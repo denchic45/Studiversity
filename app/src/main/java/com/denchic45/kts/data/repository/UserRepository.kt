@@ -1,5 +1,6 @@
 package com.denchic45.kts.data.repository
 
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.local.db.UserLocalDataSource
 import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.pref.UserPreferences
@@ -31,18 +32,20 @@ open class UserRepository @Inject constructor(
     }
 
     private fun saveUserPreference(user: User) {
-        userPreferences.id = user.id
-        userPreferences.firstName = user.firstName
-        userPreferences.patronymic = user.patronymic ?: ""
-        userPreferences.surname = user.surname
-        userPreferences.role = user.role.toString()
-        userPreferences.gender = user.gender
-        userPreferences.photoUrl = user.photoUrl
-        userPreferences.email = user.email ?: ""
-        userPreferences.isAdmin = user.admin
-        userPreferences.timestamp = user.timestamp!!.time
-        userPreferences.isGeneratedAvatar = user.generatedAvatar
-        user.groupId?.let { userPreferences.groupId = it }
+        userPreferences.apply {
+            id = user.id
+            firstName = user.firstName
+            patronymic = user.patronymic ?: ""
+            surname = user.surname
+            role = user.role.toString()
+            gender = user.gender
+            photoUrl = user.photoUrl
+            email = user.email ?: ""
+            isAdmin = user.admin
+            timestamp = user.timestamp!!.time
+            isGeneratedAvatar = user.generatedAvatar
+            user.groupId?.let { groupId = it }
+        }
     }
 
     fun findSelf(): User {
@@ -57,7 +60,7 @@ open class UserRepository @Inject constructor(
                 else
                     null
             },
-            User.Role.valueOf(userPreferences.role),
+            UserRole.valueOf(userPreferences.role),
             userPreferences.email,
             userPreferences.photoUrl,
             Date(userPreferences.timestamp), userPreferences.gender,
@@ -100,16 +103,14 @@ open class UserRepository @Inject constructor(
             userRemoteDataSource.observeById(userId)
                 .collect { map ->
                     map?.let {
-                        userLocalDataSource.upsert(
-                            map.mapToUserEntity()
-                        )
+                        userLocalDataSource.upsert(map.mapToUserEntity())
                     }
                 }
         }
         emitAll(
             userLocalDataSource.observe(userId)
                 .distinctUntilChanged()
-                .map { it?.toDomain() }
+                .map { it?.toUserDomain() }
         )
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.model.Group
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.ui.base.BaseViewModel
@@ -31,11 +32,11 @@ class ProfileViewModel @Inject constructor(
     private var userOfProfile: User? = null
     private var group: Group? = null
 
-    private fun mapRoleToNameRoleId(role: User.Role): Int {
+    private fun mapRoleToNameRoleId(role: UserRole): Int {
         return when (role) {
-            User.Role.STUDENT -> R.string.role_student
-            User.Role.TEACHER -> R.string.role_teacher
-            User.Role.HEAD_TEACHER -> R.string.role_headTeacher
+            UserRole.STUDENT -> R.string.role_student
+            UserRole.TEACHER -> R.string.role_teacher
+            UserRole.HEAD_TEACHER -> R.string.role_headTeacher
         }
     }
 

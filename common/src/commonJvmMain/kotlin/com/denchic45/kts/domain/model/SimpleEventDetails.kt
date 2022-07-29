@@ -1,22 +1,20 @@
-package com.denchic45.kts.data.model.domain
+package com.denchic45.kts.domain.model
 
-import com.denchic45.kts.data.model.mapper.Default
-import com.denchic45.kts.domain.model.Event
-import com.denchic45.kts.domain.model.EventDetails
+import com.denchic45.kts.data.domain.model.EventType
 import com.denchic45.kts.util.UUIDS
 
-data class SimpleEventDetails @Default constructor (
+data class SimpleEventDetails constructor(
     override var id: String,
     val name: String,
     val iconUrl: String,
     val color: String
 ) : EventDetails() {
 
-    private constructor() : this("", "", "","")
+    private constructor() : this("", "", "", "")
 
-    constructor(name: String):this (
+    constructor(name: String) : this(
         UUIDS.createShort(), name,
-            "https://firebasestorage.googleapis.com/v0/b/kts-app-2ab1f.appspot.com/o/subjects%2Fevent.svg?alt=media&token=082f0838-b01b-4a51-9c7a-f111380c5689",
+        "https://firebasestorage.googleapis.com/v0/b/kts-app-2ab1f.appspot.com/o/subjects%2Fevent.svg?alt=media&token=082f0838-b01b-4a51-9c7a-f111380c5689",
         "blue"
     )
 
@@ -24,8 +22,8 @@ data class SimpleEventDetails @Default constructor (
         return SimpleEventDetails(id, name, iconUrl, color)
     }
 
-    override val type: Event.TYPE
-        get() = Event.TYPE.SIMPLE
+    override val eventType: EventType
+        get() = EventType.SIMPLE
 
     companion object {
 

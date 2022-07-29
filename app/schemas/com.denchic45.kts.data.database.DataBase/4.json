@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "be8226fccfcf1ee6b3c313576511d9c6",
+    "identityHash": "a4ea6914e4b0445c0aaa1e5da54fb48e",
     "entities": [
       {
         "tableName": "subject",
@@ -34,17 +34,17 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "subject_id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
       },
       {
         "tableName": "event",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`event_id` TEXT NOT NULL, `day_id` TEXT NOT NULL, `position` INTEGER NOT NULL, `room` TEXT, `subject_id` TEXT, `teacher_ids` TEXT, `group_id` TEXT NOT NULL, `type` TEXT NOT NULL, `name` TEXT, `icon_url` TEXT, `color` TEXT, PRIMARY KEY(`event_id`), FOREIGN KEY(`day_id`) REFERENCES `day`(`day_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`event_id` TEXT NOT NULL, `day_id` TEXT NOT NULL, `position` INTEGER NOT NULL, `room` TEXT, `subject_id` TEXT, `teacher_ids` TEXT, `group_id` TEXT NOT NULL, `eventType` TEXT NOT NULL, `name` TEXT, `icon_url` TEXT, `color` TEXT, PRIMARY KEY(`event_id`), FOREIGN KEY(`day_id`) REFERENCES `day`(`day_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -89,8 +89,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "type",
-            "columnName": "type",
+            "fieldPath": "eventType",
+            "columnName": "eventType",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -114,10 +114,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "event_id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -224,10 +224,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "content_id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -310,10 +310,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "user_id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -348,10 +348,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "day_id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -404,10 +404,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "group_id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -430,10 +430,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "specialty_id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -468,10 +468,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "course_id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -525,11 +525,11 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "event_id",
             "user_id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -594,11 +594,11 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "group_id",
             "course_id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -675,10 +675,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "section_id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -731,10 +731,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -787,10 +787,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -903,10 +903,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "submission_id"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": [
@@ -938,7 +938,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'be8226fccfcf1ee6b3c313576511d9c6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a4ea6914e4b0445c0aaa1e5da54fb48e')"
     ]
   }
 }

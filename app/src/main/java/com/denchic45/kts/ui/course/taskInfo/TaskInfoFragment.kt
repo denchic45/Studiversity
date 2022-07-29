@@ -16,10 +16,10 @@ import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.denchic45.kts.R
+import com.denchic45.kts.databinding.FragmentTaskInfoBinding
 import com.denchic45.kts.domain.DomainModel
 import com.denchic45.kts.domain.model.SubmissionSettings
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.databinding.FragmentTaskInfoBinding
 import com.denchic45.kts.rx.EditTextTransformer
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.course.taskEditor.AddAttachmentAdapterDelegate
@@ -42,13 +42,14 @@ class TaskInfoFragment :
     private val btnActionSubmission: Button by lazy {
         View.inflate(requireContext(), R.layout.btn_action_submission, null) as Button
     }
-    private val adapter =
-        adapter {
-            delegates(AttachmentAdapterDelegate(false))
-            extensions {
-                clickBuilder<AttachmentHolder> { onClick = { viewModel.onTaskFileClick(it) } }
+    private val adapter = adapter {
+        delegates(AttachmentAdapterDelegate(false))
+        extensions {
+            clickBuilder<AttachmentHolder> {
+                onClick = { viewModel.onTaskFileClick(it) }
             }
         }
+    }
 
     private val submissionAttachmentsAdapter =
         adapter {

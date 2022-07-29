@@ -1,3 +1,4 @@
+import java.lang.Boolean;
 import kotlin.collections.List;
 
 CREATE TABLE courseContentEntity (
@@ -14,8 +15,12 @@ created_date INTEGER NOT NULL,
 timestamp INTEGER NOT NULL,
 completion_date INTEGER NOT NULL,
 week_date TEXT NOT NULL,
-'order' INTEGER NOT NULL
+'order' INTEGER NOT NULL,
+deleted INTEGER AS Boolean NOT NULL
 );
+
+delete:
+DELETE FROM courseContentEntity WHERE content_id =: id;
 
 upsert:
 INSERT INTO courseContentEntity

@@ -2,20 +2,18 @@ package com.denchic45.kts.data.repository
 
 import android.net.Uri
 import androidx.room.withTransaction
-import com.denchic45.kts.data.dao.*
+import com.denchic45.kts.SubjectEntity
 import com.denchic45.kts.data.database.DataBase
 import com.denchic45.kts.data.local.db.*
-import com.denchic45.kts.domain.model.Subject
-import com.denchic45.kts.data.remote.model.CourseDoc
-import com.denchic45.kts.data.remote.model.SubjectDoc
+import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.model.mapper.CourseMapper
-import com.denchic45.kts.data.model.mapper.SectionMapper
 import com.denchic45.kts.data.model.mapper.SubjectMapper
-import com.denchic45.kts.data.model.mapper.UserMapper
-import com.denchic45.kts.data.model.room.SubjectEntity
+import com.denchic45.kts.data.remote.model.CourseMap
+import com.denchic45.kts.data.remote.model.SubjectMap
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.di.modules.IoDispatcher
+import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.util.getDataFlow
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
@@ -37,10 +35,6 @@ class SubjectRepository @Inject constructor(
     override val firestore: FirebaseFirestore,
     override val courseMapper: CourseMapper,
     val subjectMapper: SubjectMapper,
-    val userMapper: UserMapper,
-    val sectionMapper: SectionMapper,
-    val courseDao: CourseDao,
-    val subjectDao: SubjectDao,
     private val dataBase: DataBase,
     @IoDispatcher override val dispatcher: CoroutineDispatcher,
     override val userLocalDataSource: UserLocalDataSource,
@@ -105,8 +99,8 @@ class SubjectRepository @Inject constructor(
             .get()
             .await()
             .forEach {
-                val courseDoc = it.toObject(CourseDoc::class.java)
-                removeCourse(courseDoc.id, courseDoc.groupIds)
+                val courseMap = it.toObject(CourseMap::class.java)
+                removeCourse(courseMap.id, courseMap.groupIds)
             }
 
     }
@@ -117,17 +111,16 @@ class SubjectRepository @Inject constructor(
                 coroutineScope.launch(dispatcher) {
                     value?.let {
                         if (value.exists())
-                            saveSubject(subjectMapper.docToEntity(value.toObject(SubjectDoc::class.java)!!))
+                            saveSubject(SubjectMap(value.data!!).mapToSubjectEntity())
                     }
                 }
             }
 
-        return subjectDao.observe(id).map { it?.let { subjectMapper.entityToDomain(it) } }
-
+        return subjectLocalDataSource.observe(id).map { it?.entityToSubjectDomain() }
     }
 
     private suspend fun saveSubject(subjectEntity: SubjectEntity) {
-        subjectDao.upsert(subjectEntity)
+        subjectLocalDataSource.upsert(subjectEntity)
     }
 
 //    fun findByTypedName(subjectName: String): Flow<List<Subject>> = callbackFlow {
@@ -137,7 +130,7 @@ class SubjectRepository @Inject constructor(
 //                    val subjects = value!!.toObjects(Subject::class.java)
 //                    trySend(subjects)
 //                    launch(dispatcher) {
-//                        subjectDao.upsert(subjectMapper.domainToEntity(subjects))
+//                        subjectLocalDataSource.upsert(subjectMapper.domainToEntity(subjects))
 //                    }
 //                }
 //        awaitClose { addSnapshotListener.remove() }
@@ -145,12 +138,12 @@ class SubjectRepository @Inject constructor(
 
     override fun findByContainsName(text: String): Flow<List<Subject>> {
         return subjectsRef.whereArrayContains("searchKeys", text.lowercase(Locale.getDefault()))
-            .getDataFlow { it.toObjects(SubjectDoc::class.java) }
-            .map { subjectDocs ->
+            .getDataFlow { snapshot -> snapshot.documents.map { SubjectMap(it.data!!) } }
+            .map { subjectMaps ->
                 coroutineScope.launch {
-                    subjectDao.upsert(subjectMapper.docToEntity(subjectDocs))
+                    subjectLocalDataSource.upsert(subjectMaps.mapsToSubjectEntities())
                 }
-                subjectMapper.docToDomain(subjectDocs)
+                subjectMaps.mapsToSubjectDomains()
             }
     }
 
@@ -170,12 +163,12 @@ class SubjectRepository @Inject constructor(
                 .get()
                 .await().apply {
                     dataBase.withTransaction {
-                        saveCourses(toObjects(CourseDoc::class.java))
+                        saveCourses(toObjects(CourseMap::class.java))
                     }
                 }
         }
-        return subjectDao.observeByGroupId(groupId)
-            .map(subjectMapper::entityToDomain)
+        return subjectLocalDataSource.observeByGroupId(groupId)
+            .map { it.entitiesToSubjectDomains() }
     }
 
 }

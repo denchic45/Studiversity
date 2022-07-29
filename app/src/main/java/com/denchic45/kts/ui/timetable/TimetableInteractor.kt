@@ -1,12 +1,12 @@
 package com.denchic45.kts.ui.timetable
 
 import com.denchic45.kts.data.Interactor
-import com.denchic45.kts.domain.model.EventsOfDay
-import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.data.prefs.GroupPreference
-import com.denchic45.kts.data.prefs.UserPreference
+import com.denchic45.kts.data.domain.model.UserRole
+import com.denchic45.kts.data.pref.GroupPreferences
+import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.repository.EventRepository
 import com.denchic45.kts.data.repository.SubjectRepository
+import com.denchic45.kts.domain.model.EventsOfDay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import java.time.LocalDate
@@ -15,8 +15,8 @@ import javax.inject.Inject
 class TimetableInteractor @Inject constructor(
     private val eventRepository: EventRepository,
     private val subjectRepository: SubjectRepository,
-    private val groupPreference: GroupPreference,
-    private val userPreference: UserPreference
+    private val groupPreferences: GroupPreferences,
+    private val userPreferences: UserPreferences
 ) : Interactor {
 
     fun findEventsOfGroupByDate(date: LocalDate, groupId: String): Flow<EventsOfDay> {
@@ -31,9 +31,9 @@ class TimetableInteractor @Inject constructor(
     }
 
     fun observeYourGroupId() =
-        groupPreference.observeValue(GroupPreference.GROUP_ID, "").filter(String::isNotEmpty)
+        groupPreferences.observeGroupId.filter(String::isNotEmpty)
 
-    val role: User.Role
-        get() = User.Role.valueOf(userPreference.role)
+    val role: UserRole
+        get() = UserRole.valueOf(userPreferences.role)
 
 }

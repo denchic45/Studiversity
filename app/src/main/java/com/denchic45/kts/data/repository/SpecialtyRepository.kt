@@ -1,10 +1,14 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.dao.SpecialtyDao
+import com.denchic45.kts.data.local.db.SpecialtyLocalDataSource
+import com.denchic45.kts.data.mapper.mapToSpecialtyEntity
+import com.denchic45.kts.data.mapper.mapsToDomains
+import com.denchic45.kts.data.mapper.mapsToSpecialEntities
+import com.denchic45.kts.data.mapper.entityToUserDomain
 import com.denchic45.kts.domain.model.Specialty
 import com.denchic45.kts.data.remote.model.GroupDoc
-import com.denchic45.kts.data.remote.model.SpecialtyDoc
 import com.denchic45.kts.data.model.mapper.SpecialtyMapper
+import com.denchic45.kts.data.remote.model.SpecialtyMap
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.di.modules.IoDispatcher
@@ -25,7 +29,7 @@ class SpecialtyRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     private val coroutineScope: CoroutineScope,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
-    private val specialtyDao: SpecialtyDao,
+    private val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val firestore: FirebaseFirestore,
     private val specialtyMapper: SpecialtyMapper,
     override val networkService: NetworkService
@@ -34,10 +38,10 @@ class SpecialtyRepository @Inject constructor(
     override fun findByContainsName(text: String): Flow<List<Specialty>> {
         return specialtyRef
             .whereArrayContains("searchKeys", SearchKeysGenerator.formatInput(text))
-            .getDataFlow { it.toObjects(SpecialtyDoc::class.java) }
-            .map { docs ->
-                specialtyDao.upsert(specialtyMapper.docToEntity(docs))
-                specialtyMapper.docToDomain(docs)
+            .getDataFlow { snapshot -> snapshot.documents.map { SpecialtyMap(it.data!!) } }
+            .map { maps ->
+                specialtyLocalDataSource.upsert(maps.mapsToSpecialEntities())
+                maps.mapsToDomains()
             }
     }
 
@@ -50,14 +54,14 @@ class SpecialtyRepository @Inject constructor(
                 .get()
                 .await().apply {
                     coroutineScope.launch(dispatcher) {
-                        specialtyDao.upsert(
-                            specialtyMapper.docToEntity(toObject(SpecialtyDoc::class.java)!!)
+                        specialtyLocalDataSource.upsert(
+                            SpecialtyMap(data!!).mapToSpecialtyEntity()
                         )
                     }
                 }
         }
-        return specialtyDao.observe(id).map { entity ->
-            entity?.let { specialtyMapper.entityToDomain(entity) }
+        return specialtyLocalDataSource.observe(id).map { entity ->
+            entity?.let { entity.entityToUserDomain() }
         }
     }
 

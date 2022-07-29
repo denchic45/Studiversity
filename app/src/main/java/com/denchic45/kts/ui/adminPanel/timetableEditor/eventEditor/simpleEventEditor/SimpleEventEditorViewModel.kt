@@ -3,12 +3,11 @@ package com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.simpleEventE
 import androidx.lifecycle.MutableLiveData
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
+import com.denchic45.kts.data.domain.model.EventType
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.data.model.domain.SimpleEventDetails
-import com.denchic45.kts.data.model.room.EventEntity
 import com.denchic45.kts.data.model.ui.UiColor
 import com.denchic45.kts.data.model.ui.UiImage
-import com.denchic45.kts.domain.model.Event
+import com.denchic45.kts.domain.model.SimpleEventDetails
 import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorInteractor
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.uivalidator.Rule
@@ -49,13 +48,11 @@ class SimpleEventEditorViewModel @Inject constructor(
         val selectedEvent = events[position]
         interactor.getDetails = { selectedEvent }
         showSelectedEvent.value = selectedEvent
-
     }
 
     init {
-
         with(interactor.oldEvent.value!!.details) {
-            if (this.type == Event.TYPE.SIMPLE) {
+            if (this.eventType == EventType.SIMPLE) {
                 interactor.getDetails = { this as SimpleEventDetails }
                 showSelectedEvent.value = this as SimpleEventDetails
             }

@@ -22,7 +22,7 @@ class UserLocalDataSource(db: AppDatabase) {
         queries.upsert(userEntity)
     }
 
-    suspend fun upsert(userEntities: List<UserEntity>) {
+    suspend fun upsert(userEntities: List<UserEntity>) = withContext(Dispatchers.IO) {
         queries.transaction {
             userEntities.forEach { queries.upsert(it) }
         }
@@ -54,11 +54,11 @@ class UserLocalDataSource(db: AppDatabase) {
 
     suspend fun deleteMissingStudentsByGroup(groupId: String, availableStudents: List<String>) =
         withContext(Dispatchers.IO) {
-            queries.deleteMissingStudentsByGroup(groupId, ListMapper.fromList(availableStudents))
+            queries.deleteMissingStudentsByGroup(groupId, availableStudents)
         }
 
-    suspend fun getGroupId(userId: String): String = withContext(Dispatchers.IO) {
-        queries.getGroupId(userId).executeAsOne()
+    suspend fun getGroupId(userId: String): String? = withContext(Dispatchers.IO) {
+        queries.getGroupId(userId).executeAsOne().user_group_id
     }
 
     suspend fun isExistByIdAndGroupId(id: String, groupId: String): Boolean =

@@ -4,7 +4,6 @@ import com.denchic45.kts.data.Interactor
 import com.denchic45.kts.domain.model.Course
 import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.model.Subject
-import com.denchic45.kts.data.prefs.GroupPreference
 import com.denchic45.kts.data.repository.*
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -13,8 +12,7 @@ class CourseEditorInteractor @Inject constructor(
     private val teacherRepository: TeacherRepository,
     private val subjectRepository: SubjectRepository,
     private val groupRepository: GroupRepository,
-    private val courseRepository: CourseRepository,
-    private val groupPreference: GroupPreference
+    private val courseRepository: CourseRepository
 ) : Interactor {
 
     fun findSubjectByTypedName(name: String): Flow<List<Subject>> {

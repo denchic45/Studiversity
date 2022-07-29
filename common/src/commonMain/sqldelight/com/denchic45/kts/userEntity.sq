@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS userEntity (
     first_name TEXT NOT NULL,
     surname TEXT NOT NULL,
     patronymic TEXT,
-    user_group_id TEXT NOT NULL,
+    user_group_id TEXT,
     role TEXT NOT NULL,
     email TEXT,
     photo_url TEXT NOT NULL,
@@ -53,12 +53,12 @@ ORDER BY surname;
 
 getGroupId:
 SELECT user_group_id FROM userEntity
-WHERE user_id =:userId;
+WHERE user_id =: userId;
 
 isExistByIdAndGroupId:
 SELECT EXISTS(
-SELECT * FROM userEntity WHERE user_id =:id
-AND user_group_id =:groupId
+SELECT * FROM userEntity WHERE user_id =: id
+AND user_group_id =: groupId
 );
 
 clearTeachers:
@@ -67,24 +67,26 @@ WHERE role = 'TEACHER';
 
 deleteMissingStudentsByGroup:
 DELETE FROM userEntity
-WHERE user_group_id =:groupId
-AND user_id NOT IN(:availableStudents);
+WHERE user_group_id =: groupId
+AND gender
+AND user_id NOT IN ?;
 
 getStudentIdsOfCourseByCourseId:
 SELECT u.user_id
 FROM userEntity  u
 JOIN groupCourseEntity gc
 ON u.user_group_id = gc.group_id
-WHERE gc.course_id = :courseId;
+WHERE gc.course_id =: courseId;
 
 getStudentsWithCuratorByGroupId:
 SELECT u.*, g.group_id, g.headman_id, g.curator_id FROM groupEntity g
 JOIN userEntity u
 ON u.user_group_id = g.group_id
 OR u.user_id = g.curator_id
-WHERE group_id=:groupId;
+WHERE group_id =: groupId
+ORDER BY surname;
 
 deleteMissingTeachersByGroup:
 DELETE FROM userEntity
-WHERE user_group_id =:groupId
+WHERE user_group_id =: groupId
 AND user_id NOT IN(:availableStudents);

@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.remote.model
 
+import com.denchic45.kts.data.domain.model.EventType
 import com.denchic45.kts.domain.DocModel
-import com.denchic45.kts.domain.model.Event
 
 data class EventDetailsDoc(
     var subjectId: String?,
@@ -9,10 +9,10 @@ data class EventDetailsDoc(
     var name: String?,
     var iconUrl: String?,
     var color: String?,
-    var type: Event.TYPE
+    var eventType: EventType
 ) : DocModel {
 
-    private constructor() : this("", emptyList(), "", "", "", Event.TYPE.EMPTY)
+    private constructor() : this("", emptyList(), "", "", "", EventType.EMPTY)
 
     companion object {
         fun createEmpty() = EventDetailsDoc()

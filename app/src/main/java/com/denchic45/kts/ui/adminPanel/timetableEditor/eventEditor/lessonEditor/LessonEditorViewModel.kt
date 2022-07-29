@@ -4,11 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.data.model.domain.Lesson
+import com.denchic45.kts.data.domain.model.EventType
+import com.denchic45.kts.domain.model.Lesson
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.data.model.room.EventEntity
-import com.denchic45.kts.domain.model.Event
 import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorInteractor
 import com.denchic45.kts.ui.adminPanel.timetableEditor.subjectChooser.SubjectChooserInteractor
 import com.denchic45.kts.ui.base.BaseViewModel
@@ -84,7 +83,7 @@ class LessonEditorViewModel @Inject constructor(
         interactor.getDetails = { uiEditor.item }
 
         with(interactor.oldEvent.value!!.details) {
-            if (this.type == Event.TYPE.LESSON) {
+            if (this.eventType == EventType.LESSON) {
                 uiEditor.oldItem = interactor.oldEvent.value!!.details as Lesson
             }
         }

@@ -16,20 +16,38 @@ class CourseContentLocalDataSource(db: AppDatabase) {
 
     private val queries: CourseContentEntityQueries = db.courseContentEntityQueries
 
+    suspend fun delete(courseContentEntity: CourseContentEntity) = withContext(Dispatchers.IO) {
+        queries.delete(courseContentEntity.content_id)
+    }
+
+    suspend fun delete(courseContentEntities: List<CourseContentEntity>) =
+        withContext(Dispatchers.IO) {
+            queries.transaction {
+                courseContentEntities.forEach { queries.delete(it.content_id) }
+            }
+        }
+
     suspend fun upsert(courseContentEntity: CourseContentEntity) = withContext(Dispatchers.IO) {
         queries.upsert(courseContentEntity)
     }
+
+    suspend fun upsert(courseContentEntities: List<CourseContentEntity>) =
+        withContext(Dispatchers.IO) {
+            queries.transaction {
+                courseContentEntities.forEach { queries.upsert(it) }
+            }
+        }
 
     fun getByCourseId(courseId: String): Flow<List<CourseContentEntity>> {
         return queries.getByCourseId(courseId).asFlow().mapToList(Dispatchers.IO)
     }
 
-    fun observe(id: String): Flow<CourseContentEntity?> {
-        return queries.getById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
-    }
-
     suspend fun get(id: String): CourseContentEntity? = withContext(Dispatchers.IO) {
         queries.getById(id).executeAsOneOrNull()
+    }
+
+    fun observe(id: String): Flow<CourseContentEntity?> {
+        return queries.getById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
     }
 
     fun getAttachmentsById(id: String): Flow<List<String>> {
@@ -64,6 +82,7 @@ class CourseContentLocalDataSource(db: AppDatabase) {
         groupId: String,
         studentId: String,
     ): Flow<List<CourseContentEntity>> {
-        return queries.getByGroupIdAndSubmittedUser(groupId, studentId).asFlow().mapToList(Dispatchers.IO)
+        return queries.getByGroupIdAndSubmittedUser(groupId, studentId).asFlow()
+            .mapToList(Dispatchers.IO)
     }
 }

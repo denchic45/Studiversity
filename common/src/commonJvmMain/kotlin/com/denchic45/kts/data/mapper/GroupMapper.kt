@@ -4,6 +4,8 @@ import com.denchic45.kts.GetStudentsWithCuratorByGroupId
 import com.denchic45.kts.GroupEntity
 import com.denchic45.kts.data.local.model.GroupWithCuratorAndSpecialtyEntities
 import com.denchic45.kts.data.remote.model.GroupDoc
+import com.denchic45.kts.data.remote.model.GroupMap
+import com.denchic45.kts.data.remote.model.UserMap
 import com.denchic45.kts.domain.model.*
 
 fun List<GetStudentsWithCuratorByGroupId>.toGroupMembers(): GroupMembers {
@@ -20,50 +22,37 @@ fun List<GetStudentsWithCuratorByGroupId>.toGroupMembers(): GroupMembers {
             )
         },
         headmanId = first().headman_id,
-        students = map {
-            GroupStudent(
-                id = it.user_id,
-                firstName = it.first_name,
-                surname = it.surname,
-                patronymic = it.patronymic,
-                groupId = it.group_id,
-                photoUrl = it.photo_url
-            )
-        }
+        students = filterNot { it.curator_id == it.user_id }
+            .map {
+                GroupStudent(
+                    id = it.user_id,
+                    firstName = it.first_name,
+                    surname = it.surname,
+                    patronymic = it.patronymic,
+                    groupId = it.group_id,
+                    photoUrl = it.photo_url
+                )
+            }
     )
 }
 
-@Deprecated("")
-fun GroupDoc.toEntity() = GroupEntity(
-    group_id = id,
-    group_name = name,
-    curator_id = curator.id,
-    course = course,
-    specialty_id = specialty.id,
-    headman_id = headmanId!!,
-    timestamp = timestamp!!.time
-)
-
-@Deprecated("")
-fun List<GroupDoc>.docsToEntities() = map(GroupDoc::toEntity)
-
-fun GroupWithCuratorAndSpecialtyEntities.toDomain() = Group(
+fun GroupWithCuratorAndSpecialtyEntities.entityToUserDomain() = Group(
     id = groupEntity.group_id,
     name = groupEntity.group_name,
     course = groupEntity.course,
-    specialty = specialtyEntity.toDomain(),
-    curator = curatorEntity.toDomain()
+    specialty = specialtyEntity.entityToUserDomain(),
+    curator = curatorEntity.toUserDomain()
 )
 
-fun GroupDoc.toDomain() = Group(
+fun GroupMap.mapToGroup() = Group(
     id = id,
     name = name,
     course = course,
-    specialty = specialty.toDomain(),
-    curator = curator.toDomain()
+    specialty = specialty.mapToSpecialty(),
+    curator = UserMap(curator).mapToUser()
 )
 
-fun List<GroupDoc>.docsToDomains() = map(GroupDoc::toDomain)
+fun List<GroupMap>.mapsToDomains() = map(GroupMap::mapToGroup)
 
 fun GroupDoc.toGroupHeader() = GroupHeader(
     id = id,
@@ -72,6 +61,24 @@ fun GroupDoc.toGroupHeader() = GroupHeader(
 )
 
 fun List<GroupDoc>.docsToGroupHeaders() = map(GroupDoc::toGroupHeader)
+
+fun GroupMap.mapToGroupEntity() = GroupEntity(
+    group_id = id,
+    group_name = name,
+    curator_id = curator["id"] as String,
+    specialty_id = specialty.id,
+    course = course,
+    headman_id = headmanId,
+    timestamp = timestamp.time
+)
+
+fun GroupMap.toGroupHeader() = GroupHeader(
+    id = id,
+    name = name,
+    specialtyId = specialty.id,
+)
+
+fun List<GroupMap>.mapsToGroupHeaders() = map { it.toGroupHeader() }
 
 fun Group.domainToMap(): Map<String, Any> {
     val map: MutableMap<String, Any> = HashMap()

@@ -11,7 +11,9 @@ import com.denchic45.kts.data.repository.*
 import com.denchic45.kts.di.modules.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -21,7 +23,7 @@ import javax.inject.Inject
 class MainInteractor @Inject constructor(
     private val context: Context,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
-    coroutineScope: CoroutineScope,
+    private val coroutineScope: CoroutineScope,
     private val groupRepository: GroupRepository,
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
@@ -84,7 +86,9 @@ class MainInteractor @Inject constructor(
                     groupRepository.listenYouGroupByCurator()
                     groupRepository.listenGroupsWhereThisUserIsTeacher(user)
                 } else if (user.isStudent) {
-                    groupRepository.listenYourGroup()
+                    coroutineScope.launch {
+                        groupRepository.observeYourGroupById().collect()
+                    }
                 }
                 courseRepository.observeByYourGroup()
             } ?: run {

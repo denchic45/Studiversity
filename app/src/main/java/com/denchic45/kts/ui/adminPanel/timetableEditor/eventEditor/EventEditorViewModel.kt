@@ -143,12 +143,12 @@ class EventEditorViewModel @Inject constructor(
     fun onToolbarClick() {
         showListOfEventTypes.value = Pair(
             eventTypeNames,
-            interactor.getDetails().type.ordinal
+            interactor.getDetails().eventType.ordinal
         )
     }
 
     fun onEventTypeSelect(position: Int) {
-        if (position == uiEditor.item.type.ordinal)
+        if (position == uiEditor.item.eventType.ordinal)
             return
         showDetailEditor(position)
     }
@@ -189,6 +189,6 @@ class EventEditorViewModel @Inject constructor(
                 },
             Validation(Rule({ interactor.validateEventDetails() }, ""))
         )
-        showDetailEditor(interactor.oldEvent.value!!.type.ordinal)
+        showDetailEditor(interactor.oldEvent.value!!.eventType.ordinal)
     }
 }

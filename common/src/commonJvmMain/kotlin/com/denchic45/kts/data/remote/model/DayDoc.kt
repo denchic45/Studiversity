@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.remote.model
 
+import com.denchic45.kts.data.domain.model.EventType
 import com.denchic45.kts.domain.DocModel
-import com.denchic45.kts.domain.model.Event
 import com.denchic45.kts.util.UUIDS
 import java.util.*
 
@@ -14,7 +14,7 @@ data class DayDoc(
 ) : DocModel {
 
     private constructor() : this(
-        "",
+        UUIDS.createShort(),
         Date(),
         false,
         emptyList(),
@@ -25,12 +25,12 @@ data class DayDoc(
 
     val teacherIds: List<String>
         get() = events
-            .filter { eventDoc: EventDoc -> eventDoc.eventDetailsDoc.type == Event.TYPE.LESSON }
+            .filter { eventDoc: EventDoc -> eventDoc.eventDetailsDoc.eventType == EventType.LESSON }
             .map { eventDoc: EventDoc -> eventDoc.eventDetailsDoc.teacherIds!! }
             .flatten()
 
     val subjectIds: List<String>
         get() = events
-            .filter { eventDoc: EventDoc -> eventDoc.eventDetailsDoc.type == Event.TYPE.LESSON }
+            .filter { eventDoc: EventDoc -> eventDoc.eventDetailsDoc.eventType == EventType.LESSON }
             .map { eventDoc: EventDoc -> eventDoc.eventDetailsDoc.subjectId!! }
 }

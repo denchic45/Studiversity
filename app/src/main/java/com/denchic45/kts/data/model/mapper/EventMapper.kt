@@ -1,10 +1,9 @@
 package com.denchic45.kts.data.model.mapper
 
-import com.denchic45.kts.data.model.domain.Lesson
-import com.denchic45.kts.data.model.domain.SimpleEventDetails
+import com.denchic45.kts.data.domain.model.EventType
 import com.denchic45.kts.data.model.room.EventEntity
-import com.denchic45.kts.data.model.room.EventWithSubjectAndTeachersEntities
-import com.denchic45.kts.data.model.room.GroupWithCuratorAndSpecialtyEntity
+import com.denchic45.kts.data.model.room.EventWithSubjectAndGroupAndTeachersEntities
+import com.denchic45.kts.data.model.room.GroupEntity
 import com.denchic45.kts.data.model.room.TeacherEventCrossRef
 import com.denchic45.kts.data.remote.model.EventDetailsDoc
 import com.denchic45.kts.data.remote.model.EventDetailsDoc.Companion.createEmpty
@@ -17,45 +16,46 @@ import java.time.LocalDate
 
 @Mapper(uses = [CourseContentMapper::class, UserMapper::class, GroupMapper::class, SubjectMapper::class])
 abstract class EventMapper {
-    @Mapping(source = "entities.groupEntity", target = ".")
-    abstract fun groupWithCuratorAndSpecialtyEntityToCourseGroup(entities: GroupWithCuratorAndSpecialtyEntity): GroupHeader
 
-    @Named("mapDetails")
-    fun mapDetails(entities: EventWithSubjectAndTeachersEntities): EventDetails {
-        return when (entities.eventEntity.type) {
-            Event.TYPE.LESSON -> eventEntityToLesson(entities)
-            Event.TYPE.SIMPLE -> eventEntityToSimple(entities)
-            Event.TYPE.EMPTY -> eventEntityToEmpty(entities)
-        }
-    }
+//    @Mapping(source = "entities.groupEntity", target = ".")
+//    abstract fun groupWithCuratorAndSpecialtyEntityToCourseGroup(entity: GroupEntity): GroupHeader
 
-    @Mapping(source = "teacherEntities", target = "teachers")
-    @Mapping(source = "subjectEntity", target = "subject")
-    abstract fun eventEntityToLesson(entities: EventWithSubjectAndTeachersEntities): Lesson
+//    @Named("mapDetails")
+//    fun mapDetails(entities: EventWithSubjectAndGroupAndTeachersEntities): EventDetails {
+//        return when (entities.eventEntity.eventType) {
+//            EventType.LESSON -> eventEntityToLesson(entities)
+//            EventType.SIMPLE -> eventEntityToSimple(entities)
+//            EventType.EMPTY -> eventEntityToEmpty(entities)
+//        }
+//    }
 
-    @Mapping(source = "eventEntity", target = ".")
-    abstract fun eventEntityToSimple(entities: EventWithSubjectAndTeachersEntities): SimpleEventDetails
+//    @Mapping(source = "teacherEntities", target = "teachers")
+//    @Mapping(source = "subjectEntity", target = "subject")
+//    abstract fun eventEntityToLesson(entities: EventWithSubjectAndGroupAndTeachersEntities): Lesson
+//
+//    @Mapping(source = "eventEntity", target = ".")
+//    abstract fun eventEntityToSimple(entities: EventWithSubjectAndGroupAndTeachersEntities): SimpleEventDetails
+//
+//    abstract fun eventEntityToEmpty(entities: EventWithSubjectAndGroupAndTeachersEntities): EmptyEventDetails
 
-    abstract fun eventEntityToEmpty(entities: EventWithSubjectAndTeachersEntities): EmptyEventDetails
+//    fun entityToDomain(eventWithSubjectAndTeachersEntities: List<EventWithSubjectAndGroupAndTeachersEntities>): List<Event> {
+//        return eventWithSubjectAndTeachersEntities
+//            .map { eventEntity: EventWithSubjectAndGroupAndTeachersEntities ->
+//                eventEntityToEvent(eventEntity)
+//            }
+//    }
 
-    fun entityToDomain(eventWithSubjectAndTeachersEntities: List<EventWithSubjectAndTeachersEntities>): List<Event> {
-        return eventWithSubjectAndTeachersEntities
-            .map { eventEntity: EventWithSubjectAndTeachersEntities ->
-                eventEntityToEvent(eventEntity)
-            }
-    }
+//    fun entitiesToEventsOfDay(
+//        eventWithSubjectAndTeachersEntities: List<EventWithSubjectAndGroupAndTeachersEntities>,
+//        date: LocalDate
+//    ): EventsOfDay {
+//        return EventsOfDay(date, entityToDomain(eventWithSubjectAndTeachersEntities))
+//    }
 
-    fun entitiesToEventsOfDay(
-        eventWithSubjectAndTeachersEntities: List<EventWithSubjectAndTeachersEntities>,
-        date: LocalDate
-    ): EventsOfDay {
-        return EventsOfDay(date, entityToDomain(eventWithSubjectAndTeachersEntities))
-    }
-
-    @Mapping(source = "groupEntity", target = "groupHeader")
-    @Mapping(source = "eventEntity", target = ".")
-    @Mapping(target = "details", qualifiedByName = ["mapDetails"], source = ".")
-    abstract fun eventEntityToEvent(eventEntity: EventWithSubjectAndTeachersEntities): Event
+//    @Mapping(source = "groupEntity", target = "groupHeader")
+//    @Mapping(source = "eventEntity", target = ".")
+//    @Mapping(target = "details", qualifiedByName = ["mapDetails"], source = ".")
+//    abstract fun eventEntityToEvent(eventEntity: EventWithSubjectAndGroupAndTeachersEntities): Event
 
     @Named("mapTeacherList")
     fun mapTeacherList(teachers: List<User>): List<String> {
@@ -89,10 +89,10 @@ abstract class EventMapper {
 
     @Named("detailsToDetailsDoc")
     fun detailsToDetailsDoc(eventDetails: EventDetails): EventDetailsDoc {
-        return when (eventDetails.type) {
-            Event.TYPE.LESSON -> lessonToDetailsDoc(eventDetails as Lesson)
-            Event.TYPE.SIMPLE -> simpleToDetailsDoc(eventDetails as SimpleEventDetails)
-            Event.TYPE.EMPTY -> emptyToDetailsDoc()
+        return when (eventDetails.eventType) {
+            EventType.LESSON -> lessonToDetailsDoc(eventDetails as Lesson)
+            EventType.SIMPLE -> simpleToDetailsDoc(eventDetails as SimpleEventDetails)
+            EventType.EMPTY -> emptyToDetailsDoc()
         }
     }
 

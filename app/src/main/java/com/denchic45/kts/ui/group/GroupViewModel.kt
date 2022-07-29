@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.uipermissions.Permission
 import com.denchic45.kts.uipermissions.UiPermissions
@@ -60,7 +60,7 @@ class GroupViewModel @Inject constructor(
                 navigateTo(
                     MobileNavigationDirections.actionGlobalUserEditorFragment(
                         userId = null,
-                        role = User.Role.STUDENT.toString(),
+                        role = UserRole.STUDENT.toString(),
                         groupId = groupId
                     )
                 )

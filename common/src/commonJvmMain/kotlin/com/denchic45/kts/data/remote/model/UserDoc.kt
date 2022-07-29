@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.remote.model
 
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.DocModel
-import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.util.SearchKeysGenerator
 import java.util.*
 
@@ -11,7 +11,7 @@ data class UserDoc(
     var surname: String,
     var patronymic: String? = null,
     var groupId: String? = null,
-    var role: User.Role,
+    var role: UserRole,
     var email: String? = null,
     var photoUrl: String,
     //    @ServerTimestamp
@@ -31,7 +31,7 @@ data class UserDoc(
         "",
         "",
         "",
-        User.Role.STUDENT,
+        UserRole.STUDENT,
         "",
         "",
         Date(),
@@ -46,10 +46,10 @@ data class UserDoc(
 
     val isTeacher: Boolean
         get() {
-            return role == User.Role.TEACHER || role == User.Role.HEAD_TEACHER
+            return role == UserRole.TEACHER || role == UserRole.HEAD_TEACHER
         }
     val isStudent: Boolean
-        get() = role == User.Role.STUDENT
+        get() = role == UserRole.STUDENT
     val fullName: String
         get() = "$firstName $surname"
 }

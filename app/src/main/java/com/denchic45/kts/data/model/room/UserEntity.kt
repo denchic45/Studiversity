@@ -1,8 +1,8 @@
 package com.denchic45.kts.data.model.room
 
 import androidx.room.*
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.EntityModel
-import com.denchic45.kts.domain.model.User
 import java.util.*
 
 @Entity(tableName = "user")
@@ -14,7 +14,7 @@ data class UserEntity(
     val surname: String,
     @ColumnInfo(name = "user_group_id")
     val groupId: String? = null,
-    val role: User.Role,
+    val role: UserRole,
     val email: String? = null,
     val photoUrl: String,
     val gender: Int = 0,

@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.model.mapper
 
 import com.denchic45.kts.domain.model.Section
-import com.denchic45.kts.data.remote.model.SectionDoc
+import com.denchic45.kts.data.remote.model.SectionMap
 import com.denchic45.kts.data.model.room.SectionEntity
 import org.mapstruct.Mapper
 import org.mapstruct.Named
@@ -20,7 +20,7 @@ abstract class SectionMapper {
 
     abstract fun entityToDomain(entityList: List<SectionEntity>): List<Section>
 
-    abstract fun docToEntity(sectionDoc: SectionDoc): SectionEntity
+    abstract fun docToEntity(sectionMap: SectionMap): SectionEntity
 
-    abstract fun docToEntity(sectionDocs: List<SectionDoc>): List<SectionEntity>
+    abstract fun docToEntity(sectionDocs: List<SectionMap>): List<SectionEntity>
 }

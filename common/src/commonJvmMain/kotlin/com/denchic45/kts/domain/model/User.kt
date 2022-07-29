@@ -1,5 +1,6 @@
 package com.denchic45.kts.domain.model
 
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.DomainModel
 import com.denchic45.kts.util.UUIDS
 import java.util.*
@@ -10,8 +11,7 @@ data class User(
     val surname: String,
     val patronymic: String?,
     val groupId: String?,
-    val role: Role,
-//    val phoneNum: String,
+    val role: UserRole,
     val email: String?,
     val photoUrl: String,
     val timestamp: Date?,
@@ -26,8 +26,7 @@ data class User(
         "",
         "",
         "",
-        Role.STUDENT,
-//        "",
+        UserRole.STUDENT,
         "",
         "",
         null,
@@ -38,14 +37,14 @@ data class User(
 
 
     val isTeacher: Boolean
-        get() = role == Role.TEACHER || role == Role.HEAD_TEACHER
+        get() = role == UserRole.TEACHER || role == UserRole.HEAD_TEACHER
     val isStudent: Boolean
-        get() = role == Role.STUDENT
+        get() = role == UserRole.STUDENT
 
 
     fun hasGroup(): Boolean = !groupId.isNullOrEmpty()
 
-    fun hasAdminPerms() = admin || role == Role.HEAD_TEACHER
+    fun hasAdminPerms() = admin || role == UserRole.HEAD_TEACHER
 
     val fullName: String
         get() = "$firstName $surname"
@@ -80,8 +79,6 @@ data class User(
 
     fun curatorFor(groupId: String): Boolean = isTeacher && groupId == this.groupId
 
-    enum class Role { STUDENT, TEACHER, HEAD_TEACHER }
-
     companion object {
 //        const val STUDENT = "STUDENT"
 
@@ -90,12 +87,12 @@ data class User(
 //        const val TEACHER = "TEACHER"
 //        const val HEAD_TEACHER = "HEAD_TEACHER"
 
-        fun isTeacher(role: Role): Boolean {
-            return role == Role.TEACHER || role == Role.HEAD_TEACHER
+        fun isTeacher(role: UserRole): Boolean {
+            return role == UserRole.TEACHER || role == UserRole.HEAD_TEACHER
         }
 
-        fun isStudent(role: Role): Boolean {
-            return role == Role.STUDENT
+        fun isStudent(role: UserRole): Boolean {
+            return role == UserRole.STUDENT
         }
 
         fun createEmpty(): User {

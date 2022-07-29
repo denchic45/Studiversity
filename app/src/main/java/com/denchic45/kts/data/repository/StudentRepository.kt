@@ -1,6 +1,7 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.dao.UserDao
+import com.denchic45.kts.data.local.db.UserLocalDataSource
+import com.denchic45.kts.data.mapper.toUserDomain
 import com.denchic45.kts.data.model.mapper.UserMapper
 import com.denchic45.kts.data.remote.model.UserDoc
 import com.denchic45.kts.data.service.AppVersionService
@@ -18,7 +19,7 @@ import javax.inject.Inject
 class StudentRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     override val networkService: NetworkService,
-    private val userDao: UserDao,
+    private val userLocalDataSource: UserLocalDataSource,
     private val userMapper: UserMapper,
     private val firestore: FirebaseFirestore
 ) : Repository() {
@@ -40,7 +41,7 @@ class StudentRepository @Inject constructor(
         requireAllowWriteData()
         val batch = firestore.batch()
         val studentDoc = userMapper.domainToDoc(student)
-        val cacheStudent = userMapper.entityToDomain(userDao.get(student.id)!!)
+        val cacheStudent = userLocalDataSource.get(student.id)!!.toUserDomain()
         if (changePersonalData(student, cacheStudent)) {
             batch[userRef.document(student.id)] = studentDoc
         }
@@ -67,13 +68,13 @@ class StudentRepository @Inject constructor(
         requireAllowWriteData()
         val batch = firestore.batch()
         batch.delete(userRef.document(studentId))
-        deleteStudentFromGroup(studentId, getGroupIdByStudentId(studentId), batch)
+        deleteStudentFromGroup(studentId, getGroupIdByStudentId(studentId)!!, batch)
         batch.commit().await()
         deleteAvatar(studentId)
     }
 
-    private suspend fun getGroupIdByStudentId(studentId: String): String {
-        return userDao.getGroupId(studentId)
+    private suspend fun getGroupIdByStudentId(studentId: String): String? {
+        return userLocalDataSource.getGroupId(studentId)
     }
 
     private suspend fun deleteAvatar(userId: String) {

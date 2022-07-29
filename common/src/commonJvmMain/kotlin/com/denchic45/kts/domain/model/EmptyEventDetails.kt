@@ -1,14 +1,16 @@
 package com.denchic45.kts.domain.model
 
+import com.denchic45.kts.data.domain.model.EventType
+
 class EmptyEventDetails : EventDetails() {
-    override val type: Event.TYPE
-        get() = Event.TYPE.EMPTY
+    override val eventType: EventType
+        get() = EventType.EMPTY
 
     override fun equals(other: Any?): Boolean {
-        return (other as EventDetails?)!!.type == Event.TYPE.EMPTY
+        return (other as EventDetails?)!!.eventType == EventType.EMPTY
     }
 
     override fun hashCode(): Int {
-        return type.hashCode()
+        return eventType.hashCode()
     }
 }

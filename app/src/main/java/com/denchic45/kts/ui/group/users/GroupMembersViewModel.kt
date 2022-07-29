@@ -4,11 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.DomainModel
 import com.denchic45.kts.domain.model.GroupMember
 import com.denchic45.kts.domain.model.GroupMembers
 import com.denchic45.kts.data.model.domain.OptionItem
-import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.data.model.ui.Header
 import com.denchic45.kts.data.model.ui.UiText
 import com.denchic45.kts.data.model.ui.UserItem
@@ -125,7 +125,7 @@ class GroupMembersViewModel @Inject constructor(
                     navigateTo(
                         MobileNavigationDirections.actionGlobalUserEditorFragment(
                             userId = selectedUserId,
-                            role = User.Role.STUDENT.toString(),
+                            role = UserRole.STUDENT.toString(),
                             groupId = groupId
                         )
                     )

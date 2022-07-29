@@ -1,5 +1,50 @@
+import kotlin.collections.List;
+
 CREATE TABLE eventEntity (
 event_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 day_id TEXT NOT NULL,
-position INTEGER
+position INTEGER AS Int NOT NULL,
+room TEXT NOT NULL,
+type TEXT NOT NULL,
+event_name TEXT,
+event_icon_url TEXT,
+color TEXT,
+subject_id TEXT NOT NULL,
+teacher_ids TEXT AS List<String> NOT NULL,
+group_id TEXT NOT NULL
 );
+
+CREATE VIEW eventWithSubjectAndGroupAndTeachers AS
+SELECT e.*, s.*, te.teacher_id, g.*, u.*
+FROM eventEntity e
+JOIN subjectEntity s ON s.subject_id = e.subject_id
+JOIN teacherEventEntity te ON te.event_id = e.event_id
+JOIN groupEntity g ON g.group_id == e.group_id
+JOIN userEntity u ON u.user_id = te.teacher_id;
+
+upsert:
+INSERT INTO eventEntity
+VALUES ?
+ON CONFLICT(event_id)
+DO UPDATE SET
+position = excluded.position;
+
+getById:
+SELECT * FROM eventEntity WHERE event_id =: id;
+
+getDayByDateAndGroupId:
+SELECT * FROM dayEntity WHERE date =: date
+AND group_id =:groupId;
+
+getEventsWithSubjectAndTeachersByDayId:
+SELECT * FROM eventWithSubjectAndGroupAndTeachers e
+WHERE day_id =: dayId ORDER BY position;
+
+getEventsWithSubjectAndTeachersByDateAndTeacherId:
+SELECT e.* FROM eventWithSubjectAndGroupAndTeachers e
+JOIN dayEntity d ON d.day_id = e.day_id
+WHERE d.date=:date AND e.teacher_id =: teacherId ORDER BY position;
+
+deleteByGroupAndDateRange:
+DELETE FROM dayEntity WHERE date
+BETWEEN :start AND :end AND group_id =: groupId;

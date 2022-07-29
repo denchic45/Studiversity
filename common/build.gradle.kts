@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.compose") version "1.1.1"
     id("com.android.library")
     id("com.squareup.sqldelight")
+//    kotlin("plugin.serialization") version "1.6.10"
 }
 
 kotlin {
@@ -44,7 +45,6 @@ kotlin {
                 api(compose.material3)
 //                api(compose.material)
 
-
                 api("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
@@ -59,6 +59,9 @@ kotlin {
 
                 api("com.russhwolf:multiplatform-settings:0.9")
                 api("com.russhwolf:multiplatform-settings-coroutines:0.9")
+
+//                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.13.0")
+//                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0-RC")
             }
         }
         val commonTest by getting {
@@ -112,6 +115,8 @@ kotlin {
 
                 api("com.squareup.sqldelight:sqlite-driver:$sqlDelightVersion")
                 api("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
+
+//                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-jvm:0.13.0")
 
                 dependsOn(commonJvmMain)
             }

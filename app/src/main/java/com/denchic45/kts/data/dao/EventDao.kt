@@ -38,7 +38,7 @@ abstract class EventDao : BaseDao<EventEntity>() {
     ): Flow<DayEntity?>
 
     @Query("SELECT * FROM event WHERE day_id=:dayId ORDER BY position")
-    abstract fun observeEventsByDayId(dayId: String): Flow<List<EventWithSubjectAndTeachersEntities>>
+    abstract fun observeEventsByDayId(dayId: String): Flow<List<EventWithSubjectAndGroupAndTeachersEntities>>
 
     @Transaction
     @Query("SELECT * FROM event e JOIN teacher_event te ON e.event_id == te.event_id JOIN day d ON d.day_id = e.day_id WHERE d.date=:date AND te.user_id =:teacherId ORDER BY position")
@@ -46,7 +46,7 @@ abstract class EventDao : BaseDao<EventEntity>() {
         @TypeConverters(LocalDateConverter::class)
         date: LocalDate,
         teacherId: String
-    ): Flow<List<EventWithSubjectAndTeachersEntities>>
+    ): Flow<List<EventWithSubjectAndGroupAndTeachersEntities>>
 
     @Query("DELETE FROM day WHERE date BETWEEN :start AND :end AND group_id =:groupId")
     abstract suspend fun deleteByGroupAndDateRange(
@@ -57,10 +57,10 @@ abstract class EventDao : BaseDao<EventEntity>() {
         end: LocalDate
     )
 
-    @Query("DELETE FROM day WHERE date =:date AND group_id =:groupId")
-    abstract fun deleteByDateAndGroup(
-        @TypeConverters(LocalDateConverter::class)
-        date: LocalDate,
-        groupId: String
-    )
+//    @Query("DELETE FROM day WHERE date =:date AND group_id =:groupId")
+//    abstract fun deleteByDateAndGroup(
+//        @TypeConverters(LocalDateConverter::class)
+//        date: LocalDate,
+//        groupId: String
+//    )
 }

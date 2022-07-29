@@ -17,7 +17,7 @@ data class CourseContentDoc constructor(
     var order: Long,
     val createdDate: Date,
     val timestamp: Date?,
-    val comments: List<ContentCommentDoc>?,
+    val comments: List<ContentCommentMap>?,
     val submissions: Map<String, SubmissionDoc>?,
     @field:JvmField
     val deleted: Boolean = false,

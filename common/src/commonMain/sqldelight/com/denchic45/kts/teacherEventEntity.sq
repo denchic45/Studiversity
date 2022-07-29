@@ -1,0 +1,9 @@
+CREATE TABLE teacherEventEntity (
+event_id TEXT NOT NULL,
+teacher_id TEXT NOT NULL,
+FOREIGN KEY (event_id) REFERENCES eventEntity(event_id) ON DELETE CASCADE,
+FOREIGN KEY (teacher_id) REFERENCES userEntity(user_id) ON DELETE CASCADE
+);
+
+insert:
+INSERT OR IGNORE INTO teacherEventEntity VALUES ?;

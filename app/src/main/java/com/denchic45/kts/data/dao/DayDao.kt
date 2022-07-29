@@ -9,6 +9,7 @@ import java.time.LocalDate
 
 @Dao
 abstract class DayDao : BaseDao<DayEntity>() {
+
     @Query("SELECT * FROM day WHERE day_id=:id")
     abstract operator fun get(id: String): DayEntity
 

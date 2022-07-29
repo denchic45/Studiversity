@@ -7,6 +7,7 @@ import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.Resource
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.model.User.Companion.isStudent
@@ -87,7 +88,7 @@ open class UserEditorViewModel @Inject constructor(
     private val uiValidator: UIValidator
     private val uiEditor: UIEditor<User>
     private var userId: String
-    private var role: User.Role
+    private var role: UserRole
     private var gender = 0
     private var admin = false
     private var generatedAvatar = true
@@ -151,7 +152,7 @@ open class UserEditorViewModel @Inject constructor(
     }
 
     init {
-        this.role = role?.let { User.Role.valueOf(it) } ?: User.Role.TEACHER
+        this.role = role?.let { UserRole.valueOf(it) } ?: UserRole.TEACHER
         this.userId = userId ?: UUIDS.createShort()
         this.genderList = genderList
         uiEditor = UIEditor(userId == null) {
@@ -205,8 +206,8 @@ open class UserEditorViewModel @Inject constructor(
 
     private fun setupForNewItem() {
         toolbarTitle = when (role) {
-            User.Role.STUDENT -> "Новый студент"
-            User.Role.TEACHER -> "Новый преподаватель"
+            UserRole.STUDENT -> "Новый студент"
+            UserRole.TEACHER -> "Новый преподаватель"
             else -> throw IllegalStateException()
         }
     }
@@ -216,10 +217,10 @@ open class UserEditorViewModel @Inject constructor(
 //        emailFieldEnable.value = false
         accountFieldsVisibility.value = false
         toolbarTitle = when (role) {
-            User.Role.STUDENT -> {
+            UserRole.STUDENT -> {
                 "Редактировать студента"
             }
-            User.Role.TEACHER, User.Role.HEAD_TEACHER -> {
+            UserRole.TEACHER, UserRole.HEAD_TEACHER -> {
                 "Редактировать руководителя"
             }
         }
@@ -237,9 +238,9 @@ open class UserEditorViewModel @Inject constructor(
 
     private fun setRoleView() {
         roleField.value = when (role) {
-            User.Role.STUDENT -> R.string.role_student
-            User.Role.TEACHER -> R.string.role_teacher
-            User.Role.HEAD_TEACHER -> R.string.role_headTeacher
+            UserRole.STUDENT -> R.string.role_student
+            UserRole.TEACHER -> R.string.role_teacher
+            UserRole.HEAD_TEACHER -> R.string.role_headTeacher
         }
     }
 
@@ -264,7 +265,7 @@ open class UserEditorViewModel @Inject constructor(
     }
 
     fun onRoleSelect(roleItem: ListItem) {
-        role = User.Role.valueOf(roleItem.content as String)
+        role = UserRole.valueOf(roleItem.content as String)
 
     }
 

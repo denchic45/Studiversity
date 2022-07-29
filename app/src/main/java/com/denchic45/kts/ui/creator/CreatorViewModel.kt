@@ -4,8 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.data.model.ui.UiImage
 import com.denchic45.kts.ui.base.BaseViewModel
 import kotlinx.coroutines.launch
@@ -22,7 +22,7 @@ class CreatorViewModel @Inject constructor() : BaseViewModel() {
                 navigateTo(
                     MobileNavigationDirections.actionGlobalUserEditorFragment(
                         userId = null,
-                        role = User.Role.STUDENT.toString(),
+                        role = UserRole.STUDENT.toString(),
                         groupId = null
                     )
                 )
@@ -31,7 +31,7 @@ class CreatorViewModel @Inject constructor() : BaseViewModel() {
                 navigateTo(
                     MobileNavigationDirections.actionGlobalUserEditorFragment(
                         userId = null,
-                        role = User.Role.TEACHER.toString(),
+                        role = UserRole.TEACHER.toString(),
                         groupId = null
                     )
                 )

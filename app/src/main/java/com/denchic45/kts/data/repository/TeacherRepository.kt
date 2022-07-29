@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.repository
 
 import android.util.Log
-import com.denchic45.kts.data.remote.model.CourseDoc
+import com.denchic45.kts.data.remote.model.CourseMap
 import com.denchic45.kts.data.remote.model.GroupDoc
 import com.denchic45.kts.data.model.mapper.UserMapper
 import com.denchic45.kts.data.remote.model.UserDoc
@@ -62,7 +62,7 @@ class TeacherRepository @Inject constructor(
         val groupWithThisCuratorSnapshot = tasks[1].result as QuerySnapshot?
         if (!coursesWithThisTeacherSnapshot!!.isEmpty) {
             val coursesWithThisTeacher = coursesWithThisTeacherSnapshot.toObjects(
-                CourseDoc::class.java
+                CourseMap::class.java
             )
             for (courseDoc in coursesWithThisTeacher) {
                 val updateCourseMap: MutableMap<String, Any> = HashMap()

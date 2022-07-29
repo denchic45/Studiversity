@@ -11,6 +11,7 @@ import com.denchic45.kts.data.model.ui.UiImage
 import com.denchic45.kts.domain.model.Event
 import com.denchic45.kts.domain.model.EventsOfDay
 import com.denchic45.kts.domain.model.GroupHeader
+import com.denchic45.kts.domain.model.Lesson
 import com.denchic45.kts.domain.usecase.FindGroupByContainsNameUseCase
 import com.denchic45.kts.ui.adapter.EventAdapter
 import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorInteractor
@@ -190,7 +191,6 @@ class TimetableFinderViewModel @Inject constructor(
                 )
             eventEditorInteractor.setEditedEvent(_eventsOfDay.value, createdLesson)
             openEventEditor.call()
-
 
             _eventsOfDay.update { eventEditorInteractor.receiveEvent() }
         }

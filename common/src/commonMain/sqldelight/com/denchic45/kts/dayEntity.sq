@@ -1,6 +1,25 @@
 CREATE TABLE dayEntity (
 day_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 date TEXT NOT NULL,
-startAtZero INTEGER AS Boolean NOT NULL,
+start_at_zero INTEGER AS Boolean NOT NULL,
 group_id TEXT
 );
+
+upsert:
+INSERT INTO dayEntity
+VALUES ?
+ON CONFLICT(day_id)
+DO UPDATE SET
+date = excluded.date,
+start_at_zero = excluded.start_at_zero,
+group_id = excluded.group_id;
+
+getById:
+SELECT * FROM dayEntity WHERE day_id = :id;
+
+getIdByDateAndGroupId:
+SELECT day_id FROM dayEntity WHERE date =:date
+AND group_id =:groupId;
+
+deleteByDate:
+DELETE FROM dayEntity WHERE date =: date;

@@ -16,8 +16,8 @@ import com.denchic45.kts.SvgColorListener
 import com.denchic45.kts.R
 import com.denchic45.kts.customPopup.ListPopupWindowAdapter
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.data.model.domain.SimpleEventDetails
 import com.denchic45.kts.databinding.FragmentSimpleEventBinding
+import com.denchic45.kts.domain.model.SimpleEventDetails
 import com.denchic45.kts.glideSvg.GlideApp
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.util.Dimensions

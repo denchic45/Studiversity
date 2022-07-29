@@ -6,7 +6,6 @@ import com.denchic45.kts.util.NetworkException
 import com.denchic45.kts.util.OldVersionException
 import java.util.function.Consumer
 
-
 abstract class Repository protected constructor() :
     PreconditionsRepository {
     val subscriptions: MutableMap<String, Subscription> = HashMap()

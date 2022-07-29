@@ -5,7 +5,7 @@ import androidx.room.Junction
 import androidx.room.Relation
 import com.denchic45.kts.domain.EntityModel
 
-data class EventWithSubjectAndTeachersEntities(
+data class EventWithSubjectAndGroupAndTeachersEntities(
     @Embedded
     var eventEntity: EventEntity,
 
@@ -16,7 +16,7 @@ data class EventWithSubjectAndTeachersEntities(
     var subjectEntity: SubjectEntity?,
 
     @Relation(entity = GroupEntity::class, parentColumn = "group_id", entityColumn = "group_id")
-    var groupEntity: GroupWithCuratorAndSpecialtyEntity,
+    var groupEntity: GroupEntity,
 
     @Relation(
         parentColumn = "event_id", entityColumn = "user_id", associateBy = Junction(

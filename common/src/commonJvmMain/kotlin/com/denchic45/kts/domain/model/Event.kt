@@ -1,5 +1,6 @@
 package com.denchic45.kts.domain.model
 
+import com.denchic45.kts.data.domain.model.EventType
 import com.denchic45.kts.domain.DomainModel
 import com.denchic45.kts.util.UUIDS
 import java.time.LocalDate
@@ -23,14 +24,10 @@ data class Event(
         get() = requireEventsOfDay().date
 
     val isEmpty: Boolean
-        get() = details.type == TYPE.EMPTY
+        get() = details.eventType == EventType.EMPTY
 
     override fun copy(): Event {
         return Event(id, groupHeader, _order, timestamp, room, details)
-    }
-
-    enum class TYPE {
-        LESSON, SIMPLE, EMPTY
     }
 
     private fun requireEventsOfDay(): EventsOfDay {
@@ -41,7 +38,7 @@ data class Event(
     val order: Int
         get() = requireEventsOfDay().orderOf(this)
 
-    val type: TYPE = details.type
+    val eventType: EventType = details.eventType
 
     companion object {
 

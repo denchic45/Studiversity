@@ -23,14 +23,11 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.kts.LessonTimeCalculator
 import com.denchic45.kts.R
 import com.denchic45.kts.SvgColorListener
+import com.denchic45.kts.data.domain.model.EventType
 import com.denchic45.kts.domain.DomainModel
 import com.denchic45.kts.data.model.domain.*
-import com.denchic45.kts.data.model.room.EventEntity
 import com.denchic45.kts.databinding.*
-import com.denchic45.kts.domain.model.Event
-import com.denchic45.kts.domain.model.GroupHeader
-import com.denchic45.kts.domain.model.Subject
-import com.denchic45.kts.domain.model.Task
+import com.denchic45.kts.domain.model.*
 import com.denchic45.kts.glideSvg.GlideApp
 import com.denchic45.kts.ui.adapter.EventAdapter.OnCreateLessonClickListener
 import com.denchic45.kts.ui.adapter.EventAdapter.OnEditEventItemClickListener
@@ -114,9 +111,9 @@ class EventAdapter(
 
     override fun getItemViewType(position: Int): Int {
         if (getItem(position) is Event) {
-            if ((getItem(position) as Event).details.type == Event.TYPE.LESSON) return TYPE_LESSON
-            if ((getItem(position) as Event).details.type == Event.TYPE.SIMPLE) return TYPE_SIMPLE
-            if ((getItem(position) as Event).details.type == Event.TYPE.EMPTY) return TYPE_EMPTY
+            if ((getItem(position) as Event).details.eventType == EventType.LESSON) return TYPE_LESSON
+            if ((getItem(position) as Event).details.eventType == EventType.SIMPLE) return TYPE_SIMPLE
+            if ((getItem(position) as Event).details.eventType == EventType.EMPTY) return TYPE_EMPTY
         } else if (getItem(position) is ListItem) {
             return (getItem(position) as ListItem).type
         }

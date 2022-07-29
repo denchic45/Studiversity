@@ -5,6 +5,7 @@ import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.data.dao.*
 import com.denchic45.kts.data.database.DataBase
 import com.denchic45.kts.data.local.db.*
+import com.denchic45.kts.data.remote.db.GroupRemoteDataSource
 import com.denchic45.kts.data.remote.db.UserRemoteDataSource
 import com.denchic45.kts.data.service.AndroidNetworkService
 import com.denchic45.kts.data.service.NetworkService
@@ -58,6 +59,11 @@ object DatabaseModule {
     }
 
     @Provides
+    fun provideCourseContentLocalDataSource(appDatabase: AppDatabase): CourseContentLocalDataSource {
+        return CourseContentLocalDataSource(appDatabase)
+    }
+
+    @Provides
     fun provideSpecialtyLocalDataSource(appDatabase: AppDatabase): SpecialtyLocalDataSource {
         return SpecialtyLocalDataSource(appDatabase)
     }
@@ -78,6 +84,22 @@ object DatabaseModule {
     }
 
     @Provides
+    fun provideEventLocalDataSource(appDatabase: AppDatabase): EventLocalDataSource {
+        return EventLocalDataSource(appDatabase)
+    }
+
+    @Provides
+    fun provideTeacherEventLocalDataSource(appDatabase: AppDatabase): TeacherEventLocalDataSource {
+        return TeacherEventLocalDataSource(appDatabase)
+    }
+
+    @Provides
+    fun provideDayLocalDataSource(appDatabase: AppDatabase): DayLocalDataSource {
+        return DayLocalDataSource(appDatabase)
+    }
+
+
+    @Provides
     fun provideSubjectLocalDataSource(appDatabase: AppDatabase): SubjectLocalDataSource {
         return SubjectLocalDataSource(appDatabase)
     }
@@ -89,6 +111,12 @@ object DatabaseModule {
     fun provideUserRemoteDataSource(firestore: FirebaseFirestore): UserRemoteDataSource {
         return UserRemoteDataSource(firestore)
     }
+
+    @Provides
+    fun provideGroupRemoteDataSource(firestore: FirebaseFirestore): GroupRemoteDataSource {
+        return GroupRemoteDataSource(firestore)
+    }
+
 
     @Singleton
     @Provides

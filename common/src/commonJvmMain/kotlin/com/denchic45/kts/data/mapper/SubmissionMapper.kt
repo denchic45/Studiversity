@@ -1,16 +1,16 @@
 package com.denchic45.kts.data.mapper
 
-import com.denchic45.kts.GetSubmissionAndStudentByTaskIdAndUserId
 import com.denchic45.kts.SubmissionEntity
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.local.model.SubmissionWithStudentEntities
-import com.denchic45.kts.data.remote.model.SubmissionDoc
+import com.denchic45.kts.data.remote.model.SubmissionMap
 import com.denchic45.kts.domain.model.Attachment
 import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.util.toToLocalDateTime
 import java.util.*
 
-fun SubmissionDoc.toEntity() = SubmissionEntity(
+fun SubmissionMap.domainToEntity() = SubmissionEntity(
     submission_id = id,
     student_id = studentId,
     content_id = contentId,
@@ -27,7 +27,7 @@ fun SubmissionDoc.toEntity() = SubmissionEntity(
     timestamp = timestamp.time
 )
 
-fun SubmissionWithStudentEntities.toDomain(attachments: List<Attachment>) =
+fun SubmissionWithStudentEntities.entityToUserDomain(attachments: List<Attachment>) =
     Task.Submission(
         contentId = submissionEntity.content_id,
         student = studentEntity.run {
@@ -38,7 +38,7 @@ fun SubmissionWithStudentEntities.toDomain(attachments: List<Attachment>) =
                 patronymic = patronymic,
                 groupId = user_group_id,
                 photoUrl = photo_url,
-                role = User.Role.valueOf(role),
+                role = UserRole.valueOf(role),
                 email = email,
                 timestamp = Date(timestamp),
                 gender = gender,
@@ -69,7 +69,7 @@ fun SubmissionWithStudentEntities.toDomain(attachments: List<Attachment>) =
                             patronymic = patronymic,
                             groupId = user_group_id,
                             photoUrl = photo_url,
-                            role = User.Role.valueOf(role),
+                            role = UserRole.valueOf(role),
                             email = email,
                             timestamp = Date(timestamp),
                             gender = gender,
@@ -91,7 +91,7 @@ fun SubmissionWithStudentEntities.toDomain(attachments: List<Attachment>) =
                             patronymic = patronymic,
                             groupId = user_group_id,
                             photoUrl = photo_url,
-                            role = User.Role.valueOf(role),
+                            role = UserRole.valueOf(role),
                             email = email,
                             timestamp = Date(timestamp),
                             gender = gender,
