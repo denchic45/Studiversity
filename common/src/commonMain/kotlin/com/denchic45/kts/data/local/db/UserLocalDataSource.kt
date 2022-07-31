@@ -75,6 +75,5 @@ class UserLocalDataSource(db: AppDatabase) {
         return queries.getStudentsWithCuratorByGroupId(groupId)
             .asFlow()
             .mapToList()
-
     }
 }

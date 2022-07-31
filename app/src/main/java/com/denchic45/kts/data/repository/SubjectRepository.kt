@@ -6,8 +6,6 @@ import com.denchic45.kts.SubjectEntity
 import com.denchic45.kts.data.database.DataBase
 import com.denchic45.kts.data.local.db.*
 import com.denchic45.kts.data.mapper.*
-import com.denchic45.kts.data.model.mapper.CourseMapper
-import com.denchic45.kts.data.model.mapper.SubjectMapper
 import com.denchic45.kts.data.remote.model.CourseMap
 import com.denchic45.kts.data.remote.model.SubjectMap
 import com.denchic45.kts.data.service.AppVersionService
@@ -15,6 +13,7 @@ import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.di.modules.IoDispatcher
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.util.getDataFlow
+import com.denchic45.kts.util.toMaps
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -33,8 +32,6 @@ class SubjectRepository @Inject constructor(
     override val coroutineScope: CoroutineScope,
     override val networkService: NetworkService,
     override val firestore: FirebaseFirestore,
-    override val courseMapper: CourseMapper,
-    val subjectMapper: SubjectMapper,
     private val dataBase: DataBase,
     @IoDispatcher override val dispatcher: CoroutineDispatcher,
     override val userLocalDataSource: UserLocalDataSource,
@@ -55,24 +52,24 @@ class SubjectRepository @Inject constructor(
         requireAllowWriteData()
         isExistWithSameIconAndColor(subject)
         subjectsRef.document(subject.id)
-            .set(subjectMapper.domainToDoc(subject))
+            .set(subject.domainToMap())
             .await()
     }
 
     suspend fun update(subject: Subject) {
         requireAllowWriteData()
         isExistWithSameIconAndColor(subject)
-        val subjectDoc = subjectMapper.domainToDoc(subject)
+        val subjectMap = subject.domainToMap()
         val batch = firestore.batch()
 
-        batch[subjectsRef.document(subject.id)] = subjectDoc
+        batch[subjectsRef.document(subject.id)] = subjectMap
         coursesRef.whereEqualTo("subject.id", subject.id).get().await().forEach { docSnapshot ->
             @Suppress("UNCHECKED_CAST")
             updateGroupsOfCourse(batch, (docSnapshot.get("groupIds") as List<String>))
             batch.update(
                 coursesRef.document(docSnapshot.id),
                 "subject",
-                subjectDoc,
+                subjectMap,
                 "timestamp",
                 FieldValue.serverTimestamp()
             )
@@ -123,22 +120,9 @@ class SubjectRepository @Inject constructor(
         subjectLocalDataSource.upsert(subjectEntity)
     }
 
-//    fun findByTypedName(subjectName: String): Flow<List<Subject>> = callbackFlow {
-//        val addSnapshotListener =
-//            subjectsRef.whereArrayContains("searchKeys", subjectName.lowercase(Locale.getDefault()))
-//                .addSnapshotListener { value: QuerySnapshot?, _ ->
-//                    val subjects = value!!.toObjects(Subject::class.java)
-//                    trySend(subjects)
-//                    launch(dispatcher) {
-//                        subjectLocalDataSource.upsert(subjectMapper.domainToEntity(subjects))
-//                    }
-//                }
-//        awaitClose { addSnapshotListener.remove() }
-//    }
-
     override fun findByContainsName(text: String): Flow<List<Subject>> {
         return subjectsRef.whereArrayContains("searchKeys", text.lowercase(Locale.getDefault()))
-            .getDataFlow { snapshot -> snapshot.documents.map { SubjectMap(it.data!!) } }
+            .getDataFlow { snapshot -> snapshot.toMaps(::SubjectMap) }
             .map { subjectMaps ->
                 coroutineScope.launch {
                     subjectLocalDataSource.upsert(subjectMaps.mapsToSubjectEntities())

@@ -1,19 +1,16 @@
 package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.local.db.SpecialtyLocalDataSource
-import com.denchic45.kts.data.mapper.mapToSpecialtyEntity
-import com.denchic45.kts.data.mapper.mapsToDomains
-import com.denchic45.kts.data.mapper.mapsToSpecialEntities
-import com.denchic45.kts.data.mapper.entityToUserDomain
-import com.denchic45.kts.domain.model.Specialty
-import com.denchic45.kts.data.remote.model.GroupDoc
-import com.denchic45.kts.data.model.mapper.SpecialtyMapper
+import com.denchic45.kts.data.mapper.*
+import com.denchic45.kts.data.remote.model.GroupMap
 import com.denchic45.kts.data.remote.model.SpecialtyMap
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.di.modules.IoDispatcher
+import com.denchic45.kts.domain.model.Specialty
 import com.denchic45.kts.util.SearchKeysGenerator
 import com.denchic45.kts.util.getDataFlow
+import com.denchic45.kts.util.toMaps
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -31,14 +28,13 @@ class SpecialtyRepository @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     private val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val firestore: FirebaseFirestore,
-    private val specialtyMapper: SpecialtyMapper,
-    override val networkService: NetworkService
+    override val networkService: NetworkService,
 ) : Repository(), FindByContainsNameRepository<Specialty> {
 
     override fun findByContainsName(text: String): Flow<List<Specialty>> {
         return specialtyRef
             .whereArrayContains("searchKeys", SearchKeysGenerator.formatInput(text))
-            .getDataFlow { snapshot -> snapshot.documents.map { SpecialtyMap(it.data!!) } }
+            .getDataFlow { snapshot -> snapshot.toMaps(::SpecialtyMap) }
             .map { maps ->
                 specialtyLocalDataSource.upsert(maps.mapsToSpecialEntities())
                 maps.mapsToDomains()
@@ -61,39 +57,34 @@ class SpecialtyRepository @Inject constructor(
                 }
         }
         return specialtyLocalDataSource.observe(id).map { entity ->
-            entity?.let { entity.entityToUserDomain() }
+            entity?.let { entity.toDomain() }
         }
     }
 
     suspend fun add(specialty: Specialty) {
         requireAllowWriteData()
-        val data = specialtyMapper.domainToDoc(specialty)
-        specialtyRef.document(specialty.id).set(data)
-            .await()
-
+        specialtyRef.document(specialty.id).set(specialty.toMap()).await()
     }
 
     suspend fun update(specialty: Specialty) {
         requireAllowWriteData()
-        val specialtyDoc = specialtyMapper.domainToDoc(specialty)
+        val specialtyMap = specialty.toMap()
         val id = specialty.id
         groupsRef.whereEqualTo("specialty.id", id)
             .get()
             .await().apply {
                 val batch = firestore.batch()
-                if (!this.isEmpty) for (groupDoc in this.toObjects(
-                    GroupDoc::class.java
-                )) {
-                    batch.update(
-                        groupsRef.document(groupDoc.id), mapOf(
-                            "specialty.$id" to specialtyDoc,
-                            "timestamp" to FieldValue.serverTimestamp()
+                if (!this.isEmpty)
+                    for (groupDoc in toMaps(::GroupMap)) {
+                        batch.update(
+                            groupsRef.document(groupDoc.id), mapOf(
+                                "specialty" to specialtyMap,
+                                "timestamp" to FieldValue.serverTimestamp()
+                            )
                         )
-                    )
-                }
-                batch[specialtyRef.document(id)] = specialtyDoc
-                batch.commit()
-                    .await()
+                    }
+                batch[specialtyRef.document(id)] = specialtyMap
+                batch.commit().await()
             }
     }
 

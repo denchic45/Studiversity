@@ -8,14 +8,14 @@ fun FireMap.timestampNotNull(): Boolean {
     return !timestampIsNull()
 }
 
-fun List<Map<String, Any>>.timestampsIsNull(): Boolean {
+fun List<FireMap>.timestampsIsNull(): Boolean {
     return any { it.timestampIsNull() }
 }
 
-fun List<Map<String, Any>>.timestampsNotNull(): Boolean {
+fun List<FireMap>.timestampsNotNull(): Boolean {
     return !timestampsIsNull()
 }
 
-typealias FireMap = Map<String, Any>
+typealias FireMap = Map<String, Any?>
 
-typealias MutableFireMap = MutableMap<String, Any>
+typealias MutableFireMap = MutableMap<String, Any?>

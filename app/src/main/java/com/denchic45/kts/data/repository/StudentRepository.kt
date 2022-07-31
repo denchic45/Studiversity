@@ -1,12 +1,13 @@
 package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.local.db.UserLocalDataSource
+import com.denchic45.kts.data.mapper.toMap
 import com.denchic45.kts.data.mapper.toUserDomain
-import com.denchic45.kts.data.model.mapper.UserMapper
-import com.denchic45.kts.data.remote.model.UserDoc
+import com.denchic45.kts.data.remote.model.UserMap
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.util.FireMap
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,8 +21,7 @@ class StudentRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     override val networkService: NetworkService,
     private val userLocalDataSource: UserLocalDataSource,
-    private val userMapper: UserMapper,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
 ) : Repository() {
     private val storage: FirebaseStorage = FirebaseStorage.getInstance()
     private val avatarRef: StorageReference = storage.reference.child("avatars")
@@ -31,24 +31,24 @@ class StudentRepository @Inject constructor(
     suspend fun add(student: User) {
         requireAllowWriteData()
         val batch = firestore.batch()
-        val studentDoc = userMapper.domainToDoc(student)
-        batch[userRef.document(student.id)] = studentDoc
-        updateStudentFromGroup(studentDoc, student.groupId!!, batch)
+        val studentMap = student.toMap()
+        batch[userRef.document(student.id)] = studentMap
+        updateStudentFromGroup(studentMap, student.groupId!!, batch)
         batch.commit().await()
     }
 
     suspend fun update(student: User) {
         requireAllowWriteData()
         val batch = firestore.batch()
-        val studentDoc = userMapper.domainToDoc(student)
+        val studentMap = UserMap(student.toMap())
         val cacheStudent = userLocalDataSource.get(student.id)!!.toUserDomain()
         if (changePersonalData(student, cacheStudent)) {
-            batch[userRef.document(student.id)] = studentDoc
+            batch[userRef.document(student.id)] = studentMap
         }
         if (changeGroup(student, cacheStudent)) {
-            deleteStudentFromGroup(studentDoc.id, cacheStudent.groupId!!, batch)
+            deleteStudentFromGroup(studentMap.id, cacheStudent.groupId!!, batch)
         }
-        updateStudentFromGroup(studentDoc, student.groupId!!, batch)
+        updateStudentFromGroup(studentMap.map, student.groupId!!, batch)
         batch.commit().await()
     }
 
@@ -82,9 +82,9 @@ class StudentRepository @Inject constructor(
         reference.delete().await()
     }
 
-    private fun updateStudentFromGroup(studentDoc: UserDoc, groupId: String, batch: WriteBatch) {
+    private fun updateStudentFromGroup(studentMap: FireMap, groupId: String, batch: WriteBatch) {
         val updateGroupMap: MutableMap<String, Any> = HashMap()
-        updateGroupMap["students." + studentDoc.id] = studentDoc
+        updateGroupMap["students." + studentMap["id"]] = studentMap
         updateGroupMap["timestamp"] = FieldValue.serverTimestamp()
         batch.update(groupRef.document(groupId), updateGroupMap)
     }
@@ -95,5 +95,4 @@ class StudentRepository @Inject constructor(
         updateGroupMap["timestamp"] = FieldValue.serverTimestamp()
         batch.update(groupRef.document(groupId), updateGroupMap)
     }
-
 }

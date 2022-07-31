@@ -3,6 +3,8 @@ package com.denchic45.kts.data.remote.db
 import com.denchic45.kts.data.remote.model.GroupMap
 import com.denchic45.kts.util.SearchKeysGenerator
 import com.denchic45.kts.util.getQuerySnapshotFlow
+import com.denchic45.kts.util.toMap
+import com.denchic45.kts.util.toMaps
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -26,7 +28,7 @@ actual class GroupRemoteDataSource(
         return groupsRef
             .whereArrayContains("searchKeys", SearchKeysGenerator.formatInput(text))
             .getQuerySnapshotFlow()
-            .map { snapshot -> snapshot.documents.map { GroupMap(it.data!!) } }
+            .map { it.toMaps(::GroupMap) }
     }
 
     actual suspend fun remove(id: String) {
@@ -37,7 +39,7 @@ actual class GroupRemoteDataSource(
             groupDocReference(groupId)
                 .get()
                 .await()
-                .data!!
+                .toMap()
         )
     }
 
@@ -45,16 +47,15 @@ actual class GroupRemoteDataSource(
         return coursesRef.whereArrayContains("groupIds", groupId)
             .get()
             .await()
-            .map { courseDocSnapshot -> courseDocSnapshot.id }
+            .map { snapshot -> snapshot.id }
     }
-
 
     private fun groupDocReference(groupId: String) = groupsRef.document(groupId)
 
     suspend fun removeGroupAndRemoveStudentsAndRemoveGroupIdInCourses(
         groupId: String,
         studentIds: Set<String>,
-        groupCourseIds: List<String>
+        groupCourseIds: List<String>,
     ) {
         val batch = firestore.batch().delete(groupDocReference(groupId))
         studentIds.forEach { userId -> batch.delete(usersRef.document(userId)) }

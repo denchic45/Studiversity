@@ -15,7 +15,7 @@ fun SubmissionMap.domainToEntity() = SubmissionEntity(
     student_id = studentId,
     content_id = contentId,
     course_id = courseId,
-    status = status.toString(),
+    status = status,
     text = text,
     attachments = attachments,
     teacher_id = teacherId,
@@ -106,3 +106,10 @@ fun SubmissionWithStudentEntities.entityToUserDomain(attachments: List<Attachmen
         },
         contentUpdateDate = submissionEntity.timestamp.toToLocalDateTime()
     )
+
+fun Task.Submission.domainToStatus(): Task.Submission.Status = when (status) {
+    is Task.SubmissionStatus.NotSubmitted -> Task.Submission.Status.NOT_SUBMITTED
+    is Task.SubmissionStatus.Submitted -> Task.Submission.Status.SUBMITTED
+    is Task.SubmissionStatus.Graded -> Task.Submission.Status.GRADED
+    is Task.SubmissionStatus.Rejected -> Task.Submission.Status.REJECTED
+}

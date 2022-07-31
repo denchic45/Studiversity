@@ -40,7 +40,7 @@ fun GroupWithCuratorAndSpecialtyEntities.entityToUserDomain() = Group(
     id = groupEntity.group_id,
     name = groupEntity.group_name,
     course = groupEntity.course,
-    specialty = specialtyEntity.entityToUserDomain(),
+    specialty = specialtyEntity.toDomain(),
     curator = curatorEntity.toUserDomain()
 )
 
@@ -48,7 +48,7 @@ fun GroupMap.mapToGroup() = Group(
     id = id,
     name = name,
     course = course,
-    specialty = specialty.mapToSpecialty(),
+    specialty = specialty.toDomain(),
     curator = UserMap(curator).mapToUser()
 )
 

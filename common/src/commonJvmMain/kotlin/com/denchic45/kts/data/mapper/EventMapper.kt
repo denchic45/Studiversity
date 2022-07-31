@@ -90,7 +90,7 @@ fun List<EventWithSubjectAndGroupAndTeachers>.entityToUserDomain(): Event = firs
 fun List<EventWithSubjectAndGroupAndTeachers>.entitiesToDomains(): List<Event> =
     groupBy { it.event_id }.map { it.value.entityToUserDomain() }
 
-fun Event.domainToMap() = mutableMapOf(
+fun Event.domainToMap() = mutableMapOf<String, Any?>(
     "id" to id,
     "date" to date.toDate(),
     "position" to order,

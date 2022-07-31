@@ -23,11 +23,13 @@ object DatabaseModule {
         return AndroidNetworkService(context)
     }
 
+    @Singleton
     @Provides
     fun provideSqlDriver(context: Context): SqlDriver {
         return DriverFactory(context).driver
     }
 
+    @Singleton
     @Provides
     fun provideAppDatabase(sqlDriver: SqlDriver): AppDatabase {
         return DbHelper(sqlDriver).database
@@ -116,7 +118,6 @@ object DatabaseModule {
     fun provideGroupRemoteDataSource(firestore: FirebaseFirestore): GroupRemoteDataSource {
         return GroupRemoteDataSource(firestore)
     }
-
 
     @Singleton
     @Provides

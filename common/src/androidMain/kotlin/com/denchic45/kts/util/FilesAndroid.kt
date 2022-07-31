@@ -13,7 +13,7 @@ import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.min
 
-object AndroidFiles {
+object FilesAndroid {
 
     fun getPath(context: Context, uri: Uri): String {
         // DocumentProvider

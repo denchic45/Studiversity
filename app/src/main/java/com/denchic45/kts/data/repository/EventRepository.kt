@@ -7,7 +7,6 @@ import com.denchic45.kts.data.database.DataBase
 import com.denchic45.kts.data.local.db.*
 import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.model.domain.GroupTimetable
-import com.denchic45.kts.data.model.mapper.*
 import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.prefs.AppPreference
@@ -36,9 +35,6 @@ class EventRepository @Inject constructor(
     override val networkService: NetworkService,
     private val coroutineScope: CoroutineScope,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
-    val userMapper: UserMapper,
-    val specialtyMapper: SpecialtyMapper,
-    private val dayMapper: DayMapper,
     override val dataBase: DataBase,
     private val appDatabase: AppDatabase,
     private val eventLocalDataSource: EventLocalDataSource,
@@ -46,7 +42,6 @@ class EventRepository @Inject constructor(
     private val teacherEventLocalDataSource: TeacherEventLocalDataSource,
     private val groupPreferences: GroupPreferences,
     private val firestore: FirebaseFirestore,
-    private val eventMapper: EventMapper,
     private val dayLocalDataSource: DayLocalDataSource,
     private val subjectLocalDataSource: SubjectLocalDataSource,
     private val userPreferences: UserPreferences,
@@ -54,7 +49,7 @@ class EventRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     override val userLocalDataSource: UserLocalDataSource,
     override val groupLocalDataSource: GroupLocalDataSource,
-    override val specialtyLocalDataSource: SpecialtyLocalDataSource
+    override val specialtyLocalDataSource: SpecialtyLocalDataSource,
 ) : Repository(), SaveGroupOperation {
 
     private val groupsRef = firestore.collection("Groups")
@@ -86,8 +81,6 @@ class EventRepository @Inject constructor(
                 eventLocalDataSource.observeEventsByDateAndGroupId(date, groupId)
                     .run {
                         if (date.toDateUTC() > nextSaturday || date.toDateUTC() < previousMonday) {
-                            Log.d("lol", "ON available date ")
-                            Log.d("lol", "ON events coroutine launch: ")
                             withSnapshotListener(
                                 query = getQueryOfEventsOfGroupByDate(
                                     date,
@@ -112,26 +105,15 @@ class EventRepository @Inject constructor(
 
     fun findEventsForDayForTeacherByDate(date: LocalDate): Flow<EventsOfDay> {
         return callbackFlow {
-            Log.d("lol", "ON callback flow: ")
             val teacherId = userPreferences.id
-
             launch {
                 eventLocalDataSource.observeEventsByDateAndTeacherId(date, teacherId)
                     .distinctUntilChanged()
                     .map { it.entitiesToEventsOfDay(date) }
-                    .collect {
-                        send(it)
-                    }
+                    .collect { send(it) }
             }
-
-
             val eventsOfTeacherByDate = eventsOfTeacherByDate(date, teacherId)
-            awaitClose {
-                Log.d("lol", "ON awaitClose: ")
-                eventsOfTeacherByDate.remove()
-            }
-
-
+            awaitClose(eventsOfTeacherByDate::remove)
         }
     }
 
@@ -188,7 +170,7 @@ class EventRepository @Inject constructor(
 
     private fun eventsOfTeacherByDate(
         date: LocalDate,
-        teacherId: String
+        teacherId: String,
     ): ListenerRegistration {
         return firestore.collectionGroup("Days")
             .whereArrayContains("teacherIds", teacherId)
@@ -199,8 +181,8 @@ class EventRepository @Inject constructor(
                     return@addSnapshotListener
                 }
                 if (!snapshot!!.isEmpty) {
-                    val dayDocs = snapshot.documents.map { DayMap(it.data!!) }
-                    for (dayDoc in dayDocs) {
+                    val dayMaps = snapshot.toMutableMaps(::DayMap)
+                    for (dayDoc in dayMaps) {
                         coroutineScope.launch(dispatcher) {
                             dataBase.withTransaction {
                                 if (!groupLocalDataSource.isExist(dayDoc.groupId)) {
@@ -236,7 +218,7 @@ class EventRepository @Inject constructor(
                     }
                     if (!querySnapshot!!.isEmpty) {
                         coroutineScope.launch(dispatcher) {
-                            for (dayDoc in querySnapshot.documents.map { DayMap(it.data!!) }) {
+                            for (dayDoc in querySnapshot.toMutableMaps(::DayMap)) {
                                 saveDay(dayDoc)
                             }
                         }
@@ -268,7 +250,7 @@ class EventRepository @Inject constructor(
 
     private suspend fun addGroupTimetable(
         batch: WriteBatch,
-        groupTimetable: GroupTimetable
+        groupTimetable: GroupTimetable,
     ) {
         val groupWeekEvents = groupTimetable.weekEvents
         val dayRef = groupsRef.document(groupTimetable.groupHeader.id).collection("Days")
@@ -278,19 +260,19 @@ class EventRepository @Inject constructor(
             groupWeekEvents[5].date
         )
 
-        val existsDayDocs: List<DayDoc> = getQueryOfWeekDays(groupTimetable, dayRef)
+        val existsDayDocs: List<DayMap> = getQueryOfWeekDays(groupTimetable, dayRef)
             .await()
-            .toObjects(DayDoc::class.java)
+            .toMutableMaps(::DayMap)
 
         for (eventsOfTheDay in groupWeekEvents) {
-            val maybeDayDoc = findDayByDate(existsDayDocs, eventsOfTheDay.date.toDateUTC())
+            val maybeDayMap = findDayByDate(existsDayDocs, eventsOfTheDay.date.toDateUTC())
 
-            val addableEvents = eventMapper.domainToDoc(eventsOfTheDay.events)
+            val addableEvents = eventsOfTheDay.events.map { EventMap(it.domainToMap()) }
 
-            val dayDoc: DayDoc = maybeDayDoc?.let {
+            val dayDoc: DayMap = maybeDayMap?.let {
                 it.events = addableEvents
                 it
-            } ?: dayMapper.domainToDoc(eventsOfTheDay, groupTimetable.groupHeader.id)
+            } ?: DayMap(eventsOfTheDay.domainToMap(groupTimetable.groupHeader.id))
 
             batch[dayRef.document(dayDoc.id), dayDoc] = SetOptions.merge()
 
@@ -306,13 +288,13 @@ class EventRepository @Inject constructor(
 
     }
 
-    private fun findDayByDate(dayDocs: List<DayDoc>, date: Date): DayDoc? {
-        return dayDocs.firstOrNull { dayDoc: DayDoc -> dayDoc.date == date }
+    private fun findDayByDate(dayDocs: List<DayMap>, date: Date): DayMap? {
+        return dayDocs.firstOrNull { dayDoc -> dayDoc.date == date }
     }
 
     private fun getQueryOfWeekDays(
         groupTimetable: GroupTimetable,
-        daysRef: CollectionReference
+        daysRef: CollectionReference,
     ): Task<QuerySnapshot> {
         val monday = groupTimetable.weekEvents[0].date.toDateUTC()
         val saturday = groupTimetable.weekEvents[5].date.toDateUTC()
@@ -336,7 +318,7 @@ class EventRepository @Inject constructor(
                 val dayMap = DayMap(snapshot.documents[0].data!!)
                 dayLocalDataSource.upsert(dayMap.mapToEntity())
 
-                val eventDocs = eventMapper.domainToDoc(eventsOfDay.events)
+                val eventDocs = eventsOfDay.events.domainsToMaps()
                 daysRef.document(dayMap.id)
                     .update(
                         "events",

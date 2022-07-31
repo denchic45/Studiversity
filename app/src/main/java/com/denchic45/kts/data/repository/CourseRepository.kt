@@ -5,9 +5,6 @@ import com.denchic45.kts.*
 import com.denchic45.kts.data.database.DataBase
 import com.denchic45.kts.data.local.db.*
 import com.denchic45.kts.data.mapper.*
-import com.denchic45.kts.data.model.mapper.CourseContentMapper
-import com.denchic45.kts.data.model.mapper.CourseMapper
-import com.denchic45.kts.data.model.mapper.SubmissionMapper
 import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.prefs.AppPreference
@@ -36,8 +33,6 @@ class CourseRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     override val coroutineScope: CoroutineScope,
     @IoDispatcher override val dispatcher: CoroutineDispatcher,
-    override val courseMapper: CourseMapper,
-    private val submissionMapper: SubmissionMapper,
     private val coursePreference: CoursePreference,
     private val groupPreferences: GroupPreferences,
     override val networkService: NetworkService,
@@ -49,8 +44,6 @@ class CourseRepository @Inject constructor(
     private val userPreferences: UserPreferences,
     private val timestampPreference: TimestampPreference,
     private val appPreference: AppPreference,
-    private val courseContentMapper: CourseContentMapper,
-//    private val courseContentLocalDataSource: courseContentLocalDataSource,
     private val courseContentLocalDataSource: CourseContentLocalDataSource,
     private val submissionLocalDataSource: SubmissionLocalDataSource,
     private val contentCommentLocalDataSource: ContentCommentLocalDataSource,
@@ -163,11 +156,12 @@ class CourseRepository @Inject constructor(
                     if (value.timestampsNotNull()) {
                         appDatabase.transaction {
                             coroutineScope.launch(dispatcher) {
-                                val courseContents = courseContentMapper.docToEntity(value)
-                                saveCourseContentsLocal(value.toMaps(::CourseContentMap))
+                                val courseContents = value.toMaps(::CourseContentMap)
+                                val timestamp = courseContents.maxOf { it.timestamp }.time
+                                saveCourseContentsLocal(courseContents)
                                 coursePreference.setTimestampContentsOfCourse(
                                     courseId,
-                                    courseContents.first.maxOf { it.timestamp }.time
+                                    timestamp
                                 )
                             }
                         }
@@ -181,14 +175,13 @@ class CourseRepository @Inject constructor(
                 CourseContents.sort(
                     courseContentEntities.entitiesToDomains(),
                     sectionEntities.entitiesToDomains()
-//                    sectionMapper.entityToDomain(sectionEntities)
                 )
             }
             .distinctUntilChanged()
     }
 
     private suspend fun saveCourseContentsLocal(
-        courseContents: List<CourseContentMap>
+        courseContents: List<CourseContentMap>,
     ) {
 
         val entities = courseContents.map { it.domainToEntity() }
@@ -301,36 +294,6 @@ class CourseRepository @Inject constructor(
         batch.commit().await()
     }
 
-//    suspend fun update(course: Course) {
-//        requireAllowWriteData()
-//        val batch = firestore.batch()
-//        val courseDoc = courseMapper.domainToDoc(course)
-//
-//        val oldCourse = courseMapper.entityToDomain2(courseDao.get(course.id))
-//        val oldCourseDoc = courseMapper.domainToDoc(oldCourse)
-//
-//        (oldCourseDoc.groupIds + courseDoc.groupIds).forEach { groupId ->
-//            batch.update(
-//                groupsRef.document(groupId),
-//                "timestamp",
-//                FieldValue.serverTimestamp()
-//            )
-//
-//            batch.update(
-//                groupsRef.document(groupId),
-//                "timestampCourses",
-//                FieldValue.serverTimestamp()
-//            )
-//        }
-//
-//        batch.update(
-//            coursesRef.document(courseDoc.id),
-//            FieldsComparator.mapOfDifference(oldCourseDoc, courseDoc)
-//        )
-//        batch.commit().await()
-//    }
-
-
     private fun timestampFiledPair() = "timestamp" to FieldValue.serverTimestamp()
 
     suspend fun removeGroupFromCourses(groupId: String) {
@@ -370,10 +333,7 @@ class CourseRepository @Inject constructor(
         coursesRef.document(task.courseId)
             .collection("Contents")
             .document(task.id)
-            .set(courseContentMapper.domainToTaskDoc(task).apply {
-                this.attachments = attachments
-                this.order = order
-            }.asMutableMap().apply {
+            .set(task.toMap(attachments, order).apply {
                 val studentIdsOfCourseByCourseId =
                     userLocalDataSource.getStudentIdsOfCourseByCourseId(task.courseId)
                 val mapOfEmptySubmissions =
@@ -394,7 +354,7 @@ class CourseRepository @Inject constructor(
 
     private suspend fun getLastContentOrderByCourseIdAndSectionId(
         courseId: String,
-        sectionId: String
+        sectionId: String,
     ): Long {
         val snapshot = coursesRef.document(courseId).collection("Contents")
             .whereEqualTo("sectionId", sectionId)
@@ -413,12 +373,16 @@ class CourseRepository @Inject constructor(
         val cacheTask =
             courseContentLocalDataSource.get(task.id)!!.entityToTaskDoc()
         val updatedFields =
-            FieldsComparator.mapOfDifference(cacheTask, courseContentMapper.domainToDoc(task))
-        updatedFields["attachments"] = attachments
-        updatedFields["timestamp"] = Date()
-        if (updatedFields.containsKey("sectionId"))
-            updatedFields["order"] =
-                getLastContentOrderByCourseIdAndSectionId(task.courseId, task.sectionId) + 1024
+            FieldsComparator.mapOfDifference(cacheTask, task.toMap(attachments, task.order))
+                .apply {
+                    put("timestamp", Date())
+                    if (containsKey("sectionId")) {
+                        put(
+                            "order",
+                            getLastContentOrderByCourseIdAndSectionId(task.courseId,
+                                task.sectionId) + 1024)
+                    }
+                }
         coursesRef.document(task.courseId)
             .collection("Contents")
             .document(task.id)
@@ -456,7 +420,7 @@ class CourseRepository @Inject constructor(
 
     fun findTaskSubmissionByContentIdAndStudentId(
         taskId: String,
-        studentId: String
+        studentId: String,
     ): Flow<Task.Submission> {
         return submissionLocalDataSource.getByTaskIdAndUserId(taskId, studentId)
             .map {
@@ -491,7 +455,7 @@ class CourseRepository @Inject constructor(
         val updatedFields = mapOf(
             "submissions.$studentId.text" to submission.content.text,
             "submissions.$studentId.attachments" to attachmentUrls,
-            "submissions.$studentId.status" to submissionMapper.domainToStatus(submission),
+            "submissions.$studentId.status" to submission.domainToStatus(),
             "submissions.$studentId.contentUpdateDate" to submission.contentUpdateDate.toDate(),
             "submissions.$studentId.submittedDate" to submittedDate,
             "submittedByStudentIds" to
@@ -516,7 +480,7 @@ class CourseRepository @Inject constructor(
         taskId: String,
         studentId: String,
         grade: Int,
-        teacherId: String = userPreferences.id
+        teacherId: String = userPreferences.id,
     ) {
         requireNetworkAvailable()
         getContentDocument(taskId).update(
@@ -538,7 +502,7 @@ class CourseRepository @Inject constructor(
         taskId: String,
         studentId: String,
         cause: String,
-        teacherId: String = userPreferences.id
+        teacherId: String = userPreferences.id,
     ) {
         requireNetworkAvailable()
         getContentDocument(taskId).update(
@@ -581,7 +545,6 @@ class CourseRepository @Inject constructor(
                         it.submissionEntity.attachments
                     )
                 )
-//                submissionMapper.entityToDomain(it, attachments)
             }
         }
             .mapLatest {
@@ -655,9 +618,7 @@ class CourseRepository @Inject constructor(
                 appDatabase.transaction {
                     coroutineScope.launch {
                         value?.let {
-                            val courseContentMaps: List<CourseContentMap> =
-                                it.toMaps(::CourseContentMap)
-                            saveCourseContentsLocal(courseContentMaps)
+                            saveCourseContentsLocal(it.toMaps(::CourseContentMap))
                         }
                     }
                 }
@@ -723,7 +684,6 @@ class SameCoursesException : Exception()
 interface RemoveCourseOperation : PreconditionsRepository {
 
     val firestore: FirebaseFirestore
-    val courseMapper: CourseMapper
     val coursesRef: CollectionReference
     val groupsRef: CollectionReference
     val coroutineScope: CoroutineScope
@@ -754,7 +714,6 @@ interface RemoveCourseOperation : PreconditionsRepository {
 interface UpdateCourseOperation : PreconditionsRepository {
 
     val firestore: FirebaseFirestore
-    val courseMapper: CourseMapper
     val courseLocalDataSource: CourseLocalDataSource
     val groupsRef: CollectionReference
     val coursesRef: CollectionReference

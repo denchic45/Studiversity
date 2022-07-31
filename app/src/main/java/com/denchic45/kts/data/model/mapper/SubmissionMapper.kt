@@ -62,15 +62,7 @@ abstract class SubmissionMapper {
         }
     }
 
-    fun domainToStatus(submission: Task.Submission): Task.Submission.Status {
-        return when (submission.status) {
-            is Task.SubmissionStatus.NotSubmitted -> Task.Submission.Status.NOT_SUBMITTED
-            is Task.SubmissionStatus.Submitted -> Task.Submission.Status.SUBMITTED
-            is Task.SubmissionStatus.Graded -> Task.Submission.Status.GRADED
-            is Task.SubmissionStatus.Rejected -> Task.Submission.Status.REJECTED
 
-        }
-    }
 
 //    @Mapping(source = "entity.userEntity", target = "student")
 //    @Mapping(source = "entity.submissionEntity", target = ".")

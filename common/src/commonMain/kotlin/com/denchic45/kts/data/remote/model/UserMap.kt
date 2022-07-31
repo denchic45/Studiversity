@@ -3,10 +3,11 @@ package com.denchic45.kts.data.remote.model
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.util.FireMap
 import com.denchic45.kts.util.SearchKeysGenerator
+import com.denchic45.kts.util.mapCast
 import com.denchic45.kts.util.mapOrNull
 import java.util.*
 
-data class UserMap(override val map: FireMap):MapWrapper {
+data class UserMap(override val map: FireMap) : MapWrapper {
     val id: String by map
     val firstName: String by map
     val surname: String by map

@@ -5,79 +5,78 @@ import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.remote.model.UserDoc
 import com.denchic45.kts.data.remote.model.UserMap
 import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.util.MutableFireMap
 import java.util.*
 
 fun User.domainToEntity() = UserEntity(
-    id,
-    firstName,
-    surname,
-    patronymic,
-    groupId ?: "",
-    role.toString(),
-    email,
-    photoUrl,
-    gender,
-    admin,
-    generatedAvatar,
-    timestamp!!.time
+    user_id = id,
+    first_name = firstName,
+    surname = surname,
+    patronymic = patronymic,
+    user_group_id = groupId ?: "",
+    role = role.toString(),
+    email = email,
+    photo_url = photoUrl,
+    gender = gender,
+    admin = admin,
+    generated_avatar = generatedAvatar,
+    timestamp = timestamp!!.time
 )
 
 fun List<User>.domainsToEntities() = this.map(User::domainToEntity)
 
 fun UserEntity.toUserDomain() = User(
-    user_id,
-    first_name,
-    surname,
-    patronymic,
-    user_group_id,
-    UserRole.valueOf(role),
-    email,
-    photo_url,
-    Date(timestamp),
-    gender,
-    admin,
-    generated_avatar,
+    id = user_id,
+    firstName = first_name,
+    surname = surname,
+    patronymic = patronymic,
+    groupId = user_group_id,
+    role = UserRole.valueOf(role),
+    email = email,
+    photoUrl = photo_url,
+    timestamp = Date(timestamp),
+    gender = gender,
+    generatedAvatar = generated_avatar,
+    admin = admin
 )
 
 fun List<UserEntity>.entitiesToUserDomains() = map { }
 
 @Deprecated("")
 fun UserDoc.domainToEntity() = UserEntity(
-    id,
-    firstName,
-    surname,
-    patronymic,
-    groupId ?: "",
-    role.toString(),
-    email,
-    photoUrl,
-    gender,
-    admin,
-    generatedAvatar,
-    timestamp!!.time
+    user_id = id,
+    first_name = firstName,
+    surname = surname,
+    patronymic = patronymic,
+    user_group_id = groupId ?: "",
+    role = role.toString(),
+    email = email,
+    photo_url = photoUrl,
+    gender = gender,
+    admin = admin,
+    generated_avatar = generatedAvatar,
+    timestamp = timestamp!!.time
 )
 
 @Deprecated("")
 fun List<UserDoc>.docsToEntities() = this.map(UserDoc::domainToEntity)
 
-@Deprecated("")
-fun User.toMap() = UserDoc(
-    id = id,
-    firstName = firstName,
-    surname = surname,
-    patronymic = patronymic,
-    groupId = groupId,
-    role = role,
-    email = email,
-    photoUrl = photoUrl,
-    timestamp = timestamp,
-    gender = gender,
-    generatedAvatar = generatedAvatar,
-    admin = admin
+fun User.toMap(): MutableFireMap = mutableMapOf(
+    "id" to id,
+    "firstName" to firstName,
+    "surname" to surname,
+    "patronymic" to patronymic,
+    "groupId" to groupId,
+    "role" to role.toString(),
+    "email" to email,
+    "photoUrl" to photoUrl,
+    "timestamp" to timestamp,
+    "gender" to gender,
+    "generatedAvatar" to generatedAvatar,
+    "admin" to admin
 )
 
-@Deprecated("")
-fun List<User>.domainsToDocs() = this.map(User::toMap)
+fun List<User>.domainsToMaps() = this.map(User::toMap)
 
 fun UserDoc.docToUserDomain() = User(
     id = id,
@@ -102,7 +101,7 @@ fun UserMap.mapToUserEntity() = UserEntity(
     surname = surname,
     patronymic = patronymic,
     user_group_id = groupId,
-    role = role.toString(),
+    role = role,
     email = email,
     timestamp = timestamp.time,
     gender = gender,

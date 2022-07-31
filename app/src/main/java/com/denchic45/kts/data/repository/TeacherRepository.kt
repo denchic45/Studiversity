@@ -1,15 +1,17 @@
 package com.denchic45.kts.data.repository
 
 import android.util.Log
+import com.denchic45.kts.data.mapper.mapsToUsers
+import com.denchic45.kts.data.mapper.toMap
 import com.denchic45.kts.data.remote.model.CourseMap
 import com.denchic45.kts.data.remote.model.GroupDoc
-import com.denchic45.kts.data.model.mapper.UserMapper
-import com.denchic45.kts.data.remote.model.UserDoc
+import com.denchic45.kts.data.remote.model.UserMap
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.util.SearchKeysGenerator
 import com.denchic45.kts.util.getDataFlow
+import com.denchic45.kts.util.toMaps
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.*
@@ -20,9 +22,8 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class TeacherRepository @Inject constructor(
-    private val userMapper: UserMapper,
     override val appVersionService: AppVersionService,
-    override val networkService: NetworkService
+    override val networkService: NetworkService,
 ) : Repository(), FindByContainsNameRepository<User> {
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val usersRef: CollectionReference = firestore.collection("Users")
@@ -40,20 +41,20 @@ class TeacherRepository @Inject constructor(
             SearchKeysGenerator.formatInput(text)
         )
             .whereEqualTo("teacher", true)
-            .getDataFlow { userMapper.docToDomain(it.toObjects(UserDoc::class.java)) }
+            .getDataFlow { it.toMaps(::UserMap).mapsToUsers() }
     }
 
     suspend fun add(teacher: User): User {
         batch = firestore.batch()
-        val teacherDoc = userMapper.domainToDoc(teacher)
-        batch!![usersRef.document(teacherDoc.id)] = teacherDoc
+        val teacherMap = teacher.toMap()
+        batch!![usersRef.document(teacherMap["id"] as String)] = teacherMap
         batch!!.commit().await()
         return teacher
     }
 
     suspend fun update(teacher: User): User {
         batch = firestore.batch()
-        val teacherDoc = userMapper.domainToDoc(teacher)
+        val teacherMap = teacher.toMap()
         val tasks = Tasks.whenAllComplete(
             findCoursesWithTeacherQuery(teacher.id),
             findGroupWithCuratorQuery(teacher.id)
@@ -66,7 +67,7 @@ class TeacherRepository @Inject constructor(
             )
             for (courseDoc in coursesWithThisTeacher) {
                 val updateCourseMap: MutableMap<String, Any> = HashMap()
-                updateCourseMap["teacher"] = teacherDoc
+                updateCourseMap["teacher"] = teacherMap
                 updateCourseMap["timestamp"] = FieldValue.serverTimestamp()
                 batch!!.update(coursesRef.document(courseDoc.id), updateCourseMap)
             }
@@ -75,11 +76,11 @@ class TeacherRepository @Inject constructor(
             val groupWithThisCurator =
                 groupWithThisCuratorSnapshot.toObjects(GroupDoc::class.java)[0]
             val updateGroupMap: MutableMap<String, Any> = HashMap()
-            updateGroupMap["curator"] = teacherDoc
+            updateGroupMap["curator"] = teacherMap
             updateGroupMap["timestamp"] = FieldValue.serverTimestamp()
             batch!!.update(groupsRef.document(groupWithThisCurator.id), updateGroupMap)
         }
-        batch!![usersRef.document(teacherDoc.id)] = teacherDoc
+        batch!![usersRef.document(teacherMap["id"] as String)] = teacherMap
         batch!!.commit().await()
         return teacher
     }

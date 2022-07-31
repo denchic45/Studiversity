@@ -3,7 +3,7 @@ package com.denchic45.kts.data.remote.model
 import com.denchic45.kts.util.FireMap
 import java.util.*
 
-class SubmissionCommentMap(map: FireMap) {
+class SubmissionCommentMap(override val map: FireMap) : MapWrapper {
     val id: String by map
     val submissionId: String by map
     val content: String by map
