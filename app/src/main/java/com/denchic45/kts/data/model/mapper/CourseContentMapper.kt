@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.model.mapper
 
-import com.denchic45.kts.data.remote.model.CourseContentDoc
 import com.denchic45.kts.data.model.room.CourseContentEntity
+import com.denchic45.kts.data.remote.model.CourseContentDoc
 import com.denchic45.kts.domain.model.*
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.gson.Gson
@@ -40,16 +40,14 @@ abstract class CourseContentMapper {
         val courseContentEntities: MutableList<CourseContentEntity> = ArrayList()
         val courseContentDocs: MutableList<CourseContentDoc> = ArrayList()
         for (snapshot in snapshots) {
-            val courseContentDoc = snapshot.toObject(
-                CourseContentDoc::class.java
-            )
+            val courseContentMap = snapshot.toObject(CourseContentDoc::class.java)
             courseContentEntities.add(
                 courseContentDocToEntity(
-                    courseContentDoc,
+                    courseContentMap,
                     Gson().toJson(snapshot["contentDetails"])
                 )
             )
-            courseContentDocs.add(courseContentDoc)
+            courseContentDocs.add(courseContentMap)
         }
         return Pair<List<CourseContentEntity>, List<CourseContentDoc>>(
             courseContentEntities,

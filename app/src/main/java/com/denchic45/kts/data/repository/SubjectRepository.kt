@@ -13,6 +13,7 @@ import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.di.modules.IoDispatcher
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.util.getDataFlow
+import com.denchic45.kts.util.toMap
 import com.denchic45.kts.util.toMaps
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
@@ -96,7 +97,7 @@ class SubjectRepository @Inject constructor(
             .get()
             .await()
             .forEach {
-                val courseMap = it.toObject(CourseMap::class.java)
+                val courseMap = it.toMap(::CourseMap)
                 removeCourse(courseMap.id, courseMap.groupIds)
             }
 
@@ -108,7 +109,7 @@ class SubjectRepository @Inject constructor(
                 coroutineScope.launch(dispatcher) {
                     value?.let {
                         if (value.exists())
-                            saveSubject(SubjectMap(value.data!!).mapToSubjectEntity())
+                            saveSubject(SubjectMap(value.toMap()).mapToSubjectEntity())
                     }
                 }
             }

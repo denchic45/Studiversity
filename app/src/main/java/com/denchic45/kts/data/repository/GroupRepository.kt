@@ -252,29 +252,9 @@ class GroupRepository @Inject constructor(
 
     suspend fun remove(groupId: String) {
         requireAllowWriteData()
-
-//        val studentIds = mutableListOf<String>()
-
-
         val studentIds: Set<String> = groupRemoteDataSource.findById(groupId).students.keys
 
-//        groupDocReference(groupId)
-//            .get()
-//            .await().apply {
-//                this.toObject(GroupDoc::class.java)!!
-//                    .students!!
-//                    .values
-//                    .forEach { userDoc -> studentIds.add(userDoc.id) }
-//            }
-
         val groupCourseIds: List<String> = groupRemoteDataSource.findCoursesByGroupId(groupId)
-
-//        coursesRef.whereArrayContains("groupIds", groupId)
-//            .get()
-//            .await()
-//            .forEach { courseDocSnapshot ->
-//                courseWithGroupIds.add(courseDocSnapshot.id)
-//            }
 
         groupRemoteDataSource.removeGroupAndRemoveStudentsAndRemoveGroupIdInCourses(
             groupId,

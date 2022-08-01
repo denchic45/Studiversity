@@ -25,12 +25,12 @@ class FilePicker(
 
     private fun activityFromFragment() = fragment.requireActivity()
 
-    private var getPermissions: ActivityResultLauncher<Intent> =
-        registry.register(
-            PERMISSION_REGISTRY_KEY,
-            fragment,
-            ActivityResultContracts.StartActivityForResult()
-        ) { chooseFile() }
+//    private var getPermissions: ActivityResultLauncher<Intent> =
+//        registry.register(
+//            PERMISSION_REGISTRY_KEY,
+//            fragment,
+//            ActivityResultContracts.StartActivityForResult()
+//        ) { chooseFile() }
 
     private var getFile: ActivityResultLauncher<Intent> =
         registry.register(
@@ -46,15 +46,7 @@ class FilePicker(
                                 clipData.getItemAt(position).uri.toFile()
                             }
                         )
-                    } ?: run {
-
-//                        fragment.requireContext().contentResolver.takePersistableUriPermission(
-//                            data!!,
-//                            Intent.FLAG_GRANT_READ_URI_PERMISSION
-//                        )
-
-                        callback(listOf(data.data!!.toFile()))
-                    }
+                    } ?: callback(listOf(data.data!!.toFile()))
                 }
             }
         }

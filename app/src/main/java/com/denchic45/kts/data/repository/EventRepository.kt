@@ -3,6 +3,7 @@ package com.denchic45.kts.data.repository
 import android.util.Log
 import androidx.room.withTransaction
 import com.denchic45.kts.AppDatabase
+import com.denchic45.kts.DayEntity
 import com.denchic45.kts.data.database.DataBase
 import com.denchic45.kts.data.local.db.*
 import com.denchic45.kts.data.mapper.*
@@ -62,7 +63,7 @@ class EventRepository @Inject constructor(
                     coroutineScope.launch(dispatcher) {
                         snapshots?.let {
                             if (!snapshots.isEmpty) {
-                                saveDay(DayMap(snapshots.documents[0].data!!))
+                                saveDay(DayMap(snapshots.documents[0].toMutableMap()))
                             }
                         }
                     }
@@ -89,7 +90,7 @@ class EventRepository @Inject constructor(
                                 onQuerySnapshot = {
                                     if (!it.isEmpty) {
                                         coroutineScope.launch {
-                                            saveDay(DayMap(it.documents[0].data!!))
+                                            saveDay(DayMap(it.documents[0].toMutableMap()))
                                         }
                                     }
                                 }
@@ -190,7 +191,7 @@ class EventRepository @Inject constructor(
                                         .get()
                                         .await()
                                     if (documentSnapshot.exists())
-                                        saveGroup(GroupMap(documentSnapshot.data!!))
+                                        saveGroup(documentSnapshot.toMutableMap(::GroupMap))
                                 }
                                 saveDay(dayDoc)
                             }
@@ -277,10 +278,10 @@ class EventRepository @Inject constructor(
             batch[dayRef.document(dayDoc.id), dayDoc] = SetOptions.merge()
 
             dayLocalDataSource.upsert(
-                com.denchic45.kts.DayEntity(
+                DayEntity(
                     day_id = dayDoc.id,
                     date = dayDoc.date.toString(DatePatterns.yyy_MM_dd),
-                    start_at_zero = eventsOfTheDay.startsAtZero,
+                    start_at_zero    = eventsOfTheDay.startsAtZero,
                     group_id = groupTimetable.groupHeader.id
                 )
             )
@@ -315,7 +316,7 @@ class EventRepository @Inject constructor(
                 .await()
 
             if (!snapshot.isEmpty) {
-                val dayMap = DayMap(snapshot.documents[0].data!!)
+                val dayMap = DayMap(snapshot.documents[0].toMutableMap())
                 dayLocalDataSource.upsert(dayMap.mapToEntity())
 
                 val eventDocs = eventsOfDay.events.domainsToMaps()
