@@ -1,12 +1,13 @@
 package com.denchic45.kts.data.remote.model
 
 import com.denchic45.kts.util.FireMap
+import com.denchic45.kts.util.mapOrNull
 
-class EventDetailsMap(map: FireMap) {
-    val subjectId: String by map
-    val teacherIds: List<String> by map
-    val name: String by map
-    val iconUrl: String by map
-    val color: String by map
-    val type: String by map
+class EventDetailsMap(override val map: FireMap):MapWrapper {
+    val subjectId: String? by mapOrNull()
+    val teacherIds: List<String>? by mapOrNull()
+    val name: String? by mapOrNull()
+    val iconUrl: String? by mapOrNull()
+    val color: String? by mapOrNull()
+    val eventType: String by map
 }

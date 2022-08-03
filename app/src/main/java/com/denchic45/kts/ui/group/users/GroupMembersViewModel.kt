@@ -12,6 +12,7 @@ import com.denchic45.kts.data.model.domain.OptionItem
 import com.denchic45.kts.data.model.ui.Header
 import com.denchic45.kts.data.model.ui.UiText
 import com.denchic45.kts.data.model.ui.UserItem
+import com.denchic45.kts.data.model.ui.toUserItem
 import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.teacherChooser.TeacherChooserInteractor
@@ -178,13 +179,4 @@ class GroupMembersViewModel @Inject constructor(
         const val OPTION_SET_HEADMAN = "OPTION_SET_HEADMAN"
         const val OPTION_REMOVE_HEADMAN = "OPTION_REMOVE_HEADMAN"
     }
-}
-
-private fun GroupMember.toUserItem(groupMembers: GroupMembers): UserItem {
-    return UserItem(
-        id = id,
-        title = fullName,
-        photoUrl = photoUrl,
-        subtitle = if (groupMembers.isHeadman(this)) "Староста" else null
-    )
 }

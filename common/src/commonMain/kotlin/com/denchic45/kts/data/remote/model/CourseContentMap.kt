@@ -1,13 +1,12 @@
 package com.denchic45.kts.data.remote.model
 
-import com.denchic45.kts.util.FireMap
-import com.denchic45.kts.util.mapOrNull
+import com.denchic45.kts.util.*
 import java.util.*
 
 class CourseContentMap(override val map: FireMap) : MapWrapper {
     val id: String by map
-    val courseId: String = ""
-    val sectionId: String = ""
+    val courseId: String by map
+    val sectionId: String by map
     val name: String by map
     val description: String by map
     val commentsEnabled: Boolean by map
@@ -15,7 +14,7 @@ class CourseContentMap(override val map: FireMap) : MapWrapper {
     val order: Long by map
     val createdDate: Date by map
     val timestamp: Date by map
-    val deleted: Boolean by map
+    val deleted: Boolean by mapOrDefault(false)
     val contentType: String by map
     val completionDate: Date? by mapOrNull()
     val weekDate: String? by mapOrNull()
@@ -55,9 +54,7 @@ class CourseContentMap(override val map: FireMap) : MapWrapper {
 //        this.contentDetails = contentDetails
 //    }
 
-    val comments: List<ContentCommentMap> = (map["comments"] as List<FireMap>)
-        .map(::ContentCommentMap)
-    val submissions: Map<String, SubmissionMap> = (map["submissions"] as Map<String, FireMap>)
-        .map { Pair(it.key, SubmissionMap(it.value)) }
-        .toMap()
+    val comments: List<FireMap> by mapListOrEmpty()
+
+    val submissions: Map<String, FireMap> by mapNestedMapOrEmpty()
 }

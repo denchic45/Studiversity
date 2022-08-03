@@ -57,10 +57,10 @@ abstract class EventDao : BaseDao<EventEntity>() {
         end: LocalDate
     )
 
-//    @Query("DELETE FROM day WHERE date =:date AND group_id =:groupId")
-//    abstract fun deleteByDateAndGroup(
-//        @TypeConverters(LocalDateConverter::class)
-//        date: LocalDate,
-//        groupId: String
-//    )
+    @Query("DELETE FROM day WHERE date =:date AND group_id =:groupId")
+    abstract fun deleteByDateAndGroup(
+        @TypeConverters(LocalDateConverter::class)
+        date: LocalDate,
+        groupId: String
+    )
 }

@@ -6,8 +6,10 @@ import com.denchic45.kts.data.remote.model.CourseContentDoc
 import com.denchic45.kts.data.remote.model.CourseContentMap
 import com.denchic45.kts.data.remote.model.SubmissionDoc
 import com.denchic45.kts.domain.model.*
+import com.denchic45.kts.util.toDate
+import com.denchic45.kts.util.toJsonString
+import com.google.gson.GsonBuilder
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.time.LocalDateTime
@@ -23,13 +25,13 @@ fun CourseContentMap.domainToEntity() = CourseContentEntity(
     description = description,
     order = order,
     attachments = attachments,
-    content_details = Json.encodeToString(contentDetails),
+    content_details = contentDetails.toJsonString(),
     comments_enabled = commentsEnabled,
     content_type = contentType,
     created_date = createdDate.time,
     timestamp = timestamp.time,
-    completion_date = completionDate!!.time,
-    week_date = weekDate!!,
+    completion_date = completionDate?.time,
+    week_date = weekDate,
     deleted = deleted
 )
 
@@ -44,9 +46,8 @@ fun CourseContentEntity.entityToDomain(): CourseContent {
 
 fun CourseContentEntity.toTaskDomain(): Task {
     return courseContentEntityWithDetailsToTask(
-        this,
-        Json.decodeFromString(content_details)
-//        GsonBuilder().create().fromJson(entity.contentDetails, ContentDetails.Task::class.java)
+//        Json.decodeFromString(content_details)
+        GsonBuilder().create().fromJson(content_details, ContentDetails.Task::class.java)
     )
 }
 
@@ -62,8 +63,8 @@ fun CourseContentEntity.entityToTaskDoc(): CourseContentDoc {
     val timestamp = Date(timestamp)
     val deleted: Boolean = deleted
     val contentType: ContentType = ContentType.valueOf(content_type)
-    val completionDate = Date(completion_date)
-    val weekDate: String = week_date
+    val completionDate = Date(completion_date!!)
+    val weekDate: String = week_date!!
     val comments: List<ContentCommentMap>? = null
     val submissions: Map<String, SubmissionDoc>? = null
     return CourseContentDoc(
@@ -96,39 +97,28 @@ fun mapAttachmentsToFilePaths(attachments: List<Attachment>): List<String> {
     return attachments.map { (file) -> file.path }
 }
 
-fun courseContentEntityWithDetailsToTask(
-    courseEntity: CourseContentEntity,
+fun CourseContentEntity.courseContentEntityWithDetailsToTask(
     taskDetails: ContentDetails.Task,
-): Task {
-    val order = courseEntity.order
-    val commentsEnabled = courseEntity.comments_enabled
-    val id: String = courseEntity.course_id
-    val attachments: List<Attachment> = mapFilePathsToAttachments(courseEntity.attachments)
-    val courseId: String = courseEntity.course_id
-    val sectionId: String = courseEntity.section_id
-    val name: String = courseEntity.name
-    val description: String = courseEntity.description
-
-    val completionDate: LocalDateTime = LocalDateTime.ofInstant(
-        Date(courseEntity.completion_date).toInstant(),
-        ZoneId.of("UTC")
-    )
-
-    val createdDate = Date(courseEntity.created_date)
-    val timestamp = Date(courseEntity.timestamp)
-
-    val disabledSendAfterDate: Boolean = taskDetails.disabledSendAfterDate
-    val submissionSettings: SubmissionSettings = taskDetails.submissionSettings
-    return Task(
-        id,
-        courseId,
-        sectionId,
-        name, description, order, completionDate, disabledSendAfterDate, attachments,
-        submissionSettings, commentsEnabled,
-        createdDate,
-        timestamp
-    )
-}
+) = Task(
+    id = content_id,
+    courseId = course_id,
+    sectionId = section_id,
+    name = name,
+    description = description,
+    order = order,
+    completionDate = completion_date?.let {
+        LocalDateTime.ofInstant(
+            Date(it).toInstant(),
+            ZoneId.of("UTC")
+        )
+    },
+    disabledSendAfterDate = taskDetails.disabledSendAfterDate,
+    attachments = mapFilePathsToAttachments(attachments),
+    submissionSettings = taskDetails.submissionSettings,
+    commentsEnabled = comments_enabled,
+    createdDate = Date(created_date),
+    timestamp = Date(timestamp)
+)
 
 fun Task.toMap(attachments: List<String>, order: Long) = mutableMapOf(
     "id" to id,
@@ -142,9 +132,10 @@ fun Task.toMap(attachments: List<String>, order: Long) = mutableMapOf(
     "createdDate" to createdDate,
     "timestamp" to timestamp,
     "contentType" to ContentType.TASK.name,
-    "completionDate" to completionDate,
+    "completionDate" to completionDate?.toDate(),
     "weekDate" to weekDate,
-    "contentDetails" to taskToTaskDetails()
+    "contentDetails" to taskToTaskDetails(),
+    "deleted" to false
 )
 
 fun mapFilePathsToAttachments(filePaths: List<String>?): List<Attachment> {

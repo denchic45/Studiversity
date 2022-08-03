@@ -24,7 +24,3 @@ data class GroupMap(override val map: FireMap):MapWrapper {
     val allUsers: List<FireMap>
         get() = students.values + (curator)
 }
-
-class Lol(map:Map<String,Any?>) {
-    val str : Int by map
-}

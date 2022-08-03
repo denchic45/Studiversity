@@ -2,6 +2,7 @@ package com.denchic45.kts.data.repository
 
 import android.net.Uri
 import androidx.room.withTransaction
+import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.SubjectEntity
 import com.denchic45.kts.data.database.DataBase
 import com.denchic45.kts.data.local.db.*
@@ -33,7 +34,7 @@ class SubjectRepository @Inject constructor(
     override val coroutineScope: CoroutineScope,
     override val networkService: NetworkService,
     override val firestore: FirebaseFirestore,
-    private val dataBase: DataBase,
+    private val appDatabase: AppDatabase,
     @IoDispatcher override val dispatcher: CoroutineDispatcher,
     override val userLocalDataSource: UserLocalDataSource,
     override val groupLocalDataSource: GroupLocalDataSource,
@@ -147,8 +148,8 @@ class SubjectRepository @Inject constructor(
             coursesRef.whereArrayContains("groupIds", groupId)
                 .get()
                 .await().apply {
-                    dataBase.withTransaction {
-                        saveCourses(toObjects(CourseMap::class.java))
+                    appDatabase.transaction {
+                        coroutineScope.launch { saveCourses(toMaps(::CourseMap)) }
                     }
                 }
         }

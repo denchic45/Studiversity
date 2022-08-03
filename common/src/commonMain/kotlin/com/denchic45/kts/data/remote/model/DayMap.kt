@@ -1,7 +1,6 @@
 package com.denchic45.kts.data.remote.model
 
 import com.denchic45.kts.data.domain.model.EventType
-import com.denchic45.kts.util.FireMap
 import com.denchic45.kts.util.MutableFireMap
 import java.util.*
 
@@ -15,11 +14,11 @@ class DayMap(override val map: MutableFireMap):MutableMapWrapper {
 
     val teacherIds: List<String>
         get() = events
-            .filter { EventMap: EventMap -> EventMap.eventDetailsDoc.type == EventType.LESSON.toString() }
-            .map { EventMap: EventMap -> EventMap.eventDetailsDoc.teacherIds }
+            .filter { EventMap: EventMap -> EventMap.eventDetailsDoc.eventType == EventType.LESSON.toString() }
+            .map { EventMap: EventMap -> EventMap.eventDetailsDoc.teacherIds!! }
             .flatten()
     val subjectIds: List<String>
         get() = events
-            .filter { EventMap: EventMap -> EventMap.eventDetailsDoc.type == EventType.LESSON.toString() }
-            .map { EventMap: EventMap -> EventMap.eventDetailsDoc.subjectId }
+            .filter { EventMap: EventMap -> EventMap.eventDetailsDoc.eventType == EventType.LESSON.toString() }
+            .map { EventMap: EventMap -> EventMap.eventDetailsDoc.subjectId!! }
 }

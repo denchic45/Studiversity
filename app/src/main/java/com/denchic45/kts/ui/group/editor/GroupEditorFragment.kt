@@ -44,7 +44,8 @@ class GroupEditorFragment :
                 viewModel.onSpecialtySelect(position)
             }
 
-            val fab = requireActivity().findViewById<FloatingActionButton>(R.id.fab_main).apply {
+            requireActivity().findViewById<FloatingActionButton>(R.id.fab_main).apply {
+                show()
                 setImageResource(R.drawable.ic_tick)
                 setOnClickListener { viewModel.onFabClick() }
             }

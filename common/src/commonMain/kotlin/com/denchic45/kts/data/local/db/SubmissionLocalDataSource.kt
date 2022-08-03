@@ -1,10 +1,13 @@
 package com.denchic45.kts.data.local.db
 
-import com.denchic45.kts.*
+import com.denchic45.kts.AppDatabase
+import com.denchic45.kts.SubmissionEntity
+import com.denchic45.kts.SubmissionEntityQueries
+import com.denchic45.kts.UserEntity
 import com.denchic45.kts.data.local.model.SubmissionWithStudentEntities
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
-import com.squareup.sqldelight.runtime.coroutines.mapToOne
+import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -29,7 +32,7 @@ class SubmissionLocalDataSource(db: AppDatabase) {
 
     fun getByTaskIdAndUserId(
         contentId: String,
-        studentId: String
+        studentId: String,
     ): Flow<SubmissionWithStudentEntities?> {
         return queries.getSubmissionAndStudentByTaskIdAndUserId(
             contentId,
@@ -67,7 +70,7 @@ class SubmissionLocalDataSource(db: AppDatabase) {
                     timestamp
                 )
             )
-        }.asFlow().mapToOne(Dispatchers.IO)
+        }.asFlow().mapToOneOrNull(Dispatchers.IO)
     }
 
     fun getByTaskId(taskId: String): Flow<List<SubmissionWithStudentEntities>> {

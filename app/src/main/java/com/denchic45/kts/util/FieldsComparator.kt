@@ -15,3 +15,5 @@ object FieldsComparator {
         return map
     }
 }
+
+fun FireMap.differenceOf(oldMap: FireMap) = filter { (key, value)-> oldMap[key] != value }

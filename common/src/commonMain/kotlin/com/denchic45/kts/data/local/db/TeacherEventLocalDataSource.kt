@@ -12,14 +12,14 @@ class TeacherEventLocalDataSource(
     private val queries: TeacherEventEntityQueries = db.teacherEventEntityQueries
 
     suspend fun insert(teacherEventEntity: TeacherEventEntity) = withContext(Dispatchers.IO) {
-        queries.insert(teacherEventEntity)
+        queries.upsert(teacherEventEntity)
     }
 
     suspend fun insert(teacherEventEntities: List<TeacherEventEntity>) =
         withContext(Dispatchers.IO) {
             queries.transaction {
                 teacherEventEntities.map {
-                    queries.insert(it)
+                    queries.upsert(it)
                 }
             }
         }

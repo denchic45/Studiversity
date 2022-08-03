@@ -1,6 +1,9 @@
 package com.denchic45.kts.data.model.ui
 
 import com.denchic45.kts.data.UiModel
+import com.denchic45.kts.domain.model.GroupMember
+import com.denchic45.kts.domain.model.GroupMembers
+import com.denchic45.kts.domain.model.User
 
 data class UserItem(
     override val id: String,
@@ -8,3 +11,21 @@ data class UserItem(
     val photoUrl: String,
     val subtitle: String? = null
 ):UiModel
+
+fun GroupMember.toUserItem(groupMembers: GroupMembers): UserItem {
+    return UserItem(
+        id = id,
+        title = fullName,
+        photoUrl = photoUrl,
+        subtitle = if (groupMembers.isHeadman(this)) "Староста" else null
+    )
+}
+
+fun User.toUserItem(): UserItem {
+    return UserItem(
+        id = id,
+        title = fullName,
+        photoUrl = photoUrl,
+        subtitle = null
+    )
+}

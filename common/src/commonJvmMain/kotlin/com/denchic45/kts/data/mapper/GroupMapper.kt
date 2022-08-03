@@ -7,6 +7,7 @@ import com.denchic45.kts.data.remote.model.GroupDoc
 import com.denchic45.kts.data.remote.model.GroupMap
 import com.denchic45.kts.data.remote.model.UserMap
 import com.denchic45.kts.domain.model.*
+import com.denchic45.kts.util.SearchKeysGenerator
 
 fun List<GetStudentsWithCuratorByGroupId>.toGroupMembers(): GroupMembers {
     return GroupMembers(
@@ -89,5 +90,6 @@ fun Group.domainToMap(): Map<String, Any> {
 //    map["timestamp"] = FieldValue.serverTimestamp()
     map["specialty"] = specialty
     map["curator"] = curator
+    map["searchKeys"] = SearchKeysGenerator().generateKeys(name)
     return map
 }

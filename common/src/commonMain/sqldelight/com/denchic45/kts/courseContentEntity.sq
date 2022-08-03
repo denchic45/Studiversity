@@ -13,8 +13,8 @@ comments_enabled INTEGER AS Boolean NOT NULL,
 content_type TEXT NOT NULL,
 created_date INTEGER NOT NULL,
 timestamp INTEGER NOT NULL,
-completion_date INTEGER NOT NULL,
-week_date TEXT NOT NULL,
+completion_date INTEGER,
+week_date TEXT,
 'order' INTEGER NOT NULL,
 deleted INTEGER AS Boolean NOT NULL
 );
@@ -27,6 +27,7 @@ INSERT INTO courseContentEntity
 VALUES ?
 ON CONFLICT(content_id)
 DO UPDATE SET
+course_id = excluded.course_id,
 section_id = excluded.section_id,
 name = excluded.name,
 attachments = excluded.attachments,

@@ -1,18 +1,16 @@
 package com.denchic45.kts.data.local.db
 
-import com.denchic45.kts.AppDatabase
-import com.denchic45.kts.CourseContentEntity
-import com.denchic45.kts.CourseContentEntityQueries
+import com.denchic45.kts.*
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
-import com.squareup.sqldelight.runtime.coroutines.mapToOne
+import com.squareup.sqldelight.runtime.coroutines.mapToOneOrDefault
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class CourseContentLocalDataSource(db: AppDatabase) {
+class CourseContentLocalDataSource(private val db: AppDatabase) {
 
     private val queries: CourseContentEntityQueries = db.courseContentEntityQueries
 
@@ -20,22 +18,23 @@ class CourseContentLocalDataSource(db: AppDatabase) {
         queries.delete(courseContentEntity.content_id)
     }
 
-    suspend fun delete(courseContentEntities: List<CourseContentEntity>) =
-        withContext(Dispatchers.IO) {
-            queries.transaction {
-                courseContentEntities.forEach { queries.delete(it.content_id) }
-            }
+    fun delete(courseContentEntities: List<CourseContentEntity>) =
+//        withContext(Dispatchers.IO) {
+        queries.transaction {
+            courseContentEntities.forEach { queries.delete(it.content_id) }
         }
+//        }
 
-    suspend fun upsert(courseContentEntity: CourseContentEntity) = withContext(Dispatchers.IO) {
+    fun upsert(courseContentEntity: CourseContentEntity) =
+//        withContext(Dispatchers.IO) {
         queries.upsert(courseContentEntity)
-    }
+//    }
 
-    suspend fun upsert(courseContentEntities: List<CourseContentEntity>) =
-        withContext(Dispatchers.IO) {
-            queries.transaction {
-                courseContentEntities.forEach { queries.upsert(it) }
-            }
+    fun upsert(courseContentEntities: List<CourseContentEntity>) =
+
+        queries.transaction {
+            courseContentEntities.forEach { queries.upsert(it) }
+
         }
 
     fun getByCourseId(courseId: String): Flow<List<CourseContentEntity>> {
@@ -51,7 +50,8 @@ class CourseContentLocalDataSource(db: AppDatabase) {
     }
 
     fun getAttachmentsById(id: String): Flow<List<String>> {
-        return queries.getAttachmentsById(id).asFlow().mapToOne(Dispatchers.IO)
+        return queries.getAttachmentsById(id).asFlow()
+            .mapToOneOrDefault(emptyList(), Dispatchers.IO)
     }
 
     suspend fun getCourseIdByTaskId(taskId: String) = withContext(Dispatchers.IO) {
@@ -61,7 +61,7 @@ class CourseContentLocalDataSource(db: AppDatabase) {
 
     fun getByGroupIdAndGreaterCompletionDate(
         groupId: String,
-        startDate: Date = Date()
+        startDate: Date = Date(),
     ): Flow<List<CourseContentEntity>> {
         return queries.getByGroupIdAndGreaterCompletionDate(startDate.time, groupId)
             .asFlow()
@@ -84,5 +84,28 @@ class CourseContentLocalDataSource(db: AppDatabase) {
     ): Flow<List<CourseContentEntity>> {
         return queries.getByGroupIdAndSubmittedUser(groupId, studentId).asFlow()
             .mapToList(Dispatchers.IO)
+    }
+
+    fun saveContents(
+        removedCourseContents: List<CourseContentEntity>,
+        remainingCourseContent: List<CourseContentEntity>,
+        contentIds: List<String>,
+        submissionEntities: List<SubmissionEntity>,
+        contentCommentEntities: List<ContentCommentEntity>,
+        submissionCommentEntities: List<SubmissionCommentEntity>,
+    ) {
+        db.transaction {
+            delete(removedCourseContents)
+            upsert(remainingCourseContent)
+            submissionEntities.forEach {
+                db.submissionEntityQueries.upsert(it)
+            }
+            contentCommentEntities.forEach {
+                db.contentCommentEntityQueries.upsert(it)
+            }
+            submissionCommentEntities.forEach {
+                db.submissionCommentEntityQueries.upsert(it)
+            }
+        }
     }
 }

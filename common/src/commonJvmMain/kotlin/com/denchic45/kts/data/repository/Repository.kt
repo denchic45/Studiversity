@@ -11,23 +11,23 @@ abstract class Repository protected constructor() :
     val subscriptions: MutableMap<String, Subscription> = HashMap()
 
 
-    protected fun addListenerRegistration(key: String, subscription: Subscription) {
-        if (subscriptions.containsKey(key)) {
-            removeListener(key)
-            subscriptions.replace(key, subscription)
-        } else {
-            subscriptions[key] = subscription
-        }
-    }
+//    protected fun addListenerRegistration(key: String, subscription: Subscription) {
+//        if (subscriptions.containsKey(key)) {
+//            removeListener(key)
+//            subscriptions.replace(key, subscription)
+//        } else {
+//            subscriptions[key] = subscription
+//        }
+//    }
 
     protected fun hasListener(key: String): Boolean {
         return subscriptions.containsKey(key)
     }
 
 
-    protected fun addListenerRegistrationIfNotExist(key: String, registration: Subscription) {
-        if (!subscriptions.containsKey(key)) subscriptions[key] = registration
-    }
+//    protected fun addListenerRegistrationIfNotExist(key: String, registration: Subscription) {
+//        if (!subscriptions.containsKey(key)) subscriptions[key] = registration
+//    }
 
     fun removeListenerRegistration(key: String) {
         subscriptions[key]?.unsubscribe()

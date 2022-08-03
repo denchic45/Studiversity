@@ -1,16 +1,14 @@
 package com.denchic45.kts.data.repository
 
 import android.util.Log
-import androidx.room.withTransaction
 import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.DayEntity
-import com.denchic45.kts.data.database.DataBase
 import com.denchic45.kts.data.local.db.*
 import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.model.domain.GroupTimetable
+import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.UserPreferences
-import com.denchic45.kts.data.prefs.AppPreference
 import com.denchic45.kts.data.remote.model.*
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
@@ -36,7 +34,6 @@ class EventRepository @Inject constructor(
     override val networkService: NetworkService,
     private val coroutineScope: CoroutineScope,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
-    override val dataBase: DataBase,
     private val appDatabase: AppDatabase,
     private val eventLocalDataSource: EventLocalDataSource,
     private val courseLocalDataSource: CourseLocalDataSource,
@@ -46,7 +43,7 @@ class EventRepository @Inject constructor(
     private val dayLocalDataSource: DayLocalDataSource,
     private val subjectLocalDataSource: SubjectLocalDataSource,
     private val userPreferences: UserPreferences,
-    private val appPreference: AppPreference,
+    private val appPreferences: AppPreferences,
     override val appVersionService: AppVersionService,
     override val userLocalDataSource: UserLocalDataSource,
     override val groupLocalDataSource: GroupLocalDataSource,
@@ -126,46 +123,49 @@ class EventRepository @Inject constructor(
             .whereEqualTo("date", toDate)
     }
 
-    private suspend fun saveDay(dayDoc: DayMap) {
-        appDatabase.transaction {
-            coroutineScope.launch {
+    private suspend fun saveDay(dayMap: DayMap) {
+        coroutineScope.launch {
+            val notRelatedTeacherEntities =
                 courseLocalDataSource.getNotRelatedTeacherIdsToGroup(
-                    dayDoc.teacherIds,
-                    dayDoc.groupId
-                )
-                    .map { teacherId ->
-                        firestore.collection("Users")
-                            .document(teacherId)
-                            .get()
-                            .await()
-                            .apply {
-                                userLocalDataSource.upsert(UserMap(data!!).mapToUserEntity())
-                            }
-                    }
+                    dayMap.teacherIds,
+                    dayMap.groupId
+                ).map { teacherId ->
+                    firestore.collection("Users")
+                        .document(teacherId)
+                        .get()
+                        .await()
+                        .toMap(::UserMap).mapToUserEntity()
+                }
 
+            val notRelatedSubjectEntities =
                 courseLocalDataSource.getNotRelatedSubjectIdsToGroup(
-                    dayDoc.subjectIds,
-                    dayDoc.groupId
-                )
-                    .map { subjectId: String ->
-                        firestore.collection("Subjects").document(subjectId)
-                            .get()
-                            .await()
-                            .apply {
-                                subjectLocalDataSource.upsert(
-                                    SubjectMap(data!!).mapToSubjectEntity()
-                                )
-                            }
-                    }
+                    dayMap.subjectIds,
+                    dayMap.groupId
+                ).map { subjectId ->
+                    firestore.collection("Subjects").document(subjectId)
+                        .get()
+                        .await()
+                        .toMap(::SubjectMap).mapToSubjectEntity()
+                }
 
-                dayLocalDataSource.deleteByDate(dayDoc.date.toLocalDate())
-                dayLocalDataSource.upsert(dayDoc.mapToEntity())
+//                userLocalDataSource.upsert(notRelatedTeacherEntities)
+//                subjectLocalDataSource.upsert(notRelatedSubjectEntities)
 
-                val eventEntities = dayDoc.events.docsToEntities(dayDoc.id)
-                eventLocalDataSource.upsert(eventEntities)
+//                dayLocalDataSource.deleteByDate(dayDoc.date)
+//                dayLocalDataSource.upsert(dayDoc.mapToEntity())
 
-                teacherEventLocalDataSource.insert(eventEntities.toTeacherEventEntities())
-            }
+            val eventEntities = dayMap.events.docsToEntities(dayMap.id)
+//                eventLocalDataSource.upsert(eventEntities)
+
+//                teacherEventLocalDataSource.insert(eventEntities.toTeacherEventEntities())
+
+            dayLocalDataSource.saveDay(
+                notRelatedTeacherEntities = notRelatedTeacherEntities,
+                notRelatedSubjectEntities = notRelatedSubjectEntities,
+                dayEntity = dayMap.mapToEntity(),
+                eventEntities = dayMap.events.docsToEntities(dayMap.id),
+                teacherEventEntities = eventEntities.toTeacherEventEntities()
+            )
         }
     }
 
@@ -183,18 +183,16 @@ class EventRepository @Inject constructor(
                 }
                 if (!snapshot!!.isEmpty) {
                     val dayMaps = snapshot.toMutableMaps(::DayMap)
-                    for (dayDoc in dayMaps) {
+                    for (dayMap in dayMaps) {
                         coroutineScope.launch(dispatcher) {
-                            dataBase.withTransaction {
-                                if (!groupLocalDataSource.isExist(dayDoc.groupId)) {
-                                    val documentSnapshot = groupsRef.document(dayDoc.groupId)
-                                        .get()
-                                        .await()
-                                    if (documentSnapshot.exists())
-                                        saveGroup(documentSnapshot.toMutableMap(::GroupMap))
-                                }
-                                saveDay(dayDoc)
+                            if (!groupLocalDataSource.isExist(dayMap.groupId)) {
+                                val documentSnapshot = groupsRef.document(dayMap.groupId)
+                                    .get()
+                                    .await()
+                                if (documentSnapshot.exists())
+                                    saveGroup(GroupMap(documentSnapshot.toMap()))
                             }
+                            saveDay(dayMap)
                         }
                     }
                 }
@@ -202,9 +200,9 @@ class EventRepository @Inject constructor(
     }
 
     var lessonTime: Int
-        get() = appPreference.lessonTime
+        get() = appPreferences.lessonTime
         set(lessonTime) {
-            appPreference.lessonTime = lessonTime
+            appPreferences.lessonTime = lessonTime
         }
 
     fun observeEventsOfYourGroup() {
@@ -243,7 +241,7 @@ class EventRepository @Inject constructor(
     suspend fun addGroupTimetables(groupTimetables: List<GroupTimetable>) {
         if (isNetworkNotAvailable) throw NetworkException()
         val batch = firestore.batch()
-        groupTimetables.map { groupTimetable: GroupTimetable ->
+        groupTimetables.map { groupTimetable ->
             addGroupTimetable(batch, groupTimetable)
         }
         batch.commit().await()
@@ -270,18 +268,18 @@ class EventRepository @Inject constructor(
 
             val addableEvents = eventsOfTheDay.events.map { EventMap(it.domainToMap()) }
 
-            val dayDoc: DayMap = maybeDayMap?.let {
+            val dayMap: DayMap = maybeDayMap?.let {
                 it.events = addableEvents
                 it
             } ?: DayMap(eventsOfTheDay.domainToMap(groupTimetable.groupHeader.id))
 
-            batch[dayRef.document(dayDoc.id), dayDoc] = SetOptions.merge()
+            batch[dayRef.document(dayMap.id), dayMap] = SetOptions.merge()
 
             dayLocalDataSource.upsert(
                 DayEntity(
-                    day_id = dayDoc.id,
-                    date = dayDoc.date.toString(DatePatterns.yyy_MM_dd),
-                    start_at_zero    = eventsOfTheDay.startsAtZero,
+                    day_id = dayMap.id,
+                    date = dayMap.date.toString(DatePatterns.yyy_MM_dd),
+                    start_at_zero = eventsOfTheDay.startsAtZero,
                     group_id = groupTimetable.groupHeader.id
                 )
             )

@@ -6,6 +6,7 @@ import com.denchic45.kts.data.remote.model.UserDoc
 import com.denchic45.kts.data.remote.model.UserMap
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.util.MutableFireMap
+import com.denchic45.kts.util.SearchKeysGenerator
 import java.util.*
 
 fun User.domainToEntity() = UserEntity(
@@ -73,7 +74,8 @@ fun User.toMap(): MutableFireMap = mutableMapOf(
     "timestamp" to timestamp,
     "gender" to gender,
     "generatedAvatar" to generatedAvatar,
-    "admin" to admin
+    "admin" to admin,
+    "searchKeys" to SearchKeysGenerator().generateKeys(fullName)
 )
 
 fun List<User>.domainsToMaps() = this.map(User::toMap)

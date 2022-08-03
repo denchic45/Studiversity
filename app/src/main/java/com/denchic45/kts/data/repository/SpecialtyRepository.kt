@@ -10,6 +10,7 @@ import com.denchic45.kts.di.modules.IoDispatcher
 import com.denchic45.kts.domain.model.Specialty
 import com.denchic45.kts.util.SearchKeysGenerator
 import com.denchic45.kts.util.getDataFlow
+import com.denchic45.kts.util.toMap
 import com.denchic45.kts.util.toMaps
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
@@ -51,7 +52,7 @@ class SpecialtyRepository @Inject constructor(
                 .await().apply {
                     coroutineScope.launch(dispatcher) {
                         specialtyLocalDataSource.upsert(
-                            SpecialtyMap(data!!).mapToSpecialtyEntity()
+                            toMap(::SpecialtyMap).mapToSpecialtyEntity()
                         )
                     }
                 }

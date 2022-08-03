@@ -3,6 +3,7 @@ package com.denchic45.kts.data.mapper
 import com.denchic45.kts.SubjectEntity
 import com.denchic45.kts.data.remote.model.SubjectMap
 import com.denchic45.kts.domain.model.Subject
+import com.denchic45.kts.util.SearchKeysGenerator
 
 fun SubjectEntity.entityToSubjectDomain() = Subject(
     id = subject_id,
@@ -35,7 +36,8 @@ fun Subject.domainToMap() = mapOf<String,Any>(
     "id" to id,
     "name" to name,
     "iconUrl" to iconUrl,
-    "colorName" to colorName
+    "colorName" to colorName,
+    "searchKeys" to SearchKeysGenerator().generateKeys(name)
 )
 
 fun List<Subject>.domainsToMaps() = map { it.domainToMap() }

@@ -89,4 +89,4 @@ ORDER BY surname;
 deleteMissingTeachersByGroup:
 DELETE FROM userEntity
 WHERE user_group_id =: groupId
-AND user_id NOT IN(:availableStudents);
+AND user_id NOT IN(?);

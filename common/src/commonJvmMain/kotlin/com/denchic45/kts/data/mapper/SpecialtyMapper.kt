@@ -5,6 +5,7 @@ import com.denchic45.kts.data.remote.model.SpecialtyDoc
 import com.denchic45.kts.data.remote.model.SpecialtyMap
 import com.denchic45.kts.domain.model.Specialty
 import com.denchic45.kts.util.MutableFireMap
+import com.denchic45.kts.util.SearchKeysGenerator
 
 fun SpecialtyEntity.toDomain() = Specialty(
     id = specialty_id,
@@ -32,7 +33,8 @@ fun List<SpecialtyMap>.mapsToSpecialEntities() = map { it.mapToSpecialtyEntity()
 
 fun Specialty.toMap(): MutableFireMap = mutableMapOf(
     "id" to id,
-    "name" to name
+    "name" to name,
+    "searchKeys" to SearchKeysGenerator().generateKeys(name)
 )
 
 fun List<Specialty>.specialtiesToMaps() = map(Specialty::toMap)

@@ -1,18 +1,20 @@
 package com.denchic45.kts.di.modules
 
 import android.content.Context
-import com.denchic45.kts.data.pref.GroupPreferences
-import com.denchic45.kts.data.pref.UserPreferences
-import com.denchic45.kts.data.prefs.AppPreference
-import com.denchic45.kts.data.prefs.GroupPreference
-import com.denchic45.kts.data.prefs.TimestampPreference
-import com.denchic45.kts.data.prefs.UserPreference
+import com.denchic45.kts.data.pref.*
 import com.russhwolf.settings.AndroidSettings
 import dagger.Module
 import dagger.Provides
 
 @Module
 object PreferenceModule {
+
+    @Provides
+    fun provideAppPreferences(context: Context): AppPreferences {
+        return AppPreferences(
+            AndroidSettings(context.getSharedPreferences("App", Context.MODE_PRIVATE))
+        )
+    }
 
     @Provides
     fun provideUserPreferences(context: Context): UserPreferences {
@@ -29,14 +31,28 @@ object PreferenceModule {
     }
 
     @Provides
-    fun provideAppPreference(context: Context) = AppPreference(context)
+    fun provideTimestampPreferences(context: Context): TimestampPreferences {
+        return TimestampPreferences(
+            AndroidSettings(context.getSharedPreferences("Timestamp", Context.MODE_PRIVATE))
+        )
+    }
 
     @Provides
-    fun provideGroupPreference(context: Context) = GroupPreference(context)
+    fun provideCoursePreferences(context: Context): CoursePreferences {
+        return CoursePreferences(
+            AndroidSettings(context.getSharedPreferences("Courses", Context.MODE_PRIVATE))
+        )
+    }
 
-    @Provides
-    fun provideTimestampPreference(context: Context) = TimestampPreference(context)
-
-    @Provides
-    fun provideUserPreference(context: Context) = UserPreference(context)
+//    @Provides
+//    fun provideAppPreference(context: Context) = AppPreference(context)
+//
+//    @Provides
+//    fun provideGroupPreference(context: Context) = GroupPreference(context)
+//
+//    @Provides
+//    fun provideTimestampPreference(context: Context) = TimestampPreference(context)
+//
+//    @Provides
+//    fun provideUserPreference(context: Context) = UserPreference(context)
 }

@@ -20,7 +20,6 @@ kotlin {
         val ktorVersion = "2.0.3"
         val koinVersion = "3.2.0-beta-1"
         val sqlDelightVersion = "1.5.3"
-
         val commonJvmMain by creating {
             dependencies {
 
@@ -29,6 +28,10 @@ kotlin {
 
                 implementation("com.squareup.sqldelight:runtime-jvm:$sqlDelightVersion")
                 implementation("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
+//                implementation("app.cash.sqldelight:runtime-jvm:2.0.0-alpha03")
+//                implementation("app.cash.sqldelight:coroutines-extensions-jvm:2.0.0-alpha03")
+
+                implementation("com.google.code.gson:gson:2.9.0")
 
                 implementation("net.harawata:appdirs:1.2.1")
 
@@ -54,6 +57,8 @@ kotlin {
 
                 implementation("com.squareup.sqldelight:runtime:$sqlDelightVersion")
                 implementation("com.squareup.sqldelight:coroutines-extensions:$sqlDelightVersion")
+//                implementation("app.cash.sqldelight:runtime:2.0.0-alpha03")
+//                implementation("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha-03")
 
                 implementation("io.insert-koin:koin-core:$koinVersion")
 
@@ -82,6 +87,8 @@ kotlin {
                 implementation("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("com.squareup.sqldelight:android-driver:$sqlDelightVersion")
+//                implementation("app.cash.sqldelight:android-driver:2.0.0-alpha03")
+
 
                 // Firebase
                 api(project.dependencies.platform("com.google.firebase:firebase-bom:30.2.0"))
@@ -115,6 +122,7 @@ kotlin {
 
                 api("com.squareup.sqldelight:sqlite-driver:$sqlDelightVersion")
                 api("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
+//                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
 //                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-jvm:0.13.0")
 

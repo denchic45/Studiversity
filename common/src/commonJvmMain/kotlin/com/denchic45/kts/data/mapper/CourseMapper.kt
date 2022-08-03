@@ -11,7 +11,7 @@ import com.denchic45.kts.data.remote.model.UserMap
 import com.denchic45.kts.domain.model.*
 import java.util.*
 
-fun CourseMap.mapToEntity() = CourseEntity(
+fun CourseMap.mapToCourseEntity() = CourseEntity(
     course_id = id,
     name = name,
     subject_id = subject["id"] as String,

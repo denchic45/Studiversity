@@ -8,12 +8,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-class CourseLocalDataSource(db: AppDatabase) {
+class CourseLocalDataSource(private val db: AppDatabase) {
 
     private val queries: CourseEntityQueries = db.courseEntityQueries
 
-    suspend fun upsert(courseEntity: CourseEntity) = withContext(Dispatchers.IO) {
+    fun upsert(courseEntity: CourseEntity) {
+//        withContext(Dispatchers.IO) {
         queries.upsert(courseEntity)
+//        }
     }
 
     fun observe(id: String): Flow<List<GetCourseWithSubjectWithTeacherAndGroupsById>> {
@@ -51,7 +53,7 @@ class CourseLocalDataSource(db: AppDatabase) {
             .mapToList(Dispatchers.IO)
     }
 
-    suspend fun hasRelatedTeacherToGroup(teacherId: String, groupId: String): Boolean =
+    private suspend fun hasRelatedTeacherToGroup(teacherId: String, groupId: String): Boolean =
         withContext(Dispatchers.IO) {
             queries.hasRelatedTeacherToGroup(groupId, teacherId).executeAsOne()
         }
@@ -63,7 +65,7 @@ class CourseLocalDataSource(db: AppDatabase) {
 
     suspend fun getNotRelatedTeacherIdsToGroup(
         teacherIds: List<String>,
-        groupId: String
+        groupId: String,
     ): List<String> {
         return teacherIds
             .filter { teacherId: String -> !hasRelatedTeacherToGroup(teacherId, groupId) }
@@ -72,7 +74,7 @@ class CourseLocalDataSource(db: AppDatabase) {
 
     suspend fun getNotRelatedSubjectIdsToGroup(
         subjectIds: List<String>,
-        groupId: String
+        groupId: String,
     ): List<String> = subjectIds
         .filter { subjectId -> !hasRelatedSubjectToGroup(subjectId, groupId) }
 
@@ -92,5 +94,28 @@ class CourseLocalDataSource(db: AppDatabase) {
 
     suspend fun getCourseIdByContentId(taskId: String): String = withContext(Dispatchers.IO) {
         queries.getCourseIdByContentId(taskId).executeAsOne()
+    }
+
+    fun saveCourse(
+        courseId: String,
+        teacherEntity: UserEntity,
+        subjectEntity: SubjectEntity,
+        courseEntity: CourseEntity,
+        sectionEntities: List<SectionEntity>,
+        groupCourseEntities: List<GroupCourseEntity>,
+    ) {
+        db.transaction {
+            db.groupCourseEntityQueries.apply {
+                deleteByCourseId(courseId)
+                groupCourseEntities.forEach { upsert(it) }
+            }
+            db.userEntityQueries.upsert(teacherEntity)
+            db.subjectEntityQueries.upsert(subjectEntity)
+            queries.upsert(courseEntity)
+            db.sectionEntityQueries.apply {
+                deleteByCourseId(courseId)
+                sectionEntities.forEach { upsert(it) }
+            }
+        }
     }
 }

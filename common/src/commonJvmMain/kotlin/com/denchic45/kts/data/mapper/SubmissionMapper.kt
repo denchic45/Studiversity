@@ -10,7 +10,7 @@ import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.util.toToLocalDateTime
 import java.util.*
 
-fun SubmissionMap.domainToEntity() = SubmissionEntity(
+fun SubmissionMap.mapToEntity() = SubmissionEntity(
     submission_id = id,
     student_id = studentId,
     content_id = contentId,
@@ -23,7 +23,7 @@ fun SubmissionMap.domainToEntity() = SubmissionEntity(
     grade = grade.toLong(),
     graded_date = gradedDate.time,
     rejectd_date = rejectedDate.time,
-    submitted_date = submittedDate.time,
+    submitted_date = submittedDate?.time,
     timestamp = timestamp.time
 )
 
@@ -56,7 +56,7 @@ fun SubmissionWithStudentEntities.entityToUserDomain(attachments: List<Attachmen
             }
             Task.Submission.Status.SUBMITTED -> {
                 Task.SubmissionStatus.Submitted(
-                    submittedDate = submissionEntity.submitted_date.toToLocalDateTime()
+                    submittedDate = submissionEntity.submitted_date!!.toToLocalDateTime()
                 )
             }
             Task.Submission.Status.GRADED -> {
@@ -77,8 +77,8 @@ fun SubmissionWithStudentEntities.entityToUserDomain(attachments: List<Attachmen
                             admin = admin
                         )
                     },
-                    grade = submissionEntity.grade.toInt(),
-                    gradedDate = submissionEntity.graded_date.toToLocalDateTime()
+                    grade = submissionEntity.grade!!.toInt(),
+                    gradedDate = submissionEntity.graded_date!!.toToLocalDateTime()
                 )
             }
             Task.Submission.Status.REJECTED -> {
@@ -99,8 +99,8 @@ fun SubmissionWithStudentEntities.entityToUserDomain(attachments: List<Attachmen
                             admin = admin
                         )
                     },
-                    cause = submissionEntity.cause,
-                    rejectedDate = submissionEntity.rejectd_date.toToLocalDateTime()
+                    cause = submissionEntity.cause!!,
+                    rejectedDate = submissionEntity.rejectd_date!!.toToLocalDateTime()
                 )
             }
         },

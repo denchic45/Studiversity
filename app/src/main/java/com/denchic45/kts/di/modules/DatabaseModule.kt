@@ -121,9 +121,7 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideDataBase(context: Context): DataBase = DataBase.getInstance(
-        context
-    )
+    fun provideDataBase(context: Context): DataBase = DataBase.getInstance(context)
 
     @Provides
     fun provideSubjectDao(dataBase: DataBase): SubjectDao = dataBase.subjectDao()

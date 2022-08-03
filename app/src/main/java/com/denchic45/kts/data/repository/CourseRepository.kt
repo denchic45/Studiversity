@@ -1,16 +1,9 @@
 package com.denchic45.kts.data.repository
 
-import androidx.room.withTransaction
 import com.denchic45.kts.*
-import com.denchic45.kts.data.database.DataBase
 import com.denchic45.kts.data.local.db.*
 import com.denchic45.kts.data.mapper.*
-import com.denchic45.kts.data.pref.GroupPreferences
-import com.denchic45.kts.data.pref.UserPreferences
-import com.denchic45.kts.data.prefs.AppPreference
-import com.denchic45.kts.data.prefs.CoursePreference
-import com.denchic45.kts.data.prefs.TimestampPreference
-import com.denchic45.kts.data.prefs.TimestampPreference.Companion.TIMESTAMP_LAST_UPDATE_GROUP_COURSES
+import com.denchic45.kts.data.pref.*
 import com.denchic45.kts.data.remote.model.*
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
@@ -33,17 +26,16 @@ class CourseRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     override val coroutineScope: CoroutineScope,
     @IoDispatcher override val dispatcher: CoroutineDispatcher,
-    private val coursePreference: CoursePreference,
+    private val coursePreferences: CoursePreferences,
     private val groupPreferences: GroupPreferences,
     override val networkService: NetworkService,
     private val contentAttachmentStorage: ContentAttachmentStorage,
     private val submissionAttachmentStorage: SubmissionAttachmentStorage,
     override val firestore: FirebaseFirestore,
-    override val dataBase: DataBase,
     private val appDatabase: AppDatabase,
     private val userPreferences: UserPreferences,
-    private val timestampPreference: TimestampPreference,
-    private val appPreference: AppPreference,
+    private val timestampPreferences: TimestampPreferences,
+    private val appPreferences: AppPreferences,
     private val courseContentLocalDataSource: CourseContentLocalDataSource,
     private val submissionLocalDataSource: SubmissionLocalDataSource,
     private val contentCommentLocalDataSource: ContentCommentLocalDataSource,
@@ -66,8 +58,9 @@ class CourseRepository @Inject constructor(
             .whereArrayContains("searchKeys", text.lowercase())
             .getDataFlow { it.toMaps(::CourseMap) }
             .map { courseMaps ->
-                dataBase.withTransaction {
+                coroutineScope.launch {
                     saveCourses(courseMaps)
+
                 }
                 courseMaps.mapsToCourseHeaderDomains()
             }
@@ -87,16 +80,14 @@ class CourseRepository @Inject constructor(
                     return@withSnapshotListener
                 val courseMap = documentSnapshot.toMap(::CourseMap)
                 coroutineScope.launch {
-                    dataBase.withTransaction {
-                        if (courseMap.groupIds.isNotEmpty()) {
-                            val querySnapshot = groupsRef.whereIn("id", courseMap.groupIds)
-                                .get()
-                                .await()
-                            if (querySnapshot.timestampsNotNull())
-                                saveGroups(querySnapshot.toMaps(::GroupMap))
-                        }
-                        saveCourse(courseMap)
+                    if (courseMap.groupIds.isNotEmpty()) {
+                        val querySnapshot = groupsRef.whereIn("id", courseMap.groupIds)
+                            .get()
+                            .await()
+                        if (querySnapshot.timestampsNotNull())
+                            saveGroups(querySnapshot.toMaps(::GroupMap))
                     }
+                    saveCourse(courseMap)
                 }
             }
         )
@@ -114,19 +105,19 @@ class CourseRepository @Inject constructor(
         return coursesRef.whereEqualTo("teacher.id", teacherId)
             .whereGreaterThan(
                 "timestamp",
-                Date(timestampPreference.updateTeacherCoursesTimestamp)
+                Date(timestampPreferences.teacherCoursesUpdateTimestamp)
             )
     }
 
     suspend fun observeByYourGroup() {
         combine(
-            timestampPreference.observeValue(TIMESTAMP_LAST_UPDATE_GROUP_COURSES, 0L)
+            timestampPreferences.observeGroupCoursesUpdateTimestamp
                 .filter { it != 0L }
-                .drop(if (appPreference.coursesLoadedFirstTime) 1 else 0),
+                .drop(if (appPreferences.coursesLoadedFirstTime) 1 else 0),
             groupPreferences.observeGroupId.filter(String::isNotEmpty)
         ) { timestamp, groupId -> timestamp to groupId }
             .collect { (timestamp, groupId) ->
-                appPreference.coursesLoadedFirstTime = true
+                appPreferences.coursesLoadedFirstTime = true
                 getCoursesByGroupIdRemotely(groupId)
             }
     }
@@ -140,7 +131,7 @@ class CourseRepository @Inject constructor(
 
     fun findContentByCourseId(courseId: String): Flow<List<DomainModel>> {
         val query = coursesRef.document(courseId).collection("Contents").run {
-            val timestampContentsOfCourse = coursePreference.getTimestampContentsOfCourse(courseId)
+            val timestampContentsOfCourse = coursePreferences.getTimestampContentsOfCourse(courseId)
             if (timestampContentsOfCourse == 0L)
                 whereEqualTo("deleted", false)
             else
@@ -154,16 +145,14 @@ class CourseRepository @Inject constructor(
                 }
                 if (value != null && !value.isEmpty) {
                     if (value.timestampsNotNull()) {
-                        appDatabase.transaction {
-                            coroutineScope.launch(dispatcher) {
-                                val courseContents = value.toMaps(::CourseContentMap)
-                                val timestamp = courseContents.maxOf { it.timestamp }.time
-                                saveCourseContentsLocal(courseContents)
-                                coursePreference.setTimestampContentsOfCourse(
-                                    courseId,
-                                    timestamp
-                                )
-                            }
+                        coroutineScope.launch(dispatcher) {
+                            val courseContents = value.toMaps(::CourseContentMap)
+                            val timestamp = courseContents.maxOf { it.timestamp }.time
+                            saveCourseContentsLocal(courseContents)
+                            coursePreferences.setTimestampContentsOfCourse(
+                                courseId,
+                                timestamp
+                            )
                         }
                     }
                 }
@@ -187,7 +176,7 @@ class CourseRepository @Inject constructor(
         val entities = courseContents.map { it.domainToEntity() }
 
         val removedCourseContents = entities.filter { entity ->
-            entities.first { it.content_id == entity.course_id }.deleted
+            entities.first { it.course_id == entity.course_id }.deleted
         }
         val remainingCourseContent = entities - removedCourseContents.toSet()
 
@@ -196,44 +185,55 @@ class CourseRepository @Inject constructor(
             submissionAttachmentStorage.deleteFromLocal(it.content_id)
         }
 
-        appDatabase.transaction {
-            coroutineScope.launch {
-                courseContentLocalDataSource.delete(removedCourseContents)
-                courseContentLocalDataSource.upsert(remainingCourseContent)
+        val submissionEntities = mutableListOf<SubmissionEntity>()
+        val contentCommentEntities = mutableListOf<ContentCommentEntity>()
+        val submissionCommentEntities = mutableListOf<SubmissionCommentEntity>()
 
-                val submissionEntities = mutableListOf<SubmissionEntity>()
-                val contentCommentEntities = mutableListOf<ContentCommentEntity>()
-                val submissionCommentEntities = mutableListOf<SubmissionCommentEntity>()
+        courseContents.forEach {
+//            submissionLocalDataSource.deleteByContentId(it.id) //TODO ВЫНЕСТИ В CourseContentLocalDataSource
+//            contentCommentLocalDataSource.deleteByContentId(it.id) //TODO ВЫНЕСТИ В CourseContentLocalDataSource
 
-                courseContents.forEach {
-                    submissionLocalDataSource.deleteByContentId(it.id)
-                    contentCommentLocalDataSource.deleteByContentId(it.id)
-
-                    it.submissions.forEach { submissionDoc ->
-                        submissionEntities.add(
-                            submissionDoc.value.domainToEntity()
+            it.submissions.forEach { map ->
+                SubmissionMap(map.value).let { submissionMap ->
+                    submissionEntities.add(submissionMap.mapToEntity())
+                    submissionCommentEntities.addAll(
+                        it.comments
+                            .map(::SubmissionCommentMap)
+                            .docsToEntity()
+                    )
+                    it.comments.let { contentComments ->
+                        contentCommentEntities.addAll(
+                            contentComments
+                                .map(::ContentCommentMap)
+                                .docsToEntity()
                         )
-                        submissionCommentEntities.addAll(submissionDoc.value.comments.docsToEntity())
-                        it.comments.let { contentComments ->
-                            contentCommentEntities.addAll(contentComments.docsToEntity())
-                        }
                     }
                 }
 
-                submissionLocalDataSource.upsert(submissionEntities)
-                contentCommentLocalDataSource.upsert(contentCommentEntities)
-                submissionCommentLocalDataSource.upsert(submissionCommentEntities)
             }
         }
+
+        courseContentLocalDataSource.saveContents(
+            removedCourseContents = removedCourseContents,
+            remainingCourseContent = remainingCourseContent,
+            contentIds = courseContents.map(CourseContentMap::id),
+            submissionEntities = submissionEntities,
+            contentCommentEntities = contentCommentEntities,
+            submissionCommentEntities = submissionCommentEntities
+        )
+//        appDatabase.transaction {
+//            courseContentLocalDataSource.delete(removedCourseContents)
+//            courseContentLocalDataSource.upsert(remainingCourseContent)
+//            submissionLocalDataSource.upsert(submissionEntities)
+//            contentCommentLocalDataSource.upsert(contentCommentEntities)
+//            submissionCommentLocalDataSource.upsert(submissionCommentEntities)
+//        }
     }
 
     fun findByGroupId(groupId: String): Flow<List<CourseHeader>> {
         if (groupId != groupPreferences.groupId)
-            coroutineScope.launch {
-                dataBase.withTransaction {
-                    getCoursesByGroupIdRemotely(groupId)
-                }
-            }
+            coroutineScope.launch { getCoursesByGroupIdRemotely(groupId) }
+
         return courseLocalDataSource.observeCoursesByGroupId(groupId)
             .map { it.entitiesToCourseHeaders() }
     }
@@ -241,7 +241,7 @@ class CourseRepository @Inject constructor(
     private suspend fun getCoursesByGroupIdRemotely(groupId: String) {
         coursesByGroupIdQuery(groupId).get().await().let {
             if (!it.isEmpty)
-                dataBase.withTransaction {
+                coroutineScope.launch {
                     groupCourseLocalDataSource.deleteByGroup(groupId)
                     saveCourses(it.toMaps(::CourseMap))
                 }
@@ -253,12 +253,10 @@ class CourseRepository @Inject constructor(
             coroutineScope.launch {
                 value?.let { value ->
                     if (!value.isEmpty) {
-                        value.toMaps(::CourseMap).apply {
-                            dataBase.withTransaction {
-                                saveCourses(this)
-                            }
-                            timestampPreference.updateTeacherCoursesTimestamp =
-                                this.maxOf { it.timestamp.time }
+                        value.toMaps(::CourseMap).let { courseMaps ->
+                            coroutineScope.launch { saveCourses(courseMaps) }
+                            timestampPreferences.teacherCoursesUpdateTimestamp =
+                                courseMaps.maxOf { it.timestamp.time }
                         }
                     }
                 } ?: error?.printStackTrace()
@@ -315,15 +313,12 @@ class CourseRepository @Inject constructor(
         batch.commit().await()
     }
 
-    fun findTask(id: String): Flow<Task?> {
-        return courseContentLocalDataSource.observe(id)
-            .map { taskEntity -> taskEntity?.toTaskDomain() }
-    }
+    fun findTask(id: String): Flow<Task?> = courseContentLocalDataSource.observe(id)
+        .map { taskEntity -> taskEntity?.toTaskDomain() }
 
     fun findAttachmentsByContentId(contentId: String): Flow<List<Attachment>> {
         return courseContentLocalDataSource.getAttachmentsById(contentId)
-            .filterNotNull()
-            .mapLatest { attachments -> contentAttachmentStorage.get(contentId, attachments) }
+            .map { attachments -> contentAttachmentStorage.get(contentId, attachments) }
     }
 
     suspend fun addTask(task: Task) {
@@ -371,18 +366,21 @@ class CourseRepository @Inject constructor(
         requireAllowWriteData()
         val attachments = contentAttachmentStorage.update(task.id, task.attachments)
         val cacheTask =
-            courseContentLocalDataSource.get(task.id)!!.entityToTaskDoc()
-        val updatedFields =
-            FieldsComparator.mapOfDifference(cacheTask, task.toMap(attachments, task.order))
-                .apply {
-                    put("timestamp", Date())
-                    if (containsKey("sectionId")) {
-                        put(
-                            "order",
-                            getLastContentOrderByCourseIdAndSectionId(task.courseId,
-                                task.sectionId) + 1024)
-                    }
+            courseContentLocalDataSource.get(task.id)!!.run {
+                toTaskDomain().toMap(attachments, order)
+            }
+        val map = task.toMap(attachments, task.order)
+        val updatedFields = map.differenceOf(cacheTask).toMutableMap()
+            .apply {
+                put("timestamp", Date())
+                if (containsKey("sectionId")) {
+                    put(
+                        "order",
+                        getLastContentOrderByCourseIdAndSectionId(task.courseId,
+                            task.sectionId) + 1024)
                 }
+            }
+
         coursesRef.document(task.courseId)
             .collection("Contents")
             .document(task.id)
@@ -615,14 +613,11 @@ class CourseRepository @Inject constructor(
             )
             .limit(10)
             .addSnapshotListener { value, error ->
-                appDatabase.transaction {
-                    coroutineScope.launch {
-                        value?.let {
-                            saveCourseContentsLocal(it.toMaps(::CourseContentMap))
-                        }
+                coroutineScope.launch {
+                    value?.let {
+                        saveCourseContentsLocal(it.toMaps(::CourseContentMap))
                     }
                 }
-
             }
         return courseContentLocalDataSource.getByGroupIdAndGreaterCompletionDate(
             groupPreferences.groupId
@@ -765,26 +760,36 @@ interface SaveCourseRepository {
 
 
     suspend fun saveCourse(courseMap: CourseMap) {
-
-        groupCourseLocalDataSource.deleteByCourse(courseMap.id)
-
-        userLocalDataSource.upsert(UserMap(courseMap.teacher).mapToUserEntity())
-
-        subjectLocalDataSource.upsert(SubjectMap(courseMap.subject).mapToSubjectEntity())
-
-        courseLocalDataSource.upsert(courseMap.mapToEntity())
-
-        sectionLocalDataSource.deleteByCourseId(courseMap.id)
-
-        sectionLocalDataSource.upsert(
-            courseMap.sections?.map { SectionMap(it).mapToEntity() } ?: emptyList()
-        )
-
-        groupCourseLocalDataSource.upsert(
-            courseMap.groupIds
-                .filter { groupLocalDataSource.isExist(it) }
+        courseLocalDataSource.saveCourse(
+            courseId = courseMap.id,
+            teacherEntity = UserMap(courseMap.teacher).mapToUserEntity(),
+            subjectEntity = SubjectMap(courseMap.subject).mapToSubjectEntity(),
+            courseEntity = courseMap.mapToCourseEntity(),
+            sectionEntities = courseMap.sections.map { SectionMap(it).mapToEntity() },
+            groupCourseEntities = courseMap.groupIds
+                .filter(groupLocalDataSource::isExist)
                 .map { groupId -> GroupCourseEntity(groupId, courseMap.id) }
         )
+
+//        groupCourseLocalDataSource.deleteByCourseId(courseMap.id)
+
+//        userLocalDataSource.upsert(UserMap(courseMap.teacher).mapToUserEntity())
+
+//        subjectLocalDataSource.upsert(SubjectMap(courseMap.subject).mapToSubjectEntity())
+
+//        courseLocalDataSource.upsert(courseMap.mapToEntity())
+
+//        sectionLocalDataSource.deleteByCourseId(courseMap.id)
+
+//        sectionLocalDataSource.upsert(
+//            courseMap.sections?.map { SectionMap(it).mapToEntity() } ?: emptyList()
+//        )
+
+//        groupCourseLocalDataSource.upsert(
+//            courseMap.groupIds
+//                .filter { groupLocalDataSource.isExist(it) }
+//                .map { groupId -> GroupCourseEntity(groupId, courseMap.id) }
+//        )
     }
 
     suspend fun saveCourses(courseDocs: List<CourseMap>) {

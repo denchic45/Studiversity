@@ -21,8 +21,8 @@ class FindByContainsNameRepositoryImpl<T : DomainModel, D : DocModel>
         return collectionRef.whereArrayContains("searchKeys", text.lowercase(Locale.getDefault()))
             .getDataFlow { it.toObjects(docClazz) }
             .onEach { onSave(it) }
-            .map { subjectDocs ->
-                map(subjectDocs)
+            .map { docs ->
+                map(docs)
             }
     }
 

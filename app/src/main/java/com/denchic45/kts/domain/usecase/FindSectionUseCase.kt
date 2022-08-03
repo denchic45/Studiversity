@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class FindSectionUseCase @Inject constructor(private val courseRepository: CourseRepository) {
 
-    suspend operator fun invoke(sectionId: String): Section? {
-       return courseRepository.findSection(sectionId)
+    suspend operator fun invoke(sectionId: String): Section {
+       return courseRepository.findSection(sectionId) ?: Section.createEmpty()
     }
 }

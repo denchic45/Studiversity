@@ -24,8 +24,9 @@ fun DayWithEventsEntities.entityToUserDomain() = EventsOfDay(
 
 fun EventsOfDay.domainToMap(groupId: String):MutableFireMap = mutableMapOf(
     "id" to id,
-    "date" to date,
+    "date" to date.toDate(),
     "startsAtZero" to startsAtZero,
     "events" to events.domainsToMaps(),
-    "groupId" to groupId
+    "groupId" to groupId,
+    "timestamp" to Date()
 )

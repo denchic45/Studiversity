@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-class GroupLocalDataSource(db: AppDatabase) {
+class GroupLocalDataSource(private val db: AppDatabase) {
 
     private val queries: GroupEntityQueries = db.groupEntityQueries
 
@@ -66,8 +66,10 @@ class GroupLocalDataSource(db: AppDatabase) {
         return queries.isExist(id).asFlow().mapToOne(Dispatchers.IO)
     }
 
-    suspend fun isExist(id: String): Boolean = withContext(Dispatchers.IO) {
-        queries.isExist(id).executeAsOne()
+    fun isExist(id: String): Boolean {
+//        return withContext(Dispatchers.IO) {
+        return queries.isExist(id).executeAsOne()
+//        }
     }
 
     suspend fun deleteById(groupId: String) = withContext(Dispatchers.IO) {
@@ -83,7 +85,7 @@ class GroupLocalDataSource(db: AppDatabase) {
                     group_id,
                     group_name,
                     curator_id,
-                    course.toInt(),
+                    course,
                     specialty_id,
                     headman_id,
                     timestamp
@@ -142,5 +144,23 @@ class GroupLocalDataSource(db: AppDatabase) {
         }
             .asFlow()
             .mapToOne(Dispatchers.IO)
+    }
+
+    suspend fun saveGroup(
+        groupEntity: GroupEntity,
+        allUsersEntity: List<UserEntity>,
+        availableStudentIds: List<String>,
+        specialtyEntity: SpecialtyEntity,
+    ) = withContext(Dispatchers.IO) {
+        db.transaction {
+            queries.upsert(groupEntity)
+            db.userEntityQueries.apply {
+                allUsersEntity.forEach {
+                    upsert(it)
+                    deleteMissingStudentsByGroup(groupEntity.group_id, availableStudentIds)
+                }
+            }
+            db.specialtyEntityQueries.upsert(specialtyEntity)
+        }
     }
 }

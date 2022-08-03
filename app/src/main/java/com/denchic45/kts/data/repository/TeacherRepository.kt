@@ -4,13 +4,14 @@ import android.util.Log
 import com.denchic45.kts.data.mapper.mapsToUsers
 import com.denchic45.kts.data.mapper.toMap
 import com.denchic45.kts.data.remote.model.CourseMap
-import com.denchic45.kts.data.remote.model.GroupDoc
+import com.denchic45.kts.data.remote.model.GroupMap
 import com.denchic45.kts.data.remote.model.UserMap
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.util.SearchKeysGenerator
 import com.denchic45.kts.util.getDataFlow
+import com.denchic45.kts.util.toMap
 import com.denchic45.kts.util.toMaps
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
@@ -60,11 +61,9 @@ class TeacherRepository @Inject constructor(
             findGroupWithCuratorQuery(teacher.id)
         ).await()
         val coursesWithThisTeacherSnapshot = tasks[0].result as QuerySnapshot?
-        val groupWithThisCuratorSnapshot = tasks[1].result as QuerySnapshot?
+        val snapshot = tasks[1].result as QuerySnapshot?
         if (!coursesWithThisTeacherSnapshot!!.isEmpty) {
-            val coursesWithThisTeacher = coursesWithThisTeacherSnapshot.toObjects(
-                CourseMap::class.java
-            )
+            val coursesWithThisTeacher = coursesWithThisTeacherSnapshot.toMaps(::CourseMap)
             for (courseDoc in coursesWithThisTeacher) {
                 val updateCourseMap: MutableMap<String, Any> = HashMap()
                 updateCourseMap["teacher"] = teacherMap
@@ -72,9 +71,8 @@ class TeacherRepository @Inject constructor(
                 batch!!.update(coursesRef.document(courseDoc.id), updateCourseMap)
             }
         }
-        if (!groupWithThisCuratorSnapshot!!.isEmpty) {
-            val groupWithThisCurator =
-                groupWithThisCuratorSnapshot.toObjects(GroupDoc::class.java)[0]
+        if (!snapshot!!.isEmpty) {
+            val groupWithThisCurator = snapshot.documents[0].toMap(::GroupMap)
             val updateGroupMap: MutableMap<String, Any> = HashMap()
             updateGroupMap["curator"] = teacherMap
             updateGroupMap["timestamp"] = FieldValue.serverTimestamp()

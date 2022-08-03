@@ -17,7 +17,7 @@ fun EventMap.docToEntity(dayId: String) = EventEntity(
     day_id = dayId,
     position = position,
     room = room,
-    type = eventDetailsDoc.type,
+    type = eventDetailsDoc.eventType,
     event_name = eventDetailsDoc.name,
     event_icon_url = eventDetailsDoc.iconUrl,
     color = eventDetailsDoc.color,
@@ -31,9 +31,9 @@ fun List<EventMap>.docsToEntities(dayId: String): List<EventEntity> {
 }
 
 fun List<EventEntity>.toTeacherEventEntities(): List<TeacherEventEntity> {
-    return filter { it.teacher_ids.isNotEmpty() }
+    return filterNot { it.teacher_ids.isNullOrEmpty() }
         .flatMap { eventEntity ->
-            eventEntity.teacher_ids.map { id: String ->
+            eventEntity.teacher_ids!!.map { id: String ->
                 TeacherEventEntity(
                     eventEntity.event_id,
                     id
@@ -54,25 +54,25 @@ fun List<EventWithSubjectAndGroupAndTeachers>.entityToUserDomain(): Event = firs
         details = when (EventType.valueOf(type)) {
             EventType.LESSON -> Lesson(
                 Subject(
-                    id = subject_id,
-                    name = subject_name,
-                    iconUrl = icon_url,
-                    colorName = color_name
+                    id = subject_id!!,
+                    name = subject_name!!,
+                    iconUrl = icon_url!!,
+                    colorName = color_name!!
                 ),
                 map {
                     User(
-                        id = user_id,
-                        firstName = first_name,
-                        surname = surname,
+                        id = user_id!!,
+                        firstName = first_name!!,
+                        surname = surname!!,
                         patronymic = patronymic,
                         groupId = user_group_id,
-                        photoUrl = photo_url,
-                        role = UserRole.valueOf(role),
+                        photoUrl = photo_url!!,
+                        role = UserRole.valueOf(role!!),
                         email = email,
                         timestamp = Date(timestamp),
-                        gender = gender,
-                        generatedAvatar = generated_avatar,
-                        admin = admin
+                        gender = gender!!,
+                        generatedAvatar = generated_avatar!!,
+                        admin = admin!!
                     )
                 }
             )
@@ -96,15 +96,15 @@ fun Event.domainToMap() = mutableMapOf<String, Any?>(
     "position" to order,
     "room" to room,
     "groupId" to groupHeader.id,
-    "eventDetailsDoc" to details.detailsToDetailsDoc()
+    "eventDetailsDoc" to details.detailsToDetailsMap()
 )
 
 fun List<Event>.domainsToMaps() = map { it.domainToMap() }
 
-fun EventDetails.detailsToDetailsDoc(): FireMap {
+fun EventDetails.detailsToDetailsMap(): FireMap {
     return HashMap<String, Any>().apply {
-        put("eventType", eventType)
-        when (this@detailsToDetailsDoc) {
+        put("eventType", eventType.name)
+        when (this@detailsToDetailsMap) {
             is Lesson -> {
                 put("subjectId", subject.id)
                 put("teacherIds", teachers.map(User::id))

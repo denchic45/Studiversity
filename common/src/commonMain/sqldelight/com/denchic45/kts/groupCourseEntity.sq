@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS groupCourseEntity (
     course_id TEXT NOT NULL,
     PRIMARY KEY(group_id, course_id),
     FOREIGN KEY (group_id) REFERENCES groupEntity(group_id) ON DELETE CASCADE,
-    FOREIGN KEY (course_id) REFERENCES courseEntity(course_id) ON DELETE CASCADE
+    FOREIGN KEY (course_id) REFERENCES courseEntity(course_id) ON DELETE CASCADE,
+    UNIQUE(group_id, course_id)
 );
 
 upsert:
@@ -14,8 +15,8 @@ DO UPDATE SET
 group_id = excluded.group_id,
 course_id = excluded.course_id;
 
-deleteByGroup:
+deleteByGroupId:
 DELETE FROM groupCourseEntity WHERE group_id =:groupId;
 
-deleteByCourse:
+deleteByCourseId:
 DELETE FROM groupCourseEntity WHERE course_id =:courseId;

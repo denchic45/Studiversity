@@ -9,18 +9,19 @@ type TEXT NOT NULL,
 event_name TEXT,
 event_icon_url TEXT,
 color TEXT,
-subject_id TEXT NOT NULL,
-teacher_ids TEXT AS List<String> NOT NULL,
-group_id TEXT NOT NULL
+subject_id TEXT,
+teacher_ids TEXT AS List<String>,
+group_id TEXT NOT NULL,
+FOREIGN KEY (day_id) REFERENCES dayEntity(day_id) ON DELETE CASCADE
 );
 
 CREATE VIEW eventWithSubjectAndGroupAndTeachers AS
 SELECT e.*, s.*, te.teacher_id, g.*, u.*
 FROM eventEntity e
-JOIN subjectEntity s ON s.subject_id = e.subject_id
-JOIN teacherEventEntity te ON te.event_id = e.event_id
-JOIN groupEntity g ON g.group_id == e.group_id
-JOIN userEntity u ON u.user_id = te.teacher_id;
+LEFT OUTER JOIN subjectEntity s ON s.subject_id = e.subject_id
+LEFT OUTER JOIN teacherEventEntity te ON te.event_id = e.event_id
+LEFT OUTER JOIN userEntity u ON u.user_id = te.teacher_id
+JOIN groupEntity g ON g.group_id == e.group_id;
 
 upsert:
 INSERT INTO eventEntity
@@ -33,8 +34,8 @@ getById:
 SELECT * FROM eventEntity WHERE event_id =: id;
 
 getDayByDateAndGroupId:
-SELECT * FROM dayEntity WHERE date =: date
-AND group_id =:groupId;
+SELECT * FROM dayEntity
+WHERE date =: date AND group_id =:groupId;
 
 getEventsWithSubjectAndTeachersByDayId:
 SELECT * FROM eventWithSubjectAndGroupAndTeachers e
@@ -48,3 +49,10 @@ WHERE d.date=:date AND e.teacher_id =: teacherId ORDER BY position;
 deleteByGroupAndDateRange:
 DELETE FROM dayEntity WHERE date
 BETWEEN :start AND :end AND group_id =: groupId;
+
+getEventIdsByDayId:
+SELECT e.event_id FROM eventEntity e
+WHERE day_id =: dayId;
+
+deleteByEventId:
+DELETE FROM eventEntity WHERE event_id =: eventId;

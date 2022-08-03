@@ -2,12 +2,13 @@ package com.denchic45.kts.data.remote.model
 
 import com.denchic45.kts.util.FireMap
 import com.denchic45.kts.util.SearchKeysGenerator
+import com.denchic45.kts.util.mapListOrEmpty
 import java.util.*
 
-data class CourseMap(val map: FireMap) {
+data class CourseMap(override val map: FireMap):MapWrapper {
     val id: String by map
     val name: String by map
-    val sections: List<FireMap>? by map
+    val sections: List<FireMap> by mapListOrEmpty()
     val subject: FireMap by map
     val teacher: FireMap by map
     val groupIds: List<String> by map

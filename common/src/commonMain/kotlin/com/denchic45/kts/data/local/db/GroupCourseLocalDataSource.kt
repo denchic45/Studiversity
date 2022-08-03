@@ -13,17 +13,21 @@ class GroupCourseLocalDataSource (db:AppDatabase) {
         queries.upsert(groupCourseEntity)
     }
 
-    suspend fun upsert(groupCourseEntities: List<GroupCourseEntity>) = withContext(Dispatchers.IO) {
+    fun upsert(groupCourseEntities: List<GroupCourseEntity>) {
+//        withContext(Dispatchers.IO) {
         queries.transaction {
             groupCourseEntities.forEach { queries.upsert(it) }
         }
+//        }
     }
 
-     suspend fun deleteByGroup(groupId: String) = withContext(Dispatchers.IO) {
-         queries.deleteByGroup(groupId)
+    suspend fun deleteByGroup(groupId: String) = withContext(Dispatchers.IO) {
+        queries.deleteByGroupId(groupId)
     }
 
-     suspend fun deleteByCourse(courseId: String) = withContext(Dispatchers.IO) {
-        queries.deleteByCourse(courseId)
+    fun deleteByCourseId(courseId: String) {
+//         withContext(Dispatchers.IO) {
+        queries.deleteByCourseId(courseId)
+//         }
     }
 }

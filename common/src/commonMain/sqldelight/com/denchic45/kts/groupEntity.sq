@@ -8,6 +8,11 @@ headman_id TEXT NOT NULL,
 timestamp INTEGER NOT NULL
 );
 
+CREATE VIEW groupWithCuratorAndSpecialty AS
+SELECT * FROM groupEntity g
+JOIN userEntity u ON u.user_id = g.curator_id
+JOIN specialtyEntity s ON s.specialty_id = g.specialty_id;
+
 upsert:
 INSERT INTO groupEntity
 VALUES ?
@@ -47,7 +52,5 @@ JOIN specialtyEntity s ON g.specialty_id = s.specialty_id
 WHERE u.user_id =:userId;
 
 getWithCuratorAndSpecialtyByCuratorId:
-SELECT * FROM groupEntity g
-JOIN userEntity u ON g.group_id = u.user_group_id
-JOIN specialtyEntity s ON g.specialty_id = s.specialty_id
-WHERE curator_id =:userId;
+SELECT * FROM groupWithCuratorAndSpecialty
+WHERE curator_id =: userId;

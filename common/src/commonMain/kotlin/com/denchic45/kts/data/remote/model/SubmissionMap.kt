@@ -1,6 +1,9 @@
 package com.denchic45.kts.data.remote.model
 
 import com.denchic45.kts.util.FireMap
+import com.denchic45.kts.util.MapValueListOrEmptyDelegate
+import com.denchic45.kts.util.mapListOrEmpty
+import com.denchic45.kts.util.mapOrNull
 import java.util.*
 
 class SubmissionMap(override val map: FireMap) : MapWrapper {
@@ -17,7 +20,6 @@ class SubmissionMap(override val map: FireMap) : MapWrapper {
     val timestamp: Date by map
     val rejectedDate: Date by map
     val cause: String by map
-    val comments: List<SubmissionCommentMap> =
-        (map["comments"] as List<FireMap>).map { SubmissionCommentMap(it) }
-    val submittedDate: Date by map
+    val comments: List<FireMap> by mapListOrEmpty()
+    val submittedDate: Date? by mapOrNull()
 }

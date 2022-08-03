@@ -15,21 +15,26 @@ interface SaveGroupOperation {
     val groupLocalDataSource: GroupLocalDataSource
     val specialtyLocalDataSource: SpecialtyLocalDataSource
     val userLocalDataSource: UserLocalDataSource
-    val dataBase: DataBase
 
-    private suspend fun upsertUsersOfGroup(groupMap: GroupMap) {
+
+
+    suspend fun saveGroup(groupMap: GroupMap) {
+//        groupLocalDataSource.upsert(groupMap.mapToGroupEntity())
+//        upsertUsersOfGroup(groupMap)
         val allUsersEntity: List<UserEntity> = groupMap.allUsers
             .map(::UserMap)
             .mapsToUserEntities()
-        userLocalDataSource.upsert(allUsersEntity)
+//        userLocalDataSource.upsert(allUsersEntity)
         val availableUsers = allUsersEntity.map(UserEntity::user_id)
-        userLocalDataSource.deleteMissingStudentsByGroup(groupMap.id, availableUsers)
-    }
-
-    suspend fun saveGroup(groupMap: GroupMap) {
-        groupLocalDataSource.upsert(groupMap.mapToGroupEntity())
-        upsertUsersOfGroup(groupMap)
+//        userLocalDataSource.deleteMissingStudentsByGroup(groupMap.id, availableUsers)
         specialtyLocalDataSource.upsert(groupMap.specialty.mapToSpecialtyEntity())
+
+        groupLocalDataSource.saveGroup(
+            groupMap.mapToGroupEntity(),
+            allUsersEntity,
+            availableUsers,
+            groupMap.specialty.mapToSpecialtyEntity()
+        )
     }
 
     suspend fun saveGroups(groupMaps: List<GroupMap>) {
