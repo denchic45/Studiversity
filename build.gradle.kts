@@ -12,7 +12,7 @@ buildscript {
 
     dependencies {
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.4.2")
-        classpath("com.android.tools.build:gradle:7.2.1")
+        classpath("com.android.tools.build:gradle:7.2.2")
         classpath("com.google.gms:google-services:4.3.13")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("com.squareup.sqldelight:gradle-plugin:1.5.3")
