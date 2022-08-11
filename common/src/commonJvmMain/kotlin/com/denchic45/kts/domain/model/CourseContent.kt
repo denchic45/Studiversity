@@ -1,6 +1,7 @@
 package com.denchic45.kts.domain.model
 
-import com.denchic45.kts.domain.DomainModel
+import com.denchic45.kts.data.domain.model.Attachment
+import com.denchic45.kts.data.domain.model.DomainModel
 import java.util.*
 
 abstract class CourseContent : DomainModel {
@@ -18,7 +19,7 @@ abstract class CourseContent : DomainModel {
 sealed class ContentDetails {
     class Task(
         val disabledSendAfterDate: Boolean,
-        val submissionSettings: SubmissionSettings
+        val submissionSettings: SubmissionSettings,
     ) : ContentDetails()
 
     object Empty : ContentDetails()

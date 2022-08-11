@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local
 
 import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.CourseContentEntity

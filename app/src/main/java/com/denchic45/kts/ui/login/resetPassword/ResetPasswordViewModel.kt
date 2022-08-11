@@ -2,14 +2,14 @@ package com.denchic45.kts.ui.login.resetPassword
 
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.data.repository.AuthRepository
+import com.denchic45.kts.data.service.AuthService
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.util.Validations
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ResetPasswordViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authService: AuthService,
 ) : BaseViewModel() {
 
     val showErrorFieldEmail = SingleLiveData<Boolean>()
@@ -21,7 +21,7 @@ class ResetPasswordViewModel @Inject constructor(
         showErrorFieldEmail.value = false
         viewModelScope.launch {
             try {
-                authRepository.resetPassword(email)
+                authService.resetPassword(email)
                 showSnackBar("Письмо успешно отправлено на почту")
                 finish()
             } catch (t: Throwable) {

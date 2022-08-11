@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.mapper
 
 import com.denchic45.kts.SectionEntity
-import com.denchic45.kts.data.remote.model.SectionMap
+import com.denchic45.kts.data.db.remote.model.SectionMap
 import com.denchic45.kts.domain.model.Section
 
 fun SectionMap.mapToEntity() = SectionEntity(
@@ -21,3 +21,12 @@ fun SectionEntity.entityToUserDomain() = Section(
 )
 
 fun List<SectionEntity>.entitiesToDomains() = map { it.entityToUserDomain() }
+
+fun Section.toMap() = mapOf(
+    "id" to id,
+    "courseId" to courseId,
+    "name" to name,
+    "order" to order
+)
+
+fun List<Section>.domainsToMaps() = map(Section::toMap)

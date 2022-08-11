@@ -1,16 +1,16 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.SectionEntity
 import com.denchic45.kts.SectionEntityQueries
-import com.denchic45.kts.data.mapper.ListMapper
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class SectionLocalDataSource(db: AppDatabase) {
+class SectionLocalDataSource @Inject constructor(db: AppDatabase) {
 
     private val queries: SectionEntityQueries = db.sectionEntityQueries
 

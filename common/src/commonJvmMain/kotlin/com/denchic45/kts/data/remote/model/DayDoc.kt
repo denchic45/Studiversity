@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.remote.model
 
+import com.denchic45.kts.data.domain.model.DocModel
 import com.denchic45.kts.data.domain.model.EventType
-import com.denchic45.kts.domain.DocModel
 import com.denchic45.kts.util.UUIDS
 import java.util.*
 
@@ -10,7 +10,7 @@ data class DayDoc(
     val date: Date,
     val startsAtZero: Boolean,
     var events: List<EventDoc>,
-    val groupId: String
+    val groupId: String,
 ) : DocModel {
 
     private constructor() : this(

@@ -4,7 +4,7 @@ group_name TEXT NOT NULL,
 curator_id TEXT NOT NULL,
 course INTEGER AS Int NOT NULL,
 specialty_id TEXT NOT NULL,
-headman_id TEXT NOT NULL,
+headman_id TEXT,
 timestamp INTEGER NOT NULL
 );
 

@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.SubjectEntity
@@ -9,8 +9,9 @@ import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class SubjectLocalDataSource(db: AppDatabase) {
+class SubjectLocalDataSource @Inject constructor(db: AppDatabase) {
     private val queries: SubjectEntityQueries = db.subjectEntityQueries
 
     suspend fun upsert(subjectEntity: SubjectEntity) = withContext(Dispatchers.IO) {

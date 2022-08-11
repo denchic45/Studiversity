@@ -1,25 +1,25 @@
-package com.denchic45.kts.data.repository
+package com.denchic45.kts.data.service
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class AuthService @Inject constructor() {
+actual class AuthService @Inject constructor() {
 
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    val currentUser: FirebaseUser?
-        get() = firebaseAuth.currentUser
+    actual val isAuthenticated: Boolean
+        get() = firebaseAuth.currentUser != null
+
 
     fun signOut() {
         firebaseAuth.signOut()
     }
 
-    val listenAuthState: Flow<Boolean> = callbackFlow {
+    actual val observeIsAuthenticated: Flow<Boolean> = callbackFlow {
         val listener: (FirebaseAuth) -> Unit = {
             trySend(firebaseAuth.currentUser != null)
         }
@@ -30,20 +30,16 @@ class AuthService @Inject constructor() {
     }
 
 
-    suspend fun signInWithEmailAndPassword(email: String, password: String) {
+    actual suspend fun signInWithEmailAndPassword(email: String, password: String) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .await()
     }
 
-    fun createNewUser(email: String, password: String) {
-        firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
-            if (it.exception != null) {
-                it.exception!!.printStackTrace()
-            }
-        }
+    actual suspend fun createNewUser(email: String, password: String) {
+        firebaseAuth.createUserWithEmailAndPassword(email, password).await()
     }
 
-    suspend fun resetPassword(email: String) {
+    actual suspend fun resetPassword(email: String) {
         firebaseAuth.sendPasswordResetEmail(email).await()
     }
 }

@@ -2,8 +2,9 @@ package com.denchic45.kts.data.service
 
 import android.content.Context
 import android.net.ConnectivityManager
+import javax.inject.Inject
 
-class AndroidNetworkService(private val context: Context) : NetworkService {
+class AndroidNetworkService @Inject constructor(private val context: Context) : NetworkService {
     override val isNetworkAvailable: Boolean
         get() {
             val connectivityManager =

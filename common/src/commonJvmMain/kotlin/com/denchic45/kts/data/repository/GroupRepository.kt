@@ -6,21 +6,14 @@ import com.denchic45.kts.data.db.remote.source.CourseRemoteDataSource
 import com.denchic45.kts.data.db.remote.source.GroupRemoteDataSource
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.mapper.*
-import com.denchic45.kts.data.model.domain.GroupCourses
 import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.TimestampPreferences
 import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
-import com.denchic45.kts.di.modules.IoDispatcher
-import com.denchic45.kts.domain.model.Group
-import com.denchic45.kts.domain.model.GroupHeader
-import com.denchic45.kts.domain.model.GroupMembers
-import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.domain.model.*
 import com.denchic45.kts.domain.model.User.Companion.isStudent
 import com.denchic45.kts.util.timestampNotNull
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -28,8 +21,6 @@ import javax.inject.Inject
 
 class GroupRepository @Inject constructor(
     override val appVersionService: AppVersionService,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher,
-    private val coroutineScope: CoroutineScope,
     override val groupLocalDataSource: GroupLocalDataSource,
     override val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val timestampPreferences: TimestampPreferences,
@@ -214,7 +205,7 @@ class GroupRepository @Inject constructor(
 
     fun getNameByGroupId(groupId: String): Flow<String> = flow {
         coroutineScope {
-            launch(dispatcher) {
+            launch() {
                 if (!groupLocalDataSource.isExist(groupId)) {
                     observeAndSaveGroupFlow(groupId).collect()
                 }
@@ -253,7 +244,7 @@ class GroupRepository @Inject constructor(
 
     fun findGroupByStudent(user: User): Flow<Group> = flow {
         if (!userLocalDataSource.isExistByIdAndGroupId(user.id, user.groupId!!))
-            find(user.groupId!!)
+            find(user.groupId)
 
         emitAll(
             groupLocalDataSource.getByStudentId(user.id)

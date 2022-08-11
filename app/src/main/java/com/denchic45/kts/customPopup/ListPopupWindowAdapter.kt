@@ -16,8 +16,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.kts.R
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.data.model.ui.onId
-import com.denchic45.kts.data.model.ui.onUrl
+import com.denchic45.kts.ui.model.onId
+import com.denchic45.kts.ui.model.onUrl
 import com.denchic45.kts.databinding.ItemPopupContentBinding
 import com.denchic45.kts.util.viewBinding
 

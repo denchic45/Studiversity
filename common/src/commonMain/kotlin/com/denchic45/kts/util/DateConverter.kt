@@ -13,7 +13,7 @@ fun Date.toString(format: String): String =
     SimpleDateFormat(format, Locale.getDefault()).format(this)
 
 fun LocalDateTime.toString(pattern: String): String =
-    DateTimeFormatter.ofPattern(pattern).format(this)
+    DateTimeFormatter.ofPattern(pattern, Locale.getDefault()).format(this)
 
 fun LocalDate.toString(pattern: String): String =
     DateTimeFormatter.ofPattern(pattern).format(this)

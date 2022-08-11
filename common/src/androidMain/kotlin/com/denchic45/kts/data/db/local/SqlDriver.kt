@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local
 
 import android.content.Context
 import com.denchic45.kts.AppDatabase
@@ -9,6 +9,6 @@ actual class DriverFactory(context: Context) {
     actual val driver: SqlDriver = AndroidSqliteDriver(
         AppDatabase.Schema,
         context,
-        "database2.db"
+        "database.db"
     )
 }

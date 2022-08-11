@@ -1,13 +1,13 @@
 package com.denchic45.kts.ui.settings
 
-import com.denchic45.kts.data.repository.AuthRepository
+import com.denchic45.kts.data.service.AuthService
 import com.denchic45.kts.ui.base.BaseViewModel
 import javax.inject.Inject
 
 class SettingsViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authService: AuthService,
 ) : BaseViewModel() {
     fun onSignOutCLick() {
-        authRepository.signOut()
+        authService.signOut()
     }
 }

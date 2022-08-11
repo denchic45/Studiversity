@@ -1,5 +1,5 @@
-package com.denchic45.kts.domain
+package com.denchic45.kts.data.domain.model
 
-import com.denchic45.kts.domain.Model
+import com.denchic45.kts.data.domain.model.Model
 
 interface EntityModel : Model

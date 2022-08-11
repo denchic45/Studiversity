@@ -2,11 +2,12 @@ package com.denchic45.kts.data.mapper
 
 import com.denchic45.kts.GetStudentsWithCuratorByGroupId
 import com.denchic45.kts.GroupEntity
-import com.denchic45.kts.data.local.model.GroupWithCuratorAndSpecialtyEntities
+import com.denchic45.kts.data.db.local.model.GroupWithCuratorAndSpecialtyEntities
+import com.denchic45.kts.data.db.remote.model.GroupMap
+import com.denchic45.kts.data.db.remote.model.UserMap
 import com.denchic45.kts.data.remote.model.GroupDoc
-import com.denchic45.kts.data.remote.model.GroupMap
-import com.denchic45.kts.data.remote.model.UserMap
 import com.denchic45.kts.domain.model.*
+import com.denchic45.kts.util.MutableFireMap
 import com.denchic45.kts.util.SearchKeysGenerator
 
 fun List<GetStudentsWithCuratorByGroupId>.toGroupMembers(): GroupMembers {
@@ -37,7 +38,7 @@ fun List<GetStudentsWithCuratorByGroupId>.toGroupMembers(): GroupMembers {
     )
 }
 
-fun GroupWithCuratorAndSpecialtyEntities.entityToUserDomain() = Group(
+fun GroupWithCuratorAndSpecialtyEntities.toGroup() = Group(
     id = groupEntity.group_id,
     name = groupEntity.group_name,
     course = groupEntity.course,
@@ -81,15 +82,14 @@ fun GroupMap.toGroupHeader() = GroupHeader(
 
 fun List<GroupMap>.mapsToGroupHeaders() = map { it.toGroupHeader() }
 
-fun Group.domainToMap(): Map<String, Any> {
-    val map: MutableMap<String, Any> = HashMap()
-    map["id"] = id
-    map["name"] = name
-    map["course"] = course
-    map["specialtyId"] = specialty.id
-//    map["timestamp"] = FieldValue.serverTimestamp()
-    map["specialty"] = specialty
-    map["curator"] = curator
-    map["searchKeys"] = SearchKeysGenerator().generateKeys(name)
-    return map
+fun Group.toMap(): MutableFireMap {
+    return mutableMapOf(
+        "id" to id,
+        "name" to name,
+        "course" to course,
+        "specialtyId" to specialty.id,
+        "specialty" to specialty,
+        "curator" to curator,
+        "searchKeys" to SearchKeysGenerator().generateKeys(name)
+    )
 }

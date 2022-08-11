@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.repository
+package com.denchic45.kts.util
 
 import java.lang.Exception
 

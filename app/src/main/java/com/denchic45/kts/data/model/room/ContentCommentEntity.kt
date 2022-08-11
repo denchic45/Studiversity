@@ -1,8 +1,8 @@
 package com.denchic45.kts.data.model.room
 
 import androidx.room.*
-import com.denchic45.kts.domain.DocModel
-import com.denchic45.kts.domain.EntityModel
+import com.denchic45.kts.data.domain.model.DocModel
+import com.denchic45.kts.data.domain.model.EntityModel
 import com.google.firebase.firestore.Exclude
 import java.util.*
 
@@ -27,5 +27,5 @@ data class ContentCommentEntity(
     val content: String,
     val authorId: String,
     @field:TypeConverters(DateConverter::class)
-    val createdDate: Date
+    val createdDate: Date,
 ) : EntityModel, DocModel

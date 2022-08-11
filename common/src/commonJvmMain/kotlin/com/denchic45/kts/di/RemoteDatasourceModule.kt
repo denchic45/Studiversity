@@ -1,4 +1,7 @@
-package com.denchic45.kts.di
-
-interface IRemoteDatasourceModule {
-}
+//package com.denchic45.kts.di
+//
+//import dagger.Module
+//
+//@Module
+//expect object RemoteDatasourceModule {
+//}

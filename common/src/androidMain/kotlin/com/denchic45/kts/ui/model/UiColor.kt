@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.model.ui
+package com.denchic45.kts.ui.model
 
 sealed class UiColor {
 

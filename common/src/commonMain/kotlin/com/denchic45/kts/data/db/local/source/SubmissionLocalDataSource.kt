@@ -1,18 +1,19 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.SubmissionEntity
 import com.denchic45.kts.SubmissionEntityQueries
 import com.denchic45.kts.UserEntity
-import com.denchic45.kts.data.local.model.SubmissionWithStudentEntities
+import com.denchic45.kts.data.db.local.model.SubmissionWithStudentEntities
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class SubmissionLocalDataSource(db: AppDatabase) {
+class SubmissionLocalDataSource @Inject constructor(db: AppDatabase) {
 
     private val queries: SubmissionEntityQueries = db.submissionEntityQueries
 

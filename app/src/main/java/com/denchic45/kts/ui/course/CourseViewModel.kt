@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.domain.DomainModel
+import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.domain.model.CourseContent
 import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.domain.usecase.*
@@ -24,7 +24,7 @@ class CourseViewModel @Inject constructor(
     private val removeCourseContentUseCase: RemoveCourseContentUseCase,
     private val updateCourseContentOrderUseCase: UpdateCourseContentOrderUseCase,
     private val findCourseContentUseCase: FindCourseContentUseCase,
-    findSelfUserUseCase: FindSelfUserUseCase
+    findSelfUserUseCase: FindSelfUserUseCase,
 ) : BaseViewModel() {
     val openTaskEditor = SingleLiveData<Triple<String?, String, String>>()
     val openTask = SingleLiveData<Pair<String, String>>()
@@ -95,12 +95,6 @@ class CourseViewModel @Inject constructor(
 //        }
     }
 
-
-    override fun onCleared() {
-        super.onCleared()
-        findCourseContentUseCase.removeListeners()
-    }
-
     override fun onOptionClick(itemId: Int) {
         when (itemId) {
             R.id.option_edit_course -> openCourseEditor.value = courseId
@@ -123,7 +117,7 @@ class CourseViewModel @Inject constructor(
         viewModelScope.launch {
             val contents = showContents.value!!
 
-            val prevOrder:Int = if (position == 0 || contents[position - 1] !is CourseContent) 0
+            val prevOrder: Int = if (position == 0 || contents[position - 1] !is CourseContent) 0
             else (contents[position - 1] as CourseContent).order.toInt()
 
             val nextOrder: Int =

@@ -5,10 +5,7 @@ import com.google.firebase.firestore.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlin.reflect.full.memberProperties
 
@@ -36,7 +33,7 @@ fun Query.getLocalDataAndObserveRemote(): Flow<QuerySnapshot?> {
 }
 
 @ExperimentalCoroutinesApi
-fun <T> Flow<T>.withSnapshotListener(
+fun <T> Flow<T>.withQuerySnapshot(
     query: Query,
     onQuerySnapshot: (QuerySnapshot) -> Unit,
     onErrorSnapshot: (Throwable) -> Unit = {}
@@ -55,7 +52,7 @@ fun <T> Flow<T>.withSnapshotListener(
 }
 
 @ExperimentalCoroutinesApi
-fun <T> Flow<T>.withSnapshotListener(
+fun <T> Flow<T>.withDocumentSnapshot(
     documentReference: DocumentReference,
     onDocumentSnapshot: (DocumentSnapshot) -> Unit,
     onErrorSnapshot: (Throwable) -> Unit = {}
@@ -75,8 +72,7 @@ fun <T> Flow<T>.withSnapshotListener(
 @ExperimentalCoroutinesApi
 fun Query.getQuerySnapshotFlow(): Flow<QuerySnapshot> {
     return callbackFlow {
-        val listenerRegistration =
-            addSnapshotListener { querySnapshot, firestoreException ->
+        val listenerRegistration = addSnapshotListener { querySnapshot, firestoreException ->
                 if (firestoreException != null) {
                     cancel(
                         message = "Error on fetching query",
@@ -91,7 +87,29 @@ fun Query.getQuerySnapshotFlow(): Flow<QuerySnapshot> {
                 }
             }
         awaitClose {
-            Log.d("lol", "getQuerySnapshotFlow awaitClose: ")
+            listenerRegistration.remove()
+        }
+    }
+}
+
+@ExperimentalCoroutinesApi
+fun DocumentReference.getDocumentSnapshotFlow(): Flow<DocumentSnapshot> {
+    return callbackFlow {
+        val listenerRegistration = addSnapshotListener { querySnapshot, firestoreException ->
+                if (firestoreException != null) {
+                    cancel(
+                        message = "Error on fetching document reference",
+                        cause = firestoreException
+                    )
+                    return@addSnapshotListener
+                }
+                if (querySnapshot != null) {
+                    launch {
+                        send(querySnapshot)
+                    }
+                }
+            }
+        awaitClose {
             listenerRegistration.remove()
         }
     }
@@ -100,9 +118,7 @@ fun Query.getQuerySnapshotFlow(): Flow<QuerySnapshot> {
 @ExperimentalCoroutinesApi
 fun <T> Query.getDataFlow(mapper: (QuerySnapshot) -> T): Flow<T> {
     return getQuerySnapshotFlow()
-        .map {
-            return@map mapper(it)
-        }
+        .map { mapper(it) }
 }
 
 fun CollectionReference.deleteCollection(batchSize: Int) {

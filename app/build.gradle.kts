@@ -91,7 +91,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime:$composeVersion")
     implementation("androidx.compose.compiler:compiler:$composeVersion")
     implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.activity:activity-compose:1.5.0")
+    implementation("androidx.activity:activity-compose:1.5.1")
     // Tooling support (Previews, etc.)
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
@@ -102,10 +102,9 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
 
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("androidx.appcompat:appcompat:1.4.2")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
-    implementation("com.google.android.material:material:1.7.0-alpha02")
+    implementation("com.google.android.material:material:1.7.0-alpha03")
     implementation("androidx.preference:preference-ktx:1.2.0")
 
     implementation(project(":appbarcontroller"))
@@ -120,8 +119,8 @@ dependencies {
     implementation("com.github.alexmamo:FirestoreDocument-Android:0.1.5")
 
     implementation("androidx.recyclerview:recyclerview:1.2.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
 
     implementation("com.github.CanHub:Android-Image-Cropper:3.3.5")
 
@@ -137,8 +136,6 @@ dependencies {
 //    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.8.1"
 
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.5.0")
-    implementation("androidx.navigation:navigation-ui-ktx:2.5.0")
     implementation("com.github.tarek360.RichPath:animator:0.1.1")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation("com.airbnb.android:lottie:4.0.0")
@@ -152,7 +149,6 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
     // dagger
-    implementation("com.google.dagger:dagger:2.38.1")
     kapt("com.google.dagger:dagger-compiler:2.38.1")
     implementation("com.google.dagger:dagger-android:2.38.1")
     implementation("com.google.dagger:dagger-android-support:2.38.1")
@@ -181,8 +177,6 @@ dependencies {
     implementation("com.github.chrisbanes:PhotoView:2.3.0")
 
     implementation("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.3")
-
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
 
     // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
     implementation("com.sun.mail:javax.mail:1.6.2")

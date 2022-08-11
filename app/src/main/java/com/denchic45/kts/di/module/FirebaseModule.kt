@@ -1,6 +1,7 @@
 package com.denchic45.kts.di.module
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 
@@ -9,4 +10,7 @@ object FirebaseModule {
 
     @Provides
     fun provideFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    @Provides
+    fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
 }

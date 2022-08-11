@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.mapper
 
 import com.denchic45.kts.SubjectEntity
-import com.denchic45.kts.data.remote.model.SubjectMap
+import com.denchic45.kts.data.db.remote.model.SubjectMap
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.util.SearchKeysGenerator
 
@@ -32,7 +32,7 @@ fun SubjectMap.mapToSubjectEntity() = SubjectEntity(
 
 fun List<SubjectMap>.mapsToSubjectEntities() = map { it.mapToSubjectEntity() }
 
-fun Subject.domainToMap() = mapOf<String,Any>(
+fun Subject.domainToMap() = mapOf(
     "id" to id,
     "name" to name,
     "iconUrl" to iconUrl,

@@ -62,14 +62,3 @@ class SnackbarUpdateView @JvmOverloads constructor(
        binding.progressDownload.isIndeterminate = value
     }
 }
-
-fun View.getActivity(): Activity? {
-    var context = context
-    while (context is ContextWrapper) {
-        if (context is Activity) {
-            return context
-        }
-        context = context.baseContext
-    }
-    return null
-}

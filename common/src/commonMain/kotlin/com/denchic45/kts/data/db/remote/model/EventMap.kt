@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.remote.model
+package com.denchic45.kts.data.db.remote.model
 
 import com.denchic45.kts.util.MutableFireMap
 import java.util.*

@@ -5,7 +5,8 @@ plugins {
     id("org.jetbrains.compose") version "1.1.1"
     id("com.android.library")
     id("com.squareup.sqldelight")
-//    kotlin("plugin.serialization") version "1.6.10"
+    id("kotlin-kapt")
+    kotlin("plugin.serialization") version "1.6.10"
 }
 
 kotlin {
@@ -36,6 +37,12 @@ kotlin {
                 implementation("net.harawata:appdirs:1.2.1")
 
                 api("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
+
+                //Dagger
+                api("com.google.dagger:dagger:2.38.1")
+                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.38.1"))
+
+                implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
             }
         }
 
@@ -50,7 +57,8 @@ kotlin {
 
                 api("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                api("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                api("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 api("io.ktor:ktor-client-logging:$ktorVersion")
 
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
@@ -84,13 +92,22 @@ kotlin {
                 api("androidx.appcompat:appcompat:1.4.2")
                 api("androidx.core:core-ktx:1.8.0")
 
-                implementation("io.ktor:ktor-client-android:$ktorVersion")
+                api("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("com.squareup.sqldelight:android-driver:$sqlDelightVersion")
 //                implementation("app.cash.sqldelight:android-driver:2.0.0-alpha03")
 
+                api("com.squareup.retrofit2:retrofit:2.9.0")
 
-                // Firebase
+//                implementation("com.android.tools:desugar_jdk_libs:1.1.5")
+//                configurations["coreLibraryDesugaring"].dependencies.add(project.dependencies
+//                    .create("com.android.tools:desugar_jdk_libs:1.1.5"))
+
+                //Navigation
+                api("androidx.navigation:navigation-fragment-ktx:2.5.1")
+                api("androidx.navigation:navigation-ui-ktx:2.5.1")
+
+                //Firebase SDK
                 api(project.dependencies.platform("com.google.firebase:firebase-bom:30.2.0"))
                 api("com.google.firebase:firebase-firestore") {
                     exclude("com.squareup.okhttp")
@@ -144,6 +161,10 @@ android {
     defaultConfig {
         minSdk = 24
         targetSdk = 31
+        buildFeatures {
+            viewBinding = true
+            compose = true
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

@@ -1,6 +1,6 @@
 package com.denchic45.kts.domain.model
 
-import com.denchic45.kts.domain.DomainModel
+import com.denchic45.kts.data.domain.model.DomainModel
 
 data class GroupMembers(
     val groupId: String?,

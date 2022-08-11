@@ -10,5 +10,4 @@ class UpdateTaskUseCase @Inject constructor(
     suspend operator fun invoke(task: Task){
         courseRepository.updateTask(task)
     }
-
 }

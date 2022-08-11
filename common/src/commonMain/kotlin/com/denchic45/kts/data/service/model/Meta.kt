@@ -1,4 +1,6 @@
 package com.denchic45.kts.data.service.model
 
-class Meta {
-}
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Meta(val lesson_time: Int)

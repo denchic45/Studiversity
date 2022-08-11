@@ -1,8 +1,12 @@
 package com.denchic45.kts.data.model.mapper
 
+import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.model.room.CourseContentEntity
 import com.denchic45.kts.data.remote.model.CourseContentDoc
-import com.denchic45.kts.domain.model.*
+import com.denchic45.kts.domain.model.ContentDetails
+import com.denchic45.kts.domain.model.ContentType
+import com.denchic45.kts.domain.model.CourseContent
+import com.denchic45.kts.domain.model.Task
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -16,14 +20,14 @@ abstract class CourseContentMapper {
     @Mapping(source = "courseEntity.id", target = "id")
     abstract fun courseContentEntityWithDetailsToTask(
         courseEntity: CourseContentEntity,
-        taskDetails: ContentDetails.Task
+        taskDetails: ContentDetails.Task,
     ): Task
 
     @Mapping(source = "courseEntity.id", target = "id")
     @Mapping(source = "contentDetails", target = "contentDetails")
     abstract fun courseContentEntityWithDetailsToTaskDoc(
         courseEntity: CourseContentEntity,
-        contentDetails: ContentDetails.Task
+        contentDetails: ContentDetails.Task,
     ): CourseContentDoc
 
     abstract fun taskToTaskDetails(task: Task): ContentDetails.Task
@@ -33,7 +37,7 @@ abstract class CourseContentMapper {
     abstract fun taskWithDetailsToTaskDoc(
         task: Task,
         contentDetails: ContentDetails.Task,
-        contentType: ContentType
+        contentType: ContentType,
     ): CourseContentDoc
 
     fun docToEntity(snapshots: QuerySnapshot): Pair<List<CourseContentEntity>, List<CourseContentDoc>> {
@@ -58,7 +62,7 @@ abstract class CourseContentMapper {
     @Mapping(source = "contentDetails", target = "contentDetails")
     abstract fun courseContentDocToEntity(
         courseContentDoc: CourseContentDoc,
-        contentDetails: String
+        contentDetails: String,
     ): CourseContentEntity
 
     fun domainToDoc(courseContent: CourseContent): CourseContentDoc {

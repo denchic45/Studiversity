@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.remote.model
 
+import com.denchic45.kts.data.domain.model.DocModel
 import com.denchic45.kts.data.domain.model.EventType
-import com.denchic45.kts.domain.DocModel
 
 data class EventDetailsDoc(
     var subjectId: String?,
@@ -9,7 +9,7 @@ data class EventDetailsDoc(
     var name: String?,
     var iconUrl: String?,
     var color: String?,
-    var eventType: EventType
+    var eventType: EventType,
 ) : DocModel {
 
     private constructor() : this("", emptyList(), "", "", "", EventType.EMPTY)

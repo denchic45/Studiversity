@@ -3,16 +3,16 @@ package com.denchic45.kts.data.mapper
 import com.denchic45.kts.EventEntity
 import com.denchic45.kts.EventWithSubjectAndGroupAndTeachers
 import com.denchic45.kts.TeacherEventEntity
+import com.denchic45.kts.data.db.remote.model.EventMap
 import com.denchic45.kts.data.domain.model.EventType
 import com.denchic45.kts.data.domain.model.UserRole
-import com.denchic45.kts.data.remote.model.EventMap
 import com.denchic45.kts.domain.model.*
 import com.denchic45.kts.util.FireMap
 import com.denchic45.kts.util.toDate
 import java.time.LocalDate
 import java.util.*
 
-fun EventMap.docToEntity(dayId: String) = EventEntity(
+fun EventMap.mapToEntity(dayId: String) = EventEntity(
     event_id = id,
     day_id = dayId,
     position = position,
@@ -27,7 +27,7 @@ fun EventMap.docToEntity(dayId: String) = EventEntity(
 )
 
 fun List<EventMap>.docsToEntities(dayId: String): List<EventEntity> {
-    return map { eventDoc -> eventDoc.docToEntity(dayId) }
+    return map { eventDoc -> eventDoc.mapToEntity(dayId) }
 }
 
 fun List<EventEntity>.toTeacherEventEntities(): List<TeacherEventEntity> {
@@ -119,5 +119,5 @@ fun EventDetails.detailsToDetailsMap(): FireMap {
 }
 
 fun List<EventWithSubjectAndGroupAndTeachers>.entitiesToEventsOfDay(date: LocalDate): EventsOfDay {
-    return EventsOfDay(date, entitiesToDomains())
+    return EventsOfDay(date, entitiesToDomains(), id = first().day_id)
 }

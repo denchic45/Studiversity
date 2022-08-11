@@ -5,9 +5,7 @@ import com.denchic45.kts.data.db.remote.source.SpecialtyRemoteDataSource
 import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
-import com.denchic45.kts.di.modules.IoDispatcher
 import com.denchic45.kts.domain.model.Specialty
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,7 +15,6 @@ import javax.inject.Inject
 class SpecialtyRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     private val coroutineScope: CoroutineScope,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher,
     private val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val specialtyRemoteDataSource: SpecialtyRemoteDataSource,
     override val networkService: NetworkService,
@@ -32,7 +29,7 @@ class SpecialtyRepository @Inject constructor(
     }
 
     fun observe(id: String): Flow<Specialty?> {
-        coroutineScope.launch(dispatcher) {
+        coroutineScope.launch {
             specialtyLocalDataSource.upsert(
                 specialtyRemoteDataSource.findById(id).mapToSpecialtyEntity()
             )

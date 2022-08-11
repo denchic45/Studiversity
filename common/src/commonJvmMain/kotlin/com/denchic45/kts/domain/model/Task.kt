@@ -1,10 +1,9 @@
 package com.denchic45.kts.domain.model
 
-import com.denchic45.kts.domain.DomainModel
-import com.denchic45.kts.util.Files
-import com.denchic45.kts.util.getExtension
+import com.denchic45.kts.data.domain.model.Attachment
+import com.denchic45.kts.data.domain.model.DomainModel
+import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.toString
-import java.io.File
 import java.time.LocalDateTime
 import java.util.*
 
@@ -60,29 +59,29 @@ data class Task(
         val student: User,
         val content: Content,
         val status: SubmissionStatus,
-        val contentUpdateDate: LocalDateTime
+        val contentUpdateDate: LocalDateTime,
+        override var id: String
     ) : DomainModel {
-
-        override var id: String = ""
 
         val submitted: Boolean
             get() = status !is SubmissionStatus.NotSubmitted
 
         companion object {
-            fun createEmpty(contentId: String, student: User): Submission {
+            fun createEmptyNotSubmitted(contentId: String, student: User): Submission {
                 return Submission(
                     contentId,
                     student,
                     Content.createEmpty(),
                     SubmissionStatus.NotSubmitted,
-                    LocalDateTime.now()
+                    LocalDateTime.now(),
+                    UUIDS.createShort()
                 )
             }
         }
 
         data class Content(
             val text: String,
-            val attachments: List<Attachment>
+            val attachments: List<Attachment>,
         ) {
             companion object {
                 fun createEmpty(): Content = Content("", emptyList())
@@ -99,7 +98,6 @@ data class Task(
             fun hasAll(): Boolean = text.isNotEmpty() && attachments.isNotEmpty()
         }
 
-        enum class Status { NOT_SUBMITTED, SUBMITTED, GRADED, REJECTED }
     }
 
     sealed class SubmissionStatus {
@@ -107,19 +105,19 @@ data class Task(
         object NotSubmitted : SubmissionStatus()
 
         data class Submitted(
-            val submittedDate: LocalDateTime = LocalDateTime.now()
+            val submittedDate: LocalDateTime = LocalDateTime.now(),
         ) : SubmissionStatus()
 
         data class Graded(
             val teacher: User,
             val grade: Int,
-            val gradedDate: LocalDateTime
+            val gradedDate: LocalDateTime,
         ) : SubmissionStatus()
 
         data class Rejected(
             val teacher: User,
             val cause: String,
-            val rejectedDate: LocalDateTime
+            val rejectedDate: LocalDateTime,
         ) : SubmissionStatus()
     }
 
@@ -127,19 +125,9 @@ data class Task(
         override val id: String,
         val content: String,
         val author: User,
-        val createdDate: LocalDateTime
+        val createdDate: LocalDateTime,
     ) : DomainModel
-}
 
-data class Attachment(
-    val file: File
-) : DomainModel {
-
-    val name: String = Files.nameWithoutTimestamp(file.name)
-
-    override var id: String = name
-
-    val extension: String = file.getExtension()
 }
 
 data class SubmissionSettings(
@@ -147,7 +135,7 @@ data class SubmissionSettings(
     val charsLimit: Int,
     val attachmentsAvailable: Boolean,
     val attachmentsLimit: Int,
-    val attachmentsSizeLimit: Int
+    val attachmentsSizeLimit: Int,
 ) {
 
     private constructor() : this(false, 100, true, 16, 200)

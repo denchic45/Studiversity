@@ -1,10 +1,11 @@
 package com.denchic45.kts.data.mapper
 
 import com.denchic45.kts.SubmissionEntity
+import com.denchic45.kts.data.db.local.model.SubmissionWithStudentEntities
+import com.denchic45.kts.data.db.remote.model.SubmissionMap
+import com.denchic45.kts.data.domain.model.Attachment
+import com.denchic45.kts.data.domain.model.TaskStatus
 import com.denchic45.kts.data.domain.model.UserRole
-import com.denchic45.kts.data.local.model.SubmissionWithStudentEntities
-import com.denchic45.kts.data.remote.model.SubmissionMap
-import com.denchic45.kts.domain.model.Attachment
 import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.util.toToLocalDateTime
@@ -20,14 +21,42 @@ fun SubmissionMap.mapToEntity() = SubmissionEntity(
     attachments = attachments,
     teacher_id = teacherId,
     cause = cause,
-    grade = grade.toLong(),
-    graded_date = gradedDate.time,
-    rejectd_date = rejectedDate.time,
+    grade = grade,
+    graded_date = gradedDate?.time,
+    rejectd_date = rejectedDate?.time,
     submitted_date = submittedDate?.time,
     timestamp = timestamp.time
 )
 
-fun SubmissionWithStudentEntities.entityToUserDomain(attachments: List<Attachment>) =
+fun Task.Submission.toMap(courseId: String, attachmentUrls: List<String>) = mapOf(
+    "id" to id,
+    "studentId" to student.id,
+    "contentId" to contentId,
+    "courseId" to courseId,
+    "status" to domainToStatus().name,
+    "text" to content.text,
+    "attachments" to attachmentUrls,
+//    "submittedDate" to (status as Task.SubmissionStatus.Submitted)
+//        .submittedDate.toDate(),
+)
+
+//val id: String by map
+//val studentId: String by map
+//val contentId: String by map
+//val courseId: String by map
+//val status: String by map
+//val text: String by map
+//val attachments: List<String> by map
+//val teacherId: String by map
+//val grade: Int by map
+//val gradedDate: Date by map
+//val timestamp: Date by map
+//val rejectedDate: Date by map
+//val cause: String by map
+//val comments: List<FireMap> by mapListOrEmpty()
+//val submittedDate: Date? by mapOrNull()
+
+fun SubmissionWithStudentEntities.toDomain(attachments: List<Attachment>) =
     Task.Submission(
         contentId = submissionEntity.content_id,
         student = studentEntity.run {
@@ -47,19 +76,19 @@ fun SubmissionWithStudentEntities.entityToUserDomain(attachments: List<Attachmen
             )
         },
         content = Task.Submission.Content(
-            text = submissionEntity.text,
+            text = submissionEntity.text!!,
             attachments = attachments
         ),
-        status = when (Task.Submission.Status.valueOf(submissionEntity.status)) {
-            Task.Submission.Status.NOT_SUBMITTED -> {
+        status = when (TaskStatus.valueOf(submissionEntity.status)) {
+            TaskStatus.NOT_SUBMITTED -> {
                 Task.SubmissionStatus.NotSubmitted
             }
-            Task.Submission.Status.SUBMITTED -> {
+            TaskStatus.SUBMITTED -> {
                 Task.SubmissionStatus.Submitted(
                     submittedDate = submissionEntity.submitted_date!!.toToLocalDateTime()
                 )
             }
-            Task.Submission.Status.GRADED -> {
+            TaskStatus.GRADED -> {
                 Task.SubmissionStatus.Graded(
                     teacher = studentEntity.run {
                         User(
@@ -81,7 +110,7 @@ fun SubmissionWithStudentEntities.entityToUserDomain(attachments: List<Attachmen
                     gradedDate = submissionEntity.graded_date!!.toToLocalDateTime()
                 )
             }
-            Task.Submission.Status.REJECTED -> {
+            TaskStatus.REJECTED -> {
                 Task.SubmissionStatus.Rejected(
                     teacher = studentEntity.run {
                         User(
@@ -104,12 +133,13 @@ fun SubmissionWithStudentEntities.entityToUserDomain(attachments: List<Attachmen
                 )
             }
         },
-        contentUpdateDate = submissionEntity.timestamp.toToLocalDateTime()
+        contentUpdateDate = submissionEntity.timestamp.toToLocalDateTime(),
+        id = submissionEntity.submission_id
     )
 
-fun Task.Submission.domainToStatus(): Task.Submission.Status = when (status) {
-    is Task.SubmissionStatus.NotSubmitted -> Task.Submission.Status.NOT_SUBMITTED
-    is Task.SubmissionStatus.Submitted -> Task.Submission.Status.SUBMITTED
-    is Task.SubmissionStatus.Graded -> Task.Submission.Status.GRADED
-    is Task.SubmissionStatus.Rejected -> Task.Submission.Status.REJECTED
+fun Task.Submission.domainToStatus(): TaskStatus = when (status) {
+    is Task.SubmissionStatus.NotSubmitted -> TaskStatus.NOT_SUBMITTED
+    is Task.SubmissionStatus.Submitted -> TaskStatus.SUBMITTED
+    is Task.SubmissionStatus.Graded -> TaskStatus.GRADED
+    is Task.SubmissionStatus.Rejected -> TaskStatus.REJECTED
 }

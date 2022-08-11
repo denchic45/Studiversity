@@ -1,8 +1,8 @@
 package com.denchic45.kts.data.model.mapper
 
-import com.denchic45.kts.domain.model.Section
-import com.denchic45.kts.data.remote.model.SectionMap
+import com.denchic45.kts.data.db.remote.model.SectionMap
 import com.denchic45.kts.data.model.room.SectionEntity
+import com.denchic45.kts.domain.model.Section
 import org.mapstruct.Mapper
 import org.mapstruct.Named
 

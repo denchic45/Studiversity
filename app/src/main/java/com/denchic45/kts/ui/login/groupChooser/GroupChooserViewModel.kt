@@ -1,7 +1,7 @@
 package com.denchic45.kts.ui.login.groupChooser
 
 import androidx.lifecycle.viewModelScope
-import com.denchic45.kts.domain.DomainModel
+import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.model.Specialty
 import com.denchic45.kts.ui.base.BaseViewModel
@@ -76,9 +76,9 @@ class GroupChooserViewModel @Inject constructor(
     }
 
     fun onGroupItemClick(position: Int) {
-        val groupId = _groupAndSpecialtyList.value[position].id
-        groupChooserInteractor.findGroupInfoById(groupId)
         viewModelScope.launch {
+            val groupId = _groupAndSpecialtyList.value[position].id
+            groupChooserInteractor.findGroupInfoById(groupId)
             finish()
             groupChooserInteractor.postSelectGroup((_groupAndSpecialtyList.value[position] as GroupHeader))
         }

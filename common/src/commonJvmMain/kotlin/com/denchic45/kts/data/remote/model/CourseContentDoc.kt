@@ -1,9 +1,9 @@
 package com.denchic45.kts.data.remote.model
 
-import com.denchic45.kts.domain.DocModel
+import com.denchic45.kts.data.db.remote.model.ContentCommentMap
+import com.denchic45.kts.data.domain.model.TaskStatus
 import com.denchic45.kts.domain.model.ContentDetails
 import com.denchic45.kts.domain.model.ContentType
-import com.denchic45.kts.domain.model.Task
 import java.util.*
 
 data class CourseContentDoc constructor(
@@ -52,7 +52,7 @@ data class SubmissionDoc(
     val studentId: String,
     val contentId: String,
     val courseId: String,
-    val status: Task.Submission.Status,
+    val status: TaskStatus,
     val text: String,
     val attachments: List<String>,
     val teacherId: String,
@@ -67,7 +67,7 @@ data class SubmissionDoc(
     private constructor(
     ) : this(
         "", "", "", "",
-        Task.Submission.Status.NOT_SUBMITTED,
+        TaskStatus.NOT_SUBMITTED,
         "",
         emptyList(),
         "",
@@ -94,7 +94,7 @@ data class SubmissionDoc(
         studentId,
         contentId,
         courseId,
-        Task.Submission.Status.NOT_SUBMITTED,
+        TaskStatus.NOT_SUBMITTED,
         "",
         emptyList(),
         "",

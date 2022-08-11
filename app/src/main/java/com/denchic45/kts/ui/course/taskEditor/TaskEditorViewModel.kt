@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.domain.model.Attachment
+import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.domain.model.Section
 import com.denchic45.kts.domain.model.SubmissionSettings
 import com.denchic45.kts.domain.model.Task
@@ -38,7 +38,7 @@ class TaskEditorViewModel @Inject constructor(
     private val findAttachmentsUseCase: FindAttachmentsUseCase,
     private val findSectionUseCase: FindSectionUseCase,
     private val addTaskUseCase: AddTaskUseCase,
-    private val updateTaskUseCase: UpdateTaskUseCase
+    private val updateTaskUseCase: UpdateTaskUseCase,
 ) : BaseViewModel() {
 
     val nameField = MutableLiveData<String>()
@@ -167,7 +167,7 @@ class TaskEditorViewModel @Inject constructor(
     private fun setupForExist() {
         viewModelScope.launch {
             findTaskUseCase(taskId)
-                .onEach { if (it == null)  finish() }
+                .onEach { if (it == null) finish() }
                 .filterNotNull()
                 .collect {
                     uiEditor.oldItem = it
@@ -188,7 +188,7 @@ class TaskEditorViewModel @Inject constructor(
                         )
                     }
                     commentsEnabled.value = it.commentsEnabled
-                    section = findSectionUseCase(it.sectionId)!! //TODO найти другое решение!
+                    section = findSectionUseCase(it.sectionId) //TODO найти другое решение!
                     postSelection()
                     observeAttachments()
                 }
@@ -208,7 +208,7 @@ class TaskEditorViewModel @Inject constructor(
     }
 
     fun onAvailabilityDateClick() {
-        completionDate?.let {
+        completionDate?.also {
             openDatePicker.postValue(it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
         } ?: run {
             openDatePicker.postValue(System.currentTimeMillis())
@@ -228,11 +228,11 @@ class TaskEditorViewModel @Inject constructor(
     }
 
     private fun postCompletionDate() {
-        completionDate?.let {
+        completionDate?.also {
             showCompletionDate.postValue(
                 completionDate!!.format(DateTimeFormatter.ofPattern("EE, dd LLLL yyyy, HH:mm"))
             )
-        } ?: kotlin.run {
+        } ?: run {
             showCompletionDate.postValue(null)
         }
     }
@@ -339,7 +339,7 @@ class TaskEditorViewModel @Inject constructor(
                 } else {
                     updateTaskUseCase(uiEditor.item)
                 }
-                 finish()
+                finish()
             }
         }
     }
@@ -362,6 +362,6 @@ class TaskEditorViewModel @Inject constructor(
         val charsLimit: String,
         val attachmentsAvailable: Boolean,
         val attachmentsLimit: String,
-        val attachmentsSizeLimit: String
+        val attachmentsSizeLimit: String,
     )
 }

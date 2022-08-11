@@ -30,7 +30,7 @@ class ProfileInteractor @Inject constructor(
     }
 
     fun findGroupByCurator(user: User): Flow<Group> {
-        return groupRepository.findGroupByCurator(user)
+        return groupRepository.findGroupByCuratorId(user.id)
     }
 
     override fun removeListeners() {

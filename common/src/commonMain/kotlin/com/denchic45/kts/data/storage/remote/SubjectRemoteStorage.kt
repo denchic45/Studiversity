@@ -1,4 +1,6 @@
 package com.denchic45.kts.data.storage.remote
 
-class SubjectRemoteStorage {
+expect class SubjectRemoteStorage {
+
+    suspend fun findAllRefsOfSubjectIcons(): List<String>
 }

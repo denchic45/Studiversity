@@ -6,6 +6,7 @@ import com.denchic45.kts.AvatarBuilderTemplate
 import com.denchic45.kts.data.Interactor
 import com.denchic45.kts.data.Resource
 import com.denchic45.kts.data.repository.*
+import com.denchic45.kts.data.service.AuthService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.model.User.Companion.isStudent
@@ -21,8 +22,8 @@ class UserEditorInteractor @Inject constructor(
     private val userRepository: UserRepository,
     private val studentRepository: StudentRepository,
     private val teacherRepository: TeacherRepository,
-    private val authRepository: AuthRepository,
-    val networkService: NetworkService
+    private val authService: AuthService,
+    private val networkService: NetworkService
 ) : Interactor {
 
     private val avatarGenerator: AvatarGenerator.Builder = AvatarGenerator.Builder(context)
@@ -91,8 +92,8 @@ class UserEditorInteractor @Inject constructor(
         groupRepository.removeListeners()
     }
 
-    fun signUpUser(email: String, password: String) {
-        authRepository.createNewUser(email, password)
+    suspend fun signUpUser(email: String, password: String) {
+        authService.createNewUser(email, password)
     }
 
 }

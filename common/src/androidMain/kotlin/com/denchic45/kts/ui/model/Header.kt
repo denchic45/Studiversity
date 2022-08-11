@@ -1,7 +1,5 @@
-package com.denchic45.kts.data.model.ui
-
-import com.denchic45.kts.data.UiModel
+package com.denchic45.kts.ui.model
 
 data class Header(
-    val title:String
-):UiModel
+    val title: String,
+) : UiModel

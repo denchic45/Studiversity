@@ -2,7 +2,7 @@ package com.denchic45.kts.data.model.room
 
 import androidx.room.*
 import com.denchic45.kts.data.domain.model.UserRole
-import com.denchic45.kts.domain.EntityModel
+import com.denchic45.kts.data.domain.model.EntityModel
 import java.util.*
 
 @Entity(tableName = "user")

@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.collection.SparseArrayCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.denchic45.kts.domain.DomainModel
+import com.denchic45.kts.data.domain.model.DomainModel
 
 class DelegationAdapterExtended(
     vararg delegates: AdapterDelegate,

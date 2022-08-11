@@ -3,6 +3,7 @@ package com.denchic45.kts.ui.login.groupChooser
 import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.model.Specialty
 import com.denchic45.kts.data.repository.GroupRepository
+import com.denchic45.kts.data.repository.SpecialtyRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -10,7 +11,8 @@ import javax.inject.Singleton
 
 @Singleton
 class GroupChooserInteractor @Inject constructor(
-    private val groupRepository: GroupRepository
+    private val groupRepository: GroupRepository,
+    specialtyRepository: SpecialtyRepository
 ) {
     private val selectedGroup = Channel<GroupHeader>()
 
@@ -18,10 +20,10 @@ class GroupChooserInteractor @Inject constructor(
         return groupRepository.findBySpecialtyId(id)
     }
 
-    val allSpecialties: Flow<List<Specialty>> = groupRepository.findAllSpecialties()
+    val allSpecialties: Flow<List<Specialty>> = specialtyRepository.findAllSpecialties()
 
-    fun findGroupInfoById(groupId: String) {
-        groupRepository.findGroupInfoById(groupId)
+    suspend fun findGroupInfoById(groupId: String) {
+        groupRepository.find(groupId)
     }
 
     suspend fun receiveSelectedGroup(): GroupHeader {

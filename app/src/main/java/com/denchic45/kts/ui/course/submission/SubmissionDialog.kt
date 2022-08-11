@@ -3,7 +3,6 @@ package com.denchic45.kts.ui.course.submission
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,13 +17,14 @@ import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.denchic45.kts.R
-import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.databinding.FragmentSubmissionBinding
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
+import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.rx.EditTextTransformer
 import com.denchic45.kts.ui.course.taskEditor.AttachmentAdapterDelegate
 import com.denchic45.kts.util.ValueFilter
 import com.denchic45.kts.util.closeKeyboard
+import com.denchic45.kts.util.windowHeight
 import com.denchic45.widget.extendedAdapter.ItemAdapterDelegate
 import com.denchic45.widget.extendedAdapter.adapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -57,7 +57,7 @@ class SubmissionDialog : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return inflater.inflate(R.layout.fragment_submission, container, false)
     }
@@ -203,9 +203,9 @@ class SubmissionDialog : BottomSheetDialogFragment() {
         }
     }
 
-    private fun animateHeight(windowHeight:Int) {
+    private fun animateHeight(windowHeight: Int) {
 
-         fun preMeasureViewHeight(): Int {
+        fun preMeasureViewHeight(): Int {
             val currentView = binding.vf.currentView
             currentView.measure(windowWidth, windowHeight)
             return currentView.measuredHeight
@@ -242,8 +242,6 @@ class SubmissionDialog : BottomSheetDialogFragment() {
     }
 
 
-
-
     private inline val windowWidth: Int
         get() {
             val view = requireActivity().window.decorView
@@ -258,7 +256,3 @@ class SubmissionDialog : BottomSheetDialogFragment() {
     }
 }
 
-fun Activity.windowHeight(): Int {
-    val view = window.decorView
-    return resources.displayMetrics.heightPixels
-}

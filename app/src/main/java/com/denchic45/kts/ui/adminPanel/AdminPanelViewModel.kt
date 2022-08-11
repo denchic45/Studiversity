@@ -3,9 +3,8 @@ package com.denchic45.kts.ui.adminPanel
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.data.model.ui.UiColor
-import com.denchic45.kts.data.model.ui.UiImage
-import com.denchic45.kts.data.model.ui.UiText
+import com.denchic45.kts.ui.model.UiColor
+import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.ui.base.BaseViewModel
 import javax.inject.Inject
 

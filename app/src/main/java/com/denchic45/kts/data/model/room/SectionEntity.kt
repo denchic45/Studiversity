@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.denchic45.kts.domain.EntityModel
+import com.denchic45.kts.data.domain.model.EntityModel
 
 @Entity(tableName = "section", foreignKeys = [
     ForeignKey(

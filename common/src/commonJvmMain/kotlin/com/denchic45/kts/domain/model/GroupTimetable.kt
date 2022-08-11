@@ -1,12 +1,10 @@
-package com.denchic45.kts.data.model.domain
+package com.denchic45.kts.domain.model
 
-import com.denchic45.kts.domain.model.EventsOfDay
-import com.denchic45.kts.domain.model.GroupHeader
 import java.time.LocalDate
 
 data class GroupTimetable(
     val groupHeader: GroupHeader,
-    val weekEvents: List<EventsOfDay>
+    val weekEvents: List<EventsOfDay>,
 ) {
 
     fun updateEventsOfDay(eventsOfDay: EventsOfDay): GroupTimetable {

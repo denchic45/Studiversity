@@ -1,23 +1,23 @@
 package com.denchic45.kts.ui.main
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import com.denchic45.kts.data.Interactor
-import com.denchic45.kts.data.database.DataBase
+import com.denchic45.kts.data.db.local.DbHelper
+import com.denchic45.kts.data.repository.*
+import com.denchic45.kts.data.service.AuthService
+import com.denchic45.kts.di.module.IoDispatcher
 import com.denchic45.kts.domain.model.CourseHeader
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.data.prefs.TimestampPreference
-import com.denchic45.kts.data.repository.*
-import com.denchic45.kts.di.modules.IoDispatcher
+import com.denchic45.kts.util.SystemDirs
+import com.denchic45.kts.util.databaseFile
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import java.io.File
 import javax.inject.Inject
 
 class MainInteractor @Inject constructor(
@@ -25,16 +25,15 @@ class MainInteractor @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     private val coroutineScope: CoroutineScope,
     private val groupRepository: GroupRepository,
-    private val authRepository: AuthRepository,
+    private val authService: AuthService,
     private val userRepository: UserRepository,
     private val eventRepository: EventRepository,
-    private val metaRepository: MetaRepository,
-    private val timestampPreference: TimestampPreference,
     private val courseRepository: CourseRepository,
-    private val dataBase: DataBase
+    private val dbHelper: DbHelper,
+    private val systemDirs: SystemDirs
 ) : Interactor {
 
-    val listenAuthState: Flow<Boolean> = authRepository.listenAuthState
+    val listenAuthState: Flow<Boolean> = authService.observeIsAuthenticated
 
     init {
         coroutineScope.launch(dispatcher) {
@@ -47,9 +46,15 @@ class MainInteractor @Inject constructor(
     }
 
     private fun clearAllData(context: Context) {
-        dataBase.clearAllTables()
-        val sharedPreferenceFile = File("/data/data/" + context.packageName + "/shared_prefs/")
-        val listFiles = sharedPreferenceFile.listFiles()
+//        dataBase.clearAllTables()
+        dbHelper.driver.close()
+        systemDirs.databaseFile.delete()
+
+
+        val sharedPreferenceFile =
+            systemDirs.prefsDirectory
+//            File("/data/data/" + context.packageName + "/shared_prefs/")
+        val listFiles = sharedPreferenceFile.listFiles()!!
         for (file in listFiles) {
             val name = file.name
             val sharedPrefs =
@@ -64,13 +69,15 @@ class MainInteractor @Inject constructor(
         groupRepository.removeListeners()
     }
 
-    val lessonTime: LiveData<Int>
-        get() = metaRepository.lessonTime
-
-    fun observeHasGroup(): Flow<Boolean> {
-        return groupRepository.observeHasGroup().onEach {
-            if (it) {
-                eventRepository.observeEventsOfYourGroup()
+    suspend fun observeHasGroup(): Flow<Boolean> {
+        return flow {
+            coroutineScope {
+                groupRepository.observeHasGroup().collect {
+                    if (it) {
+                        launch { eventRepository.observeEventsOfYourGroup() }
+                    }
+                    emit(it)
+                }
             }
         }
     }
@@ -83,8 +90,12 @@ class MainInteractor @Inject constructor(
         observeThisUser().collect { user ->
             user?.let {
                 if (user.isTeacher) {
-                    groupRepository.listenYouGroupByCurator()
-                    groupRepository.listenGroupsWhereThisUserIsTeacher(user)
+                    coroutineScope.launch {
+                        groupRepository.listenYouGroupByCurator()
+                    }
+                    coroutineScope.launch {
+                        groupRepository.listenGroupsWhereThisUserIsTeacher(user)
+                    }
                 } else if (user.isStudent) {
                     coroutineScope.launch {
                         groupRepository.observeYourGroupById().collect()
@@ -93,7 +104,7 @@ class MainInteractor @Inject constructor(
                 courseRepository.observeByYourGroup()
             } ?: run {
                 clearAllData(context)
-                authRepository.signOut()
+                authService.signOut()
             }
         }
     }

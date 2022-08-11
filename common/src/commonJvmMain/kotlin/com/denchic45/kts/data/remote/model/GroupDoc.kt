@@ -1,6 +1,6 @@
 package com.denchic45.kts.data.remote.model
 
-import com.denchic45.kts.domain.DocModel
+import com.denchic45.kts.data.domain.model.DocModel
 import com.denchic45.kts.util.SearchKeysGenerator
 import java.util.*
 
@@ -12,7 +12,7 @@ data class GroupDoc(
     var timestamp: Date? = null,
     var timestampCourses: Date? = null,
     var specialty: SpecialtyDoc,
-    val headmanId: String?
+    val headmanId: String?,
 ) : DocModel {
 
     private constructor() : this(

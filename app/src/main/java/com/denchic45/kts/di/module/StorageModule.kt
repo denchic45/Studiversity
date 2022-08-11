@@ -7,8 +7,7 @@ import dagger.Provides
 @Module
 object StorageModule {
 
-    @Provides
-    fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
+  
 
 //    @Provides
 //    fun provideUserRemoteStorage(storage: FirebaseStorage) = UserRemoteStorage(storage)

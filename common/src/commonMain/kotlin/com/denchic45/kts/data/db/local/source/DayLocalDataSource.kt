@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.*
 import com.denchic45.kts.util.DatePatterns
@@ -6,8 +6,9 @@ import com.denchic45.kts.util.toString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
+import javax.inject.Inject
 
-class DayLocalDataSource(private val db: AppDatabase) {
+class DayLocalDataSource @Inject constructor(private val db: AppDatabase) {
     private val queries: DayEntityQueries = db.dayEntityQueries
 
     suspend fun upsert(dayEntity: DayEntity) = withContext(Dispatchers.IO) {
@@ -53,7 +54,7 @@ class DayLocalDataSource(private val db: AppDatabase) {
                         db.teacherEventEntityQueries.deleteByEventId(eventId)
                     }
                 }
-                eventEntities.forEach {upsert(it) }
+                eventEntities.forEach { upsert(it) }
             }
             teacherEventEntities.forEach { db.teacherEventEntityQueries.upsert(it) }
         }

@@ -1,11 +1,11 @@
 package com.denchic45.kts.data.remote.model
 
-import com.denchic45.kts.domain.DocModel
+import com.denchic45.kts.data.domain.model.DocModel
 import com.denchic45.kts.util.SearchKeysGenerator
 
 data class SpecialtyDoc(
     var id: String,
-    var name: String
+    var name: String,
 ) : DocModel {
 
     val searchKeys: List<String>

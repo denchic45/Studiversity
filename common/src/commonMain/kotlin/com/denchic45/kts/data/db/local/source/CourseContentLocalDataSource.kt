@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.*
 import com.squareup.sqldelight.runtime.coroutines.asFlow
@@ -9,21 +9,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.util.*
+import javax.inject.Inject
 
-class CourseContentLocalDataSource(private val db: AppDatabase) {
+class CourseContentLocalDataSource @Inject constructor(private val db: AppDatabase) {
 
     private val queries: CourseContentEntityQueries = db.courseContentEntityQueries
 
-    suspend fun delete(courseContentEntity: CourseContentEntity) = withContext(Dispatchers.IO) {
-        queries.delete(courseContentEntity.content_id)
-    }
-
-    fun delete(courseContentEntities: List<CourseContentEntity>) =
-//        withContext(Dispatchers.IO) {
-        queries.transaction {
-            courseContentEntities.forEach { queries.delete(it.content_id) }
+    suspend fun deleteByIds(courseContentEntity: CourseContentEntity) =
+        withContext(Dispatchers.IO) {
+            queries.delete(courseContentEntity.content_id)
         }
-//        }
+
+    private fun deleteByIds(courseContentEntities: List<String>) = queries.transaction {
+        courseContentEntities.forEach { queries.delete(it) }
+    }
 
     fun upsert(courseContentEntity: CourseContentEntity) =
 //        withContext(Dispatchers.IO) {
@@ -87,7 +86,7 @@ class CourseContentLocalDataSource(private val db: AppDatabase) {
     }
 
     suspend fun saveContents(
-        removedCourseContents: List<CourseContentEntity>,
+        removedCourseContentIds: List<String>,
         remainingCourseContent: List<CourseContentEntity>,
         contentIds: List<String>,
         submissionEntities: List<SubmissionEntity>,
@@ -99,7 +98,7 @@ class CourseContentLocalDataSource(private val db: AppDatabase) {
                 db.submissionEntityQueries.deleteByContentId(it)
                 db.contentCommentEntityQueries.deleteByContentId(it)
             }
-            delete(removedCourseContents)
+            deleteByIds(removedCourseContentIds)
             upsert(remainingCourseContent)
             submissionEntities.forEach {
                 db.submissionEntityQueries.upsert(it)

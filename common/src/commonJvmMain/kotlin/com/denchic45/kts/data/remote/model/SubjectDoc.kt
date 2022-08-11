@@ -1,6 +1,6 @@
 package com.denchic45.kts.data.remote.model
 
-import com.denchic45.kts.domain.DocModel
+import com.denchic45.kts.data.domain.model.DocModel
 import com.denchic45.kts.util.SearchKeysGenerator
 
 class SubjectDoc(

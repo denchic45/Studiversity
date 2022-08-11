@@ -1,4 +1,3 @@
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -9,9 +8,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import com.denchic45.kts.UserEntity
-import com.denchic45.kts.data.local.db.DbHelper
-import com.denchic45.kts.data.local.db.DriverFactory
-import com.denchic45.kts.data.pref.core.FilePreferencesFactory
+import com.denchic45.kts.data.db.local.DriverFactory
 import com.denchic45.kts.main.MainContent
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
@@ -19,6 +16,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.denchic45.kts.main.theme.KtsTheme
+import com.denchic45.kts.data.db.local.DbHelper
 
 fun main() = application {
     Window(
@@ -37,7 +35,6 @@ fun main() = application {
 
         GlobalScope.launch {
             delay(500)
-            FilePreferencesFactory("AppPrefs").systemRoot().putFloat("Float",2F)
             DriverFactory().driver.apply {
                 DbHelper(this).database.apply {
                     userEntityQueries.upsert(

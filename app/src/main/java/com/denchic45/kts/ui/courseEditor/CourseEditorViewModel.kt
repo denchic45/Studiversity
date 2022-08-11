@@ -7,9 +7,9 @@ import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.customPopup.ListPopupWindowAdapter
 import com.denchic45.kts.data.Resource
-import com.denchic45.kts.domain.DomainModel
+import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.*
-import com.denchic45.kts.data.model.ui.UiImage
+import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.data.repository.SameCoursesException
 import com.denchic45.kts.domain.model.Course
 import com.denchic45.kts.domain.model.GroupHeader

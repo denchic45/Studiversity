@@ -4,8 +4,8 @@ import android.content.res.ColorStateList
 import android.view.ViewGroup
 import androidx.core.widget.ImageViewCompat
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.data.model.ui.onId
-import com.denchic45.kts.data.model.ui.onUrl
+import com.denchic45.kts.ui.model.onId
+import com.denchic45.kts.ui.model.onUrl
 import com.denchic45.kts.databinding.ItemIconContentBinding
 import com.denchic45.kts.ui.adapter.BaseViewHolder
 import com.denchic45.kts.util.viewBinding

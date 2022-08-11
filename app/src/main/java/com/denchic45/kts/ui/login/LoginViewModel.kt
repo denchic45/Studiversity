@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
+import com.denchic45.kts.domain.usecase.SignInWithEmailAndPasswordUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.util.Validations
 import com.google.firebase.FirebaseNetworkException
@@ -14,7 +15,7 @@ import java.util.*
 import javax.inject.Inject
 
 class LoginViewModel @Inject constructor(
-    private val interactor: LoginInteractor
+    private val interactor: SignInWithEmailAndPasswordUseCase
 ) : BaseViewModel() {
 
     val backToFragment = SingleLiveData<Void>()
@@ -83,7 +84,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 Log.d("lol", "A try authByEmail: ")
-                interactor.authByEmail(mail, password)
+                interactor.invoke(mail, password)
                 Log.d("lol", "A onSuccessfulLogin: ")
                 onSuccessfulLogin()
             } catch (t: Throwable) {

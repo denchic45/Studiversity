@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.denchic45.kts.BuildConfig
 
 fun Fragment.setActivityTitle(@StringRes id: Int) {
     (activity as AppCompatActivity?)?.supportActionBar?.title = getString(id)
@@ -23,11 +22,11 @@ fun Fragment.toast(messageRes: Int, duration: Int = Toast.LENGTH_SHORT) {
 }
 
 fun Fragment.debugToast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
-    if (BuildConfig.DEBUG)
+    if (false)
         requireContext().toast(message, duration)
 }
 
 fun Fragment.debugToast(messageRes: Int, duration: Int = Toast.LENGTH_SHORT) {
-    if (BuildConfig.DEBUG)
+    if (false)
         requireContext().toast(messageRes, duration)
 }

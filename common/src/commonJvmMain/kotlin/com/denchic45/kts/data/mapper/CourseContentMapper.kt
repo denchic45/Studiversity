@@ -1,11 +1,15 @@
 package com.denchic45.kts.data.mapper
 
 import com.denchic45.kts.CourseContentEntity
-import com.denchic45.kts.data.remote.model.ContentCommentMap
+import com.denchic45.kts.data.db.remote.model.ContentCommentMap
+import com.denchic45.kts.data.db.remote.model.CourseContentMap
+import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.remote.model.CourseContentDoc
-import com.denchic45.kts.data.remote.model.CourseContentMap
 import com.denchic45.kts.data.remote.model.SubmissionDoc
-import com.denchic45.kts.domain.model.*
+import com.denchic45.kts.domain.model.ContentDetails
+import com.denchic45.kts.domain.model.ContentType
+import com.denchic45.kts.domain.model.CourseContent
+import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.util.toDate
 import com.denchic45.kts.util.toJsonString
 import com.google.gson.GsonBuilder

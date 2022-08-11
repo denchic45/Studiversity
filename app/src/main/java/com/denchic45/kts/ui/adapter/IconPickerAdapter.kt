@@ -13,7 +13,7 @@ import com.denchic45.kts.R
 import com.denchic45.kts.SvgColorListener
 import com.denchic45.kts.glideSvg.GlideApp
 
-class IconPickerAdapter(context: Context) : ArrayAdapter<Uri?>(context, R.layout.item_icon) {
+class IconPickerAdapter(context: Context) : ArrayAdapter<String>(context, R.layout.item_icon) {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView = convertView
         if (convertView == null) {

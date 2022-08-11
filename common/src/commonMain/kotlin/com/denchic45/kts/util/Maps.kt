@@ -1,7 +1,7 @@
 package com.denchic45.kts.util
 
-import com.denchic45.kts.data.remote.model.MapWrapper
-import com.denchic45.kts.data.remote.model.MutableMapWrapper
+import com.denchic45.kts.data.db.remote.model.MapWrapper
+import com.denchic45.kts.data.db.remote.model.MutableMapWrapper
 import kotlin.reflect.KProperty
 
 fun <V> MapWrapper.mapOrNull() = MapValueOrNullDelegate<V?>(map)
@@ -9,6 +9,8 @@ fun <V> MapWrapper.mapOrNull() = MapValueOrNullDelegate<V?>(map)
 fun <V> MutableMapWrapper.mapOrNull() = MutableMapValueOrNullDelegate<V?>(map)
 
 fun <V> MapWrapper.mapListOrEmpty() = MapValueListOrEmptyDelegate<V>(map)
+
+fun <V> MutableMapWrapper.mapListOrEmpty() = MutableMapValueListOrEmptyDelegate<V>(map)
 
 fun <K, V> MapWrapper.mapNestedMapOrEmpty() = MapValueMapOrEmptyDelegate<K, V>(map)
 
@@ -39,6 +41,16 @@ class MapValueListOrEmptyDelegate<V>(private val map: FireMap) {
     @Suppress("UNCHECKED_CAST")
     operator fun getValue(thisRef: Any?, property: KProperty<*>): List<V> =
         map[property.name]?.let { it as List<V> } ?: emptyList()
+}
+
+class MutableMapValueListOrEmptyDelegate<V>(private val map: MutableFireMap) {
+    @Suppress("UNCHECKED_CAST")
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): List<V> =
+        map[property.name]?.let { it as List<V> } ?: emptyList()
+
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: List<V>) {
+        map[property.name] = value
+    }
 }
 
 class MapValueMapOrEmptyDelegate<K, V>(private val map: FireMap) {

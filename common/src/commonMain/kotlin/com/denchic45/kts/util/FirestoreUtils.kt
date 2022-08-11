@@ -1,5 +1,15 @@
 package com.denchic45.kts.util
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.util.*
+
+typealias FireMap = Map<String, Any?>
+
+typealias MutableFireMap = MutableMap<String, Any?>
+
 fun FireMap.timestampIsNull(): Boolean {
     return get("timestamp") == null
 }
@@ -16,6 +26,11 @@ fun List<FireMap>.timestampsNotNull(): Boolean {
     return !timestampsIsNull()
 }
 
-typealias FireMap = Map<String, Any?>
+fun LocalDateTime.toTimestampValue(): String = atOffset(ZoneOffset.UTC)
+    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX"))
 
-typealias MutableFireMap = MutableMap<String, Any?>
+fun LocalDate.toTimestampValue(): String = atStartOfDay().atOffset(ZoneOffset.UTC)
+    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX"))
+
+fun Date.toTimestampValue(): String = toInstant().atOffset(ZoneOffset.UTC)
+    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX"))

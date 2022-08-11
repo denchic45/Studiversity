@@ -1,6 +1,5 @@
-package com.denchic45.kts.data
+package com.denchic45.kts.domain
 
-import android.util.Log
 import com.denchic45.kts.domain.model.GroupCourses
 import com.denchic45.kts.domain.model.GroupTimetable
 import com.denchic45.kts.domain.model.*
@@ -76,8 +75,6 @@ class TimetableParser {
             throw e
         }
 
-
-        Log.d("lol", "return timetables: ${groupTimetableList.size}")
         return groupTimetableList
     }
 

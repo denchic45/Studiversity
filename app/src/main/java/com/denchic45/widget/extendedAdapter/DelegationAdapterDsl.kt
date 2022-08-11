@@ -1,6 +1,6 @@
 package com.denchic45.widget.extendedAdapter
 
-import com.denchic45.kts.domain.DomainModel
+import com.denchic45.kts.data.domain.model.DomainModel
 
 @DslMarker
 annotation class ExtendedAdapterMarker

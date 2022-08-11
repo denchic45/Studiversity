@@ -1,13 +1,10 @@
 package com.denchic45.kts.data.mapper
 
 import com.denchic45.kts.DayEntity
-import com.denchic45.kts.data.local.model.DayWithEventsEntities
-import com.denchic45.kts.data.remote.model.DayDoc
-import com.denchic45.kts.data.remote.model.DayMap
-import com.denchic45.kts.data.remote.model.EventDoc
+import com.denchic45.kts.data.db.local.model.DayWithEventsEntities
+import com.denchic45.kts.data.db.remote.model.DayMap
 import com.denchic45.kts.domain.model.EventsOfDay
 import com.denchic45.kts.util.*
-import java.time.ZoneOffset
 import java.util.*
 
 fun DayMap.mapToEntity() = DayEntity(
@@ -19,10 +16,11 @@ fun DayMap.mapToEntity() = DayEntity(
 
 fun DayWithEventsEntities.entityToUserDomain() = EventsOfDay(
     date = dayEntity.date.toLocalDate(DatePatterns.yyy_MM_dd),
-    _events = eventEntities.entitiesToDomains()
+    _events = eventEntities.entitiesToDomains(),
+    id = dayEntity.day_id
 )
 
-fun EventsOfDay.domainToMap(groupId: String):MutableFireMap = mutableMapOf(
+fun EventsOfDay.domainToMap(groupId: String): MutableFireMap = mutableMapOf(
     "id" to id,
     "date" to date.toDate(),
     "startsAtZero" to startsAtZero,

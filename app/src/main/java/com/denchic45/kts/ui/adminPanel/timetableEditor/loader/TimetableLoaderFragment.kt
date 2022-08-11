@@ -14,7 +14,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.adapter.FragmentViewHolder
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
-import com.denchic45.kts.domain.DomainModel
+import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.databinding.FragmentTimetableLoaderBinding
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.adapter.EventAdapter

@@ -10,11 +10,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.denchic45.kts.data.model.domain.OptionItem
-import com.denchic45.kts.data.model.ui.UiText
-import com.denchic45.kts.data.model.ui.onId
-import com.denchic45.kts.data.model.ui.onString
-import com.denchic45.kts.data.model.ui.onUrl
+import com.denchic45.kts.ui.model.OptionItem
+import com.denchic45.kts.ui.model.UiText
+import com.denchic45.kts.ui.model.onId
+import com.denchic45.kts.ui.model.onString
+import com.denchic45.kts.ui.model.onUrl
 import com.denchic45.kts.databinding.ItemPopupIconContentBinding
 import com.denchic45.kts.util.viewBinding
 

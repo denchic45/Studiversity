@@ -13,8 +13,6 @@ import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.pref.*
-import com.denchic45.kts.data.remote.db.RemoveCourseOperation
-import com.denchic45.kts.data.remote.db.UpdateGroupsOfCourse
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.data.storage.ContentAttachmentStorage
@@ -52,9 +50,9 @@ class CourseRepository @Inject constructor(
     override val sectionLocalDataSource: SectionLocalDataSource,
     override val groupCourseLocalDataSource: GroupCourseLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
-    override val courseRemoteDataSource: CourseRemoteDataSource,
+    private val courseRemoteDataSource: CourseRemoteDataSource,
     private val groupRemoteDataSource: GroupRemoteDataSource,
-) : Repository(), SaveGroupOperation, SaveCourseRepository, RemoveCourseOperation,
+) : Repository(), SaveGroupOperation, SaveCourseRepository,
     FindByContainsNameRepository<CourseHeader> {
 
     override fun findByContainsName(text: String): Flow<List<CourseHeader>> {
@@ -429,11 +427,11 @@ class CourseRepository @Inject constructor(
         return submissionLocalDataSource.getByTaskId(taskId).map { list ->
             list.map { it.toDomain(getSubmissionAttachments(it)) }
         }.mapLatest {
-                it + submissionLocalDataSource.getStudentsWithoutSubmission(taskId)
-                    .map { userEntity ->
-                        Task.Submission.createEmptyNotSubmitted(taskId, userEntity.toUserDomain())
-                    }
-            }
+            it + submissionLocalDataSource.getStudentsWithoutSubmission(taskId)
+                .map { userEntity ->
+                    Task.Submission.createEmptyNotSubmitted(taskId, userEntity.toUserDomain())
+                }
+        }
             .distinctUntilChanged()
     }
 
@@ -514,23 +512,27 @@ class CourseRepository @Inject constructor(
             CourseMap(courseLocalDataSource.get(course.id).entityToCourseDomain().toCourseMap()),
             CourseMap(course.toCourseMap()))
     }
+
+    suspend fun removeCourse(courseId: String, groupIds: List<String>) {
+        courseRemoteDataSource.removeCourse(courseId, groupIds)
+    }
 }
 
 
 class SameCoursesException : Exception()
 
-interface UpdateCourseOperation : PreconditionsRepository, UpdateGroupsOfCourse {
-
-    val courseLocalDataSource: CourseLocalDataSource
-    val courseRemoteDataSource: CourseRemoteDataSource
-
-    suspend fun updateCourse(course: Course) {
-        requireAllowWriteData()
-        courseRemoteDataSource.updateCourse(
-            CourseMap(courseLocalDataSource.get(course.id).entityToCourseDomain().toCourseMap()),
-            CourseMap(course.toCourseMap()))
-    }
-}
+//interface UpdateCourseOperation : PreconditionsRepository, UpdateGroupsOfCourse {
+//
+//    val courseLocalDataSource: CourseLocalDataSource
+//    val courseRemoteDataSource: CourseRemoteDataSource
+//
+//    suspend fun updateCourse(course: Course) {
+//        requireAllowWriteData()
+//        courseRemoteDataSource.updateCourse(
+//            CourseMap(courseLocalDataSource.get(course.id).entityToCourseDomain().toCourseMap()),
+//            CourseMap(course.toCourseMap()))
+//    }
+//}
 
 interface SaveCourseRepository {
 

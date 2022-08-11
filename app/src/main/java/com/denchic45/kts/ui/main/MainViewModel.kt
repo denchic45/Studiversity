@@ -10,9 +10,9 @@ import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.model.CourseHeader
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.data.model.ui.UiText
-import com.denchic45.kts.data.model.ui.onId
-import com.denchic45.kts.data.model.ui.onString
+import com.denchic45.kts.ui.model.UiText
+import com.denchic45.kts.ui.model.onId
+import com.denchic45.kts.ui.model.onString
 import com.denchic45.kts.ui.base.NavigationCommand
 import com.denchic45.kts.ui.adapter.*
 import com.denchic45.kts.ui.adminPanel.AdminPanelFragmentDirections
@@ -183,7 +183,6 @@ class MainViewModel @Inject constructor(
                 interactor.findOwnCourses(),
                 interactor.observeHasGroup()
             ) { courses, hasGroup ->
-                Log.d("lol", "courses, hasGroup: $courses, $hasGroup")
                 courseIds = courses.associate { it.name to it.id }
                 NavMenuState.NavMenu(
                     courses,

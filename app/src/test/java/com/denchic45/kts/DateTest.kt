@@ -1,18 +1,29 @@
 package com.denchic45.kts
 
-import com.denchic45.kts.util.DatePatterns
 import com.denchic45.kts.util.toString
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import java.time.DayOfWeek
-import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 class DateTest {
 
     @Test
     fun mondayOfThisWeekTest() {
-        print(
-            "Monday is: " + LocalDate.now().plusWeeks(1).with(DayOfWeek.MONDAY)
-                .toString(DatePatterns.DD_MM_yy)
+        println(
+            "Monday is: " + LocalDateTime.now().plusWeeks(1).with(DayOfWeek.MONDAY).atOffset(
+                ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX"))
+        )
+    }
+
+    @Test
+    fun testConvertDate() {
+        println(
+            "Date is: " + LocalDateTime.now().atOffset(
+                ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX"))
         )
     }
 }

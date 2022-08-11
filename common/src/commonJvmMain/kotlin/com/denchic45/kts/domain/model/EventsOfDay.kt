@@ -1,6 +1,5 @@
 package com.denchic45.kts.domain.model
 
-import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.swap
 import com.denchic45.kts.util.toString
 import java.time.LocalDate
@@ -9,7 +8,7 @@ data class EventsOfDay(
     val date: LocalDate,
     private val _events: List<Event> = mutableListOf(),
     val startsAtZero: Boolean = false,
-    val id: String = UUIDS.createShort()
+    val id: String,
 ) {
 
     val size: Int = _events.size
@@ -79,6 +78,6 @@ data class EventsOfDay(
         get() = date.toString("EEE")
 
     companion object {
-        fun createEmpty(date: LocalDate): EventsOfDay = EventsOfDay(date, mutableListOf())
+        fun createEmpty(date: LocalDate): EventsOfDay = EventsOfDay(date, mutableListOf(), id = "")
     }
 }

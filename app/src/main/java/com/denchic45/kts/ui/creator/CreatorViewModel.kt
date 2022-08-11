@@ -6,7 +6,7 @@ import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.data.model.ui.UiImage
+import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.ui.base.BaseViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

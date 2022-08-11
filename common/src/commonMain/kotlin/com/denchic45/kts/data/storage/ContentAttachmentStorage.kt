@@ -1,6 +1,8 @@
 package com.denchic45.kts.data.storage
 
-import com.denchic45.kts.domain.model.Attachment
+import com.denchic45.kts.data.domain.model.Attachment
+import com.denchic45.kts.data.storage.remote.ContentAttachmentRemoteStorage
+import com.denchic45.kts.data.storage.local.ContentAttachmentLocalStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

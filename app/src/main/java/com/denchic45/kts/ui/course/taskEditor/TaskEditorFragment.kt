@@ -23,15 +23,15 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.denchic45.kts.R
-import com.denchic45.kts.data.UiModel
-import com.denchic45.kts.domain.model.Attachment
+import com.denchic45.kts.ui.model.UiModel
+import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.databinding.FragmentTaskEditorBinding
 import com.denchic45.kts.databinding.ItemAddAttachmentBinding
 import com.denchic45.kts.databinding.ItemAttachmentBinding
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
 import com.denchic45.kts.rx.EditTextTransformer
-import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.adapter.BaseViewHolder
+import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.course.sectionPicker.SectionPickerFragment
 import com.denchic45.kts.ui.course.sectionPicker.SectionPickerViewModel
 import com.denchic45.kts.util.FilePicker
@@ -395,7 +395,7 @@ class AddAttachmentHolder(itemAddAttachmentBinding: ItemAddAttachmentBinding) :
 
 class AttachmentHolder(
     itemAttachmentBinding: ItemAttachmentBinding,
-    private val crossBtnVisibility: Boolean
+    private val crossBtnVisibility: Boolean,
 ) :
     BaseViewHolder<Attachment, ItemAttachmentBinding>(itemAttachmentBinding) {
     override fun onBind(item: Attachment) {

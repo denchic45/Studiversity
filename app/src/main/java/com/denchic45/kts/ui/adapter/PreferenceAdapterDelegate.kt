@@ -3,7 +3,7 @@ package com.denchic45.kts.ui.adapter
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import com.bumptech.glide.Glide
-import com.denchic45.kts.domain.DomainModel
+import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.databinding.ItemContentSwitchBinding
 import com.denchic45.kts.databinding.ItemIconContent2Binding
 import com.denchic45.kts.util.viewBinding

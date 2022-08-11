@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.mapper
 
 import com.denchic45.kts.SubmissionCommentEntity
-import com.denchic45.kts.data.remote.model.SubmissionCommentMap
+import com.denchic45.kts.data.db.remote.model.SubmissionCommentMap
 
 fun SubmissionCommentMap.domainToEntity() = SubmissionCommentEntity(
     comment_id = id,

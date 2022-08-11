@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.GetStudentsWithCuratorByGroupId
@@ -13,8 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class UserLocalDataSource(db: AppDatabase) {
+class UserLocalDataSource @Inject constructor (db: AppDatabase) {
 
     private val queries: UserEntityQueries = db.userEntityQueries
 

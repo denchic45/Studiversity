@@ -24,7 +24,7 @@ import com.denchic45.kts.LessonTimeCalculator
 import com.denchic45.kts.R
 import com.denchic45.kts.SvgColorListener
 import com.denchic45.kts.data.domain.model.EventType
-import com.denchic45.kts.domain.DomainModel
+import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.*
 import com.denchic45.kts.databinding.*
 import com.denchic45.kts.domain.model.*

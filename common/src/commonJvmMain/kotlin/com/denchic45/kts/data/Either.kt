@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.model.domain
+package com.denchic45.kts.data
 
 sealed class Either<out L, out R> {
 

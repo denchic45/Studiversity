@@ -1,14 +1,10 @@
 package com.denchic45.kts.data.model.mapper
 
-import com.denchic45.kts.domain.model.Course
-import com.denchic45.kts.domain.model.GroupHeader
-import com.denchic45.kts.domain.model.CourseHeader
-import com.denchic45.kts.data.remote.model.CourseMap
+import com.denchic45.kts.data.db.remote.model.CourseMap
 import com.denchic45.kts.data.model.room.CourseEntity
 import com.denchic45.kts.data.model.room.CourseWithSubjectAndTeacherEntities
-import com.denchic45.kts.data.model.room.CourseWithSubjectWithTeacherAndGroupsEntities
-import com.denchic45.kts.data.model.room.GroupWithCuratorAndSpecialtyEntity
-import org.mapstruct.*
+import com.denchic45.kts.domain.model.Course
+import org.mapstruct.Mapper
 
 @Mapper(uses = [GroupMapper::class, UserMapper::class, SubjectMapper::class, SpecialtyMapper::class])
 abstract class CourseMapper {

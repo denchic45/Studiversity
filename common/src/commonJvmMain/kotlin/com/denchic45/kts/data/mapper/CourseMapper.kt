@@ -3,11 +3,11 @@ package com.denchic45.kts.data.mapper
 import com.denchic45.kts.CourseEntity
 import com.denchic45.kts.GetCourseWithSubjectAndTeacherByTeacherId
 import com.denchic45.kts.GetCourseWithSubjectWithTeacherAndGroupsById
+import com.denchic45.kts.data.db.local.model.CourseWithSubjectAndTeacherEntities
+import com.denchic45.kts.data.db.remote.model.CourseMap
+import com.denchic45.kts.data.db.remote.model.SubjectMap
+import com.denchic45.kts.data.db.remote.model.UserMap
 import com.denchic45.kts.data.domain.model.UserRole
-import com.denchic45.kts.data.local.model.CourseWithSubjectAndTeacherEntities
-import com.denchic45.kts.data.remote.model.CourseMap
-import com.denchic45.kts.data.remote.model.SubjectMap
-import com.denchic45.kts.data.remote.model.UserMap
 import com.denchic45.kts.domain.model.*
 import java.util.*
 
@@ -70,7 +70,8 @@ fun CourseWithSubjectAndTeacherEntities.entityToCourseHeaderDomain() = CourseHea
     teacher = teacherEntity.toUserDomain()
 )
 
-fun List<CourseWithSubjectAndTeacherEntities>.entitiesToCourseHeaders() = map { it.entityToCourseHeaderDomain() }
+fun List<CourseWithSubjectAndTeacherEntities>.entitiesToCourseHeaders() =
+    map { it.entityToCourseHeaderDomain() }
 
 fun GetCourseWithSubjectAndTeacherByTeacherId.entityToUserDomain() = CourseHeader(
     id = course_id,
@@ -97,9 +98,10 @@ fun GetCourseWithSubjectAndTeacherByTeacherId.entityToUserDomain() = CourseHeade
     )
 )
 
-fun List<GetCourseWithSubjectAndTeacherByTeacherId>.entitiesToDomains() = map { it.entityToUserDomain() }
+fun List<GetCourseWithSubjectAndTeacherByTeacherId>.entitiesToDomains() =
+    map { it.entityToUserDomain() }
 
-fun Course.domainToCourseMap() = mapOf(
+fun Course.toCourseMap() = mapOf(
     "id" to id,
     "name" to name,
     "subject" to subject.domainToMap(),

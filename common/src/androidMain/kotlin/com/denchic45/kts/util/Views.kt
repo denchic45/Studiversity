@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.app.Activity
+import android.content.ContextWrapper
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -16,8 +17,6 @@ import android.widget.ViewFlipper
 import androidx.annotation.ColorRes
 import androidx.core.view.WindowInsetsCompat
 import androidx.viewbinding.ViewBinding
-import com.denchic45.kts.ui.course.submission.windowHeight
-import com.denchic45.kts.ui.updateView.getActivity
 
 fun View.getLayoutInflater(attachToParent: Boolean = false): LayoutInflater =
     LayoutInflater.from(context)
@@ -45,6 +44,11 @@ fun Activity.windowWidth(): Int {
     val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets, view)
         .getInsets(WindowInsetsCompat.Type.systemBars())
     return resources.displayMetrics.widthPixels - insets.left - insets.right
+}
+
+fun Activity.windowHeight(): Int {
+    val view = window.decorView
+    return resources.displayMetrics.heightPixels
 }
 
 fun ViewFlipper.animateHeight(
@@ -99,5 +103,15 @@ fun ImageView.paintColor(@ColorRes colorRes: Int) {
     val colorFilter = PorterDuffColorFilter(context.colors(colorRes), PorterDuff.Mode.SRC_ATOP)
     paint.colorFilter = colorFilter
     setLayerPaint(paint)
+}
 
+fun View.getActivity(): Activity? {
+    var context = context
+    while (context is ContextWrapper) {
+        if (context is Activity) {
+            return context
+        }
+        context = context.baseContext
+    }
+    return null
 }

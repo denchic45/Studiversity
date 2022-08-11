@@ -9,8 +9,8 @@ import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentIconPickerBinding
-import com.denchic45.kts.ui.base.BaseDialogFragment
 import com.denchic45.kts.ui.adapter.IconPickerAdapter
+import com.denchic45.kts.ui.base.BaseDialogFragment
 import com.denchic45.kts.util.collectWhenStarted
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -20,13 +20,6 @@ class IconPickerDialog :
     override val binding: FragmentIconPickerBinding by viewBinding(FragmentIconPickerBinding::bind)
     private var gvIconPicker: GridView? = null
     private var adapter: IconPickerAdapter? = null
-
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        return inflater.inflate(R.layout.fragment_icon_picker, container, false)
-//    }
 
     override fun onBuildDialog(dialog: MaterialAlertDialogBuilder, savedInstanceState: Bundle?) {
         dialog.setTitle("Выбрать иконку предмета")

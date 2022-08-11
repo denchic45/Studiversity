@@ -1,8 +1,8 @@
 package com.denchic45.kts.data.model.room
 
 import androidx.room.*
-import com.denchic45.kts.domain.EntityModel
-import com.denchic45.kts.domain.model.Task
+import com.denchic45.kts.data.domain.model.TaskStatus
+import com.denchic45.kts.data.domain.model.EntityModel
 import java.util.*
 
 @Entity(
@@ -35,7 +35,7 @@ data class SubmissionEntity(
     val contentId: String,
     @ColumnInfo(name = "course_id")
     val courseId: String,
-    val status: Task.Submission.Status,
+    val status: TaskStatus,
     @ColumnInfo(defaultValue = "")
     val text: String,
     @field:TypeConverters(ListConverter::class)

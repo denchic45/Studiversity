@@ -7,7 +7,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.data.model.ui.onId
+import com.denchic45.kts.ui.model.onId
 import com.denchic45.kts.databinding.*
 import com.denchic45.kts.util.viewBinding
 

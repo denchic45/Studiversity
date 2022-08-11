@@ -9,7 +9,6 @@ import com.denchic45.kts.data.db.remote.source.GroupRemoteDataSource
 import com.denchic45.kts.data.db.remote.source.SubjectRemoteDataSource
 import com.denchic45.kts.data.db.remote.source.UserRemoteDataSource
 import com.denchic45.kts.data.mapper.*
-import com.denchic45.kts.data.model.domain.GroupTimetable
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.UserPreferences
@@ -17,10 +16,12 @@ import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.EventsOfDay
 import com.denchic45.kts.domain.model.GroupHeader
+import com.denchic45.kts.domain.model.GroupTimetable
 import com.denchic45.kts.util.DatePatterns
 import com.denchic45.kts.util.NetworkException
 import com.denchic45.kts.util.toDateUTC
 import com.denchic45.kts.util.toString
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -48,14 +49,16 @@ class EventRepository @Inject constructor(
 ) : Repository(), SaveGroupOperation {
 
     fun findEventsOfDayByGroupIdAndDate(groupId: String, date: LocalDate): Flow<EventsOfDay> {
-        return callbackFlow {
-            launch {
-                eventRemoteDataSource.observeEventsOfGroupByDate(groupId, date).collect {
-                    saveDay(it)
+        return flow {
+            coroutineScope {
+                launch {
+                    eventRemoteDataSource.observeEventsOfGroupByDate(groupId, date).collect {
+                        saveDay(it)
+                    }
                 }
+                emitAll(eventLocalDataSource.observeEventsByDateAndGroupId(date, groupId)
+                    .map { it.entityToUserDomain() })
             }
-            eventLocalDataSource.observeEventsByDateAndGroupId(date, groupId)
-                .map { it.entityToUserDomain() }.collect { send(it) }
         }
     }
 

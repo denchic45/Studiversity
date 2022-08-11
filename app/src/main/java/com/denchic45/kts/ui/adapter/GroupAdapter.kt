@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import com.denchic45.kts.R
-import com.denchic45.kts.domain.DomainModel
+import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.model.Specialty
 import com.denchic45.kts.databinding.ItemIconContentBinding

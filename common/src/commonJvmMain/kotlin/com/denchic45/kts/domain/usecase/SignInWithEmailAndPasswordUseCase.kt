@@ -1,19 +1,16 @@
-package com.denchic45.kts.ui.login
+package com.denchic45.kts.domain.usecase
 
-import android.util.Log
-import com.denchic45.kts.data.repository.AuthService
 import com.denchic45.kts.data.repository.UserRepository
+import com.denchic45.kts.data.service.AuthService
 import javax.inject.Inject
 
-class LoginInteractor @Inject constructor(
+class SignInWithEmailAndPasswordUseCase @Inject constructor(
     private val userRepository: UserRepository,
-    private val authRepository: AuthService
+    private val authService: AuthService,
 ) {
 
-    suspend fun authByEmail(mail: String, password: String) {
-        Log.d("lol", "A authByEmail: ")
-        authRepository.signInWithEmailAndPassword(mail, password)
-        Log.d("lol", "A findAndSaveByEmail: ")
-        userRepository.findAndSaveByEmail(mail)
+    suspend operator fun invoke(email: String, password: String) {
+        authService.signInWithEmailAndPassword(email, password)
+        userRepository.findAndSaveByEmail(email)
     }
 }

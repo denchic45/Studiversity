@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.local.model
+package com.denchic45.kts.data.db.local.model
 
 import com.denchic45.kts.GroupEntity
 import com.denchic45.kts.SpecialtyEntity

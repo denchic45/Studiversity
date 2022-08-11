@@ -4,7 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.denchic45.kts.data.model.ui.UserItem
+import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.databinding.ItemUserBinding
 import com.denchic45.kts.util.viewBinding
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate

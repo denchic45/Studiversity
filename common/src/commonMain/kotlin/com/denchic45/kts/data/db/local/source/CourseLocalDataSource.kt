@@ -1,14 +1,15 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.*
-import com.denchic45.kts.data.local.model.CourseWithSubjectAndTeacherEntities
+import com.denchic45.kts.data.db.local.model.CourseWithSubjectAndTeacherEntities
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class CourseLocalDataSource(private val db: AppDatabase) {
+class CourseLocalDataSource @Inject constructor(private val db: AppDatabase) {
 
     private val queries: CourseEntityQueries = db.courseEntityQueries
 

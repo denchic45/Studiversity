@@ -1,7 +1,7 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.*
-import com.denchic45.kts.data.local.model.DayWithEventsEntities
+import com.denchic45.kts.data.db.local.model.DayWithEventsEntities
 import com.denchic45.kts.util.DatePatterns
 import com.denchic45.kts.util.toString
 import com.squareup.sqldelight.runtime.coroutines.asFlow
@@ -14,8 +14,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
+import javax.inject.Inject
 
-class EventLocalDataSource(db: AppDatabase) {
+class EventLocalDataSource @Inject constructor(db: AppDatabase) {
 
     private val queries: EventEntityQueries = db.eventEntityQueries
 
@@ -35,7 +36,7 @@ class EventLocalDataSource(db: AppDatabase) {
     }
 
     fun observeEventsByDateAndGroupId(
-        date: LocalDate, groupId: String
+        date: LocalDate, groupId: String,
     ): Flow<DayWithEventsEntities> {
         return getDayByDateAndGroupId(date, groupId)
             .flatMapLatest { dayEntity ->
@@ -59,7 +60,7 @@ class EventLocalDataSource(db: AppDatabase) {
 
     fun getDayByDateAndGroupId(
         date: LocalDate,
-        groupId: String
+        groupId: String,
     ): Flow<DayEntity?> {
         return queries.getDayByDateAndGroupId(date.toString(DatePatterns.yyy_MM_dd), groupId)
             .asFlow().mapToOneOrNull()
@@ -72,7 +73,7 @@ class EventLocalDataSource(db: AppDatabase) {
 
     fun observeEventsByDateAndTeacherId(
         date: LocalDate,
-        teacherId: String
+        teacherId: String,
     ): Flow<List<EventWithSubjectAndGroupAndTeachers>> {
         return queries.getEventsWithSubjectAndTeachersByDateAndTeacherId(
             date.toString(DatePatterns.yyy_MM_dd),
@@ -83,7 +84,7 @@ class EventLocalDataSource(db: AppDatabase) {
     suspend fun deleteByGroupAndDateRange(
         groupId: String,
         start: LocalDate,
-        end: LocalDate
+        end: LocalDate,
     ) = withContext(Dispatchers.IO) {
         queries.deleteByGroupAndDateRange(
             start.toString(DatePatterns.yyy_MM_dd),

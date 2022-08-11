@@ -1,12 +1,13 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.GroupCourseEntity
 import com.denchic45.kts.GroupCourseEntityQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class GroupCourseLocalDataSource (db:AppDatabase) {
+class GroupCourseLocalDataSource @Inject constructor(db: AppDatabase) {
     private val queries: GroupCourseEntityQueries = db.groupCourseEntityQueries
 
     suspend fun upsert(groupCourseEntity: GroupCourseEntity) = withContext(Dispatchers.IO) {

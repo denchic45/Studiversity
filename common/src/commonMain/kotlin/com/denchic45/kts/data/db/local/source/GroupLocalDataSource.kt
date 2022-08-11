@@ -1,15 +1,16 @@
-package com.denchic45.kts.data.local.db
+package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.*
-import com.denchic45.kts.data.local.model.GroupWithCuratorAndSpecialtyEntities
+import com.denchic45.kts.data.db.local.model.GroupWithCuratorAndSpecialtyEntities
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class GroupLocalDataSource(private val db: AppDatabase) {
+class GroupLocalDataSource @Inject constructor (private val db: AppDatabase) {
 
     private val queries: GroupEntityQueries = db.groupEntityQueries
 
@@ -23,36 +24,37 @@ class GroupLocalDataSource(private val db: AppDatabase) {
         }
     }
 
-   suspend fun get(id:String): GroupWithCuratorAndSpecialtyEntities? = withContext(Dispatchers.IO) {
-       queries.getWithCuratorAndSpecialtyByCuratorId(id) { group_id, group_name, curator_id, course, specialty_id, headman_id, timestamp, user_id, first_name, surname, patronymic, user_group_id, role, email, photo_url, gender, admin, generated_avatar, timestamp_, specialty_id_, name ->
-           GroupWithCuratorAndSpecialtyEntities(
-               GroupEntity(
-                   group_id,
-                   group_name,
-                   curator_id,
-                   course.toInt(),
-                   specialty_id,
-                   headman_id,
-                   timestamp
-               ),
-               UserEntity(
-                   user_id,
-                   first_name,
-                   surname,
-                   patronymic,
-                   user_group_id,
-                   role,
-                   email,
-                   photo_url,
-                   gender,
-                   admin,
-                   generated_avatar,
-                   timestamp_
-               ),
-               SpecialtyEntity(specialty_id_, name)
-           )
-       }.executeAsOneOrNull()
-   }
+    suspend fun get(id: String): GroupWithCuratorAndSpecialtyEntities? =
+        withContext(Dispatchers.IO) {
+            queries.getWithCuratorAndSpecialtyByCuratorId(id) { group_id, group_name, curator_id, course, specialty_id, headman_id, timestamp, user_id, first_name, surname, patronymic, user_group_id, role, email, photo_url, gender, admin, generated_avatar, timestamp_, specialty_id_, name ->
+                GroupWithCuratorAndSpecialtyEntities(
+                    GroupEntity(
+                        group_id,
+                        group_name,
+                        curator_id,
+                        course.toInt(),
+                        specialty_id,
+                        headman_id,
+                        timestamp
+                    ),
+                    UserEntity(
+                        user_id,
+                        first_name,
+                        surname,
+                        patronymic,
+                        user_group_id,
+                        role,
+                        email,
+                        photo_url,
+                        gender,
+                        admin,
+                        generated_avatar,
+                        timestamp_
+                    ),
+                    SpecialtyEntity(specialty_id_, name)
+                )
+            }.executeAsOneOrNull()
+        }
 
     fun observe(id: String): Flow<GroupWithCuratorAndSpecialtyEntities?> {
         return queries.getWithCuratorAndSpecialtyById(
@@ -141,7 +143,6 @@ class GroupLocalDataSource(private val db: AppDatabase) {
             .asFlow()
             .mapToOne(Dispatchers.IO)
     }
-
 
 
     fun getByCuratorId(userId: String): Flow<GroupWithCuratorAndSpecialtyEntities> {

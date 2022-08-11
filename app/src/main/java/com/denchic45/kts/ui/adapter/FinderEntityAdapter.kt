@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.denchic45.kts.R
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.data.model.ui.onId
+import com.denchic45.kts.ui.model.onId
 import com.denchic45.kts.databinding.ItemFinderEntityBinding
 import com.denchic45.kts.ui.adapter.FinderEntityAdapter.FinderEntityHolder
 import com.denchic45.kts.util.viewBinding

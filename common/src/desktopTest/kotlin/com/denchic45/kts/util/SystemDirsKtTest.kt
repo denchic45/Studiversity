@@ -2,11 +2,11 @@ package com.denchic45.kts.util
 
 import kotlin.test.Test
 
- class SystemDirsKtTest {
+class SystemDirsKtTest {
 
     @Test
     fun appDirTest() {
-        val dir = appDirectory
+        val dir = SystemDirs().appDirectory
         println("Directory is: $dir")
     }
 }

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
-import com.denchic45.kts.data.UiModel
+import com.denchic45.kts.ui.model.UiModel
 import com.denchic45.kts.domain.model.Section
 import com.denchic45.kts.databinding.FragmentCourseSectionEditorBinding
 import com.denchic45.kts.databinding.ItemAddSectionBinding

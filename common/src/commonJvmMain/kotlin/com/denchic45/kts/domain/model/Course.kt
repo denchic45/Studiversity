@@ -1,8 +1,6 @@
 package com.denchic45.kts.domain.model
 
-import com.denchic45.kts.domain.DomainModel
-import com.denchic45.kts.domain.model.GroupHeader
-import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.data.domain.model.DomainModel
 
 data class Course(
     override var id: String,

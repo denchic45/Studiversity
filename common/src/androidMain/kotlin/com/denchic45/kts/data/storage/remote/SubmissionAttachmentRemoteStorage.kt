@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.storage.local
+package com.denchic45.kts.data.storage.remote
 
 import android.net.Uri
 import com.denchic45.kts.data.domain.model.Attachment
@@ -6,14 +6,19 @@ import com.denchic45.kts.data.network.DownloadByUrlApi
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.StorageReference
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.tasks.await
 import retrofit2.Retrofit
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
-class SubmissionAttachmentRemoteStorage(
+actual class SubmissionAttachmentRemoteStorage @Inject constructor(
     private val firebaseStorage: FirebaseStorage,
-    private val retrofit: Retrofit,
+//    private val retrofit: Retrofit,
+    private val client: HttpClient
 ) {
     private val submissionAttachmentsRef = firebaseStorage.reference.child("submission_attachments")
 
@@ -26,7 +31,7 @@ class SubmissionAttachmentRemoteStorage(
         return submissionAttachmentsRef.child(contentId)
     }
 
-    suspend fun addSubmissionAttachments(
+    actual suspend fun addSubmissionAttachments(
         contentId: String,
         studentId: String,
         attachments: List<Attachment>,
@@ -55,15 +60,20 @@ class SubmissionAttachmentRemoteStorage(
         }
     }
 
-    fun getAttachmentName(url: String): String {
+    actual fun getAttachmentName(url: String): String {
         return firebaseStorage.getReferenceFromUrl(url).name
     }
 
-    suspend fun getAttachmentBytes(url: String): ByteArray {
-        return retrofit.create(DownloadByUrlApi::class.java).invoke(url).body()!!.bytes()
+    actual suspend fun getAttachmentBytes(url: String): ByteArray {
+        return client.get { url(url) }.readBytes()
+//        return retrofit.create(DownloadByUrlApi::class.java).invoke(url).body()!!.bytes()
     }
 
-    suspend fun update(contentId: String, studentId: String, attachments: List<Attachment>): List<String> {
+    actual suspend fun update(
+        contentId: String,
+        studentId: String,
+        attachments: List<Attachment>,
+    ): List<String> {
         val currentFiles = getSubmissionReference(contentId, studentId).listAll().await().items
 
         val currentFileNames = currentFiles.map { it.name }.toSet()
@@ -79,7 +89,7 @@ class SubmissionAttachmentRemoteStorage(
             .map { it.downloadUrl.await().toString() } + uploaded
     }
 
-    suspend fun deleteFilesByContentId(contentId: String) {
+    actual suspend fun deleteFilesByContentId(contentId: String) {
         getSubmissionsReference(contentId).deleteFolder()
     }
 

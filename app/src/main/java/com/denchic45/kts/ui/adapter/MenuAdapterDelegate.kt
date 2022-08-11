@@ -4,10 +4,10 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.denchic45.avatarGenerator.AvatarGenerator
-import com.denchic45.kts.data.UiModel
-import com.denchic45.kts.data.model.ui.UiText
-import com.denchic45.kts.data.model.ui.onId
-import com.denchic45.kts.data.model.ui.onString
+import com.denchic45.kts.ui.model.UiModel
+import com.denchic45.kts.ui.model.UiText
+import com.denchic45.kts.ui.model.onId
+import com.denchic45.kts.ui.model.onString
 import com.denchic45.kts.databinding.ItemNavBinding
 import com.denchic45.kts.databinding.ItemNavDividerBinding
 import com.denchic45.kts.databinding.ItemNavDropdownBinding

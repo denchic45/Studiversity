@@ -80,7 +80,7 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
                 .map { obj: CharSequence -> obj.toString() }
                 .doOnNext { btnGenerate.isEnabled = it.isEmpty() }
                 .filter(String::isNotEmpty)
-                .subscribe { s -> viewModel.onPasswordType(s) }
+                .subscribe(viewModel::onPasswordType)
 
             tilGroup.setEndIconOnClickListener { viewModel.onSelectGroupClick() }
 
@@ -92,41 +92,34 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
 
             etGroup.setOnClickListener { viewModel.onSelectGroupClick() }
 
-            viewModel.firstNameField.collectWhenStarted(
-                lifecycleScope
-            ) { firstName ->
+            viewModel.firstNameField.collectWhenStarted(lifecycleScope) { firstName ->
                 if (firstName != etFirstName.text.toString()) etFirstName.setText(firstName)
             }
 
-            viewModel.surnameField.collectWhenStarted(
-                lifecycleScope
-            ) { surname ->
+            viewModel.surnameField.collectWhenStarted(lifecycleScope) { surname ->
                 if (surname != etSurname.text.toString()) etSurname.setText(surname)
             }
 
-            viewModel.patronymicField.collectWhenStarted(
-                lifecycleScope
-            ) { patronymic ->
+            viewModel.patronymicField.collectWhenStarted(lifecycleScope) { patronymic ->
                 if (patronymic != etPatronymic.text
                         .toString()
                 ) etPatronymic.setText(patronymic)
             }
 
-            viewModel.emailField.collectWhenStarted(
-                lifecycleScope
-            ) { email -> if (email != etEmail.text.toString()) etEmail.setText(email) }
-
-            viewModel.genderField.filter(String::isNotEmpty).collectWhenStarted(
-                lifecycleScope
-            ) { gender ->
-                etGender.setText(
-                    resources.getIdentifier(
-                        gender,
-                        "string",
-                        requireContext().packageName
-                    )
-                )
+            viewModel.emailField.collectWhenStarted(lifecycleScope) { email ->
+                if (email != etEmail.text.toString()) etEmail.setText(email)
             }
+
+            viewModel.genderField.filter(String::isNotEmpty)
+                .collectWhenStarted(lifecycleScope) { gender ->
+                    etGender.setText(
+                        resources.getIdentifier(
+                            gender,
+                            "string",
+                            requireContext().packageName
+                        )
+                    )
+                }
 
             viewModel.passwordField.collectWhenStarted(lifecycleScope) {
                 etPassword.setText(it)
@@ -136,13 +129,9 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
                 etRole.setText(resources.getString(role))
             }
 
-            viewModel.groupField.collectWhenResumed(lifecycleScope) {
-                etGroup.setText(it)
-            }
+            viewModel.groupField.collectWhenResumed(lifecycleScope, etGroup::setText)
 
-            viewModel.accountFieldsVisibility.collectWhenStarted(
-                lifecycleScope
-            ) { visibility: Boolean ->
+            viewModel.accountFieldsVisibility.collectWhenStarted(lifecycleScope) { visibility ->
                 llAccount.visibility = if (visibility) View.VISIBLE else View.GONE
             }
 

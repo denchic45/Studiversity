@@ -4,9 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.domain.DomainModel
-import com.denchic45.kts.data.model.ui.UiText
-import com.denchic45.kts.domain.model.Attachment
+import com.denchic45.kts.data.domain.model.Attachment
+import com.denchic45.kts.data.domain.model.DomainModel
+import com.denchic45.kts.ui.model.UiText
 import com.denchic45.kts.domain.model.SubmissionSettings
 import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.domain.model.User
@@ -254,7 +254,7 @@ class TaskInfoViewModel @Inject constructor(
         val submissionSettings = task().submissionSettings
         val allowEditContent = status !is Task.SubmissionStatus.Submitted
 
-        val attachments =
+        val attachments: List<DomainModel> =
             if (content.attachments.size == submissionSettings.attachmentsLimit || !allowEditContent)
                 content.attachments
             else
