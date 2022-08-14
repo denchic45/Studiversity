@@ -16,8 +16,6 @@ buildscript {
         classpath("com.google.gms:google-services:4.3.13")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("com.squareup.sqldelight:gradle-plugin:1.5.3")
-//        classpath(kotlin("serialization", version = kotlinVersion))
-//        classpath("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
     }
 }
 
