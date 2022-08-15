@@ -1,13 +1,16 @@
 package com.denchic45.kts
 
+import com.denchic45.kts.di.SettingsFactory
 import com.denchic45.kts.di.component.DaggerAndroidAppComponent
 import com.denchic45.kts.di.module.AppModule
+import com.denchic45.kts.di.module.PreferencesModule
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 
 class AndroidApp : DaggerApplication() {
     private val androidAppComponent: AndroidInjector<AndroidApp> = DaggerAndroidAppComponent.builder()
         .appModule(AppModule(this))
+        .preferenceModule(PreferencesModule(SettingsFactory(this)))
         .create(this)
 
     override fun onCreate() {

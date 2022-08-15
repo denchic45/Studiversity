@@ -16,7 +16,7 @@ import javax.inject.Singleton
         DatabaseModule::class,
         StorageModule::class,
         MapperModule::class,
-        PreferenceModule::class,
+        PreferencesModule::class,
         RawModule::class,
         DispatcherModule::class,
         FragmentModule::class,
@@ -28,6 +28,7 @@ interface AndroidAppComponent : AndroidInjector<AndroidApp> {
     @Component.Builder
     abstract class Builder : AndroidInjector.Builder<AndroidApp>() {
         abstract fun appModule(appModule: AppModule): Builder
+        abstract fun preferenceModule(preferenceModule: PreferencesModule):Builder
         abstract override fun build(): AndroidAppComponent
     }
 }
