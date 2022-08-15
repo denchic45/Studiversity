@@ -29,8 +29,6 @@ kotlin {
 
                 implementation("com.squareup.sqldelight:runtime-jvm:$sqlDelightVersion")
                 implementation("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
-//                implementation("app.cash.sqldelight:runtime-jvm:2.0.0-alpha03")
-//                implementation("app.cash.sqldelight:coroutines-extensions-jvm:2.0.0-alpha03")
 
                 implementation("com.google.code.gson:gson:2.9.0")
 
@@ -53,7 +51,6 @@ kotlin {
                 api(compose.foundation)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 api(compose.material3)
-//                api(compose.material)
 
                 api("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
@@ -65,16 +62,11 @@ kotlin {
 
                 implementation("com.squareup.sqldelight:runtime:$sqlDelightVersion")
                 implementation("com.squareup.sqldelight:coroutines-extensions:$sqlDelightVersion")
-//                implementation("app.cash.sqldelight:runtime:2.0.0-alpha03")
-//                implementation("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha-03")
 
                 implementation("io.insert-koin:koin-core:$koinVersion")
 
                 api("com.russhwolf:multiplatform-settings:0.9")
                 api("com.russhwolf:multiplatform-settings-coroutines:0.9")
-
-//                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.13.0")
-//                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0-RC")
             }
         }
         val commonTest by getting {
@@ -95,19 +87,18 @@ kotlin {
                 api("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("com.squareup.sqldelight:android-driver:$sqlDelightVersion")
-//                implementation("app.cash.sqldelight:android-driver:2.0.0-alpha03")
 
                 api("com.squareup.retrofit2:retrofit:2.9.0")
 
-//                implementation("com.android.tools:desugar_jdk_libs:1.1.5")
-//                configurations["coreLibraryDesugaring"].dependencies.add(project.dependencies
-//                    .create("com.android.tools:desugar_jdk_libs:1.1.5"))
+                // Dagger
+                api("com.google.dagger:dagger-android:2.38.1")
+                api("com.google.dagger:dagger-android-support:2.38.1")
 
-                //Navigation
+                // Navigation
                 api("androidx.navigation:navigation-fragment-ktx:2.5.1")
                 api("androidx.navigation:navigation-ui-ktx:2.5.1")
 
-                //Firebase SDK
+                // Firebase SDK
                 api(project.dependencies.platform("com.google.firebase:firebase-bom:30.2.0"))
                 api("com.google.firebase:firebase-firestore") {
                     exclude("com.squareup.okhttp")
@@ -139,9 +130,6 @@ kotlin {
 
                 api("com.squareup.sqldelight:sqlite-driver:$sqlDelightVersion")
                 api("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
-//                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
-
-//                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-jvm:0.13.0")
 
                 dependsOn(commonJvmMain)
             }

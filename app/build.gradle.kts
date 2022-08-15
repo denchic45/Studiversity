@@ -102,16 +102,15 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
 
-    implementation("androidx.appcompat:appcompat:1.4.2")
+    implementation("androidx.appcompat:appcompat:1.5.0")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
-    implementation("com.google.android.material:material:1.7.0-alpha03")
+    implementation("com.google.android.material:material:1.7.0-beta01")
     implementation("androidx.preference:preference-ktx:1.2.0")
 
     implementation(project(":appbarcontroller"))
     implementation("com.github.denchic45:SearchBar:1.1")
 
     implementation("androidx.test:core-ktx:1.4.0")
-//    implementation("androidx.lifecycle:lifecycle-common-java8:2.5.0")
 
     // support new language API
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
@@ -133,7 +132,7 @@ dependencies {
     implementation("io.reactivex.rxjava3:rxjava:3.1.0")
     implementation("com.jakewharton.rxbinding4:rxbinding-material:4.0.0")
 
-//    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.8.1"
+//    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.8.1")
 
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.github.tarek360.RichPath:animator:0.1.1")
@@ -148,10 +147,8 @@ dependencies {
 
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
-    // dagger
+    // Dagger-android
     kapt("com.google.dagger:dagger-compiler:2.38.1")
-    implementation("com.google.dagger:dagger-android:2.38.1")
-    implementation("com.google.dagger:dagger-android-support:2.38.1")
     kapt("com.google.dagger:dagger-android-processor:2.38.1")
 
     implementation("org.mapstruct:mapstruct:1.5.0.Beta1")
