@@ -91,7 +91,6 @@ class TaskEditorViewModel @Inject constructor(
                 DateTimeFormatter.ofPattern("EE, dd LLLL yyyy, HH:mm")
             ) else null,
             disabledSendAfterDate.value ?: false,
-            attachments,
             with(submissionSettings.value) {
                 SubmissionSettings(
                     textAvailable,
@@ -201,7 +200,6 @@ class TaskEditorViewModel @Inject constructor(
             findAttachmentsUseCase(taskId).collect {
                 attachments.clear()
                 attachments.addAll(it)
-                uiEditor.oldItem = uiEditor.oldItem!!.copy(attachments = attachments.toList())
                 postAttachments()
             }
         }
@@ -335,9 +333,9 @@ class TaskEditorViewModel @Inject constructor(
         if (uiValidator.runValidates() && uiEditor.hasBeenChanged()) {
             viewModelScope.launch {
                 if (uiEditor.isNew) {
-                    addTaskUseCase(uiEditor.item)
+                    addTaskUseCase(uiEditor.item, attachments)
                 } else {
-                    updateTaskUseCase(uiEditor.item)
+                    updateTaskUseCase(uiEditor.item, attachments)
                 }
                 finish()
             }

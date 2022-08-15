@@ -259,15 +259,17 @@ class CourseRepository @Inject constructor(
 
     fun findAttachmentsByContentId(contentId: String): Flow<List<Attachment>> {
         return courseContentLocalDataSource.getAttachmentsById(contentId)
-            .map { attachments -> contentAttachmentStorage.get(contentId, attachments) }
+            .map { attachmentUrls ->
+                contentAttachmentStorage.getAttachments(contentId,
+                    attachmentUrls)
+            }
     }
 
-    suspend fun addTask(task: Task) {
+    suspend fun addTask(task: Task, attachments: List<Attachment>) {
         requireAllowWriteData()
         courseRemoteDataSource.addTask(
             task = CourseContentMap(task.toMap(
-                attachments = contentAttachmentStorage.addContentAttachments(task.id,
-                    task.attachments),
+                attachments = contentAttachmentStorage.addContentAttachments(task.id, attachments),
                 order = createLastContentOrder(task)
             ).apply {
                 val studentIdsOfCourse =
@@ -294,28 +296,25 @@ class CourseRepository @Inject constructor(
     )
 
 
-    suspend fun updateTask(task: Task) {
+    suspend fun updateTask(task: Task, attachments: List<Attachment>) {
         requireAllowWriteData()
 
-        val attachments = contentAttachmentStorage.update(task.id, task.attachments)
+        val attachmentUrls = contentAttachmentStorage.update(task.id, attachments)
         val cacheTask = courseContentLocalDataSource.get(task.id)!!.run {
-            toTaskDomain().toMap(attachments, order)
+            toTaskDomain().toMap(this.attachments, order)
         }
-        val map = task.toMap(attachments, task.order)
+        val map = task.toMap(attachmentUrls, task.order)
         val updatedFields = map.differenceOf(cacheTask).toMutableMap()
             .apply {
-                if (containsKey("sectionId")) {
-                    put(
-                        "order",
-                        createLastContentOrder(task))
-                }
+                if (containsKey("sectionId"))
+                    put("order", createLastContentOrder(task))
+
             }
         courseRemoteDataSource.updateTask(task.courseId, task.id, updatedFields)
     }
 
     private suspend fun createLastContentOrder(task: Task) =
-        getLastContentOrderByCourseIdAndSectionId(task.courseId,
-            task.sectionId) + 1024
+        getLastContentOrderByCourseIdAndSectionId(task.courseId, task.sectionId) + 1024
 
     suspend fun removeCourseContent(contentId: String) {
         requireAllowWriteData()

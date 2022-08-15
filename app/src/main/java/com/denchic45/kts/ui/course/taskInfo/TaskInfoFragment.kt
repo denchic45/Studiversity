@@ -74,7 +74,7 @@ class TaskInfoFragment :
             }
         }
 
-    private val fileChooser by lazy {
+    private val fileViewer by lazy {
         FileViewer(requireActivity()) {
             Toast.makeText(
                 requireContext(),
@@ -211,7 +211,7 @@ class TaskInfoFragment :
         }
 
         lifecycleScope.launchWhenStarted {
-            viewModel.taskAttachments.collect {
+            viewModel.attachments.collect {
                 binding.tvAttachmentsHeader.visibility =
                     if (it.isEmpty()) View.GONE else View.VISIBLE
                 adapter.submit(it)
@@ -283,7 +283,7 @@ class TaskInfoFragment :
             }
         }
 
-        viewModel.openAttachment.observe(viewLifecycleOwner) { fileChooser.openFile(it) }
+        viewModel.openAttachment.observe(viewLifecycleOwner) { fileViewer.openFile(it) }
 
         viewModel.openFilePicker.observe(viewLifecycleOwner) { filePicker.selectFiles() }
     }

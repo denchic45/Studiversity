@@ -2,7 +2,6 @@ package com.denchic45.kts.data.storage.remote
 
 import android.net.Uri
 import com.denchic45.kts.data.domain.model.Attachment
-import com.denchic45.kts.data.network.DownloadByUrlApi
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.StorageReference
@@ -10,7 +9,6 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.tasks.await
-import retrofit2.Retrofit
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -41,7 +39,7 @@ actual class SubmissionAttachmentRemoteStorage @Inject constructor(
                 getSubmissionReference(
                     contentId,
                     studentId
-                ).child(attachment.name).downloadUrl.await().toString()
+                ).child(attachment.shortName).downloadUrl.await().toString()
             } catch (exception: Exception) {
                 if (exception is StorageException &&
                     exception.errorCode == StorageException.ERROR_OBJECT_NOT_FOUND
@@ -49,7 +47,7 @@ actual class SubmissionAttachmentRemoteStorage @Inject constructor(
                     val timestamp = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH-mm-ss")
                         .format(LocalDateTime.now())
                     val filePath =
-                        submissionAttachmentsRef.child("$contentId/$studentId/${timestamp}_${attachment.name}")
+                        submissionAttachmentsRef.child("$contentId/$studentId/${timestamp}_${attachment.shortName}")
                     filePath.putFile(Uri.fromFile(attachment.file)).await()
                     filePath.downloadUrl.await().toString()
                 } else {
@@ -60,6 +58,7 @@ actual class SubmissionAttachmentRemoteStorage @Inject constructor(
         }
     }
 
+    //TODO Вынести этот метод в абстракцию, чтобы его мооно было использовать в любом storage
     actual fun getAttachmentName(url: String): String {
         return firebaseStorage.getReferenceFromUrl(url).name
     }
@@ -77,9 +76,9 @@ actual class SubmissionAttachmentRemoteStorage @Inject constructor(
         val currentFiles = getSubmissionReference(contentId, studentId).listAll().await().items
 
         val currentFileNames = currentFiles.map { it.name }.toSet()
-        val updatedFileNames = attachments.map { it.name }.toSet()
+        val updatedFileNames = attachments.map { it.shortName }.toSet()
 
-        val added = attachments.filterNot { currentFileNames.contains(it.name) }
+        val added = attachments.filterNot { currentFileNames.contains(it.shortName) }
         val removed = currentFiles.filterNot { updatedFileNames.contains(it.name) }
 
         removed.forEach { it.delete().await() }

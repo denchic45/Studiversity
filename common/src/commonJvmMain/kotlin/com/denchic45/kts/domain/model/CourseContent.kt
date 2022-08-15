@@ -1,6 +1,5 @@
 package com.denchic45.kts.domain.model
 
-import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.domain.model.DomainModel
 import java.util.*
 
@@ -10,7 +9,6 @@ abstract class CourseContent : DomainModel {
     abstract val name: String
     abstract val description: String
     abstract val order: Long
-    abstract val attachments: List<Attachment>
     abstract val commentsEnabled: Boolean
     abstract val createdDate: Date
     abstract val timestamp: Date

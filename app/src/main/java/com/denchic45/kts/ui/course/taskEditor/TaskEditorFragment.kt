@@ -34,10 +34,7 @@ import com.denchic45.kts.ui.adapter.BaseViewHolder
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.course.sectionPicker.SectionPickerFragment
 import com.denchic45.kts.ui.course.sectionPicker.SectionPickerViewModel
-import com.denchic45.kts.util.FilePicker
-import com.denchic45.kts.util.ValueFilter
-import com.denchic45.kts.util.getType
-import com.denchic45.kts.util.viewBinding
+import com.denchic45.kts.util.*
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
 import com.denchic45.widget.extendedAdapter.adapter
 import com.denchic45.widget.extendedAdapter.extension.clickBuilder
@@ -69,6 +66,16 @@ class TaskEditorFragment :
     private var oldToolbarScrollFlags by Delegates.notNull<Int>()
 
     private lateinit var appBarController: AppBarController
+
+    private val fileViewer by lazy {
+        FileViewer(requireActivity()) {
+            Toast.makeText(
+                requireContext(),
+                "Невозможно открыть файл на данном устройстве",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
 
     private val adapter = adapter {
         delegates(AttachmentAdapterDelegate())
@@ -241,7 +248,7 @@ class TaskEditorFragment :
                 }
             }
 
-            viewModel.openAttachment.observe(viewLifecycleOwner, this@TaskEditorFragment::openFile)
+            viewModel.openAttachment.observe(viewLifecycleOwner, fileViewer::openFile)
 
             viewModel.availabilityDateRemoveVisibility.observe(viewLifecycleOwner) {
                 ivRemoveAvailabilityDate.visibility = if (it) View.VISIBLE else View.GONE
@@ -322,30 +329,6 @@ class TaskEditorFragment :
         }
     }
 
-    private fun openFile(file: File) {
-        // Get URI and MIME type of file
-        // Open file with user selected app
-        val intent = Intent().apply {
-            action = Intent.ACTION_VIEW
-            val apkURI = FileProvider.getUriForFile(
-                requireContext(),
-                requireActivity().applicationContext
-                    .packageName.toString() + ".provider", file
-            )
-            val extensionFromMimeType = MimeTypeMap
-                .getSingleton()
-                .getExtensionFromMimeType(file.toURI().toURL().toString())
-            setDataAndType(apkURI, extensionFromMimeType)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        try {
-            requireActivity().startActivity(intent)
-        } catch (exception: ActivityNotFoundException) {
-            Toast.makeText(requireContext(), "Не получается открыть файл :(", Toast.LENGTH_SHORT)
-                .show()
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         appBarController.toolbarScrollFlags = oldToolbarScrollFlags
@@ -404,7 +387,7 @@ class AttachmentHolder(
                 ivFileRemove.visibility = View.GONE
             }
             ivOverlay.setImageDrawable(null)
-            tvName.text = item.name
+            tvName.text = item.shortName
             val glide = Glide.with(ivFile)
             val load: RequestBuilder<Drawable> = when (item.file.getType()) {
                 "image" -> {

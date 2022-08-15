@@ -42,7 +42,7 @@ class TaskInfoViewModel @Inject constructor(
         replay = 1,
         started = SharingStarted.WhileSubscribed()
     )
-    val taskAttachments = findTaskAttachmentsUseCase(taskId)
+    val attachments = findTaskAttachmentsUseCase(taskId).stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     val taskViewState = taskFlow.onEach { task ->
         if (task == null) {
             finish()
@@ -142,7 +142,7 @@ class TaskInfoViewModel @Inject constructor(
 
     fun onTaskFileClick(position: Int) {
         viewModelScope.launch {
-            openAttachment.value = task().attachments[position].file
+            openAttachment.value = attachments.value[position].file
         }
     }
 

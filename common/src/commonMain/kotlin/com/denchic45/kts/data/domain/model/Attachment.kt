@@ -8,9 +8,11 @@ data class Attachment(
     val file: File
 ) : DomainModel {
 
-    val name: String = Files.nameWithoutTimestamp(file.name)
+    val shortName: String = Files.nameWithoutTimestamp(file.name)
 
-    override var id: String = name
+    val name: String = file.name
+
+    override var id: String = shortName
 
     val extension: String = file.getExtension()
 }

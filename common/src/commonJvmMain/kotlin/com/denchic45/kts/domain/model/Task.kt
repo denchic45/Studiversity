@@ -16,9 +16,7 @@ data class Task(
     override val description: String,
     override val order: Long,
     val completionDate: LocalDateTime?,
-
     val disabledSendAfterDate: Boolean,
-    override val attachments: List<Attachment>,
     val submissionSettings: SubmissionSettings,
     override val commentsEnabled: Boolean,
     override val createdDate: Date,
@@ -37,7 +35,6 @@ data class Task(
         0,
         LocalDateTime.MIN,
         false,
-        emptyList(),
         SubmissionSettings(
             true,
             100,

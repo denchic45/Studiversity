@@ -9,7 +9,7 @@ import javax.inject.Inject
 class SubmissionAttachmentLocalStorage @Inject constructor(systemDirs: SystemDirs) {
 
     private val internalDir = systemDirs.appDirectory
-    private val submissionLocalPath = File("${internalDir.path}/submissions")
+    private val submissionDir = File("${internalDir.path}/submissions")
 
     fun getByContentIdAndStudentId(contentId: String, studentId: String): List<File> {
         val attachmentPath =  getSubmissionLocalPath(contentId, studentId)
@@ -18,11 +18,11 @@ class SubmissionAttachmentLocalStorage @Inject constructor(systemDirs: SystemDir
     }
 
     private fun getSubmissionLocalPath(contentId: String, studentId: String): String {
-        return submissionLocalPath.path + '/' + contentId + '/' + studentId
+        return submissionDir.path + '/' + contentId + '/' + studentId
     }
 
     private fun getSubmissionsLocalPath(contentId: String): String {
-        return submissionLocalPath.path + '/' + contentId
+        return submissionDir.path + '/' + contentId
     }
 
     fun save(contentId: String, studentId: String, name:String, bytes:ByteArray): File {

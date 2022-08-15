@@ -102,7 +102,7 @@ fun mapAttachmentsToFilePaths(attachments: List<Attachment>): List<String> {
 }
 
 fun CourseContentEntity.courseContentEntityWithDetailsToTask(
-    taskDetails: ContentDetails.Task,
+    taskDetails: ContentDetails.Task
 ) = Task(
     id = content_id,
     courseId = course_id,
@@ -117,7 +117,6 @@ fun CourseContentEntity.courseContentEntityWithDetailsToTask(
         )
     },
     disabledSendAfterDate = taskDetails.disabledSendAfterDate,
-    attachments = mapFilePathsToAttachments(attachments),
     submissionSettings = taskDetails.submissionSettings,
     commentsEnabled = comments_enabled,
     createdDate = Date(created_date),

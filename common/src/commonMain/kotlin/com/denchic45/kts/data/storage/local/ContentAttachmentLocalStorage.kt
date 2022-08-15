@@ -9,33 +9,50 @@ import javax.inject.Inject
 class ContentAttachmentLocalStorage @Inject constructor(systemDirs: SystemDirs) {
 
     private val internalDir = systemDirs.appDirectory
-    private val contentPath = File("${internalDir.path}/contents")
+    private val contentPDir = File("${internalDir.path}/contents")
 
-    fun deleteFromLocal(contentId: String) {
-        val contentDir = File(contentPath.path + '/' + getAttachmentPath(contentId) + contentId)
+    fun delete(contentId: String) {
+        val contentDir =
+            File(contentPDir.path + '/' + getAttachmentsPath(contentId) + contentId)
         contentDir.listFiles()?.forEach { it.delete() }
         contentDir.delete()
     }
 
-    fun get(contentId: String, url: String): File? {
-        val timestamp = url.substring(url.lastIndexOf("/o/"), url.indexOf('_'))
-        val attachmentPath = getAttachmentPath(contentId)
-        val itContentDir = File(attachmentPath)
-        return itContentDir.listFiles { _, name -> name.startsWith(timestamp) }?.firstOrNull()
+    fun get(contentId: String, name: String): File? {
+        val attachmentPath = getAttachmentPath(contentId, name)
+        return File(attachmentPath).run {
+            if (exists())
+                this
+            else null
+        }
     }
 
-    private fun getAttachmentPath(contentId: String): String {
-        return contentPath.path + '/' + contentId
+    private fun getAttachmentsPath(contentId: String): String {
+        return contentPDir.path + File.separator + contentId
+    }
+
+    private fun getAttachmentPath(contentId: String, name: String): String {
+        return contentPDir.path + File.separator + contentId + File.separator + name
     }
 
     fun saveFile(contentId: String, name: String, bytes: ByteArray): File {
-        val attachmentPath = getAttachmentPath(contentId)
-        File(attachmentPath).mkdirs()
-        val contentDir = File(attachmentPath, name)
+        val attachmentsPath = getAttachmentsPath(contentId)
+        File(attachmentsPath).mkdirs()
+        val contentDir = File(attachmentsPath, name)
         contentDir.createNewFile()
         val fileOutputStream = FileOutputStream(contentDir)
         fileOutputStream.write(bytes)
         fileOutputStream.close()
         return contentDir
+    }
+
+    fun getByContent(contentId: String): List<File> {
+        val attachmentPath = getSubmissionPath(contentId)
+        val itContentDir = File(attachmentPath)
+        return itContentDir.listFiles()?.asList() ?: emptyList()
+    }
+
+    private fun getSubmissionPath(contentId: String): String {
+        return contentPDir.path + '/' + contentId
     }
 }
