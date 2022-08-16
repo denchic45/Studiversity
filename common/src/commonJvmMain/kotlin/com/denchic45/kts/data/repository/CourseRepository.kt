@@ -1,5 +1,6 @@
 package com.denchic45.kts.data.repository
 
+import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.ContentCommentEntity
 import com.denchic45.kts.GroupCourseEntity
 import com.denchic45.kts.SubmissionCommentEntity
@@ -13,7 +14,6 @@ import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.pref.*
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.data.storage.ContentAttachmentStorage
 import com.denchic45.kts.data.storage.SubmissionAttachmentStorage

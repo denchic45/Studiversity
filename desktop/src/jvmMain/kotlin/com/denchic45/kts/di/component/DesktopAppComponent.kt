@@ -1,12 +1,13 @@
 package com.denchic45.kts.di.component
 
+import com.denchic45.kts.di.module.DesktopAppModule
 import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
 @Component(
     modules = [
-//        AppModule::class,
+        DesktopAppModule::class,
 //        DatabaseModule::class,
 //        StorageModule::class,
 //        MapperModule::class,
@@ -19,9 +20,9 @@ import javax.inject.Singleton
     ]
 )
 interface DesktopAppComponent {
-//    @Component.Builder
-//    abstract class Builder : .Builder<AndroidApp>() {
-//        abstract fun appModule(appModule: AppModule): Builder
-//        abstract override fun build(): DesktopAppComponent
-//    }
+    @Component.Builder
+    interface Builder {
+        fun appModule(desktopAppModule: DesktopAppModule): Builder
+        fun build(): DesktopAppComponent
+    }
 }

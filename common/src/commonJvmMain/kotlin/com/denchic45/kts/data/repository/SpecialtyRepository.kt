@@ -1,9 +1,9 @@
 package com.denchic45.kts.data.repository
 
+import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.db.local.source.SpecialtyLocalDataSource
 import com.denchic45.kts.data.db.remote.source.SpecialtyRemoteDataSource
 import com.denchic45.kts.data.mapper.*
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.Specialty
 import kotlinx.coroutines.CoroutineScope

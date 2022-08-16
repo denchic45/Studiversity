@@ -1,5 +1,6 @@
 package com.denchic45.kts.data.repository
 
+import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.DayEntity
 import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.db.remote.model.DayMap
@@ -12,7 +13,6 @@ import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.UserPreferences
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.EventsOfDay
 import com.denchic45.kts.domain.model.GroupHeader

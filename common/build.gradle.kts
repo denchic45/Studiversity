@@ -37,8 +37,8 @@ kotlin {
                 api("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
 
                 //Dagger
-                api("com.google.dagger:dagger:2.38.1")
-                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.38.1"))
+                api("com.google.dagger:dagger:2.43.2")
+//                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.43.2"))
 
                 implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
             }
@@ -46,7 +46,6 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-
                 api(compose.runtime)
                 api(compose.foundation)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
@@ -91,8 +90,8 @@ kotlin {
                 api("com.squareup.retrofit2:retrofit:2.9.0")
 
                 // Dagger
-                api("com.google.dagger:dagger-android:2.38.1")
-                api("com.google.dagger:dagger-android-support:2.38.1")
+                api("com.google.dagger:dagger-android:2.43.2")
+                api("com.google.dagger:dagger-android-support:2.43.2")
 
                 // Navigation
                 api("androidx.navigation:navigation-fragment-ktx:2.5.1")
@@ -131,6 +130,9 @@ kotlin {
                 api("com.squareup.sqldelight:sqlite-driver:$sqlDelightVersion")
                 api("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
+                // Dagger
+                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.43.2"))
+
                 dependsOn(commonJvmMain)
             }
         }
@@ -160,6 +162,9 @@ android {
     }
     sourceSets.all {
         kotlin.srcDir("src/$name/kotlin")
+    }
+    kapt {
+        correctErrorTypes = true
     }
 }
 

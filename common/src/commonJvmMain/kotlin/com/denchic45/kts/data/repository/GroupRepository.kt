@@ -1,5 +1,6 @@
 package com.denchic45.kts.data.repository
 
+import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.db.remote.model.GroupMap
 import com.denchic45.kts.data.db.remote.source.CourseRemoteDataSource
@@ -9,7 +10,6 @@ import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.TimestampPreferences
 import com.denchic45.kts.data.pref.UserPreferences
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.*
 import com.denchic45.kts.domain.model.User.Companion.isStudent
@@ -205,7 +205,7 @@ class GroupRepository @Inject constructor(
 
     fun getNameByGroupId(groupId: String): Flow<String> = flow {
         coroutineScope {
-            launch() {
+            launch {
                 if (!groupLocalDataSource.isExist(groupId)) {
                     observeAndSaveGroupFlow(groupId).collect()
                 }

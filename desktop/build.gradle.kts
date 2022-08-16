@@ -3,6 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("multiplatform")
+    id("kotlin-kapt")
     id("org.jetbrains.compose") version "1.1.1"
 }
 
@@ -21,6 +22,9 @@ kotlin {
             dependencies {
                 implementation(project(":common"))
                 implementation(compose.desktop.currentOs)
+                // Dagger
+                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.43.2"))
+
 //                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
 //                implementation(compose.material3)
 //                implementation("org.jetbrains.compose.material3:material3-desktop:1.1.0")

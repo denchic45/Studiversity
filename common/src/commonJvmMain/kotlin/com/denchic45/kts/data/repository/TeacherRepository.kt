@@ -1,10 +1,10 @@
 package com.denchic45.kts.data.repository
 
+import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.mapper.mapsToUsers
 import com.denchic45.kts.data.mapper.toMap
 import com.denchic45.kts.data.db.remote.source.UserRemoteDataSource
 import com.denchic45.kts.data.storage.remote.UserRemoteStorage
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.User
 import kotlinx.coroutines.flow.Flow

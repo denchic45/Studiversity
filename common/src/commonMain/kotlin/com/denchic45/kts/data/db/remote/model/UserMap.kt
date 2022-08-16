@@ -3,7 +3,6 @@ package com.denchic45.kts.data.db.remote.model
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.util.FireMap
 import com.denchic45.kts.util.SearchKeysGenerator
-import com.denchic45.kts.util.mapCast
 import com.denchic45.kts.util.mapOrNull
 import java.util.*
 

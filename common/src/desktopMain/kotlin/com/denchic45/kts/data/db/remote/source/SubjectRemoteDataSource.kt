@@ -2,16 +2,10 @@ package com.denchic45.kts.data.db.remote.source
 
 import com.denchic45.kts.data.db.remote.model.CourseMap
 import com.denchic45.kts.data.db.remote.model.SubjectMap
-import com.denchic45.kts.data.service.AppVersionService
-import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.util.FireMap
 import kotlinx.coroutines.flow.Flow
 
-actual class SubjectRemoteDataSource(
-    networkService: NetworkService,
-    appVersionService: AppVersionService,
-    courseRemoteDataSource: CourseRemoteDataSource
-) {
+actual class SubjectRemoteDataSource {
 
     actual suspend fun add(subjectMap: SubjectMap) {
 

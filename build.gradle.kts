@@ -2,12 +2,13 @@
 buildscript {
     val kotlinVersion = "1.6.10"
     repositories {
-        gradlePluginPortal()
-        google()
         mavenCentral()
+        google()
+        gradlePluginPortal()
         maven(url = "https://dl.bintray.com/kotlin/kotlinx/")
         maven(url = "https://kotlin.bintray.com/kotlin-eap")
         maven(url = "https://kotlin.bintray.com/kotlin-dev")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 
     dependencies {
@@ -24,9 +25,10 @@ version = "1.0"
 
 allprojects {
     repositories {
+        mavenCentral()
         google()
         maven("https://jitpack.io")
-        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 

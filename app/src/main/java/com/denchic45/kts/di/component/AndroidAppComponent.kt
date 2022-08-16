@@ -12,7 +12,7 @@ import javax.inject.Singleton
 @Component(
     modules = [
         AndroidSupportInjectionModule::class,
-        AppModule::class,
+        AndroidAppModule::class,
         DatabaseModule::class,
         StorageModule::class,
         MapperModule::class,
@@ -27,7 +27,7 @@ import javax.inject.Singleton
 interface AndroidAppComponent : AndroidInjector<AndroidApp> {
     @Component.Builder
     abstract class Builder : AndroidInjector.Builder<AndroidApp>() {
-        abstract fun appModule(appModule: AppModule): Builder
+        abstract fun appModule(androidAppModule: AndroidAppModule): Builder
         abstract fun preferenceModule(preferenceModule: PreferencesModule):Builder
         abstract override fun build(): AndroidAppComponent
     }

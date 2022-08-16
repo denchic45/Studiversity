@@ -1,6 +1,5 @@
-package com.denchic45.appVersion
+package com.denchic45.kts.data.service
 
-import com.denchic45.kts.data.service.AppVersionService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -8,7 +7,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FakeAppVersionService @Inject constructor(
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) : AppVersionService() {
 
     override fun observeUpdates(onUpdateAvailable: () -> Unit, onError: (Throwable) -> Unit) {
@@ -21,13 +20,13 @@ class FakeAppVersionService @Inject constructor(
 
     override fun startDownloadUpdate() {
         coroutineScope.launch(Dispatchers.IO) {
-            onUpdateLoading(0,10F)
+            onUpdateLoading(0, 10F)
             delay(500)
-            onUpdateLoading(23,10F)
+            onUpdateLoading(23, 10F)
             delay(1000)
-            onUpdateLoading(24,10F)
+            onUpdateLoading(24, 10F)
             delay(600)
-            onUpdateLoading(56,10F)
+            onUpdateLoading(56, 10F)
             delay(1000)
             onUpdateLoading(100, 10F)
             delay(1500)

@@ -1,10 +1,10 @@
 package com.denchic45.kts.data.db.remote.source
 
+import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.db.remote.model.CourseMap
 import com.denchic45.kts.data.db.remote.model.SubjectMap
 import com.denchic45.kts.data.remote.db.RemoveCourseOperation
 import com.denchic45.kts.data.remote.db.UpdateGroupsOfCourse
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.util.*
 import com.google.firebase.firestore.CollectionReference

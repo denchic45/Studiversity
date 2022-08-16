@@ -185,6 +185,7 @@ class AppBarController private constructor(
         return false
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun <T : View?> getView(@IdRes viewId: Int): T? {
         return views[viewId] as T?
     }
@@ -224,8 +225,8 @@ class AppBarController private constructor(
         }
     }
 
-    fun hasToolbar(): Boolean {
-        return toolbar != null
+    private fun hasToolbar(): Boolean {
+        return true
     }
 
     fun setTitle(title: String) {

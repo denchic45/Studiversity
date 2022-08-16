@@ -3,9 +3,8 @@ package com.denchic45.appVersion
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-import com.denchic45.kts.BuildConfig
-import com.denchic45.kts.data.prefs.AppPreference
-import com.denchic45.kts.data.prefs.TimestampPreference
+import com.denchic45.kts.data.pref.AppPreferences
+import com.denchic45.kts.data.pref.TimestampPreferences
 import com.denchic45.kts.data.service.AppVersionService
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.InstallStateUpdatedListener
@@ -27,8 +26,8 @@ import kotlin.math.max
 class GoogleAppVersionService @Inject constructor(
     context: Context,
     private val coroutineScope: CoroutineScope,
-    private val appPreference: AppPreference,
-    private val timestampPreference: TimestampPreference,
+    private val appPreferences: AppPreferences,
+    private val timestampPreferences: TimestampPreferences,
 ) : AppVersionService(), Closeable {
     private val appUpdateManager = AppUpdateManagerFactory.create(context)
 
@@ -107,12 +106,22 @@ class GoogleAppVersionService @Inject constructor(
         }
     }
 
+    fun versionCode(): Int {
+//        return BuildConfig.VERSION_CODE
+        return 1
+    }
+
+    fun isDebug(): Boolean {
+//        return BuildConfig.DEBUG
+        return true
+    }
+
     private fun logVersions() {
-        val currentBuildVersion = BuildConfig.VERSION_CODE
+        val currentBuildVersion = versionCode()
 
         coroutineScope.launch {
             Log.d("lol", "current version code: $currentBuildVersion")
-            val maxLatestVersion: Long = if (!BuildConfig.DEBUG) {
+            val maxLatestVersion: Long = if (!isDebug()) {
                 val latestVersion = getLatestVersion()
                 Log.d("lol", "latest version code: $latestVersion")
                 max(latestVersion, currentBuildVersion).toLong()
@@ -120,11 +129,11 @@ class GoogleAppVersionService @Inject constructor(
                 currentBuildVersion.toLong()
             }
 
-            if (maxLatestVersion > appPreference.latestVersion) {
-                appPreference.coursesLoadedFirstTime = false
-                timestampPreference.updateGroupCoursesTimestamp = 1
-                timestampPreference.updateTeacherCoursesTimestamp = 1
-                appPreference.latestVersion = maxLatestVersion
+            if (maxLatestVersion > appPreferences.latestVersion) {
+                appPreferences.coursesLoadedFirstTime = false
+                timestampPreferences.groupCoursesUpdateTimestamp = 1
+                timestampPreferences.teacherCoursesUpdateTimestamp = 1
+                appPreferences.latestVersion = maxLatestVersion
             }
         }
     }

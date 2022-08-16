@@ -2,10 +2,10 @@ package com.denchic45.kts.data.storage
 
 import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.storage.local.ContentAttachmentLocalStorage
-import com.denchic45.kts.data.storage.remote.ContentAttachmentRemoteStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import com.denchic45.kts.data.storage.remote.ContentAttachmentRemoteStorage
 
 class ContentAttachmentStorage @Inject constructor(
     private val contentAttachmentRemoteStorage: ContentAttachmentRemoteStorage,

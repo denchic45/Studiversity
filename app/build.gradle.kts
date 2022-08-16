@@ -61,7 +61,7 @@ android {
         }
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=compatibility")
     }
     kapt {
@@ -88,19 +88,19 @@ dependencies {
     implementation(project((":common")))
     //Compose
     val composeVersion = "1.1.1"
-    implementation("androidx.compose.runtime:runtime:$composeVersion")
+    implementation("androidx.compose.runtime:runtime:1.2.1")
     implementation("androidx.compose.compiler:compiler:$composeVersion")
-    implementation("androidx.compose.ui:ui:$composeVersion")
+    implementation("androidx.compose.ui:ui:1.2.1")
     implementation("androidx.activity:activity-compose:1.5.1")
     // Tooling support (Previews, etc.)
-    implementation("androidx.compose.ui:ui-tooling:$composeVersion")
+    implementation("androidx.compose.ui:ui-tooling:1.2.1")
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation("androidx.compose.foundation:foundation:$composeVersion")
+    implementation("androidx.compose.foundation:foundation:1.2.1")
     // Material Design
-    implementation("androidx.compose.material:material:$composeVersion")
+    implementation("androidx.compose.material:material:1.2.1")
     // Material design icons
-    implementation("androidx.compose.material:material-icons-core:$composeVersion")
-    implementation("androidx.compose.material:material-icons-extended:$composeVersion")
+    implementation("androidx.compose.material:material-icons-core:1.2.1")
+    implementation("androidx.compose.material:material-icons-extended:1.2.1")
 
     implementation("androidx.appcompat:appcompat:1.5.0")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
@@ -148,8 +148,8 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
     // Dagger-android
-    kapt("com.google.dagger:dagger-compiler:2.38.1")
-    kapt("com.google.dagger:dagger-android-processor:2.38.1")
+    kapt("com.google.dagger:dagger-compiler:2.43.2")
+    kapt("com.google.dagger:dagger-android-processor:2.43.2")
 
     implementation("org.mapstruct:mapstruct:1.5.0.Beta1")
     kapt("org.mapstruct:mapstruct-processor:1.5.0.Beta1")
