@@ -1,6 +1,6 @@
 package com.denchic45.kts.domain.uivalidator
 
-import com.denchic45.kts.domain.uivalidator.util.ErrorMessage
+import com.denchic45.kts.domain.uivalidator.rule.ErrorMessage
 
 class Condition<T>(
     private val value: () -> T,

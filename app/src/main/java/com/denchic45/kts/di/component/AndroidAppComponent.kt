@@ -28,7 +28,7 @@ interface AndroidAppComponent : AndroidInjector<AndroidApp> {
     @Component.Builder
     abstract class Builder : AndroidInjector.Builder<AndroidApp>() {
         abstract fun appModule(androidAppModule: AndroidAppModule): Builder
-        abstract fun preferenceModule(preferenceModule: PreferencesModule):Builder
+        abstract fun preferencesModule(preferenceModule: PreferencesModule):Builder
         abstract override fun build(): AndroidAppComponent
     }
 }

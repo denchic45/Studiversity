@@ -17,6 +17,9 @@ buildscript {
         classpath("com.google.gms:google-services:4.3.13")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("com.squareup.sqldelight:gradle-plugin:1.5.3")
+
+        classpath("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.6.10-1.0.4")
+//        classpath("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
     }
 }
 

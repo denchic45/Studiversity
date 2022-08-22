@@ -10,7 +10,7 @@ import dagger.android.DaggerApplication
 class AndroidApp : DaggerApplication() {
     private val androidAppComponent: AndroidInjector<AndroidApp> = DaggerAndroidAppComponent.builder()
         .appModule(AndroidAppModule(this))
-        .preferenceModule(PreferencesModule(SettingsFactory(this)))
+        .preferencesModule(PreferencesModule(SettingsFactory(this)))
         .create(this)
 
     override fun onCreate() {
@@ -19,6 +19,7 @@ class AndroidApp : DaggerApplication() {
     }
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+
         return androidAppComponent
     }
 }

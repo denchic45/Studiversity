@@ -1,4 +1,4 @@
-package com.denchic45.kts.main.theme
+package com.denchic45.kts.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

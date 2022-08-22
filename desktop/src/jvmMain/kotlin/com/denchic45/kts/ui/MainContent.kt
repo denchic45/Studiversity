@@ -1,17 +1,17 @@
-package com.denchic45.kts.main
+package com.denchic45.kts.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.denchic45.kts.ui.TimetableScreen
 
 @Preview
 @Composable
@@ -19,6 +19,7 @@ fun MainContent() {
     Surface(
         tonalElevation = 1.dp
     ) {
+
         var selectedItem by remember { mutableStateOf(0) }
 
         Row {

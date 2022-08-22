@@ -4,6 +4,8 @@ plugins {
     id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin") apply false
     id("com.google.gms.google-services")
+
+//    id("com.google.dagger.hilt.android")
 }
 
 apply(plugin = "androidx.navigation.safeargs.kotlin")
@@ -31,7 +33,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-
 
     defaultConfig {
         applicationId = "com.denchic45.kts"
@@ -63,9 +64,13 @@ android {
     kotlinOptions {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xjvm-default=compatibility")
+
     }
     kapt {
         correctErrorTypes = true
+//        javacOptions {
+//            option("-Adagger.hilt.android.internal.disableAndroidSuperclassValidation=true")
+//        }
     }
     buildFeatures {
         viewBinding = true
@@ -148,8 +153,10 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
     // Dagger-android
-    kapt("com.google.dagger:dagger-compiler:2.43.2")
-    kapt("com.google.dagger:dagger-android-processor:2.43.2")
+    kapt("com.google.dagger:dagger-compiler:2.38.1")
+    kapt("com.google.dagger:dagger-android-processor:2.38.1")
+//    kapt("com.google.dagger:hilt-android-compiler:2.38.1")
+//    implementation("com.google.dagger:hilt-android:2.38.1")
 
     implementation("org.mapstruct:mapstruct:1.5.0.Beta1")
     kapt("org.mapstruct:mapstruct-processor:1.5.0.Beta1")

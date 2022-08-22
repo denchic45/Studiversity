@@ -7,9 +7,12 @@ import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalSettingsApi::class, ExperimentalCoroutinesApi::class)
 class AppPreferences(val settings: ObservableSettings) : Settings by settings {
-    var lessonTime: Int by int()
-    var coursesLoadedFirstTime: Boolean by boolean()
-    var latestVersion: Long by long()
+    var lessonTime by int()
+    var coursesLoadedFirstTime by boolean()
+    var latestVersion by long()
+
+    var token by string()
+    var refreshToken by string()
 
     val observeLessonTime: Flow<Int> = settings.getIntFlow("lessonTime", 45)
 }

@@ -1,4 +1,4 @@
-package com.denchic45.kts.domain.uivalidator.util
+package com.denchic45.kts.domain.uivalidator.rule
 
 import com.denchic45.kts.domain.uivalidator.IRule
 

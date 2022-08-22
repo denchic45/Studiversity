@@ -7,6 +7,10 @@ plugins {
     id("com.squareup.sqldelight")
     id("kotlin-kapt")
     kotlin("plugin.serialization") version "1.6.10"
+
+
+    id("com.google.devtools.ksp")
+//    id("dagger.hilt.android.plugin")
 }
 
 kotlin {
@@ -19,8 +23,10 @@ kotlin {
 
     sourceSets {
         val ktorVersion = "2.0.3"
-        val koinVersion = "3.2.0-beta-1"
+        val koinVersion = "3.2.0"
         val sqlDelightVersion = "1.5.3"
+        val decomposeVersion = "1.0.0-alpha-02"
+
         val commonJvmMain by creating {
             dependencies {
 
@@ -37,25 +43,35 @@ kotlin {
                 api("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
 
                 //Dagger
-                api("com.google.dagger:dagger:2.43.2")
-//                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.43.2"))
+                api("com.google.dagger:dagger:2.38.1")
+                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.38.1"))
+//                api("com.google.dagger:hilt-android:2.38.1")
+
+
 
                 implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
             }
         }
 
         val commonMain by getting {
+
+
             dependencies {
                 api(compose.runtime)
                 api(compose.foundation)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 api(compose.material3)
 
+                // Ktor
                 api("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 api("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 api("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 api("io.ktor:ktor-client-logging:$ktorVersion")
+                api("io.ktor:ktor-client-auth:$ktorVersion")
+
+                // Decompose
+                api("com.arkivanov.decompose:decompose:$decomposeVersion")
 
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
@@ -64,8 +80,13 @@ kotlin {
 
                 implementation("io.insert-koin:koin-core:$koinVersion")
 
+                // Settings
                 api("com.russhwolf:multiplatform-settings:0.9")
                 api("com.russhwolf:multiplatform-settings-coroutines:0.9")
+
+                // kotlin-inject
+                configurations["ksp"].dependencies.add(project.dependencies.create("me.tatarka.inject:kotlin-inject-compiler-ksp:0.5.1"))
+                implementation("me.tatarka.inject:kotlin-inject-runtime:0.5.1")
             }
         }
         val commonTest by getting {
@@ -90,8 +111,8 @@ kotlin {
                 api("com.squareup.retrofit2:retrofit:2.9.0")
 
                 // Dagger
-                api("com.google.dagger:dagger-android:2.43.2")
-                api("com.google.dagger:dagger-android-support:2.43.2")
+                api("com.google.dagger:dagger-android:2.38.1")
+                api("com.google.dagger:dagger-android-support:2.38.1")
 
                 // Navigation
                 api("androidx.navigation:navigation-fragment-ktx:2.5.1")
@@ -123,6 +144,10 @@ kotlin {
         }
         val desktopMain by getting {
             dependencies {
+
+
+                api(compose.desktop.currentOs)
+
                 api(compose.preview)
 
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
@@ -131,7 +156,11 @@ kotlin {
                 api("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 // Dagger
-                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.43.2"))
+                api("com.google.dagger:dagger:2.38.1")
+                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.38.1"))
+
+                // Decompose
+                implementation("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
 
                 dependsOn(commonJvmMain)
             }
@@ -165,7 +194,10 @@ android {
     }
     kapt {
         correctErrorTypes = true
-    }
+//        javacOptions {
+//            option("-Adagger.hilt.android.internal.disableAndroidSuperclassValidation=true")
+        }
+//    }
 }
 
 sqldelight {

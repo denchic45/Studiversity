@@ -1,7 +1,6 @@
-package com.denchic45.kts.main
+package com.denchic45.kts.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -14,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
@@ -22,8 +20,8 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import com.denchic45.kts.main.theme.Blue
-import com.denchic45.kts.main.theme.Typography
+import com.denchic45.kts.ui.theme.Blue
+import com.denchic45.kts.ui.theme.Typography
 
 @Preview
 @OptIn(ExperimentalUnitApi::class)
