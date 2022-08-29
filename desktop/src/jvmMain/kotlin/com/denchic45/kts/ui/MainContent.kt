@@ -7,19 +7,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.denchic45.kts.ui.TimetableScreen
+import com.denchic45.kts.ui.root.RootComponent
+import com.denchic45.kts.ui.timetable.TimetableScreen
 
 @Preview
 @Composable
-fun MainContent() {
+fun MainContent(rootComponent: RootComponent) {
     Surface(
         tonalElevation = 1.dp
     ) {
-
         var selectedItem by remember { mutableStateOf(0) }
 
         Row {

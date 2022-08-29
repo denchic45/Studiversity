@@ -9,5 +9,5 @@ data class SignInWithPasswordResponse(
     val refreshToken: String,
     val expiresIn: String,
     val localId: String,
-    val registered: String,
+    val registered: String
 )
