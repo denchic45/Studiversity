@@ -6,12 +6,16 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
+import com.denchic45.kts.data.service.AuthService
 import com.denchic45.kts.ui.login.LoginComponent
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
+@me.tatarka.inject.annotations.Inject
 class RootComponent @Inject constructor(
-    loginComponent: LoginComponent,
+    authService: AuthService,
+    loginComponent: () -> LoginComponent,
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
@@ -21,11 +25,13 @@ class RootComponent @Inject constructor(
         source = navigation,
         initialConfiguration = Config.Login,
         childFactory = { config: Config, componentContext: ComponentContext ->
-            Child.Login(loginComponent)
+            Child.Login(loginComponent())
         }
     )
 
-    val childStack: Value<ChildStack<*, Child>> get() = stack
+    val childStack: Value<ChildStack<*, Child>> = stack
+
+    val isAuth: Flow<Boolean> = authService.observeIsAuthenticated
 
     private sealed class Config : Parcelable {
         object Login : Config()

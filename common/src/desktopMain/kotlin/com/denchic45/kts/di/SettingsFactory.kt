@@ -13,5 +13,4 @@ actual class SettingsFactory {
     actual fun createObservable(name: String): ObservableSettings {
         return JvmPreferencesSettings(FilePreferences(null, name))
     }
-
 }

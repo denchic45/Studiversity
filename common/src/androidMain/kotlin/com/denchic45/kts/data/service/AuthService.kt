@@ -5,9 +5,10 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
 
-actual class AuthService @Inject constructor() {
+@Inject
+actual class AuthService @javax.inject.Inject constructor() {
 
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
