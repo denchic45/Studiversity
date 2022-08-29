@@ -23,8 +23,8 @@ kotlin {
     }
 
     sourceSets {
-
         val jvmMain by getting {
+            kotlin.srcDir("build/generated/ksp/jvm/jvmMain/kotlin")
             dependencies {
 
                 implementation(project(mapOf("path" to ":common")))

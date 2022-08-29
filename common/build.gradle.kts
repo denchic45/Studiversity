@@ -21,6 +21,10 @@ kotlin {
         }
     }
 
+    ksp {
+        arg("me.tatarka.inject.enableJavaxAnnotations", "true")
+    }
+
     sourceSets {
         val ktorVersion = "2.0.3"
         val koinVersion = "3.2.0"
@@ -54,8 +58,6 @@ kotlin {
         }
 
         val commonMain by getting {
-
-
             dependencies {
                 api(compose.runtime)
                 api(compose.foundation)
@@ -143,9 +145,8 @@ kotlin {
             }
         }
         val desktopMain by getting {
+            kotlin.srcDir("build/generated/ksp/desktop/desktopMain/kotlin")
             dependencies {
-
-
                 api(compose.desktop.currentOs)
 
                 api(compose.preview)
