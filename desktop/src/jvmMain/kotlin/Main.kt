@@ -8,9 +8,6 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import com.denchic45.kts.UserEntity
-import com.denchic45.kts.data.db.local.DbHelper
-import com.denchic45.kts.data.db.local.DriverFactory
 import com.denchic45.kts.di.SettingsFactory
 import com.denchic45.kts.di.component.JvmAppComponent
 import com.denchic45.kts.di.component.PreferencesComponent
@@ -18,11 +15,6 @@ import com.denchic45.kts.di.component.create
 import com.denchic45.kts.ui.MainContent
 import com.denchic45.kts.ui.login.LoginScreen
 import com.denchic45.kts.ui.theme.KtsTheme
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.awt.Toolkit
 
 fun main() = application {
