@@ -1,21 +1,23 @@
 package com.denchic45.kts.ui.timetable
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,34 +28,148 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import com.denchic45.kts.ui.theme.Blue
+import com.denchic45.kts.ui.theme.DarkBlue
 import com.denchic45.kts.ui.theme.Typography
 
 @Preview
-@OptIn(ExperimentalUnitApi::class)
 @Composable
 fun TimetableScreen() {
-    MediumTopAppBar(
-        title = { Text("Июль", fontSize = TextUnit(32F, TextUnitType.Sp)) },
-        modifier = Modifier.heightIn(min = 112.dp),
-        actions = {
-            IconButton(
-                modifier = Modifier,
-                onClick = {}
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "back arrow icon"
-                )
-            }
-        }
-    )
+    TopAppBar()
     Card(
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.fillMaxSize().padding(end = 24.dp),
+        modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
         elevation = 0.dp
     ) {
         TimetableBody()
+    }
+}
+
+@OptIn(ExperimentalUnitApi::class)
+@Composable
+private fun TopAppBar() {
+    val contentHeight = 40.dp
+    Row(Modifier.padding(top = contentHeight, bottom = 24.dp, end = 24.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Text("Июль",
+            Modifier,
+            fontFamily = FontFamily(Font(resource = "fonts/Gilroy-Medium.ttf")),
+            fontSize = TextUnit(32F, TextUnitType.Sp))
+        Spacer(Modifier.width(24.dp))
+        OutlinedButton(
+            onClick = {},
+            modifier = Modifier.size(contentHeight),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
+            contentPadding = PaddingValues(0.dp),
+            shape = CircleShape,
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
+        ) {
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowLeft,
+                contentDescription = "previous week arrow icon"
+            )
+        }
+        Spacer(Modifier.width(16.dp))
+        OutlinedButton(
+            onClick = {},
+            modifier = Modifier.size(contentHeight),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
+            contentPadding = PaddingValues(0.dp),
+            shape = CircleShape,
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
+        ) {
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = "next week arrow icon"
+            )
+        }
+        Spacer(Modifier.width(16.dp))
+        OutlinedButton(
+            onClick = {},
+            modifier = Modifier.height(contentHeight),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
+            contentPadding = PaddingValues(0.dp),
+            shape = CircleShape,
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
+        ) {
+            Text(
+                "Сегодня",
+                Modifier.padding(start = 24.dp, end = 24.dp),
+                style = Typography.bodyMedium,
+                color = DarkBlue
+            )
+        }
+        Spacer(Modifier.weight(1f))
+        Spinner()
+        Spacer(Modifier.width(24.dp))
+        IconButton(
+            onClick = {},
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Notifications,
+                tint = Color.DarkGray,
+                contentDescription = "previous week arrow icon"
+            )
+        }
+        Spacer(Modifier.width(24.dp))
+        IconButton(
+            onClick = {},
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.AccountCircle,
+                tint = Color.DarkGray,
+                contentDescription = "previous week arrow icon"
+            )
+        }
+    }
+}
+
+@Composable
+fun Spinner() {
+
+    val options = listOf("День", "Неделя", "Месяц")
+
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOptionText by remember { mutableStateOf(options[1]) }
+
+    Box(Modifier) {
+        OutlinedButton(
+            onClick = {
+                println("LOGGING: onClick")
+                expanded = !expanded
+            },
+            enabled = !expanded,
+            modifier = Modifier.size(112.dp, 40.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 8.dp),
+            shape = RoundedCornerShape(4.dp),
+            border = BorderStroke(1.dp,
+                MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
+        ) {
+            Text(selectedOptionText, Modifier.weight(1f), style = Typography.bodyMedium)
+            Icon(Icons.Outlined.ArrowDropDown, "")
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            modifier = Modifier.width(240.dp),
+            onDismissRequest = {
+                println("LOGGING: onDismissRequest")
+                expanded = false
+            }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        selectedOptionText = selectionOption
+                        expanded = false
+                    }
+                ) {
+                    Text(text = selectionOption)
+                }
+            }
+        }
     }
 }
 
@@ -109,11 +225,7 @@ private fun LessonsOrder() {
             Spacer(Modifier.weight(1f))
             Divider(Modifier.width(30.dp))
         }
-        Divider(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(1.dp)
-        )
+        Divider(Modifier.fillMaxHeight().width(1.dp))
     }
 }
 
@@ -123,7 +235,7 @@ private fun DaysOfWeekHeader(modifierHorScroll: Modifier) {
     Row(modifierHorScroll) {
         repeat(6) { DayOfWeekCell(it) }
     }
-    Divider(modifier = Modifier.fillMaxWidth().height(1.dp))
+    Divider(Modifier.fillMaxWidth().height(1.dp))
 }
 
 @Composable
@@ -131,16 +243,9 @@ private fun DaysOfWeekHeader(modifierHorScroll: Modifier) {
 fun RowScope.DayOfWeekCell(order: Int) {
     Row(Modifier.weight(1f).height(IntrinsicSize.Max), verticalAlignment = Alignment.Bottom) {
         if (order != 0)
-            Divider(
-                modifier = Modifier
-                    .width(1.dp)
-                    .height(24.dp)
-            )
+            Divider(Modifier.width(1.dp).height(24.dp))
         Column(
-            modifier = Modifier.widthIn(min = 196.dp)
-                .height(124.dp)
-                .padding(top = 24.dp)
-                .fillMaxWidth(),
+            Modifier.widthIn(min = 196.dp).height(124.dp).padding(top = 24.dp).fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -166,9 +271,11 @@ fun LessonCells(modifier: Modifier, verticalScroll: ScrollState) {
                 if (it != 0) {
                     Divider(Modifier.width(1.dp).fillMaxHeight())
                 }
-                Column(modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.fillMaxWidth()) {
                     repeat(8) {
                         LessonCell()
+                        if (it != 7)
+                            Divider(Modifier.fillMaxWidth().height(1.dp))
                     }
                 }
             }
@@ -181,22 +288,22 @@ fun LessonCells(modifier: Modifier, verticalScroll: ScrollState) {
 @Preview
 fun LessonCell() {
     Column(
-        modifier = Modifier.widthIn(min = 196.dp).height(126.dp).padding(18.dp)
+        Modifier.widthIn(min = 196.dp).height(126.dp).padding(18.dp)
     ) {
         Icon(
             painterResource("icons/ic_basketball.xml"),
             null,
-            modifier = Modifier.size(28.dp),
-            tint = Blue
+            Modifier.size(28.dp),
+            tint = DarkBlue
         )
         Text(
             "Физкультура",
-            modifier = Modifier.padding(top = 8.dp),
+            Modifier.padding(top = 8.dp),
             style = Typography.titleLarge
         )
         Text(
             "2-й корпус",
-            modifier = Modifier.padding(top = 4.dp),
+            Modifier.padding(top = 4.dp),
             fontSize = TextUnit(18F, TextUnitType.Sp),
             fontFamily = FontFamily(
                 Font(
@@ -205,9 +312,4 @@ fun LessonCell() {
             )
         )
     }
-    Divider(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-    )
 }
