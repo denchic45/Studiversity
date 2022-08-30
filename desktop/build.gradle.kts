@@ -28,7 +28,6 @@ kotlin {
             dependencies {
 
                 implementation(project(mapOf("path" to ":common")))
-                implementation(project(":example-jvm"))
 
                 implementation(compose.desktop.currentOs)
                 // Dagger
