@@ -30,8 +30,8 @@ val Typography = Typography(
     bodyLarge = defaultTypography.bodyLarge.copy(
         fontFamily = FontFamily(Font(resource = "fonts/Gilroy-Medium.ttf"))
     ),
-    bodyMedium = defaultTypography.bodyLarge.copy(
-        fontFamily = FontFamily(Font(resource = "fonts/Gilroy-Medium.ttf"))
+    bodyMedium = defaultTypography.bodyMedium.copy(
+        fontFamily = FontFamily(Font(resource = "fonts/Gilroy-Medium.ttf")),
     ),
     bodySmall = defaultTypography.bodySmall.copy(
         fontFamily = FontFamily(Font(resource = "fonts/Gilroy-Medium.ttf"))
