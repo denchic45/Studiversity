@@ -25,7 +25,7 @@ android {
     testOptions.apply {
         unitTests.isIncludeAndroidResources = true
     }
-    compileSdk = 32
+    compileSdk = 33
     buildToolsVersion = "30.0.3"
 
     compileOptions {
@@ -37,7 +37,7 @@ android {
     defaultConfig {
         applicationId = "com.denchic45.kts"
         minSdk = 24
-        targetSdk = 32
+        targetSdk = 33
         versionCode = 83
         versionName = "1.0.7"
         vectorDrawables.useSupportLibrary = true
@@ -68,9 +68,6 @@ android {
     }
     kapt {
         correctErrorTypes = true
-//        javacOptions {
-//            option("-Adagger.hilt.android.internal.disableAndroidSuperclassValidation=true")
-//        }
     }
     buildFeatures {
         viewBinding = true

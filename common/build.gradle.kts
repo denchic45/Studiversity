@@ -180,7 +180,7 @@ android {
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 24
-        targetSdk = 31
+        targetSdk = 33
         buildFeatures {
             viewBinding = true
             compose = true
@@ -195,10 +195,7 @@ android {
     }
     kapt {
         correctErrorTypes = true
-//        javacOptions {
-//            option("-Adagger.hilt.android.internal.disableAndroidSuperclassValidation=true")
         }
-//    }
 }
 
 sqldelight {
