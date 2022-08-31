@@ -14,8 +14,8 @@ pluginManagement {
 
 rootProject.name = "KtsApp"
 
-include(":app")
-rootProject.name = "KTS"
+//rootProject.name = "KTS"
+include(":android")
 include(":appbarcontroller")
 include(":common")
 include(":desktop")
