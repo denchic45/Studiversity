@@ -1,5 +1,6 @@
 package com.denchic45.kts.data.service
 
+import com.denchic45.kts.ApiKeys
 import com.denchic45.kts.data.network.model.SignInWithPasswordRequest
 import com.denchic45.kts.data.network.model.SignInWithPasswordResponse
 import com.denchic45.kts.data.pref.AppPreferences
@@ -28,7 +29,7 @@ actual class AuthService @Inject constructor(
     actual suspend fun signInWithEmailAndPassword(email: String, password: String) {
         client.post {
             url("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword")
-            parameter("key", "AIzaSyB76HAiBD81LwU4_L9ocbE1IOERYm3RMt8")
+            parameter("key", ApiKeys.firebaseApiKey)
             contentType(ContentType.Application.Json)
             setBody(SignInWithPasswordRequest(email, password))
         }
