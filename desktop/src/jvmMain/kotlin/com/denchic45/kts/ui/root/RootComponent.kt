@@ -7,7 +7,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.denchic45.kts.data.service.AuthService
-import com.denchic45.kts.ui.login.LoginComponent
+import com.denchic45.kts.ui.timetable.TimetableComponent
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @me.tatarka.inject.annotations.Inject
 class RootComponent @Inject constructor(
     authService: AuthService,
-    loginComponent: () -> LoginComponent,
+    timetableComponent: () -> TimetableComponent,
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
@@ -25,7 +25,7 @@ class RootComponent @Inject constructor(
         source = navigation,
         initialConfiguration = Config.Login,
         childFactory = { config: Config, componentContext: ComponentContext ->
-            Child.Login(loginComponent())
+            Child.Timetable(timetableComponent())
         }
     )
 
@@ -38,6 +38,6 @@ class RootComponent @Inject constructor(
     }
 
     sealed class Child {
-        class Login(val loginComponent: LoginComponent) : Child()
+        class Timetable(val timetableComponent: TimetableComponent) : Child()
     }
 }

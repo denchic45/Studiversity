@@ -1,5 +1,5 @@
 package com.denchic45.kts.data.service
 
-interface NetworkService {
+expect class NetworkService {
     val isNetworkAvailable: Boolean
 }

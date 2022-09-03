@@ -4,8 +4,9 @@ import android.content.Context
 import android.net.ConnectivityManager
 import javax.inject.Inject
 
-class AndroidNetworkService @Inject constructor(private val context: Context) : NetworkService {
-    override val isNetworkAvailable: Boolean
+@me.tatarka.inject.annotations.Inject
+actual class NetworkService @Inject constructor(private val context: Context) {
+    actual val isNetworkAvailable: Boolean
         get() {
             val connectivityManager =
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

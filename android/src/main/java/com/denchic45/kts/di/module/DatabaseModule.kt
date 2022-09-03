@@ -2,13 +2,10 @@ package com.denchic45.kts.di.module
 
 import android.content.Context
 import com.denchic45.kts.AppDatabase
-import com.denchic45.kts.data.database.DataBase
 import com.denchic45.kts.data.db.local.DbHelper
 import com.denchic45.kts.data.db.local.DriverFactory
-import com.denchic45.kts.data.service.AndroidNetworkService
 import com.denchic45.kts.data.service.NetworkService
 import com.squareup.sqldelight.db.SqlDriver
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -53,6 +50,9 @@ object DatabaseModule {
 //        )
 //    }
 
+    @Provides
+    fun provideNetwork(context: Context) = NetworkService(context)
+
 //    @Provides
 //    fun provideSpecialtyRemoteDataSource(firestore: FirebaseFirestore): SpecialtyRemoteDataSource {
 //        return SpecialtyRemoteDataSource(firestore)
@@ -72,7 +72,7 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideADbHelper(sqlDriver: SqlDriver): DbHelper {
+    fun provideDbHelper(sqlDriver: SqlDriver): DbHelper {
         return DbHelper(sqlDriver)
     }
 
@@ -205,8 +205,8 @@ object DatabaseModule {
 @Module
 interface DataBindModule {
 
-    @Binds
-    fun bindNetworkService(service: AndroidNetworkService): NetworkService
+//    @Binds
+//    fun bindNetworkService(service: NetworkService): NetworkService
 
 //    @Binds
 //    fun provideUserRemoteDataSource(userRemoteDataSource: UserRemoteDataSource): UserRemoteDataSource

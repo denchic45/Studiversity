@@ -30,6 +30,7 @@ import java.time.temporal.TemporalAdjusters
 import java.util.*
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class EventRepository @Inject constructor(
     override val networkService: NetworkService,
     private val eventLocalDataSource: EventLocalDataSource,

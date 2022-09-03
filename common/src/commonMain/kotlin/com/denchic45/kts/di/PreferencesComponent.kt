@@ -1,7 +1,6 @@
-package com.denchic45.kts.di.component
+package com.denchic45.kts.di
 
 import com.denchic45.kts.data.pref.*
-import com.denchic45.kts.di.SettingsFactory
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Scope
