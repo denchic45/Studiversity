@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject
 
-class FindEventsOfDayByYourUserUseCase @Inject constructor(
+class FindEventsOfDayByThisUserUseCase @Inject constructor(
     findSelfUserUseCase: FindSelfUserUseCase,
     private val eventRepository: EventRepository
 ) {

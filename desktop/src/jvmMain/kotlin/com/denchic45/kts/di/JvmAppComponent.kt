@@ -3,33 +3,20 @@ package com.denchic45.kts.di
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
-import com.denchic45.kts.ApiKeys
-import com.denchic45.kts.data.network.model.RefreshTokenResponse
-import com.denchic45.kts.data.pref.AppPreferences
-import com.denchic45.kts.di.component.PreferencesComponent
-import com.denchic45.kts.ui.login.LoginComponent
-import com.denchic45.kts.ui.root.RootComponent
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
-import kotlinx.serialization.json.Json
+import com.denchic45.kts.data.service.AppVersionService
+import com.denchic45.kts.data.service.FakeAppVersionService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
+import javax.inject.Singleton
 
 @Component
 abstract class JvmAppComponent(
     @Component val preferencesComponent: PreferencesComponent,
-) {
-    abstract val rootComponent: RootComponent
-
-    abstract val loginComponent: LoginComponent
+    @Component val databaseComponent: DatabaseComponent,
+    @Component val networkComponent: NetworkComponent,
+) : LogicComponent {
 
     @Provides
     fun provideComponentContext(): ComponentContext {
@@ -37,62 +24,12 @@ abstract class JvmAppComponent(
     }
 
     @Provides
-    fun provideHttpClient() = HttpClient {
-        install(Logging) {
-            level = LogLevel.ALL
-        }
-        install(ContentNegotiation) {
-            json(Json {
-                prettyPrint = true
-                isLenient = true
-                ignoreUnknownKeys = true
-                encodeDefaults = true
-            })
-        }
-    }
+    @Singleton
+    fun provideApplicationScope() = CoroutineScope(SupervisorJob())
 
     @Provides
-    fun provideFirebaseHttpClient(appPreferences: AppPreferences): FirebaseHttpClient = HttpClient {
-        install(Logging) {
-            level = LogLevel.ALL
-        }
-        install(ContentNegotiation) {
-            json(Json {
-                prettyPrint = true
-                isLenient = true
-                ignoreUnknownKeys = true
-                encodeDefaults = true
-            })
-        }
-        install(Auth) {
-            bearer {
-                appPreferences.token?.let { token ->
-                    appPreferences.refreshToken?.let { refreshToken ->
-                        loadTokens {
-                            BearerTokens(token, refreshToken)
-                        }
-                    }
-                }
-                refreshTokens {
-                    val response: RefreshTokenResponse = client.submitForm(
-                        url = "https://securetoken.googleapis.com/v1/token",
-                        formParameters = Parameters.build {
-                            append("grant_type", "refresh_token")
-                            append("refresh_token", oldTokens?.refreshToken ?: "")
-                        }) {
-                        parameter("key", ApiKeys.firebaseApiKey)
-                        markAsRefreshTokenRequest()
-                    }.body()
-                    appPreferences.apply {
-                        token = response.id_token
-                        refreshToken = response.refresh_token
-                    }
-                    BearerTokens(response.id_token, response.refresh_token)
-                }
-            }
-        }
+    fun provideAppVersionService(coroutineScope: CoroutineScope): AppVersionService {
+        return FakeAppVersionService(coroutineScope)
     }
 }
-
-typealias FirebaseHttpClient = HttpClient
 
