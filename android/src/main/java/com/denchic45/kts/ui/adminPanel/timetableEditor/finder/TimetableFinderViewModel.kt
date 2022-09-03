@@ -186,7 +186,7 @@ class TimetableFinderViewModel @Inject constructor(
             val createdLesson =
                 Event.createEmpty(
                     groupHeader = selectedGroup.first(),
-                    order = order,
+//                    order = order,
                     details = Lesson.createEmpty()
                 )
             eventEditorInteractor.setEditedEvent(_eventsOfDay.value, createdLesson)

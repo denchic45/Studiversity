@@ -162,7 +162,9 @@ class TimetableParser {
     private fun createEvent(order: Int, subjectAndRoom: String, date: LocalDate): Event {
         var subjectAndRoom = subjectAndRoom
         if (subjectAndRoom.isEmpty()) {
-            return createEmpty(groupHeader = currentGroupCourse.groupHeader, order = order)
+            return createEmpty(groupHeader = currentGroupCourse.groupHeader,
+//                order = order
+            )
         }
         val separatorSubjectRoomPos = subjectAndRoom.indexOf('\\')
         val eventName: String

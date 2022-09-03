@@ -129,7 +129,9 @@ class EventEditorViewModel @Inject constructor(
                         uiEditor.item.run {
                             eventsOfDay.update(
                                 createEmpty(
-                                    id, groupHeader, order, details
+                                    id, groupHeader,
+//                                    order,
+                                    details
                                 )
                             )
                         }

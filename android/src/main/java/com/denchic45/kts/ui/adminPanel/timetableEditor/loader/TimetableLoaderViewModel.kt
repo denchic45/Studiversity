@@ -263,7 +263,7 @@ class TimetableLoaderViewModel @Inject constructor(
             eventsOfDay = groupsTimetables[positionOfCurrentTimetable].weekEvents[dayOfWeek],
             event = Event.createEmpty(
                 groupHeader = groupHeaders[positionOfCurrentTimetable],
-                order = if (eventsOfTheDay.isEmpty()) 1 else eventsOfTheDay.last().order + 1
+//                order = if (eventsOfTheDay.isEmpty()) 1 else eventsOfTheDay.last().order + 1
             )
         )
         receiveUpdatedEventsOfDay()
