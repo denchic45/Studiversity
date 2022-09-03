@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class SubmissionLocalDataSource @Inject constructor(db: AppDatabase) {
 
     private val queries: SubmissionEntityQueries = db.submissionEntityQueries

@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import java.util.*
 
+@me.tatarka.inject.annotations.Inject
 actual class EventRemoteDataSource {
     actual fun observeEventsOfGroupByDate(groupId: String, date: LocalDate): Flow<DayMap> {
         TODO("Not yet implemented")

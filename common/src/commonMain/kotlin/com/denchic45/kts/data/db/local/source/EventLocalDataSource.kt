@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class EventLocalDataSource @Inject constructor(db: AppDatabase) {
 
     private val queries: EventEntityQueries = db.eventEntityQueries

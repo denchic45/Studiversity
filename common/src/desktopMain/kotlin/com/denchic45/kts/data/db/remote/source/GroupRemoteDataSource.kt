@@ -4,6 +4,7 @@ import com.denchic45.kts.data.db.remote.model.GroupMap
 import com.denchic45.kts.util.MutableFireMap
 import kotlinx.coroutines.flow.Flow
 
+@me.tatarka.inject.annotations.Inject
 actual class GroupRemoteDataSource {
 
     actual fun observeById(groupId: String): Flow<GroupMap?> {

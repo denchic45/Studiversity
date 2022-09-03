@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class CourseLocalDataSource @Inject constructor(private val db: AppDatabase) {
 
     private val queries: CourseEntityQueries = db.courseEntityQueries

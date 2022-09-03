@@ -5,6 +5,7 @@ import com.denchic45.kts.util.FireMap
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 actual class UserRemoteDataSource @Inject constructor() {
     actual fun observeById(id: String): Flow<UserMap?> {
         TODO("Not yet implemented")

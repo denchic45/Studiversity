@@ -5,6 +5,7 @@ import com.denchic45.kts.data.db.remote.model.SubjectMap
 import com.denchic45.kts.util.FireMap
 import kotlinx.coroutines.flow.Flow
 
+@me.tatarka.inject.annotations.Inject
 actual class SubjectRemoteDataSource {
 
     actual suspend fun add(subjectMap: SubjectMap) {

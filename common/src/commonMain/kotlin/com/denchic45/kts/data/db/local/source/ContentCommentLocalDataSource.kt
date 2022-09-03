@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class ContentCommentLocalDataSource @Inject constructor(db: AppDatabase) {
 
     private val queries: ContentCommentEntityQueries = db.contentCommentEntityQueries

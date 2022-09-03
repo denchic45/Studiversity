@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class CourseContentLocalDataSource @Inject constructor(private val db: AppDatabase) {
 
     private val queries: CourseContentEntityQueries = db.courseContentEntityQueries

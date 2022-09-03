@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class UserLocalDataSource @Inject constructor (db: AppDatabase) {
 
     private val queries: UserEntityQueries = db.userEntityQueries

@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class DayLocalDataSource @Inject constructor(private val db: AppDatabase) {
     private val queries: DayEntityQueries = db.dayEntityQueries
 

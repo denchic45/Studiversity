@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class GroupLocalDataSource @Inject constructor (private val db: AppDatabase) {
 
     private val queries: GroupEntityQueries = db.groupEntityQueries
