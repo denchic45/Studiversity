@@ -38,6 +38,9 @@ kotlin {
                 implementation("me.tatarka.inject:kotlin-inject-runtime:0.5.1")
                 configurations["ksp"].dependencies.add(project.dependencies.create("me.tatarka.inject:kotlin-inject-compiler-ksp:0.5.1"))
 
+                // Kamel
+                implementation("com.alialbaali.kamel:kamel-image:0.4.0")
+
 //                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:hilt-android-compiler:2.38.1"))
 //                implementation("com.google.dagger:hilt-compiler:2.38.1")
 //                implementation("com.google.dagger:hilt-core:2.38.1")

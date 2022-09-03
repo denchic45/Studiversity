@@ -21,15 +21,16 @@ kotlin {
         }
     }
 
-    ksp {
-        arg("me.tatarka.inject.enableJavaxAnnotations", "true")
-    }
+//    ksp {
+//        arg("me.tatarka.inject.enableJavaxAnnotations", "true")
+//    }
 
     sourceSets {
         val ktorVersion = "2.0.3"
         val koinVersion = "3.2.0"
         val sqlDelightVersion = "1.5.3"
         val decomposeVersion = "1.0.0-alpha-02"
+//        val korimVersion = "2.2.0"
 
         val commonJvmMain by creating {
             dependencies {
@@ -161,7 +162,10 @@ kotlin {
                 configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.38.1"))
 
                 // Decompose
-                implementation("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
+                api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
+
+                // KorIM
+//                api("com.soywiz.korlibs.korim:korim-jvm:$korimVersion")
 
                 dependsOn(commonJvmMain)
             }
