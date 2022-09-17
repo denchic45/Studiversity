@@ -20,7 +20,7 @@ data class GroupTimetable(
         fun createEmpty(groupHeader: GroupHeader, mondayDate: LocalDate): GroupTimetable {
             return GroupTimetable(
                 groupHeader,
-                List(6) { EventsOfDay(mondayDate.plusDays(it.toLong()), id = "") }
+                List(6) { EventsOfDay.createEmpty(mondayDate.plusDays(it.toLong())) }
             )
         }
     }
