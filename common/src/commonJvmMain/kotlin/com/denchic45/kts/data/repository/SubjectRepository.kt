@@ -1,11 +1,11 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.SubjectEntity
 import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.db.remote.model.SubjectMap
 import com.denchic45.kts.data.db.remote.source.SubjectRemoteDataSource
 import com.denchic45.kts.data.mapper.*
+import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.data.storage.remote.SubjectRemoteStorage
 import com.denchic45.kts.domain.model.Subject
@@ -44,10 +44,11 @@ class SubjectRepository @Inject constructor(
         subjectRemoteDataSource.remove(subject.domainToMap())
     }
 
-    fun find(id: String): Flow<Subject?> = callbackFlow {
+    fun observe(id: String): Flow<Subject?> = callbackFlow {
         launch {
             subjectRemoteDataSource.observeById(id).collect {
-                saveSubject(it.mapToSubjectEntity())
+                it?.let { saveSubject(it.mapToSubjectEntity()) }
+                    ?: subjectLocalDataSource.delete(id)
             }
         }
         subjectLocalDataSource.observe(id)

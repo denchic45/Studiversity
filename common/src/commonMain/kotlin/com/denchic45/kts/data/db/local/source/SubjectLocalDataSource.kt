@@ -36,4 +36,8 @@ class SubjectLocalDataSource @Inject constructor(db: AppDatabase) {
     fun observeByGroupId(groupId: String): Flow<List<SubjectEntity>> {
         return queries.getByGroupId(groupId).asFlow().mapToList(Dispatchers.IO)
     }
+
+    suspend fun delete(id:String) = withContext(Dispatchers.IO) {
+        queries.delete(id)
+    }
 }

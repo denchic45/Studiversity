@@ -20,3 +20,6 @@ SELECT s.* FROM subjectEntity s
 JOIN courseEntity c ON s.subject_id == c.subject_id
 JOIN groupCourseEntity gc ON gc.course_id == c.course_id
 WHERE gc.group_id =:groupId;
+
+delete:
+DELETE FROM subjectEntity WHERE subject_id =: id;
