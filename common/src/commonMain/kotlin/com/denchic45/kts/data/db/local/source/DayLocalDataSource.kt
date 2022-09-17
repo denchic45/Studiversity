@@ -10,58 +10,61 @@ import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
 class DayLocalDataSource @Inject constructor(private val db: AppDatabase) {
-    private val queries: DayEntityQueries = db.dayEntityQueries
+    private val dayEntityQueries: DayEntityQueries = db.dayEntityQueries
 
     suspend fun upsert(dayEntity: DayEntity) = withContext(Dispatchers.IO) {
-        queries.upsert(dayEntity)
+        dayEntityQueries.upsert(dayEntity)
     }
 
     suspend fun upsert(dayEntities: List<DayEntity>) = withContext(Dispatchers.IO) {
-        queries.transaction {
-            dayEntities.forEach { queries.upsert(it) }
+        dayEntityQueries.transaction {
+            dayEntities.forEach { dayEntityQueries.upsert(it) }
         }
     }
 
     suspend fun get(id: String): DayEntity = withContext(Dispatchers.IO) {
-        queries.getById(id).executeAsOne()
+        dayEntityQueries.getById(id).executeAsOne()
     }
 
     suspend fun getIdByDateAndGroupId(
         date: LocalDate, groupId: String,
     ): String? = withContext(Dispatchers.IO) {
-        queries.getIdByDateAndGroupId(date.toString(DatePatterns.yyy_MM_dd), groupId)
+        dayEntityQueries.getIdByDateAndGroupId(date.toString(DatePatterns.yyy_MM_dd), groupId)
             .executeAsOneOrNull()
     }
 
 
-    fun saveDay(
+    suspend fun saveDay(
         notRelatedTeacherEntities: List<UserEntity>,
         notRelatedSubjectEntities: List<SubjectEntity>,
         dayEntity: DayEntity,
         eventEntities: List<EventEntity>,
         teacherEventEntities: List<TeacherEventEntity>,
     ) {
-        db.transaction {
-            notRelatedTeacherEntities.forEach { db.userEntityQueries.upsert(it) }
-            notRelatedSubjectEntities.forEach { db.subjectEntityQueries.upsert(it) }
-            queries.apply {
-                deleteById(dayEntity.day_id)
-                upsert(dayEntity)
-            }
-            db.eventEntityQueries.apply {
-                getEventIdsByDayId(dayEntity.day_id).executeAsList().let { eventIds ->
-                    eventIds.forEach { eventId ->
-                        deleteByEventId(eventId)
-                        db.teacherEventEntityQueries.deleteByEventId(eventId)
-                    }
+//        withContext(Dispatchers.IO) {
+        println("object db: $db")
+            db.transaction {
+                notRelatedTeacherEntities.forEach { db.userEntityQueries.upsert(it) }
+                notRelatedSubjectEntities.forEach { db.subjectEntityQueries.upsert(it) }
+                dayEntityQueries.apply {
+                    deleteById(dayEntity.day_id)
+                    upsert(dayEntity)
                 }
-                eventEntities.forEach { upsert(it) }
+                db.eventEntityQueries.apply {
+                    getEventIdsByDayId(dayEntity.day_id).executeAsList().let { eventIds ->
+                        eventIds.forEach { eventId ->
+                            deleteByEventId(eventId)
+                            db.teacherEventEntityQueries.deleteByEventId(eventId)
+                        }
+                    }
+                    eventEntities.forEach { upsert(it) }
+                }
+                teacherEventEntities.forEach { db.teacherEventEntityQueries.upsert(it) }
             }
-            teacherEventEntities.forEach { db.teacherEventEntityQueries.upsert(it) }
-        }
+//        }
     }
 
     fun deleteById(dayId: String) {
-        queries.deleteById(dayId)
+        dayEntityQueries.deleteById(dayId)
     }
 }

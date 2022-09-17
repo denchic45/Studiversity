@@ -6,9 +6,7 @@ import com.denchic45.kts.EventEntity
 import com.denchic45.kts.SubmissionEntity
 import com.denchic45.kts.data.mapper.ListMapper
 import com.squareup.sqldelight.ColumnAdapter
-import com.squareup.sqldelight.db.SqlCursor
 import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.db.use
 
 class ListColumnAdapter : ColumnAdapter<List<String>, String> {
     override fun decode(databaseValue: String): List<String> {
@@ -21,7 +19,6 @@ class ListColumnAdapter : ColumnAdapter<List<String>, String> {
 }
 
 class DbHelper(val driver: SqlDriver) {
-
     val database by lazy {
         val currentVer = version
         if (currentVer == 0) {
@@ -54,16 +51,18 @@ class DbHelper(val driver: SqlDriver) {
             submissionEntityAdapter = SubmissionEntity.Adapter(
                 attachmentsAdapter = ListColumnAdapter()
             ),
-        eventEntityAdapter = EventEntity.Adapter(
-            teacher_idsAdapter = ListColumnAdapter()
-        ))
+            eventEntityAdapter = EventEntity.Adapter(
+                teacher_idsAdapter = ListColumnAdapter()
+            ))
     }
 
     private var version: Int
         get() {
             val sqlCursor = driver.executeQuery(null, "PRAGMA user_version;", 0, null)
             sqlCursor.next()
-            return sqlCursor.getLong(0)!!.toInt()
+            val result = sqlCursor.getLong(0)!!.toInt()
+            sqlCursor.close()
+            return result
         }
         private set(version) {
             driver.execute(null, String.format("PRAGMA user_version = %d;", version), 0, null)
