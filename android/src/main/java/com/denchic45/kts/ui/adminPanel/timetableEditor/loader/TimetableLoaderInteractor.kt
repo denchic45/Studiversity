@@ -1,6 +1,6 @@
 package com.denchic45.kts.ui.adminPanel.timetableEditor.loader
 
-import com.denchic45.kts.data.Interactor
+import com.denchic45.kts.domain.Interactor
 import com.denchic45.kts.data.repository.EventRepository
 import com.denchic45.kts.data.repository.GroupRepository
 import com.denchic45.kts.data.repository.SubjectRepository

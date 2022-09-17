@@ -1,6 +1,6 @@
 package com.denchic45.kts.ui.courseEditor
 
-import com.denchic45.kts.data.Interactor
+import com.denchic45.kts.domain.Interactor
 import com.denchic45.kts.domain.model.Course
 import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.model.Subject

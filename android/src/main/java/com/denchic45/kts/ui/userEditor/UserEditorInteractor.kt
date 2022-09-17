@@ -3,7 +3,7 @@ package com.denchic45.kts.ui.userEditor
 import android.content.Context
 import com.denchic45.avatarGenerator.AvatarGenerator
 import com.denchic45.kts.AvatarBuilderTemplate
-import com.denchic45.kts.data.Interactor
+import com.denchic45.kts.domain.Interactor
 import com.denchic45.kts.data.Resource
 import com.denchic45.kts.data.repository.*
 import com.denchic45.kts.data.service.AuthService

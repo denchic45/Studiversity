@@ -1,6 +1,6 @@
 package com.denchic45.kts.ui.timetable
 
-import com.denchic45.kts.data.Interactor
+import com.denchic45.kts.domain.Interactor
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.UserPreferences
@@ -30,8 +30,7 @@ class TimetableInteractor @Inject constructor(
         subjectRepository.removeListeners()
     }
 
-    fun observeYourGroupId() =
-        groupPreferences.observeGroupId.filter(String::isNotEmpty)
+    fun observeYourGroupId() = groupPreferences.observeGroupId.filter(String::isNotEmpty)
 
     val role: UserRole
         get() = UserRole.valueOf(userPreferences.role)

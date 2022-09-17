@@ -1,4 +1,4 @@
-package com.denchic45.kts.data
+package com.denchic45.kts.domain
 
 interface Interactor {
     fun removeListeners()

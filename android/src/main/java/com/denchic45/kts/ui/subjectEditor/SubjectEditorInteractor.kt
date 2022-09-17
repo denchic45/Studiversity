@@ -1,6 +1,6 @@
 package com.denchic45.kts.ui.subjectEditor
 
-import com.denchic45.kts.data.Interactor
+import com.denchic45.kts.domain.Interactor
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.data.repository.SubjectRepository
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +24,7 @@ class SubjectEditorInteractor @Inject constructor(
 
 
     fun find(id: String): Flow<Subject?> {
-        return subjectRepository.find(id)
+        return subjectRepository.observe(id)
     }
 
     override fun removeListeners() {}

@@ -3,7 +3,7 @@ package com.denchic45.kts.ui.profile.fullAvatar
 import android.content.Context
 import com.denchic45.avatarGenerator.AvatarGenerator
 import com.denchic45.kts.AvatarBuilderTemplate
-import com.denchic45.kts.data.Interactor
+import com.denchic45.kts.domain.Interactor
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.data.repository.StudentRepository
 import com.denchic45.kts.data.repository.TeacherRepository

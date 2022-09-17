@@ -1,6 +1,6 @@
 package com.denchic45.kts.ui.profile
 
-import com.denchic45.kts.data.Interactor
+import com.denchic45.kts.domain.Interactor
 import com.denchic45.kts.domain.model.Group
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.data.repository.GroupRepository
@@ -29,7 +29,7 @@ class ProfileInteractor @Inject constructor(
         return groupRepository.findGroupByStudent(user)
     }
 
-    fun findGroupByCurator(user: User): Flow<Group> {
+    fun findGroupByCurator(user: User): Flow<Group?> {
         return groupRepository.findGroupByCuratorId(user.id)
     }
 
