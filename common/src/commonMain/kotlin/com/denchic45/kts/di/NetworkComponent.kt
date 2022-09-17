@@ -36,11 +36,15 @@ abstract class NetworkComponent {
     }
 
     @Provides
-    fun provideFirebaseHttpClient(appPreferences: AppPreferences): FirebaseHttpClient = HttpClient {
+    fun provideFirebaseHttpClient(
+        httpClient: HttpClient,
+        appPreferences: AppPreferences,
+    ): FirebaseHttpClient = HttpClient {
         install(Logging) {
             level = LogLevel.ALL
         }
         install(ContentNegotiation) {
+
             json(Json {
                 prettyPrint = true
                 isLenient = true
@@ -58,15 +62,17 @@ abstract class NetworkComponent {
                     }
                 }
                 refreshTokens {
-                    val response: RefreshTokenResponse = client.submitForm(
-                        url = "https://securetoken.googleapis.com/v1/token",
-                        formParameters = Parameters.build {
-                            append("grant_type", "refresh_token")
-                            append("refresh_token", oldTokens?.refreshToken ?: "")
-                        }) {
-                        parameter("key", ApiKeys.firebaseApiKey)
-                        markAsRefreshTokenRequest()
-                    }.body()
+                    val response: RefreshTokenResponse =
+                        httpClient.submitForm(
+                            url = "https://securetoken.googleapis.com/v1/token",
+                            formParameters = Parameters.build {
+                                append("grant_type", "refresh_token")
+                                append("refresh_token", oldTokens?.refreshToken ?: "")
+                            }) {
+                            parameter("key", ApiKeys.firebaseApiKey)
+                            markAsRefreshTokenRequest()
+                        }.body()
+
                     appPreferences.apply {
                         token = response.id_token
                         refreshToken = response.refresh_token

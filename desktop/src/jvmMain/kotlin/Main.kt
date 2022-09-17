@@ -1,3 +1,4 @@
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -13,18 +14,21 @@ import com.denchic45.kts.di.*
 import com.denchic45.kts.ui.MainContent
 import com.denchic45.kts.ui.login.LoginScreen
 import com.denchic45.kts.ui.theme.KtsTheme
+import com.denchic45.kts.ui.timetable.desktopConfig
+import io.kamel.image.config.LocalKamelConfig
 import java.awt.Toolkit
 
+val appComponent = JvmAppComponent::class.create(
+    PreferencesComponent::class.create(SettingsFactory()),
+    DatabaseComponent::class.create(DriverFactory()),
+    NetworkComponent::class.create()
+)
+
+val splashComponent = appComponent.splashComponent
+
 fun main() = application {
-    val appComponent = JvmAppComponent::class.create(
-        PreferencesComponent::class.create(SettingsFactory()),
-        DatabaseComponent::class.create(DriverFactory()),
-        NetworkComponent::class.create()
-    )
 
-    val rootComponent = appComponent.rootComponent
-
-    val isAuth by rootComponent.isAuth.collectAsState(null)
+    val isAuth by splashComponent.isAuth.collectAsState(null)
 
     isAuth?.let {
         if (it) {
@@ -37,14 +41,16 @@ fun main() = application {
                 state = WindowState(size = size, position = WindowPosition(Alignment.Center))
             ) {
                 KtsTheme {
-                    MainContent(rootComponent)
+                    CompositionLocalProvider(LocalKamelConfig provides desktopConfig) {
+                        MainContent(appComponent.rootComponent())
+                    }
                 }
             }
         } else {
             Window(onCloseRequest = ::exitApplication,
                 state = WindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))
             ) {
-                LoginScreen(appComponent.loginComponent)
+                LoginScreen(appComponent.loginComponent())
             }
         }
     }
