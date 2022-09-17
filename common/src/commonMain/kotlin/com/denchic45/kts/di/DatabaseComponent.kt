@@ -6,24 +6,24 @@ import com.denchic45.kts.data.db.local.DriverFactory
 import com.squareup.sqldelight.db.SqlDriver
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
-import javax.inject.Singleton
 
+@AppScope
 @Component
 abstract class DatabaseComponent(@get:Provides val driverFactory: DriverFactory) {
 
-    @Singleton
+    @AppScope
     @Provides
     fun provideSqlDriver(): SqlDriver {
         return driverFactory.driver
     }
 
-    @Singleton
+    @AppScope
     @Provides
     fun provideDbHelper(sqlDriver: SqlDriver): DbHelper {
         return DbHelper(sqlDriver)
     }
 
-    @Singleton
+    @AppScope
     @Provides
     fun provideAppDatabase(dbHelper: DbHelper): AppDatabase {
         return dbHelper.database

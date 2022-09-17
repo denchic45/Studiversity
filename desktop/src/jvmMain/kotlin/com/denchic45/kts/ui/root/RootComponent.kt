@@ -6,20 +6,25 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
+import com.denchic45.kts.data.repository.EventRepository
 import com.denchic45.kts.data.service.AuthService
+import com.denchic45.kts.domain.MainInteractor
 import com.denchic45.kts.ui.timetable.TimetableComponent
-import kotlinx.coroutines.flow.Flow
+import com.denchic45.kts.util.componentScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 @me.tatarka.inject.annotations.Inject
 class RootComponent @Inject constructor(
-    authService: AuthService,
     timetableComponent: () -> TimetableComponent,
+    eventRepository: EventRepository,
+    mainInteractor: MainInteractor,
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     private val navigation = StackNavigation<Config>()
+
+    private val coroutineScope = componentScope()
 
     private val stack = childStack<Config, Child>(
         source = navigation,
@@ -31,7 +36,10 @@ class RootComponent @Inject constructor(
 
     val childStack: Value<ChildStack<*, Child>> = stack
 
-    val isAuth: Flow<Boolean> = authService.observeIsAuthenticated
+    init {
+        coroutineScope.launch { eventRepository.observeEventsOfYourGroup() }
+        coroutineScope.launch { mainInteractor.startListeners() }
+    }
 
     private sealed class Config : Parcelable {
         object Login : Config()
