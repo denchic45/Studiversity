@@ -19,20 +19,31 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import com.denchic45.kts.domain.model.*
 import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.theme.DarkBlue
 import com.denchic45.kts.ui.theme.Typography
-import io.kamel.image.KamelImage
-import io.kamel.image.lazyPainterResource
-import io.ktor.http.*
+import io.kamel.core.config.DefaultCacheSize
+import io.kamel.core.config.KamelConfig
+import io.kamel.core.config.takeFrom
+import io.kamel.image.config.Default
+import io.kamel.image.config.LocalKamelConfig
+import io.kamel.image.config.resourcesFetcher
+import io.kamel.image.config.svgDecoder
+
+val desktopConfig = KamelConfig {
+    takeFrom(KamelConfig.Default)
+    svgCacheSize = DefaultCacheSize
+    // Available only on Desktop.
+    resourcesFetcher()
+    svgDecoder()
+}
 
 @Preview
 @Composable
@@ -109,9 +120,7 @@ fun Spinner() {
 
     Box(Modifier) {
         OutlinedButton(
-            onClick = {
-                expanded = !expanded
-            },
+            onClick = { expanded = !expanded },
             enabled = !expanded,
             modifier = Modifier.size(112.dp, 40.dp),
             contentPadding = PaddingValues(start = 16.dp, end = 8.dp),
@@ -127,9 +136,7 @@ fun Spinner() {
         DropdownMenu(
             expanded = expanded,
             modifier = Modifier.width(240.dp),
-            onDismissRequest = {
-                expanded = false
-            }
+            onDismissRequest = { expanded = false }
         ) {
             options.forEach { selectionOption ->
                 DropdownMenuItem(
@@ -240,7 +247,7 @@ fun RowScope.DayOfWeekCell(order: Int) {
 
 @Composable
 @Preview
-fun LessonCells(modifier: Modifier, verticalScroll: ScrollState, timetable: GroupTimetable) {
+fun LessonCells(modifier: Modifier, verticalScroll: ScrollState, timetable: TimetableViewState) {
     Row(modifier.verticalScroll(verticalScroll)) {
         repeat(6) { dayOfWeek ->
             Row(Modifier.weight(1F).height(IntrinsicSize.Max)) {
@@ -248,8 +255,8 @@ fun LessonCells(modifier: Modifier, verticalScroll: ScrollState, timetable: Grou
                     Divider(Modifier.width(1.dp).fillMaxHeight())
                 }
                 Column(Modifier.fillMaxWidth()) {
-                    repeat(7) { eventOrder ->
-                        LessonCell(timetable.weekEvents[dayOfWeek].events[eventOrder])
+                    repeat(timetable.maxEventsSize) { eventOrder ->
+                        LessonCell(timetable.events[dayOfWeek][eventOrder])
                         if (eventOrder != 7)
                             Divider(Modifier.fillMaxWidth().height(1.dp))
                     }
@@ -262,62 +269,39 @@ fun LessonCells(modifier: Modifier, verticalScroll: ScrollState, timetable: Grou
 @OptIn(ExperimentalUnitApi::class)
 @Composable
 @Preview
-fun LessonCell(event: Event) {
-
-    val iconUrl = when (val details = event.details) {
-        is Lesson -> details.subject.iconUrl
-        is EmptyEventDetails -> {
-            ""
-        }
-        is SimpleEventDetails -> {
-            details.iconUrl
-        }
-    }
-
-    val text = when (val details = event.details) {
-        is Lesson -> details.subject.name
-        is EmptyEventDetails -> {
-            "Пусто"
-        }
-        is SimpleEventDetails -> {
-            details.name
-        }
-    }
-
+fun LessonCell(cell: TimetableViewState.Cell) {
     Column(Modifier.widthIn(min = 196.dp).height(126.dp).padding(18.dp)) {
-        val density = LocalDensity.current
-        Box(Modifier.size(28.dp)) {
-
-            KamelImage(lazyPainterResource(
-                Url("https://www.svgrepo.com/show/424692/energy-factory-illustration-7.svg")),
-                contentDescription = null,
-                onFailure = { it.printStackTrace() }
-            )
-
-//            AsyncIcon(
-//                url = iconUrl,
-//                modifier = Modifier.size(28.dp),
-//                tint = DarkBlue,
-//                contentDescription = null
-//            )
-
-//            AsyncIcon(
-//                load = { loadSvgPainter(iconUrl, density) },
-//                painterFor = { it },
-//                tint = DarkBlue,
-//                contentDescription = null
-//            )
+        when (cell) {
+            is TimetableViewState.Cell.Event -> {
+                Icon(
+                    painter = painterResource(
+//                        "icons/${cell.iconName}.xml"
+                        "icons/ic_basketball.xml" // TODO убрать
+                    ),
+                    modifier = Modifier.size(28.dp),
+                    tint = DarkBlue,
+                    contentDescription = null
+                )
+                Text(
+                    cell.name,
+                    Modifier.padding(top = 8.dp),
+                    style = Typography.titleLarge
+                )
+                Text(
+                    "2-й корпус",
+                    Modifier.padding(top = 4.dp),
+                    fontSize = TextUnit(18F, TextUnitType.Sp),
+                    fontFamily = FontFamily(Font("fonts/Gilroy-Medium.ttf"))
+                )
+            }
+            TimetableViewState.Cell.Empty -> {
+                Text(
+                    "Пусто",
+                    fontSize = TextUnit(18F, TextUnitType.Sp),
+                    color = Color.Gray,
+                    fontFamily = FontFamily(Font("fonts/Gilroy-Medium.ttf"))
+                )
+            }
         }
-        Text(
-            text,
-            Modifier.padding(top = 8.dp),
-            style = Typography.titleLarge
-        )
-        Text(
-            "2-й корпус",
-            Modifier.padding(top = 4.dp),
-            fontSize = TextUnit(18F, TextUnitType.Sp),
-            fontFamily = FontFamily(Font("fonts/Gilroy-Medium.ttf"))
-        )
     }
 }
