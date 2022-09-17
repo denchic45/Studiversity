@@ -93,10 +93,14 @@ class ProfileViewModel @Inject constructor(
                     } else if (user.isTeacher) {
                         viewModelScope.launch {
                             interactor.findGroupByCurator(user).collect {
-                                if (group == null) return@collect
-                                groupInfoVisibility.value = true
-                                this@ProfileViewModel.group = it
-                                showGroupInfo.setValue("Куратор группы: " + it.name)
+                                group?.also {
+                                    groupInfoVisibility.value = true
+                                    this@ProfileViewModel.group = it
+                                    showGroupInfo.setValue("Куратор группы: " + it.name)
+                                } ?: run {
+                                    groupInfoVisibility.value = false
+                                    showGroupInfo.setValue("")
+                                }
                             }
                         }
                     }
