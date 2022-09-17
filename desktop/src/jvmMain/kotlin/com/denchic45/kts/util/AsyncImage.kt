@@ -18,7 +18,6 @@ import androidx.compose.ui.res.loadXmlImageVector
 import androidx.compose.ui.unit.Density
 import com.squareup.sqldelight.db.use
 import io.kamel.core.Resource
-import io.kamel.image.lazyPainterResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.xml.sax.InputSource

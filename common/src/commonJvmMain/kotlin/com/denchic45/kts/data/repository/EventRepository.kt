@@ -1,6 +1,5 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.DayEntity
 import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.db.remote.model.DayMap
@@ -13,6 +12,7 @@ import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.UserPreferences
+import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.EventsOfDay
 import com.denchic45.kts.domain.model.GroupHeader
@@ -53,12 +53,13 @@ class EventRepository @Inject constructor(
         return flow {
             coroutineScope {
                 launch {
-                    eventRemoteDataSource.observeEventsOfGroupByDate(groupId, date).collect {
-                        saveDay(it)
-                    }
+                    eventRemoteDataSource.observeEventsOfGroupByDate(groupId, date)
+                        .filterNotNull().collect {
+                            saveDay(it)
+                        }
                 }
-                emitAll(eventLocalDataSource.observeEventsByDateAndGroupId(date, groupId)
-                    .map { it.entityToUserDomain() })
+                emitAll(eventLocalDataSource.observeDayEventsByDateAndGroupId(date, groupId)
+                    .map { it?.entityToUserDomain() ?: EventsOfDay.createEmpty(date) })
             }
         }
     }
@@ -70,10 +71,29 @@ class EventRepository @Inject constructor(
                 if (selectedDate.toDateUTC() > nextSaturday || selectedDate.toDateUTC() < previousMonday) {
                     findEventsOfDayByGroupIdAndDate(groupId, selectedDate)
                 } else {
-                    eventLocalDataSource.observeEventsByDateAndGroupId(selectedDate, groupId)
-                        .map { it.entityToUserDomain() }
+                    eventLocalDataSource.observeDayEventsByDateAndGroupId(selectedDate, groupId)
+                        .map { it?.entityToUserDomain() ?: EventsOfDay.createEmpty(selectedDate) }
                         .distinctUntilChanged()
                 }
+            }
+    }
+
+    fun findTimetableByYourGroupAndWeek(selectedMonday: LocalDate): Flow<List<EventsOfDay>> {
+        if (selectedMonday.dayOfWeek != DayOfWeek.MONDAY)
+            throw IllegalArgumentException("Date must be only monday")
+        return groupPreferences.observeGroupId
+            .filter(String::isNotEmpty)
+            .flatMapLatest { groupId ->
+                val dates = List(6) { selectedMonday.plusDays(it.toLong()) }
+                eventLocalDataSource.observeEventsByDateRangeAndGroupId(
+                    groupId = groupId,
+                    dates = dates)
+                    .map { daysWithEvents ->
+                        daysWithEvents.zip(dates) { entity, date ->
+                            entity?.entityToUserDomain() ?: EventsOfDay.createEmpty(date)
+                        }
+                    }
+                    .distinctUntilChanged()
             }
     }
 
@@ -117,6 +137,7 @@ class EventRepository @Inject constructor(
 //                eventLocalDataSource.upsert(eventEntities)
 
 //                teacherEventLocalDataSource.insert(eventEntities.toTeacherEventEntities())
+
 
         dayLocalDataSource.saveDay(
             notRelatedTeacherEntities = notRelatedTeacherEntities,
@@ -164,11 +185,15 @@ class EventRepository @Inject constructor(
         }
 
     suspend fun observeEventsOfYourGroup() {
-        eventRemoteDataSource.observeEventsOfGroupByPreviousAndAfterDates(
-            groupPreferences.groupId,
-            previousMonday,
-            nextSaturday
-        ).collect { dayMaps -> dayMaps.forEach { saveDay(it) } }
+        groupPreferences.observeGroupId
+            .filter(String::isNotEmpty)
+            .flatMapLatest { groupId ->
+                eventRemoteDataSource.observeEventsOfGroupByPreviousAndNextDates(
+                    groupId,
+                    previousMonday,
+                    nextSaturday
+                )
+            }.collect { dayMaps -> dayMaps.forEach { saveDay(it) } }
     }
 
     private val nextSaturday: Date

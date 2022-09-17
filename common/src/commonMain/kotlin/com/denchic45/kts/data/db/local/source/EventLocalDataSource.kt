@@ -8,10 +8,7 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
@@ -36,30 +33,21 @@ class EventLocalDataSource @Inject constructor(db: AppDatabase) {
         queries.getById(id).executeAsOneOrNull()
     }
 
-    fun observeEventsByDateAndGroupId(
-        date: LocalDate, groupId: String,
-    ): Flow<DayWithEventsEntities> {
-        return getDayByDateAndGroupId(date, groupId)
+    fun observeDayEventsByDateAndGroupId(
+        date: LocalDate,
+        groupId: String,
+    ): Flow<DayWithEventsEntities?> {
+        return observeDayByDateAndGroupId(date, groupId)
             .flatMapLatest { dayEntity ->
                 dayEntity?.let {
                     observeEventsByDayId(dayEntity.day_id).map { events ->
                         DayWithEventsEntities(dayEntity, events)
                     }
-                } ?: flowOf(
-                    DayWithEventsEntities(
-                        DayEntity(
-                            day_id = "",
-                            date = date.toString(DatePatterns.yyy_MM_dd),
-                            start_at_zero = false,
-                            group_id = groupId
-                        ),
-                        emptyList()
-                    )
-                )
+                } ?: flowOf(null)
             }
     }
 
-    fun getDayByDateAndGroupId(
+    private fun observeDayByDateAndGroupId(
         date: LocalDate,
         groupId: String,
     ): Flow<DayEntity?> {
@@ -67,7 +55,7 @@ class EventLocalDataSource @Inject constructor(db: AppDatabase) {
             .asFlow().mapToOneOrNull()
     }
 
-    fun observeEventsByDayId(dayId: String): Flow<List<EventWithSubjectAndGroupAndTeachers>> {
+    private fun observeEventsByDayId(dayId: String): Flow<List<EventWithSubjectAndGroupAndTeachers>> {
         return queries.getEventsWithSubjectAndTeachersByDayId(dayId).asFlow()
             .mapToList(Dispatchers.IO)
     }
@@ -92,5 +80,12 @@ class EventLocalDataSource @Inject constructor(db: AppDatabase) {
             end.toString(DatePatterns.yyy_MM_dd),
             groupId
         )
+    }
+
+    fun observeEventsByDateRangeAndGroupId(
+        groupId: String,
+        dates: List<LocalDate>,
+    ): Flow<List<DayWithEventsEntities?>> {
+        return combine(dates.map { observeDayEventsByDateAndGroupId(it, groupId) }) { it.toList() }
     }
 }

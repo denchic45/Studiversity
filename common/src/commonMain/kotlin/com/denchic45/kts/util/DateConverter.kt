@@ -71,6 +71,14 @@ object Dates {
             false
         }
     }
+
+    fun parseRfc3339(date: String): Date {
+        return try {
+            date.toDate("yyyy-MM-dd'T'HH:mm:ssX")
+        } catch (e: Exception) {
+            date.toDate("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        }
+    }
 }
 
 object DatePatterns {

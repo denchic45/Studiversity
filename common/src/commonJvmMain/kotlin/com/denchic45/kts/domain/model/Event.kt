@@ -7,9 +7,8 @@ import java.time.LocalDate
 import java.util.*
 
 data class Event(
-    override var id: String = UUIDS.createShort(),
+    override val id: String = UUIDS.createShort(),
     val groupHeader: GroupHeader,
-//    private val _order: Int = 0,
     val timestamp: Date? = null,
     val room: String = "",
     val details: EventDetails = EmptyEventDetails()
@@ -45,7 +44,6 @@ data class Event(
         fun createEmpty(
             id: String = UUIDS.createShort(),
             groupHeader: GroupHeader,
-//            order: Int,
             details: EventDetails = EmptyEventDetails()
         ): Event {
             return Event(id, groupHeader, details = details)

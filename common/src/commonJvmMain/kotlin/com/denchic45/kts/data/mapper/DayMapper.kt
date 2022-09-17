@@ -16,7 +16,7 @@ fun DayMap.mapToEntity() = DayEntity(
 
 fun DayWithEventsEntities.entityToUserDomain() = EventsOfDay(
     date = dayEntity.date.toLocalDate(DatePatterns.yyy_MM_dd),
-    _events = eventEntities.entitiesToDomains(),
+    events = eventEntities.entitiesToDomains(),
     id = dayEntity.day_id
 )
 
