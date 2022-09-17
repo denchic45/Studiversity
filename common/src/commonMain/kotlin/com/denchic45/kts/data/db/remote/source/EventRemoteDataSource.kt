@@ -7,7 +7,7 @@ import java.util.*
 
 expect class EventRemoteDataSource {
 
-    fun observeEventsOfGroupByDate(groupId: String, date: LocalDate): Flow<DayMap>
+    fun observeEventsOfGroupByDate(groupId: String, date: LocalDate): Flow<DayMap?>
 
     suspend fun findEventsOfGroupByDate(
         groupId: String,
@@ -15,19 +15,21 @@ expect class EventRemoteDataSource {
     ): DayMap
 
     suspend fun updateEventsOfDay(dayMap: DayMap)
+
     fun observeEventsOfTeacherByDate(
         teacherId: String,
         date: LocalDate,
     ): Flow<List<DayMap>>
 
     suspend fun setDay(dayMap: DayMap)
+
     suspend fun findEventsOfGroupByDateRange(
         groupId: String,
         previousMonday: Date,
         nextSaturday: Date,
     ): List<DayMap>
 
-    fun observeEventsOfGroupByPreviousAndAfterDates(
+    fun observeEventsOfGroupByPreviousAndNextDates(
         groupId: String,
         previousMonday: Date,
         nextSaturday: Date,

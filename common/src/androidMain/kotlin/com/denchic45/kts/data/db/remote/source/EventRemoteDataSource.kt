@@ -23,13 +23,16 @@ actual class EventRemoteDataSource @Inject constructor(
     private val groupsRef = firestore.collection("Groups")
     private val daysRef: Query = firestore.collectionGroup("Days")
 
-    actual fun observeEventsOfGroupByDate(groupId: String, date: LocalDate): Flow<DayMap> {
+    actual fun observeEventsOfGroupByDate(groupId: String, date: LocalDate): Flow<DayMap?> {
         return groupsRef
             .document(groupId)
             .collection("Days")
             .whereEqualTo("date", date.toDateUTC())
             .getQuerySnapshotFlow()
-            .map { it.documents[0].toMutableMap(::DayMap) }
+            .map {
+                if (it.isEmpty) null
+                else it.documents[0].toMutableMap(::DayMap)
+            }
     }
 
     actual suspend fun findEventsOfGroupByDate(groupId: String, date: LocalDate): DayMap {
@@ -42,7 +45,7 @@ actual class EventRemoteDataSource @Inject constructor(
             .documents[0].toMutableMap(::DayMap)
     }
 
-    actual fun observeEventsOfGroupByPreviousAndAfterDates(
+    actual fun observeEventsOfGroupByPreviousAndNextDates(
         groupId: String,
         previousMonday: Date,
         nextSaturday: Date,
@@ -54,7 +57,7 @@ actual class EventRemoteDataSource @Inject constructor(
             .map { it.toMutableMaps(::DayMap) }
     }
 
-    actual   suspend fun findEventsOfGroupByDateRange(
+    actual suspend fun findEventsOfGroupByDateRange(
         groupId: String,
         previousMonday: Date,
         nextSaturday: Date,
@@ -71,7 +74,10 @@ actual class EventRemoteDataSource @Inject constructor(
         dayRef.document(dayMap.id).set(dayMap.map, SetOptions.merge()).await()
     }
 
-    actual   fun observeEventsOfTeacherByDate(teacherId: String, date: LocalDate): Flow<List<DayMap>> {
+    actual fun observeEventsOfTeacherByDate(
+        teacherId: String,
+        date: LocalDate,
+    ): Flow<List<DayMap>> {
         return daysRef
             .whereArrayContains("teacherIds", teacherId)
             .whereEqualTo("date", date.toDateUTC())

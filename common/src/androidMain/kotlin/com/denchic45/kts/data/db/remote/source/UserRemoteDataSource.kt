@@ -14,18 +14,20 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-actual class UserRemoteDataSource @Inject constructor (
+actual class UserRemoteDataSource @Inject constructor(
     private val firestore: FirebaseFirestore,
 ) {
     private val usersRef: CollectionReference = firestore.collection("Users")
     private val groupsRef: CollectionReference = firestore.collection("Groups")
     private val coursesRef: CollectionReference = firestore.collection("Courses")
 
-    actual fun observeById(id: String): Flow<UserMap?> {
-        return usersRef.whereEqualTo("id", id)
-            .getQuerySnapshotFlow()
-            .map { snapshot -> snapshot.documents[0].toMap(::UserMap) }
+    actual suspend fun findById(id: String): UserMap {
+        return usersRef.document(id).get().await().toMap(::UserMap)
     }
+
+    actual fun observeById(id: String): Flow<UserMap?> = usersRef.document(id)
+        .getDocumentSnapshotFlow()
+        .map { it.toMap(::UserMap) }
 
     actual fun findByContainsName(text: String): Flow<List<UserMap>> {
         return usersRef
@@ -34,7 +36,7 @@ actual class UserRemoteDataSource @Inject constructor (
             .map { it.toMaps(::UserMap) }
     }
 
-    actual suspend fun findAndByEmail(email: String): UserMap {
+    actual suspend fun findByEmail(email: String): UserMap {
         return usersRef.whereEqualTo("email", email)
             .get()
             .await().run {
@@ -105,11 +107,12 @@ actual class UserRemoteDataSource @Inject constructor (
         return usersRef.whereArrayContains(
             "searchKeys",
             SearchKeysGenerator.formatInput(text)
-        ).whereEqualTo("teacher", true)
+        )
+            .whereEqualTo("teacher", true)
             .getDataFlow { it.toMaps(::UserMap) }
     }
 
-    actual  suspend fun addStudent(studentMap: UserMap) {
+    actual suspend fun addStudent(studentMap: UserMap) {
         firestore.batch().apply {
             this[usersRef.document(studentMap.id)] = studentMap.map
             updateStudentFromGroup(studentMap.map, studentMap.groupId!!, this)
@@ -125,7 +128,7 @@ actual class UserRemoteDataSource @Inject constructor (
         batch.update(groupsRef.document(groupId), updateGroupMap)
     }
 
-    actual  suspend fun updateStudent(oldStudentMap: UserMap, studentMap: UserMap) {
+    actual suspend fun updateStudent(oldStudentMap: UserMap, studentMap: UserMap) {
         firestore.batch().apply {
             if (changePersonalData(studentMap, oldStudentMap)) {
                 this[usersRef.document(studentMap.id)] = studentMap.map
@@ -162,9 +165,5 @@ actual class UserRemoteDataSource @Inject constructor (
         batch.delete(usersRef.document(studentId))
         deleteStudentFromGroup(studentId, groupId, batch)
         batch.commit().await()
-    }
-
-    actual  suspend fun findById(userId: String): UserMap {
-        return usersRef.document(userId).get().await().toMap(::UserMap)
     }
 }

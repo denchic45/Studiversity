@@ -15,7 +15,7 @@ expect class SubjectRemoteDataSource {
 
     suspend fun remove(map: FireMap)
 
-    fun observeById(id: String): Flow<SubjectMap>
+    fun observeById(id: String): Flow<SubjectMap?>
 
     suspend fun findById(id: String): SubjectMap
 

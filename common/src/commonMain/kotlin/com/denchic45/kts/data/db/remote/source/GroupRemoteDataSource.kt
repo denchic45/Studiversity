@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 expect class GroupRemoteDataSource {
 
-    fun observeById(groupId: String): Flow<GroupMap?>
+    fun observeById(id: String): Flow<GroupMap?>
 
     suspend fun add(groupMap: MutableFireMap)
 
@@ -14,7 +14,7 @@ expect class GroupRemoteDataSource {
 
     fun findByContainsName(text: String): Flow<List<GroupMap>>
 
-    suspend fun findById(groupId: String): GroupMap
+    suspend fun findById(id: String): GroupMap
 
     suspend fun findCoursesByGroupId(groupId: String): List<String>
 
@@ -39,7 +39,7 @@ expect class GroupRemoteDataSource {
         timestampGroups: Long,
     ): Flow<List<GroupMap>>
 
-    fun findByCuratorId(userId: String): Flow<GroupMap>
+    suspend fun findByCuratorId(id: String): GroupMap
 
     fun observeByCuratorId(id: String): Flow<GroupMap?>
 

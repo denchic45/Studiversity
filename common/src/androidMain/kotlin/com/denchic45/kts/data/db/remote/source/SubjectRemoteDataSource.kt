@@ -77,7 +77,7 @@ actual class SubjectRemoteDataSource @Inject constructor(
             }
     }
 
-    actual fun observeById(id: String): Flow<SubjectMap> {
+    actual fun observeById(id: String): Flow<SubjectMap?> {
         return subjectsRef.document(id)
             .getDocumentSnapshotFlow()
             .map { snapshot -> snapshot.toMap(::SubjectMap) }

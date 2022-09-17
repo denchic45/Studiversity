@@ -6,11 +6,13 @@ import kotlinx.coroutines.flow.Flow
 
 expect class UserRemoteDataSource {
 
+    suspend fun findById(id: String): UserMap
+
     fun observeById(id: String): Flow<UserMap?>
 
     fun findByContainsName(text: String): Flow<List<UserMap>>
 
-    suspend fun findAndByEmail(email: String): UserMap
+    suspend fun findByEmail(email: String): UserMap
 
     suspend fun addTeacher(map: FireMap)
 
@@ -19,8 +21,6 @@ expect class UserRemoteDataSource {
     suspend fun removeTeacher(teacher: FireMap)
 
     fun findTeachersByContainsName(text: String): Flow<List<UserMap>>
-
-    suspend fun findById(userId: String): UserMap
 
     suspend fun addStudent(studentMap: UserMap)
 

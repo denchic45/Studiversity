@@ -28,12 +28,12 @@ actual class GroupRemoteDataSource @Inject constructor(
             }
     }
 
-    actual suspend fun findById(groupId: String): GroupMap {
-        return GroupMap(groupDocReference(groupId).get().await().toMap())
+    actual suspend fun findById(id: String): GroupMap {
+        return GroupMap(groupDocReference(id).get().await().toMap())
     }
 
-    actual fun observeById(groupId: String): Flow<GroupMap?> {
-        return groupDocReference(groupId)
+    actual fun observeById(id: String): Flow<GroupMap?> {
+        return groupDocReference(id)
             .getDocumentSnapshotFlow()
             .map {
                 if (it.data != null)
@@ -103,10 +103,9 @@ actual class GroupRemoteDataSource @Inject constructor(
         .getQuerySnapshotFlow()
         .map { it.toMaps(::GroupMap) }
 
-    actual fun findByCuratorId(userId: String): Flow<GroupMap> {
-        return groupsRef.whereEqualTo("curator.id", userId)
-            .getQuerySnapshotFlow()
-            .map { it.documents[0].toMap(::GroupMap) }
+    actual suspend fun findByCuratorId(id: String): GroupMap {
+        return groupsRef.whereEqualTo("curator.id", id)
+            .get().await().documents[0].toMap(::GroupMap)
     }
 
     actual fun observeByCuratorId(id: String): Flow<GroupMap?> {
