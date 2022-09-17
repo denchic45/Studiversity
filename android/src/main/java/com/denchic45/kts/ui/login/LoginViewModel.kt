@@ -15,7 +15,7 @@ import java.util.*
 import javax.inject.Inject
 
 class LoginViewModel @Inject constructor(
-    private val interactor: SignInWithEmailAndPasswordUseCase
+    private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase
 ) : BaseViewModel() {
 
     val backToFragment = SingleLiveData<Void>()
@@ -84,7 +84,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 Log.d("lol", "A try authByEmail: ")
-                interactor.invoke(mail, password)
+                signInWithEmailAndPasswordUseCase(mail, password)
                 Log.d("lol", "A onSuccessfulLogin: ")
                 onSuccessfulLogin()
             } catch (t: Throwable) {
