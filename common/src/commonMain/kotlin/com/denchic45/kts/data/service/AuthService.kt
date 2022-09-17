@@ -13,4 +13,6 @@ expect class AuthService {
     suspend fun resetPassword(email: String)
 
     suspend fun createNewUser(email: String, password: String)
+
+    fun signOut()
 }

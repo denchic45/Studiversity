@@ -22,11 +22,10 @@ actual class AuthService @Inject constructor(
         get() = TODO("Not yet implemented")
 
     actual val observeIsAuthenticated: Flow<Boolean> =
-        appPreferences.observeToken.map {
-            !it.isNullOrEmpty()
-        }
+        appPreferences.observeToken.map { !it.isNullOrEmpty() }
 
     actual suspend fun signInWithEmailAndPassword(email: String, password: String) {
+        println("AUTH: try... desktop")
         client.post {
             url("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword")
             parameter("key", ApiKeys.firebaseApiKey)
@@ -43,5 +42,8 @@ actual class AuthService @Inject constructor(
     }
 
     actual suspend fun createNewUser(email: String, password: String) {
+    }
+
+    actual fun signOut() {
     }
 }

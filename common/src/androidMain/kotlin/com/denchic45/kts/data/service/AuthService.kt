@@ -16,10 +16,6 @@ actual class AuthService @javax.inject.Inject constructor() {
         get() = firebaseAuth.currentUser != null
 
 
-    fun signOut() {
-        firebaseAuth.signOut()
-    }
-
     actual val observeIsAuthenticated: Flow<Boolean> = callbackFlow {
         val listener: (FirebaseAuth) -> Unit = {
             trySend(firebaseAuth.currentUser != null)
@@ -32,8 +28,17 @@ actual class AuthService @javax.inject.Inject constructor() {
 
 
     actual suspend fun signInWithEmailAndPassword(email: String, password: String) {
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-            .await()
+       try {
+           println("AUTH: try... android")
+           firebaseAuth.signInWithEmailAndPassword(email, password)
+               .await()
+       } catch (t:Throwable) {
+          println( t.message)
+       }
+    }
+
+    actual fun signOut() {
+        firebaseAuth.signOut()
     }
 
     actual suspend fun createNewUser(email: String, password: String) {
