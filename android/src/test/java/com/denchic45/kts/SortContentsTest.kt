@@ -61,7 +61,6 @@ class SortContentsTest {
             order,
             LocalDateTime.now(),
             false,
-            emptyList(),
             SubmissionSettings(false, 0, false, 0, 0),
             false,
             Date(),
