@@ -15,7 +15,6 @@ import javax.inject.Singleton
         AndroidAppModule::class,
         DatabaseModule::class,
         StorageModule::class,
-        MapperModule::class,
         PreferencesModule::class,
         RawModule::class,
         DispatcherModule::class,
