@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class CourseRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     private val coroutineScope: CoroutineScope,

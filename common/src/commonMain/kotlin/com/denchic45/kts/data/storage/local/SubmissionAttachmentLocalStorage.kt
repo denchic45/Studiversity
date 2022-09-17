@@ -6,6 +6,7 @@ import java.io.FileOutputStream
 import com.denchic45.kts.util.SystemDirs
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class SubmissionAttachmentLocalStorage @Inject constructor(systemDirs: SystemDirs) {
 
     private val internalDir = systemDirs.appDirectory

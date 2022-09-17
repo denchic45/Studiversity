@@ -1,19 +1,19 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.db.local.source.UserLocalDataSource
 import com.denchic45.kts.data.db.remote.source.UserRemoteDataSource
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.pref.UserPreferences
+import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.data.storage.remote.UserRemoteStorage
 import com.denchic45.kts.domain.model.User
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import java.util.*
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 open class UserRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     private val userPreferences: UserPreferences,
@@ -74,29 +74,24 @@ open class UserRepository @Inject constructor(
     }
 
     suspend fun findAndSaveByEmail(email: String) {
-        saveUserPreference(
-            userRemoteDataSource.findAndByEmail(email).mapToUser()
-        )
+        saveUserPreference(userRemoteDataSource.findByEmail(email).mapToUser())
     }
 
-    val thisUserObserver: Flow<User?> = callbackFlow {
-        userRemoteDataSource.observeById(userPreferences.id)
-            .catch { close(it) }
-            .collect { value ->
+    val thisUserObserver: Flow<User?> = userPreferences.observeId
+            .filter(String::isNotEmpty)
+            .flatMapConcat(userRemoteDataSource::observeById)
+            .map { value ->
                 if (value == null) {
-                    trySend(null)
-                    Unit
+                    return@map null
                 } else {
                     val user = value.mapToUser()
                     if (user.timestamp != null) {
                         saveUserPreference(user)
-                        trySend(user)
                     }
+                    return@map user
                 }
             }
 
-        awaitClose { }
-    }
 
     fun observeById(userId: String): Flow<User?> = flow {
         if (!userLocalDataSource.isExist(userId)) {

@@ -1,6 +1,5 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.db.remote.model.GroupMap
 import com.denchic45.kts.data.db.remote.source.CourseRemoteDataSource
@@ -10,15 +9,16 @@ import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.TimestampPreferences
 import com.denchic45.kts.data.pref.UserPreferences
+import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.*
-import com.denchic45.kts.domain.model.User.Companion.isStudent
 import com.denchic45.kts.util.timestampNotNull
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class GroupRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     override val groupLocalDataSource: GroupLocalDataSource,
@@ -54,17 +54,7 @@ class GroupRepository @Inject constructor(
         timestampPreferences.groupCoursesUpdateTimestamp = group.timestampCourses.time
     }
 
-    suspend fun listenYouGroupByCurator() {
-        findGroupByCuratorId(userPreferences.id).collect()
-//        addListenerRegistration("byCurator") { getYourGroupByCuratorListener() }
-    }
-
     suspend fun listenGroupsWhereThisUserIsTeacher(teacher: User) {
-        getUpdatedGroupsByTeacherListener(teacher)
-//        addListenerRegistration(teacher.id) { getUpdatedGroupsByTeacherListener(teacher) }
-    }
-
-    private suspend fun getUpdatedGroupsByTeacherListener(teacher: User) {
         val timestampGroups = timestampPreferences.groupsUpdateTimestamp
         val teacherId = teacher.id
         return groupRemoteDataSource.findByTeacherIdAndTimestamp(teacherId, timestampGroups)
@@ -72,28 +62,15 @@ class GroupRepository @Inject constructor(
                 saveGroups(it)
                 timestampPreferences.groupsUpdateTimestamp = System.currentTimeMillis()
             }
-
-//        return groupsRef.whereArrayContains("teacherIds", teacherId)
-//            .whereGreaterThan("timestamp", Date(timestampGroups))
-//            .addSnapshotListener { snapshots: QuerySnapshot?, error: FirebaseFirestoreException? ->
-//                if (error != null) {
-//                    error.printStackTrace()
-//                    throw error
-//                }
-//                if (!snapshots!!.isEmpty) {
-//                    coroutineScope.launch(dispatcher) {
-//                        saveGroups(snapshots.toMaps(::GroupMap))
-//                    }
-//                    timestampPreferences.groupsUpdateTimestamp = System.currentTimeMillis()
-//                }
-//            }
     }
 
-    fun findGroupByCuratorId(userId: String): Flow<Group> {
-        groupRemoteDataSource.findByCuratorId(userPreferences.id)
+    fun findGroupByCuratorId(userId: String): Flow<Group?> {
+        groupRemoteDataSource.observeByCuratorId(userPreferences.id)
             .onEach {
-                if (it.map.timestampNotNull()) {
-                    saveYourGroup(GroupMap(it.map))
+                it?.let {
+                    if (it.map.timestampNotNull()) {
+                        saveYourGroup(GroupMap(it.map))
+                    }
                 }
             }
         return groupLocalDataSource.getByCuratorId(userId)
@@ -115,13 +92,13 @@ class GroupRepository @Inject constructor(
 //            .map { it.toGroup() }
 //    }
 
-    fun observeYourGroupById(): Flow<GroupMap> {
-        return if (isStudent(UserRole.valueOf(userPreferences.role))) {
-            groupRemoteDataSource.observeById(userPreferences.groupId)
-        } else {
-            groupRemoteDataSource.observeByCuratorId(userPreferences.id)
+    suspend fun listenYourGroupById() {
+        when (UserRole.valueOf(userPreferences.role)) {
+            UserRole.STUDENT -> groupRemoteDataSource.observeById(userPreferences.groupId)
+            UserRole.TEACHER -> groupRemoteDataSource.observeByCuratorId(userPreferences.id)
+            else -> emptyFlow()
         }.filterNotNull()
-            .onEach { groupMap ->
+            .collect { groupMap ->
                 if (groupMap.map.timestampNotNull()) {
                     saveYourGroup(groupMap)
                 }

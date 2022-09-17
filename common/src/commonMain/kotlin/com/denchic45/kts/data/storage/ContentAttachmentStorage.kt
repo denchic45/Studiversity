@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.denchic45.kts.data.storage.remote.ContentAttachmentRemoteStorage
 
+@me.tatarka.inject.annotations.Inject
 class ContentAttachmentStorage @Inject constructor(
     private val contentAttachmentRemoteStorage: ContentAttachmentRemoteStorage,
     private val contentAttachmentLocalStorage: ContentAttachmentLocalStorage,

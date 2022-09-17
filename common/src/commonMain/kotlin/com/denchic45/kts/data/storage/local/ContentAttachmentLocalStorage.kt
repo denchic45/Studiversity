@@ -5,7 +5,7 @@ import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 
-
+@me.tatarka.inject.annotations.Inject
 class ContentAttachmentLocalStorage @Inject constructor(systemDirs: SystemDirs) {
 
     private val internalDir = systemDirs.appDirectory

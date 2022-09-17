@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class SubmissionAttachmentStorage @Inject constructor(
     private val submissionAttachmentRemoteStorage: SubmissionAttachmentRemoteStorage,
     private val submissionAttachmentLocalStorage: SubmissionAttachmentLocalStorage,

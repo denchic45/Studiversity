@@ -2,6 +2,7 @@ package com.denchic45.kts.data.storage.remote
 
 import com.denchic45.kts.data.domain.model.Attachment
 
+@me.tatarka.inject.annotations.Inject
 actual class ContentAttachmentRemoteStorage {
     actual suspend fun get(url: String): ByteArray {
         TODO("Not yet implemented")

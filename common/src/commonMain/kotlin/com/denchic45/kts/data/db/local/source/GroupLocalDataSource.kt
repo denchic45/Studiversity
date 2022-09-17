@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
-class GroupLocalDataSource @Inject constructor (private val db: AppDatabase) {
+class GroupLocalDataSource @Inject constructor(private val db: AppDatabase) {
 
     private val queries: GroupEntityQueries = db.groupEntityQueries
 
@@ -186,16 +186,18 @@ class GroupLocalDataSource @Inject constructor (private val db: AppDatabase) {
         allUsersEntity: List<UserEntity>,
         availableStudentIds: List<String>,
         specialtyEntity: SpecialtyEntity,
-    ) = withContext(Dispatchers.IO) {
-        db.transaction {
-            queries.upsert(groupEntity)
-            db.userEntityQueries.apply {
-                allUsersEntity.forEach {
-                    upsert(it)
-                    deleteMissingStudentsByGroup(groupEntity.group_id, availableStudentIds)
+    ) {
+        withContext(Dispatchers.IO) {
+            db.transaction {
+                queries.upsert(groupEntity)
+                db.userEntityQueries.apply {
+                    allUsersEntity.forEach {
+                        upsert(it)
+                        deleteMissingStudentsByGroup(groupEntity.group_id, availableStudentIds)
+                    }
                 }
+                db.specialtyEntityQueries.upsert(specialtyEntity)
             }
-            db.specialtyEntityQueries.upsert(specialtyEntity)
         }
     }
 }
