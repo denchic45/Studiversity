@@ -33,7 +33,6 @@ import io.kamel.core.config.DefaultCacheSize
 import io.kamel.core.config.KamelConfig
 import io.kamel.core.config.takeFrom
 import io.kamel.image.config.Default
-import io.kamel.image.config.LocalKamelConfig
 import io.kamel.image.config.resourcesFetcher
 import io.kamel.image.config.svgDecoder
 

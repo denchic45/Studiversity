@@ -1,10 +1,7 @@
 package com.denchic45.kts.domain
 
 import com.denchic45.kts.data.db.local.DbHelper
-import com.denchic45.kts.data.repository.CourseRepository
-import com.denchic45.kts.data.repository.EventRepository
-import com.denchic45.kts.data.repository.GroupRepository
-import com.denchic45.kts.data.repository.UserRepository
+import com.denchic45.kts.data.repository.*
 import com.denchic45.kts.data.service.AuthService
 import com.denchic45.kts.domain.model.CourseHeader
 import com.denchic45.kts.domain.model.User
@@ -26,6 +23,8 @@ class MainInteractor @Inject constructor(
     private val courseRepository: CourseRepository,
     private val dbHelper: DbHelper,
     private val systemDirs: SystemDirs,
+
+    private val metaRepository: MetaRepository
 ) : Interactor {
 
     val listenAuthState: Flow<Boolean> = authService.observeIsAuthenticated

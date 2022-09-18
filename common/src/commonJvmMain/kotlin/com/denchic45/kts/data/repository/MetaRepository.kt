@@ -1,12 +1,16 @@
 package com.denchic45.kts.data.repository
 
+import com.denchic45.kts.data.network.model.BellSchedule
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.storage.MetaStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class MetaRepository @Inject constructor(
     coroutineScope: CoroutineScope,
     private val appPreferences: AppPreferences,
@@ -14,13 +18,12 @@ class MetaRepository @Inject constructor(
 ) {
     val lessonTime: Flow<Int> = appPreferences.observeLessonTime
 
-    private suspend fun getMetaData() {
-        metaStorage.get().let { meta ->
-            appPreferences.lessonTime = meta.lesson_time
-        }
-    }
+    val bellSchedule: BellSchedule = Json.decodeFromString(appPreferences.bellSchedule)
 
     init {
-        coroutineScope.launch { getMetaData() }
+        coroutineScope.launch {
+            appPreferences.bellSchedule =
+                metaStorage.getBellSchedule().apply { println("bell: $this") }
+        }
     }
 }

@@ -13,6 +13,8 @@ class AppPreferences(val settings: ObservableSettings) : Settings by settings {
     var coursesLoadedFirstTime by boolean()
     var latestVersion by long()
 
+    var bellSchedule by string()
+
     var token by nullableString()
     var refreshToken by nullableString()
 

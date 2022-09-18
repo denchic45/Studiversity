@@ -1,12 +1,17 @@
 package com.denchic45.kts.ui.timetable
 
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.domain.model.EmptyEventDetails
 import com.denchic45.kts.domain.model.Lesson
 import com.denchic45.kts.domain.model.SimpleEventDetails
 import com.denchic45.kts.domain.usecase.FindEventsOfWeekByThisUserUseCase
 import com.denchic45.kts.util.componentScope
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import me.tatarka.inject.annotations.Inject
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -14,13 +19,18 @@ import java.time.LocalDate
 @Inject
 class TimetableComponent(
     findEventsOfWeekByThisUserUseCase: FindEventsOfWeekByThisUserUseCase,
+    metaRepository: MetaRepository,
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     private val coroutineScope = componentScope()
 
-    val timetable = findEventsOfWeekByThisUserUseCase(LocalDate.now()
-        .with(DayOfWeek.MONDAY)).map { eventsOfDays ->
+    val selectedDate = MutableStateFlow(LocalDate.now().with(DayOfWeek.MONDAY))
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val timetable = combine(selectedDate.flatMapLatest { findEventsOfWeekByThisUserUseCase(it) },
+        flowOf(metaRepository.bellSchedule))
+    { eventsOfDays, bellSchedule ->
         val maxEventsSize = eventsOfDays.maxOf { it.events.size }.let {
             if (it != 0) it
             else 8
@@ -40,7 +50,9 @@ class TimetableComponent(
                                 event.room)
                         }
                         is SimpleEventDetails -> {
-                            TimetableViewState.Cell.Event(details.iconUrl, details.name, event.room)
+                            TimetableViewState.Cell.Event(details.iconUrl,
+                                details.name,
+                                event.room)
                         }
                         is EmptyEventDetails -> TimetableViewState.Cell.Empty
                     }
