@@ -64,7 +64,7 @@ class EventsOfDay constructor(
 
     fun isEmpty(): Boolean = events.isEmpty()
 
-    fun last(): Event = events.last()
+    fun last(): Event? = events.lastOrNull()
 
     fun orderOf(event: Event): Int {
         return events.indexOfFirst { event.id == it.id } + offsetIndex
