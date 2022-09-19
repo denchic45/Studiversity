@@ -12,7 +12,7 @@ class BellScheduleTest {
     @Test
     fun test() {
         println(
-            json.encodeToString(BellSchedule(true,
+            json.encodeToString(BellSchedule(
                 listOf(
                     "8:30" to "9:10",
                     "9:20" to "10:00",
@@ -25,7 +25,8 @@ class BellScheduleTest {
                     "14:35" to "15:15",
                     "15:20" to "16:00",
                     "16:05" to "16:45",
-                )))
+                )
+            ))
         )
     }
 }
