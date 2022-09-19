@@ -158,12 +158,13 @@ fun TimetableContent(timetableComponent: TimetableComponent) {
     val horizontalScroll: ScrollState = rememberScrollState()
 
     Row {
+        val timetable by timetableComponent.timetable.collectAsState(null)
         Column(Modifier.width(78.dp)) {
             Box(Modifier.fillMaxWidth().height(124.dp), contentAlignment = Alignment.BottomEnd) {
                 Divider(Modifier.height(24.dp).width(1.dp))
             }
             Divider(Modifier.fillMaxWidth().height(1.dp))
-            LessonOrders(verticalScroll)
+            timetable?.let { LessonOrders(verticalScroll, it.orders) }
         }
         BoxWithConstraints(Modifier) {
             val modifierHorScroll = if (maxWidth < 1000.dp)
@@ -171,9 +172,7 @@ fun TimetableContent(timetableComponent: TimetableComponent) {
             else Modifier
             Column {
                 DaysOfWeekHeader(modifierHorScroll)
-                val timetable =
-                    timetableComponent.timetable.collectAsState(null)
-                timetable.value?.let {
+                timetable?.let {
                     LessonCells(modifierHorScroll, verticalScroll, it)
                 }
             }
@@ -183,23 +182,23 @@ fun TimetableContent(timetableComponent: TimetableComponent) {
 
 
 @Composable
-fun LessonOrders(state: ScrollState) {
+fun LessonOrders(state: ScrollState, orders: List<TimetableViewState.CellOrder>) {
     Column(
         Modifier.fillMaxWidth().verticalScroll(state),
         horizontalAlignment = Alignment.End
     ) {
-        repeat(8) { LessonsOrder() }
+        repeat(orders.size) { LessonsOrder(orders[it]) }
     }
 }
 
 @Composable
-private fun LessonsOrder() {
+private fun LessonsOrder(cellOrder: TimetableViewState.CellOrder) {
     Row(Modifier.height(127.dp)) {
         Column(horizontalAlignment = Alignment.End) {
-            Text("8:30",
+            Text(cellOrder.time,
                 Modifier.padding(top = 8.dp, end = 16.dp),
                 style = Typography.bodySmall)
-            Text("1",
+            Text(cellOrder.order.toString(),
                 Modifier.padding(top = 4.dp, end = 16.dp),
                 color = Color.Gray,
                 style = Typography.headlineSmall,
