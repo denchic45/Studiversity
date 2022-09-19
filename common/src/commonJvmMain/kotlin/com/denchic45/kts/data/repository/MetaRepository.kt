@@ -22,8 +22,10 @@ class MetaRepository @Inject constructor(
 
     init {
         coroutineScope.launch {
-            appPreferences.bellSchedule =
-                metaStorage.getBellSchedule().apply { println("bell: $this") }
+            metaStorage.getBellSchedule()?.apply {
+                println("bell: $this")
+                appPreferences.bellSchedule = this
+            }
         }
     }
 }

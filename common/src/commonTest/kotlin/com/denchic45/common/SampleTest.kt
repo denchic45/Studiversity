@@ -1,6 +1,6 @@
 package com.denchic45.common
 
-import com.denchic45.kts.util.getObjectValue2
+import com.denchic45.kts.util.getObjectValue
 import kotlinx.serialization.json.Json
 import org.junit.Test
 
@@ -49,7 +49,7 @@ class SampleTest {
         """.trimIndent()
         )
 
-        getObjectValue2((Json.parseToJsonElement(json))).apply {
+        getObjectValue((Json.parseToJsonElement(json))).apply {
             (this as List<Map<String, Any>>).map {
                 it.apply {
                     println(this.map { "${it.key}: ${it.value}" }.joinToString(", "))
