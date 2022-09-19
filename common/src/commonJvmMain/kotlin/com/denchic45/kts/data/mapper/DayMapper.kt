@@ -17,7 +17,8 @@ fun DayMap.mapToEntity() = DayEntity(
 fun DayWithEventsEntities.entityToUserDomain() = EventsOfDay(
     date = dayEntity.date.toLocalDate(DatePatterns.yyy_MM_dd),
     events = eventEntities.entitiesToDomains(),
-    id = dayEntity.day_id
+    id = dayEntity.day_id,
+    startsAtZero = dayEntity.start_at_zero
 )
 
 fun EventsOfDay.domainToMap(groupId: String): MutableFireMap = mutableMapOf(
