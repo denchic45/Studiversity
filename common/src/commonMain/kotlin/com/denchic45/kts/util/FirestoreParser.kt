@@ -16,50 +16,7 @@ private val props = setOf(
     "timestampValue"
 )
 
-fun getFireStoreProp(json: MutableFireMap): String? {
-    return json.keys.find { k -> props.contains(k) }
-}
-
-//fun parseObjectJson(json: JsonObject): MutableMap<String, JsonElement> {
-//    return json.map { it.key to getObjectValue(it) }.toMutableStateMap()
-//}
-
-fun getObjectValue(element: JsonElement): JsonElement {
-    return when (element) {
-        is JsonObject -> {
-            return when (val prop = element.keys.find { k -> props.contains(k) }) {
-                "stringValue" -> {
-                    JsonPrimitive(element[prop]!!.jsonPrimitive.content)
-                }
-                "mapValue" -> {
-                    getObjectValue((element[prop] as JsonObject))
-                }
-                else -> {
-                    JsonObject(
-                        element.map {
-                            it.key to getObjectValue(it.value)
-                        }.toMap()
-                    )
-                }
-            }
-        }
-        is JsonArray -> {
-            JsonArray(element.map {
-                getObjectValue(it)
-            })
-        }
-        else -> {
-            return element
-        }
-    }
-}
-
-
-fun getMapValue(map: MutableMap<String, JsonElement>): MutableFireMap {
-    return map.map { it.key to getObjectValue2(it.value) }.toMap().toMutableMap()
-}
-
-fun getObjectValue2(element: JsonElement): Any? {
+fun getObjectValue(element: JsonElement): Any? {
     return when (element) {
         is JsonObject -> {
             return when (val prop = element.keys.find { k -> props.contains(k) }) {
@@ -70,30 +27,31 @@ fun getObjectValue2(element: JsonElement): Any? {
                 "timestampValue" -> {
                     Dates.parseRfc3339(element.getValue(prop).jsonPrimitive.content)
                 }
-                "nullValue" ->  null
+                "nullValue" -> null
                 "mapValue" -> {
                     element.getValue(prop).jsonObject.getValue("fields").jsonObject.map {
-                        it.key to getObjectValue2(it.value)
+                        it.key to getObjectValue(it.value)
                     }.toMap()
                 }
                 "arrayValue" -> {
-                    element.getValue(prop).jsonObject.getValue("values").jsonArray.map {
-                        getObjectValue2(it)
-                    }
+                    println("object: $element")
+                    element.getValue(prop).jsonObject["values"]?.let { array ->
+                        array.jsonArray.map { getObjectValue(it) }
+                    } ?: emptyList<Any>()
                 }
                 else -> {
-                    element.map { it.key to getObjectValue2(it.value) }.toMap()
+                    element.map { it.key to getObjectValue(it.value) }.toMap()
                 }
             }
         }
         is JsonArray -> {
-            element.map { getObjectValue2(it) }
+            element.map { getObjectValue(it) }
         }
         else -> return element
     }
 }
 
-fun <T> parseDocuments(element: JsonElement,factory: (MutableFireMap) -> T):List<T> {
+fun <T> parseDocuments(element: JsonElement, factory: (MutableFireMap) -> T): List<T> {
     return parseDocuments(element).map(factory)
 }
 
@@ -102,10 +60,10 @@ fun parseDocuments(element: JsonElement): List<MutableFireMap> {
 }
 
 fun parseDocument(element: JsonElement): MutableFireMap {
-    return getObjectValue2(element.jsonObject.getValue("fields")) as MutableFireMap
+    return getObjectValue(element.jsonObject.getValue("fields")) as MutableFireMap
 }
 
-fun <T> parseDocument(element: JsonElement,factory: (MutableFireMap) -> T):T {
+fun <T> parseDocument(element: JsonElement, factory: (MutableFireMap) -> T): T {
     return factory(parseDocument(element))
 }
 
