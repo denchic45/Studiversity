@@ -5,6 +5,8 @@ import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.storage.MetaStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -18,7 +20,9 @@ class MetaRepository @Inject constructor(
 ) {
     val lessonTime: Flow<Int> = appPreferences.observeLessonTime
 
-    val bellSchedule: BellSchedule = Json.decodeFromString(appPreferences.bellSchedule)
+    val observeBellSchedule: Flow<BellSchedule> = appPreferences.observeBellSchedule
+        .filter(String::isNotEmpty)
+        .map(Json::decodeFromString)
 
     init {
         coroutineScope.launch {
