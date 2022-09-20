@@ -29,12 +29,15 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.theme.DarkBlue
 import com.denchic45.kts.ui.theme.Typography
+import com.denchic45.kts.util.DatePatterns
+import com.denchic45.kts.util.toString
 import io.kamel.core.config.DefaultCacheSize
 import io.kamel.core.config.KamelConfig
 import io.kamel.core.config.takeFrom
 import io.kamel.image.config.Default
 import io.kamel.image.config.resourcesFetcher
 import io.kamel.image.config.svgDecoder
+import java.time.LocalDate
 
 val desktopConfig = KamelConfig {
     takeFrom(KamelConfig.Default)
@@ -53,7 +56,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
             val contentHeight = 40.dp
             Spacer(Modifier.width(24.dp))
             OutlinedButton(
-                onClick = {},
+                onClick = timetableComponent::onPreviousWeekClick,
                 modifier = Modifier.size(contentHeight),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
                 contentPadding = PaddingValues(0.dp),
@@ -67,7 +70,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
             }
             Spacer(Modifier.width(16.dp))
             OutlinedButton(
-                onClick = {},
+                onClick = timetableComponent::onNextWeekClick,
                 modifier = Modifier.size(contentHeight),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
                 contentPadding = PaddingValues(0.dp),
@@ -81,7 +84,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
             }
             Spacer(Modifier.width(16.dp))
             OutlinedButton(
-                onClick = {},
+                onClick = timetableComponent::onTodayClick,
                 modifier = Modifier.height(contentHeight),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
                 contentPadding = PaddingValues(0.dp),
@@ -96,7 +99,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
                 )
             }
             Spacer(Modifier.weight(1f))
-            Spinner()
+//            Spinner()
             Spacer(Modifier.width(24.dp))
         }
     }
@@ -171,7 +174,8 @@ fun TimetableContent(timetableComponent: TimetableComponent) {
                 Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
             else Modifier
             Column {
-                DaysOfWeekHeader(modifierHorScroll)
+                val selectedDate by timetableComponent.selectedDate.collectAsState()
+                DaysOfWeekHeader(modifierHorScroll, selectedDate)
                 timetable?.let {
                     LessonCells(modifierHorScroll, verticalScroll, it)
                 }
@@ -212,29 +216,29 @@ private fun LessonsOrder(cellOrder: TimetableViewState.CellOrder) {
 
 
 @Composable
-private fun DaysOfWeekHeader(modifierHorScroll: Modifier) {
+private fun DaysOfWeekHeader(modifierHorScroll: Modifier, selectedDate: LocalDate) {
     Row(modifierHorScroll) {
-        repeat(6) { DayOfWeekCell(it) }
+        repeat(6) { DayOfWeekCell(selectedDate.plusDays(it.toLong())) }
     }
     Divider(Modifier.fillMaxWidth().height(1.dp))
 }
 
 @Composable
 @Preview
-fun RowScope.DayOfWeekCell(order: Int) {
+fun RowScope.DayOfWeekCell(date: LocalDate) {
     Row(Modifier.weight(1f).height(IntrinsicSize.Max), verticalAlignment = Alignment.Bottom) {
-        if (order != 0)
+        if (date.dayOfWeek.ordinal != 0)
             Divider(Modifier.width(1.dp).height(24.dp))
         Column(
             Modifier.widthIn(min = 196.dp).height(124.dp).padding(top = 24.dp).fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "ПН",
+                date.toString(DatePatterns.E).uppercase(),
                 style = Typography.bodyMedium
             )
             Text(
-                "27",
+                date.dayOfMonth.toString(),
                 modifier = Modifier.padding(top = 12.dp),
                 style = Typography.headlineMedium
             )
@@ -273,8 +277,8 @@ fun LessonCell(cell: TimetableViewState.Cell) {
             is TimetableViewState.Cell.Event -> {
                 Icon(
                     painter = painterResource(
-//                        "icons/${cell.iconName}.xml"
-                        "icons/ic_basketball.xml" // TODO убрать
+                        "drawable/${cell.iconName}.xml"
+//                        "drawable/ic_subject_basketball.xml" // TODO убрать
                     ),
                     modifier = Modifier.size(28.dp),
                     tint = DarkBlue,

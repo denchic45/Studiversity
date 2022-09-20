@@ -11,7 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Inject
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -25,12 +25,15 @@ class TimetableComponent(
 
     private val coroutineScope = componentScope()
 
-    val selectedDate = MutableStateFlow(LocalDate.now().with(DayOfWeek.MONDAY))
+    private val currentWeek: LocalDate
+        get() = LocalDate.now().with(DayOfWeek.MONDAY)
+
+    val selectedDate = MutableStateFlow(currentWeek)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val timetable = combine(
         selectedDate.flatMapLatest { findEventsOfWeekByThisUserUseCase(it) },
-        flowOf(metaRepository.bellSchedule)
+        metaRepository.observeBellSchedule
     ) { eventsOfDays, bellSchedule ->
         val hasZeroEvents = eventsOfDays.any { it.startsAtZero }
         val latestEventOrder = eventsOfDays.maxOf { it.last()?.order ?: 0 }.let {
@@ -48,7 +51,7 @@ class TimetableComponent(
                 when (val details = event.details) {
                     is Lesson -> {
                         TimetableViewState.Cell.Event(
-                            details.subject.iconUrl, details.subject.name, event.room
+                            details.subject.iconName, details.subject.name, event.room
                         )
                     }
                     is SimpleEventDetails -> {
@@ -64,7 +67,7 @@ class TimetableComponent(
                 )
             }
         }, orders = buildList {
-            bellSchedule.schedule.forEachIndexed { index, period ->
+            bellSchedule.schedule.take(latestEventOrder).forEachIndexed { index, period ->
                 add(TimetableViewState.CellOrder(index + 1, period.first))
             }
             if (hasZeroEvents) {
@@ -72,6 +75,13 @@ class TimetableComponent(
             }
         }, maxEventsRange)
     }
+
+    fun onNextWeekClick() = selectedDate.update { it.plusWeeks(1) }
+
+    fun onPreviousWeekClick() = selectedDate.update { it.minusWeeks(1) }
+
+    fun onTodayClick() = selectedDate.update { currentWeek }
+
 }
 
 data class TimetableViewState(
