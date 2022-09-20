@@ -18,7 +18,7 @@ fun LoginScreen(loginComponent: LoginComponent) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    Surface(modifier = Modifier.padding(16.dp).size(450.dp)) {
+    Surface(modifier = Modifier.size(450.dp).padding(16.dp)) {
         Column(verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
             TextField(
