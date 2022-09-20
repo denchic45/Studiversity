@@ -216,10 +216,8 @@ class EventAdapter(
             tvTitle.text = title
         }
 
-        fun setIcon(url: String, color: String) {
+        fun setIcon(url: String) {
             ivIcon?.let {
-                val color1 = itemView.resources
-                    .getIdentifier(color, "color", itemView.context.packageName)
                 GlideApp.with(itemView)
                     .`as`(PictureDrawable::class.java)
                     .transition(DrawableTransitionOptions.withCrossFade())
@@ -230,42 +228,9 @@ class EventAdapter(
                             itemView.context
                         )
                     )
-//                    .listener(object : SvgSoftwareLayerSetter() {
-//                        override fun onLoadFailed(
-//                            e: GlideException?,
-//                            model: Any,
-//                            target: Target<PictureDrawable>,
-//                            isFirstResource: Boolean
-//                        ): Boolean {
-//                            super.onLoadFailed(e, model, target, isFirstResource)
-////                            ivIcon.paintColorRes(color1)
-//                            ivIcon.paintColorName(color)
-//                            return false
-//                        }
-//
-//                        override fun onResourceReady(
-//                            resource: PictureDrawable,
-//                            model: Any,
-//                            target: Target<PictureDrawable>,
-//                            dataSource: DataSource,
-//                            isFirstResource: Boolean
-//                        ): Boolean {
-//                            super.onResourceReady(
-//                                resource,
-//                                model,
-//                                target,
-//                                dataSource,
-//                                isFirstResource
-//                            )
-////                            ivIcon.paintColorRes(color1)
-//                            ivIcon.paintColorName(color)
-//                            return false
-//                        }
-//                    })
                     .load(url)
                     .into(it)
             }
-
         }
 
         fun enableEditMode() {
@@ -367,12 +332,7 @@ class EventAdapter(
                         collapseContent()
                     }
                 }
-                color = itemView.resources.getIdentifier(
-                    subject!!.colorName,
-                    "color",
-                    itemView.context.packageName
-                )
-                setIcon(subject!!.iconUrl, subject!!.colorName)
+                setIcon(subject!!.iconName)
             }
         }
 
@@ -438,7 +398,7 @@ class EventAdapter(
             super.onBind(item)
             val details: SimpleEventDetails = item.details as SimpleEventDetails
             setTitle(details.name)
-            setIcon(details.iconUrl, details.color)
+            setIcon(details.iconUrl)
         }
 
         init {

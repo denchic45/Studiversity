@@ -19,7 +19,7 @@ fun EventMap.mapToEntity(dayId: String) = EventEntity(
     room = room,
     type = eventDetailsDoc.eventType,
     event_name = eventDetailsDoc.name,
-    event_icon_url = eventDetailsDoc.iconUrl,
+    event_icon_name = eventDetailsDoc.iconName,
     color = eventDetailsDoc.color,
     subject_id = eventDetailsDoc.subjectId,
     teacher_ids = eventDetailsDoc.teacherIds,
@@ -56,8 +56,7 @@ fun List<EventWithSubjectAndGroupAndTeachers>.entityToUserDomain(): Event = firs
                 Subject(
                     id = subject_id!!,
                     name = subject_name!!,
-                    iconUrl = icon_url!!,
-                    colorName = color_name!!
+                    iconName = icon_name!!
                 ),
                 map {
                     User(
@@ -79,7 +78,7 @@ fun List<EventWithSubjectAndGroupAndTeachers>.entityToUserDomain(): Event = firs
             EventType.SIMPLE -> SimpleEventDetails(
                 id = event_id,
                 name = event_name!!,
-                iconUrl = event_icon_url!!,
+                iconUrl = event_icon_name!!,
                 color = color!!
             )
             EventType.EMPTY -> EmptyEventDetails()

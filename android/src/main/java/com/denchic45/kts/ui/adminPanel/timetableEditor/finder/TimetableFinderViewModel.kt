@@ -6,8 +6,7 @@ import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.Resource
 import com.denchic45.kts.data.domain.model.DomainModel
-import com.denchic45.kts.data.model.domain.*
-import com.denchic45.kts.ui.model.UiImage
+import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.domain.model.Event
 import com.denchic45.kts.domain.model.EventsOfDay
 import com.denchic45.kts.domain.model.GroupHeader
@@ -16,6 +15,7 @@ import com.denchic45.kts.domain.usecase.FindGroupByContainsNameUseCase
 import com.denchic45.kts.ui.adapter.EventAdapter
 import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorInteractor
 import com.denchic45.kts.ui.base.BaseViewModel
+import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.util.NetworkException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class TimetableFinderViewModel @Inject constructor(
     var eventEditorInteractor: EventEditorInteractor,
     private val interactor: TimetableFinderInteractor,
-    private val findGroupByContainsNameUseCase: FindGroupByContainsNameUseCase
+    private val findGroupByContainsNameUseCase: FindGroupByContainsNameUseCase,
 ) : BaseViewModel() {
     val showFoundGroups = MutableSharedFlow<List<ListItem>>()
 
@@ -37,10 +37,7 @@ class TimetableFinderViewModel @Inject constructor(
     private val editEventsMode = MutableStateFlow(false)
 
     private val _eventsOfDayFromDataSource: SharedFlow<EventsOfDay> =
-        combine(
-            selectedDate,
-            selectedGroup
-        ) { date, courseGroup ->
+        combine(selectedDate, selectedGroup) { date, courseGroup ->
             date to courseGroup
         }.flatMapLatest { (date, courseGroup) ->
             interactor.findEventsOfDayByGroup(date, courseGroup.id)
@@ -53,25 +50,18 @@ class TimetableFinderViewModel @Inject constructor(
         viewModelScope.launch {
             _eventsOfDayFromDataSource.combine(editEventsMode) { a, b -> a to b }
                 .collect { (eventsOfDay, editMode) ->
-                    if (!editMode && !savingEditedEvents)
-                        _eventsOfDay.emit(eventsOfDay)
+                    if (!editMode && !savingEditedEvents) _eventsOfDay.emit(eventsOfDay)
                 }
         }
     }
 
     val eventsOfDay: StateFlow<EventsOfDayState> =
-        combine(_eventsOfDay, editEventsMode)
-        { eventsOfDay, enableEditMode ->
-            if (enableEditMode)
-                EventsOfDayState.Edit(eventsOfDay.events, eventsOfDay.date)
+        combine(_eventsOfDay, editEventsMode) { eventsOfDay, enableEditMode ->
+            if (enableEditMode) EventsOfDayState.Edit(eventsOfDay.events, eventsOfDay.date)
             else {
                 EventsOfDayState.Current(eventsOfDay.events)
             }
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            EventsOfDayState.Current(emptyList())
-        )
+        }.stateIn(viewModelScope, SharingStarted.Lazily, EventsOfDayState.Current(emptyList()))
 
     val editTimetableOptionVisibility = SingleLiveData<Boolean>()
 
@@ -133,10 +123,8 @@ class TimetableFinderViewModel @Inject constructor(
     }
 
     fun onEventEditItemEditClick(position: Int) {
-        eventEditorInteractor.setEditedEvent(
-            _eventsOfDay.value,
-            eventsOfDay.value.events[position] as Event
-        )
+        eventEditorInteractor.setEditedEvent(_eventsOfDay.value,
+            eventsOfDay.value.events[position] as Event)
         openEventEditor.call()
         viewModelScope.launch {
             eventEditorInteractor.receiveEvent().apply {
@@ -156,10 +144,7 @@ class TimetableFinderViewModel @Inject constructor(
             savingEditedEvents = false
             viewModelScope.launch {
                 try {
-                    interactor.updateGroupEventsOfDay(
-                        _eventsOfDay.value,
-                        selectedGroup.first()
-                    )
+                    interactor.updateGroupEventsOfDay(_eventsOfDay.value, selectedGroup.first())
                 } catch (e: Exception) {
                     if (e is NetworkException) {
                         showToast(R.string.error_check_network)
@@ -173,22 +158,14 @@ class TimetableFinderViewModel @Inject constructor(
     fun onEventItemMove(oldPosition: Int, targetPosition: Int) {
 
         viewModelScope.launch {
-            _eventsOfDay.emit(
-                _eventsOfDay.value.swap(oldPosition, targetPosition)
-            )
+            _eventsOfDay.emit(_eventsOfDay.value.swap(oldPosition, targetPosition))
         }
     }
 
     fun onCreateEventItemClick() {
         viewModelScope.launch {
-            val order =
-                if (_eventsOfDay.value.isEmpty()) 1 else _eventsOfDay.value.last().order + 1
-            val createdLesson =
-                Event.createEmpty(
-                    groupHeader = selectedGroup.first(),
-//                    order = order,
-                    details = Lesson.createEmpty()
-                )
+            val createdLesson = Event.createEmpty(groupHeader = selectedGroup.first(),
+                details = Lesson.createEmpty())
             eventEditorInteractor.setEditedEvent(_eventsOfDay.value, createdLesson)
             openEventEditor.call()
 
@@ -204,14 +181,11 @@ class TimetableFinderViewModel @Inject constructor(
                     when (resource) {
                         is Resource.Success -> {
                             foundGroupHeaders = resource.data
-                            showFoundGroups.emit(resource.data
-                                .map { (id, name) ->
-                                    ListItem(
-                                        id = id,
-                                        title = name,
-                                        icon = UiImage.IdImage(R.drawable.ic_group)
-                                    )
-                                })
+                            showFoundGroups.emit(resource.data.map { (id, name) ->
+                                ListItem(id = id,
+                                    title = name,
+                                    icon = UiImage.IdImage(R.drawable.ic_group))
+                            })
                         }
                     }
                 }
@@ -222,18 +196,15 @@ class TimetableFinderViewModel @Inject constructor(
 
         abstract val events: List<DomainModel>
 
-        data class Current(override val events: List<Event>) :
-            EventsOfDayState()
+        data class Current(override val events: List<Event>) : EventsOfDayState()
 
         data class Edit(private var editingEvents: List<Event>, val date: LocalDate) :
             EventsOfDayState() {
 
-            override val events: List<DomainModel> = editingEvents + ListItem(
-                id = "",
+            override val events: List<DomainModel> = editingEvents + ListItem(id = "",
                 title = "",
                 type = EventAdapter.TYPE_CREATE,
-                content = date
-            )
+                content = date)
         }
     }
 

@@ -31,10 +31,10 @@ class CourseLocalDataSource @Inject constructor(private val db: AppDatabase) {
         }
 
     fun observeCoursesByGroupId(groupId: String): Flow<List<CourseWithSubjectAndTeacherEntities>> {
-        return queries.getCoursesWithSubjectAndTeacherByGroupId(groupId) { course_id, name, subject_id, teacher_id, user_id, first_name, surname, patronymic, user_group_id, role, email, photo_url, gender, admin, generated_avatar, timestamp, subject_id_, name_, icon_url, color_name ->
+        return queries.getCoursesWithSubjectAndTeacherByGroupId(groupId) { course_id, name, subject_id, teacher_id, user_id, first_name, surname, patronymic, user_group_id, role, email, photo_url, gender, admin, generated_avatar, timestamp, subject_id_, name_, icon_name ->
             CourseWithSubjectAndTeacherEntities(
                 CourseEntity(course_id, name, subject_id, teacher_id),
-                SubjectEntity(subject_id_, name_, icon_url, color_name),
+                SubjectEntity(subject_id_, name_, icon_name),
                 UserEntity(
                     user_id,
                     first_name,

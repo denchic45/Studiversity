@@ -1,16 +1,14 @@
 CREATE TABLE subjectEntity (
 subject_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 subject_name TEXT NOT NULL,
-icon_url TEXT NOT NULL,
-color_name TEXT NOT NULL
+icon_name TEXT NOT NULL
 );
 
 upsert:
 INSERT INTO subjectEntity VALUES ?
 ON CONFLICT(subject_id) DO UPDATE SET
 subject_name = excluded.subject_name,
-icon_url = excluded.icon_url,
-color_name = excluded.color_name;
+icon_name = excluded.icon_name;
 
 getById:
 SELECT * FROM subjectEntity WHERE subject_id =: id;

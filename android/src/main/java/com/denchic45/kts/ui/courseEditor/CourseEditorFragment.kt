@@ -131,17 +131,14 @@ class CourseEditorFragment :
                     etTeacherName.closeKeyboard()
                 }
             }
-            viewModel.selectSubject.observe(viewLifecycleOwner) { (_, name, iconUrl, colorName) ->
-                val resColor = requireActivity()
-                    .resources
-                    .getIdentifier(colorName, "color", requireContext().packageName)
+            viewModel.selectSubject.observe(viewLifecycleOwner) { (_, name, iconUrl) ->
                 GlideApp.with(requireActivity())
                     .`as`(PictureDrawable::class.java)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .listener(
                         SvgColorListener(
                             ivSubjectIcon,
-                            resColor,
+                            R.color.dark_blue,
                             requireContext()
                         )
                     )

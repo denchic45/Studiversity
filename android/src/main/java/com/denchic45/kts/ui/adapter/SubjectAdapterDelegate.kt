@@ -3,6 +3,7 @@ package com.denchic45.kts.ui.adapter
 import android.graphics.drawable.PictureDrawable
 import android.view.ViewGroup
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.denchic45.kts.R
 import com.denchic45.kts.SvgColorListener
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.databinding.ItemIconContentBinding
@@ -32,11 +33,6 @@ class SubjectAdapterDelegate :
         override fun onBind(item: Subject) {
             with(binding) {
                 tvName.text = item.name
-                val color = itemView.resources.getIdentifier(
-                    item.colorName,
-                    "color",
-                    itemView.context.packageName
-                )
 
                 GlideApp.with(itemView.context)
                     .`as`(PictureDrawable::class.java)
@@ -44,11 +40,11 @@ class SubjectAdapterDelegate :
                     .listener(
                         SvgColorListener(
                             ivIcon,
-                            color,
+                            R.color.dark_blue,
                             itemView.context
                         )
                     )
-                    .load(item.iconUrl)
+                    .load(item.iconName)
                     .into(ivIcon)
             }
         }

@@ -8,8 +8,7 @@ import com.denchic45.kts.util.SearchKeysGenerator
 fun SubjectEntity.entityToSubjectDomain() = Subject(
     id = subject_id,
     name = subject_name,
-    iconUrl = icon_url,
-    colorName = color_name
+    iconName = icon_name,
 )
 
 fun List<SubjectEntity>.entitiesToSubjectDomains() = map { it.entityToSubjectDomain() }
@@ -19,15 +18,13 @@ fun List<SubjectMap>.mapsToSubjectDomains() = map { it.mapToSubjectDomain() }
 fun SubjectMap.mapToSubjectDomain() = Subject(
     id = id,
     name = name,
-    iconUrl = iconUrl,
-    colorName = colorName
+    iconName = iconName
 )
 
 fun SubjectMap.mapToSubjectEntity() = SubjectEntity(
     subject_id = id,
     subject_name = name,
-    icon_url = iconUrl,
-    color_name = colorName
+    icon_name = iconName
 )
 
 fun List<SubjectMap>.mapsToSubjectEntities() = map { it.mapToSubjectEntity() }
@@ -35,8 +32,7 @@ fun List<SubjectMap>.mapsToSubjectEntities() = map { it.mapToSubjectEntity() }
 fun Subject.domainToMap() = mapOf(
     "id" to id,
     "name" to name,
-    "iconUrl" to iconUrl,
-    "colorName" to colorName,
+    "iconName" to iconName,
     "searchKeys" to SearchKeysGenerator().generateKeys(name)
 )
 

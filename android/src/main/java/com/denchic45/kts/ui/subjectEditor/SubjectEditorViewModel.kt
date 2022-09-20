@@ -32,7 +32,7 @@ class SubjectEditorViewModel @Inject constructor(
 
     val icon = MutableLiveData<String>()
 
-    val colorIcon = MutableLiveData(R.color.blue)
+//    val colorIcon = MutableLiveData(R.color.blue)
 
     val nameField = MutableLiveData<String>()
 
@@ -53,7 +53,7 @@ class SubjectEditorViewModel @Inject constructor(
     fun onColorSelect(position: Int) {
         val colorId = Colors.ids[position]
         colorName = Colors.colorNameOfId[colorId]!!
-        colorIcon.value = colorId
+//        colorIcon.value = colorId
         enablePositiveBtn.postValue(uiValidator.runValidates())
     }
 
@@ -93,22 +93,22 @@ class SubjectEditorViewModel @Inject constructor(
                 subject?.let {
                     uiEditor.oldItem = subject
                     nameField.value = subject.name
-                    colorIcon.value = Colors.colorIdOfName[subject.colorName]
+//                    colorIcon.value = Colors.colorIdOfName[subject.colorName]
 
-                    currentSelectedColorPosition.value = IntStream.range(0, Colors.names.size)
-                        .filter { value: Int -> Colors.names[value] == subject.colorName }
-                        .findFirst()
-                        .orElse(-1)
-                    icon.value = subject.iconUrl
+//                    currentSelectedColorPosition.value = IntStream.range(0, Colors.names.size)
+//                        .filter { value: Int -> Colors.names[value] == subject.colorName }
+//                        .findFirst()
+//                        .orElse(-1)
+                    icon.value = subject.iconName
 
-                    Colors.names
-                        .firstOrNull { name -> name == subject.colorName }
-                        ?.let { name ->
-                            colorIcon.value = Colors.colorIdOfName[name]
-                            showColors.setValue(Pair(Colors.ids, Colors.names.indexOf(name)))
-                        }
+//                    Colors.names
+//                        .firstOrNull { name -> name == subject.colorName }
+//                        ?.let { name ->
+//                            colorIcon.value = Colors.colorIdOfName[name]
+//                            showColors.setValue(Pair(Colors.ids, Colors.names.indexOf(name)))
+//                        }
 
-                    colorName = subject.colorName
+//                    colorName = subject.colorName
                 } ?: run {
                     finish()
                 }
@@ -167,8 +167,7 @@ class SubjectEditorViewModel @Inject constructor(
             Subject(
                 id,
                 nameField.value ?: "",
-                icon.value ?: "",
-                colorName
+                icon.value ?: ""
             )
         }
         uiValidator = UIValidator.of(

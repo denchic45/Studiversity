@@ -36,8 +36,8 @@ actual class SubjectRemoteDataSource @Inject constructor(
     actual suspend fun isExistWithSameIconAndColor(subjectMap: SubjectMap) {
         val snapshot = subjectsRef
             .whereNotEqualTo("id", subjectMap.id)
-            .whereEqualTo("iconUrl", subjectMap.iconUrl)
-            .whereEqualTo("colorName", subjectMap.colorName)
+            .whereEqualTo("iconName", subjectMap.iconName)
+//            .whereEqualTo("colorName", subjectMap.colorName)
             .get()
             .await()
         if (!snapshot.isEmpty) {

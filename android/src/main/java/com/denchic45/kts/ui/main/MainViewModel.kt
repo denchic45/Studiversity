@@ -255,7 +255,7 @@ class MainViewModel @Inject constructor(
                             UiText.StringText(it.name),
                             id = it.id,
                             iconType = NavTextItem.IconType.CIRCLE,
-                            color = UiText.StringText(it.subject.colorName)
+                            color = UiText.StringText("dark_blue")
                         )
                     })
                     if (courses.size > 5)

@@ -22,9 +22,7 @@ class MainInteractor @Inject constructor(
     private val eventRepository: EventRepository,
     private val courseRepository: CourseRepository,
     private val dbHelper: DbHelper,
-    private val systemDirs: SystemDirs,
-
-    private val metaRepository: MetaRepository
+    private val systemDirs: SystemDirs
 ) : Interactor {
 
     val listenAuthState: Flow<Boolean> = authService.observeIsAuthenticated

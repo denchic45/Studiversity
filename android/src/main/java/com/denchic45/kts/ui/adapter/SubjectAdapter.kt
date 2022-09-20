@@ -73,22 +73,17 @@ class SubjectAdapter : CustomAdapter<DomainModel, BaseViewHolder<DomainModel, *>
         private val tvName: TextView = itemView.findViewById(R.id.tv_name)
         override fun onBind(item: Subject) {
             tvName.text = item.name
-            val color = itemView.resources.getIdentifier(
-                item.colorName,
-                "color",
-                itemView.context.packageName
-            )
             GlideApp.with(itemView.context)
                 .`as`(PictureDrawable::class.java)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .listener(
                     SvgColorListener(
                         ivIcon,
-                        color,
+                        R.color.dark_blue,
                         itemView.context
                     )
                 )
-                .load(item.iconUrl)
+                .load(item.iconName)
                 .into(ivIcon)
         }
 
@@ -103,7 +98,7 @@ class SubjectAdapter : CustomAdapter<DomainModel, BaseViewHolder<DomainModel, *>
                 }
 
                 override fun areContentsTheSame(oldItem: Subject, newItem: Subject): Boolean {
-                    return oldItem.name == newItem.name && oldItem.iconUrl == newItem.iconUrl && oldItem.colorName == newItem.colorName
+                    return oldItem.name == newItem.name && oldItem.iconName == newItem.iconName
                 }
             }
     }

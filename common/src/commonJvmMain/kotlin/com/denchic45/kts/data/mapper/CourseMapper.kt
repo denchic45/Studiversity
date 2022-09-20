@@ -34,8 +34,7 @@ fun List<GetCourseWithSubjectWithTeacherAndGroupsById>.entityToCourseDomain() = 
         Subject(
             id = subject_id,
             name = name,
-            iconUrl = icon_url,
-            colorName = color_name
+            iconName = icon_name
         )
     },
     teacher = first().run {
@@ -79,8 +78,7 @@ fun GetCourseWithSubjectAndTeacherByTeacherId.entityToUserDomain() = CourseHeade
     subject = Subject(
         id = subject_id,
         name = name,
-        iconUrl = icon_url,
-        colorName = color_name
+        iconName = icon_name
     ),
     User(
         id = teacher_id,

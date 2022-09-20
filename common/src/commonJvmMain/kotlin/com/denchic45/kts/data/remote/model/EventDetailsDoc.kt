@@ -7,7 +7,7 @@ data class EventDetailsDoc(
     var subjectId: String?,
     var teacherIds: List<String>?,
     var name: String?,
-    var iconUrl: String?,
+    var iconName: String?,
     var color: String?,
     var eventType: EventType,
 ) : DocModel {

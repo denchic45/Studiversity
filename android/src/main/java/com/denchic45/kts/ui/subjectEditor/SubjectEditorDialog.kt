@@ -92,16 +92,17 @@ class SubjectEditorDialog : BaseDialogFragment<SubjectEditorViewModel, DialogSub
                     .listener(
                         SvgColorListener(
                             ivSubjectIc,
-                            viewModel.colorIcon.value!!,
+                            R.color.dark_blue,
                             requireContext()
                         )
                     )
                     .load(iconUrl)
                     .into(ivSubjectIc)
             }
-            viewModel.colorIcon.observe(viewLifecycleOwner) { color: Int ->
-                ivSubjectIc.post { ViewUtils.paintImageView(ivSubjectIc, color, requireContext()) }
-            }
+
+//            viewModel.colorIcon.observe(viewLifecycleOwner) { color: Int ->
+//                ivSubjectIc.post { ViewUtils.paintImageView(ivSubjectIc, color, requireContext()) }
+//            }
 
             etSubjectName.textChanges()
                 .skipInitialValue()

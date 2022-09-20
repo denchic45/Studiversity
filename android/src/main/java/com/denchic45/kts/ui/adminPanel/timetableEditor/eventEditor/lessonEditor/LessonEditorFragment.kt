@@ -43,16 +43,14 @@ class LessonEditorFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            viewModel.subjectField.observe(viewLifecycleOwner) { (_, name, iconUrl, colorName) ->
-                val colorId =
-                    resources.getIdentifier(colorName, "color", requireActivity().packageName)
+            viewModel.subjectField.observe(viewLifecycleOwner) { (_, name, iconUrl) ->
                 GlideApp.with(requireActivity())
                     .`as`(PictureDrawable::class.java)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .listener(
                         SvgColorListener(
                             ivSubjectIc,
-                            colorId,
+                            R.color.dark_blue,
                             requireContext()
                         )
                     )

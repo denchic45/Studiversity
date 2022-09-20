@@ -1,6 +1,8 @@
 package com.denchic45.kts.data.network.model
 
-@kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class BellSchedule(
     val schedule: List<Pair<String, String>>, val zeroPeriod: Pair<String, String>? = null
 )

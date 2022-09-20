@@ -57,20 +57,20 @@ class CourseAdapter(
         override fun onBind(item: CourseHeader) {
             val subject: Subject = item.subject
             val teacher: User = item.teacher
-            val resColor: Int = itemView.context
-                .resources
-                .getIdentifier(subject.colorName, "color", itemView.context.packageName)
+//            val resColor: Int = itemView.context
+//                .resources
+//                .getIdentifier(subject.colorName, "color", itemView.context.packageName)
             GlideApp.with(itemView.context)
                 .`as`(PictureDrawable::class.java)
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .listener(
-                    SvgColorListener(
-                        ivSubjectIcon,
-                        resColor,
-                        itemView.context
-                    )
-                )
-                .load(subject.iconUrl)
+//                .listener(
+//                    SvgColorListener(
+//                        ivSubjectIcon,
+//                        resColor,
+//                        itemView.context
+//                    )
+//                )
+                .load(subject.iconName)
                 .into(ivSubjectIcon)
             Glide.with(itemView.context)
                 .load(teacher.photoUrl)
