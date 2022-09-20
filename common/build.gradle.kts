@@ -197,6 +197,7 @@ android {
     sourceSets.all {
         kotlin.srcDir("src/$name/kotlin")
     }
+    sourceSets["main"].res.srcDirs("src/androidMain/res", "src/commonMain/resources")
     namespace = "com.denchic45.common"
     kapt {
         correctErrorTypes = true
