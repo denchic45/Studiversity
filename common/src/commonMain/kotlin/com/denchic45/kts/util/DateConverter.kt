@@ -88,4 +88,5 @@ object DatePatterns {
     const val DD_MM_yy = "dd.MM.yy"
     const val dd_MMM = "dd MMM"
     const val dd_MMMM = "dd MMMM"
+    const val E = "E"
 }
