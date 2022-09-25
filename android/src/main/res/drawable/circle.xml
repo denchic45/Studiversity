@@ -10,7 +10,7 @@
         <shape
             android:shape="oval"
             android:useLevel="false">
-            <solid android:color="#feca57" />
+            <solid android:color="@color/yellow" />
             <size
                 android:width="32dp"
                 android:height="32dp" />

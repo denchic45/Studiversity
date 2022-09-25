@@ -13,7 +13,12 @@
     <color name="dark_gray">#535461</color>
     <color name="dark_purple">#424277</color>
     <color name="purple">#663DC9</color>
-    <color name="yellow">#FFB142</color>
+    <!--Old-->
+<!--    <color name="yellow">#FFB142</color>-->
+    <!--Test-->
+<!--    <color name="yellow">#F9C80E</color>-->
+<!--    Current-->
+    <color name="yellow">#FCBF49</color>
     <color name="green">#34A853</color>
     <color name="beige">#EFC777</color>
 </resources>
