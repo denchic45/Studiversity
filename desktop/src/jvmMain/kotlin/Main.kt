@@ -13,10 +13,10 @@ import com.denchic45.kts.data.db.local.DriverFactory
 import com.denchic45.kts.di.*
 import com.denchic45.kts.ui.MainContent
 import com.denchic45.kts.ui.login.LoginScreen
-import com.denchic45.kts.ui.theme.KtsTheme
 import com.denchic45.kts.ui.timetable.desktopConfig
 import io.kamel.image.config.LocalKamelConfig
 import java.awt.Toolkit
+import com.denchic45.kts.ui.theme2.AppTheme
 
 val appComponent = JvmAppComponent::class.create(
     PreferencesComponent::class.create(SettingsFactory()),
@@ -40,7 +40,7 @@ fun main() = application {
                 onCloseRequest = ::exitApplication,
                 state = WindowState(size = size, position = WindowPosition(Alignment.Center))
             ) {
-                KtsTheme {
+                AppTheme {
                     CompositionLocalProvider(LocalKamelConfig provides desktopConfig) {
                         MainContent(appComponent.rootComponent())
                     }
