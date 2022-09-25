@@ -34,7 +34,6 @@ fun getObjectValue(element: JsonElement): Any? {
                     }.toMap()
                 }
                 "arrayValue" -> {
-                    println("object: $element")
                     element.getValue(prop).jsonObject["values"]?.let { array ->
                         array.jsonArray.map { getObjectValue(it) }
                     } ?: emptyList<Any>()

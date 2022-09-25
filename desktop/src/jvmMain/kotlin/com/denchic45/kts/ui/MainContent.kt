@@ -4,8 +4,6 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
@@ -13,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.ExperimentalUnitApi
@@ -22,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.ui.root.RootComponent
 import com.denchic45.kts.ui.timetable.TimetableScreen
+
 
 @OptIn(ExperimentalUnitApi::class)
 @Preview
@@ -36,12 +36,12 @@ fun MainContent(rootComponent: RootComponent) {
             NavigationRail {
                 Spacer(Modifier.weight(1f))
                 NavigationRailItem(
-                    icon = { Icon(Icons.Filled.Email, "") },
+                    icon = { Icon(painterResource("drawable/ic_timetable.xml"), null) },
                     selected = selectedItem == 0,
                     onClick = { selectedItem = 0 }
                 )
                 NavigationRailItem(
-                    icon = { Icon(Icons.Filled.Call, "") },
+                    icon = { Icon(painterResource("drawable/ic_group.xml"), null) },
                     selected = selectedItem == 1,
                     onClick = { selectedItem = 1 }
                 )
