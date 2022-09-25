@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class SpecialtyRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     private val coroutineScope: CoroutineScope,

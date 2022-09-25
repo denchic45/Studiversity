@@ -11,6 +11,7 @@ import com.denchic45.kts.data.storage.remote.UserRemoteStorage
 import com.denchic45.kts.domain.model.User
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class StudentRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     override val networkService: NetworkService,

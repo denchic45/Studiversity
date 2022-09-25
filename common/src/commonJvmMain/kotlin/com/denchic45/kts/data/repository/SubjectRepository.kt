@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class SubjectRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     override val networkService: NetworkService,
