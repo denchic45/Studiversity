@@ -28,53 +28,55 @@ class TimetableComponent(
     private val currentWeek: LocalDate
         get() = LocalDate.now().with(DayOfWeek.MONDAY)
 
-    val selectedDate = MutableStateFlow(currentWeek)
+    private val selectedDate = MutableStateFlow(currentWeek)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val timetable = combine(
-        selectedDate.flatMapLatest { findEventsOfWeekByThisUserUseCase(it) },
-        metaRepository.observeBellSchedule
-    ) { eventsOfDays, bellSchedule ->
-        val hasZeroEvents = eventsOfDays.any { it.startsAtZero }
-        val latestEventOrder = eventsOfDays.maxOf { it.last()?.order ?: 0 }.let {
-            if (it != 0) it
-            else 8
-        }
-        val maxEventsRange = latestEventOrder + if (hasZeroEvents) 1 else 0
+    val timetable =
+        combine(selectedDate.flatMapLatest { date -> findEventsOfWeekByThisUserUseCase(date) },
+            metaRepository.observeBellSchedule) { eventsOfDays, bellSchedule ->
+            val hasZeroEvents = eventsOfDays.any { it.startsAtZero }
+            val latestEventOrder = eventsOfDays.maxOf { it.last()?.order ?: 0 }.let {
+                if (it != 0) it
+                else 8
+            }
+            val maxEventsRange = latestEventOrder + if (hasZeroEvents) 1 else 0
 
-        TimetableViewState(events = eventsOfDays.map { eventOfDay ->
-            MutableList(maxEventsRange) {
-                if (it >= eventOfDay.size) {
-                    return@MutableList TimetableViewState.Cell.Empty
-                }
-                val event = eventOfDay.events[it]
-                when (val details = event.details) {
-                    is Lesson -> {
-                        TimetableViewState.Cell.Event(
-                            details.subject.iconName, details.subject.name, event.room
-                        )
+            TimetableViewState(monday = selectedDate.value,
+                events = eventsOfDays.map { eventOfDay ->
+                    MutableList(maxEventsRange) {
+                        if (it >= eventOfDay.size) {
+                            return@MutableList TimetableViewState.Cell.Empty
+                        }
+                        val event = eventOfDay.events[it]
+                        when (val details = event.details) {
+                            is Lesson -> {
+                                TimetableViewState.Cell.Event(details.subject.iconName,
+                                    details.subject.name,
+                                    event.room)
+                            }
+                            is SimpleEventDetails -> {
+                                TimetableViewState.Cell.Event(details.iconUrl,
+                                    details.name,
+                                    event.room)
+                            }
+                            is EmptyEventDetails -> TimetableViewState.Cell.Empty
+                        }
+                    }.apply {
+                        if (hasZeroEvents && !eventOfDay.startsAtZero) add(0,
+                            TimetableViewState.Cell.Empty)
                     }
-                    is SimpleEventDetails -> {
-                        TimetableViewState.Cell.Event(
-                            details.iconUrl, details.name, event.room
-                        )
+                },
+                orders = buildList {
+                    bellSchedule.schedule.take(latestEventOrder).forEachIndexed { index, period ->
+                        add(TimetableViewState.CellOrder(index + 1, period.first))
                     }
-                    is EmptyEventDetails -> TimetableViewState.Cell.Empty
-                }
-            }.apply {
-                if (hasZeroEvents && !eventOfDay.startsAtZero) add(
-                    0, TimetableViewState.Cell.Empty
-                )
-            }
-        }, orders = buildList {
-            bellSchedule.schedule.take(latestEventOrder).forEachIndexed { index, period ->
-                add(TimetableViewState.CellOrder(index + 1, period.first))
-            }
-            if (hasZeroEvents) {
-                add(0, TimetableViewState.CellOrder(0, bellSchedule.zeroPeriod?.first ?: "-"))
-            }
-        }, maxEventsRange)
-    }
+                    if (hasZeroEvents) {
+                        add(0,
+                            TimetableViewState.CellOrder(0, bellSchedule.zeroPeriod?.first ?: "-"))
+                    }
+                },
+                maxEventsSize = maxEventsRange)
+        }
 
     fun onNextWeekClick() = selectedDate.update { it.plusWeeks(1) }
 
@@ -85,6 +87,7 @@ class TimetableComponent(
 }
 
 data class TimetableViewState(
+    val monday: LocalDate,
     val events: List<List<Cell>>,
     val orders: List<CellOrder>,
     val maxEventsSize: Int,

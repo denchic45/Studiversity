@@ -174,8 +174,7 @@ fun TimetableContent(timetableComponent: TimetableComponent) {
                 Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
             else Modifier
             Column {
-                val selectedDate by timetableComponent.selectedDate.collectAsState()
-                DaysOfWeekHeader(modifierHorScroll, selectedDate)
+                DaysOfWeekHeader(modifierHorScroll, timetable?.monday ?: LocalDate.now())
                 timetable?.let {
                     LessonCells(modifierHorScroll, verticalScroll, it)
                 }
