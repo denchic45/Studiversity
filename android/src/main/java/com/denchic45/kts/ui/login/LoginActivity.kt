@@ -6,7 +6,6 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.navigation.NavController
 import com.denchic45.kts.R
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
@@ -16,7 +15,6 @@ import com.denchic45.kts.util.findFragmentContainerNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.richpath.RichPath
 import com.richpath.RichPathView
-import com.richpathanimator.RichPathAnimator
 import dagger.android.AndroidInjection
 import javax.inject.Inject
 
@@ -41,17 +39,6 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login) {
         }
         viewModel.openLoginByMail.observe(this) {
             navController.navigate(R.id.action_authFragment_to_loginByEmailFragment)
-        }
-
-        viewModel.openVerifyPhoneNum.observe(
-            this
-        ) { navController.navigate(R.id.action_loginByPhoneNumFragment_to_verifyPhoneNumFragment) }
-        viewModel.showProgress.observe(this) { value: Float? ->
-            RichPathAnimator.animate(linePath)
-                .trimPathEnd(value!!)
-                .duration(400)
-                .interpolator(FastOutSlowInInterpolator())
-                .start()
         }
 
         viewModel.backToFragment.observe(this) {

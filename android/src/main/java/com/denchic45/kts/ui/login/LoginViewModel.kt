@@ -15,7 +15,7 @@ import java.util.*
 import javax.inject.Inject
 
 class LoginViewModel @Inject constructor(
-    private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase
+    private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
 ) : BaseViewModel() {
 
     val backToFragment = SingleLiveData<Void>()
@@ -35,8 +35,6 @@ class LoginViewModel @Inject constructor(
     val showPasswordError = SingleLiveData<String?>()
 
     val openLoginByMail = SingleLiveData<Void>()
-
-    val openVerifyPhoneNum = SingleLiveData<Void>()
 
     val openResetPassword = SingleLiveData<Void>()
 
@@ -70,7 +68,7 @@ class LoginViewModel @Inject constructor(
             return
         }
         showProgress.value = addedProgress.pop()
-        if (id == R.id.loginByPhoneNumFragment || id == R.id.loginByEmailFragment) {
+        if (id == R.id.loginByEmailFragment) {
             fabVisibility.value = false
         }
         backToFragment.call()
