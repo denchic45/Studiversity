@@ -46,7 +46,7 @@ class GroupEditorFragment :
 
             requireActivity().findViewById<FloatingActionButton>(R.id.fab_main).apply {
                 show()
-                setImageResource(R.drawable.ic_tick)
+                setImageResource(R.drawable.ic_done)
                 setOnClickListener { viewModel.onFabClick() }
             }
 
