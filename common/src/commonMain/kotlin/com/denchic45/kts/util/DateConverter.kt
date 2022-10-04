@@ -83,6 +83,7 @@ object Dates {
 
 object DatePatterns {
     const val yyy_MM_dd = "yyyy-MM-dd"
+    const val LLL = "LLL"
     const val LLLL = "LLLL"
     const val LLLL_yyyy = "LLLL yyyy"
     const val DD_MM_yy = "dd.MM.yy"
