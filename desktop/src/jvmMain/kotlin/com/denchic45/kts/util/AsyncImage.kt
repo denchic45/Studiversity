@@ -1,6 +1,7 @@
 package com.denchic45.kts.util
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
@@ -29,9 +30,10 @@ import java.net.URL
 fun <T> AsyncImage(
     load: suspend () -> T,
     painterFor: @Composable (T) -> Painter,
-    contentDescription: String,
+    contentDescription: String?,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
+    placeholderContent: @Composable (() -> Unit)? = null,
 ) {
     val image: T? by produceState<T?>(null) {
         value = withContext(Dispatchers.IO) {
@@ -46,13 +48,14 @@ fun <T> AsyncImage(
         }
     }
 
-    if (image != null) {
-        Image(
-            painter = painterFor(image!!),
-            contentDescription = contentDescription,
-            contentScale = contentScale,
-            modifier = modifier
-        )
+    Box(modifier) {
+        if (image != null) {
+            Image(painter = painterFor(image!!),
+                contentDescription = contentDescription,
+                contentScale = contentScale)
+        } else if (placeholderContent != null) {
+            placeholderContent()
+        }
     }
 }
 
@@ -90,7 +93,7 @@ fun <T> AsyncIcon(
     painterFor: @Composable (T) -> Painter,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current
+    tint: Color = LocalContentColor.current,
 ) {
     val image: T? by produceState<T?>(null) {
         value = withContext(Dispatchers.IO) {
@@ -106,12 +109,10 @@ fun <T> AsyncIcon(
     }
 
     if (image != null) {
-        Icon(
-            painter = painterFor(image!!),
+        Icon(painter = painterFor(image!!),
             contentDescription = contentDescription,
             modifier = modifier,
-            tint = tint
-        )
+            tint = tint)
     }
 }
 
