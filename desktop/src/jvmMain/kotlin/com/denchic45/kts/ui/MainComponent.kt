@@ -1,51 +1,63 @@
-package com.denchic45.kts.ui.root
+package com.denchic45.kts.ui
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
-import com.denchic45.kts.data.repository.EventRepository
-import com.denchic45.kts.data.service.AuthService
 import com.denchic45.kts.domain.MainInteractor
+import com.denchic45.kts.ui.group.GroupComponent
 import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
-class RootComponent @Inject constructor(
+class MainComponent @Inject constructor(
     timetableComponent: () -> TimetableComponent,
-    eventRepository: EventRepository,
+    groupComponent: (groupId: String) -> GroupComponent,
     mainInteractor: MainInteractor,
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
-    private val navigation = StackNavigation<Config>()
-
     private val coroutineScope = componentScope()
 
-    private val stack = childStack<Config, Child>(
+    private val navigation = StackNavigation<Config>()
+
+
+     val stack: Value<ChildStack<Config, Child>> = childStack(
         source = navigation,
-        initialConfiguration = Config.Login,
+        initialConfiguration = Config.Timetable,
         childFactory = { config: Config, componentContext: ComponentContext ->
-            Child.Timetable(timetableComponent())
+            when (config) {
+                is Config.Timetable -> Child.Timetable(timetableComponent())
+                is Config.Group -> Child.Group(groupComponent("id"))
+            }
         }
     )
 
-    val childStack: Value<ChildStack<*, Child>> = stack
-
     init {
-        coroutineScope.launch { eventRepository.observeEventsOfYourGroup() }
         coroutineScope.launch { mainInteractor.startListeners() }
+        coroutineScope.launch { mainInteractor.observeHasGroup() }
     }
 
-    private sealed class Config : Parcelable {
-        object Login : Config()
+    fun onTimetableClick() {
+        navigation.replaceCurrent(Config.Timetable)
+    }
+
+    fun onGroupClick() {
+        navigation.replaceCurrent(Config.Group)
+    }
+
+    sealed class Config : Parcelable {
+        object Timetable : Config()
+        object Group : Config()
     }
 
     sealed class Child {
         class Timetable(val timetableComponent: TimetableComponent) : Child()
+        class Group(val groupComponent: GroupComponent) : Child()
     }
 }
