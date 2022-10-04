@@ -28,11 +28,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:ellipsize="end"
-                android:textSize="18sp"
                 android:hint="Название курса"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <View style="@style/Divider" />
@@ -83,10 +83,11 @@
             </ViewSwitcher>
 
             <ImageView
-                android:background="?attr/selectableItemBackgroundBorderless"                android:id="@+id/iv_subject_edit"
+                android:id="@+id/iv_subject_edit"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_margin="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 app:srcCompat="@drawable/ic_edit"
                 tools:ignore="ContentDescription" />
 
@@ -105,9 +106,9 @@
                 android:id="@+id/iv_teacher_avatar"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                app:roundPercent="1"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                app:roundPercent="1"
                 app:srcCompat="@drawable/ic_teacher" />
 
             <ViewSwitcher
@@ -140,11 +141,11 @@
             </ViewSwitcher>
 
             <ImageView
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/iv_teacher_edit"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_margin="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 app:srcCompat="@drawable/ic_edit"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
@@ -165,26 +166,9 @@
             android:id="@+id/rv_groups"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:itemCount="3"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="3"
             tools:listitem="@layout/item_icon_content" />
 
     </LinearLayout>
-
-<!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
-<!--        android:id="@+id/fab"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="bottom|end"-->
-<!--        android:layout_margin="@dimen/fab_margin"-->
-<!--        android:fontFamily="@font/gilroy_semibold"-->
-<!--        android:letterSpacing="0"-->
-<!--        android:text="Добавить"-->
-<!--        android:textAllCaps="false"-->
-<!--        android:textSize="16sp"-->
-<!--        app:backgroundTint="@android:color/white"-->
-<!--        app:icon="@drawable/ic_tick"-->
-<!--        app:iconPadding="8dp"-->
-<!--        app:iconSize="36dp"-->
-<!--        app:iconTint="@color/blue" />-->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

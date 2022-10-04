@@ -15,23 +15,23 @@
         android:layout_height="match_parent"
         android:fontFamily="@font/gilroy_semi_bold"
         android:gravity="center_vertical|end"
-        tools:text="11"
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="11" />
 
     <ImageView
         android:id="@+id/imageView_lesson_icon"
         android:layout_width="34dp"
         android:layout_height="34dp"
-        android:alpha="0.8"
-        tools:srcCompat="@drawable/ic_subject"
         android:layout_marginStart="14dp"
+        android:alpha="0.8"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView_lesson_order"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        tools:srcCompat="@drawable/ic_subject" />
 
     <TextView
         android:id="@+id/textView_lesson_name"
@@ -42,30 +42,30 @@
         android:fontFamily="@font/gilroy_semi_bold"
         android:gravity="center_vertical"
         android:maxLines="1"
-        app:layout_constraintEnd_toStartOf="@id/ll_lesson_icons"
-        tools:text="subject"
         android:textColor="@color/dark"
         android:textSize="16sp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/textView_lesson_time"
+        app:layout_constraintEnd_toStartOf="@id/ll_lesson_icons"
         app:layout_constraintStart_toEndOf="@+id/imageView_lesson_icon"
         app:layout_constraintTop_toTopOf="@id/imageView_lesson_icon"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="subject" />
 
     <TextView
         android:id="@+id/textView_lesson_time"
         android:layout_width="0dp"
-        app:layout_constraintEnd_toStartOf="@id/ll_lesson_icons"
         android:layout_height="wrap_content"
         android:layout_marginStart="14dp"
         android:fontFamily="@font/gilroy_semi_bold"
         android:gravity="top"
-        tools:text="8:30-9:10"
         android:textSize="12sp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@id/imageView_lesson_icon"
+        app:layout_constraintEnd_toStartOf="@id/ll_lesson_icons"
         app:layout_constraintStart_toEndOf="@+id/imageView_lesson_icon"
-        app:layout_constraintTop_toBottomOf="@+id/textView_lesson_name" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_lesson_name"
+        tools:text="8:30-9:10" />
 
     <LinearLayout
         android:id="@+id/ll_lesson_icons"
@@ -75,6 +75,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         app:layout_constraintEnd_toEndOf="parent">
+
         <LinearLayout
             android:id="@+id/ll_group"
             android:layout_width="wrap_content"
@@ -99,21 +100,21 @@
                 android:fontFamily="@font/gilroy_semi_bold"
                 android:gravity="center_vertical"
                 android:textColor="@color/gray"
-                tools:text="Group"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                tools:text="Group" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/tv_room"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:fontFamily="@font/gilroy_semi_bold"
-            tools:text="11"
             android:layout_marginStart="16dp"
+            android:fontFamily="@font/gilroy_semi_bold"
             android:gravity="center_vertical|end"
             android:textSize="18sp"
-            app:srcCompat="@drawable/ic_baseline_keyboard_arrow_down"
-            tools:ignore="ContentDescription" />
+            app:srcCompat="@drawable/arrow_drop_down"
+            tools:ignore="ContentDescription"
+            tools:text="11" />
 
         <ImageView
             android:id="@+id/iv_lesson_edit"

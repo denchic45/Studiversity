@@ -82,7 +82,7 @@
             android:layout_height="match_parent"
             android:background="?selectableItemBackgroundBorderless"
             android:padding="16dp"
-            app:srcCompat="@drawable/ic_tick"
+            app:srcCompat="@drawable/ic_done"
             app:tint="@color/blue" />
     </ViewSwitcher>
 

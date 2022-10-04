@@ -17,7 +17,7 @@
             android:id="@+id/iv_icon"
             android:layout_width="26dp"
             android:layout_height="26dp"
-            app:srcCompat="@drawable/ic_baseline_keyboard_arrow_down" />
+            app:srcCompat="@drawable/arrow_drop_down" />
     </LinearLayout>
 
     <TextView
