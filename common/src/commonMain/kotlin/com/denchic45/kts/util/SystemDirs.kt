@@ -8,4 +8,5 @@ expect class SystemDirs() {
 }
 
 val SystemDirs.databaseFile: File
-    get() = File(File.separator + "databases" + "database.db").relativeTo(appDirectory)
+    get() = File(File.separator + "databases" + File.separator + "database.db")
+        .relativeTo(appDirectory)
