@@ -6,12 +6,11 @@ import com.denchic45.kts.domain.model.EmptyEventDetails
 import com.denchic45.kts.domain.model.Lesson
 import com.denchic45.kts.domain.model.SimpleEventDetails
 import com.denchic45.kts.domain.usecase.FindEventsOfWeekByThisUserUseCase
+import com.denchic45.kts.util.capitalized
 import com.denchic45.kts.util.componentScope
+import com.denchic45.kts.util.toString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -76,7 +75,9 @@ class TimetableComponent(
                     }
                 },
                 maxEventsSize = maxEventsRange)
-        }
+        }.stateIn(coroutineScope,
+            SharingStarted.Lazily,
+            TimetableViewState(selectedDate.value, emptyList(), emptyList(), 0))
 
     fun onNextWeekClick() = selectedDate.update { it.plusWeeks(1) }
 
@@ -92,6 +93,26 @@ data class TimetableViewState(
     val orders: List<CellOrder>,
     val maxEventsSize: Int,
 ) {
+
+    val title = getMonthTitle(monday)
+
+    private fun getMonthTitle(monday: LocalDate): String {
+        val saturday: LocalDate = monday.plusDays(5)
+        return if (monday.monthValue != saturday.monthValue) {
+            if (monday.year != saturday.year) {
+                "${monday.toString("LLL yy").capitalized().replace(".", "")} - ${
+                    saturday.toString("LLL yy").replace(".", "")
+                }"
+            } else {
+                "${
+                    (monday.toString("LLL").replace(".", "")).capitalized()
+                } - ${saturday.toString("LLL").replace(".", "")}"
+            }
+        } else {
+            monday.toString("LLLL").capitalized()
+        }
+    }
+
     sealed class Cell {
         data class Event(val iconName: String, val name: String, val room: String) : Cell()
         object Empty : Cell()

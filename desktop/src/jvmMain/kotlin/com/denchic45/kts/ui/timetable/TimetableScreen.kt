@@ -20,15 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.AppBarMediator
-import com.denchic45.kts.ui.theme.DarkBlue
-import com.denchic45.kts.ui.theme.Typography
+import com.denchic45.kts.ui.components.TextButtonContent
 import com.denchic45.kts.util.DatePatterns
 import com.denchic45.kts.util.toString
 import io.kamel.core.config.DefaultCacheSize
@@ -39,34 +36,24 @@ import io.kamel.image.config.resourcesFetcher
 import io.kamel.image.config.svgDecoder
 import java.time.LocalDate
 
-val desktopConfig = KamelConfig {
-    takeFrom(KamelConfig.Default)
-    svgCacheSize = DefaultCacheSize
-    // Available only on Desktop.
-    resourcesFetcher()
-    svgDecoder()
-}
-
 @Preview
 @Composable
 fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: TimetableComponent) {
+    val timetable by timetableComponent.timetable.collectAsState()
     appBarMediator.apply {
-        title = "Сентябрь"
+        title = timetable.title
         content = {
             val contentHeight = 40.dp
             Spacer(Modifier.width(24.dp))
-            OutlinedButton(
-                onClick = timetableComponent::onPreviousWeekClick,
+            OutlinedButton(onClick = timetableComponent::onPreviousWeekClick,
                 modifier = Modifier.size(contentHeight),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
                 contentPadding = PaddingValues(0.dp),
-                shape = CircleShape,
+//                shape = CircleShape,
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
             ) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = "previous week arrow icon"
-                )
+                Icon(imageVector = Icons.Default.KeyboardArrowLeft,
+                    contentDescription = "previous week arrow icon")
             }
             Spacer(Modifier.width(16.dp))
             OutlinedButton(
@@ -74,7 +61,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
                 modifier = Modifier.size(contentHeight),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
                 contentPadding = PaddingValues(0.dp),
-                shape = CircleShape,
+//                shape = CircleShape,
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
             ) {
                 Icon(
@@ -84,31 +71,21 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
             }
             Spacer(Modifier.width(16.dp))
             OutlinedButton(
-                onClick = timetableComponent::onTodayClick,
                 modifier = Modifier.height(contentHeight),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
-                contentPadding = PaddingValues(0.dp),
-                shape = CircleShape,
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
+                onClick = timetableComponent::onTodayClick,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
             ) {
-                Text(
-                    "Сегодня",
-                    Modifier.padding(start = 24.dp, end = 24.dp),
-                    style = Typography.bodyMedium,
-                    color = DarkBlue
-                )
+                TextButtonContent("Сегодня")
             }
             Spacer(Modifier.weight(1f))
 //            Spinner()
             Spacer(Modifier.width(24.dp))
         }
     }
-    Card(
-        shape = RoundedCornerShape(16.dp),
+    Card(shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
-        elevation = 0.dp
-    ) {
-        TimetableContent(timetableComponent)
+        elevation = 0.dp) {
+        TimetableContent(timetable)
     }
 }
 
@@ -121,33 +98,29 @@ fun Spinner() {
     var selectedOptionText by remember { mutableStateOf(options[1]) }
 
     Box(Modifier) {
-        OutlinedButton(
-            onClick = { expanded = !expanded },
+        OutlinedButton(onClick = { expanded = !expanded },
             enabled = !expanded,
             modifier = Modifier.size(112.dp, 40.dp),
             contentPadding = PaddingValues(start = 16.dp, end = 8.dp),
             shape = RoundedCornerShape(4.dp),
             border = BorderStroke(1.dp,
                 MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
-        ) {
-            Text(selectedOptionText, Modifier.weight(1f), style = Typography.bodyMedium)
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)) {
+            Text(selectedOptionText,
+                Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyMedium)
             Icon(Icons.Outlined.ArrowDropDown, "")
         }
 
-        DropdownMenu(
-            expanded = expanded,
+        DropdownMenu(expanded = expanded,
             modifier = Modifier.width(240.dp),
-            onDismissRequest = { expanded = false }
-        ) {
+            onDismissRequest = { expanded = false }) {
             options.forEach { selectionOption ->
-                DropdownMenuItem(
-                    onClick = {
-                        selectedOptionText = selectionOption
-                        expanded = false
-                    }
-                ) {
-                    Text(text = selectionOption, style = Typography.bodyMedium)
+                DropdownMenuItem(onClick = {
+                    selectedOptionText = selectionOption
+                    expanded = false
+                }) {
+                    Text(text = selectionOption, style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
@@ -156,56 +129,50 @@ fun Spinner() {
 
 @Composable
 @Preview
-fun TimetableContent(timetableComponent: TimetableComponent) {
+fun TimetableContent(timetableViewState: TimetableViewState) {
     val verticalScroll: ScrollState = rememberScrollState()
     val horizontalScroll: ScrollState = rememberScrollState()
 
     Row {
-        val timetable by timetableComponent.timetable.collectAsState(null)
         Column(Modifier.width(78.dp)) {
             Box(Modifier.fillMaxWidth().height(124.dp), contentAlignment = Alignment.BottomEnd) {
                 Divider(Modifier.height(24.dp).width(1.dp))
             }
             Divider(Modifier.fillMaxWidth().height(1.dp))
-            timetable?.let { LessonOrders(verticalScroll, it.orders) }
+            LessonOrders(verticalScroll, timetableViewState.orders)
         }
         BoxWithConstraints(Modifier) {
-            val modifierHorScroll = if (maxWidth < 1000.dp)
-                Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
-            else Modifier
+            val modifierHorScroll =
+                if (maxWidth < 1000.dp) Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
+                else Modifier
             Column {
-                DaysOfWeekHeader(modifierHorScroll, timetable?.monday ?: LocalDate.now())
-                timetable?.let {
-                    LessonCells(modifierHorScroll, verticalScroll, it)
-                }
+                DaysOfWeekHeader(modifierHorScroll, timetableViewState.monday)
+                LessonCells(modifierHorScroll, verticalScroll, timetableViewState)
             }
         }
     }
 }
 
-
 @Composable
 fun LessonOrders(state: ScrollState, orders: List<TimetableViewState.CellOrder>) {
-    Column(
-        Modifier.fillMaxWidth().verticalScroll(state),
-        horizontalAlignment = Alignment.End
-    ) {
+    Column(Modifier.fillMaxWidth().verticalScroll(state), horizontalAlignment = Alignment.End) {
         repeat(orders.size) { LessonsOrder(orders[it]) }
     }
 }
 
 @Composable
 private fun LessonsOrder(cellOrder: TimetableViewState.CellOrder) {
-    Row(Modifier.height(127.dp)) {
+    Row(Modifier.height(129.dp)) {
         Column(horizontalAlignment = Alignment.End) {
             Text(cellOrder.time,
                 Modifier.padding(top = 8.dp, end = 16.dp),
-                style = Typography.bodySmall)
-            Text(cellOrder.order.toString(),
+                style = MaterialTheme.typography.bodySmall)
+            Text(
+                cellOrder.order.toString(),
                 Modifier.padding(top = 4.dp, end = 16.dp),
                 color = Color.Gray,
-                style = Typography.headlineSmall,
-                fontFamily = FontFamily(Font(resource = "fonts/Gilroy-Semibold.ttf")))
+                style = MaterialTheme.typography.headlineMedium,
+            )
             Spacer(Modifier.weight(1f))
             Divider(Modifier.width(30.dp))
         }
@@ -226,21 +193,14 @@ private fun DaysOfWeekHeader(modifierHorScroll: Modifier, selectedDate: LocalDat
 @Preview
 fun RowScope.DayOfWeekCell(date: LocalDate) {
     Row(Modifier.weight(1f).height(IntrinsicSize.Max), verticalAlignment = Alignment.Bottom) {
-        if (date.dayOfWeek.ordinal != 0)
-            Divider(Modifier.width(1.dp).height(24.dp))
-        Column(
-            Modifier.widthIn(min = 196.dp).height(124.dp).padding(top = 24.dp).fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                date.toString(DatePatterns.E).uppercase(),
-                style = Typography.bodyMedium
-            )
-            Text(
-                date.dayOfMonth.toString(),
+        if (date.dayOfWeek.ordinal != 0) Divider(Modifier.width(1.dp).height(24.dp))
+        Column(Modifier.widthIn(min = 196.dp).height(124.dp).padding(top = 24.dp).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(date.toString(DatePatterns.E).uppercase(),
+                style = MaterialTheme.typography.bodyMedium)
+            Text(date.dayOfMonth.toString(),
                 modifier = Modifier.padding(top = 12.dp),
-                style = Typography.headlineMedium
-            )
+                style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
         }
     }
 }
@@ -258,8 +218,7 @@ fun LessonCells(modifier: Modifier, verticalScroll: ScrollState, timetable: Time
                 Column(Modifier.fillMaxWidth()) {
                     repeat(timetable.maxEventsSize) { eventOrder ->
                         LessonCell(timetable.events[dayOfWeek][eventOrder])
-                        if (eventOrder != 7)
-                            Divider(Modifier.fillMaxWidth().height(1.dp))
+                        if (eventOrder != 7) Divider(Modifier.fillMaxWidth().height(1.dp))
                     }
                 }
             }
@@ -271,37 +230,26 @@ fun LessonCells(modifier: Modifier, verticalScroll: ScrollState, timetable: Time
 @Composable
 @Preview
 fun LessonCell(cell: TimetableViewState.Cell) {
-    Column(Modifier.widthIn(min = 196.dp).height(126.dp).padding(18.dp)) {
+    Column(Modifier.widthIn(min = 196.dp).height(128.dp).padding(18.dp)) {
         when (cell) {
             is TimetableViewState.Cell.Event -> {
-                Icon(
-                    painter = painterResource(
-                        "drawable/${cell.iconName}.xml"
-//                        "drawable/ic_subject_basketball.xml" // TODO убрать
-                    ),
+                Icon(painter = painterResource("drawable/${cell.iconName}.xml"),
                     modifier = Modifier.size(28.dp),
-                    tint = DarkBlue,
-                    contentDescription = null
-                )
-                Text(
-                    cell.name,
+                    tint = MaterialTheme.colorScheme.secondary,
+                    contentDescription = null)
+                Text(cell.name,
                     Modifier.padding(top = 8.dp),
-                    style = Typography.titleLarge
-                )
-                Text(
-                    "2-й корпус",
+                    style = MaterialTheme.typography.titleLarge)
+                Text("2-й корпус",
                     Modifier.padding(top = 4.dp),
-                    fontSize = TextUnit(18F, TextUnitType.Sp),
-                    fontFamily = FontFamily(Font("fonts/Gilroy-Medium.ttf"))
-                )
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             TimetableViewState.Cell.Empty -> {
-                Text(
-                    "Пусто",
+                Text("Пусто",
                     fontSize = TextUnit(18F, TextUnitType.Sp),
-                    color = Color.Gray,
-                    fontFamily = FontFamily(Font("fonts/Gilroy-Medium.ttf"))
-                )
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.titleLarge)
             }
         }
     }
