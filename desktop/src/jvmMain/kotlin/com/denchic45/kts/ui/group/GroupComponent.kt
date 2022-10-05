@@ -14,14 +14,14 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class GroupComponent(
-    lazyMembersComponent: Lazy<GroupMembersComponent>,
-    lazyCourseComponent: Lazy<GroupCoursesComponent>,
+    groupMembersComponent: (groupId: String) -> GroupMembersComponent,
+    lazyGroupCourseComponent: Lazy<GroupCoursesComponent>,
     componentContext: ComponentContext,
     private val groupId: String,
 ) : ComponentContext by componentContext {
 
-    private val groupMembersComponent by lazyMembersComponent
-    private val courseComponent by lazyCourseComponent
+    private val groupMembersComponent by lazy { groupMembersComponent(groupId) }
+    private val courseComponent by lazyGroupCourseComponent
 
     private val navigation = StackNavigation<Config>()
 
@@ -29,7 +29,7 @@ class GroupComponent(
         initialConfiguration = Config.Members(groupId),
         childFactory = { config: Config, componentContext: ComponentContext ->
             when (config) {
-                is Config.Members -> Child.Members(groupMembersComponent)
+                is Config.Members -> Child.Members(this.groupMembersComponent)
                 is Config.Courses -> Child.Courses(courseComponent)
             }
         })
