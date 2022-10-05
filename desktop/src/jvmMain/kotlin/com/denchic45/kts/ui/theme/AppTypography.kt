@@ -93,7 +93,7 @@ val AppTypography = Typography(
     ),
     titleMedium = TextStyle(
         fontFamily = ManropeFamily,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.SemiBold,
         letterSpacing = 0.sp,
         lineHeight = 24.sp,
         fontSize = 16.sp
@@ -134,7 +134,7 @@ val AppTypography = Typography(
     ),
     labelMedium = TextStyle(
         fontFamily = RobotoFamily,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Normal,
         letterSpacing = 0.10000000149011612.sp,
         lineHeight = 16.sp,
         fontSize = 12.sp
@@ -147,5 +147,3 @@ val AppTypography = Typography(
         fontSize = 11.sp
     ),
 )
-
-internal val LocalTypography = staticCompositionLocalOf { AppTypography }
