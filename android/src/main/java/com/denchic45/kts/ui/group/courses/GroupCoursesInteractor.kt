@@ -10,21 +10,11 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GroupCoursesInteractor @Inject constructor(
-    private val courseRepository: CourseRepository,
-    private val userRepository: UserRepository,
     private val groupRepository: GroupRepository
 ) : Interactor {
-
-    fun findCoursesByGroupId(groupId: String): Flow<List<CourseHeader>> {
-        return courseRepository.findByGroupId(groupId)
-    }
 
     override fun removeListeners() {}
 
     val yourGroupId: String
         get() = groupRepository.yourGroupId
-
-    fun findThisUser(): User {
-        return userRepository.findSelf()
-    }
 }
