@@ -35,7 +35,7 @@ fun HeaderItem(name: String) {
 
 @Composable
 fun UserListItem(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     item: UserItem,
     actionsOnHover: Boolean = false,
     actions: @Composable () -> Unit,
@@ -59,8 +59,8 @@ fun UserListItem(
             Spacer(Modifier.weight(1f))
             Row(Modifier.padding(vertical = 20.dp)) {
                 if (actionsOnHover) {
-                    val entered by interactionSource.collectIsHoveredAsState()
-                    if (entered)
+                    val hovered by interactionSource.collectIsHoveredAsState()
+                    if (hovered)
                         actions.invoke()
                 } else {
                     actions.invoke()
