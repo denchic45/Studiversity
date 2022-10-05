@@ -39,8 +39,7 @@ class GroupRepository @Inject constructor(
 
     override fun findByContainsName(text: String): Flow<List<GroupHeader>> {
         return groupRemoteDataSource.findByContainsName(text)
-            .filter { groupMaps -> groupMaps.all { it.map.timestampNotNull() } }
-            .map { groupDocs ->
+            .filter { groupMaps -> groupMaps.all { it.map.timestampNotNull() } }.map { groupDocs ->
                 for (groupDoc in groupDocs) {
                     saveGroup(groupDoc)
                 }
@@ -65,16 +64,14 @@ class GroupRepository @Inject constructor(
     }
 
     fun findGroupByCuratorId(userId: String): Flow<Group?> {
-        groupRemoteDataSource.observeByCuratorId(userPreferences.id)
-            .onEach {
-                it?.let {
-                    if (it.map.timestampNotNull()) {
-                        saveYourGroup(GroupMap(it.map))
-                    }
+        groupRemoteDataSource.observeByCuratorId(userPreferences.id).onEach {
+            it?.let {
+                if (it.map.timestampNotNull()) {
+                    saveYourGroup(GroupMap(it.map))
                 }
             }
-        return groupLocalDataSource.getByCuratorId(userId)
-            .map { it.toGroup() }
+        }
+        return groupLocalDataSource.observeByCuratorId(userId).map { it.toGroup() }
     }
 
 //    fun findGroupByCurator(user: User): Flow<Group> {
@@ -97,12 +94,11 @@ class GroupRepository @Inject constructor(
             UserRole.STUDENT -> groupRemoteDataSource.observeById(userPreferences.groupId)
             UserRole.TEACHER -> groupRemoteDataSource.observeByCuratorId(userPreferences.id)
             else -> emptyFlow()
-        }.filterNotNull()
-            .collect { groupMap ->
-                if (groupMap.map.timestampNotNull()) {
-                    saveYourGroup(groupMap)
-                }
+        }.filterNotNull().collect { groupMap ->
+            if (groupMap.map.timestampNotNull()) {
+                saveYourGroup(groupMap)
             }
+        }
     }
 
     suspend fun findBySpecialtyId(specialtyId: String): List<GroupHeader> {
@@ -126,17 +122,13 @@ class GroupRepository @Inject constructor(
     fun observeById(groupId: String): Flow<Group?> = flow {
         coroutineScope {
             launch { observeAndSaveGroupFlow(groupId).collect() }
-            emitAll(groupLocalDataSource.observe(groupId)
-                .distinctUntilChanged()
-                .map { it?.toGroup() }
-            )
+            emitAll(groupLocalDataSource.observe(groupId).distinctUntilChanged()
+                .map { it?.toGroup() })
         }
     }
 
     suspend fun find(groupId: String): Group? {
-        groupLocalDataSource.upsert(
-            groupRemoteDataSource.findById(groupId).mapToGroupEntity()
-        )
+        groupLocalDataSource.upsert(groupRemoteDataSource.findById(groupId).mapToGroupEntity())
         return groupLocalDataSource.get(groupId)?.toGroup()
     }
 
@@ -168,11 +160,9 @@ class GroupRepository @Inject constructor(
 
         val groupCourseIds: List<String> = groupRemoteDataSource.findCoursesByGroupId(groupId)
 
-        groupRemoteDataSource.removeGroupAndRemoveStudentsAndRemoveGroupIdInCourses(
-            groupId,
+        groupRemoteDataSource.removeGroupAndRemoveStudentsAndRemoveGroupIdInCourses(groupId,
             studentIds,
-            groupCourseIds
-        )
+            groupCourseIds)
     }
 
     suspend fun updateGroupCurator(groupId: String, teacher: User) {
@@ -187,11 +177,16 @@ class GroupRepository @Inject constructor(
                     observeAndSaveGroupFlow(groupId).collect()
                 }
             }
-            emitAll(groupLocalDataSource.getNameById(groupId)
-                .filterNotNull()
+            emitAll(groupLocalDataSource.getNameById(groupId).filterNotNull()
                 .distinctUntilChanged())
         }
     }
+
+    fun observeGroupNameByCuratorId(curatorId: String): Flow<String> {
+        return groupLocalDataSource.observeGroupIdByCuratorId(curatorId)
+            .flatMapLatest(::getNameByGroupId)
+    }
+
 
     fun isExistGroup(groupId: String): Flow<Boolean> {
         return groupLocalDataSource.observeIsExist(groupId)
@@ -206,12 +201,8 @@ class GroupRepository @Inject constructor(
         saveCourses(courseMaps)
 
         return groupMaps.map { groupMap ->
-            GroupCourses(
-                groupMap.toGroupHeader(),
-                courseMaps
-                    .filter { it.groupIds.contains(groupMap.id) }
-                    .mapsToCourseHeaderDomains()
-            )
+            GroupCourses(groupMap.toGroupHeader(),
+                courseMaps.filter { it.groupIds.contains(groupMap.id) }.mapsToCourseHeaderDomains())
         }
     }
 
@@ -220,19 +211,14 @@ class GroupRepository @Inject constructor(
     }
 
     fun findGroupByStudent(user: User): Flow<Group> = flow {
-        if (!userLocalDataSource.isExistByIdAndGroupId(user.id, user.groupId!!))
-            find(user.groupId)
+        if (!userLocalDataSource.isExistByIdAndGroupId(user.id, user.groupId!!)) find(user.groupId)
 
-        emitAll(
-            groupLocalDataSource.getByStudentId(user.id)
-                .map { it.toGroup() }
-        )
+        emitAll(groupLocalDataSource.getByStudentId(user.id).map { it.toGroup() })
     }
 
     fun findGroupMembersByGroupId(groupId: String): Flow<GroupMembers> {
         return userLocalDataSource.observeStudentsWithCuratorByGroupId(groupId)
-            .filter { it.isNotEmpty() }
-            .map { it.toGroupMembers() }
+            .filter { it.isNotEmpty() }.map { it.toGroupMembers() }
     }
 
     suspend fun setHeadman(studentId: String, groupId: String) {

@@ -5,11 +5,11 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
-class ObserveGroupNameUseCase @Inject constructor(
+class ObserveGroupNameByCuratorUseCase @Inject constructor(
     private val groupRepository: GroupRepository
 ) {
 
     operator fun invoke(groupId: String): Flow<String> {
-       return groupRepository.getNameByGroupId(groupId)
+       return groupRepository.observeGroupNameByCuratorId(groupId)
     }
 }

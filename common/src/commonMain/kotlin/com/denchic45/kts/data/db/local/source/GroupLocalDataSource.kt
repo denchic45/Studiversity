@@ -100,6 +100,7 @@ class GroupLocalDataSource @Inject constructor(private val db: AppDatabase) {
         return queries.isExist(id).asFlow().mapToOne(Dispatchers.IO)
     }
 
+
     fun isExist(id: String): Boolean {
 //        return withContext(Dispatchers.IO) {
         return queries.isExist(id).executeAsOne()
@@ -146,7 +147,7 @@ class GroupLocalDataSource @Inject constructor(private val db: AppDatabase) {
     }
 
 
-    fun getByCuratorId(userId: String): Flow<GroupWithCuratorAndSpecialtyEntities> {
+    fun observeByCuratorId(userId: String): Flow<GroupWithCuratorAndSpecialtyEntities> {
         return queries.getWithCuratorAndSpecialtyByCuratorId<GroupWithCuratorAndSpecialtyEntities>(
             userId
         ) { group_id, group_name, curator_id, course, specialty_id, headman_id, timestamp, user_id, first_name, surname, patronymic, user_group_id, role, email, photo_url, gender, admin, generated_avatar, timestamp_, specialty_id_, name ->
@@ -179,6 +180,10 @@ class GroupLocalDataSource @Inject constructor(private val db: AppDatabase) {
         }
             .asFlow()
             .mapToOne(Dispatchers.IO)
+    }
+
+    fun observeGroupIdByCuratorId(curatorId: String): Flow<String> {
+        return queries.getGroupIdByCuratorId(curatorId).asFlow().mapToOne()
     }
 
     suspend fun saveGroup(

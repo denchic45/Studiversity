@@ -54,3 +54,7 @@ WHERE u.user_id =:userId;
 getWithCuratorAndSpecialtyByCuratorId:
 SELECT * FROM groupWithCuratorAndSpecialty
 WHERE curator_id =: userId;
+
+getGroupIdByCuratorId:
+SELECT group_id FROM groupWithCuratorAndSpecialty
+WHERE curator_id =: userId;
