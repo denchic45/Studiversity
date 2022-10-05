@@ -12,15 +12,16 @@ import androidx.compose.ui.window.application
 import com.denchic45.kts.data.db.local.DriverFactory
 import com.denchic45.kts.di.*
 import com.denchic45.kts.ui.MainContent
-import com.denchic45.kts.ui.group.members.ProfilePreview
 import com.denchic45.kts.ui.login.LoginScreen
+import com.denchic45.kts.ui.profile.ProfilePreview
 import com.denchic45.kts.ui.theme.AppTheme
 import java.awt.Toolkit
 
-val appComponent =
-    JvmAppComponent::class.create(PreferencesComponent::class.create(SettingsFactory()),
-        DatabaseComponent::class.create(DriverFactory()),
-        NetworkComponent::class.create())
+val appComponent = JvmAppComponent::class.create(
+    PreferencesComponent::class.create(SettingsFactory()),
+    DatabaseComponent::class.create(DriverFactory()),
+    NetworkComponent::class.create()
+)
 
 val splashComponent = appComponent.splashComponent
 
@@ -37,8 +38,10 @@ private fun mainApp() {
                     DpSize((width - 124).dp, (height - 124).dp)
                 }
 
-                Window(onCloseRequest = ::exitApplication,
-                    state = WindowState(size = size, position = WindowPosition(Alignment.Center))) {
+                Window(
+                    onCloseRequest = ::exitApplication,
+                    state = WindowState(size = size, position = WindowPosition(Alignment.Center))
+                ) {
                     AppTheme {
                         CompositionLocalProvider {
                             MainContent(appComponent.mainComponent())
@@ -46,8 +49,10 @@ private fun mainApp() {
                     }
                 }
             } else {
-                Window(onCloseRequest = ::exitApplication,
-                    state = WindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))) {
+                Window(
+                    onCloseRequest = ::exitApplication,
+                    state = WindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))
+                ) {
                     LoginScreen(appComponent.loginComponent())
                 }
             }
@@ -57,11 +62,13 @@ private fun mainApp() {
 
 fun previewUi() {
     application {
-        Window(onCloseRequest = ::exitApplication,
-            state = WindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))) {
+        Window(
+            onCloseRequest = ::exitApplication,
+            state = WindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))
+        ) {
             AppTheme {
                 CompositionLocalProvider {
-                    ProfilePreview()
+//                    ProfilePreview()
                 }
             }
         }
