@@ -3,10 +3,11 @@ package com.denchic45.kts.ui
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
+import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.domain.MainInteractor
 import com.denchic45.kts.ui.group.GroupComponent
 import com.denchic45.kts.ui.timetable.TimetableComponent
@@ -20,23 +21,21 @@ class MainComponent @Inject constructor(
     groupComponent: (groupId: String) -> GroupComponent,
     mainInteractor: MainInteractor,
     componentContext: ComponentContext,
+    groupPreferences: GroupPreferences,
 ) : ComponentContext by componentContext {
 
     private val coroutineScope = componentScope()
 
     private val navigation = StackNavigation<Config>()
 
-
-     val stack: Value<ChildStack<Config, Child>> = childStack(
-        source = navigation,
+    val stack: Value<ChildStack<Config, Child>> = childStack(source = navigation,
         initialConfiguration = Config.Timetable,
         childFactory = { config: Config, componentContext: ComponentContext ->
             when (config) {
                 is Config.Timetable -> Child.Timetable(timetableComponent())
-                is Config.Group -> Child.Group(groupComponent("id"))
+                is Config.Group -> Child.Group(groupComponent(groupPreferences.groupId))
             }
-        }
-    )
+        })
 
     init {
         coroutineScope.launch { mainInteractor.startListeners() }
@@ -44,11 +43,11 @@ class MainComponent @Inject constructor(
     }
 
     fun onTimetableClick() {
-        navigation.replaceCurrent(Config.Timetable)
+        navigation.bringToFront(Config.Timetable)
     }
 
     fun onGroupClick() {
-        navigation.replaceCurrent(Config.Group)
+        navigation.bringToFront(Config.Group)
     }
 
     sealed class Config : Parcelable {
