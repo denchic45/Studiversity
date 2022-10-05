@@ -4,7 +4,7 @@ import com.denchic45.kts.data.repository.GroupRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class FindGroupNameUseCase @Inject constructor(
+class ObserveGroupNameUseCase @Inject constructor(
     private val groupRepository: GroupRepository
 ) {
 
