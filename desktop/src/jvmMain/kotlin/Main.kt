@@ -13,7 +13,6 @@ import com.denchic45.kts.data.db.local.DriverFactory
 import com.denchic45.kts.di.*
 import com.denchic45.kts.ui.MainContent
 import com.denchic45.kts.ui.login.LoginScreen
-import com.denchic45.kts.ui.profile.ProfilePreview
 import com.denchic45.kts.ui.theme.AppTheme
 import java.awt.Toolkit
 
@@ -67,9 +66,7 @@ fun previewUi() {
             state = WindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))
         ) {
             AppTheme {
-                CompositionLocalProvider {
-//                    ProfilePreview()
-                }
+
             }
         }
     }
