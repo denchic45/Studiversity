@@ -6,14 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.data.Resource
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.model.User.Companion.isStudent
 import com.denchic45.kts.domain.model.User.Companion.isTeacher
 import com.denchic45.kts.domain.usecase.FindGroupByContainsNameUseCase
-import com.denchic45.kts.domain.usecase.FindGroupNameUseCase
+import com.denchic45.kts.domain.usecase.ObserveGroupNameUseCase
 import com.denchic45.kts.domain.usecase.RemoveStudentUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
@@ -42,7 +42,7 @@ open class UserEditorViewModel @Inject constructor(
     private val removeStudentUseCase: RemoveStudentUseCase,
     private val confirmInteractor: ConfirmInteractor,
     private val findGroupByContainsNameUseCase: FindGroupByContainsNameUseCase,
-    private val findGroupNameUseCase: FindGroupNameUseCase,
+    private val observeGroupNameUseCase: ObserveGroupNameUseCase,
     private val groupChooserInteractor: GroupChooserInteractor
 ) : BaseViewModel() {
 
@@ -229,7 +229,7 @@ open class UserEditorViewModel @Inject constructor(
     private fun setGroupView() {
         groupId?.let {
             viewModelScope.launch {
-                findGroupNameUseCase(it).collect {
+                observeGroupNameUseCase(it).collect {
                     groupField.value = it
                 }
             }

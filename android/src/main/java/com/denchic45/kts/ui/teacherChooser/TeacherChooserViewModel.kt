@@ -1,7 +1,7 @@
 package com.denchic45.kts.ui.teacherChooser
 
 import androidx.lifecycle.viewModelScope
-import com.denchic45.kts.data.Resource
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.model.toUserItem
 import com.denchic45.kts.domain.model.User

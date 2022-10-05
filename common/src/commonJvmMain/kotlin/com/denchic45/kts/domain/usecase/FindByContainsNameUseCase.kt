@@ -1,6 +1,6 @@
 package com.denchic45.kts.domain.usecase
 
-import com.denchic45.kts.data.Resource
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.repository.FindByContainsNameRepository
 import kotlinx.coroutines.flow.Flow

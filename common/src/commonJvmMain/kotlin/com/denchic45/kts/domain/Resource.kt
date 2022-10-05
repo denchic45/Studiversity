@@ -1,4 +1,4 @@
-package com.denchic45.kts.data
+package com.denchic45.kts.domain
 
 sealed class Resource<out T> {
     object Loading : Resource<Nothing>()

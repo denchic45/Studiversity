@@ -7,7 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
-import com.denchic45.kts.data.Resource
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.databinding.FragmentChoiceOfGroupSubjectBinding
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.adapter.SubjectAdapter

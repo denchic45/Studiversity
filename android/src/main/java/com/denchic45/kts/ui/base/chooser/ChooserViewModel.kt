@@ -1,8 +1,8 @@
 package com.denchic45.kts.ui.base.chooser
 
 import androidx.lifecycle.viewModelScope
-import com.denchic45.kts.data.Resource
-import com.denchic45.kts.data.getData
+import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.getData
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.ui.base.BaseViewModel
 import kotlinx.coroutines.flow.*

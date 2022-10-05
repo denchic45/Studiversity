@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.customPopup.ListPopupWindowAdapter
-import com.denchic45.kts.data.Resource
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.databinding.FragmentFinderBinding

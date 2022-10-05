@@ -1,6 +1,6 @@
 package com.denchic45.kts.ui.adminPanel.timetableEditor.subjectChooser
 
-import com.denchic45.kts.data.Resource
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.data.repository.SubjectRepository
 import kotlinx.coroutines.channels.Channel

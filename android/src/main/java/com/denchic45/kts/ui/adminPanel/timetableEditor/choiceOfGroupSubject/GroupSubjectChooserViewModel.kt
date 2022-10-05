@@ -3,7 +3,7 @@ package com.denchic45.kts.ui.adminPanel.timetableEditor.choiceOfGroupSubject
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.data.Resource
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.ui.adminPanel.timetableEditor.subjectChooser.SubjectChooserInteractor
 import com.denchic45.kts.ui.base.BaseViewModel

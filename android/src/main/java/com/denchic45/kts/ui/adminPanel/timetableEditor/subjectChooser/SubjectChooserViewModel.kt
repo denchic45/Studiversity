@@ -1,7 +1,7 @@
 package com.denchic45.kts.ui.adminPanel.timetableEditor.subjectChooser
 
 import androidx.lifecycle.viewModelScope
-import com.denchic45.kts.data.Resource
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.domain.usecase.FindSubjectByContainsNameUseCase
 import com.denchic45.kts.ui.base.chooser.ChooserViewModel
