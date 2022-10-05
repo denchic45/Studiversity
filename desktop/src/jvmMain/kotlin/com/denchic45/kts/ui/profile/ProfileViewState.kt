@@ -7,8 +7,8 @@ data class ProfileViewState(
     val fullName: String,
     val role: UserRole,
     val photoUrl: String,
-    val groupName: String?,
-    val personalDate: PersonalData?
+    val groupInfo: String?,
+    val personalDate: PersonalData?,
 ) {
     data class PersonalData(val email: String)
 }
@@ -16,5 +16,5 @@ data class ProfileViewState(
 fun User.toProfileViewState(groupName: String? = null) = ProfileViewState(fullName = fullName,
     role = role,
     photoUrl = photoUrl,
-    groupName = groupName,
+    groupInfo = groupName,
     personalDate = email?.let { ProfileViewState.PersonalData(it) })

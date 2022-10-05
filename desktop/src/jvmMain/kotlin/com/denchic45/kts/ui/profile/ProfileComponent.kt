@@ -1,33 +1,40 @@
 package com.denchic45.kts.ui.profile
 
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.kts.data.domain.model.UserRole
+import com.denchic45.kts.domain.usecase.ObserveGroupNameByCuratorUseCase
 import com.denchic45.kts.domain.usecase.ObserveGroupNameUseCase
 import com.denchic45.kts.domain.usecase.ObserveUserUseCase
 import com.denchic45.kts.util.componentScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class ProfileComponent(
-    userId: String,
     observeUserUseCase: ObserveUserUseCase,
-    observeGroupNameUseCase: ObserveGroupNameUseCase,
-    componentContext: ComponentContext
+    private val observeGroupNameUseCase: ObserveGroupNameUseCase,
+    private val observeGroupNameByCuratorUseCase: ObserveGroupNameByCuratorUseCase,
+    componentContext: ComponentContext,
+    userId: String,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
 
-    private val userFlow = observeUserUseCase(userId)
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val groupNameFlow = userFlow.filterNotNull().flatMapLatest {
-        it.groupId?.let { groupId -> observeGroupNameUseCase(groupId) } ?: flowOf(null)
-    }
-
-    val profileViewState: StateFlow<ProfileViewState?> = combine(
-        userFlow.filterNotNull(), groupNameFlow
-    ) { user, groupName -> user.toProfileViewState(groupName) }.stateIn(
-        componentScope, SharingStarted.Lazily, null
-    )
+    @OptIn(FlowPreview::class)
+    val profileViewState: StateFlow<ProfileViewState?> =
+        observeUserUseCase(userId).filterNotNull().flatMapMerge { user ->
+            when (user.role) {
+                UserRole.STUDENT -> {
+                    observeGroupNameUseCase(user.groupId!!).map { groupName ->
+                        user.toProfileViewState("Участник группы: $groupName")
+                    }
+                }
+                UserRole.TEACHER, UserRole.HEAD_TEACHER -> {
+                    observeGroupNameByCuratorUseCase(user.id).map { groupName ->
+                        user.toProfileViewState("Куратор группы: $groupName")
+                    }
+                }
+            }
+        }.stateIn(componentScope, SharingStarted.Lazily, null)
 }

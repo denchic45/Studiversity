@@ -2,35 +2,34 @@ package com.denchic45.kts.ui.group
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.denchic45.kts.ui.group.courses.GroupCoursesComponent
 import com.denchic45.kts.ui.group.members.GroupMembersComponent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class GroupComponent(
-    groupMembersComponent: (groupId: String) -> GroupMembersComponent,
-    lazyGroupCourseComponent: Lazy<GroupCoursesComponent>,
+    lazyGroupMembersComponent: (groupId: String) -> GroupMembersComponent,
+    lazyGroupCourseComponent: (groupId: String) -> GroupCoursesComponent,
     componentContext: ComponentContext,
     private val groupId: String,
 ) : ComponentContext by componentContext {
 
-    private val groupMembersComponent by lazy { groupMembersComponent(groupId) }
-    private val courseComponent by lazyGroupCourseComponent
-
     private val navigation = StackNavigation<Config>()
 
+    private val groupMembersComponent by lazy { lazyGroupMembersComponent(groupId) }
+    private val groupCourseComponent by lazy { lazyGroupCourseComponent(groupId) }
+
     val stack = childStack(source = navigation,
-        initialConfiguration = Config.Members(groupId),
-        childFactory = { config: Config, componentContext: ComponentContext ->
+        initialConfiguration = Config.Members,
+        childFactory = { config: Config, _ ->
             when (config) {
-                is Config.Members -> Child.Members(this.groupMembersComponent)
-                is Config.Courses -> Child.Courses(courseComponent)
+                is Config.Members -> Child.Members(groupMembersComponent)
+                is Config.Courses -> Child.Courses(groupCourseComponent)
             }
         })
 
@@ -38,18 +37,18 @@ class GroupComponent(
     val selectedTab = MutableStateFlow(0)
 
     fun onTabClick(index: Int) {
-        selectedTab.update { index }
-        navigation.replaceCurrent(when (tabs.value[index]) {
-            is TabItem.Members -> Config.Members(groupId)
-            is TabItem.Courses -> Config.Courses(groupId)
+        selectedTab.value = index
+        navigation.bringToFront(when (tabs.value[index]) {
+            is TabItem.Members -> Config.Members
+            is TabItem.Courses -> Config.Courses
             TabItem.DutyRoster -> TODO()
             TabItem.Timetable -> TODO()
         })
     }
 
-    sealed class Config(groupId: String) : Parcelable {
-        class Members(groupId: String) : Config(groupId)
-        class Courses(groupId: String) : Config(groupId)
+    sealed class Config : Parcelable {
+        object Members : Config()
+        object Courses : Config()
     }
 
     sealed class Child {

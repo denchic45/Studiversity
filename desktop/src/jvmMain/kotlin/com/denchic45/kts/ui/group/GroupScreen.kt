@@ -35,10 +35,10 @@ fun GroupScreen(appBarMediator: AppBarMediator, groupComponent: GroupComponent) 
 
 @Composable
 fun GroupContent(groupComponent: GroupComponent) {
-    Column {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         val selected by groupComponent.selectedTab.collectAsState()
         TabRow(selectedTabIndex = selected,
-            modifier = Modifier.width(396.dp).height(56.dp).align(Alignment.CenterHorizontally),
+            modifier = Modifier.width(396.dp).height(56.dp),
             backgroundColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.primary,
             indicator = { tabPositions -> TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selected])) },
