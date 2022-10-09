@@ -1,7 +1,10 @@
 package com.denchic45.kts.domain
 
 import com.denchic45.kts.data.db.local.DbHelper
-import com.denchic45.kts.data.repository.*
+import com.denchic45.kts.data.repository.CourseRepository
+import com.denchic45.kts.data.repository.EventRepository
+import com.denchic45.kts.data.repository.GroupRepository
+import com.denchic45.kts.data.repository.UserRepository
 import com.denchic45.kts.data.service.AuthService
 import com.denchic45.kts.domain.model.CourseHeader
 import com.denchic45.kts.domain.model.User
@@ -9,7 +12,9 @@ import com.denchic45.kts.util.SystemDirs
 import com.denchic45.kts.util.databaseFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -55,11 +60,11 @@ class MainInteractor @Inject constructor(
     suspend fun startListeners() {
         observeThisUser().collect { user ->
             coroutineScope.launch {
-                    listenAuthState.collect {
-                        if (!it) {
-                            clearAllData()
-                        }
+                listenAuthState.collect {
+                    if (!it) {
+                        clearAllData()
                     }
+                }
             }
             user?.let {
                 if (user.isTeacher) {

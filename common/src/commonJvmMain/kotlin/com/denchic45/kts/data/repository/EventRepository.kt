@@ -53,10 +53,8 @@ class EventRepository @Inject constructor(
         return flow {
             coroutineScope {
                 launch {
-                    eventRemoteDataSource.observeEventsOfGroupByDate(groupId, date)
-                        .filterNotNull().collect {
-                            saveDay(it)
-                        }
+                    eventRemoteDataSource.observeEventsOfGroupByDate(groupId, date).filterNotNull()
+                        .collect { saveDay(it) }
                 }
                 emitAll(eventLocalDataSource.observeDayEventsByDateAndGroupId(date, groupId)
                     .map { it?.entityToUserDomain() ?: EventsOfDay.createEmpty(date) })
@@ -65,45 +63,36 @@ class EventRepository @Inject constructor(
     }
 
     fun findEventsOfDayByYourGroupAndDate(selectedDate: LocalDate): Flow<EventsOfDay> {
-        return groupPreferences.observeGroupId
-            .filter(String::isNotEmpty)
-            .flatMapLatest { groupId ->
-                if (selectedDate.toDateUTC() > nextSaturday || selectedDate.toDateUTC() < previousMonday) {
-                    findEventsOfDayByGroupIdAndDate(groupId, selectedDate)
-                } else {
-                    eventLocalDataSource.observeDayEventsByDateAndGroupId(selectedDate, groupId)
-                        .map { it?.entityToUserDomain() ?: EventsOfDay.createEmpty(selectedDate) }
-                        .distinctUntilChanged()
-                }
+        return groupPreferences.observeGroupId.filter(String::isNotEmpty).flatMapLatest { groupId ->
+            if (selectedDate.toDateUTC() > nextSaturday || selectedDate.toDateUTC() < previousMonday) {
+                findEventsOfDayByGroupIdAndDate(groupId, selectedDate)
+            } else {
+                eventLocalDataSource.observeDayEventsByDateAndGroupId(selectedDate, groupId)
+                    .map { it?.entityToUserDomain() ?: EventsOfDay.createEmpty(selectedDate) }
+                    .distinctUntilChanged()
             }
+        }
     }
 
     fun findTimetableByYourGroupAndWeek(selectedMonday: LocalDate): Flow<List<EventsOfDay>> {
-        if (selectedMonday.dayOfWeek != DayOfWeek.MONDAY)
-            throw IllegalArgumentException("Date must be only monday")
-        return groupPreferences.observeGroupId
-            .filter(String::isNotEmpty)
-            .flatMapLatest { groupId ->
-                val dates = List(6) { selectedMonday.plusDays(it.toLong()) }
-                eventLocalDataSource.observeEventsByDateRangeAndGroupId(
-                    groupId = groupId,
-                    dates = dates)
-                    .map { daysWithEvents ->
-                        daysWithEvents.zip(dates) { entity, date ->
-                            entity?.entityToUserDomain() ?: EventsOfDay.createEmpty(date)
-                        }
-                    }
-                    .distinctUntilChanged()
-            }
+        if (selectedMonday.dayOfWeek != DayOfWeek.MONDAY) throw IllegalArgumentException("Date must be only monday")
+        return groupPreferences.observeGroupId.filter(String::isNotEmpty).flatMapLatest { groupId ->
+            val dates = List(6) { selectedMonday.plusDays(it.toLong()) }
+            eventLocalDataSource.observeEventsByDateRangeAndGroupId(
+                groupId = groupId, dates = dates
+            ).map { daysWithEvents ->
+                daysWithEvents.zip(dates) { entity, date ->
+                    entity?.entityToUserDomain() ?: EventsOfDay.createEmpty(date)
+                }
+            }.distinctUntilChanged()
+        }
     }
 
     fun findEventsForDayForTeacherByDate(date: LocalDate): Flow<EventsOfDay> = callbackFlow {
         val teacherId = userPreferences.id
         launch {
             eventLocalDataSource.observeEventsByDateAndTeacherId(date, teacherId)
-                .distinctUntilChanged()
-                .map { it.entitiesToEventsOfDay(date) }
-                .collect { send(it) }
+                .distinctUntilChanged().map { it.entitiesToEventsOfDay(date) }.collect { send(it) }
         }
 
         eventRemoteDataSource.observeEventsOfTeacherByDate(teacherId, date).collect { dayMaps ->
@@ -117,27 +106,19 @@ class EventRepository @Inject constructor(
     }
 
     private suspend fun saveDay(dayMap: DayMap) {
-        val notRelatedTeacherEntities =
-            courseLocalDataSource.getNotRelatedTeacherIdsToGroup(
-                dayMap.teacherIds,
-                dayMap.groupId
-            ).map { teacherId ->
-                userRemoteDataSource.findById(teacherId).mapToUserEntity()
-            }
+        val notRelatedTeacherEntities = courseLocalDataSource.getNotRelatedTeacherIdsToGroup(
+            dayMap.teacherIds, dayMap.groupId
+        ).map { teacherId ->
+            userRemoteDataSource.findById(teacherId).mapToUserEntity()
+        }
 
-        val notRelatedSubjectEntities =
-            courseLocalDataSource.getNotRelatedSubjectIdsToGroup(
-                dayMap.subjectIds,
-                dayMap.groupId
-            ).map { subjectId ->
-                subjectRemoteDataSource.findById(subjectId).mapToSubjectEntity()
-            }
+        val notRelatedSubjectEntities = courseLocalDataSource.getNotRelatedSubjectIdsToGroup(
+            dayMap.subjectIds, dayMap.groupId
+        ).map { subjectId ->
+            subjectRemoteDataSource.findById(subjectId).mapToSubjectEntity()
+        }
 
         val eventEntities = dayMap.events.map { EventMap(it).mapToEntity(dayMap.id) }
-//                eventLocalDataSource.upsert(eventEntities)
-
-//                teacherEventLocalDataSource.insert(eventEntities.toTeacherEventEntities())
-
 
         dayLocalDataSource.saveDay(
             notRelatedTeacherEntities = notRelatedTeacherEntities,
@@ -148,36 +129,6 @@ class EventRepository @Inject constructor(
         )
     }
 
-//    private fun eventsOfTeacherByDate(
-//        date: LocalDate,
-//        teacherId: String,
-//    ): ListenerRegistration {
-//        return firestore.collectionGroup("Days")
-//            .whereArrayContains("teacherIds", teacherId)
-//            .whereEqualTo("date", date.toDateUTC())
-//            .addSnapshotListener { snapshot: QuerySnapshot?, error: FirebaseFirestoreException? ->
-//                if (error != null) {
-//                    Log.d("lol", "getLessonsOfTeacherByDateListener: ", error)
-//                    return@addSnapshotListener
-//                }
-//                if (!snapshot!!.isEmpty) {
-//                    val dayMaps = snapshot.toMutableMaps(::DayMap)
-//                    for (dayMap in dayMaps) {
-//                        coroutineScope.launch(dispatcher) {
-//                            if (!groupLocalDataSource.isExist(dayMap.groupId)) {
-//                                val documentSnapshot = groupsRef.document(dayMap.groupId)
-//                                    .get()
-//                                    .await()
-//                                if (documentSnapshot.exists())
-//                                    saveGroup(GroupMap(documentSnapshot.toMap()))
-//                            }
-//                            saveDay(dayMap)
-//                        }
-//                    }
-//                }
-//            }
-//    }
-
     var lessonTime: Int
         get() = appPreferences.lessonTime
         set(lessonTime) {
@@ -185,27 +136,19 @@ class EventRepository @Inject constructor(
         }
 
     suspend fun observeEventsOfYourGroup() {
-        groupPreferences.observeGroupId
-            .filter(String::isNotEmpty)
-            .flatMapLatest { groupId ->
-                eventRemoteDataSource.observeEventsOfGroupByPreviousAndNextDates(
-                    groupId,
-                    previousMonday,
-                    nextSaturday
-                )
-            }.collect { dayMaps -> dayMaps.forEach { saveDay(it) } }
+        groupPreferences.observeGroupId.filter(String::isNotEmpty).flatMapLatest { groupId ->
+            eventRemoteDataSource.observeEventsOfGroupByPreviousAndNextDates(
+                groupId, previousMonday, nextSaturday
+            )
+        }.collect { dayMaps -> dayMaps.forEach { saveDay(it) } }
     }
 
     private val nextSaturday: Date
-        get() = LocalDate.now()
-            .with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY))
-            .plusWeeks(1)
+        get() = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).plusWeeks(1)
             .toDateUTC()
 
     private val previousMonday: Date
-        get() = LocalDate.now()
-            .with(TemporalAdjusters.previous(DayOfWeek.MONDAY))
-            .minusWeeks(1)
+        get() = LocalDate.now().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)).minusWeeks(1)
             .toDateUTC()
 
     suspend fun addGroupTimetables(groupTimetables: List<GroupTimetable>) {
@@ -213,16 +156,11 @@ class EventRepository @Inject constructor(
         groupTimetables.map { addGroupTimetable(it) }
     }
 
-    private suspend fun addGroupTimetable(
-        groupTimetable: GroupTimetable,
-    ) {
+    private suspend fun addGroupTimetable(groupTimetable: GroupTimetable) {
         val groupWeekEvents = groupTimetable.weekEvents
-//        val dayRef = groupsRef.document(groupTimetable.groupHeader.id).collection("Days")
 
         eventLocalDataSource.deleteByGroupAndDateRange(
-            groupTimetable.groupHeader.id,
-            groupWeekEvents[0].date,
-            groupWeekEvents[5].date
+            groupTimetable.groupHeader.id, groupWeekEvents[0].date, groupWeekEvents[5].date
         )
 
         val existsDayMaps: List<DayMap> = eventRemoteDataSource.findEventsOfGroupByDateRange(
@@ -259,32 +197,11 @@ class EventRepository @Inject constructor(
         return dayDocs.firstOrNull { dayDoc -> dayDoc.date == date }
     }
 
-//    private fun getQueryOfWeekDays(
-//        groupTimetable: GroupTimetable,
-//        daysRef: CollectionReference,
-//    ): Task<QuerySnapshot> {
-//        val monday = groupTimetable.weekEvents[0].date.toDateUTC()
-//        val saturday = groupTimetable.weekEvents[5].date.toDateUTC()
-//        return daysRef.whereGreaterThanOrEqualTo("date", monday)
-//            .whereLessThanOrEqualTo("date", saturday)
-//            .get()
-//    }
-
-
     suspend fun updateEventsOfDay(updatedEventsOfDay: EventsOfDay, groupHeader: GroupHeader) {
         val groupId = groupHeader.id
-        val localDayId =
-            dayLocalDataSource.getIdByDateAndGroupId(updatedEventsOfDay.date, groupId)
+        val localDayId = dayLocalDataSource.getIdByDateAndGroupId(updatedEventsOfDay.date, groupId)
         if (isNetworkNotAvailable) return
         if (localDayId != null) {
-//            val remotedDayMap = eventRemoteDataSource.findEventsOfGroupByDate(
-//                groupHeader.id, updatedEventsOfDay.date
-//            )
-//            dayLocalDataSource.upsert(remotedDayMap.mapToEntity())
-//            if (remotedDayMap.id != localDayId)
-//                dayLocalDataSource.deleteById(localDayId)
-
-//            val updatedEventMaps = updatedEventsOfDay.events.domainsToMaps()
             eventRemoteDataSource.updateEventsOfDay(DayMap(updatedEventsOfDay.domainToMap(groupId)))
         } else {
             val dayMap = DayMap(updatedEventsOfDay.domainToMap(groupId))

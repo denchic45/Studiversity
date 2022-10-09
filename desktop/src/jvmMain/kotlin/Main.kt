@@ -38,6 +38,7 @@ private fun mainApp() {
                 }
 
                 Window(
+                    title = "KtsApp",
                     onCloseRequest = ::exitApplication,
                     state = WindowState(size = size, position = WindowPosition(Alignment.Center))
                 ) {
@@ -49,10 +50,13 @@ private fun mainApp() {
                 }
             } else {
                 Window(
+                    title = "KtsApp - Авторизация",
                     onCloseRequest = ::exitApplication,
                     state = WindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))
                 ) {
-                    LoginScreen(appComponent.loginComponent())
+                    AppTheme {
+                        LoginScreen(appComponent.loginComponent())
+                    }
                 }
             }
         }
