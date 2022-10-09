@@ -13,7 +13,7 @@ import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.model.User.Companion.isStudent
 import com.denchic45.kts.domain.model.User.Companion.isTeacher
 import com.denchic45.kts.domain.usecase.FindGroupByContainsNameUseCase
-import com.denchic45.kts.domain.usecase.ObserveGroupNameUseCase
+import com.denchic45.kts.domain.usecase.ObserveGroupInfoUseCase
 import com.denchic45.kts.domain.usecase.RemoveStudentUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
@@ -42,7 +42,7 @@ open class UserEditorViewModel @Inject constructor(
     private val removeStudentUseCase: RemoveStudentUseCase,
     private val confirmInteractor: ConfirmInteractor,
     private val findGroupByContainsNameUseCase: FindGroupByContainsNameUseCase,
-    private val observeGroupNameUseCase: ObserveGroupNameUseCase,
+    private val observeGroupInfoUseCase: ObserveGroupInfoUseCase,
     private val groupChooserInteractor: GroupChooserInteractor
 ) : BaseViewModel() {
 
@@ -229,8 +229,8 @@ open class UserEditorViewModel @Inject constructor(
     private fun setGroupView() {
         groupId?.let {
             viewModelScope.launch {
-                observeGroupNameUseCase(it).collect {
-                    groupField.value = it
+                observeGroupInfoUseCase(it).collect {
+                    groupField.value = it.name
                 }
             }
         }

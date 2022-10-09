@@ -5,6 +5,7 @@ import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.data.repository.GroupRepository
 import com.denchic45.kts.data.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GroupInteractor @Inject constructor(
@@ -21,7 +22,7 @@ class GroupInteractor @Inject constructor(
         get() = groupRepository.yourGroupName
 
     fun getNameByGroupId(groupId: String): Flow<String> {
-        return groupRepository.getNameByGroupId(groupId)
+        return groupRepository.getGroupInfoById(groupId).map { it.name }
     }
 
     fun isExistGroup(groupId: String): Flow<Boolean> {
