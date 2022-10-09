@@ -92,7 +92,7 @@ class GroupLocalDataSource @Inject constructor(private val db: AppDatabase) {
             .mapToOneOrNull(Dispatchers.IO)
     }
 
-    fun getNameById(groupId: String): Flow<String> {
+    fun getNameById(groupId: String): Flow<GroupEntity> {
         return queries.getNameById(groupId).asFlow().mapToOne(Dispatchers.IO)
     }
 
