@@ -39,9 +39,9 @@ fun MainContent(mainComponent: MainComponent) {
             NavigationRail {
                 Spacer(Modifier.weight(1f))
                 NavigationRailItem(icon = {
-                    Icon(painterResource("drawable/ic_timetable.xml"),
-                        null)
-                }, selected = activeComponent is Child.Timetable,
+                    Icon(painterResource("drawable/ic_timetable.xml"), null)
+                },
+                    selected = activeComponent is Child.Timetable,
                     onClick = { mainComponent.onTimetableClick() })
                 NavigationRailItem(icon = { Icon(painterResource("drawable/ic_group.xml"), null) },
                     selected = activeComponent is Child.Group,
@@ -77,7 +77,7 @@ fun MainContent(mainComponent: MainComponent) {
                         TimetableScreen(appBarMediator, child.timetableComponent)
                     }
                     is Child.Group -> {
-                        GroupScreen(appBarMediator, child.groupComponent)
+                        GroupScreen(appBarMediator, child.groupRootComponent)
                     }
                 }
             }
