@@ -16,20 +16,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.ui.AppBarMediator
-import com.denchic45.kts.ui.group.courses.GroupCoursesScreen
-import com.denchic45.kts.ui.group.members.GroupMembersScreen
 import com.denchic45.kts.ui.components.Tab
 import com.denchic45.kts.ui.components.TabIndicator
+import com.denchic45.kts.ui.group.courses.GroupCoursesScreen
+import com.denchic45.kts.ui.group.members.GroupMembersScreen
+import com.denchic45.kts.ui.navigation.GroupChild
+import com.denchic45.kts.ui.navigation.GroupTabsChild
+import com.denchic45.kts.ui.navigation.GroupTabsConfig
 
 @Composable
-fun GroupScreen(appBarMediator: AppBarMediator, groupComponent: GroupComponent) {
+fun GroupScreen(appBarMediator: AppBarMediator, groupRootComponent: GroupRootComponent) {
     appBarMediator.title = "Группа"
-    Card(
-        shape = RoundedCornerShape(16.dp),
+    Card(shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
-        elevation = 0.dp
-    ) {
-        GroupContent(groupComponent)
+        elevation = 0.dp) {
+        val stack by groupRootComponent.stack.subscribeAsState()
+
+        when (val child = stack.active.instance) {
+            is GroupChild -> GroupContent(child.groupComponent)
+        }
     }
 }
 
@@ -55,8 +60,8 @@ fun GroupContent(groupComponent: GroupComponent) {
         val childStack by groupComponent.stack.subscribeAsState()
 
         when (val child = childStack.active.instance) {
-            is GroupComponent.Child.Members -> GroupMembersScreen(child.membersComponent)
-            is GroupComponent.Child.Courses -> GroupCoursesScreen(child.coursesComponent)
+            is GroupTabsChild.Members -> GroupMembersScreen(child.membersComponent)
+            is GroupTabsChild.Courses -> GroupCoursesScreen(child.coursesComponent)
         }
     }
 }

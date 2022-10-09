@@ -18,6 +18,8 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.ui.components.HeaderItem
 import com.denchic45.kts.ui.components.UserListItem
 import com.denchic45.kts.ui.model.UserItem
+import com.denchic45.kts.ui.navigation.GroupMembersChild
+import com.denchic45.kts.ui.navigation.ProfileChild
 import com.denchic45.kts.ui.profile.ProfileScreen
 
 @Composable
@@ -36,10 +38,10 @@ fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
         val stack by groupMembersComponent.stack.subscribeAsState()
 
         when (val child = stack.active.instance) {
-            GroupMembersComponent.Child.Unselected -> {
+            GroupMembersChild.Unselected -> {
 
             }
-            is GroupMembersComponent.Child.MemberProfile -> {
+            is ProfileChild -> {
                 ProfileScreen(Modifier.fillMaxHeight().width(422.dp),
                     child.profileComponent) { groupMembersComponent.onCloseProfileClick() }
             }
