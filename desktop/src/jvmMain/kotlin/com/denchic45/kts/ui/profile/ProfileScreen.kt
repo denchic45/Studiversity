@@ -1,6 +1,7 @@
 package com.denchic45.kts.ui.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
@@ -48,7 +49,9 @@ fun ProfileScreen(
             })
             Divider(Modifier.fillMaxWidth())
             if (profile.groupInfo != null) {
-                ListItem(icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
+                ListItem(Modifier.clickable(profile.groupClickable,
+                    onClick = profileComponent::onGroupClick),
+                    icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
                     text = {
                         Text(text = profile.groupInfo, style = MaterialTheme.typography.bodyLarge)
                     })
