@@ -12,7 +12,10 @@ import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import kotlin.math.max
 
 @Composable
@@ -24,7 +27,7 @@ fun ListItem(
     singleLineSecondaryText: Boolean = true,
     overlineText: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
-    text: @Composable () -> Unit
+    text: @Composable () -> Unit,
 ) {
     val typography = MaterialTheme.typography
 
@@ -37,26 +40,20 @@ fun ListItem(
 
     if (styledSecondaryText == null && styledOverlineText == null) {
         OneLine.ListItem(semanticsModifier, icon, styledText, styledTrailing)
-    } else if (
-        (styledOverlineText == null && singleLineSecondaryText) || styledSecondaryText == null
-    ) {
-        TwoLine.ListItem(
-            semanticsModifier,
+    } else if ((styledOverlineText == null && singleLineSecondaryText) || styledSecondaryText == null) {
+        TwoLine.ListItem(semanticsModifier,
             icon,
             styledText,
             styledSecondaryText,
             styledOverlineText,
-            styledTrailing
-        )
+            styledTrailing)
     } else {
-        ThreeLine.ListItem(
-            semanticsModifier,
+        ThreeLine.ListItem(semanticsModifier,
             icon,
             styledText,
             styledSecondaryText,
             styledOverlineText,
-            styledTrailing
-        )
+            styledTrailing)
     }
 }
 
@@ -84,34 +81,24 @@ private object OneLine {
         modifier: Modifier = Modifier,
         icon: @Composable (() -> Unit)?,
         text: @Composable (() -> Unit),
-        trailing: @Composable (() -> Unit)?
+        trailing: @Composable (() -> Unit)?,
     ) {
         val minHeight = if (icon == null) MinHeight else MinHeightWithIcon
         Row(modifier.heightIn(min = minHeight)) {
             if (icon != null) {
-                Box(
-                    Modifier.align(Alignment.CenterVertically)
-                        .widthIn(min = IconLeftPadding + IconMinPaddedWidth)
-                        .padding(
-                            start = IconLeftPadding,
-                            top = IconVerticalPadding,
-                            bottom = IconVerticalPadding
-                        ),
-                    contentAlignment = Alignment.CenterStart
-                ) { icon() }
+                Box(Modifier.align(Alignment.CenterVertically)
+                    .widthIn(min = IconLeftPadding + IconMinPaddedWidth)
+                    .padding(start = IconLeftPadding,
+                        top = IconVerticalPadding,
+                        bottom = IconVerticalPadding),
+                    contentAlignment = Alignment.CenterStart) { icon() }
             }
-            Box(
-                Modifier.weight(1f)
-                    .align(Alignment.CenterVertically)
-                    .padding(start = ContentLeftPadding, end = ContentRightPadding),
-                contentAlignment = Alignment.CenterStart
-            ) { text() }
+            Box(Modifier.weight(1f).align(Alignment.CenterVertically)
+                .padding(start = ContentLeftPadding, end = ContentRightPadding),
+                contentAlignment = Alignment.CenterStart) { text() }
             if (trailing != null) {
-                Box(
-                    Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(end = TrailingRightPadding)
-                ) { trailing() }
+                Box(Modifier.align(Alignment.CenterVertically)
+                    .padding(end = TrailingRightPadding)) { trailing() }
             }
         }
     }
@@ -147,71 +134,51 @@ private object TwoLine {
         text: @Composable (() -> Unit),
         secondaryText: @Composable (() -> Unit)?,
         overlineText: @Composable (() -> Unit)?,
-        trailing: @Composable (() -> Unit)?
+        trailing: @Composable (() -> Unit)?,
     ) {
         val minHeight = if (icon == null) MinHeight else MinHeightWithIcon
         Row(modifier.heightIn(min = minHeight)) {
-            val columnModifier = Modifier.weight(1f)
-                .padding(start = ContentLeftPadding, end = ContentRightPadding)
+            val columnModifier =
+                Modifier.weight(1f).padding(start = ContentLeftPadding, end = ContentRightPadding)
 
             if (icon != null) {
-                Box(
-                    Modifier
-                        .sizeIn(
-                            minWidth = IconLeftPadding + IconMinPaddedWidth,
-                            minHeight = minHeight
-                        )
-                        .padding(
-                            start = IconLeftPadding,
-                            top = IconVerticalPadding,
-                            bottom = IconVerticalPadding
-                        ),
-                    contentAlignment = Alignment.CenterStart
-                ) { icon() }
+                Box(Modifier.sizeIn(minWidth = IconLeftPadding + IconMinPaddedWidth,
+                    minHeight = minHeight).padding(start = IconLeftPadding,
+                    top = IconVerticalPadding,
+                    bottom = IconVerticalPadding),
+                    contentAlignment = Alignment.CenterStart) { icon() }
             }
 
             if (overlineText != null) {
-                BaselinesOffsetColumn(
-                    listOf(OverlineBaselineOffset, OverlineToPrimaryBaselineOffset),
-                    columnModifier
-                ) {
+                BaselinesOffsetColumn(listOf(OverlineBaselineOffset,
+                    OverlineToPrimaryBaselineOffset), columnModifier) {
                     overlineText()
                     text()
                 }
             } else {
-                BaselinesOffsetColumn(
-                    listOf(
-                        if (icon != null) {
-                            PrimaryBaselineOffsetWithIcon
-                        } else {
-                            PrimaryBaselineOffsetNoIcon
-                        },
-                        if (icon != null) {
-                            PrimaryToSecondaryBaselineOffsetWithIcon
-                        } else {
-                            PrimaryToSecondaryBaselineOffsetNoIcon
-                        }
-                    ),
-                    columnModifier
-                ) {
+                BaselinesOffsetColumn(listOf(if (icon != null) {
+                    PrimaryBaselineOffsetWithIcon
+                } else {
+                    PrimaryBaselineOffsetNoIcon
+                }, if (icon != null) {
+                    PrimaryToSecondaryBaselineOffsetWithIcon
+                } else {
+                    PrimaryToSecondaryBaselineOffsetNoIcon
+                }), columnModifier) {
                     text()
                     secondaryText!!()
                 }
             }
             if (trailing != null) {
-                OffsetToBaselineOrCenter(
-                    if (icon != null) {
-                        PrimaryBaselineOffsetWithIcon
-                    } else {
-                        PrimaryBaselineOffsetNoIcon
-                    }
-                ) {
+                OffsetToBaselineOrCenter(if (icon != null) {
+                    PrimaryBaselineOffsetWithIcon
+                } else {
+                    PrimaryBaselineOffsetNoIcon
+                }) {
                     Box(
                         // TODO(popam): find way to center and wrap content without minHeight
-                        Modifier.heightIn(min = minHeight)
-                            .padding(end = TrailingRightPadding),
-                        contentAlignment = Alignment.Center
-                    ) { trailing() }
+                        Modifier.heightIn(min = minHeight).padding(end = TrailingRightPadding),
+                        contentAlignment = Alignment.Center) { trailing() }
                 }
             }
         }
@@ -245,41 +212,30 @@ private object ThreeLine {
         text: @Composable (() -> Unit),
         secondaryText: @Composable (() -> Unit),
         overlineText: @Composable (() -> Unit)?,
-        trailing: @Composable (() -> Unit)?
+        trailing: @Composable (() -> Unit)?,
     ) {
         Row(modifier.heightIn(min = MinHeight)) {
             if (icon != null) {
                 val minSize = IconLeftPadding + IconMinPaddedWidth
-                Box(
-                    Modifier
-                        .sizeIn(minWidth = minSize, minHeight = minSize)
-                        .padding(
-                            start = IconLeftPadding,
-                            top = IconThreeLineVerticalPadding,
-                            bottom = IconThreeLineVerticalPadding
-                        ),
-                    contentAlignment = Alignment.CenterStart
-                ) { icon() }
+                Box(Modifier.sizeIn(minWidth = minSize, minHeight = minSize)
+                    .padding(start = IconLeftPadding,
+                        top = IconThreeLineVerticalPadding,
+                        bottom = IconThreeLineVerticalPadding),
+                    contentAlignment = Alignment.CenterStart) { icon() }
             }
-            BaselinesOffsetColumn(
-                listOf(
-                    ThreeLineBaselineFirstOffset,
-                    ThreeLineBaselineSecondOffset,
-                    ThreeLineBaselineThirdOffset
-                ),
+            BaselinesOffsetColumn(listOf(ThreeLineBaselineFirstOffset,
+                ThreeLineBaselineSecondOffset,
+                ThreeLineBaselineThirdOffset),
                 Modifier.weight(1f)
-                    .padding(start = ContentLeftPadding, end = ContentRightPadding)
-            ) {
+                    .padding(start = ContentLeftPadding, end = ContentRightPadding)) {
                 if (overlineText != null) overlineText()
                 text()
                 secondaryText()
             }
             if (trailing != null) {
-                OffsetToBaselineOrCenter(
-                    ThreeLineBaselineFirstOffset - ThreeLineTrailingTopPadding,
+                OffsetToBaselineOrCenter(ThreeLineBaselineFirstOffset - ThreeLineTrailingTopPadding,
                     Modifier.padding(top = ThreeLineTrailingTopPadding, end = TrailingRightPadding),
-                    trailing
-                )
+                    trailing)
             }
         }
     }
@@ -295,7 +251,7 @@ private object ThreeLine {
 private fun BaselinesOffsetColumn(
     offsets: List<Dp>,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Layout(content, modifier) { measurables, constraints ->
         val childConstraints = constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity)
@@ -310,10 +266,8 @@ private fun BaselinesOffsetColumn(
             val toPreviousBaseline = if (index > 0) {
                 placeables[index - 1].height - placeables[index - 1][LastBaseline]
             } else 0
-            val topPadding = max(
-                0,
-                offsets[index].roundToPx() - placeable[FirstBaseline] - toPreviousBaseline
-            )
+            val topPadding =
+                max(0, offsets[index].roundToPx() - placeable[FirstBaseline] - toPreviousBaseline)
             y[index] = topPadding + containerHeight
             containerHeight += topPadding + placeable.height
         }
@@ -337,7 +291,7 @@ private fun BaselinesOffsetColumn(
 private fun OffsetToBaselineOrCenter(
     offset: Dp,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Layout(content, modifier) { measurables, constraints ->
         val placeable = measurables[0].measure(constraints.copy(minHeight = 0))
@@ -349,11 +303,9 @@ private fun OffsetToBaselineOrCenter(
             containerHeight = max(constraints.minHeight, y + placeable.height)
         } else {
             containerHeight = max(constraints.minHeight, placeable.height)
-            y = Alignment.Center.align(
-                IntSize.Zero,
+            y = Alignment.Center.align(IntSize.Zero,
                 IntSize(0, containerHeight - placeable.height),
-                layoutDirection
-            ).y
+                layoutDirection).y
         }
         layout(placeable.width, containerHeight) {
             placeable.placeRelative(0, y)
@@ -364,7 +316,7 @@ private fun OffsetToBaselineOrCenter(
 private fun applyTextStyle(
     textStyle: TextStyle,
     contentAlpha: Float,
-    icon: @Composable (() -> Unit)?
+    icon: @Composable (() -> Unit)?,
 ): @Composable (() -> Unit)? {
     if (icon == null) return null
     return {
