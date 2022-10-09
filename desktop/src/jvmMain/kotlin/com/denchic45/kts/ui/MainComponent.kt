@@ -7,9 +7,8 @@ import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
-import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.domain.MainInteractor
-import com.denchic45.kts.ui.group.GroupComponent
+import com.denchic45.kts.ui.group.GroupRootComponent
 import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.launch
@@ -17,12 +16,14 @@ import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
 class MainComponent @Inject constructor(
-    timetableComponent: () -> TimetableComponent,
-    groupComponent: (groupId: String) -> GroupComponent,
+    lazyTimetableComponent: Lazy<TimetableComponent>,
+    lazyGroupRootComponent: Lazy<GroupRootComponent>,
     mainInteractor: MainInteractor,
     componentContext: ComponentContext,
-    groupPreferences: GroupPreferences,
 ) : ComponentContext by componentContext {
+
+    private val timetableComponent by lazyTimetableComponent
+    private val groupRootComponent by lazyGroupRootComponent
 
     private val coroutineScope = componentScope()
 
@@ -32,8 +33,8 @@ class MainComponent @Inject constructor(
         initialConfiguration = Config.Timetable,
         childFactory = { config: Config, componentContext: ComponentContext ->
             when (config) {
-                is Config.Timetable -> Child.Timetable(timetableComponent())
-                is Config.Group -> Child.Group(groupComponent(groupPreferences.groupId))
+                is Config.Timetable -> Child.Timetable(timetableComponent)
+                is Config.Group -> Child.Group(groupRootComponent)
             }
         })
 
@@ -55,8 +56,8 @@ class MainComponent @Inject constructor(
         object Group : Config()
     }
 
-    sealed class Child {
-        class Timetable(val timetableComponent: TimetableComponent) : Child()
-        class Group(val groupComponent: GroupComponent) : Child()
+    sealed interface Child {
+        class Timetable(val timetableComponent: TimetableComponent) : Child
+        class Group(val groupRootComponent: GroupRootComponent) : Child
     }
 }
