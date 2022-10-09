@@ -62,6 +62,12 @@ fun GroupDoc.toGroupHeader() = GroupHeader(
     specialtyId = specialty.id,
 )
 
+fun GroupEntity.toGroupHeader() = GroupHeader(
+    id = group_id,
+    name = group_name,
+    specialtyId = specialty_id,
+)
+
 fun List<GroupDoc>.docsToGroupHeaders() = map(GroupDoc::toGroupHeader)
 
 fun GroupMap.mapToGroupEntity() = GroupEntity(

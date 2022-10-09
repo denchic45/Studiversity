@@ -32,7 +32,7 @@ JOIN specialtyEntity s ON g.specialty_id = s.specialty_id
 WHERE group_id =:groupId;
 
 getNameById:
-SELECT group_name FROM groupEntity
+SELECT * FROM groupEntity
 WHERE group_id =:groupId;
 
 isExist:
@@ -56,5 +56,5 @@ SELECT * FROM groupWithCuratorAndSpecialty
 WHERE curator_id =: userId;
 
 getGroupIdByCuratorId:
-SELECT group_id FROM groupWithCuratorAndSpecialty
+SELECT group_id FROM groupEntity
 WHERE curator_id =: userId;
