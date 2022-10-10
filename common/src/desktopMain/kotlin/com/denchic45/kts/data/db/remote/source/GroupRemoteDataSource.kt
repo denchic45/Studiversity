@@ -57,7 +57,24 @@ actual class GroupRemoteDataSource(private val client: FirebaseHttpClient) {
         TODO("Not yet implemented")
     }
 
+    actual suspend fun setHeadman(studentId: String, groupId: String) {
+        client.patch("https://firestore.googleapis.com/v1/projects/kts-app-2ab1f/databases/(default)/documents/Groups/$groupId") {
+            parameter("updateMask.fieldPaths", "headmanId")
+            contentType(ContentType.Application.Json)
+            setBody(DocumentRequest(fields = mapOf("headmanId" to Value(stringValue = studentId))))
+        }.bodyAsText().apply {
+            println(this)
+        }
+    }
+
     actual suspend fun removeHeadman(groupId: String) {
+        client.patch("https://firestore.googleapis.com/v1/projects/kts-app-2ab1f/databases/(default)/documents/Groups/$groupId") {
+            parameter("updateMask.fieldPaths", "headmanId")
+            contentType(ContentType.Application.Json)
+            setBody(DocumentRequest(fields = mapOf("headmanId" to Value(nullValue = null))))
+        }.bodyAsText().apply {
+            println("remove headman $this")
+        }
     }
 
     actual suspend fun findBySpecialtyId(specialtyId: String): List<GroupMap> {
@@ -106,10 +123,6 @@ actual class GroupRemoteDataSource(private val client: FirebaseHttpClient) {
     }
 
     actual suspend fun findByCourse(course: Int): List<GroupMap> {
-        TODO("Not yet implemented")
-    }
-
-    actual suspend fun setHeadman(studentId: String, groupId: String) {
         TODO("Not yet implemented")
     }
 

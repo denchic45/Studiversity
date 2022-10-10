@@ -28,6 +28,8 @@ expect class GroupRemoteDataSource {
 
     suspend fun findByIdIn(groupIds: List<String>): List<GroupMap>?
 
+    suspend fun setHeadman(studentId: String, groupId: String)
+
     suspend fun removeHeadman(groupId: String)
 
     suspend fun updateGroupCurator(groupId: String, teacherMap: MutableFireMap)
@@ -44,6 +46,4 @@ expect class GroupRemoteDataSource {
     fun observeByCuratorId(id: String): Flow<GroupMap?>
 
     suspend fun findByCourse(course: Int): List<GroupMap>
-
-    suspend fun setHeadman(studentId: String, groupId: String)
 }
