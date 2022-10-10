@@ -14,10 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -33,7 +30,7 @@ import com.denchic45.kts.ui.theme.toDrawablePath
 @Composable
 fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
     Row {
-        val curatorWithStudents by groupMembersComponent.groupMembers.collectAsState()
+        val curatorWithStudents by groupMembersComponent.memberItems.collectAsState()
         val selectedItemId by groupMembersComponent.selectedMember.collectAsState()
 
         curatorWithStudents?.let {
@@ -73,13 +70,13 @@ private fun MemberListItem(
     onExpandActions: (memberId: String) -> Unit,
     onClickAction: (GroupMembersComponent.MemberAction) -> Unit,
     onDismissAction: () -> Unit,
-    actions: Pair<List<GroupMembersComponent.MemberAction>, String>
+    actions: Pair<List<GroupMembersComponent.MemberAction>, String>,
 ) {
     val interactionSource = remember(::MutableInteractionSource)
 
     val hovered by interactionSource.collectIsHoveredAsState()
 
-    var expanded = actions.second == userItem.id
+    var expanded by remember { mutableStateOf(false) }
 
     UserListItem(
         item = userItem,
@@ -90,10 +87,11 @@ private fun MemberListItem(
     ) {
         IconButton({
             onExpandActions(userItem.id)
+            expanded = true
         }) {
             Icon(painterResource("ic_more_vert".toDrawablePath()), null)
         }
-        DropdownMenu(expanded = expanded,
+        DropdownMenu(expanded = expanded && actions.second == userItem.id,
             modifier = Modifier.width(240.dp),
             onDismissRequest = {
                 onDismissAction()
@@ -121,7 +119,7 @@ fun MemberList(
     onExpandActions: (memberId: String) -> Unit,
     onClickAction: (GroupMembersComponent.MemberAction) -> Unit,
     onDismissAction: () -> Unit,
-    actions: Pair<List<GroupMembersComponent.MemberAction>, String>
+    actions: Pair<List<GroupMembersComponent.MemberAction>, String>,
 ) {
     LazyColumn(
         modifier,
