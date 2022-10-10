@@ -1,9 +1,11 @@
 package com.denchic45.firebasemultiplatform.api
 
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Value(
+data class Value @OptIn(ExperimentalSerializationApi::class) constructor(
     val booleanValue: Boolean? = null,
     val integerValue: String? = null,
     val doubleValue: Int? = null,
@@ -13,6 +15,8 @@ data class Value(
     val referenceValue: String? = null,
     val geoPointValue: LatLng? = null,
     val mapValue: MapValue? = null,
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val nullValue: Unit? = Unit,
 ) {
     @Serializable
     data class LatLng(val latitude: Int, val longitude: Int)
