@@ -4,6 +4,9 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.denchic45.kts.domain.usecase.FindGroupMembersUseCase
+import com.denchic45.kts.domain.usecase.RemoveHeadmanUseCase
+import com.denchic45.kts.domain.usecase.SetHeadmanUseCase
+import com.denchic45.kts.ui.model.MenuItem
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.model.toUserItem
 import com.denchic45.kts.ui.navigation.*
@@ -16,9 +19,11 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class GroupMembersComponent(
     findGroupMembersUseCase: FindGroupMembersUseCase, componentContext: ComponentContext,
+    private val setHeadmanUseCase: SetHeadmanUseCase,
+    private val removeHeadmanUseCase: RemoveHeadmanUseCase,
     profileComponent: (navigator: StackNavigator<in GroupConfig.Group>, groupClickable: Boolean, userId: String) -> ProfileComponent,
     navigator: StackNavigator<in GroupConfig>,
-    groupId: String,
+    private val groupId: String,
 ) : ComponentContext by componentContext {
 
     private val navigation = StackNavigation<GroupMembersConfig>()
@@ -26,12 +31,12 @@ class GroupMembersComponent(
     val stack: Value<ChildStack<GroupMembersConfig, GroupMembersChild>> =
         childStack(source = navigation,
             initialConfiguration = GroupMembersConfig.Unselected,
-            childFactory = { config: GroupMembersConfig, componentContext: ComponentContext ->
+            childFactory = { config, _ ->
                 when (config) {
                     GroupMembersConfig.Unselected -> GroupMembersChild.Unselected
-                    is ProfileConfig -> ProfileChild(profileComponent(navigator,
-                        false,
-                        config.userId))
+                    is ProfileConfig -> ProfileChild(
+                        profileComponent(navigator, false, config.userId)
+                    )
                 }
             })
 
@@ -44,11 +49,15 @@ class GroupMembersComponent(
 
     val selectedMember = MutableStateFlow<String?>(null)
 
+    val memberAction: MutableStateFlow<Pair<List<MemberAction>, String>> = MutableStateFlow(
+        Pair(emptyList(), "")
+    )
+
     init {
         componentScope.launch {
             selectedMember.collect { userId ->
-                val config =
-                    if (userId != null) ProfileConfig(userId) else GroupMembersConfig.Unselected
+                val config = if (userId != null) ProfileConfig(userId)
+                else GroupMembersConfig.Unselected
                 navigation.bringToFront(config)
             }
         }
@@ -60,5 +69,34 @@ class GroupMembersComponent(
 
     fun onCloseProfileClick() {
         selectedMember.value = null
+    }
+
+    fun onExpandMemberAction(memberId: String) {
+        memberAction.update {
+            listOf(MemberAction.SetHeadman, MemberAction.Edit, MemberAction.Remove) to memberId
+        }
+    }
+
+    fun onClickMemberAction(action: MemberAction) {
+        componentScope.launch {
+            when (action) {
+                MemberAction.SetHeadman -> setHeadmanUseCase(memberAction.value.second, groupId)
+                MemberAction.RemoveHeadman -> removeHeadmanUseCase(groupId)
+                MemberAction.Edit -> TODO()
+                MemberAction.Remove -> TODO()
+            }
+        }
+    }
+
+    fun onDismissAction() {
+        memberAction.value = Pair(listOf(), "")
+    }
+
+
+    enum class MemberAction(override val title: String) : MenuItem {
+        SetHeadman("Назначить старостой"),
+        RemoveHeadman("Лишить прав старосты"),
+        Edit("Редактировать"),
+        Remove("Удалить")
     }
 }
