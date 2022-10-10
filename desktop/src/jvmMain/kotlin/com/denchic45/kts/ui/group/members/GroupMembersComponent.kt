@@ -3,6 +3,7 @@ package com.denchic45.kts.ui.group.members
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
+import com.denchic45.kts.domain.model.GroupMembers
 import com.denchic45.kts.domain.usecase.FindGroupMembersUseCase
 import com.denchic45.kts.domain.usecase.RemoveHeadmanUseCase
 import com.denchic45.kts.domain.usecase.SetHeadmanUseCase
@@ -42,16 +43,18 @@ class GroupMembersComponent(
 
     private val componentScope = componentScope()
 
-    val groupMembers: StateFlow<Pair<UserItem, List<UserItem>>?> =
-        findGroupMembersUseCase(groupId).map { members ->
+    private val groupMembers: StateFlow<GroupMembers?> =
+        findGroupMembersUseCase(groupId).stateIn(componentScope, SharingStarted.Lazily, null)
+
+    val memberItems: StateFlow<Pair<UserItem, List<UserItem>>?> =
+        groupMembers.filterNotNull().map { members ->
             members.curator.toUserItem(members) to members.students.map { it.toUserItem(members) }
         }.stateIn(componentScope, SharingStarted.Lazily, null)
 
     val selectedMember = MutableStateFlow<String?>(null)
 
-    val memberAction: MutableStateFlow<Pair<List<MemberAction>, String>> = MutableStateFlow(
-        Pair(emptyList(), "")
-    )
+    val memberAction: MutableStateFlow<Pair<List<MemberAction>, String>> =
+        MutableStateFlow(Pair(emptyList(), ""))
 
     init {
         componentScope.launch {
@@ -73,7 +76,11 @@ class GroupMembersComponent(
 
     fun onExpandMemberAction(memberId: String) {
         memberAction.update {
-            listOf(MemberAction.SetHeadman, MemberAction.Edit, MemberAction.Remove) to memberId
+            listOf(
+                if (groupMembers.value?.headmanId == memberId) MemberAction.RemoveHeadman
+                else MemberAction.SetHeadman,
+                MemberAction.Edit,
+                MemberAction.Remove) to memberId
         }
     }
 

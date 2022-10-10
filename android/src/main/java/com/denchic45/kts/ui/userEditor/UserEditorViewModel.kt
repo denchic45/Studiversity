@@ -68,11 +68,7 @@ open class UserEditorViewModel @Inject constructor(
 
     val groupField = MutableStateFlow("")
 
-    val avatarUser = MutableStateFlow("")
-
-//    val emailFieldEnable = MutableStateFlow(true)
-
-//    val passwordFieldVisibility = MutableStateFlow(true)
+    val photoUrl = MutableStateFlow("")
 
     val roleFieldVisibility = MutableStateFlow(false)
 
@@ -164,7 +160,7 @@ open class UserEditorViewModel @Inject constructor(
                 groupId,
                 this.role,
                 emailField.value,
-                "",
+                photoUrl.value,
                 Date(),
                 gender,
                 generatedAvatar,
@@ -258,7 +254,7 @@ open class UserEditorViewModel @Inject constructor(
                     patronymicField.value = user.patronymic ?: ""
                     genderField.value = genders.value!![gender - 1].title
                     emailField.value = user.email!!
-                    avatarUser.value = user.photoUrl
+                    photoUrl.value = user.photoUrl
                 } ?: run { finish() }
             }
         }
@@ -324,7 +320,7 @@ open class UserEditorViewModel @Inject constructor(
                 when (resource) {
                     is Resource.Success -> finish()
                     is Resource.Next -> {
-                        if (resource.status == "LOAD_AVATAR") avatarUser.value =
+                        if (resource.status == "LOAD_AVATAR") photoUrl.value =
                             resource.data.photoUrl
                     }
                     is Resource.Error -> if (resource.error is NetworkException) {

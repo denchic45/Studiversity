@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.ui.MainComponent.Child
 import com.denchic45.kts.ui.group.GroupScreen
+import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.ui.timetable.TimetableScreen
 
 
@@ -39,11 +40,11 @@ fun MainContent(mainComponent: MainComponent) {
             NavigationRail {
                 Spacer(Modifier.weight(1f))
                 NavigationRailItem(icon = {
-                    Icon(painterResource("drawable/ic_timetable.xml"), null)
+                    Icon(painterResource("ic_timetable".toDrawablePath()), null)
                 },
                     selected = activeComponent is Child.Timetable,
                     onClick = { mainComponent.onTimetableClick() })
-                NavigationRailItem(icon = { Icon(painterResource("drawable/ic_group.xml"), null) },
+                NavigationRailItem(icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
                     selected = activeComponent is Child.Group,
                     onClick = { mainComponent.onGroupClick() })
                 Spacer(Modifier.weight(1f))

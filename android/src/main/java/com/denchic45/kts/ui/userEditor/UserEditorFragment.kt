@@ -135,7 +135,7 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
                 llAccount.visibility = if (visibility) View.VISIBLE else View.GONE
             }
 
-            viewModel.avatarUser.collectWhenStarted(lifecycleScope) { photoUrl ->
+            viewModel.photoUrl.collectWhenStarted(lifecycleScope) { photoUrl ->
                 Glide.with(requireContext())
                     .load(photoUrl)
                     .placeholder(ivAvatar.drawable)

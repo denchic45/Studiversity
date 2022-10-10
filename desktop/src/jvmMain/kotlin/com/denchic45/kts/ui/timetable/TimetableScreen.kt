@@ -3,7 +3,6 @@ package com.denchic45.kts.ui.timetable
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -28,12 +27,6 @@ import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.components.TextButtonContent
 import com.denchic45.kts.util.DatePatterns
 import com.denchic45.kts.util.toString
-import io.kamel.core.config.DefaultCacheSize
-import io.kamel.core.config.KamelConfig
-import io.kamel.core.config.takeFrom
-import io.kamel.image.config.Default
-import io.kamel.image.config.resourcesFetcher
-import io.kamel.image.config.svgDecoder
 import java.time.LocalDate
 
 @Preview
@@ -49,7 +42,6 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
                 modifier = Modifier.size(contentHeight),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
                 contentPadding = PaddingValues(0.dp),
-//                shape = CircleShape,
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
             ) {
                 Icon(imageVector = Icons.Default.KeyboardArrowLeft,
@@ -61,7 +53,6 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
                 modifier = Modifier.size(contentHeight),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
                 contentPadding = PaddingValues(0.dp),
-//                shape = CircleShape,
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
             ) {
                 Icon(
@@ -78,7 +69,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
                 TextButtonContent("Сегодня")
             }
             Spacer(Modifier.weight(1f))
-//            Spinner()
+//            Spinner() TODO add later
             Spacer(Modifier.width(24.dp))
         }
     }
@@ -200,7 +191,7 @@ fun RowScope.DayOfWeekCell(date: LocalDate) {
                 style = MaterialTheme.typography.bodyMedium)
             Text(date.dayOfMonth.toString(),
                 modifier = Modifier.padding(top = 12.dp),
-                style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
+                style = MaterialTheme.typography.headlineMedium)
         }
     }
 }
