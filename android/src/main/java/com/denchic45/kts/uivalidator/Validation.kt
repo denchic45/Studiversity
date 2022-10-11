@@ -2,6 +2,7 @@ package com.denchic45.kts.uivalidator
 
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.uivalidator.validatorlistener.*
+import com.denchic45.kts.uivalidator.validatorlistener.ValidationListener
 import kotlinx.coroutines.flow.MutableSharedFlow
 import java.util.function.Consumer
 

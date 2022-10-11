@@ -1,8 +1,8 @@
-package com.denchic45.kts.domain.uivalidator
+package com.denchic45.uivalidator
 
-import com.denchic45.kts.domain.uivalidator.rule.ErrorMessage
+import com.denchic45.uivalidator.rule.ErrorMessage
 
-open class Rule<T>(
+class Rule<T>(
     val predicate: (value: T) -> Boolean,
     val errorMessage: (value: T) -> ErrorMessage
 ) : IRule<T> {

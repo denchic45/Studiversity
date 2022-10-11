@@ -1,6 +1,6 @@
-package com.denchic45.kts.domain.uivalidator.rule
+package com.denchic45.uivalidator.rule
 
-import com.denchic45.kts.domain.uivalidator.Rule
+import com.denchic45.uivalidator.Rule
 
 fun NotEmpty(
     errorMessage: (value: String) -> ErrorMessage
@@ -8,3 +8,7 @@ fun NotEmpty(
     predicate = { it.isNotEmpty() },
     errorMessage = errorMessage
 )
+
+fun lol() {
+    NotEmpty { value -> ErrorMessage.StringMessage("") }
+}

@@ -17,7 +17,6 @@ import com.denchic45.kts.util.Colors
 import com.denchic45.kts.util.NetworkException
 import com.denchic45.kts.util.UUIDS
 import kotlinx.coroutines.launch
-import java.util.stream.IntStream
 import javax.inject.Inject
 import javax.inject.Named
 

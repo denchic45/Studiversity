@@ -1,4 +1,4 @@
-package com.denchic45.kts.domain.uivalidator
+package com.denchic45.uivalidator
 
 class Validator(private vararg val conditions: Condition<out Any>) : Validatable {
 

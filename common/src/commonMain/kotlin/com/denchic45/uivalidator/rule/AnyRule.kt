@@ -1,6 +1,6 @@
-package com.denchic45.kts.domain.uivalidator.rule
+package com.denchic45.uivalidator.rule
 
-import com.denchic45.kts.domain.uivalidator.IRule
+import com.denchic45.uivalidator.IRule
 
 class AnyRule<T : Any>(
     private vararg val rules: IRule<T>,

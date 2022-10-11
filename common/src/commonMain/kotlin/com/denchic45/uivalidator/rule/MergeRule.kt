@@ -1,8 +1,8 @@
-package com.denchic45.kts.domain.uivalidator.rule
+package com.denchic45.uivalidator.rule
 
-import com.denchic45.kts.domain.uivalidator.IRule
+import com.denchic45.uivalidator.IRule
 
-class CompositeRule<T : Any>(private vararg val rules: IRule<T>) : IRule<T> {
+class MergeRule<T : Any>(private val rules: Set<IRule<T>>) : IRule<T> {
 
     override fun validate(value: T, messageCallback: (message: ErrorMessage) -> Unit): Boolean {
         return rules.all { rule -> rule.validate(value) { messageCallback(it) } }

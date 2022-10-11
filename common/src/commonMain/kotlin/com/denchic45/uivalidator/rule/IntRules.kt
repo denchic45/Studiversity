@@ -1,6 +1,7 @@
-package com.denchic45.kts.domain.uivalidator.rule
+package com.denchic45.uivalidator.rule
 
-import com.denchic45.kts.domain.uivalidator.Rule
+import com.denchic45.uivalidator.Rule
+import com.denchic45.uivalidator.rule.ErrorMessage
 
 fun NotZero(errorMessage: (value: Int) -> ErrorMessage): Rule<Int> {
     return Rule(

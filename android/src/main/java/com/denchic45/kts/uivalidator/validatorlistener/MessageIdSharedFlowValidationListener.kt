@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 
 class MessageIdSharedFlowValidationListener(sharedFlow: MutableSharedFlow<Int>) :
     SharedFlowValidationListener<Int>(sharedFlow) {
-    override fun onSuccess() { }
+    override fun onSuccess() {}
 
     override fun onError(rule: Rule) {
         mutableSharedFlow.tryEmit(rule.errorResId)
