@@ -115,7 +115,7 @@ open class Validation(private vararg val rules: Rule) {
     }
 
     private val isValid: Boolean
-        private get() {
+        get() {
             for (rule in rules) {
                 validationListener.run(rule)
                 if (!rule.isValid) {

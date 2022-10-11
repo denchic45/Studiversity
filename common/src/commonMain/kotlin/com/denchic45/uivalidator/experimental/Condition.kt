@@ -3,17 +3,18 @@ package com.denchic45.uivalidator.experimental
 import com.denchic45.uivalidator.rule.ErrorMessage
 
 open class Condition<T>(
-    override val value: () -> T,
+    val value: () -> T,
     val predicate: (value: T) -> Boolean,
-    override val errorMessage: (value: T) -> ErrorMessage,
-    override val onError: (errorMessage: ErrorMessage) -> Unit
+    val errorMessage: (value: T) -> ErrorMessage,
+    override val onResult: ((isValid: Boolean, value: T) -> Unit)?,
 ) : ICondition<T> {
 
-    override fun isValid(): Boolean {
-        return predicate(value())
-    }
-
     override fun validate(): Boolean {
-        return isValid().apply { if (!this) onError(errorMessage(value())) }
+        val value = value()
+        return predicate(value).apply { onResult?.invoke(this, value) }
     }
+}
+
+interface ICondition<T> : Validatable {
+    val onResult: ((isValid: Boolean, value: T) -> Unit)?
 }
