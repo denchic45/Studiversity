@@ -1,12 +1,12 @@
 package com.denchic45.uivalidator.experimental
 
 class Validator<T>(
-    private vararg val conditions: Condition<T>,
+    private vararg val defaultConditions: DefaultCondition<T>,
     override val onResult: ((isValid: Boolean) -> Unit)?
 ) : ICondition<T> {
 
     override fun validate(): Boolean {
-        return conditions.asList().allEach { it.validate() }.apply { onResult?.let { it(this) } }
+        return defaultConditions.asList().allEach { it.validate() }.apply { onResult?.let { it(this) } }
     }
 }
 

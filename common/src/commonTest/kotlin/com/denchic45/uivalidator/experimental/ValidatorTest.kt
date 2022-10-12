@@ -11,7 +11,7 @@ internal class ValidatorTest {
     @Test
     fun test() {
         println("Starting test...")
-        val condition1 = Condition(
+        val defaultCondition1 = DefaultCondition(
             value = { "Ivan@gmail.com" },
             predicate = { it.contains("Ivan") },
             onResult = { isValid ->
@@ -22,7 +22,7 @@ internal class ValidatorTest {
             }
         )
 
-        val condition11 = Condition(
+        val defaultCondition11 = DefaultCondition(
             value = { "123" },
             predicate = { it == "123" },
             onResult = { isValid ->
@@ -33,7 +33,7 @@ internal class ValidatorTest {
             }
         )
 
-        val condition2 = Condition({ "Ivan" }, { it.startsWith("1") }) { isValid ->
+        val defaultCondition2 = DefaultCondition({ "Ivan" }, { it.startsWith("1") }) { isValid ->
             if (!isValid) println("#value not starts with 1")
         }
 
@@ -47,7 +47,7 @@ internal class ValidatorTest {
         }
 
         val combinedCondition =
-            CombineCondition(conditions = listOf(condition1, condition2)) { isValid ->
+            CombineCondition(conditions = listOf(defaultCondition1, defaultCondition2)) { isValid ->
                 if (isValid) {
                     println("All combined conditions valid")
                 } else {
@@ -55,14 +55,14 @@ internal class ValidatorTest {
                 }
             }
 
-        val condition3 = Condition(
+        val defaultCondition3 = DefaultCondition(
             { conditionSource.value },
             { it.startsWith("1") },
             stateFlowResult(errorFlow) { conditionSource.value + " не начинается на единицу" }
         )
 
 
-        val validator = Validator(condition1, condition11, condition3, combinedCondition) {
+        val validator = Validator(defaultCondition1, defaultCondition11, defaultCondition3, combinedCondition) {
             println("Validator is ${if (it) "valid" else "not valid"}!")
         }
         validator.validate()
