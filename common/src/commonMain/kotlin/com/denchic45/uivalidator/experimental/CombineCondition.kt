@@ -1,13 +1,12 @@
 package com.denchic45.uivalidator.experimental
 
-import com.denchic45.uivalidator.rule.ErrorMessage
-
-class CombineCondition<T>(
-    private val conditions: List<Validatable>,
-    override val onResult: (isValid: Boolean, value: T?) -> Unit
-) : ICondition<T?> {
+class CombineCondition<out T>(
+    private val conditions: List<ICondition<T>>,
+    override val onResult: ((isValid: Boolean) -> Unit)? = null
+) : ICondition<@UnsafeVariance T> {
 
     override fun validate(): Boolean {
-        return conditions.all { validatable -> validatable.validate() }.apply { if (!this) onResult(this, validatable.) }
+        return conditions.allEach { condition -> condition.validate() }
+            .apply { onResult?.invoke(this) }
     }
 }

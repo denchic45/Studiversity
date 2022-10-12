@@ -1,20 +1,29 @@
 package com.denchic45.uivalidator.experimental
 
-import com.denchic45.uivalidator.rule.ErrorMessage
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 open class Condition<T>(
     val value: () -> T,
     val predicate: (value: T) -> Boolean,
-    val errorMessage: (value: T) -> ErrorMessage,
-    override val onResult: ((isValid: Boolean, value: T) -> Unit)?,
+    override val onResult: ((isValid: Boolean) -> Unit)? = null,
 ) : ICondition<T> {
 
     override fun validate(): Boolean {
         val value = value()
-        return predicate(value).apply { onResult?.invoke(this, value) }
+        return predicate(value).apply { onResult?.invoke(this) }
     }
 }
 
 interface ICondition<T> : Validatable {
-    val onResult: ((isValid: Boolean, value: T) -> Unit)?
+    val onResult: ((isValid: Boolean) -> Unit)?
+}
+
+fun <T> stateFlowResult(
+    stateFlow: MutableStateFlow<T?>,
+    message: () -> T
+): (isValid: Boolean) -> Unit = { isValid ->
+    stateFlow.update {
+        if (isValid) null else message()
+    }
 }
