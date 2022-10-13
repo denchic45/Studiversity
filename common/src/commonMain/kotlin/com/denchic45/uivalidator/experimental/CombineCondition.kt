@@ -1,9 +1,9 @@
 package com.denchic45.uivalidator.experimental
 
-class CombineCondition<out T>(
-    private val conditions: List<ICondition<T>>,
-    override val onResult: ((isValid: Boolean) -> Unit)? = null
-) : ICondition<@UnsafeVariance T> {
+class CombineCondition<T>(
+    private val conditions: List<Condition<T>>,
+    override val onResult: ValidationResult? = null
+) : Condition<T> {
 
     override fun validate(): Boolean {
         return conditions.allEach { condition -> condition.validate() }
