@@ -1,9 +1,11 @@
 package com.denchic45.uivalidator.experimental
 
+import kotlinx.coroutines.flow.StateFlow
+
 class Validator<T>(
     private val conditions: List<Condition<T>>,
     val operator: Operator = Operator.AllEach,
-    override val onResult: ValidationResult?,
+    override val onResult: ValidationResult? = null,
 ) : Condition<T> {
 
     override fun validate(): Boolean {
