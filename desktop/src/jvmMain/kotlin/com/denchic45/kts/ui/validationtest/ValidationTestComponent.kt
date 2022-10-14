@@ -45,7 +45,7 @@ class ValidationTestComponent(componentContext: ComponentContext) :
 
     private val coroutineScope = componentScope()
 
-    val phoneNumValidation = Validator(
+    private val phoneNumValidation = Validator(
         listOf(Condition(
             value = { field.value },
             predicate = { it.isPhoneNum() }
@@ -57,7 +57,7 @@ class ValidationTestComponent(componentContext: ComponentContext) :
         ),
         Operator.All
     )
-    val emailValidation = Validator(
+    private val emailValidation = Validator(
         listOf(Condition(
             value = { field.value },
             predicate = { it.isEmail() }
@@ -69,22 +69,31 @@ class ValidationTestComponent(componentContext: ComponentContext) :
         ),
         Operator.All
     )
+    private val emailOrPhoneValidator = Validator(conditions = listOf(
+        phoneNumValidation,
+        emailValidation
+    ), operator = Operator.Any) {
+        println(if (it) "Либо почта, либо телефон правильны" else "Ни почта ни тел не правильны")
+    }
     private val validator = Validator(conditions = listOf(
         Condition(value = { field.value },
-            source = field,
-            coroutineScope = coroutineScope,
-            predicate = { it.isNotEmpty() }
+            predicate = { it.isNotEmpty() },
+            trigger = { validatable ->
+                coroutineScope.launch {
+                    field.collect {
+                        validatable.validate()
+                    }
+                }
+            }
         ) {
             println("On result empty:$it")
             fieldError.value = if (!it) "Заполните поле!" else null
             validateEnabled.value = it
         },
-        Validator(conditions = listOf(
-            phoneNumValidation,
-            emailValidation
-        ), operator = Operator.Any) { println(if (it) "Либо почта, либо телефон правильны" else "Ни почта ни тел не правильны") },
+        emailOrPhoneValidator,
     )) {
         coroutineScope.launch {
+            println("Final validation: $it")
             result.emit(if (it) "Валидация прошла успешно!" else "Валидация не пройдена")
         }
     }

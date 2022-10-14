@@ -1,6 +1,5 @@
 package com.denchic45.uivalidator.experimental
 
-import kotlinx.coroutines.flow.StateFlow
 
 class Validator<T>(
     private val conditions: List<Condition<T>>,
@@ -21,7 +20,7 @@ inline fun <T> Iterable<T>.anyEach(predicate: (T) -> Boolean): Boolean {
 
 inline fun <T> Iterable<T>.allEach(predicate: (T) -> Boolean): Boolean {
     var notFound = true
-    for (element in this) if (predicate(element)) notFound = false
+    for (element in this) if (!predicate(element)) notFound = false
     return notFound
 }
 

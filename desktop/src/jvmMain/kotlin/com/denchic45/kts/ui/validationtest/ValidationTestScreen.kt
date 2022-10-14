@@ -32,7 +32,7 @@ private fun ValidationTestBody(component: ValidationTestComponent) {
 
     val errorMessage by component.fieldError.collectAsState()
 
-    Column(Modifier.padding(48.dp)) {
+    Column() {
         println("Input: $input")
         TextField(input, onValueChange = {
             println("onValueChange: $it")
@@ -41,7 +41,6 @@ private fun ValidationTestBody(component: ValidationTestComponent) {
         errorMessage?.let {
             Text(
                 it,
-                Modifier.padding(start = 16.dp),
                 style = MaterialTheme.typography.bodySmall
             )
         }
