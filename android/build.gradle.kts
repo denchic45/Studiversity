@@ -4,8 +4,6 @@ plugins {
     id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin") apply false
     id("com.google.gms.google-services")
-
-//    id("com.google.dagger.hilt.android")
 }
 
 apply(plugin = "androidx.navigation.safeargs.kotlin")
@@ -77,7 +75,7 @@ android {
     namespace = "com.denchic45.kts"
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.1"
+        kotlinCompilerExtensionVersion = "1.3.2"
     }
 
     sourceSets.all {
@@ -86,20 +84,21 @@ android {
 }
 
 
+val daggerVersion = "2.44"
+
 dependencies {
     implementation(project((":common")))
     //Compose
-    val composeVersion = "1.1.1"
     implementation("androidx.compose.runtime:runtime:1.2.1")
-    implementation("androidx.compose.compiler:compiler:$composeVersion")
+    implementation("androidx.compose.compiler:compiler:1.3.2")
     implementation("androidx.compose.ui:ui:1.2.1")
-    implementation("androidx.activity:activity-compose:1.5.1")
+    implementation("androidx.activity:activity-compose:1.6.0")
     // Tooling support (Previews, etc.)
     implementation("androidx.compose.ui:ui-tooling:1.2.1")
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
     implementation("androidx.compose.foundation:foundation:1.2.1")
     // Material Design
-    implementation("androidx.compose.material3:material3:1.0.0-beta01")
+    implementation("androidx.compose.material3:material3:1.0.0-rc01")
     // Material design icons
     implementation("androidx.compose.material:material-icons-core:1.2.1")
     implementation("androidx.compose.material:material-icons-extended:1.2.1")
@@ -142,7 +141,7 @@ dependencies {
     implementation("com.airbnb.android:lottie:4.0.0")
 
     implementation("androidx.room:room-rxjava3:2.5.0-alpha02")
-    
+
     implementation("androidx.room:room-ktx:2.5.0-alpha02")
     implementation("androidx.room:room-runtime:2.5.0-alpha02")
     kapt("androidx.room:room-compiler:2.5.0-alpha02")
@@ -150,8 +149,8 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
     // Dagger-android
-    kapt("com.google.dagger:dagger-compiler:2.38.1")
-    kapt("com.google.dagger:dagger-android-processor:2.38.1")
+    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
+    kapt("com.google.dagger:dagger-android-processor:$daggerVersion")
 //    kapt("com.google.dagger:hilt-android-compiler:2.38.1")
 //    implementation("com.google.dagger:hilt-android:2.38.1")
 

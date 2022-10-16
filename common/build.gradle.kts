@@ -1,16 +1,11 @@
-import org.jetbrains.compose.compose
-
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.1.1"
+    id("org.jetbrains.compose") version "1.2.0"
     id("com.android.library")
     id("com.squareup.sqldelight")
     id("kotlin-kapt")
-    kotlin("plugin.serialization") version "1.6.10"
-
-
+    kotlin("plugin.serialization") version "1.7.20"
     id("com.google.devtools.ksp")
-//    id("dagger.hilt.android.plugin")
 }
 
 kotlin {
@@ -21,16 +16,12 @@ kotlin {
         }
     }
 
-//    ksp {
-//        arg("me.tatarka.inject.enableJavaxAnnotations", "true")
-//    }
-
     sourceSets {
         val ktorVersion = "2.0.3"
         val koinVersion = "3.2.0"
         val sqlDelightVersion = "1.5.3"
-        val decomposeVersion = "1.0.0-alpha-02"
-//        val korimVersion = "2.2.0"
+        val decomposeVersion = "1.0.0-alpha-06"
+        val daggerVersion = "2.44"
 
         val commonJvmMain by creating {
             dependencies {
@@ -48,11 +39,8 @@ kotlin {
                 api("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
 
                 //Dagger
-                api("com.google.dagger:dagger:2.38.1")
-                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.38.1"))
-//                api("com.google.dagger:hilt-android:2.38.1")
-
-
+                api("com.google.dagger:dagger:$daggerVersion")
+                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
 
                 implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
             }
@@ -114,8 +102,8 @@ kotlin {
                 api("com.squareup.retrofit2:retrofit:2.9.0")
 
                 // Dagger
-                api("com.google.dagger:dagger-android:2.38.1")
-                api("com.google.dagger:dagger-android-support:2.38.1")
+                api("com.google.dagger:dagger-android:$daggerVersion")
+                api("com.google.dagger:dagger-android-support:$daggerVersion")
 
                 // Navigation
                 api("androidx.navigation:navigation-fragment-ktx:2.5.1")
@@ -158,14 +146,11 @@ kotlin {
                 api("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 // Dagger
-                api("com.google.dagger:dagger:2.38.1")
-                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:2.38.1"))
+                api("com.google.dagger:dagger:$daggerVersion")
+                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
 
                 // Decompose
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
-
-                // KorIM
-//                api("com.soywiz.korlibs.korim:korim-jvm:$korimVersion")
 
                 dependsOn(commonJvmMain)
             }
@@ -201,7 +186,7 @@ android {
     namespace = "com.denchic45.common"
     kapt {
         correctErrorTypes = true
-        }
+    }
 }
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
