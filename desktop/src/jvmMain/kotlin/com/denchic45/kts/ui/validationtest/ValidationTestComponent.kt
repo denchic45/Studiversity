@@ -5,6 +5,7 @@ import com.denchic45.kts.util.componentScope
 import com.denchic45.uivalidator.experimental.Condition
 import com.denchic45.uivalidator.experimental.Operator
 import com.denchic45.uivalidator.experimental.Validator
+import com.denchic45.uivalidator.experimental.triggerOn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -72,23 +73,20 @@ class ValidationTestComponent(componentContext: ComponentContext) :
     private val emailOrPhoneValidator = Validator(conditions = listOf(
         phoneNumValidation,
         emailValidation
-    ), operator = Operator.Any) {
-        println(if (it) "Либо почта, либо телефон правильны" else "Ни почта ни тел не правильны")
-    }
+    ), operator = Operator.Any)
     private val validator = Validator(conditions = listOf(
-        Condition(value = { field.value },
+        Condition(
+            value = { field.value },
             predicate = { it.isNotEmpty() },
-            trigger = { validatable ->
-                coroutineScope.launch {
-                    field.collect {
-                        validatable.validate()
-                    }
-                }
-            }
         ) {
             println("On result empty:$it")
             fieldError.value = if (!it) "Заполните поле!" else null
             validateEnabled.value = it
+        }.triggerOn(field, coroutineScope),
+        Condition(
+            value = { field.value },
+            predicate = { it.isEmail() or it.isPhoneNum() }) {
+            if (!it) fieldError.value = "Ни почта ни тел не правильны"
         },
         emailOrPhoneValidator,
     )) {

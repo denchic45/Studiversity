@@ -1,7 +1,6 @@
 package com.denchic45.kts.ui.validationtest
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.TextField
 import androidx.compose.material3.MaterialTheme
@@ -9,8 +8,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 
@@ -32,7 +29,7 @@ private fun ValidationTestBody(component: ValidationTestComponent) {
 
     val errorMessage by component.fieldError.collectAsState()
 
-    Column() {
+    Column {
         println("Input: $input")
         TextField(input, onValueChange = {
             println("onValueChange: $it")
