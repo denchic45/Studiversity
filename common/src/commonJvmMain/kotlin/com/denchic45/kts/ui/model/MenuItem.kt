@@ -1,9 +1,11 @@
 package com.denchic45.kts.ui.model
 
-interface MenuItem {
+interface MenuAction {
     val title: String
+    val iconName: String?
 }
 
-interface MenuItemWithIcon : MenuItem {
-    val iconName: String
-}
+data class MenuItem<T : MenuAction>(
+    val action: T,
+    val enabled: Boolean = true,
+) : MenuAction by action
