@@ -23,17 +23,6 @@ import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.util.AsyncImage
 import com.denchic45.kts.util.loadImageBitmap
 
-
-@Composable
-fun HeaderItem(name: String) {
-    Row(
-        Modifier.height(48.dp).padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(name, style = MaterialTheme.typography.titleMedium)
-    }
-}
-
 @Composable
 fun UserListItem(
     modifier: Modifier = Modifier,
