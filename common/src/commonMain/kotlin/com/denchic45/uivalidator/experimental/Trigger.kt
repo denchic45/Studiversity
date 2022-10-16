@@ -1,5 +1,9 @@
 package com.denchic45.uivalidator.experimental
 
-fun interface Trigger {
-    operator fun invoke(validatable: Validatable)
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+
+fun <T> Condition<T>.triggerOn(flow: Flow<*>, coroutineScope: CoroutineScope) = apply {
+    coroutineScope.launch { flow.collect { validate() } }
 }
