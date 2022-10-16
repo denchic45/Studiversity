@@ -1,37 +1,14 @@
 package com.denchic45.uivalidator.experimental
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
-
 interface Condition<T> : Validatable {
     val onResult: ValidationResult?
 
     companion object {
-
         operator fun <T> invoke(
             value: () -> T,
             predicate: (value: T) -> Boolean,
             onResult: ValidationResult? = null,
         ): Condition<T> = DefaultCondition(value, predicate, onResult)
-
-        operator fun <T> invoke(
-            value: () -> T,
-            predicate: (value: T) -> Boolean,
-            trigger: Trigger,
-            onResult: ValidationResult? = null,
-        ): Condition<T> = DefaultCondition(value, predicate, onResult).apply { trigger(this) }
-
-//        operator fun <T> invoke(
-//            value: () -> T,
-//            predicate: List<(value: T) -> Boolean>,
-//            onResult: ValidationResult? = null
-//        ): Condition<T> = MultiCondition(value, predicate.toTypedArray(), onResult)
-//
-//        operator fun <T> invoke(
-//            value: () -> T,
-//            vararg predicate: (value: T) -> Boolean,
-//            onResult: ValidationResult? = null
-//        ): Condition<T> = MultiCondition(value, arrayOf(*predicate), onResult)
     }
 }
 
@@ -46,25 +23,6 @@ private class DefaultCondition<T>(
     }
 }
 
-//private class MultiCondition<T>(
-//    private val value: () -> T,
-//    private val predicates: Array<(value: T) -> Boolean>,
-//    override val onResult: ValidationResult?
-//) : Condition<T> {
-//    override fun validate(): Boolean {
-//        return predicates.all { it(value()) }
-//    }
-//}
-
 fun interface ValidationResult {
     operator fun invoke(isValid: Boolean)
-}
-
-class StateFlowResult<T>(
-    private val stateFlow: MutableStateFlow<T?>,
-    private val message: () -> T,
-) : ValidationResult {
-    override fun invoke(isValid: Boolean) {
-        stateFlow.update { if (isValid) null else message() }
-    }
 }
