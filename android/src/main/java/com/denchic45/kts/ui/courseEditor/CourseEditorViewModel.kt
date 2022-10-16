@@ -102,6 +102,7 @@ class CourseEditorViewModel @Inject constructor(
                                     }
                                 )
                             }
+                            else -> {}
                         }
                     }
             } catch (e: Exception) {

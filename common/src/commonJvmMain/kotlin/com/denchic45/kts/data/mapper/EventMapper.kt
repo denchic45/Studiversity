@@ -113,6 +113,7 @@ fun EventDetails.detailsToDetailsMap(): FireMap {
                 put("iconUrl", iconUrl)
                 put("color", color)
             }
+            is EmptyEventDetails -> {}
         }
     }
 }

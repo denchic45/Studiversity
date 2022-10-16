@@ -71,6 +71,7 @@ class GroupEditorViewModel @Inject constructor(
                             }
                         )
                     }
+                    else -> {}
                 }
             }
         }
