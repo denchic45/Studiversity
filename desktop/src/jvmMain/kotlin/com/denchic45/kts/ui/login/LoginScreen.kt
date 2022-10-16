@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.theme.RobotoFamily
-import com.denchic45.kts.ui.theme.Text2
+import com.denchic45.kts.ui.theme.TextM2
 
 @Preview
 @Composable
@@ -32,12 +32,12 @@ fun LoginScreen(loginComponent: LoginComponent) {
                 modifier = Modifier.padding(8.dp),
                 value = email,
                 onValueChange = { email = it },
-                label = { Text2("Почта", fontFamily = RobotoFamily) },
+                label = { TextM2("Почта", fontFamily = RobotoFamily) },
             )
             TextField(modifier = Modifier.padding(8.dp),
                 value = password,
                 onValueChange = { password = it },
-                label = { Text2("Пароль") })
+                label = { TextM2("Пароль") })
             Button(onClick = {
                 loginComponent.onLoginClick(
                     "denchic860@gmail.com", "Den141819!kts"

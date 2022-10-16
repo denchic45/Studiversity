@@ -25,7 +25,7 @@ val appComponent = JvmAppComponent::class.create(
 
 val splashComponent = appComponent.splashComponent
 
-fun main() = previewUi()
+fun main() = mainApp()
 
 private fun mainApp() {
     application {

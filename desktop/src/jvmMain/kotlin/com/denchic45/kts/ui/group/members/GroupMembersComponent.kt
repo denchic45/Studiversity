@@ -7,7 +7,7 @@ import com.denchic45.kts.domain.model.GroupMembers
 import com.denchic45.kts.domain.usecase.FindGroupMembersUseCase
 import com.denchic45.kts.domain.usecase.RemoveHeadmanUseCase
 import com.denchic45.kts.domain.usecase.SetHeadmanUseCase
-import com.denchic45.kts.ui.model.MenuItem
+import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.model.toUserItem
 import com.denchic45.kts.ui.navigation.*
@@ -100,7 +100,11 @@ class GroupMembersComponent(
     }
 
 
-    enum class MemberAction(override val title: String) : MenuItem {
+    enum class MemberAction(
+        override val title: String,
+        override val iconName: String? = null,
+    ) :
+        MenuAction {
         SetHeadman("Назначить старостой"),
         RemoveHeadman("Лишить прав старосты"),
         Edit("Редактировать"),

@@ -8,7 +8,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -77,44 +76,6 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
         modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
         elevation = 0.dp) {
         TimetableContent(timetable)
-    }
-}
-
-
-@Composable
-fun Spinner() {
-    val options = listOf("День", "Неделя", "Месяц")
-
-    var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(options[1]) }
-
-    Box(Modifier) {
-        OutlinedButton(onClick = { expanded = !expanded },
-            enabled = !expanded,
-            modifier = Modifier.size(112.dp, 40.dp),
-            contentPadding = PaddingValues(start = 16.dp, end = 8.dp),
-            shape = RoundedCornerShape(4.dp),
-            border = BorderStroke(1.dp,
-                MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)) {
-            Text(selectedOptionText,
-                Modifier.weight(1f),
-                style = MaterialTheme.typography.bodyMedium)
-            Icon(Icons.Outlined.ArrowDropDown, "")
-        }
-
-        DropdownMenu(expanded = expanded,
-            modifier = Modifier.width(240.dp),
-            onDismissRequest = { expanded = false }) {
-            options.forEach { selectionOption ->
-                DropdownMenuItem(onClick = {
-                    selectedOptionText = selectionOption
-                    expanded = false
-                }) {
-                    Text(text = selectionOption, style = MaterialTheme.typography.bodyMedium)
-                }
-            }
-        }
     }
 }
 
