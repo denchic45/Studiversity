@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.model.domain.ListItem
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.model.User.Companion.isStudent
 import com.denchic45.kts.domain.model.User.Companion.isTeacher
@@ -19,10 +19,13 @@ import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.ui.login.groupChooser.GroupChooserInteractor
 import com.denchic45.kts.uieditor.UIEditor
-import com.denchic45.kts.uivalidator.*
+import com.denchic45.kts.uivalidator.Rule
+import com.denchic45.kts.uivalidator.UIValidator
+import com.denchic45.kts.uivalidator.Validation
 import com.denchic45.kts.util.NetworkException
 import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.Validations
+import com.denchic45.kts.util.randomAlphaNumericString
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -288,17 +291,13 @@ open class UserEditorViewModel @Inject constructor(
         patronymicField.value = patronymic
     }
 
-//    fun onPhoneNumType(phoneNum: String) {
-//        fieldPhoneNum.value = phoneNum
-//    }
-
     fun onEmailType(email: String) {
         emailField.value = email
     }
 
-    fun onGroupNameType(groupName: String) {
-        viewModelScope.launch { typedNameGroup.emit(groupName) }
-    }
+//    fun onGroupNameType(groupName: String) {
+//        viewModelScope.launch { typedNameGroup.emit(groupName) }
+//    }
 
     private fun onFabClick() {
         uiValidator.runValidates {
@@ -421,13 +420,5 @@ open class UserEditorViewModel @Inject constructor(
 
     fun onPasswordGenerateClick() {
         passwordField.value = randomAlphaNumericString(16)
-    }
-
-    private fun randomAlphaNumericString(desiredStrLength: Int): String {
-        val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
-        return (1..desiredStrLength)
-            .map { kotlin.random.Random.nextInt(0, charPool.size) }
-            .map(charPool::get)
-            .joinToString("")
     }
 }
