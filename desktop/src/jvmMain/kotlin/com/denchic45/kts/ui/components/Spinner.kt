@@ -22,6 +22,7 @@ import com.denchic45.kts.ui.theme.toDrawablePath
 fun <T : MenuAction> Spinner(
     items: List<MenuItem<T>>,
     onActionClick: (action: T) -> Unit,
+    modifier: Modifier = Modifier,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     placeholder: String? = null,
@@ -33,7 +34,7 @@ fun <T : MenuAction> Spinner(
         OutlinedTextField(
             value = selectedItem?.title ?: "",
             onValueChange = {},
-            Modifier.clickable { onExpandedChange(!expanded) },
+            modifier.clickable { onExpandedChange(!expanded) },
             label = { placeholder?.let { TextM2(it) } },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
