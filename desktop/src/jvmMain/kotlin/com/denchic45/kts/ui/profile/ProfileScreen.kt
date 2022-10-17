@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.data.domain.model.UserRole
@@ -75,7 +76,8 @@ fun ProfileHeader(photoUrl: String, title: String, subtitle: String) {
         AsyncImage(load = { loadImageBitmap(photoUrl) },
             painterFor = { BitmapPainter(it) },
             null,
-            Modifier.size(68.dp).clip(CircleShape)) {
+            Modifier.size(68.dp).clip(CircleShape),
+            contentScale = ContentScale.Crop) {
             Box(Modifier.size(68.dp).background(Color.LightGray))
         }
         Column(Modifier.padding(start = 16.dp)) {
