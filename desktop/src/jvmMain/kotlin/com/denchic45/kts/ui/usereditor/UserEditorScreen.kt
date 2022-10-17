@@ -1,19 +1,20 @@
 package com.denchic45.kts.ui.usereditor
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.IconButton
-import androidx.compose.material.TextField
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -27,46 +28,52 @@ import com.denchic45.kts.util.AsyncImage
 import com.denchic45.kts.util.loadImageBitmap
 
 @Composable
-fun UserEditorScreen(component: UserEditorComponent) {
-    Column(Modifier.padding(vertical = 48.dp)) {
+fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifier) {
+    Column(modifier.padding(vertical = 48.dp)) {
+        val photoUrl by component.photoUrl.collectAsState()
         AsyncImage(
-            load = { loadImageBitmap("") },
+            load = { loadImageBitmap(photoUrl) },
             painterFor = { BitmapPainter(it) },
-            null
+            null,
+            modifier = Modifier.size(148.dp)
+                .align(Alignment.CenterHorizontally)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
         ) {
-            Box(Modifier.size(40.dp))
+            Box(Modifier.size(148.dp))
         }
         HeaderItem("Личные данные")
         val firstName by component.firstNameField.collectAsState()
-        TextField(
+        OutlinedTextField(
             value = firstName,
             onValueChange = component::onFirstNameType,
+            Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
             label = { TextM2("Имя") },
             singleLine = true
         )
         val surname by component.surnameField.collectAsState()
-        TextField(
+        OutlinedTextField(
             value = surname,
             onValueChange = component::onSurnameType,
-            Modifier.padding(top = 24.dp),
+            Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp).fillMaxWidth(),
             label = { TextM2("Фамилия") },
             singleLine = true
         )
         val patronymic by component.patronymicField.collectAsState()
-        TextField(
+        OutlinedTextField(
             value = patronymic,
             onValueChange = component::onPatronymicType,
-            Modifier.padding(top = 24.dp),
+            Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp).fillMaxWidth(),
             label = { TextM2("Отчество") },
             placeholder = { TextM2("Отчество (необязательно)") },
             singleLine = true
         )
-
         val gender by component.genderField.collectAsState()
         var expanded by remember { mutableStateOf(false) }
         Spinner(
             items = component.genders,
             onActionClick = component::onGenderSelect,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp).fillMaxWidth(),
             expanded = expanded,
             onExpandedChange = { expanded = it },
             placeholder = "Пол",
@@ -74,19 +81,20 @@ fun UserEditorScreen(component: UserEditorComponent) {
         )
         HeaderItem("Вход в аккаунт")
         val email by component.emailField.collectAsState()
-        TextField(
+        OutlinedTextField(
             value = email,
             onValueChange = component::onEmailType,
-            Modifier.padding(top = 24.dp),
+            Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
             label = { TextM2("Почта") },
-            leadingIcon = { Icon(painterResource("ic_email".toDrawablePath()), null) }
+            leadingIcon = { Icon(painterResource("ic_email".toDrawablePath()), null) },
+            singleLine = true
         )
         val password by component.passwordField.collectAsState()
         var passwordVisible by remember { mutableStateOf(false) }
-        TextField(
+        OutlinedTextField(
             value = password,
             onValueChange = component::onPasswordType,
-            Modifier.padding(top = 24.dp),
+            Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp).fillMaxWidth(),
             label = { TextM2("Пароль") },
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
