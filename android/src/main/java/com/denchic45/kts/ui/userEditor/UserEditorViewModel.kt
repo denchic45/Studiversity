@@ -84,8 +84,8 @@ open class UserEditorViewModel @Inject constructor(
     private val genderList: List<ListItem>
     private val uiValidator: UIValidator
     private val uiEditor: UIEditor<User>
-    private var userId: String
-    private var role: UserRole
+    private var userId: String = userId ?: UUIDS.createShort()
+    private var role: UserRole = role?.let { UserRole.valueOf(it) } ?: UserRole.TEACHER
     private var gender = 0
     private var admin = false
     private var generatedAvatar = true
@@ -149,8 +149,6 @@ open class UserEditorViewModel @Inject constructor(
     }
 
     init {
-        this.role = role?.let { UserRole.valueOf(it) } ?: UserRole.TEACHER
-        this.userId = userId ?: UUIDS.createShort()
         this.genderList = genderList
         uiEditor = UIEditor(userId == null) {
             User(
