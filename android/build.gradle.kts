@@ -99,9 +99,6 @@ dependencies {
     implementation("androidx.compose.foundation:foundation:1.2.1")
     // Material Design
     implementation("androidx.compose.material3:material3:1.0.0-rc01")
-    // Material design icons
-    implementation("androidx.compose.material:material-icons-core:1.2.1")
-    implementation("androidx.compose.material:material-icons-extended:1.2.1")
 
     implementation("androidx.appcompat:appcompat:1.5.0")
     implementation("androidx.viewpager2:viewpager2:1.0.0")

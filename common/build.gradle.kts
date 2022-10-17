@@ -52,6 +52,7 @@ kotlin {
                 api(compose.foundation)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 api(compose.material3)
+                api(compose.materialIconsExtended)
 
                 // Ktor
                 api("io.ktor:ktor-client-core:$ktorVersion")
