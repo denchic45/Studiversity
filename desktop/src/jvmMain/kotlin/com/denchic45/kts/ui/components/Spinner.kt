@@ -25,12 +25,13 @@ fun <T : MenuAction> Spinner(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     placeholder: String? = null,
-    activeItemIndex: Int = -1,
+    activeAction: T?,
 ) {
-    var selectedItem by remember { mutableStateOf(items.getOrNull(activeItemIndex)) }
+    var selectedItem by remember { mutableStateOf(items.find { it.action == activeAction }) }
 
     Column {
-        OutlinedTextField(value = selectedItem?.title ?: "",
+        OutlinedTextField(
+            value = selectedItem?.title ?: "",
             onValueChange = {},
             Modifier.clickable { onExpandedChange(!expanded) },
             label = { placeholder?.let { TextM2(it) } },
@@ -39,9 +40,11 @@ fun <T : MenuAction> Spinner(
                 disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(ContentAlpha.medium)
             ),
             trailingIcon = {
-                Icon(painterResource("arrow_drop_down".toDrawablePath()),
+                Icon(
+                    painterResource("arrow_drop_down".toDrawablePath()),
                     null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             },
             enabled = false,
             singleLine = true
@@ -57,9 +60,11 @@ fun <T : MenuAction> Spinner(
                     selectedItem = item
                 }, enabled = item.enabled) {
                     item.action.iconName?.let {
-                        Icon(painter = painterResource(it.toDrawablePath()),
+                        Icon(
+                            painter = painterResource(it.toDrawablePath()),
                             null,
-                            Modifier.padding(end = 12.dp))
+                            Modifier.padding(end = 12.dp)
+                        )
                     }
                     Text(text = item.title, style = MaterialTheme.typography.bodyMedium)
                 }
