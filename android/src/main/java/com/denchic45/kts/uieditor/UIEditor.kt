@@ -14,15 +14,6 @@ class UIEditor<T : DomainModel> @JvmOverloads constructor(
 
     var oldItem: T? = null
 
-//    fun createInstance(): T {
-//        return createSupplier.get()
-//    }
-
-//    fun updateItem(reduce: T.() -> T) {
-//        val newItem = item.reduce()
-//        item = newItem
-//    }
-
     fun hasBeenChanged(): Boolean {
         Log.d("lol", "hasBeenChanged course: $oldItem \nand ${createItem()}")
         return oldItem != createItem()
