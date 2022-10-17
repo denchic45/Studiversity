@@ -187,6 +187,9 @@ class TimetableFinderViewModel @Inject constructor(
                                     icon = UiImage.IdImage(R.drawable.ic_group))
                             })
                         }
+                        is Resource.Error -> TODO()
+                        Resource.Loading -> TODO()
+                        is Resource.Next -> TODO()
                     }
                 }
         }
