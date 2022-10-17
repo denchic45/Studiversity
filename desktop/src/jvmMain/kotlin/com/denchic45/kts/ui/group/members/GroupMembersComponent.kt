@@ -3,6 +3,7 @@ package com.denchic45.kts.ui.group.members
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.model.GroupMembers
 import com.denchic45.kts.domain.usecase.FindGroupMembersUseCase
 import com.denchic45.kts.domain.usecase.RemoveHeadmanUseCase
@@ -12,6 +13,7 @@ import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.model.toUserItem
 import com.denchic45.kts.ui.navigation.*
 import com.denchic45.kts.ui.profile.ProfileComponent
+import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -23,6 +25,7 @@ class GroupMembersComponent(
     private val setHeadmanUseCase: SetHeadmanUseCase,
     private val removeHeadmanUseCase: RemoveHeadmanUseCase,
     profileComponent: (navigator: StackNavigator<in GroupConfig.Group>, groupClickable: Boolean, userId: String) -> ProfileComponent,
+    userEditorComponent: (userId: String?, role: UserRole, groupId: String?) -> UserEditorComponent,
     navigator: StackNavigator<in GroupConfig>,
     private val groupId: String,
 ) : ComponentContext by componentContext {
@@ -37,6 +40,13 @@ class GroupMembersComponent(
                     GroupMembersConfig.Unselected -> GroupMembersChild.Unselected
                     is ProfileConfig -> ProfileChild(
                         profileComponent(navigator, false, config.userId)
+                    )
+                    is UserEditorConfig -> UserEditorChild(
+                        userEditorComponent(
+                            config.userId,
+                            config.role,
+                            config.groupId
+                        )
                     )
                 }
             })
@@ -80,7 +90,8 @@ class GroupMembersComponent(
                 if (groupMembers.value?.headmanId == memberId) MemberAction.RemoveHeadman
                 else MemberAction.SetHeadman,
                 MemberAction.Edit,
-                MemberAction.Remove) to memberId
+                MemberAction.Remove
+            ) to memberId
         }
     }
 
