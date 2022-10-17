@@ -68,13 +68,6 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
                 .map { obj: CharSequence -> obj.toString() }
                 .subscribe(viewModel::onEmailType)
 
-            etGroup.textChanges()
-                .skip(1)
-                .compose(AsyncTransformer())
-                .map { obj: CharSequence -> obj.toString() }
-                .filter(String::isNotEmpty)
-                .subscribe(viewModel::onGroupNameType)
-
             etPassword.textChanges()
                 .compose(AsyncTransformer())
                 .map { obj: CharSequence -> obj.toString() }
