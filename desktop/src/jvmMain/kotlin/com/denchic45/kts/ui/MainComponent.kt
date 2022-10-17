@@ -38,7 +38,7 @@ class MainComponent constructor(
         // persistent = false, // Disable navigation state saving, if needed
         handleBackButton = true, // Close the dialog on back button press
     ) { config, componentContext ->
-        UserEditorComponent()
+        
     }
 
     private val navigation = StackNavigation<Config>()
