@@ -2,12 +2,11 @@ package com.denchic45.kts.ui.group.members
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -24,8 +23,10 @@ import com.denchic45.kts.ui.components.UserListItem
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.navigation.GroupMembersChild
 import com.denchic45.kts.ui.navigation.ProfileChild
+import com.denchic45.kts.ui.navigation.UserEditorChild
 import com.denchic45.kts.ui.profile.ProfileScreen
 import com.denchic45.kts.ui.theme.toDrawablePath
+import com.denchic45.kts.ui.usereditor.UserEditorScreen
 
 @Composable
 fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
@@ -47,16 +48,21 @@ fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
                 onDismissAction = groupMembersComponent::onDismissAction
             )
         }
-        val stack by groupMembersComponent.stack.subscribeAsState()
 
-        when (val child = stack.active.instance) {
-            GroupMembersChild.Unselected -> {
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+            val stack by groupMembersComponent.stack.subscribeAsState()
 
-            }
-            is ProfileChild -> {
-                ProfileScreen(
-                    Modifier.fillMaxHeight().width(422.dp), child.profileComponent
-                ) { groupMembersComponent.onCloseProfileClick() }
+            when (val child = stack.active.instance) {
+                GroupMembersChild.Unselected -> {
+
+                }
+                is ProfileChild -> {
+                    ProfileScreen(
+                        Modifier.fillMaxHeight().width(422.dp), child.profileComponent
+                    ) { groupMembersComponent.onCloseProfileClick() }
+                }
+                is UserEditorChild -> UserEditorScreen(child.userEditorComponent,
+                    Modifier.fillMaxHeight().width(422.dp))
             }
         }
     }
@@ -93,9 +99,7 @@ private fun MemberListItem(
         }
         DropdownMenu(expanded = expanded && actions.second == userItem.id,
             modifier = Modifier.width(240.dp),
-            onDismissRequest = {
-                onDismissAction()
-            }) {
+            onDismissRequest = { onDismissAction() }) {
 
             actions.first.forEach { action ->
                 DropdownMenuItem(onClick = {
