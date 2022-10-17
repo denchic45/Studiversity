@@ -6,20 +6,20 @@ data class GroupMembers(
     val groupId: String?,
     val curator: GroupCurator,
     val headmanId: String?,
-    val students: List<GroupStudent>
+    val students: List<GroupStudent>,
 ) {
     fun isHeadman(member: GroupMember): Boolean {
         return headmanId == member.id
     }
 }
 
- interface GroupMember : DomainModel {
-     override val id: String
-     val firstName: String
-     val surname: String
-     val patronymic: String?
-     val groupId: String?
-     val photoUrl: String
+interface GroupMember : DomainModel {
+    override val id: String
+    val firstName: String
+    val surname: String
+    val patronymic: String?
+    val groupId: String?
+    val photoUrl: String
 
     val fullName: String
         get() = "$firstName $surname"
@@ -32,7 +32,7 @@ data class GroupStudent(
     override val patronymic: String?,
     override val groupId: String?,
     override val photoUrl: String,
-): GroupMember
+) : GroupMember
 
 data class GroupCurator(
     override val id: String,
@@ -41,4 +41,4 @@ data class GroupCurator(
     override val patronymic: String?,
     override val groupId: String?,
     override val photoUrl: String,
-): GroupMember
+) : GroupMember
