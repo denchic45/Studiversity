@@ -25,7 +25,7 @@ class GroupMembersComponent(
     private val setHeadmanUseCase: SetHeadmanUseCase,
     private val removeHeadmanUseCase: RemoveHeadmanUseCase,
     profileComponent: (navigator: StackNavigator<in GroupConfig.Group>, groupClickable: Boolean, userId: String) -> ProfileComponent,
-    userEditorComponent: (userId: String?, role: UserRole, groupId: String?) -> UserEditorComponent,
+    userEditorComponent: (userId: String?, role: UserRole?, groupId: String?) -> UserEditorComponent,
     navigator: StackNavigator<in GroupConfig>,
     private val groupId: String,
 ) : ComponentContext by componentContext {
@@ -100,7 +100,11 @@ class GroupMembersComponent(
             when (action) {
                 MemberAction.SetHeadman -> setHeadmanUseCase(memberAction.value.second, groupId)
                 MemberAction.RemoveHeadman -> removeHeadmanUseCase(groupId)
-                MemberAction.Edit -> TODO()
+                MemberAction.Edit -> {
+                    navigation.push(
+                        UserEditorConfig(userId = memberAction.value.second, null, groupId)
+                    )
+                }
                 MemberAction.Remove -> TODO()
             }
         }
