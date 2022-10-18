@@ -37,7 +37,7 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
         SmallTopAppBar(
             title = { Text("Новый студент") },
             navigationIcon = {
-                IconButton(onClick = {}) {
+                IconButton(onClick = component::onSaveClick) {
                     Icon(
                         imageVector = Icons.Outlined.ArrowBack,
                         null,
