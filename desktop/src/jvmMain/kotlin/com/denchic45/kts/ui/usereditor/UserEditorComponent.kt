@@ -4,7 +4,9 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.UIEditor
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.domain.usecase.AddUserUseCase
 import com.denchic45.kts.domain.usecase.ObserveUserUseCase
+import com.denchic45.kts.domain.usecase.UpdateUserUseCase
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.MenuItem
 import com.denchic45.kts.util.UUIDS
@@ -19,11 +21,13 @@ import java.util.*
 @Inject
 class UserEditorComponent(
     observeUserUseCase: ObserveUserUseCase,
+    private val addUserUseCase: AddUserUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
     componentContext: ComponentContext,
     userId: String?, role: UserRole?, groupId: String?,
 ) : ComponentContext by componentContext {
 
-    val coroutineScope = componentScope()
+    private val componentScope = componentScope()
 
     private var userId: String = userId ?: UUIDS.createShort()
     private var role: UserRole = role ?: UserRole.TEACHER
@@ -78,7 +82,7 @@ class UserEditorComponent(
     private var admin = false
 
     init {
-        coroutineScope.launch {
+        componentScope.launch {
             observeUserUseCase(this@UserEditorComponent.userId).collect { user ->
                 user?.let {
                     uiEditor.oldItem = user
@@ -94,7 +98,7 @@ class UserEditorComponent(
                         2 -> GenderAction.Male
                         else -> throw IllegalArgumentException("Not correct gender")
                     }
-                    emailField.value = user.email!!
+                    emailField.value = user.email
                     photoUrl.value = user.photoUrl
                 } ?: run { TODO("finish") }
             }
@@ -137,6 +141,28 @@ class UserEditorComponent(
 
     fun onPasswordGenerateClick() {
         passwordField.value = randomAlphaNumericString(16)
+    }
+
+    private fun saveChanges() {
+//        componentScope.launch {
+//            if (uiEditor.isNew) {
+//                addUserUseCase(uiEditor.item, passwordField.value)
+//            } else {
+//                updateUserUseCase(uiEditor.item)
+//            }.collect { resource: Resource<User> ->
+//                when (resource) {
+//                    is Resource.Success -> finish()
+//                    is Resource.Next -> {
+//                        if (resource.status == "LOAD_AVATAR") photoUrl.value =
+//                            resource.data.photoUrl
+//                    }
+//                    is Resource.Error -> if (resource.error is NetworkException) {
+//                        showToast(R.string.error_check_network)
+//                    }
+//                    else -> throw IllegalStateException()
+//                }
+//            }
+//        }
     }
 }
 
