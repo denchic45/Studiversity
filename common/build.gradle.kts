@@ -79,6 +79,10 @@ kotlin {
                 // kotlin-inject
                 configurations["ksp"].dependencies.add(project.dependencies.create("me.tatarka.inject:kotlin-inject-compiler-ksp:0.5.1"))
                 implementation("me.tatarka.inject:kotlin-inject-runtime:0.5.1")
+
+                // kotlin-result
+                api("com.michael-bull.kotlin-result:kotlin-result:1.1.16")
+                api("com.michael-bull.kotlin-result:kotlin-result-coroutines:1.1.16")
             }
         }
         val commonTest by getting {
@@ -166,7 +170,7 @@ kotlin {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 24
