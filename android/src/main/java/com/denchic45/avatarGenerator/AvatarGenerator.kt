@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.text.TextPaint
-import org.jetbrains.annotations.Contract
 import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.math.sqrt
@@ -15,12 +14,11 @@ class AvatarGenerator(private val context: Context) {
     private var paint: Paint? = null
     private val randomColor = RandomColor()
 
-    @Contract("_, _, _, _ -> new")
     private fun generateBitmapDrawable(
         name: String?,
         size: Int,
         color: Int,
-        font: Typeface?
+        font: Typeface?,
     ): BitmapDrawable {
         var name = name!!
         var size = size
