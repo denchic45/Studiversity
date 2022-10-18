@@ -14,7 +14,6 @@ import com.denchic45.kts.di.*
 import com.denchic45.kts.ui.MainContent
 import com.denchic45.kts.ui.login.LoginScreen
 import com.denchic45.kts.ui.theme.AppTheme
-import com.denchic45.kts.ui.validationtest.ValidationTestScreen
 import java.awt.Toolkit
 
 val appComponent = JvmAppComponent::class.create(
@@ -29,7 +28,6 @@ fun main() = mainApp()
 
 private fun mainApp() {
     application {
-
         val isAuth by splashComponent.isAuth.collectAsState(null)
 
         isAuth?.let {
@@ -70,9 +68,7 @@ fun previewUi() {
             onCloseRequest = ::exitApplication,
             state = WindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))
         ) {
-            AppTheme {
-                ValidationTestScreen()
-            }
+
         }
     }
 }
