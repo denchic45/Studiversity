@@ -12,6 +12,8 @@ import com.denchic45.kts.ui.model.MenuItem
 import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.randomAlphaNumericString
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -139,30 +141,24 @@ class UserEditorComponent(
 //        }
     }
 
+    fun onSaveClick() {
+        saveChanges()
+    }
+
     fun onPasswordGenerateClick() {
         passwordField.value = randomAlphaNumericString(16)
     }
 
     private fun saveChanges() {
-//        componentScope.launch {
-//            if (uiEditor.isNew) {
-//                addUserUseCase(uiEditor.item, passwordField.value)
-//            } else {
-//                updateUserUseCase(uiEditor.item)
-//            }.collect { resource: Resource<User> ->
-//                when (resource) {
-//                    is Resource.Success -> finish()
-//                    is Resource.Next -> {
-//                        if (resource.status == "LOAD_AVATAR") photoUrl.value =
-//                            resource.data.photoUrl
-//                    }
-//                    is Resource.Error -> if (resource.error is NetworkException) {
-//                        showToast(R.string.error_check_network)
-//                    }
-//                    else -> throw IllegalStateException()
-//                }
-//            }
-//        }
+        componentScope.launch {
+            if (uiEditor.isNew) {
+                addUserUseCase(uiEditor.item, passwordField.value)
+            } else {
+                updateUserUseCase(uiEditor.item)
+            }
+                .onSuccess { TODO("finish") }
+                .onFailure { TODO("Уведомление о подключении к интернету") }
+        }
     }
 }
 
