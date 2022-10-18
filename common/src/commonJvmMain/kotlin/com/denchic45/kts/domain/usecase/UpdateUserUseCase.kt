@@ -1,14 +1,17 @@
 package com.denchic45.kts.domain.usecase
 
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.repository.GroupRepository
 import com.denchic45.kts.data.repository.StudentRepository
 import com.denchic45.kts.data.repository.TeacherRepository
 import com.denchic45.kts.data.repository.UserRepository
 import com.denchic45.kts.data.service.AuthService
 import com.denchic45.kts.data.service.NetworkService
-import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.error.NetworkError
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.util.NetworkException
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
 import me.tatarka.inject.annotations.Inject
 
 @Inject
@@ -21,23 +24,18 @@ class UpdateUserUseCase(
     private val authService: AuthService,
 ) {
 
-    suspend operator fun invoke(user: User): Result<User> {
-
-        TODO("Использовать другой Result")
-//        if (!networkService.isNetworkAvailable) {
-//            emit(Resource.Error(NetworkException()))
-//        } else {
-//            val photoUrl = createAvatar(user)
-//            val updatedUser = user.copy(photoUrl = photoUrl)
-//            emit(Resource.Next(updatedUser, "LOAD_AVATAR"))
-//            when {
-//                User.isStudent(updatedUser.role) -> studentRepository.update(updatedUser)
-//                User.isTeacher(updatedUser.role) -> teacherRepository.update(updatedUser)
-//                else -> throw IllegalStateException()
-//            }
-//            emit(Resource.Success(updatedUser))
-//            return@flow
-//        }
+    suspend operator fun invoke(user: User): Result<User, NetworkError> {
+        return if (!networkService.isNetworkAvailable) {
+            Err(NetworkError)
+        } else {
+            val photoUrl = createAvatar(user)
+            val updatedUser = user.copy(photoUrl = photoUrl)
+            when (updatedUser.role) {
+                UserRole.STUDENT -> studentRepository.update(updatedUser)
+                UserRole.TEACHER, UserRole.HEAD_TEACHER -> teacherRepository.update(updatedUser)
+            }
+            Ok(updatedUser)
+        }
     }
 
     private suspend fun createAvatar(user: User): String {

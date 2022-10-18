@@ -1,14 +1,17 @@
 package com.denchic45.kts.domain.usecase
 
-import com.denchic45.kts.data.Either
+import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.repository.GroupRepository
 import com.denchic45.kts.data.repository.StudentRepository
 import com.denchic45.kts.data.repository.TeacherRepository
 import com.denchic45.kts.data.repository.UserRepository
 import com.denchic45.kts.data.service.AuthService
 import com.denchic45.kts.data.service.NetworkService
+import com.denchic45.kts.domain.error.NetworkError
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.util.NetworkException
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
 import me.tatarka.inject.annotations.Inject
 
 @Inject
@@ -21,18 +24,18 @@ class AddUserUseCase(
     private val authService: AuthService,
 ) {
 
-    suspend operator fun invoke(user: User, password: String): Result<User> {
+    suspend operator fun invoke(user: User, password: String): Result<User, NetworkError> {
         if (!networkService.isNetworkAvailable) {
-            return Result.failure(NetworkException())
+            return Err(NetworkError)
         }
         authService.createNewUser(user.email, password)
         val photoUrl = createAvatar(user)
         val updatedUser = user.copy(photoUrl = photoUrl)
-        when {
-            User.isStudent(updatedUser.role) -> studentRepository.add(updatedUser)
-            User.isTeacher(updatedUser.role) -> teacherRepository.add(updatedUser)
+        when (updatedUser.role) {
+            UserRole.STUDENT -> studentRepository.add(updatedUser)
+            UserRole.TEACHER, UserRole.HEAD_TEACHER -> teacherRepository.add(updatedUser)
         }
-        return Result.success(updatedUser)
+        return Ok(updatedUser)
 
     }
 
