@@ -48,8 +48,6 @@ fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
                 onDismissAction = groupMembersComponent::onDismissAction
             )
         }
-
-        Column(Modifier.verticalScroll(rememberScrollState())) {
             val stack by groupMembersComponent.stack.subscribeAsState()
 
             when (val child = stack.active.instance) {
@@ -58,14 +56,13 @@ fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
                 }
                 is ProfileChild -> {
                     ProfileScreen(
-                        Modifier.fillMaxHeight().width(422.dp), child.profileComponent
+                        Modifier.width(422.dp), child.profileComponent
                     ) { groupMembersComponent.onCloseProfileClick() }
                 }
                 is UserEditorChild -> UserEditorScreen(child.userEditorComponent,
-                    Modifier.fillMaxHeight().width(422.dp))
+                    Modifier.width(422.dp))
             }
         }
-    }
 }
 
 @Composable
