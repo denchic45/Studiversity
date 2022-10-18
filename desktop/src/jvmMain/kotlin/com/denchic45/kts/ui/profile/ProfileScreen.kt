@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,21 +34,29 @@ fun ProfileScreen(
 ) {
     val profileViewState by profileComponent.profileViewState.collectAsState()
     Column(modifier) {
-        Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.End) {
-            IconButton(onCloseClick) {
-                Icon(painterResource("ic_close".toDrawablePath()), null)
-            }
-        }
+        SmallTopAppBar(
+            title = {},
+            actions = {
+                IconButton(onCloseClick) {
+                    Icon(painterResource("ic_close".toDrawablePath()), null)
+                }
+            },
+            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
+        )
         profileViewState?.let { profile ->
-            ProfileHeader(profile.photoUrl, profile.fullName, when (profile.role) {
-                UserRole.STUDENT -> "Студент"
-                UserRole.TEACHER -> "Преподаватель"
-                UserRole.HEAD_TEACHER -> "Завуч"
-            })
+            ProfileHeader(
+                profile.photoUrl, profile.fullName, when (profile.role) {
+                    UserRole.STUDENT -> "Студент"
+                    UserRole.TEACHER -> "Преподаватель"
+                    UserRole.HEAD_TEACHER -> "Завуч"
+                }
+            )
             Divider(Modifier.fillMaxWidth())
             if (profile.groupInfo != null) {
-                ListItem(Modifier.clickable(profile.groupClickable,
-                    onClick = profileComponent::onGroupClick),
+                ListItem(Modifier.clickable(
+                    profile.groupClickable,
+                    onClick = profileComponent::onGroupClick
+                ),
                     icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
                     text = {
                         Text(text = profile.groupInfo, style = MaterialTheme.typography.bodyLarge)
@@ -71,13 +76,17 @@ fun ProfileScreen(
 
 @Composable
 fun ProfileHeader(photoUrl: String, title: String, subtitle: String) {
-    Row(modifier = Modifier.height(100.dp).padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically) {
-        AsyncImage(load = { loadImageBitmap(photoUrl) },
+    Row(
+        modifier = Modifier.height(100.dp).padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AsyncImage(
+            load = { loadImageBitmap(photoUrl) },
             painterFor = { BitmapPainter(it) },
             null,
             Modifier.size(68.dp).clip(CircleShape),
-            contentScale = ContentScale.Crop) {
+            contentScale = ContentScale.Crop
+        ) {
             Box(Modifier.size(68.dp).background(Color.LightGray))
         }
         Column(Modifier.padding(start = 16.dp)) {
