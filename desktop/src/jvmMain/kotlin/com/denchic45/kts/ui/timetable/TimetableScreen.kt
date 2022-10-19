@@ -36,7 +36,17 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
         title = timetable.title
         content = {
             val contentHeight = 40.dp
-            Spacer(Modifier.width(24.dp))
+//            Spacer(Modifier.width(24.dp))
+            Spacer(Modifier.weight(1f))
+
+            OutlinedButton(
+                modifier = Modifier.height(contentHeight),
+                onClick = timetableComponent::onTodayClick,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+            ) {
+                TextButtonContent("Сегодня")
+            }
+            Spacer(Modifier.width(16.dp))
             OutlinedButton(onClick = timetableComponent::onPreviousWeekClick,
                 modifier = Modifier.size(contentHeight),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
@@ -59,15 +69,8 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
                     contentDescription = "next week arrow icon"
                 )
             }
-            Spacer(Modifier.width(16.dp))
-            OutlinedButton(
-                modifier = Modifier.height(contentHeight),
-                onClick = timetableComponent::onTodayClick,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-            ) {
-                TextButtonContent("Сегодня")
-            }
-            Spacer(Modifier.weight(1f))
+
+//            Spacer(Modifier.weight(1f))
 //            Spinner() TODO add later
             Spacer(Modifier.width(24.dp))
         }
