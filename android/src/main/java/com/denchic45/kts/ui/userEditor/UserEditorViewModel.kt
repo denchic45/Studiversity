@@ -26,9 +26,7 @@ import com.denchic45.kts.util.NetworkException
 import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.Validations
 import com.denchic45.kts.util.randomAlphaNumericString
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -51,7 +49,7 @@ open class UserEditorViewModel @Inject constructor(
 
     val genders = MutableLiveData<List<ListItem>>()
 
-    val groupList = MutableLiveData<List<ListItem>>()
+//    val groupList = MutableLiveData<List<ListItem>>()
 
     val firstNameField = MutableStateFlow("")
 
@@ -79,10 +77,10 @@ open class UserEditorViewModel @Inject constructor(
 
     val errorMessageField = SingleLiveData<Pair<Int, String?>>()
 
-    private val typedNameGroup = MutableSharedFlow<String>()
+//    private val typedNameGroup = MutableSharedFlow<String>()
 
     private val genderList: List<ListItem>
-    private val uiValidator: UIValidator
+
     private val uiEditor: UIEditor<User>
     private var userId: String = userId ?: UUIDS.createShort()
     private var role: UserRole = role?.let { UserRole.valueOf(it) } ?: UserRole.TEACHER
@@ -90,18 +88,18 @@ open class UserEditorViewModel @Inject constructor(
     private var admin = false
     private var generatedAvatar = true
     private var password: String = ""
-    private fun getUiValidator(): UIValidator {
-        val uiValidator: UIValidator = UIValidator.of(
-            Validation(Rule({
-                firstNameField.value.isNotEmpty()
-            }, "Имя обязательно"))
-                .sendMessageResult(R.id.til_firstName, errorMessageField),
-            Validation(Rule({
-                !TextUtils.isEmpty(
-                    surnameField.value
-                )
-            }, "Фамилия обязательна"))
-                .sendMessageResult(R.id.til_surname, errorMessageField),
+
+    private val uiValidator: UIValidator = UIValidator.of(
+        Validation(Rule({
+            firstNameField.value.isNotEmpty()
+        }, "Имя обязательно"))
+            .sendMessageResult(R.id.til_firstName, errorMessageField),
+        Validation(Rule({
+            !TextUtils.isEmpty(
+                surnameField.value
+            )
+        }, "Фамилия обязательна"))
+            .sendMessageResult(R.id.til_surname, errorMessageField),
 //            Validation(
 //                Rule({
 //                    !TextUtils.isEmpty(
@@ -114,39 +112,37 @@ open class UserEditorViewModel @Inject constructor(
 //                    )
 //                }, "Номер некоректный")
 //            ).sendMessageResult(R.id.til_phoneNum, fieldErrorMessage),
-            Validation(Rule({ gender != 0 }, "Пол обязателен"))
-                .sendMessageResult(R.id.til_gender, errorMessageField),
+        Validation(Rule({ gender != 0 }, "Пол обязателен"))
+            .sendMessageResult(R.id.til_gender, errorMessageField),
 //            Validation(
 //                Rule({ !TextUtils.isEmpty(role) }, "Роль обязательна")
 //            ).sendMessageResult(R.id.til_role, fieldErrorMessage),
-            Validation(Rule({
-                isTeacher(
-                    role
-                ) || isStudent(role) && !groupId.isNullOrEmpty()
-            }, "Группа отсутствует"))
-                .sendMessageResult(R.id.til_group, errorMessageField),
-            Validation(
-                Rule({
-                    !accountFieldsVisibility.value || Validations.validEmail(
-                        emailField.value
-                    ) && accountFieldsVisibility.value
-                }, "Некоректная почта!")
-            )
-                .sendMessageResult(R.id.til_email, errorMessageField),
-            Validation(
-                Rule(
-                    { !accountFieldsVisibility.value || !TextUtils.isEmpty(password) && accountFieldsVisibility.value },
-                    "Некоректный пароль!"
-                ),
-                Rule(
-                    { !accountFieldsVisibility.value || accountFieldsVisibility.value && password.length > 5 },
-                    "Минимальный размер пароля - 6 символов!"
-                )
-            )
-                .sendMessageResult(R.id.til_password, errorMessageField)
+        Validation(Rule({
+            isTeacher(
+                this.role
+            ) || isStudent(this.role) && !groupId.isNullOrEmpty()
+        }, "Группа отсутствует"))
+            .sendMessageResult(R.id.til_group, errorMessageField),
+        Validation(
+            Rule({
+                !accountFieldsVisibility.value || Validations.validEmail(
+                    emailField.value
+                ) && accountFieldsVisibility.value
+            }, "Некоректная почта!")
         )
-        return uiValidator
-    }
+            .sendMessageResult(R.id.til_email, errorMessageField),
+        Validation(
+            Rule(
+                { !accountFieldsVisibility.value || !TextUtils.isEmpty(password) && accountFieldsVisibility.value },
+                "Некоректный пароль!"
+            ),
+            Rule(
+                { !accountFieldsVisibility.value || accountFieldsVisibility.value && password.length > 5 },
+                "Минимальный размер пароля - 6 символов!"
+            )
+        )
+            .sendMessageResult(R.id.til_password, errorMessageField)
+    )
 
     init {
         this.genderList = genderList
@@ -166,7 +162,6 @@ open class UserEditorViewModel @Inject constructor(
                 admin
             )
         }
-        uiValidator = getUiValidator()
         setup()
     }
 
@@ -179,19 +174,19 @@ open class UserEditorViewModel @Inject constructor(
         groupFieldVisibility.value = isStudent(role)
         roleFieldVisibility.value = isTeacher(role)
         genders.value = genderList
-        viewModelScope.launch {
-            typedNameGroup.flatMapLatest { name: String -> findGroupByContainsNameUseCase(name) }
-                .collect { resource ->
-                    if (resource is Resource.Success) {
-                        groupList.value = resource.data.map { group ->
-                            ListItem(
-                                id = group.id,
-                                title = group.name
-                            )
-                        }
-                    }
-                }
-        }
+//        viewModelScope.launch {
+//            typedNameGroup.flatMapLatest { name: String -> findGroupByContainsNameUseCase(name) }
+//                .collect { resource ->
+//                    if (resource is Resource.Success) {
+//                        groupList.value = resource.data.map { group ->
+//                            ListItem(
+//                                id = group.id,
+//                                title = group.name
+//                            )
+//                        }
+//                    }
+//                }
+//        }
         if (uiEditor.isNew) {
             setupForNewItem()
         } else {
@@ -202,14 +197,12 @@ open class UserEditorViewModel @Inject constructor(
     private fun setupForNewItem() {
         toolbarTitle = when (role) {
             UserRole.STUDENT -> "Новый студент"
-            UserRole.TEACHER -> "Новый преподаватель"
-            else -> throw IllegalStateException()
+            UserRole.TEACHER, UserRole.HEAD_TEACHER -> "Новый руководитель"
         }
     }
 
     private fun setupForExistItem() {
         getExistUser()
-//        emailFieldEnable.value = false
         accountFieldsVisibility.value = false
         toolbarTitle = when (role) {
             UserRole.STUDENT -> {
@@ -252,7 +245,7 @@ open class UserEditorViewModel @Inject constructor(
                     surnameField.value = user.surname
                     patronymicField.value = user.patronymic ?: ""
                     genderField.value = genders.value!![gender - 1].title
-                    emailField.value = user.email!!
+                    emailField.value = user.email
                     photoUrl.value = user.photoUrl
                 } ?: run { finish() }
             }
@@ -261,7 +254,6 @@ open class UserEditorViewModel @Inject constructor(
 
     fun onRoleSelect(roleItem: ListItem) {
         role = UserRole.valueOf(roleItem.content as String)
-
     }
 
     fun onGenderSelect(position: Int) {
@@ -271,11 +263,11 @@ open class UserEditorViewModel @Inject constructor(
         genderField.value = item.title
     }
 
-    fun onGroupSelect(position: Int) {
-        val item = groupList.value!![position]
-        groupId = item.id
-        groupField.value = item.title
-    }
+//    fun onGroupSelect(position: Int) {
+//        val item = groupList.value!![position]
+//        groupId = item.id
+//        groupField.value = item.title
+//    }
 
     fun onFirstNameType(firstName: String) {
         firstNameField.value = firstName

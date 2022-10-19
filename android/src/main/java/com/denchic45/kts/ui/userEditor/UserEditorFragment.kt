@@ -167,9 +167,9 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
                     }
             }
 
-            viewModel.groupList.observe(viewLifecycleOwner) { items: List<ListItem> ->
-                groupAdapter.updateList(items)
-            }
+//            viewModel.groupList.observe(viewLifecycleOwner) { items: List<ListItem> ->
+//                groupAdapter.updateList(items)
+//            }
 
             viewModel.roleFieldVisibility.collectWhenStarted(lifecycleScope) {
                 tilRole.visibility = if (it) View.VISIBLE else View.GONE
