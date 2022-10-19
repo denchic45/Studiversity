@@ -5,7 +5,7 @@ import com.denchic45.kts.ui.usereditor.UserEditorComponent
 
 class UserEditorConfig(
     val userId: String?,
-    val role: UserRole?,
+    val role: UserRole,
     val groupId: String?,
 ) : GroupMembersConfig
 
