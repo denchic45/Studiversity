@@ -2,11 +2,11 @@ package com.denchic45.kts.ui.group.members
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -35,7 +35,7 @@ fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
         val selectedItemId by groupMembersComponent.selectedMember.collectAsState()
 
         curatorWithStudents?.let {
-            val options by groupMembersComponent.memberAction.collectAsState()
+            val options by groupMembersComponent.studentAction.collectAsState()
             MemberList(
                 modifier = Modifier.weight(3f),
                 curator = it.first,
@@ -48,32 +48,34 @@ fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
                 onDismissAction = groupMembersComponent::onDismissAction
             )
         }
-            val stack by groupMembersComponent.stack.subscribeAsState()
+        val stack by groupMembersComponent.stack.subscribeAsState()
 
-            when (val child = stack.active.instance) {
-                GroupMembersChild.Unselected -> {
+        when (val child = stack.active.instance) {
+            GroupMembersChild.Unselected -> {
 
-                }
-                is ProfileChild -> {
-                    ProfileScreen(
-                        Modifier.width(422.dp), child.profileComponent
-                    ) { groupMembersComponent.onCloseProfileClick() }
-                }
-                is UserEditorChild -> UserEditorScreen(child.userEditorComponent,
-                    Modifier.width(422.dp))
             }
+            is ProfileChild -> {
+                ProfileScreen(
+                    Modifier.width(422.dp), child.profileComponent
+                ) { groupMembersComponent.onCloseProfileClick() }
+            }
+            is UserEditorChild -> UserEditorScreen(
+                child.userEditorComponent,
+                Modifier.width(422.dp)
+            )
         }
+    }
 }
 
 @Composable
-private fun MemberListItem(
+private fun StudentListItem(
     userItem: UserItem,
     selected: Boolean,
     onClick: (id: String) -> Unit,
     onExpandActions: (memberId: String) -> Unit,
-    onClickAction: (GroupMembersComponent.MemberAction) -> Unit,
+    onClickAction: (GroupMembersComponent.StudentAction) -> Unit,
     onDismissAction: () -> Unit,
-    actions: Pair<List<GroupMembersComponent.MemberAction>, String>,
+    actions: Pair<List<GroupMembersComponent.StudentAction>, String>,
 ) {
     val interactionSource = remember(::MutableInteractionSource)
 
@@ -118,9 +120,9 @@ fun MemberList(
     selectedItemId: String?,
     onClick: (String) -> Unit,
     onExpandActions: (memberId: String) -> Unit,
-    onClickAction: (GroupMembersComponent.MemberAction) -> Unit,
+    onClickAction: (GroupMembersComponent.StudentAction) -> Unit,
     onDismissAction: () -> Unit,
-    actions: Pair<List<GroupMembersComponent.MemberAction>, String>,
+    actions: Pair<List<GroupMembersComponent.StudentAction>, String>,
 ) {
     LazyColumn(
         modifier,
@@ -129,14 +131,11 @@ fun MemberList(
         item { HeaderItem("Куратор") }
 
         item {
-            MemberListItem(
-                userItem = curator,
-                selected = curator.id == selectedItemId,
+            UserListItem(
+                item = curator,
                 onClick = onClick,
-                onExpandActions = onExpandActions,
-                onClickAction = onClickAction,
-                onDismissAction = onDismissAction,
-                actions = actions
+                actionsVisible = false,
+                selected = curator.id == selectedItemId
             )
         }
 
@@ -144,7 +143,7 @@ fun MemberList(
 
 
         items(students) {
-            MemberListItem(
+            StudentListItem(
                 userItem = it,
                 selected = it.id == selectedItemId,
                 onClick = onClick,
