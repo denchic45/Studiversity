@@ -22,7 +22,7 @@ class GroupInteractor @Inject constructor(
         get() = groupRepository.yourGroupName
 
     fun getNameByGroupId(groupId: String): Flow<String> {
-        return groupRepository.getGroupInfoById(groupId).map { it.name }
+        return groupRepository.observeGroupInfoById(groupId).map { it.name }
     }
 
     fun isExistGroup(groupId: String): Flow<Boolean> {

@@ -170,7 +170,7 @@ class GroupRepository @Inject constructor(
         groupRemoteDataSource.updateGroupCurator(groupId, teacher.toMap())
     }
 
-    fun getGroupInfoById(groupId: String): Flow<GroupHeader> = flow {
+    fun observeGroupInfoById(groupId: String): Flow<GroupHeader> = flow {
         coroutineScope {
             launch {
                 if (!groupLocalDataSource.isExist(groupId)) {
@@ -184,7 +184,7 @@ class GroupRepository @Inject constructor(
 
     fun observeGroupInfoByCuratorId(curatorId: String): Flow<GroupHeader> {
         return groupLocalDataSource.observeGroupIdByCuratorId(curatorId)
-            .flatMapLatest(::getGroupInfoById)
+            .flatMapLatest(::observeGroupInfoById)
     }
 
 
