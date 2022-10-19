@@ -19,6 +19,9 @@ import com.denchic45.uivalidator.experimental.Operator
 import com.denchic45.uivalidator.experimental.Validator
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -36,7 +39,7 @@ class UserEditorComponent(
     userId: String?, role: UserRole, groupId: String?,
 ) : ComponentContext by componentContext {
 
-    private val componentScope = componentScope()
+    private val componentScope = componentScope(Dispatchers.Default + SupervisorJob())
 
     private var userId: String = userId ?: UUIDS.createShort()
 
@@ -49,7 +52,7 @@ class UserEditorComponent(
             groupId,
             selectedRole.value,
             emailField.value,
-            photoUrl.value,
+            _photoUrl.value,
             Date(),
             when (genderField.value) {
                 GenderAction.Undefined -> 0
@@ -80,7 +83,8 @@ class UserEditorComponent(
     val availableRoles: StateFlow<List<MenuItem<RoleAction>>?> = MutableStateFlow(
         when (role) {
             UserRole.TEACHER,
-            UserRole.HEAD_TEACHER -> listOf(
+            UserRole.HEAD_TEACHER,
+            -> listOf(
                 MenuItem(RoleAction.Teacher),
                 MenuItem(RoleAction.HeadTeacher)
             )
@@ -103,12 +107,13 @@ class UserEditorComponent(
     }
 
     val groupField: StateFlow<GroupHeader> =
-        this.groupId.filterNotNull().flatMapLatest { observeGroupInfoUseCase(it) }.stateIn(
-            componentScope,
-            SharingStarted.Lazily, GroupHeader.createEmpty()
-        )
+        this.groupId.filterNotNull().flatMapLatest { observeGroupInfoUseCase(it) }
+            .stateIn(componentScope, SharingStarted.Lazily, GroupHeader.createEmpty())
 
-    val photoUrl = MutableStateFlow("")
+
+    private val _photoUrl = MutableStateFlow("")
+    val photoUrl:StateFlow<String> = _photoUrl
+
 
     private var generatedAvatar = true
 
@@ -120,8 +125,9 @@ class UserEditorComponent(
 
     val toolbarTitle = when (selectedRole.value) {
         UserRole.STUDENT -> if (uiEditor.isNew) "Новый студент" else "Редактировать студента"
-        UserRole.TEACHER,
-        UserRole.HEAD_TEACHER -> if (uiEditor.isNew) "Новый руководитель" else "Редактировать руководителя"
+        UserRole.TEACHER, UserRole.HEAD_TEACHER -> {
+            if (uiEditor.isNew) "Новый руководитель" else "Редактировать руководителя"
+        }
     }
 
     private val emailValidator = Validator(
@@ -201,7 +207,7 @@ class UserEditorComponent(
                             }
                             selectedRole.value = user.role
                             emailField.value = user.email
-                            photoUrl.value = user.photoUrl
+                            _photoUrl.update { user.photoUrl }
                         } ?: onFinish()
                     }
                 }

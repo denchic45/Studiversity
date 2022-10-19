@@ -1,12 +1,14 @@
 package com.denchic45.kts.ui.usereditor
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
@@ -15,16 +17,12 @@ import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -38,6 +36,8 @@ import com.denchic45.kts.ui.theme.TextM2
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.util.AsyncImage
 import com.denchic45.kts.util.loadImageBitmap
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifier) {
@@ -64,17 +64,53 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
 
         Column(Modifier.verticalScroll(rememberScrollState())) {
             val photoUrl by component.photoUrl.collectAsState()
+            Text(photoUrl)
+
+            println("start load: $photoUrl")
             AsyncImage(
-                load = { loadImageBitmap(photoUrl) },
-                painterFor = { BitmapPainter(it) },
+                load = {
+                    println("PHOTO URL load: $photoUrl")
+                    loadImageBitmap(photoUrl)
+                },
+                painterFor = {
+                    println("PAINTER FOR load: $photoUrl")
+                    BitmapPainter(it)
+                },
                 null,
-                modifier = Modifier.size(148.dp).padding(top = 48.dp)
+                modifier = Modifier.padding(top = 48.dp).size(148.dp)
                     .align(Alignment.CenterHorizontally)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             ) {
                 Box(Modifier.size(148.dp))
             }
+
+
+            val rememberCoroutineScope = rememberCoroutineScope()
+
+            var pair: Pair<String, ImageBitmap>? by remember { mutableStateOf(null) }
+
+            rememberCoroutineScope.launch {
+                if (pair?.first != photoUrl) {
+                    pair = photoUrl to loadImageBitmap(photoUrl)
+                    println("painter done!")
+                } else {
+                    println("painter exist!!!!")
+                }
+                delay(5000)
+            }
+
+            pair?.let {
+                println("painter done! Image")
+                Image(
+                    painter = BitmapPainter(it.second),
+                    null,
+                    modifier = Modifier.padding(top = 48.dp).size(148.dp)
+                        .align(Alignment.CenterHorizontally),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
             HeaderItem("Личные данные")
             val firstName by component.firstNameField.collectAsState()
             OutlinedTextField(
@@ -188,6 +224,13 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
                     enabled = false,
                     singleLine = true
                 )
+            }
+
+            OutlinedButton(onClick = {},
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
+                    .align(Alignment.End),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
+                Text("Удалить пользователя")
             }
             Spacer(Modifier.height(48.dp))
         }

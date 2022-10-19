@@ -9,12 +9,11 @@ import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.usecase.ObserveGroupInfoUseCase
 import com.denchic45.kts.domain.usecase.ObserveGroupNameByCuratorUseCase
 import com.denchic45.kts.domain.usecase.ObserveUserUseCase
-import com.denchic45.kts.ui.group.GroupComponent
-import com.denchic45.kts.ui.group.members.GroupMembersComponent
 import com.denchic45.kts.ui.navigation.GroupConfig
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
 @Inject
@@ -24,7 +23,7 @@ class ProfileComponent(
     private val observeGroupNameByCuratorUseCase: ObserveGroupNameByCuratorUseCase,
     componentContext: ComponentContext,
     private val navigator: StackNavigator<in GroupConfig.Group>,
-    private val groupClickable:Boolean,
+    private val groupClickable: Boolean,
     userId: String,
 ) : ComponentContext by componentContext {
 
@@ -52,6 +51,11 @@ class ProfileComponent(
                 }
             }, groupClickable)
         }.stateIn(componentScope, SharingStarted.Lazily, null)
+
+    private val observe = observeUserUseCase(userId)
+
+    val photoUrl = observe.map { it?.photoUrl }
+        .stateIn(componentScope, SharingStarted.Lazily, null)
 
     fun onGroupClick() {
         navigator.push(GroupConfig.Group(groupInfoFlow.value!!.id))

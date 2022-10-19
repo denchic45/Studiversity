@@ -1,5 +1,6 @@
 package com.denchic45.kts.ui.profile
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,9 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,6 +22,7 @@ import com.denchic45.kts.ui.components.ListItem
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.util.AsyncImage
 import com.denchic45.kts.util.loadImageBitmap
+import io.ktor.http.*
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -43,6 +43,22 @@ fun ProfileScreen(
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
         )
+        val photoUrl by profileComponent.photoUrl.collectAsState(null)
+        photoUrl?.let {
+            Text(it)
+            println("ProfileScreen: $it")
+
+            Image(
+                painter = BitmapPainter(loadImageBitmap(it)),
+                null,
+                modifier = Modifier.padding(top = 48.dp).size(148.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+
+        }
+
         profileViewState?.let { profile ->
             ProfileHeader(
                 profile.photoUrl, profile.fullName, when (profile.role) {
