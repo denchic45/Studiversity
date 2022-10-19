@@ -25,7 +25,7 @@ class GroupMembersComponent(
     private val setHeadmanUseCase: SetHeadmanUseCase,
     private val removeHeadmanUseCase: RemoveHeadmanUseCase,
     profileComponent: (navigator: StackNavigator<in GroupConfig.Group>, groupClickable: Boolean, userId: String) -> ProfileComponent,
-    userEditorComponent: (userId: String?, role: UserRole?, groupId: String?) -> UserEditorComponent,
+    userEditorComponent: (onFinish: () -> Unit, userId: String?, role: UserRole, groupId: String?) -> UserEditorComponent,
     navigator: StackNavigator<in GroupConfig>,
     private val groupId: String,
 ) : ComponentContext by componentContext {
@@ -43,6 +43,7 @@ class GroupMembersComponent(
                     )
                     is UserEditorConfig -> UserEditorChild(
                         userEditorComponent(
+                            navigation::pop,
                             config.userId,
                             config.role,
                             config.groupId
@@ -63,7 +64,7 @@ class GroupMembersComponent(
 
     val selectedMember = MutableStateFlow<String?>(null)
 
-    val memberAction: MutableStateFlow<Pair<List<MemberAction>, String>> =
+    val studentAction: MutableStateFlow<Pair<List<StudentAction>, String>> =
         MutableStateFlow(Pair(emptyList(), ""))
 
     init {
@@ -85,44 +86,45 @@ class GroupMembersComponent(
     }
 
     fun onExpandMemberAction(memberId: String) {
-        memberAction.update {
+        studentAction.update {
             listOf(
-                if (groupMembers.value?.headmanId == memberId) MemberAction.RemoveHeadman
-                else MemberAction.SetHeadman,
-                MemberAction.Edit,
-                MemberAction.Remove
+                if (groupMembers.value?.headmanId == memberId) StudentAction.RemoveHeadman
+                else StudentAction.SetHeadman,
+                StudentAction.Edit
             ) to memberId
         }
     }
 
-    fun onClickMemberAction(action: MemberAction) {
+    fun onClickMemberAction(action: StudentAction) {
         componentScope.launch {
             when (action) {
-                MemberAction.SetHeadman -> setHeadmanUseCase(memberAction.value.second, groupId)
-                MemberAction.RemoveHeadman -> removeHeadmanUseCase(groupId)
-                MemberAction.Edit -> {
-                    navigation.push(
-                        UserEditorConfig(userId = memberAction.value.second, null, groupId)
+                StudentAction.SetHeadman -> setHeadmanUseCase(studentAction.value.second, groupId)
+                StudentAction.RemoveHeadman -> removeHeadmanUseCase(groupId)
+                StudentAction.Edit -> {
+                    navigation.bringToFront(
+                        UserEditorConfig(
+                            userId = studentAction.value.second,
+                            role = UserRole.STUDENT,
+                            groupId = groupId
+                        )
                     )
                 }
-                MemberAction.Remove -> TODO()
             }
         }
     }
 
     fun onDismissAction() {
-        memberAction.value = Pair(listOf(), "")
+        studentAction.value = Pair(listOf(), "")
     }
 
 
-    enum class MemberAction(
+    enum class StudentAction(
         override val title: String,
         override val iconName: String? = null,
     ) :
         MenuAction {
         SetHeadman("Назначить старостой"),
         RemoveHeadman("Лишить прав старосты"),
-        Edit("Редактировать"),
-        Remove("Удалить")
+        Edit("Редактировать")
     }
 }
