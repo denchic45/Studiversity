@@ -26,3 +26,17 @@ private class DefaultCondition<T>(
 fun interface ValidationResult {
     operator fun invoke(isValid: Boolean)
 }
+
+ class MultiCondition<T>(
+    private val value: () -> T,
+    conditions: List<Pair<(value: T) -> Boolean, ValidationResult?>>,
+    val operator: Operator = Operator.All,
+    override val onResult: ValidationResult? = null,
+) : Condition<T> {
+
+    private val conditions = conditions.map { Condition(value, it.first, it.second) }
+
+    override fun validate(): Boolean {
+        return operator(conditions).apply { onResult?.invoke(this) }
+    }
+}
