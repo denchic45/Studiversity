@@ -55,32 +55,34 @@ fun MainContent(mainComponent: MainComponent) {
                 val appBarMediator = AppBarMediator()
                 SmallTopAppBar(title = {
                     Row {
-                        Text(text = appBarMediator.title,
+                        Text(
+                            text = appBarMediator.title,
                             fontSize = TextUnit(32F, TextUnitType.Sp),
-                            style = MaterialTheme.typography.headlineLarge)
+                            style = MaterialTheme.typography.headlineLarge
+                        )
                         appBarMediator.content(this)
                     }
                 }, modifier = Modifier.padding(top = 24.dp, bottom = 8.dp, end = 24.dp), actions = {
                     IconButton(onClick = {}) {
-                        Icon(imageVector = Icons.Outlined.Notifications,
+                        Icon(
+                            imageVector = Icons.Outlined.Notifications,
                             tint = Color.DarkGray,
-                            contentDescription = "previous week arrow icon")
+                            contentDescription = "previous week arrow icon"
+                        )
                     }
                     Spacer(Modifier.width(12.dp))
                     IconButton(onClick = {}) {
-                        Icon(imageVector = Icons.Outlined.AccountCircle,
+                        Icon(
+                            imageVector = Icons.Outlined.AccountCircle,
                             tint = Color.DarkGray,
-                            contentDescription = "previous week arrow icon")
+                            contentDescription = "previous week arrow icon"
+                        )
                     }
                 })
 
                 when (val child = childStack.active.instance) {
-                    is Child.Timetable -> {
-                        TimetableScreen(appBarMediator, child.timetableComponent)
-                    }
-                    is Child.Group -> {
-                        GroupScreen(appBarMediator, child.groupRootComponent)
-                    }
+                    is Child.Timetable -> TimetableScreen(appBarMediator, child.timetableComponent)
+                    is Child.Group -> GroupScreen(appBarMediator, child.groupRootComponent)
                 }
             }
         }
@@ -94,25 +96,33 @@ private fun MainAppBar(
     title: String,
     content: @Composable () -> Unit,
 ) {
-    Row(Modifier.padding(top = 40.dp, bottom = 24.dp, end = 24.dp),
-        verticalAlignment = Alignment.CenterVertically) {
-        Text(title,
+    Row(
+        Modifier.padding(top = 40.dp, bottom = 24.dp, end = 24.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            title,
             Modifier,
             fontFamily = FontFamily(Font(resource = "fonts/Gilroy-Medium.ttf")),
-            fontSize = TextUnit(32F, TextUnitType.Sp))
+            fontSize = TextUnit(32F, TextUnitType.Sp)
+        )
 
         Box(Modifier.weight(1f)) { content() }
 
         IconButton(onClick = {}, modifier = Modifier.size(32.dp)) {
-            Icon(imageVector = Icons.Outlined.Notifications,
+            Icon(
+                imageVector = Icons.Outlined.Notifications,
                 tint = Color.DarkGray,
-                contentDescription = "previous week arrow icon")
+                contentDescription = "previous week arrow icon"
+            )
         }
         Spacer(Modifier.width(24.dp))
         IconButton(onClick = {}, modifier = Modifier.size(32.dp)) {
-            Icon(imageVector = Icons.Outlined.AccountCircle,
+            Icon(
+                imageVector = Icons.Outlined.AccountCircle,
                 tint = Color.DarkGray,
-                contentDescription = "previous week arrow icon")
+                contentDescription = "previous week arrow icon"
+            )
         }
     }
 }
