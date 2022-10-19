@@ -11,6 +11,6 @@ class ObserveGroupInfoUseCase @Inject constructor(
 ) {
 
     operator fun invoke(groupId: String): Flow<GroupHeader> {
-       return groupRepository.getGroupInfoById(groupId)
+       return groupRepository.observeGroupInfoById(groupId)
     }
 }

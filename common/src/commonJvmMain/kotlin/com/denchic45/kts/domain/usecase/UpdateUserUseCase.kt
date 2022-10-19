@@ -28,7 +28,7 @@ class UpdateUserUseCase(
         return if (!networkService.isNetworkAvailable) {
             Err(NetworkError)
         } else {
-            val photoUrl = createAvatar(user)
+            val photoUrl = ""
             val updatedUser = user.copy(photoUrl = photoUrl)
             when (updatedUser.role) {
                 UserRole.STUDENT -> studentRepository.update(updatedUser)

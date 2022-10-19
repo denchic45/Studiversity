@@ -29,7 +29,7 @@ class AddUserUseCase(
             return Err(NetworkError)
         }
         authService.createNewUser(user.email, password)
-        val photoUrl = createAvatar(user)
+        val photoUrl = ""
         val updatedUser = user.copy(photoUrl = photoUrl)
         when (updatedUser.role) {
             UserRole.STUDENT -> studentRepository.add(updatedUser)
