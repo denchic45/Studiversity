@@ -1,6 +1,6 @@
 package com.denchic45.kts.ui.usereditor
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -36,8 +35,6 @@ import com.denchic45.kts.ui.theme.TextM2
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.util.AsyncImage
 import com.denchic45.kts.util.loadImageBitmap
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifier) {
@@ -64,52 +61,18 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
 
         Column(Modifier.verticalScroll(rememberScrollState())) {
             val photoUrl by component.photoUrl.collectAsState()
-            Text(photoUrl)
 
-            println("start load: $photoUrl")
             AsyncImage(
-                load = {
-                    println("PHOTO URL load: $photoUrl")
-                    loadImageBitmap(photoUrl)
-                },
-                painterFor = {
-                    println("PAINTER FOR load: $photoUrl")
-                    BitmapPainter(it)
-                },
+                load = { loadImageBitmap(photoUrl) },
+                painterFor = { BitmapPainter(it) },
+                key = photoUrl,
                 null,
                 modifier = Modifier.padding(top = 48.dp).size(148.dp)
                     .align(Alignment.CenterHorizontally)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
-            ) {
-                Box(Modifier.size(148.dp))
-            }
-
-
-            val rememberCoroutineScope = rememberCoroutineScope()
-
-            var pair: Pair<String, ImageBitmap>? by remember { mutableStateOf(null) }
-
-            rememberCoroutineScope.launch {
-                if (pair?.first != photoUrl) {
-                    pair = photoUrl to loadImageBitmap(photoUrl)
-                    println("painter done!")
-                } else {
-                    println("painter exist!!!!")
-                }
-                delay(5000)
-            }
-
-            pair?.let {
-                println("painter done! Image")
-                Image(
-                    painter = BitmapPainter(it.second),
-                    null,
-                    modifier = Modifier.padding(top = 48.dp).size(148.dp)
-                        .align(Alignment.CenterHorizontally),
-                    contentScale = ContentScale.Crop
-                )
-            }
+            )
+            { Box(Modifier.size(148.dp).background(Color.Gray)) }
 
             HeaderItem("Личные данные")
             val firstName by component.firstNameField.collectAsState()

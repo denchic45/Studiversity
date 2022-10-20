@@ -21,7 +21,6 @@ import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -52,7 +51,7 @@ class UserEditorComponent(
             groupId,
             selectedRole.value,
             emailField.value,
-            _photoUrl.value,
+            photoUrl.value,
             Date(),
             when (genderField.value) {
                 GenderAction.Undefined -> 0
@@ -110,10 +109,7 @@ class UserEditorComponent(
         this.groupId.filterNotNull().flatMapLatest { observeGroupInfoUseCase(it) }
             .stateIn(componentScope, SharingStarted.Lazily, GroupHeader.createEmpty())
 
-
-    private val _photoUrl = MutableStateFlow("")
-    val photoUrl:StateFlow<String> = _photoUrl
-
+    val photoUrl = MutableStateFlow("")
 
     private var generatedAvatar = true
 
@@ -207,7 +203,7 @@ class UserEditorComponent(
                             }
                             selectedRole.value = user.role
                             emailField.value = user.email
-                            _photoUrl.update { user.photoUrl }
+                            photoUrl.value = user.photoUrl
                         } ?: onFinish()
                     }
                 }

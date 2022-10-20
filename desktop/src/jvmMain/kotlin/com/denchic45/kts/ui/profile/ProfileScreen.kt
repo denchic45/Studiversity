@@ -1,6 +1,5 @@
 package com.denchic45.kts.ui.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -43,22 +42,6 @@ fun ProfileScreen(
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
         )
-        val photoUrl by profileComponent.photoUrl.collectAsState(null)
-        photoUrl?.let {
-            Text(it)
-            println("ProfileScreen: $it")
-
-            Image(
-                painter = BitmapPainter(loadImageBitmap(it)),
-                null,
-                modifier = Modifier.padding(top = 48.dp).size(148.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
-
-        }
-
         profileViewState?.let { profile ->
             ProfileHeader(
                 profile.photoUrl, profile.fullName, when (profile.role) {
@@ -99,6 +82,7 @@ fun ProfileHeader(photoUrl: String, title: String, subtitle: String) {
         AsyncImage(
             load = { loadImageBitmap(photoUrl) },
             painterFor = { BitmapPainter(it) },
+            photoUrl,
             null,
             Modifier.size(68.dp).clip(CircleShape),
             contentScale = ContentScale.Crop

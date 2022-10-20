@@ -50,6 +50,7 @@ fun UserListItem(
             AsyncImage(
                 load = { loadImageBitmap(photoUrl) },
                 painterFor = { BitmapPainter(it) },
+                photoUrl,
                 null,
                 Modifier.size(40.dp).clip(CircleShape),
                 contentScale = ContentScale.Crop

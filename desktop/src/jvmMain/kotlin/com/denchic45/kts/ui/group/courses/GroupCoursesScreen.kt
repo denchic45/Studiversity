@@ -69,6 +69,7 @@ fun GroupCourseListItem(item: GroupCourseItem, modifier: Modifier = Modifier) {
                 Row(Modifier, verticalAlignment = Alignment.CenterVertically) {
                     AsyncImage(load = { loadImageBitmap(item.teacherPhotoUrl) },
                         painterFor = { BitmapPainter(it) },
+                        item.teacherPhotoUrl,
                         null,
                         Modifier.size(24.dp).clip(CircleShape),
                         contentScale = ContentScale.Crop)
