@@ -1,7 +1,10 @@
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -14,6 +17,8 @@ import com.denchic45.kts.di.*
 import com.denchic45.kts.ui.MainContent
 import com.denchic45.kts.ui.login.LoginScreen
 import com.denchic45.kts.ui.theme.AppTheme
+import com.denchic45.kts.util.AsyncImageOriginal
+import com.denchic45.kts.util.loadFileImageBitmap
 import java.awt.Toolkit
 
 val appComponent = JvmAppComponent::class.create(
@@ -24,7 +29,7 @@ val appComponent = JvmAppComponent::class.create(
 
 val splashComponent = appComponent.splashComponent
 
-fun main() = mainApp()
+fun main() = asyncImages()
 
 private fun mainApp() {
     application {
@@ -69,6 +74,36 @@ fun previewUi() {
             state = WindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))
         ) {
 
+        }
+    }
+}
+
+fun asyncImages() = application {
+    Window(
+        onCloseRequest = ::exitApplication,
+        state = WindowState(size = DpSize(500.dp, 500.dp))
+    ) {
+        val dir = "/home/denis/Documents"
+        val images = listOf("$dir/image1.png", "$dir/image2.png", "$dir/image3.png")
+        var currentImageUrl by remember { mutableStateOf<String?>(null) }
+
+        Column {
+            Row {
+                Button(onClick = { currentImageUrl = null }) { Text("null") }
+                Button(onClick = { currentImageUrl = images[0] }) { Text("0") }
+                Button(onClick = { currentImageUrl = images[1] }) { Text("1") }
+                Button(onClick = { currentImageUrl = images[2] }) { Text("2") }
+                Text("Current image: $currentImageUrl")
+            }
+            currentImageUrl?.let { url ->
+                AsyncImageOriginal(
+                    url = url,
+                    load = { loadFileImageBitmap(url) },
+                    painterFor =  { BitmapPainter(it) } ,
+                    ""
+                )
+//                AsyncImageChanged(url = url, "")
+            }
         }
     }
 }
