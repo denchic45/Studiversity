@@ -38,15 +38,3 @@ fun interface Operator {
         val Any: Operator = Operator { it.any(Condition<*>::validate) }
     }
 }
-
-//class AnyEach : Operator {
-//    override fun invoke(conditions: List<Condition<*>>): Boolean {
-//        return conditions.anyEach(Condition<*>::validate)
-//    }
-//}
-//
-//class AllEach : Operator {
-//    override fun invoke(conditions: List<Condition<*>>): Boolean {
-//        return conditions.allEach(Condition<*>::validate)
-//    }
-//}
