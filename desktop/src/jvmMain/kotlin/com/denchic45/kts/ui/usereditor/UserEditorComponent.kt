@@ -19,8 +19,6 @@ import com.denchic45.uivalidator.experimental.Operator
 import com.denchic45.uivalidator.experimental.Validator
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -38,7 +36,7 @@ class UserEditorComponent(
     userId: String?, role: UserRole, groupId: String?,
 ) : ComponentContext by componentContext {
 
-    private val componentScope = componentScope(Dispatchers.Default + SupervisorJob())
+    private val componentScope = componentScope()
 
     private var userId: String = userId ?: UUIDS.createShort()
 
@@ -62,6 +60,8 @@ class UserEditorComponent(
             admin
         )
     }
+
+    val errorState = MutableStateFlow(ErrorState())
 
     private val groupId = MutableStateFlow(groupId)
 
@@ -131,11 +131,17 @@ class UserEditorComponent(
             Condition(
                 value = emailField::value,
                 predicate = String::isNotEmpty
-            ),
+            ) { isValid ->
+                errorState.update {
+                    it.copy(emailMessage = if (isValid) null else "Почта обязательна")
+                }
+            },
             Condition(
                 value = emailField::value,
-                predicate = { TODO("Убедиться, что это настоящий email") }
-            ) {}
+                predicate = { true } // TODO Проверить почту на корректность
+            ) { isValid ->
+                errorState.update { it.copy(emailMessage = if (isValid) null else "Некоректная почта") }
+            }
         )
     )
     private val passwordValidator = Validator(
@@ -143,16 +149,22 @@ class UserEditorComponent(
             Condition(
                 value = passwordField::value,
                 predicate = String::isNotEmpty
-            ) {},
+            ) { isValid ->
+                errorState.update {
+                    it.copy(passwordMessage = if (isValid) null else "Пароль обязателен")
+                }
+            },
             Condition(
                 value = passwordField::value,
                 predicate = { it.length >= 6 }
-            ) {},
+            ) { isValid ->
+                errorState.update {
+                    it.copy(passwordMessage = if (isValid) null else "Минимальный размер пароля - 6 символов")
+                }
+            },
             Condition(
                 value = passwordField::value,
-                predicate = {
-                    TODO("Проверить, что содержаться буквы в верхнем и нижнем регистрах и цифры")
-                }
+                predicate = { true } //TODO Проверить, что содержаться буквы в верхнем и нижнем регистрах и цифры
             ) {},
         )
     )
@@ -160,23 +172,33 @@ class UserEditorComponent(
         Condition(
             value = firstNameField::value,
             predicate = String::isNotEmpty
-        ) {},
+        ) { isValid ->
+            errorState.update {
+                it.copy(firstNameMessage = if (isValid) null else "Имя обязательно")
+            }
+        },
         Condition(
             value = surnameField::value,
             predicate = String::isNotEmpty
-        ) {},
+        ) { isValid ->
+            errorState.update {
+                it.copy(surnameMessage = if (isValid) null else "Фамилия обязательна")
+            }
+        },
         Condition(
             value = groupField::value,
             predicate = { group ->
                 group != GroupHeader.createEmpty() || selectedRole.value != UserRole.STUDENT
             }
-        ) {},
+        ) { isValid ->
+            errorState.update {
+                it.copy(groupMessage = if (isValid) null else "Группа отсутствует")
+            }
+        },
         Validator(
             conditions = listOf(
                 Condition(value = accountFieldsVisibility::value, predicate = { !it }) {},
-                Validator(
-                    conditions = listOf(emailValidator, passwordValidator)
-                )
+                Validator(conditions = listOf(emailValidator, passwordValidator))
             ),
             operator = Operator.Any
         )
@@ -257,8 +279,11 @@ class UserEditorComponent(
     }
 
     fun onSaveClick() {
-        saveChanges()
+        validator.validate()
+//        saveChanges()
     }
+
+    fun onCloseClick() = onFinish()
 
     fun onPasswordGenerateClick() {
         passwordField.value = randomAlphaNumericString(16)
@@ -275,7 +300,18 @@ class UserEditorComponent(
                 .onFailure { TODO("Уведомление о подключении к интернету") }
         }
     }
+
 }
+
+
+data class ErrorState(
+    val firstNameMessage: String? = null,
+    val surnameMessage: String? = null,
+    val groupMessage: String? = null,
+    val emailMessage: String? = null,
+    val passwordMessage: String? = null,
+    val isValid: Boolean = true
+)
 
 enum class GenderAction(override val title: String, override val iconName: String? = null) :
     MenuAction {

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.components.HeaderItem
 import com.denchic45.kts.ui.components.Spinner
+import com.denchic45.kts.ui.components.SupportingText
 import com.denchic45.kts.ui.theme.TextM2
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.util.AsyncImage
@@ -42,7 +43,7 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
         SmallTopAppBar(
             title = { Text(component.toolbarTitle) },
             navigationIcon = {
-                IconButton(onClick = component::onSaveClick) {
+                IconButton(onClick = component::onCloseClick) {
                     Icon(
                         imageVector = Icons.Outlined.ArrowBack,
                         null,
@@ -52,14 +53,14 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
             },
             actions = {
                 Button(
-                    onClick = {},
+                    onClick = component::onSaveClick,
                     Modifier.padding(horizontal = 16.dp)
                 ) { Text("Сохранить") }
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
         )
 
-        Column(Modifier.verticalScroll(rememberScrollState())) {
+        Column(Modifier.padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
             val photoUrl by component.photoUrl.collectAsState()
 
             AsyncImage(
@@ -74,28 +75,35 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
             )
             { Box(Modifier.size(148.dp).background(Color.Gray)) }
 
+            val errorState by component.errorState.collectAsState()
+
             HeaderItem("Личные данные")
             val firstName by component.firstNameField.collectAsState()
+
             OutlinedTextField(
                 value = firstName,
                 onValueChange = component::onFirstNameType,
-                Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                Modifier.fillMaxWidth(),
                 label = { TextM2("Имя") },
-                singleLine = true
+                singleLine = true,
+                isError = errorState.firstNameMessage != null,
             )
+            SupportingText(errorState.firstNameMessage ?: "", true)
             val surname by component.surnameField.collectAsState()
             OutlinedTextField(
                 value = surname,
                 onValueChange = component::onSurnameType,
-                Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp).fillMaxWidth(),
+                Modifier.padding(top = 4.dp).fillMaxWidth(),
                 label = { TextM2("Фамилия") },
-                singleLine = true
+                singleLine = true,
+                isError = errorState.surnameMessage != null,
             )
+            SupportingText(errorState.surnameMessage ?: "", true)
             val patronymic by component.patronymicField.collectAsState()
             OutlinedTextField(
                 value = patronymic,
                 onValueChange = component::onPatronymicType,
-                Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp).fillMaxWidth(),
+                Modifier.padding(top = 4.dp).fillMaxWidth(),
                 label = { TextM2("Отчество") },
                 placeholder = { TextM2("Отчество (необязательно)") },
                 singleLine = true
@@ -105,7 +113,7 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
             Spinner(
                 items = component.genders,
                 onActionClick = component::onGenderSelect,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp).fillMaxWidth(),
+                Modifier.padding(top = 24.dp).fillMaxWidth(),
                 expanded = expandedGenders,
                 onExpandedChange = { expandedGenders = it },
                 placeholder = "Пол",
@@ -118,8 +126,7 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
                 Spinner(
                     items = roles,
                     onActionClick = component::onRoleSelect,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp)
-                        .fillMaxWidth(),
+                    Modifier.padding(top = 4.dp).fillMaxWidth(),
                     expanded = expandedRoles,
                     onExpandedChange = { expandedRoles = it },
                     placeholder = "Роль",
@@ -134,17 +141,20 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
                 OutlinedTextField(
                     value = email,
                     onValueChange = component::onEmailType,
-                    Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+                    Modifier.fillMaxWidth(),
                     label = { TextM2("Почта") },
                     leadingIcon = { Icon(painterResource("ic_email".toDrawablePath()), null) },
-                    singleLine = true
+                    singleLine = true,
+                    isError = errorState.emailMessage != null,
                 )
+                SupportingText(errorState.emailMessage ?: "", true)
+
                 val password by component.passwordField.collectAsState()
                 var passwordVisible by remember { mutableStateOf(false) }
                 OutlinedTextField(
                     value = password,
                     onValueChange = component::onPasswordType,
-                    Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp).fillMaxWidth(),
+                    Modifier.padding(top = 4.dp).fillMaxWidth(),
                     label = { TextM2("Пароль") },
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -156,23 +166,22 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
                             )
                         }
                     },
-                    singleLine = true
+                    singleLine = true,
+                    isError = errorState.passwordMessage != null,
                 )
+                SupportingText(errorState.passwordMessage ?: "", true)
+
             }
             val groupVisibility by component.groupFieldVisibility.collectAsState()
             if (groupVisibility) {
                 val groupHeader by component.groupField.collectAsState()
                 androidx.compose.material.Divider(
-                    Modifier.padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 24.dp
-                    )
+                    Modifier.padding(top = 24.dp).fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = groupHeader.name,
                     onValueChange = component::onPasswordType,
-                    Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp).fillMaxWidth()
+                    Modifier.padding(top = 16.dp).fillMaxWidth()
                         .clickable(onClick = component::onGroupClick),
                     label = { TextM2("Группа") },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -185,14 +194,18 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
                         }
                     },
                     enabled = false,
-                    singleLine = true
+                    singleLine = true,
+                    isError = errorState.groupMessage != null,
                 )
             }
+            SupportingText(errorState.groupMessage ?: "", true)
 
-            OutlinedButton(onClick = {},
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
+            OutlinedButton(
+                onClick = {},
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     .align(Alignment.End),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+            ) {
                 Text("Удалить пользователя")
             }
             Spacer(Modifier.height(48.dp))
