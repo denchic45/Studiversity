@@ -17,6 +17,7 @@ import com.denchic45.kts.util.randomAlphaNumericString
 import com.denchic45.uivalidator.experimental.Condition
 import com.denchic45.uivalidator.experimental.Operator
 import com.denchic45.uivalidator.experimental.Validator
+import com.denchic45.uivalidator.isEmail
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.flow.*
@@ -138,11 +139,12 @@ class UserEditorComponent(
             },
             Condition(
                 value = emailField::value,
-                predicate = { true } // TODO Проверить почту на корректность
+                predicate = String::isEmail
             ) { isValid ->
                 errorState.update { it.copy(emailMessage = if (isValid) null else "Некоректная почта") }
             }
-        )
+        ),
+        operator = Operator.All
     )
     private val passwordValidator = Validator(
         conditions = listOf(
@@ -164,11 +166,18 @@ class UserEditorComponent(
             },
             Condition(
                 value = passwordField::value,
-                predicate = { true } //TODO Проверить, что содержаться буквы в верхнем и нижнем регистрах и цифры
-            ) {},
-        )
+                predicate = {
+                    it.contains("[A-Za-z]".toRegex())
+                }
+            ) { isValid ->
+                errorState.update {
+                    it.copy(passwordMessage = if (isValid) null else "Пароль должен содержать символы в верхнем и нижнем регистре")
+                }
+            },
+        ),
+        operator = Operator.All
     )
-    val validator = Validator(conditions = listOf(
+    private val validator = Validator(conditions = listOf(
         Condition(
             value = firstNameField::value,
             predicate = String::isNotEmpty
@@ -310,7 +319,7 @@ data class ErrorState(
     val groupMessage: String? = null,
     val emailMessage: String? = null,
     val passwordMessage: String? = null,
-    val isValid: Boolean = true
+    val isValid: Boolean = true,
 )
 
 enum class GenderAction(override val title: String, override val iconName: String? = null) :
