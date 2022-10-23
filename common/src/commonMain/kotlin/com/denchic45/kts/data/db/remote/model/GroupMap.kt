@@ -5,7 +5,7 @@ import com.denchic45.kts.util.SearchKeysGenerator
 import com.denchic45.kts.util.mapNestedMapOrEmpty
 import java.util.*
 
-data class GroupMap(override val map: FireMap):MapWrapper {
+data class GroupMap(private val map: FireMap) : FireMap by map {
 
     val id: String by map
     val course: Int by map

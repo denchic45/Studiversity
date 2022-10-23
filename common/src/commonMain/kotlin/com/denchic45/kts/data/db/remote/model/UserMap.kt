@@ -6,7 +6,7 @@ import com.denchic45.kts.util.SearchKeysGenerator
 import com.denchic45.kts.util.mapOrNull
 import java.util.*
 
-data class UserMap(override val map: FireMap) : MapWrapper {
+ class UserMap( val map: FireMap) : FireMap by map {
     val id: String by map
     val firstName: String by map
     val surname: String by map

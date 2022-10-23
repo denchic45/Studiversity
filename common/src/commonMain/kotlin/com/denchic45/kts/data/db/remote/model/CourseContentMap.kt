@@ -3,7 +3,7 @@ package com.denchic45.kts.data.db.remote.model
 import com.denchic45.kts.util.*
 import java.util.*
 
-class CourseContentMap(override val map: MutableFireMap) : MutableMapWrapper {
+data class CourseContentMap(private val map: MutableFireMap) : MutableFireMap by map {
     val id: String by map
     val courseId: String by map
     val sectionId: String by map

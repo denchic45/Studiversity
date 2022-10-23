@@ -5,7 +5,7 @@ import com.denchic45.kts.util.MutableFireMap
 import com.denchic45.kts.util.mapListOrEmpty
 import java.util.*
 
-class DayMap(override val map: MutableFireMap) : MutableMapWrapper {
+data class DayMap(private val map: MutableFireMap) : MutableFireMap by map {
     var id: String by map
     var date: Date by map
     var startsAtZero: Boolean by map

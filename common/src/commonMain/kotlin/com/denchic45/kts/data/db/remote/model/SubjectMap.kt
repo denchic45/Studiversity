@@ -2,7 +2,7 @@ package com.denchic45.kts.data.db.remote.model
 
 import com.denchic45.kts.util.FireMap
 
-class SubjectMap(override val map: FireMap):MapWrapper {
+data class SubjectMap(private val map: FireMap) : FireMap by map {
     val id: String by map
     val name: String by map
     val iconName: String by map

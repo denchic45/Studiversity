@@ -1,20 +1,18 @@
 package com.denchic45.kts.util
 
-import com.denchic45.kts.data.db.remote.model.MapWrapper
-import com.denchic45.kts.data.db.remote.model.MutableMapWrapper
 import kotlin.reflect.KProperty
 
-fun <V> MapWrapper.mapOrNull() = MapValueOrNullDelegate<V?>(map)
+fun <V> FireMap.mapOrNull() = MapValueOrNullDelegate<V?>(this)
 
-fun <V> MutableMapWrapper.mapOrNull() = MutableMapValueOrNullDelegate<V?>(map)
+fun <V> MutableFireMap.mapOrNull() = MutableMapValueOrNullDelegate<V?>(this)
 
-fun <V> MapWrapper.mapListOrEmpty() = MapValueListOrEmptyDelegate<V>(map)
+fun <V> FireMap.mapListOrEmpty() = MapValueListOrEmptyDelegate<V>(this)
 
-fun <V> MutableMapWrapper.mapListOrEmpty() = MutableMapValueListOrEmptyDelegate<V>(map)
+fun <V> MutableFireMap.mapListOrEmpty() = MutableMapValueListOrEmptyDelegate<V>(this)
 
-fun <K, V> MapWrapper.mapNestedMapOrEmpty() = MapValueMapOrEmptyDelegate<K, V>(map)
+fun <K, V> FireMap.mapNestedMapOrEmpty() = MapValueMapOrEmptyDelegate<K, V>(this)
 
-fun <V> MapWrapper.mapOrDefault(defaultValue: V) = MapValueOrDefaultDelegate(map, defaultValue)
+fun <V> FireMap.mapOrDefault(defaultValue: V) = MapValueOrDefaultDelegate(this, defaultValue)
 
 open class MapValueOrNullDelegate<V>(private val map: FireMap) {
     @Suppress("UNCHECKED_CAST")
@@ -29,7 +27,7 @@ class MutableMapValueOrNullDelegate<V>(private val map: MutableFireMap) :
     }
 }
 
-fun <V, V2> MapWrapper.mapCast(transform: (V) -> V2) = MapValueCastDelegate(map, transform)
+fun <V, V2> FireMap.mapCast(transform: (V) -> V2) = MapValueCastDelegate(this, transform)
 
 class MapValueCastDelegate<V, V2>(private val map: FireMap, private val transform: (V) -> V2) {
     @Suppress("UNCHECKED_CAST")

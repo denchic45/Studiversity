@@ -223,7 +223,7 @@ class CourseRepository @Inject constructor(
 
     suspend fun addTask(task: Task, attachments: List<Attachment>) {
         requireAllowWriteData()
-        courseRemoteDataSource.addTask(task = CourseContentMap(task.toMap(attachments = contentAttachmentStorage.addContentAttachments(
+        courseRemoteDataSource.addTask(courseContentMap = CourseContentMap(task.toMap(attachments = contentAttachmentStorage.addContentAttachments(
             task.id,
             attachments), order = createLastContentOrder(task)).apply {
             val studentIdsOfCourse =

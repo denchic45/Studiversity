@@ -39,7 +39,7 @@ class GroupRepository @Inject constructor(
 
     override fun findByContainsName(text: String): Flow<List<GroupHeader>> {
         return groupRemoteDataSource.findByContainsName(text)
-            .filter { groupMaps -> groupMaps.all { it.map.timestampNotNull() } }.map { groupDocs ->
+            .filter { groupMaps -> groupMaps.all { it.timestampNotNull() } }.map { groupDocs ->
                 for (groupDoc in groupDocs) {
                     saveGroup(groupDoc)
                 }
@@ -66,8 +66,8 @@ class GroupRepository @Inject constructor(
     fun findGroupByCuratorId(userId: String): Flow<Group?> {
         groupRemoteDataSource.observeByCuratorId(userPreferences.id).onEach {
             it?.let {
-                if (it.map.timestampNotNull()) {
-                    saveYourGroup(GroupMap(it.map))
+                if (it.timestampNotNull()) {
+                    saveYourGroup(GroupMap(it))
                 }
             }
         }
@@ -95,7 +95,7 @@ class GroupRepository @Inject constructor(
             UserRole.TEACHER -> groupRemoteDataSource.observeByCuratorId(userPreferences.id)
             else -> emptyFlow()
         }.filterNotNull().collect { groupMap ->
-            if (groupMap.map.timestampNotNull()) {
+            if (groupMap.timestampNotNull()) {
                 saveYourGroup(groupMap)
             }
         }
@@ -135,7 +135,7 @@ class GroupRepository @Inject constructor(
     private suspend fun observeAndSaveGroupFlow(groupId: String): Flow<GroupMap?> {
         return groupRemoteDataSource.observeById(groupId).onEach { groupMap ->
             if (groupMap != null) {
-                if (groupMap.map.timestampNotNull()) {
+                if (groupMap.timestampNotNull()) {
                     saveGroup(groupMap)
                 }
             } else {
@@ -160,9 +160,11 @@ class GroupRepository @Inject constructor(
 
         val groupCourseIds: List<String> = groupRemoteDataSource.findCoursesByGroupId(groupId)
 
-        groupRemoteDataSource.removeGroupAndRemoveStudentsAndRemoveGroupIdInCourses(groupId,
+        groupRemoteDataSource.removeGroupAndRemoveStudentsAndRemoveGroupIdInCourses(
+            groupId,
             studentIds,
-            groupCourseIds)
+            groupCourseIds
+        )
     }
 
     suspend fun updateGroupCurator(groupId: String, teacher: User) {
@@ -178,7 +180,8 @@ class GroupRepository @Inject constructor(
                 }
             }
             emitAll(groupLocalDataSource.getNameById(groupId).filterNotNull()
-                .map { it.toGroupHeader() }.distinctUntilChanged())
+                .map { it.toGroupHeader() }.distinctUntilChanged()
+            )
         }
     }
 
@@ -202,7 +205,8 @@ class GroupRepository @Inject constructor(
 
         return groupMaps.map { groupMap ->
             GroupCourses(groupMap.toGroupHeader(),
-                courseMaps.filter { it.groupIds.contains(groupMap.id) }.mapsToCourseHeaderDomains())
+                courseMaps.filter { it.groupIds.contains(groupMap.id) }.mapsToCourseHeaderDomains()
+            )
         }
     }
 

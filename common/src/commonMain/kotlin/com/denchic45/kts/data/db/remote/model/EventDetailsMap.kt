@@ -3,7 +3,7 @@ package com.denchic45.kts.data.db.remote.model
 import com.denchic45.kts.util.FireMap
 import com.denchic45.kts.util.mapOrNull
 
-class EventDetailsMap(override val map: FireMap):MapWrapper {
+data class EventDetailsMap(private val map: FireMap) : FireMap by map {
     val subjectId: String? by mapOrNull()
     val teacherIds: List<String>? by mapOrNull()
     val name: String? by mapOrNull()

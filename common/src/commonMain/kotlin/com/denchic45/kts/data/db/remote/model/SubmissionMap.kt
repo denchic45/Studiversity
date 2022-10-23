@@ -7,7 +7,7 @@ import com.denchic45.kts.util.mapOrDefault
 import com.denchic45.kts.util.mapOrNull
 import java.util.*
 
-class SubmissionMap(override val map: FireMap) : MapWrapper {
+data class SubmissionMap(private val map: FireMap) : FireMap by map {
     val id: String by map
     val studentId: String by map
     val contentId: String by map
