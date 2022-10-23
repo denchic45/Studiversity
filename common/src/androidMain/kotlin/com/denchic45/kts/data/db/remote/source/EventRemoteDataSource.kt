@@ -71,7 +71,7 @@ actual class EventRemoteDataSource @Inject constructor(
 
     actual suspend fun setDay(dayMap: DayMap) {
         val dayRef = groupsRef.document(dayMap.groupId).collection("Days")
-        dayRef.document(dayMap.id).set(dayMap.map, SetOptions.merge()).await()
+        dayRef.document(dayMap.id).set(dayMap, SetOptions.merge()).await()
     }
 
     actual fun observeEventsOfTeacherByDate(

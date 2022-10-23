@@ -62,7 +62,7 @@ actual class CourseRemoteDataSource @Inject constructor (
                 FieldValue.serverTimestamp()
             )
         }
-        batch.set(coursesRef.document(courseMap.id), courseMap.map)
+        batch.set(coursesRef.document(courseMap.id), courseMap)
         batch.commit().await()
     }
 
@@ -213,7 +213,7 @@ actual class CourseRemoteDataSource @Inject constructor (
                     else
                         FieldValue.arrayUnion(studentId)
         ).apply {
-            submissionMap.map.forEach { (key, value) -> put("submissions.$studentId.$key", value) }
+            submissionMap.forEach { (key, value) -> put("submissions.$studentId.$key", value) }
         }
         coursesRef.document(courseId)
             .collection("Contents")
@@ -249,11 +249,11 @@ actual class CourseRemoteDataSource @Inject constructor (
             ).getDataFlow { it.toMaps(::CourseMap) }
     }
 
-    actual suspend fun addTask(task: CourseContentMap) {
-        coursesRef.document(task.courseId)
+    actual suspend fun addTask(courseContentMap: CourseContentMap) {
+        coursesRef.document(courseContentMap.courseId)
             .collection("Contents")
-            .document(task.id)
-            .set(task.map)
+            .document(courseContentMap.id)
+            .set(courseContentMap)
             .await()
     }
 

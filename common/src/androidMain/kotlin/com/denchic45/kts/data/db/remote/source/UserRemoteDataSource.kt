@@ -120,7 +120,6 @@ actual class UserRemoteDataSource @Inject constructor(
         }
     }
 
-
     private fun updateStudentFromGroup(studentMap: FireMap, groupId: String, batch: WriteBatch) {
         val updateGroupMap: MutableMap<String, Any> = HashMap()
         updateGroupMap["students." + studentMap["id"]] = studentMap

@@ -1,6 +1,10 @@
 package com.denchic45.kts.util
 
+import com.denchic45.firebasemultiplatform.api.ArrayValue
+import com.denchic45.firebasemultiplatform.api.MapValue
+import com.denchic45.firebasemultiplatform.api.Value
 import kotlinx.serialization.json.*
+import java.util.*
 
 private val props = setOf(
     "arrayValue",
@@ -89,3 +93,20 @@ fun <T> parseDocument(element: JsonElement, factory: (MutableFireMap) -> T): T {
 //    return value
 //}
 //export default FireStoreParser
+
+fun FireMap.toMapValues(): Map<String, Value> = entries.associate {
+//    println("key: ${it.key} value: ${it.value}")
+    it.key to it.value.toValue()
+}
+
+private fun Any?.toValue(): Value = when (val value = this) {
+    is String -> Value(stringValue = value)
+    is Int, Long -> Value(integerValue = value.toString())
+    is Double -> Value(doubleValue = value)
+    is Boolean -> Value(booleanValue = value)
+    is Date -> Value(timestampValue = value.toTimestampValue())
+    is Map<*, *> -> Value(mapValue = MapValue((value as FireMap).toMapValues()))
+    is List<*> -> Value(arrayValue = ArrayValue(value.map { it.toValue() }))
+    null -> Value(nullValue = null)
+    else -> throw IllegalArgumentException("Unknown type vaue: $value")
+}

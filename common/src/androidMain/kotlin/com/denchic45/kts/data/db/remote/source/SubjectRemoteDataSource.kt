@@ -29,7 +29,7 @@ actual class SubjectRemoteDataSource @Inject constructor(
     actual suspend fun add(subjectMap: SubjectMap) {
         isExistWithSameIconAndColor(subjectMap)
         subjectsRef.document(subjectMap.id)
-            .set(subjectMap.map)
+            .set(subjectMap)
             .await()
     }
 
@@ -48,7 +48,7 @@ actual class SubjectRemoteDataSource @Inject constructor(
     actual suspend fun update(subjectMap: SubjectMap) {
         isExistWithSameIconAndColor(subjectMap)
         firestore.batch().apply {
-            this[subjectsRef.document(subjectMap.id)] = subjectMap.map
+            this[subjectsRef.document(subjectMap.id)] = subjectMap
             coursesRef.whereEqualTo("subject.id", subjectMap.id).get().await()
                 .forEach { docSnapshot ->
                     @Suppress("UNCHECKED_CAST")
@@ -56,7 +56,7 @@ actual class SubjectRemoteDataSource @Inject constructor(
                     update(
                         coursesRef.document(docSnapshot.id),
                         "subject",
-                        subjectMap.map,
+                        subjectMap,
                         "timestamp",
                         FieldValue.serverTimestamp()
                     )

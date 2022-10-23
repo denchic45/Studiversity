@@ -63,7 +63,7 @@ expect class CourseRemoteDataSource {
         timestampPreferences: Long,
     ): Flow<List<CourseMap>>
 
-    suspend fun addTask(task: CourseContentMap)
+    suspend fun addTask(courseContentMap: CourseContentMap)
 
     suspend fun updateCourse(oldCourseMap: CourseMap, courseMap: CourseMap)
 

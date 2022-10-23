@@ -110,7 +110,7 @@ actual class CourseRemoteDataSource(
     }
 
     actual suspend fun addTask(
-        task: CourseContentMap,
+        courseContentMap: CourseContentMap,
     ) {
     }
 
