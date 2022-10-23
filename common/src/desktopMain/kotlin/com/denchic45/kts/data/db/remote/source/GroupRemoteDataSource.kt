@@ -36,7 +36,8 @@ actual class GroupRemoteDataSource(private val client: FirebaseHttpClient) {
             Json.parseToJsonElement(
                 client.get("https://firestore.googleapis.com/v1/projects/kts-app-2ab1f/databases/(default)/documents/Groups/$id")
                     .bodyAsText()
-            ), ::GroupMap)
+            ), ::GroupMap
+        )
     }
 
     actual suspend fun findCoursesByGroupId(groupId: String): List<String> {
@@ -61,7 +62,12 @@ actual class GroupRemoteDataSource(private val client: FirebaseHttpClient) {
         client.patch("https://firestore.googleapis.com/v1/projects/kts-app-2ab1f/databases/(default)/documents/Groups/$groupId") {
             parameter("updateMask.fieldPaths", "headmanId")
             contentType(ContentType.Application.Json)
-            setBody(DocumentRequest(fields = mapOf("headmanId" to Value(stringValue = studentId))))
+            setBody(
+                DocumentRequest(
+                    name = "projects/kts-app-2ab1f/databases/(default)/documents/Groups/$groupId",
+                    fields = mapOf("headmanId" to Value(stringValue = studentId))
+                )
+            )
         }.bodyAsText().apply {
             println(this)
         }
@@ -91,14 +97,20 @@ actual class GroupRemoteDataSource(private val client: FirebaseHttpClient) {
     actual suspend fun findByCuratorId(id: String): GroupMap {
         return client.post {
             url("https://firestore.googleapis.com/v1/projects/${ApiKeys.firebaseProjectId}/databases/(default)/documents:runQuery")
-            setBody(Request(structuredQuery = StructuredQuery(
-                from = CollectionSelector("Groups"),
-                where = Filter(fieldFilter = FieldFilter(
-                    field = FieldReference("curator.id"),
-                    op = FieldFilter.Operator.EQUAL,
-                    value = Value(stringValue = id)
-                ))
-            )))
+            setBody(
+                Request(
+                    structuredQuery = StructuredQuery(
+                        from = CollectionSelector("Groups"),
+                        where = Filter(
+                            fieldFilter = FieldFilter(
+                                field = FieldReference("curator.id"),
+                                op = FieldFilter.Operator.EQUAL,
+                                value = Value(stringValue = id)
+                            )
+                        )
+                    )
+                )
+            )
         }.let {
             GroupMap(parseDocuments(Json.parseToJsonElement(it.bodyAsText()))[0])
         }
@@ -108,14 +120,20 @@ actual class GroupRemoteDataSource(private val client: FirebaseHttpClient) {
         emit(
             client.post {
                 url("https://firestore.googleapis.com/v1/projects/${ApiKeys.firebaseProjectId}/databases/(default)/documents:runQuery")
-                setBody(Request(structuredQuery = StructuredQuery(
-                    from = CollectionSelector("Groups"),
-                    where = Filter(fieldFilter = FieldFilter(
-                        field = FieldReference("curator.id"),
-                        op = FieldFilter.Operator.EQUAL,
-                        value = Value(stringValue = id)
-                    ))
-                )))
+                setBody(
+                    Request(
+                        structuredQuery = StructuredQuery(
+                            from = CollectionSelector("Groups"),
+                            where = Filter(
+                                fieldFilter = FieldFilter(
+                                    field = FieldReference("curator.id"),
+                                    op = FieldFilter.Operator.EQUAL,
+                                    value = Value(stringValue = id)
+                                )
+                            )
+                        )
+                    )
+                )
             }.let {
                 GroupMap(parseDocuments(Json.parseToJsonElement(it.bodyAsText()))[0])
             }
