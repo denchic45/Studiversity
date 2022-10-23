@@ -5,13 +5,13 @@ import kotlin.test.Test
 
 internal class ValidatorTest {
 
-    val testPhoneNum = "+79510832144"
-    val testPhoneNum2 = "+7951750383"
-    val testPhoneNum3 = "+7951002348"
+    private val testPhoneNum = "+79510832144"
+    private val testPhoneNum2 = "+7951750383"
+    private val testPhoneNum3 = "+7951002348"
 
-    val testEmail = "User@gmail.com"
-    val testEmail2 = "AnotherUser@gmail.com"
-    val testEmail3 = "Test@gmail.com"
+    private val testEmail = "User@gmail.com"
+    private val testEmail2 = "AnotherUser@gmail.com"
+    private val testEmail3 = "Test@gmail.com"
 
     @Test
     fun testInputEmailOrPhoneNum() {
@@ -40,7 +40,7 @@ internal class ValidatorTest {
                 ) { if (it) println("Введена почта") },
                 Condition(
                     value = { field },
-                    predicate = { field.isEmailExist() }
+                    predicate = { it.isEmailExist() }
                 ) { if (!it) println("Такой почты не существует") }
             ),
             operator = Operator.All
@@ -53,7 +53,7 @@ internal class ValidatorTest {
             println(if (it) "phone num or email is correct" else "nothing correct")
         }
 
-        field = testEmail3
+        field = testPhoneNum2
 
         validator.validate()
 

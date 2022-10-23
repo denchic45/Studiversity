@@ -11,30 +11,3 @@ class Validator<T>(
         return operator(conditions).apply { onResult?.let { it(this) } }
     }
 }
-
-inline fun <T> Iterable<T>.anyEach(predicate: (T) -> Boolean): Boolean {
-    var found = false
-    for (element in this) if (predicate(element)) found = true
-    return found
-}
-
-inline fun <T> Iterable<T>.allEach(predicate: (T) -> Boolean): Boolean {
-    var notFound = true
-    for (element in this) if (!predicate(element)) notFound = false
-    return notFound
-}
-
-fun interface Operator {
-    operator fun invoke(conditions: List<Condition<*>>): Boolean
-
-    companion object {
-
-        val AllEach: Operator = Operator { it.allEach(Condition<*>::validate) }
-
-        val AnyEach: Operator = Operator { it.anyEach(Condition<*>::validate) }
-
-        val All: Operator = Operator { it.all(Condition<*>::validate) }
-
-        val Any: Operator = Operator { it.any(Condition<*>::validate) }
-    }
-}
