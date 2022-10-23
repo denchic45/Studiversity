@@ -98,7 +98,10 @@ private fun StudentListItem(
         }
         DropdownMenu(expanded = expanded && actions.second == userItem.id,
             modifier = Modifier.width(240.dp),
-            onDismissRequest = { onDismissAction() }) {
+            onDismissRequest = {
+                expanded = false
+                onDismissAction()
+            }) {
 
             actions.first.forEach { action ->
                 DropdownMenuItem(onClick = {
