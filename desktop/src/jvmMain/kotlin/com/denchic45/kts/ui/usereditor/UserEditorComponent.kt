@@ -14,9 +14,12 @@ import com.denchic45.kts.ui.model.MenuItem
 import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.randomAlphaNumericString
-import com.denchic45.uivalidator.experimental.Condition
-import com.denchic45.uivalidator.experimental.Operator
-import com.denchic45.uivalidator.experimental.Validator
+import com.denchic45.uivalidator.experimental2.Operator
+import com.denchic45.uivalidator.experimental2.condition.Condition
+import com.denchic45.uivalidator.experimental2.condition.observable
+import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
+import com.denchic45.uivalidator.experimental2.validator.ValueValidator
+import com.denchic45.uivalidator.experimental2.validator.observable
 import com.denchic45.uivalidator.isEmail
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
@@ -24,7 +27,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import java.util.*
-
 
 @Inject
 class UserEditorComponent(
@@ -127,91 +129,94 @@ class UserEditorComponent(
         }
     }
 
-    private val emailValidator = Validator(
+    private val emailValidator = ValueValidator(
+        value = emailField::value,
         conditions = listOf(
-            Condition(
-                value = emailField::value,
-                predicate = String::isNotEmpty
-            ) { isValid ->
+            Condition(String::isNotEmpty).observable { isValid ->
                 errorState.update {
                     it.copy(emailMessage = if (isValid) null else "Почта обязательна")
                 }
             },
-            Condition(
-                value = emailField::value,
-                predicate = String::isEmail
-            ) { isValid ->
+            Condition(String::isEmail).observable { isValid ->
                 errorState.update { it.copy(emailMessage = if (isValid) null else "Некоректная почта") }
             }
         ),
-        operator = Operator.All
+        operator = Operator.all()
     )
-    private val passwordValidator = Validator(
+
+    private val passwordValidator = ValueValidator(
+        value = passwordField::value,
         conditions = listOf(
             Condition(
-                value = passwordField::value,
                 predicate = String::isNotEmpty
-            ) { isValid ->
+            ).observable { isValid ->
                 errorState.update {
                     it.copy(passwordMessage = if (isValid) null else "Пароль обязателен")
                 }
             },
-            Condition(
-                value = passwordField::value,
+            Condition<String>(
+
                 predicate = { it.length >= 6 }
-            ) { isValid ->
+            ).observable { isValid ->
                 errorState.update {
                     it.copy(passwordMessage = if (isValid) null else "Минимальный размер пароля - 6 символов")
                 }
             },
-            Condition(
-                value = passwordField::value,
+            Condition<String>(
                 predicate = {
                     it.contains("[A-Za-z]".toRegex())
                 }
-            ) { isValid ->
+            ).observable { isValid ->
                 errorState.update {
                     it.copy(passwordMessage = if (isValid) null else "Пароль должен содержать символы в верхнем и нижнем регистре")
                 }
             },
         ),
-        operator = Operator.All
+        operator = Operator.all()
     )
-    private val validator = Validator(conditions = listOf(
-        Condition(
-            value = firstNameField::value,
-            predicate = String::isNotEmpty
-        ) { isValid ->
-            errorState.update {
-                it.copy(firstNameMessage = if (isValid) null else "Имя обязательно")
-            }
-        },
-        Condition(
-            value = surnameField::value,
-            predicate = String::isNotEmpty
-        ) { isValid ->
-            errorState.update {
-                it.copy(surnameMessage = if (isValid) null else "Фамилия обязательна")
-            }
-        },
-        Condition(
-            value = groupField::value,
-            predicate = { group ->
-                group != GroupHeader.createEmpty() || selectedRole.value != UserRole.STUDENT
-            }
-        ) { isValid ->
-            errorState.update {
-                it.copy(groupMessage = if (isValid) null else "Группа отсутствует")
-            }
-        },
-        Validator(
-            conditions = listOf(
-                Condition(value = accountFieldsVisibility::value, predicate = { !it }) {},
-                Validator(conditions = listOf(emailValidator, passwordValidator))
+
+    private val validator = CompositeValidator(
+        listOf(
+            ValueValidator(
+                value = firstNameField::value,
+                conditions = listOf(Condition(String::isNotEmpty)
+                    .observable { isValid ->
+                        errorState.update {
+                            it.copy(firstNameMessage = if (isValid) null else "Имя обязательно")
+                        }
+                    })
             ),
-            operator = Operator.Any
+            ValueValidator(
+                value = surnameField::value,
+                conditions = listOf(Condition(String::isNotEmpty).observable { isValid ->
+                    errorState.update {
+                        it.copy(surnameMessage = if (isValid) null else "Фамилия обязательна")
+                    }
+                })
+            ),
+            ValueValidator(
+                value = { selectedRole.value to groupField.value },
+                conditions = listOf(
+                    Condition { (role, group) ->
+                        role != UserRole.STUDENT || group != GroupHeader.createEmpty()
+                    }
+                )
+            ).observable { isValid ->
+                errorState.update {
+                    it.copy(groupMessage = if (isValid) null else "Группа отсутствует")
+                }
+            },
+            CompositeValidator(
+                validators = listOf(
+                    ValueValidator(
+                        value = accountFieldsVisibility::value,
+                        conditions = listOf(Condition { visible -> !visible })
+                    ),
+                    CompositeValidator(listOf(emailValidator, passwordValidator))
+                ),
+                operator = Operator.any()
+            )
         )
-    )
     )
 
     init {
@@ -289,7 +294,7 @@ class UserEditorComponent(
 
     fun onSaveClick() {
         validator.validate()
-//        saveChanges()
+        saveChanges()
     }
 
     fun onCloseClick() = onFinish()
@@ -309,9 +314,7 @@ class UserEditorComponent(
                 .onFailure { TODO("Уведомление о подключении к интернету") }
         }
     }
-
 }
-
 
 data class ErrorState(
     val firstNameMessage: String? = null,

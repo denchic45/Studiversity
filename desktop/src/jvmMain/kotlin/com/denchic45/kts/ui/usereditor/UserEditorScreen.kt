@@ -68,7 +68,7 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
                 painterFor = { BitmapPainter(it) },
                 key = photoUrl,
                 null,
-                modifier = Modifier.padding(top = 48.dp).size(148.dp)
+                modifier = Modifier.padding(top = 48.dp).size(136.dp)
                     .align(Alignment.CenterHorizontally)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
