@@ -2,6 +2,7 @@ package com.denchic45.kts.util
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,7 +18,6 @@ import androidx.compose.ui.res.loadXmlImageVector
 import androidx.compose.ui.unit.Density
 import com.squareup.sqldelight.db.use
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.xml.sax.InputSource
@@ -48,7 +48,8 @@ fun <T> AsyncImage(
             Image(
                 painter = painterFor(image!!),
                 contentDescription = contentDescription,
-                contentScale = contentScale
+                contentScale = contentScale,
+                modifier = Modifier.fillMaxSize()
             )
         } else if (placeholderContent != null) {
             placeholderContent()
@@ -71,34 +72,3 @@ fun loadSvgPainter(url: String, density: Density): Painter =
 
 fun loadXmlImageVector(url: String, density: Density): ImageVector =
     URL(url).openStream().buffered().use { loadXmlImageVector(InputSource(it), density) }
-
-
-//@Composable
-//inline fun lazyPainterUrl(
-//    data: String,
-//    key: Any? = data,
-//    block: ResourceConfigBuilder.() -> Unit = {},
-//): Resource<Painter> {
-//    val density = LocalDensity.current
-//    val resourceConfig = remember(key, density) {
-//        ResourceConfigBuilder()
-//            .apply { this.density = density }
-//            .apply(block)
-//            .build()
-//    }
-//    val painterResource by remember(data, resourceConfig) {
-//        loadImageBitmapFlow(data)
-//    }.collectAsState(null, resourceConfig.coroutineContext)
-//    return painterResource?.let {
-//        Resource.Success(BitmapPainter(painterResource!!))
-//    } ?: Resource.Loading(0f)
-//}
-
-//@Composable
-//fun lazyPainterUrl2(url: String): Painter {
-//    val painterResource by remember(key1 = url) { loadImageBitmapFlow(url) }.collectAsState(null)
-//    return painterResource?.let { BitmapPainter(painterResource!!) }
-//        ?: BitmapPainter(ImageBitmap(100, 100))
-//}
-
-fun loadImageBitmapFlow(data: String): Flow<ImageBitmap> = flow { emit(loadImageBitmap(data)) }
