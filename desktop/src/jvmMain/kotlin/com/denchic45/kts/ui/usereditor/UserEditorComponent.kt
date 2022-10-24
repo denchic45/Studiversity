@@ -154,23 +154,28 @@ class UserEditorComponent(
                     it.copy(passwordMessage = if (isValid) null else "Пароль обязателен")
                 }
             },
-            Condition<String>(
-
-                predicate = { it.length >= 6 }
-            ).observable { isValid ->
+            Condition<String> { it.length >= 6 }.observable { isValid ->
                 errorState.update {
                     it.copy(passwordMessage = if (isValid) null else "Минимальный размер пароля - 6 символов")
                 }
             },
-            Condition<String>(
-                predicate = {
-                    it.contains("[A-Za-z]".toRegex())
-                }
-            ).observable { isValid ->
+            Condition<String> { it.contains("(?=.*[a-z])(?=.*[A-Z])".toRegex()) }
+                .observable { isValid ->
+                    errorState.update {
+                        it.copy(
+                            passwordMessage = if (isValid) null
+                            else "Пароль должен содержать символы в верхнем и нижнем регистре"
+                        )
+                    }
+                },
+            Condition<String> { it.contains("[0-9]".toRegex()) }.observable { isValid ->
                 errorState.update {
-                    it.copy(passwordMessage = if (isValid) null else "Пароль должен содержать символы в верхнем и нижнем регистре")
+                    it.copy(
+                        passwordMessage = if (isValid) null
+                        else "Пароль должен содержать цифры"
+                    )
                 }
-            },
+            }
         ),
         operator = Operator.all()
     )
