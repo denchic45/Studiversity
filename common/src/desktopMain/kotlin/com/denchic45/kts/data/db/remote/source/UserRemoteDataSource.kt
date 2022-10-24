@@ -1,17 +1,21 @@
 package com.denchic45.kts.data.db.remote.source
 
 import com.denchic45.firebasemultiplatform.api.*
-import com.denchic45.kts.ApiKeys
+import com.denchic45.firebasemultiplatform.ktor.PathReference
+import com.denchic45.firebasemultiplatform.ktor.commit
+import com.denchic45.firebasemultiplatform.ktor.runQuery
 import com.denchic45.kts.data.db.remote.model.UserMap
 import com.denchic45.kts.di.FirebaseHttpClient
-import com.denchic45.kts.util.*
+import com.denchic45.kts.util.FireMap
+import com.denchic45.kts.util.parseDocument
+import com.denchic45.kts.util.parseDocuments
+import com.denchic45.kts.util.toMapValues
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
-import java.util.*
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
@@ -39,24 +43,20 @@ actual class UserRemoteDataSource @Inject constructor(private val client: Fireba
     }
 
     actual suspend fun findByEmail(email: String): UserMap {
-        return client.post {
-            url("https://firestore.googleapis.com/v1/projects/${ApiKeys.firebaseProjectId}/databases/(default)/documents:runQuery")
-            contentType(ContentType.Application.Json)
-            setBody(
-                Request(
-                    structuredQuery = StructuredQuery(
-                        from = CollectionSelector("Users"),
-                        where = Filter(
-                            fieldFilter = FieldFilter(
-                                field = FieldReference("email"),
-                                op = FieldFilter.Operator.EQUAL,
-                                value = Value(stringValue = email)
-                            )
+        return client.runQuery(
+            Request(
+                structuredQuery = StructuredQuery(
+                    from = CollectionSelector("Users"),
+                    where = Filter(
+                        fieldFilter = FieldFilter(
+                            field = FieldReference("email"),
+                            op = FieldFilter.Operator.EQUAL,
+                            value = Value(stringValue = email)
                         )
                     )
                 )
             )
-        }.let {
+        ).let {
             UserMap(parseDocuments(Json.parseToJsonElement(it.bodyAsText()))[0])
         }
     }
@@ -80,116 +80,78 @@ actual class UserRemoteDataSource @Inject constructor(private val client: Fireba
     actual suspend fun addStudent(studentMap: UserMap) {
     }
 
-    actual suspend fun updateStudent(
-        oldStudentMap: UserMap,
-        studentMap: UserMap,
-    ) {
-        client.post {
-            url("https://firestore.googleapis.com/v1/projects/kts-app-2ab1f/databases/(default)/documents:commit")
+    actual suspend fun updateStudent(oldStudentMap: UserMap, studentMap: UserMap) {
+        val writes = buildList {
 
-            val writes = buildList {
+            val studentField = "students.`${studentMap.id}`"
 
-                val replace = "students.`${studentMap["id"]}`"
-
-                if (changePersonalData(studentMap, oldStudentMap)) {
-                    add(
-                        Write(
-                            updateMask = null,
-                            update = DocumentRequest(
-                                name = "projects/kts-app-2ab1f/databases/(default)/documents/Users/${studentMap.id}",
-                                fields = studentMap.toMapValues()
-                            )
-                        )
-                    )
-                }
-
-                if (changeGroup(studentMap, oldStudentMap)) {
-                    add(
-                        Write(
-                            updateMask = DocumentMask(
-                                listOf(
-                                    replace,
-                                    "timestamp"
-                                )
-                            ),
-                            updateTransforms = listOf(
-                                FieldTransform(
-                                    fieldPath = "timestamp",
-                                    setToServerValue = ServerValue.REQUEST_TIME
-                                )
-                            ),
-                            update = DocumentRequest(
-                                name = "projects/kts-app-2ab1f/databases/(default)/documents/Group/${oldStudentMap.groupId}",
-                                fields = emptyMap()
-                            )
-                        )
-                    )
-                }
-
-                println("STRING!!! $replace")
+            if (changePersonalData(studentMap, oldStudentMap)) {
                 add(
                     Write(
-                        updateMask = DocumentMask(
-                            listOf(
-                                replace,
-                                "timestamp",
-                                "abc"
-                            )
-                        ),
+                        updateMask = null,
                         update = DocumentRequest(
-                            name = "projects/kts-app-2ab1f/databases/(default)/documents/Group/${studentMap.groupId}",
-                            fields = mapOf(
-                                "students" to Value(
-                                    mapValue = MapValue(
-                                        mapOf(
-                                            studentMap.id to Value(
-                                                mapValue = MapValue(studentMap.toMapValues())
-                                            )
-                                        )
-                                    )
-                                ),
-                                "timestamp" to Value(timestampValue = Date().toTimestampValue()),
-                                "abc" to Value(stringValue = "123")
-                            )
-                        ),
-                        updateTransforms = listOf(
-                            FieldTransform(
-                                fieldPath = "timestamp",
-                                setToServerValue = ServerValue.REQUEST_TIME,
-                            )
+                            name = PathReference()
+                                .collection("Users")
+                                .document(studentMap.id).path,
+                            fields = studentMap.toMapValues()
                         )
                     )
                 )
             }
-            contentType(ContentType.Application.Json)
-            setBody(Commit(writes))
-        }.bodyAsText().apply { println(this) }
 
-//        firestore.batch().apply {
-//            if (changePersonalData(studentMap, oldStudentMap)) {
-//                this[usersRef.document(studentMap.id)] = studentMap.map
-//            }
-//        if (changeGroup(studentMap, oldStudentMap)) {
-//            deleteStudentFromGroup(studentMap.id, oldStudentMap.groupId!!, this)
-//        }
-//        updateStudentFromGroup(studentMap.map, studentMap.groupId!!, this)
-//        commit().await()
-//        }
+            if (changeGroup(studentMap, oldStudentMap)) {
+                add(
+                    Write(
+                        updateMask = DocumentMask(listOf(studentField, "timestamp")),
+                        updateTransforms = listOf(
+                            FieldTransform(
+                                fieldPath = "timestamp",
+                                setToServerValue = ServerValue.REQUEST_TIME
+                            )
+                        ),
+                        update = DocumentRequest(
+                            name = PathReference().collection("Groups")
+                                .document(oldStudentMap.groupId!!).path,
+                            fields = emptyMap()
+                        )
+                    )
+                )
+            }
+
+            add(
+                Write(
+                    updateMask = DocumentMask(
+                        listOf(
+                            "timestamp",
+                            studentField
+                        )
+                    ),
+                    update = DocumentRequest(
+                        name = PathReference().collection("Groups")
+                            .document(studentMap.groupId!!).path,
+                        fields = mapOf(
+                            "students" to Value(
+                                mapValue = MapValue(
+                                    mapOf(
+                                        studentMap.id to Value(
+                                            mapValue = MapValue(studentMap.toMapValues())
+                                        )
+                                    )
+                                )
+                            ),
+                        )
+                    ),
+                    updateTransforms = listOf(
+                        FieldTransform(
+                            fieldPath = "timestamp",
+                            setToServerValue = ServerValue.REQUEST_TIME,
+                        )
+                    )
+                )
+            )
+        }
+        client.commit(Commit(writes)).bodyAsText().apply { println(this) }
     }
-
-//    private fun updateStudentFromGroup(studentMap: FireMap, groupId: String, batch: WriteBatch) {
-//        val updateGroupMap: MutableMap<String, Any> = HashMap()
-//        updateGroupMap["students." + studentMap["id"]] = studentMap
-//        updateGroupMap["timestamp"] = FieldValue.serverTimestamp()
-//        batch.update(groupsRef.document(groupId), updateGroupMap)
-//    }
-
-//    private fun deleteStudentFromGroup(studentId: String, groupId: String, batch: WriteBatch) {
-//        val updateGroupMap: MutableMap<String, Any> = HashMap()
-//        updateGroupMap["students.$studentId"] = FieldValue.delete()
-//        updateGroupMap["timestamp"] = FieldValue.serverTimestamp()
-//        batch.update(groupsRef.document(groupId), updateGroupMap)
-//    }
 
     private fun changePersonalData(student: UserMap, cacheStudent: UserMap): Boolean {
         return student.fullName != cacheStudent.fullName || student.gender != cacheStudent.gender ||

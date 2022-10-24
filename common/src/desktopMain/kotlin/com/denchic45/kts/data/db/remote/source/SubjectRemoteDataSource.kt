@@ -1,11 +1,11 @@
 package com.denchic45.kts.data.db.remote.source
 
+import com.denchic45.firebasemultiplatform.ktor.getDocument
 import com.denchic45.kts.data.db.remote.model.CourseMap
 import com.denchic45.kts.data.db.remote.model.SubjectMap
 import com.denchic45.kts.di.FirebaseHttpClient
 import com.denchic45.kts.util.FireMap
 import com.denchic45.kts.util.parseDocument
-import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.Flow
@@ -27,20 +27,18 @@ actual class SubjectRemoteDataSource(private val client: FirebaseHttpClient) {
 
     actual fun observeById(id: String): Flow<SubjectMap?> = flow {
         emit(
-            client.get {
-                url("https://firestore.googleapis.com/v1/projects/kts-app-2ab1f/databases/(default)/documents/Subjects/$id")
-            }.run {
+            client.getDocument { collection("Subjects").document(id) }.run {
                 if (status != HttpStatusCode.OK) null
                 else parseDocument(Json.parseToJsonElement(bodyAsText()), ::SubjectMap)
             }
         )
     }
 
-    actual suspend fun findById(id: String): SubjectMap {
-        return parseDocument(Json.parseToJsonElement(client.get {
-            url("https://firestore.googleapis.com/v1/projects/kts-app-2ab1f/databases/(default)/documents/Subjects/$id")
-        }.bodyAsText()), ::SubjectMap)
-    }
+    actual suspend fun findById(id: String): SubjectMap = parseDocument(
+        Json.parseToJsonElement(
+            client.getDocument { collection("Subjects").document(id) }.bodyAsText()
+        ), ::SubjectMap
+    )
 
     actual suspend fun remove(map: FireMap) {
 
