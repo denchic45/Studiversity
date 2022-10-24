@@ -15,7 +15,6 @@ import javax.inject.Inject
 
 actual class SubmissionAttachmentRemoteStorage @Inject constructor(
     private val firebaseStorage: FirebaseStorage,
-//    private val retrofit: Retrofit,
     private val client: HttpClient
 ) {
     private val submissionAttachmentsRef = firebaseStorage.reference.child("submission_attachments")
@@ -65,7 +64,6 @@ actual class SubmissionAttachmentRemoteStorage @Inject constructor(
 
     actual suspend fun getAttachmentBytes(url: String): ByteArray {
         return client.get { url(url) }.readBytes()
-//        return retrofit.create(DownloadByUrlApi::class.java).invoke(url).body()!!.bytes()
     }
 
     actual suspend fun update(
