@@ -2,10 +2,11 @@ package com.denchic45.kts.ui.group
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.TabRow
+import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -13,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.ui.AppBarMediator
@@ -22,18 +24,50 @@ import com.denchic45.kts.ui.group.courses.GroupCoursesScreen
 import com.denchic45.kts.ui.group.members.GroupMembersScreen
 import com.denchic45.kts.ui.navigation.GroupChild
 import com.denchic45.kts.ui.navigation.GroupTabsChild
-import com.denchic45.kts.ui.navigation.GroupTabsConfig
+import com.denchic45.kts.ui.navigation.UserEditorChild
+import com.denchic45.kts.ui.theme.toDrawablePath
+import com.denchic45.kts.ui.usereditor.UserEditorDialog
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun GroupScreen(appBarMediator: AppBarMediator, groupRootComponent: GroupRootComponent) {
     appBarMediator.title = "Группа"
-    Card(shape = RoundedCornerShape(16.dp),
+    appBarMediator.content = {
+        Spacer(Modifier.weight(1f))
+        IconButton(onClick = groupRootComponent::onAddStudentClick) {
+            Icon(
+                imageVector = Icons.Rounded.Add,
+                tint = Color.DarkGray,
+                contentDescription = ""
+            )
+        }
+        IconButton(onClick = {}) {
+            Icon(
+                painter = painterResource("ic_settings".toDrawablePath()),
+                tint = Color.DarkGray,
+                contentDescription = ""
+            )
+        }
+    }
+    Card(
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
-        elevation = 0.dp) {
+        elevation = 0.dp
+    ) {
         val stack by groupRootComponent.stack.subscribeAsState()
 
         when (val child = stack.active.instance) {
-            is GroupChild -> GroupContent(child.groupComponent)
+            is GroupChild.Group -> GroupContent(child.groupComponent)
+        }
+
+        val overlay by groupRootComponent.childOverlay.subscribeAsState()
+        overlay.overlay?.let {
+            when (val instance = it.instance) {
+                is UserEditorChild -> UserEditorDialog(
+                    instance.userEditorComponent,
+                    groupRootComponent::onDialogDismiss
+                )
+            }
         }
     }
 }
@@ -50,9 +84,11 @@ fun GroupContent(groupComponent: GroupComponent) {
             divider = {}) {
             val tabs by groupComponent.tabs.collectAsState()
             tabs.forEachIndexed { index, item ->
-                Tab(selected == index,
+                Tab(
+                    selected == index,
                     onClick = { groupComponent.onTabClick(index) },
-                    text = item.title)
+                    text = item.title
+                )
             }
         }
         Divider()

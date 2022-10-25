@@ -21,11 +21,12 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class GroupMembersComponent(
-    findGroupMembersUseCase: FindGroupMembersUseCase, componentContext: ComponentContext,
+    findGroupMembersUseCase: FindGroupMembersUseCase,
+    componentContext: ComponentContext,
     private val setHeadmanUseCase: SetHeadmanUseCase,
     private val removeHeadmanUseCase: RemoveHeadmanUseCase,
     profileComponent: (navigator: StackNavigator<in GroupConfig.Group>, groupClickable: Boolean, userId: String) -> ProfileComponent,
-    userEditorComponent: (onFinish: () -> Unit, userId: String?, role: UserRole, groupId: String?) -> UserEditorComponent,
+    userEditorComponent: (onFinish: () -> Unit, config: UserEditorConfig) -> UserEditorComponent,
     navigator: StackNavigator<in GroupConfig>,
     private val groupId: String,
 ) : ComponentContext by componentContext {
@@ -42,12 +43,7 @@ class GroupMembersComponent(
                         profileComponent(navigator, false, config.userId)
                     )
                     is UserEditorConfig -> UserEditorChild(
-                        userEditorComponent(
-                            navigation::pop,
-                            config.userId,
-                            config.role,
-                            config.groupId
-                        )
+                        userEditorComponent(navigation::pop, config)
                     )
                 }
             })

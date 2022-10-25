@@ -10,3 +10,7 @@ sealed interface GroupConfig : Parcelable {
 sealed interface GroupChild {
     class Group(val groupComponent: GroupComponent) : GroupChild
 }
+
+sealed interface GroupOverlayConfig : Parcelable
+
+sealed interface GroupOverlayChild

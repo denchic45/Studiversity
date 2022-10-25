@@ -11,6 +11,7 @@ import com.denchic45.kts.domain.usecase.ObserveUserUseCase
 import com.denchic45.kts.domain.usecase.UpdateUserUseCase
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.MenuItem
+import com.denchic45.kts.ui.navigation.UserEditorConfig
 import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.randomAlphaNumericString
@@ -36,20 +37,21 @@ class UserEditorComponent(
     private val observeGroupInfoUseCase: ObserveGroupInfoUseCase,
     componentContext: ComponentContext,
     private val onFinish: () -> Unit,
-    userId: String?, role: UserRole, groupId: String?,
+    private val config: UserEditorConfig
+//    userId: String?, role: UserRole, groupId: String?,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
 
-    private var userId: String = userId ?: UUIDS.createShort()
+    private var userId: String = config.userId ?: UUIDS.createShort()
 
-    private val uiEditor: UIEditor<User> = UIEditor(userId == null) {
+    private val uiEditor: UIEditor<User> = UIEditor(config.userId == null) {
         User(
             this.userId,
             firstNameField.value,
             surnameField.value,
             patronymicField.value,
-            groupId,
+            config.groupId,
             selectedRole.value,
             emailField.value,
             photoUrl.value,
@@ -66,7 +68,7 @@ class UserEditorComponent(
 
     val errorState = MutableStateFlow(ErrorState())
 
-    private val groupId = MutableStateFlow(groupId)
+    private val groupId = MutableStateFlow(config.groupId)
 
     val genders = listOf(MenuItem(GenderAction.Male), MenuItem(GenderAction.Female))
 
@@ -83,7 +85,7 @@ class UserEditorComponent(
     val genderField = MutableStateFlow(GenderAction.Undefined)
 
     val availableRoles: StateFlow<List<MenuItem<RoleAction>>?> = MutableStateFlow(
-        when (role) {
+        when (config.role) {
             UserRole.TEACHER,
             UserRole.HEAD_TEACHER,
             -> listOf(
@@ -95,7 +97,7 @@ class UserEditorComponent(
     )
 
 
-    private val selectedRole = MutableStateFlow(role)
+    private val selectedRole = MutableStateFlow(config.role)
 
     val roleField: StateFlow<RoleAction> =
         selectedRole
@@ -116,7 +118,7 @@ class UserEditorComponent(
 
     private var generatedAvatar = true
 
-    val groupFieldVisibility: StateFlow<Boolean> = MutableStateFlow(role == UserRole.STUDENT)
+    val groupFieldVisibility: StateFlow<Boolean> = MutableStateFlow(config.role == UserRole.STUDENT)
 
     val accountFieldsVisibility: StateFlow<Boolean> = MutableStateFlow(uiEditor.isNew)
 

@@ -7,6 +7,8 @@ class UserEditorConfig(
     val userId: String?,
     val role: UserRole,
     val groupId: String?,
-) : GroupMembersConfig
+) : GroupMembersConfig, GroupOverlayConfig
 
-class UserEditorChild(val userEditorComponent: UserEditorComponent) : GroupMembersChild
+class UserEditorChild(
+    val userEditorComponent: UserEditorComponent
+) : GroupMembersChild, GroupOverlayChild
