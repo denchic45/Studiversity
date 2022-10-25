@@ -60,22 +60,29 @@ fun MainContent(mainComponent: MainComponent) {
                             fontSize = TextUnit(32F, TextUnitType.Sp),
                             style = MaterialTheme.typography.headlineLarge
                         )
-                        appBarMediator.content(this)
+                        appBarMediator.content?.let {
+                            it(this)
+                            androidx.compose.material.Divider(
+                                Modifier
+                                    .padding(horizontal = 24.dp)
+                                    .align(Alignment.CenterVertically).size(1.dp, 24.dp)
+                            )
+                        }
                     }
                 }, modifier = Modifier.padding(top = 24.dp, bottom = 8.dp, end = 24.dp), actions = {
+                    Spacer(Modifier.width(4.dp))
                     IconButton(onClick = {}) {
                         Icon(
                             imageVector = Icons.Outlined.Notifications,
                             tint = Color.DarkGray,
-                            contentDescription = "previous week arrow icon"
+                            contentDescription = "Notifications"
                         )
                     }
-                    Spacer(Modifier.width(12.dp))
                     IconButton(onClick = {}) {
                         Icon(
                             imageVector = Icons.Outlined.AccountCircle,
                             tint = Color.DarkGray,
-                            contentDescription = "previous week arrow icon"
+                            contentDescription = "Avatar"
                         )
                     }
                 })
@@ -129,5 +136,5 @@ private fun MainAppBar(
 
 class AppBarMediator {
     var title by mutableStateOf("")
-    var content by mutableStateOf<@Composable RowScope.() -> Unit>({})
+    var content by mutableStateOf<(@Composable RowScope.() -> Unit)?>({})
 }
