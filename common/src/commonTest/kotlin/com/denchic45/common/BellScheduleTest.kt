@@ -1,6 +1,6 @@
 package com.denchic45.common
 
-import com.denchic45.kts.data.network.model.BellSchedule
+import com.denchic45.kts.data.service.model.BellSchedule
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.Test
@@ -12,7 +12,8 @@ class BellScheduleTest {
     @Test
     fun test() {
         println(
-            json.encodeToString(BellSchedule(
+            json.encodeToString(
+                BellSchedule(
                 listOf(
                     "8:30" to "9:10",
                     "9:20" to "10:00",
@@ -26,7 +27,8 @@ class BellScheduleTest {
                     "15:20" to "16:00",
                     "16:05" to "16:45",
                 )
-            ))
+            )
+            )
         )
     }
 }

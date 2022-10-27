@@ -1,11 +1,11 @@
 package com.denchic45.kts.domain.usecase
 
 import com.denchic45.kts.data.domain.model.UserRole
-import com.denchic45.kts.data.repository.GroupRepository
 import com.denchic45.kts.data.repository.StudentRepository
 import com.denchic45.kts.data.repository.TeacherRepository
 import com.denchic45.kts.data.repository.UserRepository
 import com.denchic45.kts.data.service.AuthService
+import com.denchic45.kts.data.service.AvatarService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.error.NetworkError
 import com.denchic45.kts.domain.model.User
@@ -16,7 +16,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class UpdateUserUseCase(
-    private val groupRepository: GroupRepository,
+    private val avatarService: AvatarService,
     private val userRepository: UserRepository,
     private val studentRepository: StudentRepository,
     private val teacherRepository: TeacherRepository,
@@ -28,7 +28,7 @@ class UpdateUserUseCase(
         return if (!networkService.isNetworkAvailable) {
             Err(NetworkError)
         } else {
-            val photoUrl = ""
+            val photoUrl = createAvatar(user)
             val updatedUser = user.copy(photoUrl = photoUrl)
             when (updatedUser.role) {
                 UserRole.STUDENT -> studentRepository.update(updatedUser)
@@ -39,18 +39,13 @@ class UpdateUserUseCase(
     }
 
     private suspend fun createAvatar(user: User): String {
-
-        TODO("")
-
-//        val photoUrl: String = if (user.generatedAvatar) {
-//            val avatarBytes = avatarGenerator.name(user.firstName)
-//                .initFrom(AvatarBuilderTemplate())
-//                .generateBytes()
-//            loadAvatar(avatarBytes, user.id)
-//        } else {
-//            return user.photoUrl
-//        }
-//        return photoUrl
+        val photoUrl: String = if (user.generatedAvatar) {
+            val avatarBytes = avatarService.generateAvatar(user.firstName)
+            loadAvatar(avatarBytes, user.id)
+        } else {
+            return user.photoUrl
+        }
+        return photoUrl
     }
 
     private suspend fun loadAvatar(avatarBytes: ByteArray, id: String): String {
