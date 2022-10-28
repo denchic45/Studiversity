@@ -1,8 +1,8 @@
 package com.denchic45.kts.di
 
 import com.denchic45.kts.ApiKeys
-import com.denchic45.kts.data.service.model.RefreshTokenResponse
 import com.denchic45.kts.data.pref.AppPreferences
+import com.denchic45.kts.data.service.model.RefreshTokenResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.auth.*
