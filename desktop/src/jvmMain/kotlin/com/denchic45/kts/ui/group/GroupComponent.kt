@@ -23,7 +23,9 @@ class GroupComponent(
     private val groupId: String,
 ) : ComponentContext by componentContext {
 
-    private val groupMembersComponent by lazy { lazyGroupMembersComponent(navigator, groupId) }
+    private val groupMembersComponent by lazy {
+        lazyGroupMembersComponent(navigator, groupId)
+    }
     private val groupCourseComponent by lazy { lazyGroupCourseComponent(groupId) }
 
     private val navigation = StackNavigation<GroupTabsConfig>()
@@ -41,12 +43,14 @@ class GroupComponent(
 
     fun onTabClick(index: Int) {
         selectedTab.value = index
-        navigation.bringToFront(when (tabs.value[index]) {
-            is TabItem.Members -> GroupTabsConfig.Members
-            is TabItem.Courses -> GroupTabsConfig.Courses
-            TabItem.DutyRoster -> TODO()
-            TabItem.Timetable -> TODO()
-        })
+        navigation.bringToFront(
+            when (tabs.value[index]) {
+                is TabItem.Members -> GroupTabsConfig.Members
+                is TabItem.Courses -> GroupTabsConfig.Courses
+                TabItem.DutyRoster -> TODO()
+                TabItem.Timetable -> TODO()
+            }
+        )
     }
 
 

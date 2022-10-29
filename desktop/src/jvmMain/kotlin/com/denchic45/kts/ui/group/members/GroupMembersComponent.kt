@@ -33,20 +33,20 @@ class GroupMembersComponent(
 
     private val navigation = StackNavigation<GroupMembersConfig>()
 
-    val stack: Value<ChildStack<GroupMembersConfig, GroupMembersChild>> =
-        childStack(source = navigation,
-            initialConfiguration = GroupMembersConfig.Unselected,
-            childFactory = { config, _ ->
-                when (config) {
-                    GroupMembersConfig.Unselected -> GroupMembersChild.Unselected
-                    is ProfileConfig -> ProfileChild(
-                        profileComponent(navigator, false, config.userId)
-                    )
-                    is UserEditorConfig -> UserEditorChild(
-                        userEditorComponent(navigation::pop, config)
-                    )
-                }
-            })
+    val stack: Value<ChildStack<GroupMembersConfig, GroupMembersChild>> = childStack(
+        source = navigation,
+        initialConfiguration = GroupMembersConfig.Unselected,
+        childFactory = { config, _ ->
+            when (config) {
+                GroupMembersConfig.Unselected -> GroupMembersChild.Unselected
+                is ProfileConfig -> ProfileChild(
+                    profileComponent(navigator, false, config.userId)
+                )
+                is UserEditorConfig -> UserEditorChild(
+                    userEditorComponent(navigation::pop, config)
+                )
+            }
+        })
 
     private val componentScope = componentScope()
 

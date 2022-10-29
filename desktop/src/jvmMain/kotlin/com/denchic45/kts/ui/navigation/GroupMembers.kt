@@ -4,10 +4,8 @@ import com.arkivanov.essenty.parcelable.Parcelable
 
 sealed interface GroupMembersConfig : Parcelable {
     object Unselected : GroupMembersConfig
-
 }
 
 sealed interface GroupMembersChild {
     object Unselected : GroupMembersChild
-
 }
