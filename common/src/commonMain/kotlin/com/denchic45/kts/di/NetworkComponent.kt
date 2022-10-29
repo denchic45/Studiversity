@@ -17,9 +17,11 @@ import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
+@LayerScope
 @Component
 abstract class NetworkComponent {
 
+    @LayerScope
     @Provides
     fun provideHttpClient() = HttpClient {
         install(Logging) {
@@ -35,6 +37,7 @@ abstract class NetworkComponent {
         }
     }
 
+    @LayerScope
     @Provides
     fun provideFirebaseHttpClient(
         httpClient: HttpClient,

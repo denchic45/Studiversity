@@ -4,34 +4,34 @@ import com.denchic45.kts.data.pref.*
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
-@AppScope
+@LayerScope
 @Component
 abstract class PreferencesComponent(@get:Provides val factory: SettingsFactory) {
-    @AppScope
+    @LayerScope
     @Provides
     fun provideAppPreferences(): AppPreferences {
         return AppPreferences(factory.createObservable("App"))
     }
 
-    @AppScope
+    @LayerScope
     @Provides
     fun provideUserPreferences(): UserPreferences {
         return UserPreferences(factory.createObservable("User"))
     }
 
-    @AppScope
+    @LayerScope
     @Provides
     fun provideGroupPreferences(): GroupPreferences {
         return GroupPreferences(factory.createObservable("Group"))
     }
 
-    @AppScope
+    @LayerScope
     @Provides
     fun provideTimestampPreferences(): TimestampPreferences {
         return TimestampPreferences(factory.createObservable("Timestamp"))
     }
 
-    @AppScope
+    @LayerScope
     @Provides
     fun provideCoursePreferences(): CoursePreferences {
         return CoursePreferences(factory.createObservable("Courses"))
