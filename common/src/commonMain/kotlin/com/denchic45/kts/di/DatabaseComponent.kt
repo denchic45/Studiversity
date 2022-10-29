@@ -7,23 +7,23 @@ import com.squareup.sqldelight.db.SqlDriver
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
-@AppScope
+@LayerScope
 @Component
 abstract class DatabaseComponent(@get:Provides val driverFactory: DriverFactory) {
 
-    @AppScope
+    @LayerScope
     @Provides
     fun provideSqlDriver(): SqlDriver {
         return driverFactory.driver
     }
 
-    @AppScope
+    @LayerScope
     @Provides
     fun provideDbHelper(sqlDriver: SqlDriver): DbHelper {
         return DbHelper(sqlDriver)
     }
 
-    @AppScope
+    @LayerScope
     @Provides
     fun provideAppDatabase(dbHelper: DbHelper): AppDatabase {
         return dbHelper.database
