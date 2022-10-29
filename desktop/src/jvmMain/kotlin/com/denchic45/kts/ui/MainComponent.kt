@@ -1,8 +1,10 @@
 package com.denchic45.kts.ui
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.overlay.ChildOverlay
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.childOverlay
+import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
@@ -11,6 +13,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.denchic45.kts.domain.MainInteractor
 import com.denchic45.kts.ui.group.GroupRootComponent
+import com.denchic45.kts.ui.navigation.*
 import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
@@ -21,7 +24,12 @@ class MainComponent constructor(
     lazyTimetableComponent: Lazy<TimetableComponent>,
     lazyGroupRootComponent: Lazy<GroupRootComponent>,
     mainInteractor: MainInteractor,
+    private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     componentContext: ComponentContext,
+    userEditorComponent: (
+        onFinish: () -> Unit,
+        config: UserEditorConfig
+    ) -> UserEditorComponent,
 ) : ComponentContext by componentContext {
 
     private val timetableComponent by lazyTimetableComponent
@@ -29,17 +37,7 @@ class MainComponent constructor(
 
     private val coroutineScope = componentScope()
 
-    private val dialogNavigation = OverlayNavigation<DialogConfig>()
-
     data class DialogConfig(val title: String) : Parcelable
-
-    val dialog = childOverlay(
-        source = dialogNavigation,
-        // persistent = false, // Disable navigation state saving, if needed
-        handleBackButton = true, // Close the dialog on back button press
-    ) { config, componentContext ->
-        
-    }
 
     private val navigation = StackNavigation<Config>()
 
@@ -52,6 +50,18 @@ class MainComponent constructor(
             }
         })
 
+    val childOverlay: Value<ChildOverlay<OverlayConfig, OverlayChild>> = childOverlay(
+        source = overlayNavigation,
+        handleBackButton = true
+    ) { config, _ ->
+        when (config) {
+            is UserEditorConfig -> {
+                UserEditorChild(userEditorComponent(overlayNavigation::dismiss, config))
+            }
+            is ConfirmConfig -> ConfirmChild(config)
+        }
+    }
+
     init {
         coroutineScope.launch { mainInteractor.startListeners() }
         coroutineScope.launch { mainInteractor.observeHasGroup() }
@@ -63,6 +73,10 @@ class MainComponent constructor(
 
     fun onGroupClick() {
         navigation.bringToFront(Config.Group)
+    }
+
+    fun onOverlayDismiss() {
+        overlayNavigation.dismiss()
     }
 
     sealed class Config : Parcelable {

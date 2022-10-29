@@ -2,7 +2,10 @@ package com.denchic45.kts.ui.group
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.Divider
+import androidx.compose.material.IconButton
+import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -24,11 +27,9 @@ import com.denchic45.kts.ui.group.courses.GroupCoursesScreen
 import com.denchic45.kts.ui.group.members.GroupMembersScreen
 import com.denchic45.kts.ui.navigation.GroupChild
 import com.denchic45.kts.ui.navigation.GroupTabsChild
-import com.denchic45.kts.ui.navigation.UserEditorChild
 import com.denchic45.kts.ui.theme.toDrawablePath
-import com.denchic45.kts.ui.usereditor.UserEditorDialog
 
-@OptIn(ExperimentalMaterialApi::class)
+
 @Composable
 fun GroupScreen(appBarMediator: AppBarMediator, groupRootComponent: GroupRootComponent) {
     appBarMediator.title = "Группа"
@@ -58,16 +59,6 @@ fun GroupScreen(appBarMediator: AppBarMediator, groupRootComponent: GroupRootCom
 
         when (val child = stack.active.instance) {
             is GroupChild.Group -> GroupContent(child.groupComponent)
-        }
-
-        val overlay by groupRootComponent.childOverlay.subscribeAsState()
-        overlay.overlay?.let {
-            when (val instance = it.instance) {
-                is UserEditorChild -> UserEditorDialog(
-                    instance.userEditorComponent,
-                    groupRootComponent::onDialogDismiss
-                )
-            }
         }
     }
 }

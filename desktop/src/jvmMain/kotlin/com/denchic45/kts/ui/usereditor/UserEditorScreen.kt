@@ -7,7 +7,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -58,7 +57,18 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
         )
-        UserEditorContent(component)
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+            UserEditorContent(component)
+            OutlinedButton(
+                onClick = component::onRemoveClick,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    .align(Alignment.End),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Удалить пользователя")
+            }
+            Spacer(Modifier.height(24.dp))
+        }
     }
 }
 
@@ -72,25 +82,28 @@ fun UserEditorDialog(component: UserEditorComponent, onDismissRequest: () -> Uni
                 modifier = Modifier
             ) {
                 Text(component.toolbarTitle)
-                Spacer(Modifier.weight(0.1f))
-                IconButton({}) {
+                Spacer(Modifier.weight(1f))
+                IconButton({ onDismissRequest() }) {
                     Icon(Icons.Rounded.Close, "")
                 }
             }
         },
         onDismissRequest = onDismissRequest,
-        text = { UserEditorContent(component) },
-        confirmButton = { Button({}) { Text("Confirm") } },
-        dismissButton = { Button({}) { Text("Close") } },
-        optionalButton = { Button({}) { Text("Удалить") } }
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                UserEditorContent(component)
+            }
+        },
+        confirmButton = { TextButton(component::onSaveClick) { Text("Сохранить") } },
+        dismissButton = { TextButton({ onDismissRequest() }) { Text("Отмена") } },
+        optionalButton = { TextButton(component::onRemoveClick) { Text("Удалить") } }
     )
 }
 
 @Composable
 private fun UserEditorContent(component: UserEditorComponent) {
-    Column(Modifier.padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
+    Column(Modifier.padding(horizontal = 16.dp)) {
         val photoUrl by component.photoUrl.collectAsState()
-
         AsyncImage(
             load = { loadImageBitmap(photoUrl) },
             painterFor = { BitmapPainter(it) },
@@ -106,8 +119,8 @@ private fun UserEditorContent(component: UserEditorComponent) {
         val errorState by component.errorState.collectAsState()
 
         HeaderItem("Личные данные")
-        val firstName by component.firstNameField.collectAsState()
 
+        val firstName by component.firstNameField.collectAsState()
         OutlinedTextField(
             value = firstName,
             onValueChange = component::onFirstNameType,
@@ -214,7 +227,8 @@ private fun UserEditorContent(component: UserEditorComponent) {
                 label = { Text("Группа") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(ContentAlpha.medium)
+                    disabledLabelColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                    disabledBorderColor = MaterialTheme.colorScheme.outline
                 ),
                 trailingIcon = {
                     IconButton(onClick = component::onGroupClick) {
@@ -227,15 +241,5 @@ private fun UserEditorContent(component: UserEditorComponent) {
             )
         }
         SupportingText(errorState.groupMessage ?: "", true)
-
-        OutlinedButton(
-            onClick = {},
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                .align(Alignment.End),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-        ) {
-            Text("Удалить пользователя")
-        }
-        Spacer(Modifier.height(24.dp))
     }
 }
