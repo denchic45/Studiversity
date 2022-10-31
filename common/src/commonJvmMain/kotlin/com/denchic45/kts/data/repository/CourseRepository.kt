@@ -17,6 +17,7 @@ import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.data.storage.ContentAttachmentStorage
 import com.denchic45.kts.data.storage.SubmissionAttachmentStorage
+import com.denchic45.kts.domain.error.SearchError
 import com.denchic45.kts.domain.model.Course
 import com.denchic45.kts.domain.model.CourseHeader
 import com.denchic45.kts.domain.model.Section
@@ -24,6 +25,7 @@ import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.util.CourseContents
 import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.differenceOf
+import com.github.michaelbull.result.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
@@ -54,7 +56,7 @@ class CourseRepository @Inject constructor(
     private val courseRemoteDataSource: CourseRemoteDataSource,
     private val groupRemoteDataSource: GroupRemoteDataSource,
 ) : Repository(), SaveGroupOperation, SaveCourseRepository,
-    FindByContainsNameRepository<CourseHeader> {
+    FindByContainsNameRepository<CourseHeader>,FindByContainsName2Repository<CourseHeader> {
 
     override fun findByContainsName(text: String): Flow<List<CourseHeader>> {
         return courseRemoteDataSource.findByContainsName(text).map { courseMaps ->
@@ -422,6 +424,10 @@ class CourseRepository @Inject constructor(
 
     suspend fun removeCourse(courseId: String, groupIds: List<String>) {
         courseRemoteDataSource.removeCourse(courseId, groupIds)
+    }
+
+    override fun findByContainsName2(text: String): Flow<Result<List<CourseHeader>, SearchError<out CourseHeader>>> {
+        TODO("Not yet implemented")
     }
 }
 
