@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.components
+package com.denchic45.kts.ui.components.flow
 
 
 import androidx.compose.ui.unit.Constraints
