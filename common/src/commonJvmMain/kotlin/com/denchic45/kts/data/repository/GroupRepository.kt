@@ -14,6 +14,7 @@ import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.error.SearchError
 import com.denchic45.kts.domain.model.*
 import com.denchic45.kts.util.timestampNotNull
+import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
@@ -50,7 +51,14 @@ class GroupRepository @Inject constructor(
     }
 
     override fun findByContainsName2(text: String): Flow<Result<List<GroupHeader>, SearchError<out GroupHeader>>> {
-        TODO("Not yet implemented")
+
+        return groupRemoteDataSource.findByContainsName(text)
+            .filter { groupMaps -> groupMaps.all { it.timestampNotNull() } }.map { groupDocs ->
+                for (groupDoc in groupDocs) {
+                    saveGroup(groupDoc)
+                }
+                Ok(groupDocs.mapsToGroupHeaders())
+            }
     }
 
     private suspend fun saveYourGroup(group: GroupMap) {
