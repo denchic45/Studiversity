@@ -1,13 +1,12 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.db.local.source.SpecialtyLocalDataSource
 import com.denchic45.kts.data.db.remote.source.SpecialtyRemoteDataSource
 import com.denchic45.kts.data.mapper.*
+import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.error.SearchError
 import com.denchic45.kts.domain.model.Specialty
-import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +21,8 @@ class SpecialtyRepository @Inject constructor(
     private val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val specialtyRemoteDataSource: SpecialtyRemoteDataSource,
     override val networkService: NetworkService,
-) : Repository(), FindByContainsNameRepository<Specialty>,FindByContainsName2Repository<Specialty> {
+) : Repository(), FindByContainsNameRepository<Specialty>,
+    FindByContainsName3Repository<Specialty> {
 
     override fun findByContainsName(text: String): Flow<List<Specialty>> {
         return specialtyRemoteDataSource.findByContainsName(text)
@@ -32,12 +32,14 @@ class SpecialtyRepository @Inject constructor(
             }
     }
 
-    override fun findByContainsName2(text: String): Flow<Result<List<Specialty>, SearchError<out Specialty>>> {
-        return specialtyRemoteDataSource.findByContainsName(text)
-            .map { maps ->
-                specialtyLocalDataSource.upsert(maps.mapsToSpecialEntities())
-                Ok(maps.mapsToDomains())
-            }
+    override fun findByContainsName3(text: String): Flow<Result<List<Specialty>, SearchError>> {
+        return observeByContainsName {
+            specialtyRemoteDataSource.findByContainsName(text)
+                .map { maps ->
+                    specialtyLocalDataSource.upsert(maps.mapsToSpecialEntities())
+                    maps.mapsToDomains()
+                }
+        }
     }
 
     fun observe(id: String): Flow<Specialty?> {

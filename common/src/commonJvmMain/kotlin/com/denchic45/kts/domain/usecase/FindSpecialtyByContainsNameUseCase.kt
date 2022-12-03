@@ -6,4 +6,4 @@ import javax.inject.Inject
 
 class FindSpecialtyByContainsNameUseCase @Inject constructor(
     specialtyRepository: SpecialtyRepository
-) : FindByContainsNameUseCase<Specialty>(specialtyRepository)
+) : FindByContainsNameUseCase2<Specialty>(specialtyRepository)

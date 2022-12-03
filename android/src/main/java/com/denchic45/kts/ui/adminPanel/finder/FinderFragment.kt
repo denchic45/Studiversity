@@ -79,10 +79,10 @@ class FinderFragment :
             rvFinderEntities.layoutManager =
                 LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
             finderEntityAdapter.setItemClickListener { position: Int ->
-                viewModel.onFinderEntitySelect(position)
+                viewModel.onCurrentSearchSelect(position)
             }
 
-            viewModel.currentSelectedEntity.collectWhenStarted(lifecycleScope) { position: Int ->
+            viewModel.currentSearch.collectWhenStarted(lifecycleScope) { position: Int ->
                 currentAdapter = listAdapters[position] as ListAdapter<DomainModel, *>
                 rvFoundItems.adapter = currentAdapter
                 AppBarController.findController(requireActivity())

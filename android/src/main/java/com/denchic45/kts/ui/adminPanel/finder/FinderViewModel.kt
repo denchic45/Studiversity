@@ -5,19 +5,21 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.ListItem
+import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.error.NetworkError
+import com.denchic45.kts.domain.error.NotFound
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.BaseViewModel
+import com.denchic45.kts.ui.base.chooser.toSearchState
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
+import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.util.NetworkException
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
+import com.github.michaelbull.result.*
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
@@ -39,7 +41,7 @@ class FinderViewModel @Inject constructor(
 
     val finderEntities = MutableLiveData<List<ListItem>>()
 
-    val currentSelectedEntity = MutableStateFlow(POSITION_FIND_USERS)
+//    val currentSelectedEntity = MutableStateFlow(POSITION_FIND_USERS)
 
     private val openSubject = SingleLiveData<String>()
 
@@ -61,18 +63,45 @@ class FinderViewModel @Inject constructor(
         { navigateTo(MobileNavigationDirections.actionGlobalCourseFragment(it)) })
     private val queryTexts = mutableListOf<String?>(null, null, null, null, null)
     private val startEmptyList: List<DomainModel> = emptyList()
-    private val foundEntities = mutableListOf(
-        startEmptyList,
-        startEmptyList,
-        startEmptyList,
-        startEmptyList,
-        startEmptyList
-    )
 
     val foundItems = MutableStateFlow<Resource<List<DomainModel>>>(Resource.Success(startEmptyList))
 
-    private val onOptionItemClickActions: Map<String, () -> Unit>
 
+    val currentSearch = MutableStateFlow(0)
+
+    private val queryNames = listOf(
+        MutableStateFlow(""),
+        MutableStateFlow(""),
+        MutableStateFlow(""),
+        MutableStateFlow(""),
+        MutableStateFlow("")
+    )
+
+    private val searchStates = listOf(
+        queryToSearchFlow(0),
+        queryToSearchFlow(1),
+        queryToSearchFlow(2),
+        queryToSearchFlow(3),
+        queryToSearchFlow(4),
+    )
+
+    private fun queryToSearchFlow(index: Int): StateFlow<SearchState<out DomainModel>> =
+        queryNames[index].flatMapLatest { text ->
+            flow {
+                emit(SearchState.Loading)
+                findUseCases[index].invoke(text).map { result ->
+                    emit(
+                        result.toSearchState()
+                    )
+                }
+            }
+        }.stateIn(viewModelScope, SharingStarted.Lazily, SearchState.Start)
+
+    val currentSearchState: Flow<SearchState<out DomainModel>> =
+        currentSearch.flatMapLatest { index -> searchStates[index] }
+
+
+    private val onOptionItemClickActions: Map<String, () -> Unit>
 
     private val findUseCases = listOf(
         findUserByContainsNameUseCase,
@@ -82,26 +111,31 @@ class FinderViewModel @Inject constructor(
         findCourseByContainsNameUseCase
     )
 
-
     private val optionsList: List<List<ListItem>>
     private var selectedEntity: DomainModel? = null
     fun onQueryTextSubmit(queryName: String) {
+
+        queryNames[currentSearch.value].value = queryName
+
         viewModelScope.launch {
-            queryTexts[currentSelectedEntity.value] = queryName
-            queryByName.emit(queryName)
+//            queryTexts[currentSelectedEntity.value] = queryName
+//            queryByName.emit(queryName)
         }
     }
 
-    fun onFinderEntitySelect(position: Int) {
-        currentSelectedEntity.value = position
-        val items = foundEntities[currentSelectedEntity.value]
-        foundItems.tryEmit(Resource.Success(items))
+    fun onCurrentSearchSelect(position: Int) {
+//        currentSelectedEntity.value = position
+//        val items = foundEntities[currentSelectedEntity.value]
+//        foundItems.tryEmit(Resource.Success(items))
+//
+//        queryTexts[position]?.let {
+//            viewModelScope.launch {
+//                queryByName.emit(it)
+//            }
+//        }
 
-        queryTexts[position]?.let {
-            viewModelScope.launch {
-                queryByName.emit(it)
-            }
-        }
+
+        currentSearch.value = position
     }
 
     fun onOptionClick(optionId: String) {
@@ -109,13 +143,16 @@ class FinderViewModel @Inject constructor(
     }
 
     fun onFinderItemClick(position: Int) {
-        val item = foundEntities[currentSelectedEntity.value][position]
-        onFinderItemClickActions[currentSelectedEntity.value](item.id)
+//        val item = foundEntities[currentSelectedEntity.value][position]
+//        onFinderItemClickActions[currentSelectedEntity.value](item.id)
+
+        val clicked = (currentSearchState as SearchState.Found<out DomainModel>).items[position]
+        onFinderItemClickActions[currentSearch.value](clicked.id)
     }
 
     fun onFinderItemLongClick(position: Int) {
-        selectedEntity = (foundItems.value as Resource.Success).data[position]
-        showOptions.value = Pair(position, optionsList[currentSelectedEntity.value])
+//        selectedEntity = (foundItems.value as Resource.Success).data[position]
+//        showOptions.value = Pair(position, optionsList[currentSelectedEntity.value])
     }
 
     companion object {
@@ -152,15 +189,15 @@ class FinderViewModel @Inject constructor(
         )
         optionsList = listOf(userOptions, groupOptions, subjectOptions)
 
-        viewModelScope.launch {
-            queryByName.flatMapLatest { name: String ->
-                findUseCases[currentSelectedEntity.value].invoke(name)
-            }.collect { resource ->
-                foundItems.value = resource
-                if (resource is Resource.Success)
-                    foundEntities[currentSelectedEntity.value] = resource.data
-            }
-        }
+//        viewModelScope.launch {
+//            queryByName.flatMapLatest { name: String ->
+//                findUseCases[currentSelectedEntity.value].invoke(name)
+//            }.collect { resource ->
+//                foundItems.value = resource
+//                if (resource is Resource.Success)
+//                    foundEntities[currentSelectedEntity.value] = resource.data
+//            }
+//        }
 
         onOptionItemClickActions = mapOf(
             "OPTION_SHOW_PROFILE" to {
@@ -249,4 +286,12 @@ class FinderViewModel @Inject constructor(
             }
         )
     }
+}
+
+sealed class SearchState<T> {
+    object Start : SearchState<Nothing>()
+    object Loading : SearchState<Nothing>()
+    class Found<T>(val items: List<T>) : SearchState<T>()
+    object NotFound : SearchState<Nothing>()
+    object NoConnection : SearchState<Nothing>()
 }

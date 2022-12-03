@@ -57,8 +57,7 @@ class CourseRepository @Inject constructor(
     private val courseRemoteDataSource: CourseRemoteDataSource,
     private val groupRemoteDataSource: GroupRemoteDataSource,
 ) : Repository(), SaveGroupOperation, SaveCourseRepository,
-    FindByContainsNameRepository<CourseHeader>,
-    FindByContainsName2Repository<CourseHeader> {
+    FindByContainsNameRepository<CourseHeader>, FindByContainsName3Repository<CourseHeader> {
 
     override fun findByContainsName(text: String): Flow<List<CourseHeader>> {
         return courseRemoteDataSource.findByContainsName(text).map { courseMaps ->
@@ -69,9 +68,11 @@ class CourseRepository @Inject constructor(
         }
     }
 
-    override fun findByContainsName2(text: String): Flow<Result<List<CourseHeader>, SearchError<out CourseHeader>>> {
-        return courseRemoteDataSource.findByContainsName(text)
-            .map { Ok(it.mapsToCourseHeaderDomains()) }
+    override fun findByContainsName3(text: String): Flow<Result<List<CourseHeader>, SearchError>> {
+        return observeByContainsName {
+            courseRemoteDataSource.findByContainsName(text)
+                .map { it.mapsToCourseHeaderDomains() }
+        }
     }
 
     fun find(courseId: String): Flow<Course?> {

@@ -8,7 +8,9 @@ import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.data.storage.remote.SubjectRemoteStorage
+import com.denchic45.kts.domain.error.SearchError
 import com.denchic45.kts.domain.model.Subject
+import com.github.michaelbull.result.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -28,7 +30,26 @@ class SubjectRepository @Inject constructor(
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val subjectRemoteDataSource: SubjectRemoteDataSource,
     private val subjectRemoteStorage: SubjectRemoteStorage,
-) : Repository(), SaveCourseRepository, FindByContainsNameRepository<Subject> {
+) : Repository(), SaveCourseRepository, FindByContainsNameRepository<Subject>,
+    FindByContainsName3Repository<Subject> {
+
+    override fun findByContainsName(text: String): Flow<List<Subject>> {
+        return subjectRemoteDataSource.findByContainsName(text)
+            .map { subjectMaps ->
+                subjectLocalDataSource.upsert(subjectMaps.mapsToSubjectEntities())
+                subjectMaps.mapsToSubjectDomains()
+            }
+    }
+
+    override fun findByContainsName3(text: String): Flow<Result<List<Subject>, SearchError>> {
+        return observeByContainsName {
+            subjectRemoteDataSource.findByContainsName(text)
+                .map { subjectMaps ->
+                    subjectLocalDataSource.upsert(subjectMaps.mapsToSubjectEntities())
+                    subjectMaps.mapsToSubjectDomains()
+                }
+        }
+    }
 
     suspend fun add(subject: Subject) {
         requireAllowWriteData()
@@ -64,14 +85,6 @@ class SubjectRepository @Inject constructor(
 
     private suspend fun saveSubject(subjectEntity: SubjectEntity) {
         subjectLocalDataSource.upsert(subjectEntity)
-    }
-
-    override fun findByContainsName(text: String): Flow<List<Subject>> {
-        return subjectRemoteDataSource.findByContainsName(text)
-            .map { subjectMaps ->
-                subjectLocalDataSource.upsert(subjectMaps.mapsToSubjectEntities())
-                subjectMaps.mapsToSubjectDomains()
-            }
     }
 
     fun findByGroup(groupId: String): Flow<List<Subject>> = callbackFlow {

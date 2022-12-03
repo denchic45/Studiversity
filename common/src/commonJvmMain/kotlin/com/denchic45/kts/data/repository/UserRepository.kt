@@ -8,7 +8,9 @@ import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.data.storage.remote.UserRemoteStorage
+import com.denchic45.kts.domain.error.SearchError
 import com.denchic45.kts.domain.model.User
+import com.github.michaelbull.result.Result
 import kotlinx.coroutines.flow.*
 import java.util.*
 import javax.inject.Inject
@@ -21,7 +23,7 @@ open class UserRepository @Inject constructor(
     private val userLocalDataSource: UserLocalDataSource,
     private val userRemoteDataSource: UserRemoteDataSource,
     private val userRemoteStorage: UserRemoteStorage,
-) : Repository(), FindByContainsNameRepository<User> {
+) : Repository(), FindByContainsNameRepository<User>,FindByContainsName3Repository<User> {
 
     override fun findByContainsName(text: String): Flow<List<User>> {
         return userRemoteDataSource.findByContainsName(text)
@@ -29,6 +31,16 @@ open class UserRepository @Inject constructor(
                 userLocalDataSource.upsert(users.mapsToUserEntities())
                 users.mapsToUsers()
             }
+    }
+
+    override fun findByContainsName3(text: String): Flow<Result<List<User>, SearchError>> {
+        return observeByContainsName {
+            userRemoteDataSource.findByContainsName(text)
+                .map { users ->
+                    userLocalDataSource.upsert(users.mapsToUserEntities())
+                    users.mapsToUsers()
+                }
+        }
     }
 
     private fun saveUserPreference(user: User) {

@@ -6,4 +6,4 @@ import javax.inject.Inject
 
 class FindTeacherByContainsNameUseCase @Inject constructor(
     teacherRepository: TeacherRepository
-) : FindByContainsNameUseCase<User>(teacherRepository)
+) : FindByContainsNameUseCase2<User>(teacherRepository)

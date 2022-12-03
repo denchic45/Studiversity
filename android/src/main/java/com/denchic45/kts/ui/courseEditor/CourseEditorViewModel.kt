@@ -6,10 +6,8 @@ import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.customPopup.ListPopupWindowAdapter
-import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.*
-import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.data.repository.SameCoursesException
 import com.denchic45.kts.domain.model.Course
 import com.denchic45.kts.domain.model.GroupHeader
@@ -19,11 +17,13 @@ import com.denchic45.kts.domain.usecase.FindTeacherByContainsNameUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.ui.login.groupChooser.GroupChooserInteractor
+import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.uieditor.UIEditor
 import com.denchic45.kts.uivalidator.Rule
 import com.denchic45.kts.uivalidator.UIValidator
 import com.denchic45.kts.uivalidator.Validation
 import com.denchic45.kts.util.NetworkException
+import com.github.michaelbull.result.mapBoth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -82,17 +82,16 @@ class CourseEditorViewModel @Inject constructor(
     )
 
     private fun setup() {
-
         viewModelScope.launch {
             try {
                 typedTeacherName
                     .flatMapLatest { name -> findTeacherByContainsNameUseCase(name) }
-                    .collect { resource ->
-                        when (resource) {
-                            is Resource.Success -> {
-                                foundTeachers = resource.data
+                    .collect { result ->
+                        result.mapBoth( //TODO Refactor
+                            success = {
+                                foundTeachers = it
                                 showFoundTeachers.emit(
-                                    resource.data.map { user: User ->
+                                    it.map { user: User ->
                                         ListItem(
                                             id = user.id,
                                             title = user.fullName,
@@ -101,9 +100,9 @@ class CourseEditorViewModel @Inject constructor(
                                         )
                                     }
                                 )
-                            }
-                            else -> {}
-                        }
+                            },
+                            failure = {}
+                        )
                     }
             } catch (e: Exception) {
                 if (e is NetworkException) {

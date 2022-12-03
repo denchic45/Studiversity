@@ -7,4 +7,4 @@ import javax.inject.Inject
 
 class FindGroupByContainsNameUseCase @Inject constructor(
     groupRepository: GroupRepository
-) : FindByContainsNameUseCase<GroupHeader>(groupRepository)
+) : FindByContainsNameUseCase2<GroupHeader>(groupRepository)
