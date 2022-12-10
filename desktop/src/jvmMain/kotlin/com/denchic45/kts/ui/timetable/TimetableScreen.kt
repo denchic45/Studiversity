@@ -49,7 +49,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
             Spacer(Modifier.width(16.dp))
             OutlinedButton(onClick = timetableComponent::onPreviousWeekClick,
                 modifier = Modifier.size(contentHeight),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
             ) {
@@ -60,7 +60,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
             OutlinedButton(
                 onClick = timetableComponent::onNextWeekClick,
                 modifier = Modifier.size(contentHeight),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
             ) {
@@ -72,7 +72,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
 
 //            Spacer(Modifier.weight(1f))
 //            Spinner() TODO add later
-            Spacer(Modifier.width(24.dp))
+//            Spacer(Modifier.width(24.dp))
         }
     }
     Card(shape = RoundedCornerShape(16.dp),
