@@ -8,10 +8,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.denchic45.kts.ui.components.BaseDialog
 import com.denchic45.kts.ui.components.theme.toColor
 import com.denchic45.kts.ui.components.theme.toShape
-import com.denchic45.kts.ui.components.tokens.DialogTokens
 
 @Composable
 fun AlertDialog(
@@ -29,10 +27,8 @@ fun AlertDialog(
     titleContentColor: Color = AlertDialogDefaults.titleContentColor,
     textContentColor: Color = AlertDialogDefaults.textContentColor,
     tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
-//    properties: DialogProperties = DialogProperties()
 ) {
     BaseDialog(onDismissRequest = onDismissRequest) {
-//        val dialogPaneDescription = getString(Strings.Dialog)
         AlertDialogContent(
             buttons = {
                 Row {
@@ -49,10 +45,7 @@ fun AlertDialog(
                     }
                 }
             },
-            modifier = modifier.then(
-                Modifier
-//                .semantics { paneTitle = dialogPaneDescription }
-            ),
+            modifier = modifier,
             icon = icon,
             title = title,
             text = text,

@@ -1,27 +1,26 @@
 package com.denchic45.kts.ui.components.dialog
 
-import androidx.compose.foundation.shape.CornerBasedShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 
-//internal object DialogTokens {
-//    val ActionFocusLabelTextColor: Color @Composable get() = MaterialTheme.colorScheme.primary
-//    val ActionHoverLabelTextColor: Color @Composable get() = MaterialTheme.colorScheme.primary
-//    val ActionLabelTextColor: Color @Composable get() = MaterialTheme.colorScheme.primary
-//    val ActionLabelTextFont: TextStyle @Composable get() = MaterialTheme.typography.labelLarge
-//    val ActionPressedLabelTextColor: Color @Composable get() = MaterialTheme.colorScheme.primary
-//    val ContainerColor: Color @Composable get() = MaterialTheme.colorScheme.surface
-//    val ContainerElevation: Dp @Composable get() = 6.0.dp // ElevationTokens.Level3
-//    val ContainerShape: CornerBasedShape @Composable get() = MaterialTheme.shapes.extraLarge
-//    val ContainerSurfaceTintLayerColor: Color @Composable get() = MaterialTheme.colorScheme.surfaceTint
-//    val HeadlineColor: Color @Composable get() = MaterialTheme.colorScheme.onSurface
-//    val HeadlineFont: TextStyle @Composable get() = MaterialTheme.typography.headlineSmall
-//    val SupportingTextColor: Color @Composable get() = MaterialTheme.colorScheme.onSurfaceVariant
-//    val SupportingTextFont: TextStyle @Composable get() = MaterialTheme.typography.bodyMedium
-//    val IconColor: Color @Composable get() = MaterialTheme.colorScheme.secondary
-//    val IconSize: Dp = 24.0.dp
-//}
+import androidx.compose.ui.unit.dp
+import com.denchic45.kts.ui.components.tokens.ColorSchemeKeyTokens
+import com.denchic45.kts.ui.components.tokens.ElevationTokens
+import com.denchic45.kts.ui.components.tokens.ShapeKeyTokens
+import com.denchic45.kts.ui.components.tokens.TypographyKeyTokens
+
+internal object DialogTokens {
+    val ActionFocusLabelTextColor = ColorSchemeKeyTokens.Primary
+    val ActionHoverLabelTextColor = ColorSchemeKeyTokens.Primary
+    val ActionLabelTextColor = ColorSchemeKeyTokens.Primary
+    val ActionLabelTextFont = TypographyKeyTokens.LabelLarge
+    val ActionPressedLabelTextColor = ColorSchemeKeyTokens.Primary
+    val ContainerColor = ColorSchemeKeyTokens.Surface
+    val ContainerElevation = ElevationTokens.Level3
+    val ContainerShape = ShapeKeyTokens.CornerExtraLarge
+    val ContainerSurfaceTintLayerColor = ColorSchemeKeyTokens.SurfaceTint
+    val HeadlineColor = ColorSchemeKeyTokens.OnSurface
+    val HeadlineFont = TypographyKeyTokens.HeadlineSmall
+    val SupportingTextColor = ColorSchemeKeyTokens.OnSurfaceVariant
+    val SupportingTextFont = TypographyKeyTokens.BodyMedium
+    val IconColor = ColorSchemeKeyTokens.Secondary
+    val IconSize = 24.0.dp
+}
