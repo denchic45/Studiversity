@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.db.remote.source
 
 import com.denchic45.firebasemultiplatform.api.*
-import com.denchic45.kts.ApiKeys
+import com.denchic45.firebasemultiplatform.ktor.runQuery
 import com.denchic45.kts.data.db.remote.model.CourseContentMap
 import com.denchic45.kts.data.db.remote.model.CourseMap
 import com.denchic45.kts.data.db.remote.model.SectionMap
@@ -10,16 +10,13 @@ import com.denchic45.kts.di.FirebaseHttpClient
 import com.denchic45.kts.util.FireMap
 import com.denchic45.kts.util.MutableFireMap
 import com.denchic45.kts.util.parseDocuments
-import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.http.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
 
 @me.tatarka.inject.annotations.Inject
 actual class CourseRemoteDataSource(
-    private val client: FirebaseHttpClient,
-    groupRemoteDataSource: GroupRemoteDataSource,
+    private val client: FirebaseHttpClient
 ) {
     actual suspend fun removeCourse(
         courseId: String,
@@ -38,20 +35,24 @@ actual class CourseRemoteDataSource(
     }
 
     actual suspend fun findByGroupId(groupId: String): List<CourseMap> {
-        return parseDocuments(Json.parseToJsonElement(
-            client.post {
-                url("https://firestore.googleapis.com/v1/projects/${ApiKeys.firebaseProjectId}/databases/(default)/documents:runQuery")
-                contentType(ContentType.Application.Json)
-                setBody(Request(StructuredQuery(
-                    from = CollectionSelector("Courses"),
-                    where = Filter(fieldFilter = FieldFilter(
-                        field = FieldReference("groupIds"),
-                        op = FieldFilter.Operator.ARRAY_CONTAINS,
-                        value = Value(stringValue = groupId))
+        return parseDocuments(
+            Json.parseToJsonElement(
+                client.runQuery(
+                    Request(
+                        StructuredQuery(
+                            from = CollectionSelector("Courses"),
+                            where = Filter(
+                                fieldFilter = FieldFilter(
+                                    field = FieldReference("groupIds"),
+                                    op = FieldFilter.Operator.ARRAY_CONTAINS,
+                                    value = Value(stringValue = groupId)
+                                )
+                            )
+                        )
                     )
-                )))
-            }.bodyAsText()
-        ), ::CourseMap)
+                ).bodyAsText()
+            ), ::CourseMap
+        )
     }
 
     actual fun observeById(courseId: String): Flow<CourseMap?> {

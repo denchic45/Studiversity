@@ -1,13 +1,15 @@
 package com.denchic45.kts.data.db.remote.source
 
 import com.denchic45.firebasemultiplatform.api.*
-import com.denchic45.kts.ApiKeys
+import com.denchic45.firebasemultiplatform.ktor.PathReference
+import com.denchic45.firebasemultiplatform.ktor.getDocument
+import com.denchic45.firebasemultiplatform.ktor.patchDocument
+import com.denchic45.firebasemultiplatform.ktor.runQuery
 import com.denchic45.kts.data.db.remote.model.GroupMap
 import com.denchic45.kts.di.FirebaseHttpClient
 import com.denchic45.kts.util.MutableFireMap
 import com.denchic45.kts.util.parseDocument
 import com.denchic45.kts.util.parseDocuments
-import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.Flow
@@ -19,11 +21,10 @@ actual class GroupRemoteDataSource(private val client: FirebaseHttpClient) {
 
     actual fun observeById(id: String): Flow<GroupMap?> = flow {
         emit(
-            client.get("https://firestore.googleapis.com/v1/projects/kts-app-2ab1f/databases/(default)/documents/Groups/$id")
-                .run {
-                    if (status != HttpStatusCode.OK) null
-                    else parseDocument(Json.parseToJsonElement(bodyAsText()), ::GroupMap)
-                }
+            client.getDocument { collection("Groups").document(id) }.run {
+                if (status != HttpStatusCode.OK) null
+                else parseDocument(Json.parseToJsonElement(bodyAsText()), ::GroupMap)
+            }
         )
     }
 
@@ -31,14 +32,11 @@ actual class GroupRemoteDataSource(private val client: FirebaseHttpClient) {
         TODO("Not yet implemented")
     }
 
-    actual suspend fun findById(id: String): GroupMap {
-        return parseDocument(
-            Json.parseToJsonElement(
-                client.get("https://firestore.googleapis.com/v1/projects/kts-app-2ab1f/databases/(default)/documents/Groups/$id")
-                    .bodyAsText()
-            ), ::GroupMap
-        )
-    }
+    actual suspend fun findById(id: String): GroupMap = parseDocument(
+        Json.parseToJsonElement(
+            client.getDocument { collection("Groups").document(id) }.bodyAsText()
+        ), ::GroupMap
+    )
 
     actual suspend fun findCoursesByGroupId(groupId: String): List<String> {
         TODO("Not yet implemented")
@@ -59,28 +57,22 @@ actual class GroupRemoteDataSource(private val client: FirebaseHttpClient) {
     }
 
     actual suspend fun setHeadman(studentId: String, groupId: String) {
-        client.patch("https://firestore.googleapis.com/v1/projects/kts-app-2ab1f/databases/(default)/documents/Groups/$groupId") {
-            parameter("updateMask.fieldPaths", "headmanId")
-            contentType(ContentType.Application.Json)
-            setBody(
-                DocumentRequest(
-                    name = "projects/kts-app-2ab1f/databases/(default)/documents/Groups/$groupId",
-                    fields = mapOf("headmanId" to Value(stringValue = studentId))
-                )
-            )
-        }.bodyAsText().apply {
-            println(this)
-        }
+        client.patchDocument(
+            documentReference = { collection("Groups").document(groupId) },
+            document = DocumentRequest(
+                name = PathReference().collection("Groups").document(groupId).path,
+                fields = mapOf("headmanId" to Value(stringValue = studentId))
+            ),
+            updateMask = DocumentMask(listOf("headmanId"))
+        )
     }
 
     actual suspend fun removeHeadman(groupId: String) {
-        client.patch("https://firestore.googleapis.com/v1/projects/kts-app-2ab1f/databases/(default)/documents/Groups/$groupId") {
-            parameter("updateMask.fieldPaths", "headmanId")
-            contentType(ContentType.Application.Json)
-            setBody(DocumentRequest(fields = mapOf("headmanId" to Value(nullValue = null))))
-        }.bodyAsText().apply {
-            println("remove headman $this")
-        }
+        client.patchDocument(
+            documentReference = { collection("Groups").document(groupId) },
+            document = DocumentRequest(fields = mapOf("headmanId" to Value(nullValue = null))),
+            updateMask = DocumentMask(listOf("headmanId"))
+        )
     }
 
     actual suspend fun findBySpecialtyId(specialtyId: String): List<GroupMap> {
@@ -94,51 +86,32 @@ actual class GroupRemoteDataSource(private val client: FirebaseHttpClient) {
         TODO("Not yet implemented")
     }
 
-    actual suspend fun findByCuratorId(id: String): GroupMap {
-        return client.post {
-            url("https://firestore.googleapis.com/v1/projects/${ApiKeys.firebaseProjectId}/databases/(default)/documents:runQuery")
-            setBody(
-                Request(
-                    structuredQuery = StructuredQuery(
-                        from = CollectionSelector("Groups"),
-                        where = Filter(
-                            fieldFilter = FieldFilter(
-                                field = FieldReference("curator.id"),
-                                op = FieldFilter.Operator.EQUAL,
-                                value = Value(stringValue = id)
-                            )
-                        )
-                    )
-                )
-            )
-        }.let {
-            GroupMap(parseDocuments(Json.parseToJsonElement(it.bodyAsText()))[0])
-        }
-    }
+    actual suspend fun findByCuratorId(id: String): GroupMap = client.runQuery(
+        requestByCuratorId(id)
+    ).let { GroupMap(parseDocuments(Json.parseToJsonElement(it.bodyAsText()))[0]) }
 
     actual fun observeByCuratorId(id: String): Flow<GroupMap?> = flow {
         emit(
-            client.post {
-                url("https://firestore.googleapis.com/v1/projects/${ApiKeys.firebaseProjectId}/databases/(default)/documents:runQuery")
-                setBody(
-                    Request(
-                        structuredQuery = StructuredQuery(
-                            from = CollectionSelector("Groups"),
-                            where = Filter(
-                                fieldFilter = FieldFilter(
-                                    field = FieldReference("curator.id"),
-                                    op = FieldFilter.Operator.EQUAL,
-                                    value = Value(stringValue = id)
-                                )
-                            )
-                        )
-                    )
-                )
-            }.let {
-                GroupMap(parseDocuments(Json.parseToJsonElement(it.bodyAsText()))[0])
-            }
+            GroupMap(
+                parseDocuments(
+                    Json.parseToJsonElement(client.runQuery(requestByCuratorId(id)).bodyAsText())
+                )[0]
+            )
         )
     }
+
+    private fun requestByCuratorId(id: String) = Request(
+        structuredQuery = StructuredQuery(
+            from = CollectionSelector("Groups"),
+            where = Filter(
+                fieldFilter = FieldFilter(
+                    field = FieldReference("curator.id"),
+                    op = FieldFilter.Operator.EQUAL,
+                    value = Value(stringValue = id)
+                )
+            )
+        )
+    )
 
     actual suspend fun findByCourse(course: Int): List<GroupMap> {
         TODO("Not yet implemented")
