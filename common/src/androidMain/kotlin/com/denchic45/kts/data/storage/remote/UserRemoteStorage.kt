@@ -18,4 +18,8 @@ actual class UserRemoteStorage @Inject constructor(storage: FirebaseStorage) {
     actual suspend fun deleteAvatar(userId: String) {
         avatarsRef.child(userId).delete().await()
     }
+
+    actual suspend fun getAvatar(userId: String): ByteArray {
+        TODO("Not yet implemented")
+    }
 }

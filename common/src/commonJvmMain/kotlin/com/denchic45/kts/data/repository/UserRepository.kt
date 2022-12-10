@@ -40,7 +40,7 @@ open class UserRepository @Inject constructor(
             role = user.role.toString()
             gender = user.gender
             photoUrl = user.photoUrl
-            email = user.email ?: ""
+            email = user.email
             isAdmin = user.admin
             timestamp = user.timestamp!!.time
             isGeneratedAvatar = user.generatedAvatar
@@ -48,25 +48,20 @@ open class UserRepository @Inject constructor(
         }
     }
 
-    fun findSelf(): User {
-        return User(
-            userPreferences.id,
-            userPreferences.firstName,
-            userPreferences.surname,
-            userPreferences.patronymic,
-            userPreferences.groupId.let {
-                if (userPreferences.groupId.isNotEmpty())
-                    it
-                else
-                    null
-            },
-            UserRole.valueOf(userPreferences.role),
-            userPreferences.email,
-            userPreferences.photoUrl,
-            Date(userPreferences.timestamp), userPreferences.gender,
-            userPreferences.isGeneratedAvatar, userPreferences.isAdmin
-        )
-    }
+    fun findSelf(): User = User(
+        userPreferences.id,
+        userPreferences.firstName,
+        userPreferences.surname,
+        userPreferences.patronymic,
+        userPreferences.groupId.let {
+            if (userPreferences.groupId.isNotEmpty()) it else null
+        },
+        UserRole.valueOf(userPreferences.role),
+        userPreferences.email,
+        userPreferences.photoUrl,
+        Date(userPreferences.timestamp), userPreferences.gender,
+        userPreferences.isGeneratedAvatar, userPreferences.isAdmin
+    )
 
 
     suspend fun loadAvatar(avatarBytes: ByteArray, userId: String): String {
@@ -78,19 +73,19 @@ open class UserRepository @Inject constructor(
     }
 
     val thisUserObserver: Flow<User?> = userPreferences.observeId
-            .filter(String::isNotEmpty)
-            .flatMapConcat(userRemoteDataSource::observeById)
-            .map { value ->
-                if (value == null) {
-                    return@map null
-                } else {
-                    val user = value.mapToUser()
-                    if (user.timestamp != null) {
-                        saveUserPreference(user)
-                    }
-                    return@map user
+        .filter(String::isNotEmpty)
+        .flatMapConcat(userRemoteDataSource::observeById)
+        .map { value ->
+            if (value == null) {
+                return@map null
+            } else {
+                val user = value.mapToUser()
+                if (user.timestamp != null) {
+                    saveUserPreference(user)
                 }
+                return@map user
             }
+        }
 
 
     fun observeById(userId: String): Flow<User?> = flow {

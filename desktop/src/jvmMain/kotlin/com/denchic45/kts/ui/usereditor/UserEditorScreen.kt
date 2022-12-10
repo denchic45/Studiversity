@@ -1,12 +1,14 @@
 package com.denchic45.kts.ui.usereditor
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Link
@@ -14,14 +16,6 @@ import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +32,6 @@ import com.denchic45.kts.ui.components.HeaderItem
 import com.denchic45.kts.ui.components.Spinner
 import com.denchic45.kts.ui.components.SupportingText
 import com.denchic45.kts.ui.components.dialog.AlertDialog
-import com.denchic45.kts.ui.theme.TextM2
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.util.AsyncImage
 import com.denchic45.kts.util.loadImageBitmap
@@ -69,10 +62,6 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
     }
 }
 
-@OptIn(
-    ExperimentalFoundationApi::class,
-    ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class
-)
 @Composable
 fun UserEditorDialog(component: UserEditorComponent, onDismissRequest: () -> Unit) {
     AlertDialog(
@@ -123,7 +112,7 @@ private fun UserEditorContent(component: UserEditorComponent) {
             value = firstName,
             onValueChange = component::onFirstNameType,
             Modifier.fillMaxWidth(),
-            label = { TextM2("Имя") },
+            label = { Text("Имя") },
             singleLine = true,
             isError = errorState.firstNameMessage != null,
         )
@@ -133,7 +122,7 @@ private fun UserEditorContent(component: UserEditorComponent) {
             value = surname,
             onValueChange = component::onSurnameType,
             Modifier.padding(top = 4.dp).fillMaxWidth(),
-            label = { TextM2("Фамилия") },
+            label = { Text("Фамилия") },
             singleLine = true,
             isError = errorState.surnameMessage != null,
         )
@@ -143,8 +132,8 @@ private fun UserEditorContent(component: UserEditorComponent) {
             value = patronymic,
             onValueChange = component::onPatronymicType,
             Modifier.padding(top = 4.dp).fillMaxWidth(),
-            label = { TextM2("Отчество") },
-            placeholder = { TextM2("Отчество (необязательно)") },
+            label = { Text("Отчество") },
+            placeholder = { Text("Отчество (необязательно)") },
             singleLine = true
         )
         val gender by component.genderField.collectAsState()
@@ -181,7 +170,7 @@ private fun UserEditorContent(component: UserEditorComponent) {
                 value = email,
                 onValueChange = component::onEmailType,
                 Modifier.fillMaxWidth(),
-                label = { TextM2("Почта") },
+                label = { Text("Почта") },
                 leadingIcon = { Icon(painterResource("ic_email".toDrawablePath()), null) },
                 singleLine = true,
                 isError = errorState.emailMessage != null,
@@ -194,7 +183,7 @@ private fun UserEditorContent(component: UserEditorComponent) {
                 value = password,
                 onValueChange = component::onPasswordType,
                 Modifier.padding(top = 4.dp).fillMaxWidth(),
-                label = { TextM2("Пароль") },
+                label = { Text("Пароль") },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
@@ -222,7 +211,7 @@ private fun UserEditorContent(component: UserEditorComponent) {
                 onValueChange = component::onPasswordType,
                 Modifier.padding(top = 16.dp).fillMaxWidth()
                     .clickable(onClick = component::onGroupClick),
-                label = { TextM2("Группа") },
+                label = { Text("Группа") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
                     disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(ContentAlpha.medium)
