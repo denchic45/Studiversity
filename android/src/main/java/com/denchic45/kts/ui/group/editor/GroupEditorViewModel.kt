@@ -5,9 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.model.Group
 import com.denchic45.kts.data.model.domain.ListItem
+import com.denchic45.kts.domain.model.Group
 import com.denchic45.kts.domain.model.Specialty
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.usecase.*
@@ -20,6 +19,7 @@ import com.denchic45.kts.uivalidator.UIValidator
 import com.denchic45.kts.uivalidator.Validation
 import com.denchic45.kts.util.NetworkException
 import com.denchic45.kts.util.UUIDS
+import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
@@ -61,17 +61,14 @@ class GroupEditorViewModel @Inject constructor(
         viewModelScope.launch {
             typedSpecialtyByName.flatMapLatest { specialtyName: String ->
                 findSpecialtyByContainsNameUseCase(specialtyName)
-            }.collect { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        foundSpecialties = resource.data
-                        showSpecialties.postValue(
-                            resource.data.map { specialty ->
-                                ListItem(id = specialty.id, title = specialty.name)
-                            }
-                        )
-                    }
-                    else -> {}
+            }.collect { result ->
+                result.onSuccess {
+                    foundSpecialties = it
+                    showSpecialties.postValue(
+                        it.map { specialty ->
+                            ListItem(id = specialty.id, title = specialty.name)
+                        }
+                    )
                 }
             }
         }

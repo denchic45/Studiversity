@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.domain.model.Event
@@ -17,6 +16,7 @@ import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorIn
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.util.NetworkException
+import com.github.michaelbull.result.mapBoth
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -123,8 +123,10 @@ class TimetableFinderViewModel @Inject constructor(
     }
 
     fun onEventEditItemEditClick(position: Int) {
-        eventEditorInteractor.setEditedEvent(_eventsOfDay.value,
-            eventsOfDay.value.events[position] as Event)
+        eventEditorInteractor.setEditedEvent(
+            _eventsOfDay.value,
+            eventsOfDay.value.events[position] as Event
+        )
         openEventEditor.call()
         viewModelScope.launch {
             eventEditorInteractor.receiveEvent().apply {
@@ -164,8 +166,10 @@ class TimetableFinderViewModel @Inject constructor(
 
     fun onCreateEventItemClick() {
         viewModelScope.launch {
-            val createdLesson = Event.createEmpty(groupHeader = selectedGroup.first(),
-                details = Lesson.createEmpty())
+            val createdLesson = Event.createEmpty(
+                groupHeader = selectedGroup.first(),
+                details = Lesson.createEmpty()
+            )
             eventEditorInteractor.setEditedEvent(_eventsOfDay.value, createdLesson)
             openEventEditor.call()
 
@@ -177,20 +181,17 @@ class TimetableFinderViewModel @Inject constructor(
         viewModelScope.launch {
             typedGroupName.filter { s -> s.length > 1 }
                 .flatMapLatest { groupName -> findGroupByContainsNameUseCase(groupName) }
-                .collect { resource ->
-                    when (resource) {
-                        is Resource.Success -> {
-                            foundGroupHeaders = resource.data
-                            showFoundGroups.emit(resource.data.map { (id, name) ->
-                                ListItem(id = id,
-                                    title = name,
-                                    icon = UiImage.IdImage(R.drawable.ic_group))
-                            })
-                        }
-                        is Resource.Error -> TODO()
-                        Resource.Loading -> TODO()
-                        is Resource.Next -> TODO()
-                    }
+                .collect { result ->
+                    result.mapBoth(success = {
+                        foundGroupHeaders = it
+                        showFoundGroups.emit(it.map { (id, name) ->
+                            ListItem(
+                                id = id,
+                                title = name,
+                                icon = UiImage.IdImage(R.drawable.ic_group)
+                            )
+                        })
+                    }, failure = {})
                 }
         }
     }
@@ -204,10 +205,12 @@ class TimetableFinderViewModel @Inject constructor(
         data class Edit(private var editingEvents: List<Event>, val date: LocalDate) :
             EventsOfDayState() {
 
-            override val events: List<DomainModel> = editingEvents + ListItem(id = "",
+            override val events: List<DomainModel> = editingEvents + ListItem(
+                id = "",
                 title = "",
                 type = EventAdapter.TYPE_CREATE,
-                content = date)
+                content = date
+            )
         }
     }
 

@@ -9,6 +9,7 @@ import com.denchic45.kts.R
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.databinding.FragmentChooserBinding
+import com.denchic45.kts.ui.adminPanel.finder.SearchState
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.util.NetworkException
 import com.denchic45.kts.util.collectWhenStarted
@@ -61,21 +62,16 @@ abstract class ChooserFragment<VM : ChooserViewModel<out DomainModel>> :
                 }
             })
 
-            viewModel.items.collectWhenStarted(lifecycleScope) { resource ->
-                when (resource) {
-                    is Resource.Loading -> {}
-                    is Resource.Success -> {
+            viewModel.items.collectWhenStarted(lifecycleScope) { state ->
+                when (state) {
+                    SearchState.Start -> {} //TODO
+                    is SearchState.Found -> {
                         lsl.showList()
-                        adapter.submit(resource.data)
+                        adapter.submit(state.items)
                     }
-                    is Resource.Error -> {
-                        when (resource.error) {
-                            is NetworkException -> {
-                                lsl.showView(ListStateLayout.NETWORK_VIEW)
-                            }
-                        }
-                    }
-                    is Resource.Next -> {}
+                    SearchState.Loading -> lsl.showView(ListStateLayout.LOADING_VIEW)
+                    SearchState.NoConnection -> lsl.showView(ListStateLayout.NETWORK_VIEW)
+                    SearchState.NotFound -> {} //TODO
                 }
             }
         }

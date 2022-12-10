@@ -6,4 +6,4 @@ import javax.inject.Inject
 
 class FindSubjectByContainsNameUseCase @Inject constructor(
     subjectRepository: SubjectRepository
-) : FindByContainsNameUseCase<Subject>(subjectRepository)
+) : FindByContainsNameUseCase2<Subject>(subjectRepository)

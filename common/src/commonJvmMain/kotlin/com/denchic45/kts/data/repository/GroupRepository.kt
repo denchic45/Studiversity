@@ -14,7 +14,6 @@ import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.error.SearchError
 import com.denchic45.kts.domain.model.*
 import com.denchic45.kts.util.timestampNotNull
-import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
@@ -38,7 +37,8 @@ class GroupRepository @Inject constructor(
     private val groupRemoteDataSource: GroupRemoteDataSource,
     private val courseRemoteDataSource: CourseRemoteDataSource,
 ) : Repository(), SaveGroupOperation, SaveCourseRepository,
-    FindByContainsNameRepository<GroupHeader>, FindByContainsName2Repository<GroupHeader> {
+    FindByContainsNameRepository<GroupHeader>,
+    FindByContainsName3Repository<GroupHeader> {
 
     override fun findByContainsName(text: String): Flow<List<GroupHeader>> {
         return groupRemoteDataSource.findByContainsName(text)
@@ -50,16 +50,18 @@ class GroupRepository @Inject constructor(
             }
     }
 
-    override fun findByContainsName2(text: String): Flow<Result<List<GroupHeader>, SearchError<out GroupHeader>>> {
-
-        return groupRemoteDataSource.findByContainsName(text)
-            .filter { groupMaps -> groupMaps.all { it.timestampNotNull() } }.map { groupDocs ->
-                for (groupDoc in groupDocs) {
-                    saveGroup(groupDoc)
+    override fun findByContainsName3(text: String): Flow<Result<List<GroupHeader>, SearchError>> {
+        return observeByContainsName {
+            groupRemoteDataSource.findByContainsName(text)
+                .filter { groupMaps -> groupMaps.all { it.timestampNotNull() } }.map { groupDocs ->
+                    for (groupDoc in groupDocs) {
+                        saveGroup(groupDoc)
+                    }
+                    groupDocs.mapsToGroupHeaders()
                 }
-                Ok(groupDocs.mapsToGroupHeaders())
-            }
+        }
     }
+
 
     private suspend fun saveYourGroup(group: GroupMap) {
         saveGroup(group)
@@ -248,6 +250,4 @@ class GroupRepository @Inject constructor(
     suspend fun removeHeadman(groupId: String) {
         groupRemoteDataSource.removeHeadman(groupId)
     }
-
-
 }

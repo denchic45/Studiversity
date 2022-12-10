@@ -1,5 +1,5 @@
 package com.denchic45.kts.domain.error
 
-sealed interface SearchError<T>
+sealed interface SearchError
 
-object NotFound : SearchError<Nothing>
+object NotFound : SearchError

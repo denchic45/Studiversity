@@ -9,10 +9,4 @@ import kotlinx.coroutines.flow.flowOf
 
 interface NetworkServiceOwner {
     val networkService: NetworkService
-
-    fun <T> doOnConnection(block: () -> Flow<Result<T, NetworkError>>): Flow<Result<T, NetworkError>> {
-        return if (networkService.isNetworkAvailable) {
-            block()
-        } else flowOf(Err(NetworkError))
-    }
 }
