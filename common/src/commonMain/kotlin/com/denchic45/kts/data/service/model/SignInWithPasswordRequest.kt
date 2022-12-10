@@ -1,4 +1,4 @@
-package com.denchic45.kts.data.network.model
+package com.denchic45.kts.data.service.model
 
 import kotlinx.serialization.Serializable
 

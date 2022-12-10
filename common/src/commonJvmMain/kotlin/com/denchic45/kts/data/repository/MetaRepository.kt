@@ -1,6 +1,6 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.network.model.BellSchedule
+import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.storage.MetaStorage
 import kotlinx.coroutines.CoroutineScope

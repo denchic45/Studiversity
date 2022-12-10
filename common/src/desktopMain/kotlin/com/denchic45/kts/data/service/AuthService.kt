@@ -1,8 +1,8 @@
 package com.denchic45.kts.data.service
 
 import com.denchic45.kts.ApiKeys
-import com.denchic45.kts.data.network.model.SignInWithPasswordRequest
-import com.denchic45.kts.data.network.model.SignInWithPasswordResponse
+import com.denchic45.kts.data.service.model.SignInWithPasswordRequest
+import com.denchic45.kts.data.service.model.SignInWithPasswordResponse
 import com.denchic45.kts.data.pref.AppPreferences
 import io.ktor.client.*
 import io.ktor.client.call.*
