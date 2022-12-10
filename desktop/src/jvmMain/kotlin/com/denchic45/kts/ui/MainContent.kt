@@ -23,9 +23,13 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.ui.MainComponent.Child
+import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.group.GroupScreen
+import com.denchic45.kts.ui.navigation.ConfirmChild
+import com.denchic45.kts.ui.navigation.UserEditorChild
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.ui.timetable.TimetableScreen
+import com.denchic45.kts.ui.usereditor.UserEditorDialog
 
 
 @OptIn(ExperimentalUnitApi::class)
@@ -90,6 +94,24 @@ fun MainContent(mainComponent: MainComponent) {
                 when (val child = childStack.active.instance) {
                     is Child.Timetable -> TimetableScreen(appBarMediator, child.timetableComponent)
                     is Child.Group -> GroupScreen(appBarMediator, child.groupRootComponent)
+                }
+
+                val overlay by mainComponent.childOverlay.subscribeAsState()
+                overlay.overlay?.let {
+                    when (val instance = it.instance) {
+                        is UserEditorChild -> UserEditorDialog(
+                            instance.userEditorComponent,
+                            mainComponent::onOverlayDismiss
+                        )
+                        is ConfirmChild -> with(instance.config) {
+                            ConfirmDialog(
+                                title = title,
+                                text = text,
+                                onConfirm = {},
+                                onDismiss = mainComponent::onOverlayDismiss
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -1,6 +1,8 @@
 package com.denchic45.kts.ui.usereditor
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.overlay.OverlayNavigation
+import com.arkivanov.decompose.router.overlay.activate
 import com.denchic45.kts.UIEditor
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.model.GroupHeader
@@ -11,6 +13,8 @@ import com.denchic45.kts.domain.usecase.ObserveUserUseCase
 import com.denchic45.kts.domain.usecase.UpdateUserUseCase
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.MenuItem
+import com.denchic45.kts.ui.navigation.ConfirmConfig
+import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.navigation.UserEditorConfig
 import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.componentScope
@@ -35,10 +39,10 @@ class UserEditorComponent(
     private val addUserUseCase: AddUserUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val observeGroupInfoUseCase: ObserveGroupInfoUseCase,
+    private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     componentContext: ComponentContext,
     private val onFinish: () -> Unit,
     private val config: UserEditorConfig
-//    userId: String?, role: UserRole, groupId: String?,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
@@ -320,6 +324,10 @@ class UserEditorComponent(
                 .onSuccess { onFinish() }
                 .onFailure { TODO("Уведомление о подключении к интернету") }
         }
+    }
+
+    fun onRemoveClick() {
+        overlayNavigation.activate(ConfirmConfig("Удалить студента", "Вы уверены?"))
     }
 }
 
