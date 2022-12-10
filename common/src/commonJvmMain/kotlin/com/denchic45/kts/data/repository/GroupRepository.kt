@@ -11,8 +11,10 @@ import com.denchic45.kts.data.pref.TimestampPreferences
 import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
+import com.denchic45.kts.domain.error.SearchError
 import com.denchic45.kts.domain.model.*
 import com.denchic45.kts.util.timestampNotNull
+import com.github.michaelbull.result.Result
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -35,7 +37,7 @@ class GroupRepository @Inject constructor(
     private val groupRemoteDataSource: GroupRemoteDataSource,
     private val courseRemoteDataSource: CourseRemoteDataSource,
 ) : Repository(), SaveGroupOperation, SaveCourseRepository,
-    FindByContainsNameRepository<GroupHeader> {
+    FindByContainsNameRepository<GroupHeader>, FindByContainsName2Repository<GroupHeader> {
 
     override fun findByContainsName(text: String): Flow<List<GroupHeader>> {
         return groupRemoteDataSource.findByContainsName(text)
@@ -45,6 +47,10 @@ class GroupRepository @Inject constructor(
                 }
                 groupDocs.mapsToGroupHeaders()
             }
+    }
+
+    override fun findByContainsName2(text: String): Flow<Result<List<GroupHeader>, SearchError<out GroupHeader>>> {
+        TODO("Not yet implemented")
     }
 
     private suspend fun saveYourGroup(group: GroupMap) {
@@ -179,8 +185,9 @@ class GroupRepository @Inject constructor(
                     observeAndSaveGroupFlow(groupId).collect()
                 }
             }
-            emitAll(groupLocalDataSource.getNameById(groupId).filterNotNull()
-                .map { it.toGroupHeader() }.distinctUntilChanged()
+            emitAll(
+                groupLocalDataSource.getNameById(groupId).filterNotNull()
+                    .map { it.toGroupHeader() }.distinctUntilChanged()
             )
         }
     }
@@ -204,7 +211,8 @@ class GroupRepository @Inject constructor(
         saveCourses(courseMaps)
 
         return groupMaps.map { groupMap ->
-            GroupCourses(groupMap.toGroupHeader(),
+            GroupCourses(
+                groupMap.toGroupHeader(),
                 courseMaps.filter { it.groupIds.contains(groupMap.id) }.mapsToCourseHeaderDomains()
             )
         }
@@ -232,4 +240,6 @@ class GroupRepository @Inject constructor(
     suspend fun removeHeadman(groupId: String) {
         groupRemoteDataSource.removeHeadman(groupId)
     }
+
+
 }
