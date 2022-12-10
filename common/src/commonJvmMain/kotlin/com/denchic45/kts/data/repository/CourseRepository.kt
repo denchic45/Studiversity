@@ -25,6 +25,7 @@ import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.util.CourseContents
 import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.differenceOf
+import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
@@ -56,7 +57,8 @@ class CourseRepository @Inject constructor(
     private val courseRemoteDataSource: CourseRemoteDataSource,
     private val groupRemoteDataSource: GroupRemoteDataSource,
 ) : Repository(), SaveGroupOperation, SaveCourseRepository,
-    FindByContainsNameRepository<CourseHeader>,FindByContainsName2Repository<CourseHeader> {
+    FindByContainsNameRepository<CourseHeader>,
+    FindByContainsName2Repository<CourseHeader> {
 
     override fun findByContainsName(text: String): Flow<List<CourseHeader>> {
         return courseRemoteDataSource.findByContainsName(text).map { courseMaps ->
@@ -65,6 +67,11 @@ class CourseRepository @Inject constructor(
             }
             courseMaps.mapsToCourseHeaderDomains()
         }
+    }
+
+    override fun findByContainsName2(text: String): Flow<Result<List<CourseHeader>, SearchError<out CourseHeader>>> {
+        return courseRemoteDataSource.findByContainsName(text)
+            .map { Ok(it.mapsToCourseHeaderDomains()) }
     }
 
     fun find(courseId: String): Flow<Course?> {
@@ -112,19 +119,25 @@ class CourseRepository @Inject constructor(
     fun findContentByCourseId(courseId: String): Flow<List<DomainModel>> = flow {
         coroutineScope {
             launch {
-                courseRemoteDataSource.findContentByCourseId(courseId,
-                    coursePreferences.getTimestampContentsOfCourse(courseId)).filterNotNull()
+                courseRemoteDataSource.findContentByCourseId(
+                    courseId,
+                    coursePreferences.getTimestampContentsOfCourse(courseId)
+                ).filterNotNull()
                     .filter { it.isNotEmpty() }.collect { courseContents ->
                         val timestamp = courseContents.maxOf { it.timestamp }.time
                         saveCourseContentsLocal(courseContents)
                         coursePreferences.setTimestampContentsOfCourse(courseId, timestamp)
                     }
             }
-            emitAll(sectionLocalDataSource.getByCourseId(courseId)
-                .combine(courseContentLocalDataSource.getByCourseId(courseId)) { sectionEntities, courseContentEntities ->
-                    CourseContents.sort(courseContentEntities.entitiesToDomains(),
-                        sectionEntities.entitiesToDomains())
-                }.distinctUntilChanged())
+            emitAll(
+                sectionLocalDataSource.getByCourseId(courseId)
+                    .combine(courseContentLocalDataSource.getByCourseId(courseId)) { sectionEntities, courseContentEntities ->
+                        CourseContents.sort(
+                            courseContentEntities.entitiesToDomains(),
+                            sectionEntities.entitiesToDomains()
+                        )
+                    }.distinctUntilChanged()
+            )
         }
     }
 
@@ -147,21 +160,27 @@ class CourseRepository @Inject constructor(
             it.submissions.forEach { map ->
                 SubmissionMap(map.value).let { submissionMap ->
                     submissionEntities.add(submissionMap.mapToEntity())
-                    submissionCommentEntities.addAll(it.comments.map(::SubmissionCommentMap)
-                        .docsToEntity())
+                    submissionCommentEntities.addAll(
+                        it.comments.map(::SubmissionCommentMap)
+                            .docsToEntity()
+                    )
                     it.comments.let { contentComments ->
-                        contentCommentEntities.addAll(contentComments.map(::ContentCommentMap)
-                            .docsToEntity())
+                        contentCommentEntities.addAll(
+                            contentComments.map(::ContentCommentMap)
+                                .docsToEntity()
+                        )
                     }
                 }
             }
         }
-        courseContentLocalDataSource.saveContents(removedCourseContentIds = removedCourseContentIds,
+        courseContentLocalDataSource.saveContents(
+            removedCourseContentIds = removedCourseContentIds,
             remainingCourseContent = entities,
             contentIds = courseContentMaps.map(CourseContentMap::id),
             submissionEntities = submissionEntities,
             contentCommentEntities = contentCommentEntities,
-            submissionCommentEntities = submissionCommentEntities)
+            submissionCommentEntities = submissionCommentEntities
+        )
     }
 
     fun findByGroupId(groupId: String): Flow<List<CourseHeader>> = flow {
@@ -190,8 +209,10 @@ class CourseRepository @Inject constructor(
 //    }
 
     private suspend fun getAndSaveCoursesByTeacherRemotely(teacherId: String) {
-        courseRemoteDataSource.findCoursesByTeacherId(teacherId,
-            timestampPreferences.teacherCoursesUpdateTimestamp).collect { courseMaps ->
+        courseRemoteDataSource.findCoursesByTeacherId(
+            teacherId,
+            timestampPreferences.teacherCoursesUpdateTimestamp
+        ).collect { courseMaps ->
             saveCourses(courseMaps)
             timestampPreferences.teacherCoursesUpdateTimestamp =
                 courseMaps.maxOf { it.timestamp.time }
@@ -225,19 +246,26 @@ class CourseRepository @Inject constructor(
 
     suspend fun addTask(task: Task, attachments: List<Attachment>) {
         requireAllowWriteData()
-        courseRemoteDataSource.addTask(courseContentMap = CourseContentMap(task.toMap(attachments = contentAttachmentStorage.addContentAttachments(
-            task.id,
-            attachments), order = createLastContentOrder(task)).apply {
-            val studentIdsOfCourse =
-                userLocalDataSource.getStudentIdsOfCourseByCourseId(task.courseId)
-            put("notSubmittedByStudentIds", studentIdsOfCourse)
-            put("submissions", studentIdsOfCourse.associateWith { studentId ->
-                SubmissionMap.createNotSubmitted(id = UUIDS.createShort(),
-                    studentId = studentId,
-                    contentId = task.id,
-                    courseId = task.courseId)
+        courseRemoteDataSource.addTask(
+            courseContentMap = CourseContentMap(task.toMap(
+                attachments = contentAttachmentStorage.addContentAttachments(
+                    task.id,
+                    attachments
+                ), order = createLastContentOrder(task)
+            ).apply {
+                val studentIdsOfCourse =
+                    userLocalDataSource.getStudentIdsOfCourseByCourseId(task.courseId)
+                put("notSubmittedByStudentIds", studentIdsOfCourse)
+                put("submissions", studentIdsOfCourse.associateWith { studentId ->
+                    SubmissionMap.createNotSubmitted(
+                        id = UUIDS.createShort(),
+                        studentId = studentId,
+                        contentId = task.id,
+                        courseId = task.courseId
+                    )
+                })
             })
-        }))
+        )
     }
 
     private suspend fun getLastContentOrderByCourseIdAndSectionId(
@@ -268,8 +296,11 @@ class CourseRepository @Inject constructor(
         requireAllowWriteData()
         contentAttachmentStorage.deleteFilesByContentId(contentId)
         submissionAttachmentStorage.deleteFilesByContentId(contentId)
-        courseRemoteDataSource.removeCourseContent(courseContentLocalDataSource.getCourseIdByTaskId(
-            contentId), contentId)
+        courseRemoteDataSource.removeCourseContent(
+            courseContentLocalDataSource.getCourseIdByTaskId(
+                contentId
+            ), contentId
+        )
     }
 
 
@@ -285,18 +316,23 @@ class CourseRepository @Inject constructor(
         studentId: String,
     ): Flow<Task.Submission> {
         return submissionLocalDataSource.getByTaskIdAndUserId(taskId, studentId).map { entities ->
-            entities?.toDomain(getSubmissionAttachments(entities)
+            entities?.toDomain(
+                getSubmissionAttachments(entities)
 
-            ) ?: Task.Submission.createEmptyNotSubmitted(contentId = taskId,
-                student = userLocalDataSource.get(studentId)!!.toUserDomain())
+            ) ?: Task.Submission.createEmptyNotSubmitted(
+                contentId = taskId,
+                student = userLocalDataSource.get(studentId)!!.toUserDomain()
+            )
         }.distinctUntilChanged()
     }
 
     private suspend fun getSubmissionAttachments(entities: SubmissionWithStudentEntities) =
         entities.submissionEntity.attachments?.let {
-            submissionAttachmentStorage.get(entities.submissionEntity.content_id,
+            submissionAttachmentStorage.get(
+                entities.submissionEntity.content_id,
                 entities.submissionEntity.student_id,
-                it)
+                it
+            )
         } ?: emptyList()
 
     suspend fun updateSubmissionFromStudent(submission: Task.Submission) {
@@ -308,13 +344,18 @@ class CourseRepository @Inject constructor(
             submissionAttachmentStorage.update(contentId, studentId, submission.content.attachments)
 
         val courseId = findCourseIdByContentId(contentId)
-        courseRemoteDataSource.updateSubmissionFromStudent(submissionMap = SubmissionMap(submission.toMap(
-            courseId,
-            attachmentUrls)),
+        courseRemoteDataSource.updateSubmissionFromStudent(
+            submissionMap = SubmissionMap(
+                submission.toMap(
+                    courseId,
+                    attachmentUrls
+                )
+            ),
             studentId = studentId,
             attachmentUrls = attachmentUrls,
             courseId = courseId,
-            contentId = contentId)
+            contentId = contentId
+        )
     }
 
     private suspend fun findCourseIdByContentId(contentId: String) =
@@ -327,8 +368,11 @@ class CourseRepository @Inject constructor(
         teacherId: String = userPreferences.id,
     ) {
         requireNetworkAvailable()
-        courseRemoteDataSource.gradeSubmission(courseContentLocalDataSource.getCourseIdByTaskId(
-            taskId), taskId, studentId, grade, teacherId)
+        courseRemoteDataSource.gradeSubmission(
+            courseContentLocalDataSource.getCourseIdByTaskId(
+                taskId
+            ), taskId, studentId, grade, teacherId
+        )
     }
 
     suspend fun rejectSubmission(
@@ -338,8 +382,11 @@ class CourseRepository @Inject constructor(
         teacherId: String = userPreferences.id,
     ) {
         requireNetworkAvailable()
-        courseRemoteDataSource.rejectSubmission(courseContentLocalDataSource.getCourseIdByTaskId(
-            taskId), taskId, studentId, cause, teacherId)
+        courseRemoteDataSource.rejectSubmission(
+            courseContentLocalDataSource.getCourseIdByTaskId(
+                taskId
+            ), taskId, studentId, cause, teacherId
+        )
     }
 
 
@@ -374,8 +421,11 @@ class CourseRepository @Inject constructor(
 
     suspend fun updateContentOrder(contentId: String, order: Int) {
         requireAllowWriteData()
-        courseRemoteDataSource.updateContentOrder(courseContentLocalDataSource.getCourseIdByTaskId(
-            contentId), contentId, order)
+        courseRemoteDataSource.updateContentOrder(
+            courseContentLocalDataSource.getCourseIdByTaskId(
+                contentId
+            ), contentId, order
+        )
     }
 
     fun findUpcomingTasksForYourGroup(): Flow<List<Task>> = flow {
@@ -386,19 +436,25 @@ class CourseRepository @Inject constructor(
                 }
             }
             emitAll(courseContentLocalDataSource.getByGroupIdAndGreaterCompletionDate(
-                groupPreferences.groupId).map { it.entitiesToTaskDomains() })
+                groupPreferences.groupId
+            ).map { it.entitiesToTaskDomains() })
         }
     }
 
     fun findOverdueTasksForYourGroup(): Flow<List<Task>> = flow {
         coroutineScope {
             launch {
-                saveCourseContentsLocal(courseRemoteDataSource.findOverdueTasksByGroupId(
-                    userPreferences.id))
+                saveCourseContentsLocal(
+                    courseRemoteDataSource.findOverdueTasksByGroupId(
+                        userPreferences.id
+                    )
+                )
             }
 
-            emitAll(courseContentLocalDataSource.getByGroupIdAndNotSubmittedUser(groupPreferences.groupId,
-                userPreferences.id).map { it.entitiesToTaskDomains() })
+            emitAll(courseContentLocalDataSource.getByGroupIdAndNotSubmittedUser(
+                groupPreferences.groupId,
+                userPreferences.id
+            ).map { it.entitiesToTaskDomains() })
         }
     }
 
@@ -406,11 +462,16 @@ class CourseRepository @Inject constructor(
         return flow {
             coroutineScope {
                 launch {
-                    saveCourseContentsLocal(courseRemoteDataSource.findCompletedTasksByStudentId(
-                        userPreferences.id))
+                    saveCourseContentsLocal(
+                        courseRemoteDataSource.findCompletedTasksByStudentId(
+                            userPreferences.id
+                        )
+                    )
                 }
-                emitAll(courseContentLocalDataSource.getByGroupIdAndSubmittedUser(groupPreferences.groupId,
-                    userPreferences.id).map { it.entitiesToTaskDomains() })
+                emitAll(courseContentLocalDataSource.getByGroupIdAndSubmittedUser(
+                    groupPreferences.groupId,
+                    userPreferences.id
+                ).map { it.entitiesToTaskDomains() })
             }
 
         }
@@ -418,16 +479,16 @@ class CourseRepository @Inject constructor(
 
     suspend fun updateCourse(course: Course) {
         requireAllowWriteData()
-        courseRemoteDataSource.updateCourse(CourseMap(courseLocalDataSource.get(course.id)
-            .entityToCourseDomain().toCourseMap()), CourseMap(course.toCourseMap()))
+        courseRemoteDataSource.updateCourse(
+            CourseMap(
+                courseLocalDataSource.get(course.id)
+                    .entityToCourseDomain().toCourseMap()
+            ), CourseMap(course.toCourseMap())
+        )
     }
 
     suspend fun removeCourse(courseId: String, groupIds: List<String>) {
         courseRemoteDataSource.removeCourse(courseId, groupIds)
-    }
-
-    override fun findByContainsName2(text: String): Flow<Result<List<CourseHeader>, SearchError<out CourseHeader>>> {
-        TODO("Not yet implemented")
     }
 }
 
