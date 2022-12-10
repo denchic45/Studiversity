@@ -131,6 +131,8 @@ kotlin {
                 api("com.google.android.play:core-ktx:1.8.1")
 
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
+                // Flow layout
+                api("com.google.accompanist:accompanist-flowlayout:0.27.0")
             }
         }
         val androidTest by getting {
