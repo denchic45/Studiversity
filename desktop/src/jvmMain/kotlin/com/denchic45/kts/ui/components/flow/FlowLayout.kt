@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.components
+package com.denchic45.kts.ui.components.flow
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
@@ -44,7 +44,7 @@ fun FlowPreview() {
 fun FlowRow(
     modifier: Modifier = Modifier,
     mainAxisSize: SizeMode = SizeMode.Wrap,
-    mainAxisAlignment: FlowMainAxisAlignment = FlowMainAxisAlignment.Start,
+    mainAxisAlignment: FlowMainAxisAlignment = MainAxisAlignment.Start,
     mainAxisSpacing: Dp = 0.dp,
     crossAxisAlignment: FlowCrossAxisAlignment = FlowCrossAxisAlignment.Start,
     crossAxisSpacing: Dp = 0.dp,
@@ -82,7 +82,7 @@ fun FlowRow(
 fun FlowColumn(
     modifier: Modifier = Modifier,
     mainAxisSize: SizeMode = SizeMode.Wrap,
-    mainAxisAlignment: FlowMainAxisAlignment = FlowMainAxisAlignment.Start,
+    mainAxisAlignment: FlowMainAxisAlignment = MainAxisAlignment.Start,
     mainAxisSpacing: Dp = 0.dp,
     crossAxisAlignment: FlowCrossAxisAlignment = FlowCrossAxisAlignment.Start,
     crossAxisSpacing: Dp = 0.dp,
@@ -130,7 +130,7 @@ typealias FlowMainAxisAlignment = MainAxisAlignment
 @Composable
 private fun Flow(
     modifier: Modifier,
-    orientation: com.denchic45.kts.ui.components.LayoutOrientation,
+    orientation: LayoutOrientation,
     mainAxisSize: SizeMode,
     mainAxisAlignment: FlowMainAxisAlignment,
     mainAxisSpacing: Dp,
