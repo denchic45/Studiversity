@@ -1,13 +1,1 @@
-*.iml
-.gradle
-gradlew
-gradlew.bat
-/local.properties
-.idea/*
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-'.idea'
-/common/src/commonMain/kotlin/com/denchic45/kts/ApiKeys.kt
+.idea/
