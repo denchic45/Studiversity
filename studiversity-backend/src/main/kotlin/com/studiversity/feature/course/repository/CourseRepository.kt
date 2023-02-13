@@ -10,7 +10,6 @@ import com.stuiversity.api.course.model.UpdateCourseRequest
 import io.github.jan.supabase.storage.BucketApi
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class CourseRepository(private val bucket: BucketApi) {
@@ -29,12 +28,11 @@ class CourseRepository(private val bucket: BucketApi) {
         return CourseDao.findById(id)?.toResponse()
     }
 
-    fun update(id: UUID, request: UpdateCourseRequest) = transaction {
-        CourseDao.findById(id)?.apply {
-            request.name.ifPresent { name = it }
-            request.subjectId.ifPresent { subject = it?.let { SubjectDao.findById(it) } }
-        }?.toResponse()
-    }
+    fun update(id: UUID, request: UpdateCourseRequest): CourseResponse? = CourseDao.findById(id)?.apply {
+        request.name.ifPresent { name = it }
+        request.subjectId.ifPresent { subject = it?.let { SubjectDao.findById(it) } }
+    }?.toResponse()
+
 
     fun exist(id: UUID): Boolean {
         return Courses.exists { Courses.id eq id }

@@ -20,7 +20,7 @@ class RoomRepository {
 
     fun update(id: UUID, updateRoomRequest: UpdateRoomRequest): RoomResponse? {
         return RoomDao.findById(id)?.apply {
-            updateRoomRequest.name.ifPresent { it ->
+            updateRoomRequest.name.ifPresent {
                 name = it
             }
         }?.toResponse()

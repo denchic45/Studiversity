@@ -20,6 +20,8 @@ data class Capability(val resource: String) {
         val WriteStudyGroup: Capability = Capability("study_group:write")
         val DeleteStudyGroup: Capability = Capability("study_group:delete")
 
+        val WriteSpecialty: Capability = Capability("specialty:write")
+
         val BeStudent: Capability = Capability("be_student") // TODO: test capability for test
 
         val WriteTimetable: Capability = Capability("timetable:write")
