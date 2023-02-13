@@ -8,7 +8,7 @@ import com.stuiversity.api.account.model.UpdateAccountPersonalRequest
 import com.stuiversity.api.auth.model.SignupRequest
 import com.stuiversity.api.user.UserApi
 import com.stuiversity.api.user.model.User
-import com.stuiversity.util.OptionalProperty
+import com.stuiversity.util.optPropertyOf
 import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -50,9 +50,9 @@ class AccountPersonalTest : KtorClientTest() {
         val expectedPatronymic = "Pavlovich"
         accountApi.updatePersonal(
             UpdateAccountPersonalRequest(
-                firstName = OptionalProperty.of(expectedFirstName),
-                surname = OptionalProperty.of(expectedSurname),
-                patronymic = OptionalProperty.of(expectedPatronymic)
+                firstName = optPropertyOf(expectedFirstName),
+                surname = optPropertyOf(expectedSurname),
+                patronymic = optPropertyOf(expectedPatronymic)
             )
         ).unwrapAsserted()
 

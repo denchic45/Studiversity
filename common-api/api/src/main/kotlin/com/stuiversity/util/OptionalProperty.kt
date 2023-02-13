@@ -10,17 +10,11 @@ sealed class OptionalProperty<out T> {
         if (this is Present) onPresent(value)
     }
 
-    suspend fun ifPresentSuspended(onPresent: suspend (value: T) -> Unit) {
-        if (this is Present) onPresent(value)
-    }
-
     val isPresent: Boolean
         get() = this is Present
-
-    companion object {
-        fun <T> of(value: T) = Present(value)
-    }
 }
+
+fun <T> optPropertyOf(value: T) = OptionalProperty.Present(value)
 
 fun <T> OptionalProperty<T>.requirePresent(): T {
     return presentOrElse { throw IllegalStateException("Value not present") }
