@@ -6,6 +6,7 @@ import com.studiversity.feature.user.account.usecase.UpdateEmailUseCase
 import com.studiversity.feature.user.account.usecase.UpdatePasswordUseCase
 import com.studiversity.feature.user.usecase.FindUserByIdUseCase
 import com.studiversity.feature.user.usecase.RemoveUserUseCase
+import com.studiversity.feature.user.usecase.SearchUsersUseCase
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -16,6 +17,7 @@ private val useCaseModule = module {
     single { UpdateAccountPersonalUseCase(get(), get()) }
     single { UpdateEmailUseCase(get(), get()) }
     single { UpdatePasswordUseCase(get(), get()) }
+    single { SearchUsersUseCase(get(), get()) }
 }
 
 private val repositoryModule = module {

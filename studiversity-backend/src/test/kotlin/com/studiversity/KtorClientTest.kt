@@ -15,6 +15,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -36,7 +37,9 @@ abstract class KtorClientTest : KoinTest {
     @BeforeAll
     fun beforeAll(): Unit = runBlocking {
         testApp = TestApplication {
-            buildApp()
+            application {
+                buildApplication()
+            }
         }
         testApp.start()
         client = createAuthenticatedClient("denchic860@gmail.com", "JFonij5430")
@@ -51,8 +54,9 @@ abstract class KtorClientTest : KoinTest {
 
     open fun setup() {}
 
-    open fun TestApplicationBuilder.buildApp() {
-        application { loadKoinModules(apiModule) }
+    open fun Application.buildApplication() {
+        module()
+        loadKoinModules(apiModule)
     }
 
     open fun cleanup() {}

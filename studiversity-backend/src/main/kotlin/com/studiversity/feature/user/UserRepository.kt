@@ -15,12 +15,11 @@ import com.stuiversity.api.auth.model.CreateUserRequest
 import com.stuiversity.api.auth.model.SignupRequest
 import com.stuiversity.api.user.model.User
 import io.ktor.server.plugins.*
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.mindrot.jbcrypt.BCrypt
 import java.time.Instant
 import java.util.*
@@ -144,4 +143,11 @@ class UserRepository(
         }
     }
 
+    fun find(query: String): List<User> = UserDao.wrapRows(
+        Users.select(
+            Users.firstName.lowerCase() like "$query%"
+                    or (Users.surname.lowerCase() like "$query%")
+                    or (Users.patronymic.lowerCase() like "$query%")
+        )
+    ).map(UserDao::toDomain)
 }

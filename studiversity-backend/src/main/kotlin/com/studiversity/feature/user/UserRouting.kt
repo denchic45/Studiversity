@@ -5,6 +5,7 @@ import com.studiversity.feature.auth.usecase.SignUpUserManuallyUseCase
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.feature.user.usecase.FindUserByIdUseCase
 import com.studiversity.feature.user.usecase.RemoveUserUseCase
+import com.studiversity.feature.user.usecase.SearchUsersUseCase
 import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getUuid
 import com.studiversity.util.tryToUUID
@@ -27,6 +28,12 @@ fun Application.userRoutes() {
                 val organizationId: UUID by inject(named(OrganizationEnv.ORG_ID))
                 val requireCapability: RequireCapabilityUseCase by inject()
                 val signUpUserManually: SignUpUserManuallyUseCase by inject()
+                val searchUsers: SearchUsersUseCase by inject()
+
+                get {
+                    val q: String = call.request.queryParameters.getOrFail("q")
+                    call.respond(HttpStatusCode.OK, searchUsers(q))
+                }
 
                 post {
                     requireCapability(
