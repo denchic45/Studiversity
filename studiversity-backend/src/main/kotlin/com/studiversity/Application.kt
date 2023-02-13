@@ -4,43 +4,61 @@ import com.studiversity.database.DatabaseFactory
 import com.studiversity.di.OrganizationEnv
 import com.studiversity.di.configureDI
 import com.studiversity.feature.auth.configureAuth
+import com.studiversity.feature.course.configureCourses
 import com.studiversity.feature.membership.configureMembership
 import com.studiversity.feature.role.configureRoles
-import com.studiversity.feature.room.configureRoom
+import com.studiversity.feature.room.configureRooms
+import com.studiversity.feature.studygroup.configureStudyGroups
+import com.studiversity.feature.teacher.configureTeachers
 import com.studiversity.feature.timetable.configureTimetable
-import com.studiversity.feature.user.configureUser
+import com.studiversity.feature.user.configureUsers
 import com.studiversity.plugin.*
 import com.studiversity.supabase.configureSupabase
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.coroutines.runBlocking
 import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
 
-fun main(args: Array<String>): Unit = EngineMain.main(args)
+fun main() {
+    startServer()
+}
+
+private lateinit var engine: ApplicationEngine
+
+private fun startServer() {
+    engine = embeddedServer(factory = Netty, port = 8080, host = "0.0.0.0", module = Application::module)
+        .start(wait = true)
+}
+
+fun restartServer() {
+    engine.stop()
+    startServer()
+}
 
 @Suppress("unused")
 fun Application.module() = runBlocking {
     configureDI()
     configureSerialization()
     configureStatusPages()
-    configureAuth()
-    configureUser()
-    configureRoles()
-    configureMembership()
-    configureTimetable()
-    configureRoom()
-    configureRouting()
     val initialized: Boolean by inject(named(OrganizationEnv.ORG_INIT))
-    if (initialized)
-        configure()
-}
-
-private suspend fun Application.configure() {
-    configureDatabase()
-    configureSupabase()
+    if (initialized) {
+        configureDatabase()
+        configureSupabase()
+        configureAuth()
+        configureUsers()
+        configureRoles()
+        configureMembership()
+        configureTeachers()
+        configureStudyGroups()
+        configureCourses()
+        configureTimetable()
+        configureRooms()
+        configureRouting()
+    }
 }
 
 private fun Application.configureDatabase() {

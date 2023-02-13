@@ -19,7 +19,7 @@ import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
 import java.util.*
 
-fun Application.configureRoom() {
+fun Application.configureRooms() {
     routing {
         authenticate("auth-jwt") {
             route("/rooms") {
