@@ -84,6 +84,9 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-server-request-validation:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 
     implementation("org.apache.commons:commons-email:1.5")
 
@@ -93,8 +96,6 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-client-auth:$ktorVersion")
 
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
-
     // Exposed
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
@@ -102,9 +103,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
 
-    implementation("org.mindrot:jbcrypt:0.4")
-
-    implementation("org.postgresql:postgresql:42.5.1")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
 
     // Supabase
     implementation("io.github.jan-tennert.supabase:realtime-kt:$supabaseVersion")
@@ -113,19 +112,18 @@ dependencies {
     // Koin
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
-
-    // kotlin-logging
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
-
-    // kotlin-result
-    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.16")
-
     testImplementation("io.insert-koin", "koin-test-junit5", koinVersion) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-test-junit")
     }
-    testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
+
+    implementation("org.mindrot:jbcrypt:0.4")
+    implementation("com.sksamuel.hoplite:hoplite-hocon:2.7.1")
+
+    implementation("org.postgresql:postgresql:42.5.1")
+
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
+
+    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.16")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
