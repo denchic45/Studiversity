@@ -1,6 +1,6 @@
 package com.studiversity.feature.specialty
 
-import com.studiversity.di.OrganizationEnv
+import com.studiversity.config
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.feature.specialty.usecase.*
 import com.studiversity.ktor.currentUserId
@@ -13,16 +13,13 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
-import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
-import java.util.*
 
 fun Application.configureSpecialties() {
     routing {
         authenticate("auth-jwt") {
             route("/specialties") {
                 val requireCapability: RequireCapabilityUseCase by inject()
-                val organizationId: UUID by inject(named(OrganizationEnv.ORG_ID))
                 val addSpecialty: AddSpecialtyUseCase by inject()
                 val searchSpecialties: SearchSpecialtiesUseCase by inject()
 
@@ -32,7 +29,7 @@ fun Application.configureSpecialties() {
                 }
 
                 post {
-                    requireCapability(call.currentUserId(), Capability.WriteSpecialty, organizationId)
+                    requireCapability(call.currentUserId(), Capability.WriteSpecialty, config.organization.id)
                     call.respond(HttpStatusCode.Created, addSpecialty(call.receive()))
                 }
                 route("/{specialtyId}") {
@@ -44,12 +41,12 @@ fun Application.configureSpecialties() {
                         call.respond(HttpStatusCode.OK, findSpecialtyById(call.parameters.getUuid("specialtyId")))
                     }
                     patch {
-                        requireCapability(call.currentUserId(), Capability.WriteSpecialty, organizationId)
+                        requireCapability(call.currentUserId(), Capability.WriteSpecialty, config.organization.id)
                         val specialty = updateSpecialty(call.parameters.getUuid("specialtyId"), call.receive())
                         call.respond(HttpStatusCode.OK, specialty)
                     }
                     delete {
-                        requireCapability(call.currentUserId(), Capability.WriteSpecialty, organizationId)
+                        requireCapability(call.currentUserId(), Capability.WriteSpecialty, config.organization.id)
                         removeSpecialty(call.parameters.getUuid("specialtyId"))
                         call.respond(HttpStatusCode.NoContent)
                     }

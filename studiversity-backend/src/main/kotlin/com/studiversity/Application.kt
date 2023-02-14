@@ -1,7 +1,6 @@
 package com.studiversity
 
 import com.studiversity.database.DatabaseFactory
-import com.studiversity.di.OrganizationEnv
 import com.studiversity.di.configureDI
 import com.studiversity.feature.auth.configureAuth
 import com.studiversity.feature.course.configureCourses
@@ -21,7 +20,6 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.coroutines.runBlocking
-import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
 
 fun main() {
@@ -45,8 +43,7 @@ fun Application.module() = runBlocking {
     configureDI()
     configureSerialization()
     configureStatusPages()
-    val initialized: Boolean by inject(named(OrganizationEnv.ORG_INIT))
-    if (initialized) {
+    if (config.organization.initialized) {
         configureDatabase()
         configureSupabase()
         configureAuth()

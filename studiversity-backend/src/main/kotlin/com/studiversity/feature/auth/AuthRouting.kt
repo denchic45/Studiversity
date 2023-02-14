@@ -2,8 +2,7 @@ package com.studiversity.feature.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.studiversity.di.JwtEnv
-import com.studiversity.di.OrganizationEnv
+import com.studiversity.config
 import com.studiversity.feature.auth.usecase.*
 import com.studiversity.ktor.ForbiddenException
 import com.stuiversity.api.auth.AuthErrors
@@ -16,16 +15,14 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
-import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
 import java.util.*
 
 fun Route.signupRoute() {
     val signup: SignUpUseCase by inject()
-    val selfRegister: Boolean by inject(named(OrganizationEnv.ORG_SELF_REGISTER))
 
     post("/signup") {
-        if (!selfRegister) throw ForbiddenException()
+        if (!config.organization.selfRegister) throw ForbiddenException()
         val signupRequest = call.receive<SignupRequest>()
         signup(signupRequest)
         call.respond(HttpStatusCode.OK)
@@ -35,8 +32,6 @@ fun Route.signupRoute() {
 fun Route.tokenRoute() {
     val signInByEmailAndPasswordUseCase: SignInByEmailAndPasswordUseCase by inject()
     val refreshToken: RefreshTokenUseCase by inject()
-    val jwtSecret: String by inject(named(JwtEnv.JWT_SECRET))
-    val audience: String by inject(named(JwtEnv.JWT_AUDIENCE))
 
     post("/token") {
         val userIdWithToken = when (call.request.queryParameters["grant_type"]) {
@@ -46,10 +41,10 @@ fun Route.tokenRoute() {
         }
 
         val token = JWT.create()
-            .withAudience(audience)
+            .withAudience(config.jwt.audience)
             .withSubject(userIdWithToken.first.toString())
             .withExpiresAt(Date(System.currentTimeMillis() + 60000))
-            .sign(Algorithm.HMAC256(jwtSecret))
+            .sign(Algorithm.HMAC256(config.jwt.secret))
 
         call.respond(HttpStatusCode.OK, TokenResponse(token, userIdWithToken.second))
     }

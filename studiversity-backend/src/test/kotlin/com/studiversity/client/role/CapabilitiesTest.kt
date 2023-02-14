@@ -1,7 +1,6 @@
 package com.studiversity.client.role
 
 import com.studiversity.KtorClientTest
-import com.studiversity.di.OrganizationEnv
 import com.studiversity.util.assertedResultIsOk
 import com.studiversity.util.unwrapAsserted
 import com.stuiversity.api.auth.model.CreateUserRequest
@@ -22,9 +21,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.parameter.parametersOf
-import org.koin.core.qualifier.named
 import org.koin.test.inject
-import java.util.*
 
 class CapabilitiesTest : KtorClientTest() {
 
@@ -33,8 +30,6 @@ class CapabilitiesTest : KtorClientTest() {
     private val userApi: UserApi by inject { parametersOf(client) }
     private val studyGroupApi: StudyGroupApi by inject { parametersOf(client) }
     private val membershipsApi: MembershipsApi by inject { parametersOf(client) }
-
-    private val organizationId: UUID by inject(named(OrganizationEnv.ORG_ID))
 
     private lateinit var user: User
     private lateinit var studyGroup: StudyGroupResponse

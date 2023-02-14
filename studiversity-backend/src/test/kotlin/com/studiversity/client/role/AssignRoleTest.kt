@@ -1,7 +1,7 @@
 package com.studiversity.client.role
 
 import com.studiversity.KtorClientTest
-import com.studiversity.di.OrganizationEnv
+import com.studiversity.config
 import com.studiversity.util.assertedResultIsError
 import com.studiversity.util.assertedResultIsOk
 import com.studiversity.util.unwrapAsserted
@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.parameter.parametersOf
-import org.koin.core.qualifier.named
 import org.koin.test.inject
 import java.util.*
 
@@ -25,7 +24,7 @@ class AssignRoleTest : KtorClientTest() {
     private val userApi: UserApi by inject { parametersOf(client) }
     private val roleApi: RoleApi by inject { parametersOf(client) }
 
-    private val organizationId: UUID by inject(named(OrganizationEnv.ORG_ID))
+    private val organizationId: UUID = config.organization.id
 
     private lateinit var user: User
 

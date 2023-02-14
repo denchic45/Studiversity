@@ -1,12 +1,10 @@
 package com.studiversity.feature.membership
 
-import com.studiversity.di.OrganizationEnv
+import com.studiversity.config
 import com.studiversity.feature.membership.usecase.FindMembershipByScopeUseCase
 import com.studiversity.feature.membership.usecase.RemoveMemberFromScopeUseCase
 import com.studiversity.feature.membership.usecase.RemoveSelfMemberFromScopeUseCase
-import com.stuiversity.api.role.model.Capability
 import com.studiversity.feature.role.RoleErrors
-import com.stuiversity.api.role.model.UpdateUserRolesRequest
 import com.studiversity.feature.role.usecase.FindMembersInScopeUseCase
 import com.studiversity.feature.role.usecase.RequireAvailableRolesInScopeUseCase
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
@@ -18,6 +16,8 @@ import com.studiversity.util.hasNotDuplicates
 import com.studiversity.util.toUUID
 import com.studiversity.validation.buildValidationResult
 import com.stuiversity.api.membership.model.ManualJoinMemberRequest
+import com.stuiversity.api.role.model.Capability
+import com.stuiversity.api.role.model.UpdateUserRolesRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -28,7 +28,6 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
-import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
 import java.util.*
 
@@ -36,7 +35,6 @@ fun Application.membershipRoutes(memberships: Map<UUID, ExternalMembership>) {
     routing {
         authenticate("auth-jwt") {
             route("/scopes/{scopeId}") {
-                val organizationId: UUID by inject(named(OrganizationEnv.ORG_ID))
                 membersRoute()
                 route("/memberships") {
                     val findMembershipByScope: FindMembershipByScopeUseCase by inject()
@@ -53,7 +51,7 @@ fun Application.membershipRoutes(memberships: Map<UUID, ExternalMembership>) {
                             requireCapability(
                                 call.jwtPrincipal().payload.claimId,
                                 Capability.WriteMembership,
-                                organizationId
+                                config.organization.id
                             )
                             memberships[call.parameters.getOrFail("membershipId").toUUID()]
                                 ?.forceSync()

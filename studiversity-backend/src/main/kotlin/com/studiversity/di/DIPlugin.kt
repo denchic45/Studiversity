@@ -1,5 +1,7 @@
 package com.studiversity.di
 
+
+import com.studiversity.config
 import com.studiversity.database.DatabaseFactory
 import com.studiversity.database.DatabaseFactoryImpl
 import com.studiversity.feature.attachment.attachmentModule
@@ -19,7 +21,6 @@ import com.studiversity.util.EmailSender
 import io.ktor.server.application.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import org.koin.core.qualifier.named
 import org.koin.dsl.binds
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -29,19 +30,19 @@ val otherModule = module {
     single { CoroutineScope(SupervisorJob()) }
     single<DatabaseFactory> {
         DatabaseFactoryImpl(
-            get(named(DatabaseEnv.DATABASE_URL)),
-            get(named(DatabaseEnv.DATABASE_DRIVER)),
-            get(named(DatabaseEnv.DATABASE_USER)),
-            get(named(DatabaseEnv.DATABASE_PASSWORD)),
+            config.database.url,
+            config.database.driver,
+            config.database.user,
+            config.database.password,
         )
     }
     single {
         EmailSender(
-            get(named(SmtpEnv.SMTP_HOST)),
-            get(named(SmtpEnv.SMTP_PORT)),
-            get(named(SmtpEnv.SMTP_USE_SSL)),
-            get(named(SmtpEnv.SMTP_USERNAME)),
-            get(named(SmtpEnv.SMTP_PASSWORD)),
+            config.smtp.host,
+            config.smtp.port,
+            config.smtp.ssl,
+            config.smtp.username,
+            config.smtp.password,
         )
     }
     factory { DatabaseTransactionWorker() } binds arrayOf(TransactionWorker::class, SuspendTransactionWorker::class)
@@ -52,7 +53,6 @@ fun Application.configureDI() {
         slf4jLogger()
         modules(
             otherModule,
-            environmentModule,
             supabaseClientModule,
             authModule,
             userModule,

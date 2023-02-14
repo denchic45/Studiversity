@@ -1,6 +1,6 @@
 package com.studiversity.feature.user
 
-import com.studiversity.di.OrganizationEnv
+import com.studiversity.config
 import com.studiversity.feature.auth.usecase.SignUpUserManuallyUseCase
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.feature.user.usecase.FindUserByIdUseCase
@@ -17,15 +17,12 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
-import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
-import java.util.*
 
 fun Application.userRoutes() {
     routing {
         authenticate("auth-jwt") {
             route("/users") {
-                val organizationId: UUID by inject(named(OrganizationEnv.ORG_ID))
                 val requireCapability: RequireCapabilityUseCase by inject()
                 val signUpUserManually: SignUpUserManuallyUseCase by inject()
                 val searchUsers: SearchUsersUseCase by inject()
@@ -39,7 +36,7 @@ fun Application.userRoutes() {
                     requireCapability(
                         userId = call.currentUserId(),
                         capability = Capability.WriteUser,
-                        scopeId = organizationId
+                        scopeId = config.organization.id
                     )
                     call.respond(HttpStatusCode.Created, signUpUserManually(call.receive()))
                 }
@@ -51,7 +48,6 @@ fun Application.userRoutes() {
 
 private fun Route.userByIdRoute() {
     route("/{userId}") {
-        val organizationId: UUID by inject(named(OrganizationEnv.ORG_ID))
         val requireCapability: RequireCapabilityUseCase by inject()
         val findUserById: FindUserByIdUseCase by inject()
         val removeUser: RemoveUserUseCase by inject()
@@ -70,7 +66,7 @@ private fun Route.userByIdRoute() {
             requireCapability(
                 userId = call.currentUserId(),
                 capability = Capability.DeleteUser,
-                scopeId = organizationId
+                scopeId = config.organization.id
             )
 
             removeUser(call.parameters.getUuid("userId"))

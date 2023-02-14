@@ -2,7 +2,7 @@ package com.studiversity.feature.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.studiversity.di.JwtEnv
+import com.studiversity.config
 import com.studiversity.util.isEmail
 import com.studiversity.util.respondWithError
 import com.studiversity.validation.ValidationResultBuilder
@@ -16,13 +16,11 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.routing.*
-import org.koin.core.qualifier.named
-import org.koin.ktor.ext.inject
 
 fun Application.configureAuth() {
 
-    val jwtJWTSecret by inject<String>(named(JwtEnv.JWT_SECRET))
-    val jwtJWTAudience by inject<String>(named(JwtEnv.JWT_AUDIENCE))
+    val jwtJWTSecret = config.jwt.secret
+    val jwtJWTAudience = config.jwt.audience
 
     authentication {
         jwt("auth-jwt") {

@@ -1,13 +1,13 @@
 package com.studiversity.feature.timetable
 
-import com.studiversity.di.OrganizationEnv
-import com.stuiversity.api.role.model.Capability
+import com.studiversity.config
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.feature.timetable.usecase.*
 import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getSortingBy
 import com.studiversity.ktor.getUuid
 import com.studiversity.util.toUUID
+import com.stuiversity.api.role.model.Capability
 import com.stuiversity.api.timetable.model.SortingPeriods
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -17,9 +17,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
-import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
-import java.util.*
 
 fun Application.timetableRoutes() {
     routing {
@@ -30,9 +28,8 @@ fun Application.timetableRoutes() {
                 val findTimetableByStudyGroup: FindTimetableUseCase by inject()
                 val removeTimetable: RemoveTimetableUseCase by inject()
                 val requireCapability: RequireCapabilityUseCase by inject()
-                val organizationId: UUID by inject(named(OrganizationEnv.ORG_ID))
                 put {
-                    requireCapability(call.currentUserId(), Capability.WriteTimetable, organizationId)
+                    requireCapability(call.currentUserId(), Capability.WriteTimetable, config.organization.id)
 
                     val weekOfYear = call.parameters.getOrFail("weekOfYear")
                     val timetable = putTimetable(weekOfYear, call.receive())
@@ -60,7 +57,7 @@ fun Application.timetableRoutes() {
                     call.respond(HttpStatusCode.OK, timetable)
                 }
                 delete {
-                    requireCapability(call.currentUserId(), Capability.WriteTimetable, organizationId)
+                    requireCapability(call.currentUserId(), Capability.WriteTimetable, config.organization.id)
                     val weekOfYear = call.parameters.getOrFail("weekOfYear")
                     removeTimetable(call.request.queryParameters.getUuid("studyGroupId"), weekOfYear)
                     call.respond(HttpStatusCode.NoContent)
@@ -70,7 +67,7 @@ fun Application.timetableRoutes() {
                     val findTimetableOfDay: FindTimetableOfDayUseCase by inject()
                     val removeTimetableOfDay: RemoveTimetableOfDayUseCase by inject()
                     put {
-                        requireCapability(call.currentUserId(), Capability.WriteTimetable, organizationId)
+                        requireCapability(call.currentUserId(), Capability.WriteTimetable, config.organization.id)
 
                         val weekOfYear = call.parameters.getOrFail("weekOfYear")
                         val dayOfWeek = call.parameters.getOrFail("dayOfWeek").toInt()
@@ -99,10 +96,14 @@ fun Application.timetableRoutes() {
                         call.respond(HttpStatusCode.OK, timetable)
                     }
                     delete {
-                        requireCapability(call.currentUserId(), Capability.WriteTimetable, organizationId)
+                        requireCapability(call.currentUserId(), Capability.WriteTimetable, config.organization.id)
                         val weekOfYear = call.parameters.getOrFail("weekOfYear")
                         val dayOfWeek = call.parameters.getOrFail("dayOfWeek").toInt()
-                        removeTimetableOfDay(call.request.queryParameters.getUuid("studyGroupId"), weekOfYear, dayOfWeek)
+                        removeTimetableOfDay(
+                            call.request.queryParameters.getUuid("studyGroupId"),
+                            weekOfYear,
+                            dayOfWeek
+                        )
                         call.respond(HttpStatusCode.NoContent)
                     }
                 }
