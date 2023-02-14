@@ -21,6 +21,8 @@ interface StudyGroupApi {
         updateStudyGroupRequest: UpdateStudyGroupRequest
     ): ResponseResult<StudyGroupResponse>
 
+    suspend fun search(query: String): ResponseResult<List<StudyGroupResponse>>
+
     suspend fun delete(studyGroupId: UUID): EmptyResponseResult
 }
 
@@ -43,6 +45,12 @@ class StudyGroupApiImpl(private val client: HttpClient) : StudyGroupApi {
         return client.put("/studygroups/$studyGroupId") {
             contentType(ContentType.Application.Json)
             setBody(updateStudyGroupRequest)
+        }.toResult()
+    }
+
+    override suspend fun search(query: String): ResponseResult<List<StudyGroupResponse>> {
+        return client.get("/studygroups") {
+            parameter("q", query)
         }.toResult()
     }
 

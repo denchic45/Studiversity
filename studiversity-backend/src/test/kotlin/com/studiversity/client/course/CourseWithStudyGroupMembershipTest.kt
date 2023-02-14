@@ -37,14 +37,14 @@ class CourseWithStudyGroupMembershipTest : KtorClientTest() {
     fun initData(): Unit = runBlocking {
         studyGroup1 = client.post("/studygroups") {
             contentType(ContentType.Application.Json)
-            setBody(CreateStudyGroupRequest("Test group 1", AcademicYear(2022, 2023)))
+            setBody(CreateStudyGroupRequest("Test group 1", AcademicYear(2022, 2023), null,null))
         }.body<StudyGroupResponse>().apply {
             assertEquals(name, "Test group 1")
         }
 
         studyGroup2 = client.post("/studygroups") {
             contentType(ContentType.Application.Json)
-            setBody(CreateStudyGroupRequest("Test group 2", AcademicYear(2022, 2025)))
+            setBody(CreateStudyGroupRequest("Test group 2", AcademicYear(2022, 2025), null,null))
         }.body()
 
         course = client.post("/courses") {

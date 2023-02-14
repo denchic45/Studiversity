@@ -1,17 +1,18 @@
 package com.studiversity.feature.studygroup.repository
 
 import com.studiversity.database.exists
+import com.studiversity.database.table.Specialties
 import com.studiversity.database.table.SpecialtyDao
 import com.studiversity.database.table.StudyGroupDao
 import com.studiversity.database.table.StudyGroups
 import com.studiversity.feature.studygroup.mapper.toResponse
+import com.studiversity.util.toUUID
 import com.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
-import com.studiversity.util.toUUID
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import java.util.*
 
 class StudyGroupRepository {
@@ -40,6 +41,15 @@ class StudyGroupRepository {
     }
 
     fun findById(id: UUID): StudyGroupResponse? = StudyGroupDao.findById(id)?.toResponse()
+
+    fun find(query: String) = StudyGroupDao.wrapRows(
+        StudyGroups.leftJoin(Specialties, { specialtyId }, { Specialties.id })
+            .select(
+                StudyGroups.name.lowerCase().trim() like "%$query%"
+                        or (Specialties.name.lowerCase().trim() like "%$query%")
+                        or (Specialties.shortname.lowerCase().trim() like "%$query%")
+            )
+    ).map(StudyGroupDao::toResponse)
 
     fun remove(id: UUID) = StudyGroups.deleteWhere { StudyGroups.id eq id }.run { this != 0 }
 

@@ -1,11 +1,8 @@
 package com.studiversity.feature.studygroup
 
+import com.studiversity.feature.studygroup.usecase.*
 import com.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
-import com.studiversity.feature.studygroup.usecase.AddStudyGroupUseCase
-import com.studiversity.feature.studygroup.usecase.FindStudyGroupByIdUseCase
-import com.studiversity.feature.studygroup.usecase.RemoveStudyGroupUseCase
-import com.studiversity.feature.studygroup.usecase.UpdateStudyGroupUseCase
 import com.studiversity.util.onlyDigits
 import com.studiversity.util.toUUID
 import com.studiversity.validation.buildValidationResult
@@ -16,6 +13,7 @@ import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
 
 
@@ -25,6 +23,7 @@ fun Application.studyGroupRoutes() {
             route("/studygroups") {
 
                 val addStudyGroup: AddStudyGroupUseCase by inject()
+                val searchStudyGroups: SearchStudyGroupsUseCase by inject()
 
                 install(RequestValidation) {
                     validate<CreateStudyGroupRequest> { request ->
@@ -51,6 +50,10 @@ fun Application.studyGroupRoutes() {
                             }
                         }
                     }
+                }
+                get {
+                    val q: String = call.request.queryParameters.getOrFail("q")
+                    call.respond(HttpStatusCode.OK, searchStudyGroups(q))
                 }
                 post {
                     val body = call.receive<CreateStudyGroupRequest>()

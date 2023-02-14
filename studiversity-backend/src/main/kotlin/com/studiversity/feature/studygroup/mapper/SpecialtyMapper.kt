@@ -1,14 +1,10 @@
 package com.studiversity.feature.studygroup.mapper
 
 import com.studiversity.database.table.SpecialtyDao
-import com.stuiversity.api.studygroup.model.SpecialtyResponse
-
-//fun SpecialtyDao.toSpecialty() = Specialty(
-//    id = id.value,
-//    name = name
-//)
+import com.stuiversity.api.specialty.model.SpecialtyResponse
 
 fun SpecialtyDao.toResponse() = SpecialtyResponse(
     id = id.value,
-    name = name
+    name = name,
+    shortname = shortname
 )

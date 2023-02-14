@@ -40,7 +40,7 @@ fun Application.subjectRoutes() {
                 }
                 val requireCapability: RequireCapabilityUseCase by inject()
                 val addSubject: AddSubjectUseCase by inject()
-                val findAllSubjects: FindAllSubjectsUseCase by inject()
+                val searchSubjects: SearchSubjectsUseCase by inject()
 
                 post {
                     requireCapability(
@@ -52,15 +52,8 @@ fun Application.subjectRoutes() {
                     call.respond(HttpStatusCode.Created, subject)
                 }
                 get {
-                    requireCapability(
-                        call.jwtPrincipal().payload.claimId,
-                        Capability.ReadSubject,
-                        config.organization.id
-                    )
-
-                    findAllSubjects().apply {
-                        call.respond(HttpStatusCode.OK, this)
-                    }
+                    val q: String? = call.request.queryParameters["q"]
+                    call.respond(HttpStatusCode.OK, searchSubjects(q))
                 }
                 subjectByIdRoute()
             }

@@ -29,6 +29,15 @@ class CourseRepository(private val bucket: BucketApi) {
         return CourseDao.findById(id)?.toResponse()
     }
 
+    fun find(query: String) = CourseDao.wrapRows(
+        Courses.leftJoin(Subjects, { subjectId }, { Subjects.id })
+            .select(
+                Courses.name.lowerCase() like "%$query%"
+                        or (Subjects.name.lowerCase() like "%$query%")
+                        or (Subjects.shortname.lowerCase() like "%$query%")
+            )
+    ).map(CourseDao::toResponse)
+
     fun update(id: UUID, request: UpdateCourseRequest): CourseResponse? = CourseDao.findById(id)?.apply {
         request.name.ifPresent { name = it }
         request.subjectId.ifPresent { subject = it?.let { SubjectDao.findById(it) } }
@@ -101,13 +110,4 @@ class CourseRepository(private val bucket: BucketApi) {
         CourseDao.findById(courseId)!!.delete()
         bucket.deleteRecursive("courses/$courseId")
     }
-
-    fun find(query: String) = CourseDao.wrapRows(
-        Courses.innerJoin(Subjects, { subjectId }, { Subjects.id })
-            .select(
-                Courses.name.lowerCase() like "%$query%"
-                        or (Subjects.name.lowerCase() like "%$query%")
-                        or (Subjects.shortname.lowerCase() like "%$query%")
-            )
-    ).map(CourseDao::toResponse)
 }

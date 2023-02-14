@@ -40,7 +40,7 @@ class CapabilitiesTest : KtorClientTest() {
             CreateUserRequest("Anton", "Ermolin", null, "anton@mail.ru")
         ).unwrapAsserted()
         studyGroup = studyGroupApi.create(
-            CreateStudyGroupRequest("Test group", AcademicYear(2023, 2027), null)
+            CreateStudyGroupRequest("Test group", AcademicYear(2023, 2027), null, null)
         ).unwrapAsserted()
         membershipsApi.joinToScopeManually(user.id, studyGroup.id, listOf(Role.Student.id))
     }

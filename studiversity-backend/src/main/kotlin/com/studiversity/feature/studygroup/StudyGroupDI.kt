@@ -10,6 +10,7 @@ private val useCaseModule = module {
     single { FindStudyGroupByIdUseCase(get(), get()) }
     single { AddStudyGroupUseCase(config.organization.id, get(), get(), get(), get()) }
     single { UpdateStudyGroupUseCase(get()) }
+    single { SearchStudyGroupsUseCase(get(), get()) }
     single { RemoveStudyGroupUseCase(get(), get(), get()) }
     single { RequireExistStudyGroupUseCase(get(), get()) }
 }

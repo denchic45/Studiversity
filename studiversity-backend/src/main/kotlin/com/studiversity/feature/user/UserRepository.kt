@@ -143,11 +143,9 @@ class UserRepository(
         }
     }
 
-    fun find(query: String): List<User> = UserDao.wrapRows(
-        Users.select(
-            Users.firstName.lowerCase() like "$query%"
-                    or (Users.surname.lowerCase() like "$query%")
-                    or (Users.patronymic.lowerCase() like "$query%")
-        )
+    fun find(query: String): List<User> = UserDao.find(
+        Users.firstName.lowerCase() like "$query%"
+                or (Users.surname.lowerCase() like "$query%")
+                or (Users.patronymic.lowerCase() like "$query%")
     ).map(UserDao::toDomain)
 }
