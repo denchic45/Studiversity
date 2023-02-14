@@ -19,24 +19,24 @@ class SpecialtyTest : KtorClientTest() {
 
     @Test
     fun test(): Unit = runBlocking {
-        val createdRoom = specialtyApi.create(CreateSpecialtyRequest("Программирование в компьютерных системах", "ПКС"))
+        val createdSpecialty = specialtyApi.create(CreateSpecialtyRequest("Программирование в компьютерных системах", "ПКС"))
             .unwrapAsserted().apply {
                 assertEquals("Программирование в компьютерных системах", name)
                 assertEquals("ПКС", shortname)
             }
 
-        specialtyApi.getById(createdRoom.id).unwrapAsserted().apply {
-            assertEquals(createdRoom.id, id)
+        specialtyApi.getById(createdSpecialty.id).unwrapAsserted().apply {
+            assertEquals(createdSpecialty.id, id)
             assertEquals("Программирование в компьютерных системах", name)
             assertEquals("ПКС", shortname)
         }
 
-        specialtyApi.update(createdRoom.id, UpdateSpecialtyRequest(optPropertyOf("Реклама"), optPropertyOf("Р")))
+        specialtyApi.update(createdSpecialty.id, UpdateSpecialtyRequest(optPropertyOf("Реклама"), optPropertyOf("Р")))
             .unwrapAsserted().apply {
                 assertEquals("Реклама", name)
                 assertEquals("Р", shortname)
             }
 
-        specialtyApi.delete(createdRoom.id).also(::assertResultIsOk)
+        specialtyApi.delete(createdSpecialty.id).also(::assertResultIsOk)
     }
 }

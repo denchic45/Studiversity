@@ -2,10 +2,7 @@ package com.studiversity.feature.specialty
 
 import com.studiversity.di.OrganizationEnv
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
-import com.studiversity.feature.specialty.usecase.AddSpecialtyUseCase
-import com.studiversity.feature.specialty.usecase.FindSpecialtyByIdUseCase
-import com.studiversity.feature.specialty.usecase.RemoveSpecialtyUseCase
-import com.studiversity.feature.specialty.usecase.UpdateSpecialtyUseCase
+import com.studiversity.feature.specialty.usecase.*
 import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getUuid
 import com.stuiversity.api.role.model.Capability
@@ -15,6 +12,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.util.*
 import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
 import java.util.*
@@ -26,6 +24,12 @@ fun Application.configureSpecialties() {
                 val requireCapability: RequireCapabilityUseCase by inject()
                 val organizationId: UUID by inject(named(OrganizationEnv.ORG_ID))
                 val addSpecialty: AddSpecialtyUseCase by inject()
+                val searchSpecialties: SearchSpecialtiesUseCase by inject()
+
+                get {
+                    val q: String = call.request.queryParameters.getOrFail("q")
+                    call.respond(HttpStatusCode.OK, searchSpecialties(q))
+                }
 
                 post {
                     requireCapability(call.currentUserId(), Capability.WriteSpecialty, organizationId)

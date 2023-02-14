@@ -21,6 +21,8 @@ interface SpecialtyApi {
         updateSpecialtyRequest: UpdateSpecialtyRequest
     ): ResponseResult<SpecialtyResponse>
 
+    suspend fun search(query: String): ResponseResult<List<SpecialtyResponse>>
+
     suspend fun delete(specialtyId: UUID): EmptyResponseResult
 }
 
@@ -43,6 +45,12 @@ class SpecialtyApiImpl(private val client: HttpClient) : SpecialtyApi {
         return client.patch("/specialties/$specialtyId") {
             contentType(ContentType.Application.Json)
             setBody(updateSpecialtyRequest)
+        }.toResult()
+    }
+
+    override suspend fun search(query: String): ResponseResult<List<SpecialtyResponse>> {
+        return client.get("/specialties") {
+            parameter("q", query)
         }.toResult()
     }
 
