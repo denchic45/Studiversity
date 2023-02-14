@@ -48,9 +48,8 @@ fun Application.subjectRoutes() {
                         Capability.WriteSubject,
                         config.organization.id
                     )
-                    val body = call.receive<CreateSubjectRequest>()
-                    val subjectId = addSubject(body).toString()
-                    call.respond(HttpStatusCode.OK, subjectId)
+                    val subject = addSubject(call.receive())
+                    call.respond(HttpStatusCode.Created, subject)
                 }
                 get {
                     requireCapability(

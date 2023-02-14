@@ -16,7 +16,7 @@ import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 import kotlin.test.assertEquals
 
-class SearchUsers : KtorClientTest() {
+class SearchUsersTest : KtorClientTest() {
     private val userApi: UserApi by inject { parametersOf(client) }
     private val email = "denchic150@gmail.com"
     private val expectedFirstName = "Yaroslav"

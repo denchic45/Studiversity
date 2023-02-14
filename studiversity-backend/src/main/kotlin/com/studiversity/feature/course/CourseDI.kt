@@ -7,7 +7,6 @@ import com.studiversity.feature.course.subject.subjectModule
 import com.studiversity.feature.course.topic.courseTopicModule
 import com.studiversity.feature.course.usecase.*
 import com.studiversity.feature.course.work.submission.courseSubmissionModule
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 private val useCaseModule = module {
@@ -20,6 +19,7 @@ private val useCaseModule = module {
     single { DetachStudyGroupToCourseUseCase(get(), get()) }
     single { ArchiveCourseUseCase(get(), get()) }
     single { UnarchiveCourseUseCase(get(), get()) }
+    single { SearchCoursesUseCase(get(), get()) }
     single { RemoveCourseUseCase(get(), get(), get(), get()) }
 }
 

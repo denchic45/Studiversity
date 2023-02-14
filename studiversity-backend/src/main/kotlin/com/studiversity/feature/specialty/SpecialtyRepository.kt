@@ -38,9 +38,8 @@ class SpecialtyRepository {
         return SpecialtyDao.findById(id)?.delete() != null
     }
 
-    fun find(query: String): List<SpecialtyResponse> =
-        SpecialtyDao.find(
-            Specialties.name.lowerCase() like "%$query%"
-                    or (Specialties.shortname.lowerCase() like "%$query%")
-        ).map(SpecialtyDao::toResponse)
+    fun find(query: String): List<SpecialtyResponse> = SpecialtyDao.find(
+        Specialties.name.lowerCase() like "%$query%"
+                or (Specialties.shortname.lowerCase() like "%$query%")
+    ).map(SpecialtyDao::toResponse)
 }

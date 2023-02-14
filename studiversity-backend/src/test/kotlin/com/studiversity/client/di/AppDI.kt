@@ -5,9 +5,11 @@ import com.stuiversity.api.account.AccountApiImpl
 import com.stuiversity.api.auth.AuthApi
 import com.stuiversity.api.auth.AuthApiImpl
 import com.stuiversity.api.course.CoursesApi
-import com.stuiversity.api.course.CoursesApiImpl
+import com.stuiversity.api.course.CourseApiImpl
 import com.stuiversity.api.course.element.CourseElementApi
 import com.stuiversity.api.course.element.CourseElementApiImpl
+import com.stuiversity.api.course.subject.SubjectApi
+import com.stuiversity.api.course.subject.SubjectApiImpl
 import com.stuiversity.api.course.topic.CourseTopicApi
 import com.stuiversity.api.course.topic.CourseTopicApiImpl
 import com.stuiversity.api.course.work.CourseWorkApi
@@ -39,8 +41,9 @@ internal val apiModule = module {
     factory<RoleApi> { RoleApiImpl(it.get()) }
     factory<CapabilityApi> { CapabilityApiImpl(it.get()) }
     factory<StudyGroupApi> { StudyGroupApiImpl(it.get()) }
+    factory< SubjectApi> { SubjectApiImpl(it.get()) }
     factory<SpecialtyApi> { SpecialtyApiImpl(it.get()) }
-    factory<CoursesApi> { CoursesApiImpl(it.get()) }
+    factory<CoursesApi> { CourseApiImpl(it.get()) }
     factory<CourseElementApi> { CourseElementApiImpl(it.get()) }
     factory<CourseWorkApi> { CourseWorkApiImpl(it.get()) }
     factory<SubmissionsApi> { SubmissionsApiImpl(it.get()) }

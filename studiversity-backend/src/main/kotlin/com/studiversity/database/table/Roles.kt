@@ -1,6 +1,5 @@
 package com.studiversity.database.table
 
-import com.studiversity.util.varcharMax
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -8,8 +7,8 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 object Roles : LongIdTable("role", "role_id") {
-    val name = varcharMax("role_name")
-    val shortName = varcharMax("short_name")
+    val name = text("role_name")
+    val shortName = text("shortname")
     val parent = reference("parent", Roles).nullable()
 }
 

@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CreateSubjectRequest(
     val name: String,
+    val shortname: String,
     val iconName: String
 )

@@ -16,7 +16,7 @@ import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 import kotlin.test.assertEquals
 
-class SearchSpecialties : KtorClientTest() {
+class SearchSpecialtiesTest : KtorClientTest() {
     private val specialtyApi: SpecialtyApi by inject { parametersOf(client) }
 
     private lateinit var specialty: SpecialtyResponse
@@ -47,7 +47,7 @@ class SearchSpecialties : KtorClientTest() {
     }
 
     private fun SpecialtyResponse.assertSpecialtyEquals() {
-        assertEquals(name, expectedName)
-        assertEquals(shortname, expectedShortname)
+        assertEquals(expectedName, name)
+        assertEquals(expectedShortname, shortname)
     }
 }

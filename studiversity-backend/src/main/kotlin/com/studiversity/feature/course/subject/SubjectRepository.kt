@@ -10,12 +10,12 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class SubjectRepository {
-
     fun add(request: CreateSubjectRequest) = transaction {
         SubjectDao.new {
             name = request.name
+            shortname = request.shortname
             iconName = request.iconName
-        }.id.value
+        }.toResponse()
     }
 
     fun findById(id: UUID) = transaction {
@@ -29,6 +29,7 @@ class SubjectRepository {
     fun update(id: UUID, request: UpdateSubjectRequest) = transaction {
         SubjectDao.findById(id)?.apply {
             request.name.ifPresent { name = it }
+            request.shortname.ifPresent { name = it }
             request.iconName.ifPresent { iconName = it }
         }.run { this?.toResponse() }
     }

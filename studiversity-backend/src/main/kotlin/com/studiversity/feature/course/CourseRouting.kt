@@ -1,11 +1,10 @@
 package com.studiversity.feature.course
 
-import com.studiversity.di.OrganizationEnv
+import com.studiversity.config
 import com.studiversity.feature.course.element.courseElementRoutes
 import com.studiversity.feature.course.topic.courseTopicsRoutes
 import com.studiversity.feature.course.usecase.*
 import com.studiversity.feature.course.work.courseWorksRoutes
-import com.stuiversity.api.role.model.Capability
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.ktor.claimId
 import com.studiversity.ktor.getUuid
@@ -15,6 +14,7 @@ import com.studiversity.util.toUUID
 import com.studiversity.validation.buildValidationResult
 import com.stuiversity.api.course.model.CreateCourseRequest
 import com.stuiversity.api.course.model.UpdateCourseRequest
+import com.stuiversity.api.role.model.Capability
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -23,7 +23,7 @@ import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.koin.core.qualifier.named
+import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
 import java.util.*
 
@@ -41,14 +41,19 @@ fun Application.courseRoutes() {
                         }
                     }
                 }
-                val organizationId: UUID by inject(named(OrganizationEnv.ORG_ID))
                 val requireCapability: RequireCapabilityUseCase by inject()
                 val addCourse: AddCourseUseCase by inject()
+                val searchCourses: SearchCoursesUseCase by inject()
+
+                get {
+                    val q: String = call.request.queryParameters.getOrFail("q")
+                    call.respond(HttpStatusCode.OK, searchCourses(q))
+                }
 
                 post {
                     val currentUserId = call.principal<JWTPrincipal>()!!.payload.getClaim("sub").asString().toUUID()
 
-                    requireCapability(currentUserId, Capability.WriteCourse, organizationId)
+                    requireCapability(currentUserId, Capability.WriteCourse, config.organization.id)
 
                     val body = call.receive<CreateCourseRequest>()
 
@@ -155,7 +160,7 @@ private fun Route.courseStudyGroups() {
 
                 val studyGroupId = call.parameters["studyGroupId"]!!.toUUID()
                 attachStudyGroupToCourse(courseId, studyGroupId)
-                call.respond(HttpStatusCode.Created, "")
+                call.respond(HttpStatusCode.OK, "")
             }
             delete {
                 val currentUserId = call.jwtPrincipal().payload.claimId

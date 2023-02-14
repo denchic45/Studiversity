@@ -10,6 +10,7 @@ import com.stuiversity.api.course.model.UpdateCourseRequest
 import io.github.jan.supabase.storage.BucketApi
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import java.util.*
 
 class CourseRepository(private val bucket: BucketApi) {
@@ -100,4 +101,13 @@ class CourseRepository(private val bucket: BucketApi) {
         CourseDao.findById(courseId)!!.delete()
         bucket.deleteRecursive("courses/$courseId")
     }
+
+    fun find(query: String) = CourseDao.wrapRows(
+        Courses.innerJoin(Subjects, { subjectId }, { Subjects.id })
+            .select(
+                Courses.name.lowerCase() like "%$query%"
+                        or (Subjects.name.lowerCase() like "%$query%")
+                        or (Subjects.shortname.lowerCase() like "%$query%")
+            )
+    ).map(CourseDao::toResponse)
 }
