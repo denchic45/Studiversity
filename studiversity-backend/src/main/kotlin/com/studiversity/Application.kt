@@ -7,6 +7,7 @@ import com.studiversity.feature.course.configureCourses
 import com.studiversity.feature.membership.configureMembership
 import com.studiversity.feature.role.configureRoles
 import com.studiversity.feature.room.configureRooms
+import com.studiversity.feature.schedule.configureSchedule
 import com.studiversity.feature.specialty.configureSpecialties
 import com.studiversity.feature.studygroup.configureStudyGroups
 import com.studiversity.feature.teacher.configureTeachers
@@ -55,6 +56,7 @@ fun Application.module() = runBlocking {
         configureSpecialties()
         configureCourses()
         configureTimetable()
+        configureSchedule()
         configureRooms()
         configureRouting()
     }

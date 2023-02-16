@@ -2,6 +2,7 @@ package com.studiversity.feature.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.denchic45.kts.util.toDate
 import com.studiversity.config
 import com.studiversity.feature.auth.usecase.*
 import com.studiversity.ktor.ForbiddenException
@@ -16,7 +17,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
-import java.util.*
+import java.time.LocalDateTime
 
 fun Route.signupRoute() {
     val signup: SignUpUseCase by inject()
@@ -43,7 +44,7 @@ fun Route.tokenRoute() {
         val token = JWT.create()
             .withAudience(config.jwt.audience)
             .withSubject(userIdWithToken.first.toString())
-            .withExpiresAt(Date(System.currentTimeMillis() + 60000))
+            .withExpiresAt(LocalDateTime.now().plusDays(1).toDate())
             .sign(Algorithm.HMAC256(config.jwt.secret))
 
         call.respond(HttpStatusCode.OK, TokenResponse(token, userIdWithToken.second))

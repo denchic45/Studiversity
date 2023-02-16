@@ -4,8 +4,8 @@ import com.stuiversity.api.account.AccountApi
 import com.stuiversity.api.account.AccountApiImpl
 import com.stuiversity.api.auth.AuthApi
 import com.stuiversity.api.auth.AuthApiImpl
-import com.stuiversity.api.course.CoursesApi
 import com.stuiversity.api.course.CourseApiImpl
+import com.stuiversity.api.course.CoursesApi
 import com.stuiversity.api.course.element.CourseElementApi
 import com.stuiversity.api.course.element.CourseElementApiImpl
 import com.stuiversity.api.course.subject.SubjectApi
@@ -22,6 +22,8 @@ import com.stuiversity.api.role.RoleApi
 import com.stuiversity.api.role.RoleApiImpl
 import com.stuiversity.api.room.RoomApi
 import com.stuiversity.api.room.RoomApiImpl
+import com.stuiversity.api.schedule.ScheduleApi
+import com.stuiversity.api.schedule.ScheduleApiImpl
 import com.stuiversity.api.specialty.SpecialtyApi
 import com.stuiversity.api.specialty.SpecialtyApiImpl
 import com.stuiversity.api.studygroup.StudyGroupApi
@@ -41,7 +43,8 @@ internal val apiModule = module {
     factory<RoleApi> { RoleApiImpl(it.get()) }
     factory<CapabilityApi> { CapabilityApiImpl(it.get()) }
     factory<StudyGroupApi> { StudyGroupApiImpl(it.get()) }
-    factory< SubjectApi> { SubjectApiImpl(it.get()) }
+    factory<ScheduleApi> { ScheduleApiImpl(it.get()) }
+    factory<SubjectApi> { SubjectApiImpl(it.get()) }
     factory<SpecialtyApi> { SpecialtyApiImpl(it.get()) }
     factory<CoursesApi> { CourseApiImpl(it.get()) }
     factory<CourseElementApi> { CourseElementApiImpl(it.get()) }
