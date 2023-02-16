@@ -117,7 +117,11 @@ dependencies {
     }
 
     implementation("org.mindrot:jbcrypt:0.4")
+
+    // Hoplite
     implementation("com.sksamuel.hoplite:hoplite-hocon:2.7.1")
+    implementation("com.sksamuel.hoplite:hoplite-json:2.7.1")
+    implementation("com.sksamuel.hoplite:hoplite-watch:2.7.1")
 
     implementation("org.postgresql:postgresql:42.5.1")
 
