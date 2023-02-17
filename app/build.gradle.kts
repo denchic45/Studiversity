@@ -1,4 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    kotlin("plugin.serialization") version "1.7.20"
+}
+
 buildscript {
     val kotlinVersion = "1.7.20"
     repositories {

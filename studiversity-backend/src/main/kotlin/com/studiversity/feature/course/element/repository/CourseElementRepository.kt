@@ -5,11 +5,11 @@ import com.studiversity.database.table.*
 import com.studiversity.feature.course.element.toCourseElementResponse
 import com.studiversity.feature.course.element.toResponse
 import com.studiversity.util.toSqlSortOrder
-import com.stuiversity.api.course.element.model.CourseElementResponse
-import com.stuiversity.api.course.element.model.CourseElementType
-import com.stuiversity.api.course.element.model.SortingCourseElements
-import com.stuiversity.api.course.element.model.UpdateCourseElementRequest
-import com.stuiversity.api.course.work.model.CreateCourseWorkRequest
+import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
+import com.denchic45.stuiversity.api.course.element.model.CourseElementType
+import com.denchic45.stuiversity.api.course.element.model.SortingCourseElements
+import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
+import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
 import org.jetbrains.exposed.sql.and

@@ -1,7 +1,7 @@
 package com.studiversity.feature.timetable
 
 import com.studiversity.database.table.PeriodDao
-import com.stuiversity.api.timetable.model.*
+import com.denchic45.stuiversity.api.timetable.model.*
 
 fun PeriodDao.toResponse() = when (type) {
     PeriodType.LESSON -> LessonResponse(

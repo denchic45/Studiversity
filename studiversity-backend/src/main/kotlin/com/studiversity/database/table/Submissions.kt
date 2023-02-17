@@ -1,7 +1,7 @@
 package com.studiversity.database.table
 
 import com.studiversity.util.varcharMax
-import com.stuiversity.api.course.work.submission.model.SubmissionState
+import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

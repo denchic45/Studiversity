@@ -15,9 +15,9 @@ import com.studiversity.ktor.jwtPrincipal
 import com.studiversity.util.hasNotDuplicates
 import com.studiversity.util.toUUID
 import com.studiversity.validation.buildValidationResult
-import com.stuiversity.api.membership.model.ManualJoinMemberRequest
-import com.stuiversity.api.role.model.Capability
-import com.stuiversity.api.role.model.UpdateUserRolesRequest
+import com.denchic45.stuiversity.api.membership.model.ManualJoinMemberRequest
+import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.role.model.UpdateUserRolesRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

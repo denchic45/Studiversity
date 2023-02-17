@@ -5,8 +5,8 @@ import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getUuid
 import com.studiversity.util.hasNotDuplicates
 import com.studiversity.validation.buildValidationResult
-import com.stuiversity.api.role.model.Capability
-import com.stuiversity.api.role.model.UpdateUserRolesRequest
+import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.role.model.UpdateUserRolesRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

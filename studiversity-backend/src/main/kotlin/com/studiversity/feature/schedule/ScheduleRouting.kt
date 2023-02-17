@@ -1,6 +1,6 @@
 package com.studiversity.feature.schedule
 
-import com.stuiversity.api.schedule.model.Schedule
+import com.denchic45.stuiversity.api.schedule.model.Schedule
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

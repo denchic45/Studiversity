@@ -3,8 +3,8 @@ package com.studiversity.feature.auth.usecase
 import com.studiversity.feature.auth.model.RefreshToken
 import com.studiversity.feature.user.UserRepository
 import com.studiversity.transaction.TransactionWorker
-import com.stuiversity.api.auth.AuthErrors
-import com.stuiversity.api.auth.model.SignInByEmailPasswordRequest
+import com.denchic45.stuiversity.api.auth.AuthErrors
+import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest
 import io.ktor.server.plugins.*
 import org.mindrot.jbcrypt.BCrypt
 import java.time.LocalDateTime

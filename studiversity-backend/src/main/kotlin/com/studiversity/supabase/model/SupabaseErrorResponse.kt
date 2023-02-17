@@ -2,9 +2,9 @@ package com.studiversity.supabase.model
 
 import com.studiversity.util.bodyOrNull
 import com.studiversity.util.respondWithError
-import com.stuiversity.api.auth.AuthErrors
-import com.stuiversity.util.ErrorInfo
-import com.stuiversity.util.ErrorResponse
+import com.denchic45.stuiversity.api.auth.AuthErrors
+import com.denchic45.stuiversity.util.ErrorInfo
+import com.denchic45.stuiversity.util.ErrorResponse
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*

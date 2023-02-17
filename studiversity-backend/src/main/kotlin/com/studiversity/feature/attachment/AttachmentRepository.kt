@@ -3,7 +3,7 @@ package com.studiversity.feature.attachment
 import com.studiversity.database.exists
 import com.studiversity.database.table.*
 import com.studiversity.supabase.deleteRecursive
-import com.stuiversity.api.course.element.model.*
+import com.denchic45.stuiversity.api.course.element.model.*
 import io.github.jan.supabase.storage.BucketApi
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

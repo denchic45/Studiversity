@@ -1,6 +1,6 @@
 package com.studiversity.feature.role.usecase
 
-import com.stuiversity.api.role.model.Role
+import com.denchic45.stuiversity.api.role.model.Role
 import com.studiversity.feature.role.RoleErrors
 import com.studiversity.feature.role.repository.RoleRepository
 import io.ktor.server.plugins.*

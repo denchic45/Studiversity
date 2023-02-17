@@ -5,9 +5,9 @@ import com.studiversity.KtorClientTest
 import com.studiversity.util.assertResultIsOk
 import com.studiversity.util.assertedResultIsOk
 import com.studiversity.util.unwrapAsserted
-import com.stuiversity.api.course.subject.SubjectApi
-import com.stuiversity.api.course.subject.model.CreateSubjectRequest
-import com.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.stuiversity.api.course.subject.SubjectApi
+import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach

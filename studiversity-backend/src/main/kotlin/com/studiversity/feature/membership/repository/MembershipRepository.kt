@@ -2,7 +2,7 @@ package com.studiversity.feature.membership.repository
 
 import com.studiversity.database.table.ExternalStudyGroupsMemberships
 import com.studiversity.database.table.Memberships
-import com.stuiversity.api.membership.model.CreateMembershipRequest
+import com.denchic45.stuiversity.api.membership.model.CreateMembershipRequest
 import com.studiversity.logger.logger
 import com.studiversity.util.toUUID
 import io.github.jan.supabase.realtime.*

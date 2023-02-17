@@ -8,9 +8,9 @@ import com.studiversity.ktor.jwtPrincipal
 import com.studiversity.util.onlyDigits
 import com.studiversity.util.toUUID
 import com.studiversity.validation.buildValidationResult
-import com.stuiversity.api.course.subject.model.CreateSubjectRequest
-import com.stuiversity.api.course.subject.model.UpdateSubjectRequest
-import com.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
+import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
+import com.denchic45.stuiversity.api.role.model.Capability
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

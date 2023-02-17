@@ -1,8 +1,8 @@
 package com.studiversity.feature.course.work.submission
 
 import com.studiversity.database.table.SubmissionDao
-import com.stuiversity.api.course.work.model.CourseWorkType
-import com.stuiversity.api.course.work.submission.model.AssignmentSubmissionResponse
+import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
+import com.denchic45.stuiversity.api.course.work.submission.model.AssignmentSubmissionResponse
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 

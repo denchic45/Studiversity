@@ -4,8 +4,8 @@ import com.studiversity.feature.auth.model.MagicLinkToken
 import com.studiversity.feature.user.UserRepository
 import com.studiversity.transaction.TransactionWorker
 import com.studiversity.util.EmailSender
-import com.stuiversity.api.auth.AuthErrors
-import com.stuiversity.api.auth.model.ResetPasswordRequest
+import com.denchic45.stuiversity.api.auth.AuthErrors
+import com.denchic45.stuiversity.api.auth.model.ResetPasswordRequest
 import io.ktor.server.plugins.*
 import java.time.LocalDateTime
 import java.time.ZoneOffset

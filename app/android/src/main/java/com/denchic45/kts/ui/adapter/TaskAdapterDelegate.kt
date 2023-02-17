@@ -3,8 +3,8 @@ package com.denchic45.kts.ui.adapter
 import android.view.ViewGroup
 import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.databinding.ItemTaskBinding
-import com.denchic45.kts.util.toString
 import com.denchic45.kts.util.viewBinding
+import com.denchic45.stuiversity.util.toString
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
 
 class TaskAdapterDelegate : ListItemAdapterDelegate<Task, TaskHolder>() {

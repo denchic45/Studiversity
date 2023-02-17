@@ -1,9 +1,9 @@
 package com.studiversity.util
 
 import com.studiversity.supabase.model.SupabaseErrorResponse
-import com.stuiversity.util.ErrorInfo
-import com.stuiversity.util.ErrorResponse
-import com.stuiversity.util.ErrorValidation
+import com.denchic45.stuiversity.util.ErrorInfo
+import com.denchic45.stuiversity.util.ErrorResponse
+import com.denchic45.stuiversity.util.ErrorValidation
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*

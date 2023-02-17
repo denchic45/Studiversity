@@ -8,7 +8,7 @@ import com.denchic45.kts.domain.model.SimpleEventDetails
 import com.denchic45.kts.domain.usecase.FindEventsOfWeekByThisUserUseCase
 import com.denchic45.kts.util.capitalized
 import com.denchic45.kts.util.componentScope
-import com.denchic45.kts.util.toString
+import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
@@ -100,6 +100,7 @@ data class TimetableViewState(
         val saturday: LocalDate = monday.plusDays(5)
         return if (monday.monthValue != saturday.monthValue) {
             if (monday.year != saturday.year) {
+
                 "${monday.toString("LLL yy").capitalized().replace(".", "")} - ${
                     saturday.toString("LLL yy").replace(".", "")
                 }"

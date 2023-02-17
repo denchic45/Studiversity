@@ -2,8 +2,8 @@ package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.*
 import com.denchic45.kts.data.db.local.model.DayWithEventsEntities
-import com.denchic45.kts.util.DatePatterns
-import com.denchic45.kts.util.toString
+import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.toString
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull

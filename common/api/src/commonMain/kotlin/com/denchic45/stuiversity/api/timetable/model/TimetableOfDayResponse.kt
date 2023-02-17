@@ -1,0 +1,8 @@
+package com.denchic45.stuiversity.api.timetable.model
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class TimetableOfDayResponse(
+    val periods: List<PeriodResponse>
+)

@@ -2,13 +2,13 @@ package com.studiversity.feature.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.denchic45.kts.util.toDate
 import com.studiversity.config
 import com.studiversity.feature.auth.usecase.*
 import com.studiversity.ktor.ForbiddenException
-import com.stuiversity.api.auth.AuthErrors
-import com.stuiversity.api.auth.model.SignupRequest
-import com.stuiversity.api.auth.model.TokenResponse
+import com.denchic45.stuiversity.api.auth.AuthErrors
+import com.denchic45.stuiversity.api.auth.model.SignupRequest
+import com.denchic45.stuiversity.api.auth.model.TokenResponse
+import com.denchic45.stuiversity.util.toDate
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*

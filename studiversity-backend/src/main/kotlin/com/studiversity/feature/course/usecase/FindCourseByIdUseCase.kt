@@ -2,7 +2,7 @@ package com.studiversity.feature.course.usecase
 
 import com.studiversity.feature.course.repository.CourseRepository
 import com.studiversity.transaction.TransactionWorker
-import com.stuiversity.api.course.model.CourseResponse
+import com.denchic45.stuiversity.api.course.model.CourseResponse
 import io.ktor.server.plugins.*
 import java.util.*
 

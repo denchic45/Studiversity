@@ -6,14 +6,14 @@ import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.domain.model.DomainModel
-import com.denchic45.kts.ui.model.UiText
 import com.denchic45.kts.domain.model.SubmissionSettings
 import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.course.taskEditor.AddAttachmentItem
-import com.denchic45.kts.util.toString
+import com.denchic45.kts.ui.model.UiText
+import com.denchic45.stuiversity.util.toString
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -30,7 +30,7 @@ class TaskInfoViewModel @Inject constructor(
     findTaskUseCase: FindTaskUseCase,
     findTaskAttachmentsUseCase: FindAttachmentsUseCase,
     findSelfTaskSubmissionUseCase: FindSelfTaskSubmissionUseCase,
-    private val updateSubmissionFromStudentUseCase: UpdateSubmissionFromStudentUseCase
+    private val updateSubmissionFromStudentUseCase: UpdateSubmissionFromStudentUseCase,
 ) : BaseViewModel() {
 
     companion object {
@@ -42,7 +42,11 @@ class TaskInfoViewModel @Inject constructor(
         replay = 1,
         started = SharingStarted.WhileSubscribed()
     )
-    val attachments = findTaskAttachmentsUseCase(taskId).stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    val attachments = findTaskAttachmentsUseCase(taskId).stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        emptyList()
+    )
     val taskViewState = taskFlow.onEach { task ->
         if (task == null) {
             finish()
@@ -58,7 +62,10 @@ class TaskInfoViewModel @Inject constructor(
                     completionDate.format(pattern) to
                             UiText.FormattedQuantityText(
                                 value = R.plurals.day,
-                                quantity = Period.between(LocalDate.now(), completionDate.toLocalDate()).days,
+                                quantity = Period.between(
+                                    LocalDate.now(),
+                                    completionDate.toLocalDate()
+                                ).days,
                                 formatArgs = null
                             )
 
@@ -175,7 +182,8 @@ class TaskInfoViewModel @Inject constructor(
             when (_submissionViewState.first().status) {
                 is Task.SubmissionStatus.NotSubmitted,
                 is Task.SubmissionStatus.Graded,
-                is Task.SubmissionStatus.Rejected -> {
+                is Task.SubmissionStatus.Rejected,
+                -> {
                     onSubmitActionClick()
                 }
                 is Task.SubmissionStatus.Submitted -> {
@@ -227,7 +235,7 @@ class TaskInfoViewModel @Inject constructor(
         val name: String,
         val description: String,
         val dateWithTimeLeft: Pair<String, UiText.FormattedQuantityText>?,
-        val submissionSettings: SubmissionSettings
+        val submissionSettings: SubmissionSettings,
     )
 
     data class SubmissionViewState(
@@ -246,7 +254,7 @@ class TaskInfoViewModel @Inject constructor(
         val attachments: List<DomainModel>,
         val allowEditContent: Boolean,
 
-        val submissionSettings: SubmissionSettings
+        val submissionSettings: SubmissionSettings,
     )
 
     private suspend fun Task.Submission.toSubmissionViewState(): SubmissionViewState {

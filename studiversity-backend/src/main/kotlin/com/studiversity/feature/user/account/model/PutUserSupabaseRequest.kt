@@ -1,7 +1,7 @@
 package com.studiversity.feature.user.account.model
 
-import com.stuiversity.util.OptionalProperty
-import com.stuiversity.util.OptionalPropertySerializer
+import com.denchic45.stuiversity.util.OptionalProperty
+import com.denchic45.stuiversity.util.OptionalPropertySerializer
 import kotlinx.serialization.Serializable
 
 

@@ -5,9 +5,9 @@ import com.studiversity.KtorClientTest
 import com.studiversity.util.assertResultIsOk
 import com.studiversity.util.assertedResultIsOk
 import com.studiversity.util.unwrapAsserted
-import com.stuiversity.api.specialty.SpecialtyApi
-import com.stuiversity.api.specialty.model.CreateSpecialtyRequest
-import com.stuiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.stuiversity.api.specialty.SpecialtyApi
+import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
+import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach

@@ -2,7 +2,7 @@ package com.studiversity.feature.specialty.usecase
 
 import com.studiversity.feature.specialty.SpecialtyRepository
 import com.studiversity.transaction.TransactionWorker
-import com.stuiversity.api.specialty.model.CreateSpecialtyRequest
+import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
 
 class AddSpecialtyUseCase(
     private val transactionWorker: TransactionWorker,

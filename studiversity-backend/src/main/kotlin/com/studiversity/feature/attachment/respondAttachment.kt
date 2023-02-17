@@ -1,8 +1,8 @@
 package com.studiversity.feature.attachment
 
-import com.stuiversity.api.course.element.model.Attachment
-import com.stuiversity.api.course.element.model.FileAttachment
-import com.stuiversity.api.course.element.model.Link
+import com.denchic45.stuiversity.api.course.element.model.Attachment
+import com.denchic45.stuiversity.api.course.element.model.FileAttachment
+import com.denchic45.stuiversity.api.course.element.model.Link
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*

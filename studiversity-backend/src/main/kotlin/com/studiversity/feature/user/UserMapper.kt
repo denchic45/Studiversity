@@ -1,7 +1,7 @@
 package com.studiversity.feature.user
 
-import com.stuiversity.api.auth.model.CreateUserRequest
-import com.stuiversity.api.auth.model.SignupRequest
+import com.denchic45.stuiversity.api.auth.model.CreateUserRequest
+import com.denchic45.stuiversity.api.auth.model.SignupRequest
 
 fun SignupRequest.toCreateUser() = CreateUserRequest(
     firstName = firstName,

@@ -5,9 +5,9 @@ import com.studiversity.database.table.RefreshTokens
 import com.studiversity.util.assertedResultIsError
 import com.studiversity.util.assertedResultIsOk
 import com.studiversity.util.unwrapAsserted
-import com.stuiversity.api.auth.model.SignupRequest
-import com.stuiversity.api.user.UserApi
-import com.stuiversity.api.user.model.User
+import com.denchic45.stuiversity.api.auth.model.SignupRequest
+import com.denchic45.stuiversity.api.user.UserApi
+import com.denchic45.stuiversity.api.user.model.User
 import io.ktor.client.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking

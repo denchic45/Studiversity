@@ -2,7 +2,7 @@ package com.denchic45.kts.domain.model
 
 import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.swap
-import com.denchic45.kts.util.toString
+import com.denchic45.stuiversity.util.toString
 import java.time.LocalDate
 
 class EventsOfDay constructor(

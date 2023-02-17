@@ -3,10 +3,10 @@ package com.studiversity.client.room
 import com.github.michaelbull.result.unwrap
 import com.studiversity.KtorClientTest
 import com.studiversity.util.assertResultIsOk
-import com.stuiversity.api.room.RoomApi
-import com.stuiversity.api.room.model.CreateRoomRequest
-import com.stuiversity.api.room.model.UpdateRoomRequest
-import com.stuiversity.util.OptionalProperty
+import com.denchic45.stuiversity.api.room.RoomApi
+import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
+import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
+import com.denchic45.stuiversity.util.OptionalProperty
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.koin.core.parameter.parametersOf

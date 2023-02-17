@@ -2,7 +2,7 @@ package com.studiversity.feature.course.work.submission.usecase
 
 import com.studiversity.feature.course.work.submission.SubmissionRepository
 import com.studiversity.feature.membership.repository.UserMembershipRepository
-import com.stuiversity.api.role.model.Role
+import com.denchic45.stuiversity.api.role.model.Role
 import com.studiversity.transaction.TransactionWorker
 import java.util.*
 

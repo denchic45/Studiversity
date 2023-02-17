@@ -1,9 +1,9 @@
 package com.studiversity.feature.room
 
 import com.studiversity.database.table.RoomDao
-import com.stuiversity.api.room.model.CreateRoomRequest
-import com.stuiversity.api.room.model.RoomResponse
-import com.stuiversity.api.room.model.UpdateRoomRequest
+import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
+import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
 import java.util.*
 
 class RoomRepository {

@@ -4,7 +4,7 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.github.michaelbull.result.unwrap
 import com.github.michaelbull.result.unwrapError
-import com.stuiversity.api.common.ResponseResult
+import com.denchic45.stuiversity.api.common.ResponseResult
 import org.junit.jupiter.api.Assertions.assertNotNull
 
 fun assertResultIsOk(result: ResponseResult<*>) {

@@ -2,7 +2,7 @@ package com.denchic45.kts.data.db.remote.source
 
 import com.denchic45.kts.data.db.remote.model.DayMap
 import com.denchic45.kts.util.getQuerySnapshotFlow
-import com.denchic45.kts.util.toDateUTC
+import com.denchic45.stuiversity.util.toDateUTC
 import com.denchic45.kts.util.toMutableMap
 import com.denchic45.kts.util.toMutableMaps
 import com.google.firebase.firestore.FieldValue

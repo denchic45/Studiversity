@@ -1,7 +1,7 @@
 package com.studiversity.feature.room.usecase
 
 import com.studiversity.feature.room.RoomRepository
-import com.stuiversity.api.room.model.UpdateRoomRequest
+import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
 import com.studiversity.transaction.TransactionWorker
 import io.ktor.server.plugins.*
 import java.util.*

@@ -1,6 +1,6 @@
 package com.studiversity.database.table
 
-import com.stuiversity.api.course.work.model.CourseWorkType
+import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

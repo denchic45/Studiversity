@@ -1,7 +1,7 @@
 package com.studiversity.feature.course.subject.usecase
 
 import com.studiversity.feature.course.subject.SubjectRepository
-import com.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import io.ktor.server.plugins.*
 import java.util.*
 

@@ -74,7 +74,7 @@ tasks {
     }
 }
 dependencies {
-    implementation(project(":common-api:api"))
+    implementation(project(":common:api"))
     // Ktor server
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")

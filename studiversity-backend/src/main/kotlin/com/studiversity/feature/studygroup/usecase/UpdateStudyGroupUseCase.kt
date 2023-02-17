@@ -1,7 +1,7 @@
 package com.studiversity.feature.studygroup.usecase
 
 import com.studiversity.feature.studygroup.StudyGroupErrors
-import com.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.studiversity.feature.studygroup.repository.StudyGroupRepository
 import io.ktor.server.plugins.*
 import java.util.*

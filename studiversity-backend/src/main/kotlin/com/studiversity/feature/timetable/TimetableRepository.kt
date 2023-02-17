@@ -2,7 +2,7 @@ package com.studiversity.feature.timetable
 
 import com.studiversity.database.table.*
 import com.studiversity.util.toSqlSortOrder
-import com.stuiversity.api.timetable.model.*
+import com.denchic45.stuiversity.api.timetable.model.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.between
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

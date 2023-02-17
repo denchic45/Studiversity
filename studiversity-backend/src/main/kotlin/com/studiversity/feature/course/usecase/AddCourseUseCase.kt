@@ -5,9 +5,9 @@ import com.studiversity.feature.membership.repository.MembershipRepository
 import com.studiversity.feature.role.ScopeType
 import com.studiversity.feature.role.repository.ScopeRepository
 import com.studiversity.transaction.TransactionWorker
-import com.stuiversity.api.course.model.CourseResponse
-import com.stuiversity.api.course.model.CreateCourseRequest
-import com.stuiversity.api.membership.model.CreateMembershipRequest
+import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
+import com.denchic45.stuiversity.api.membership.model.CreateMembershipRequest
 import java.util.*
 
 class AddCourseUseCase(

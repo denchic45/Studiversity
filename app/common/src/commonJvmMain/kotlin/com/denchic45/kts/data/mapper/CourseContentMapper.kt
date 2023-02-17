@@ -10,7 +10,7 @@ import com.denchic45.kts.domain.model.ContentDetails
 import com.denchic45.kts.domain.model.ContentType
 import com.denchic45.kts.domain.model.CourseContent
 import com.denchic45.kts.domain.model.Task
-import com.denchic45.kts.util.toDate
+import com.denchic45.stuiversity.util.toDate
 import com.denchic45.kts.util.toJsonString
 import com.google.gson.GsonBuilder
 import kotlinx.serialization.decodeFromString

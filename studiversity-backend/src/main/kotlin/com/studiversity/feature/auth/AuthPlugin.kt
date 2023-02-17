@@ -7,9 +7,9 @@ import com.studiversity.util.isEmail
 import com.studiversity.util.respondWithError
 import com.studiversity.validation.ValidationResultBuilder
 import com.studiversity.validation.buildValidationResult
-import com.stuiversity.api.auth.AuthErrors
-import com.stuiversity.api.auth.model.SignupRequest
-import com.stuiversity.util.ErrorInfo
+import com.denchic45.stuiversity.api.auth.AuthErrors
+import com.denchic45.stuiversity.api.auth.model.SignupRequest
+import com.denchic45.stuiversity.util.ErrorInfo
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

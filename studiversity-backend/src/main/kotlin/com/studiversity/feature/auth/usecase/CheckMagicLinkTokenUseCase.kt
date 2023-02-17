@@ -2,7 +2,7 @@ package com.studiversity.feature.auth.usecase
 
 import com.studiversity.feature.user.UserRepository
 import com.studiversity.transaction.TransactionWorker
-import com.stuiversity.api.auth.AuthErrors
+import com.denchic45.stuiversity.api.auth.AuthErrors
 import io.ktor.server.plugins.*
 
 class CheckMagicLinkTokenUseCase(

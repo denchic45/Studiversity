@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.components.TextButtonContent
-import com.denchic45.kts.util.DatePatterns
-import com.denchic45.kts.util.toString
+import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.toString
 import java.time.LocalDate
 
 @Preview
@@ -47,14 +47,17 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
                 TextButtonContent("Сегодня")
             }
             Spacer(Modifier.width(16.dp))
-            OutlinedButton(onClick = timetableComponent::onPreviousWeekClick,
+            OutlinedButton(
+                onClick = timetableComponent::onPreviousWeekClick,
                 modifier = Modifier.size(contentHeight),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
             ) {
-                Icon(imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = "previous week arrow icon")
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowLeft,
+                    contentDescription = "previous week arrow icon"
+                )
             }
             Spacer(Modifier.width(16.dp))
             OutlinedButton(
@@ -75,9 +78,11 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
 //            Spacer(Modifier.width(24.dp))
         }
     }
-    Card(shape = RoundedCornerShape(16.dp),
+    Card(
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
-        elevation = 0.dp) {
+        elevation = 0.dp
+    ) {
         TimetableContent(timetable)
     }
 }
@@ -119,9 +124,11 @@ fun LessonOrders(state: ScrollState, orders: List<TimetableViewState.CellOrder>)
 private fun LessonsOrder(cellOrder: TimetableViewState.CellOrder) {
     Row(Modifier.height(129.dp)) {
         Column(horizontalAlignment = Alignment.End) {
-            Text(cellOrder.time,
+            Text(
+                cellOrder.time,
                 Modifier.padding(top = 8.dp, end = 16.dp),
-                style = MaterialTheme.typography.bodySmall)
+                style = MaterialTheme.typography.bodySmall
+            )
             Text(
                 cellOrder.order.toString(),
                 Modifier.padding(top = 4.dp, end = 16.dp),
@@ -149,13 +156,19 @@ private fun DaysOfWeekHeader(modifierHorScroll: Modifier, selectedDate: LocalDat
 fun RowScope.DayOfWeekCell(date: LocalDate) {
     Row(Modifier.weight(1f).height(IntrinsicSize.Max), verticalAlignment = Alignment.Bottom) {
         if (date.dayOfWeek.ordinal != 0) Divider(Modifier.width(1.dp).height(24.dp))
-        Column(Modifier.widthIn(min = 196.dp).height(124.dp).padding(top = 24.dp).fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(date.toString(DatePatterns.E).uppercase(),
-                style = MaterialTheme.typography.bodyMedium)
-            Text(date.dayOfMonth.toString(),
+        Column(
+            Modifier.widthIn(min = 196.dp).height(124.dp).padding(top = 24.dp).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                date.toString(DatePatterns.E).uppercase(),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                date.dayOfMonth.toString(),
                 modifier = Modifier.padding(top = 12.dp),
-                style = MaterialTheme.typography.headlineMedium)
+                style = MaterialTheme.typography.headlineMedium
+            )
         }
     }
 }
@@ -188,23 +201,31 @@ fun LessonCell(cell: TimetableViewState.Cell) {
     Column(Modifier.widthIn(min = 196.dp).height(128.dp).padding(18.dp)) {
         when (cell) {
             is TimetableViewState.Cell.Event -> {
-                Icon(painter = painterResource("drawable/${cell.iconName}.xml"),
+                Icon(
+                    painter = painterResource("drawable/${cell.iconName}.xml"),
                     modifier = Modifier.size(28.dp),
                     tint = MaterialTheme.colorScheme.secondary,
-                    contentDescription = null)
-                Text(cell.name,
+                    contentDescription = null
+                )
+                Text(
+                    cell.name,
                     Modifier.padding(top = 8.dp),
-                    style = MaterialTheme.typography.titleLarge)
-                Text("2-й корпус",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    "2-й корпус",
                     Modifier.padding(top = 4.dp),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             TimetableViewState.Cell.Empty -> {
-                Text("Пусто",
+                Text(
+                    "Пусто",
                     fontSize = TextUnit(18F, TextUnitType.Sp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.titleLarge)
+                    style = MaterialTheme.typography.titleLarge
+                )
             }
         }
     }

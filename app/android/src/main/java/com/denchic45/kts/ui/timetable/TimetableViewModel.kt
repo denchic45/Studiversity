@@ -6,8 +6,8 @@ import com.denchic45.kts.domain.model.Event
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.usecase.FindEventsOfDayByThisUserUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.util.Dates
 import com.denchic45.kts.util.capitalized
+import com.denchic45.stuiversity.util.Dates
 import com.denchic45.widget.calendar.model.WeekItem
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

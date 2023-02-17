@@ -3,7 +3,7 @@ package com.studiversity.database.table
 import com.studiversity.database.exists
 import com.studiversity.database.type.timestampWithTimeZone
 import com.studiversity.util.varcharMax
-import com.stuiversity.api.course.element.model.CourseElementType
+import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

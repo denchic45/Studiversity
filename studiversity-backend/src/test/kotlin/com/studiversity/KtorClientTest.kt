@@ -3,9 +3,9 @@ package com.studiversity
 import com.github.michaelbull.result.onSuccess
 import com.studiversity.client.di.apiModule
 import com.studiversity.util.unwrapAsserted
-import com.stuiversity.api.auth.AuthApi
-import com.stuiversity.api.auth.model.RefreshTokenRequest
-import com.stuiversity.api.auth.model.SignInByEmailPasswordRequest
+import com.denchic45.stuiversity.api.auth.AuthApi
+import com.denchic45.stuiversity.api.auth.model.RefreshTokenRequest
+import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*

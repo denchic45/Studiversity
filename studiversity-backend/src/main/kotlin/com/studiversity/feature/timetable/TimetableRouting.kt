@@ -7,8 +7,8 @@ import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getSortingBy
 import com.studiversity.ktor.getUuid
 import com.studiversity.util.toUUID
-import com.stuiversity.api.role.model.Capability
-import com.stuiversity.api.timetable.model.SortingPeriods
+import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.timetable.model.SortingPeriods
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

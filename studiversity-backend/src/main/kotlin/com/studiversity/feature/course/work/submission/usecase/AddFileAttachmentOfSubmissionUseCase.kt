@@ -1,9 +1,9 @@
 package com.studiversity.feature.course.work.submission.usecase
 
 import com.studiversity.feature.attachment.AttachmentRepository
-import com.stuiversity.api.course.element.model.FileAttachmentHeader
+import com.denchic45.stuiversity.api.course.element.model.FileAttachmentHeader
 import com.studiversity.transaction.SuspendTransactionWorker
-import com.stuiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import java.util.*
 
 class AddFileAttachmentOfSubmissionUseCase(

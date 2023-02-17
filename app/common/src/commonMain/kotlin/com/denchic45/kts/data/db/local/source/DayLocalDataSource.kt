@@ -1,8 +1,8 @@
 package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.*
-import com.denchic45.kts.util.DatePatterns
-import com.denchic45.kts.util.toString
+import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate

@@ -4,8 +4,8 @@ import com.github.michaelbull.result.unwrap
 import com.studiversity.KtorClientTest
 import com.studiversity.util.assertResultIsError
 import com.studiversity.util.assertResultIsOk
-import com.stuiversity.api.auth.model.SignupRequest
-import com.stuiversity.api.user.UserApi
+import com.denchic45.stuiversity.api.auth.model.SignupRequest
+import com.denchic45.stuiversity.api.user.UserApi
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.koin.core.component.inject

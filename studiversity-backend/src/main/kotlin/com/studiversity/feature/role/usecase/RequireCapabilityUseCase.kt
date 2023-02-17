@@ -1,6 +1,6 @@
 package com.studiversity.feature.role.usecase
 
-import com.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.role.model.Capability
 import com.studiversity.feature.role.repository.RoleRepository
 import com.studiversity.ktor.ForbiddenException
 import com.studiversity.transaction.TransactionWorker

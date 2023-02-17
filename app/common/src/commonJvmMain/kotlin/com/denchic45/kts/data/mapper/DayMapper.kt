@@ -5,6 +5,10 @@ import com.denchic45.kts.data.db.local.model.DayWithEventsEntities
 import com.denchic45.kts.data.db.remote.model.DayMap
 import com.denchic45.kts.domain.model.EventsOfDay
 import com.denchic45.kts.util.*
+import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.toDate
+import com.denchic45.stuiversity.util.toLocalDate
+import com.denchic45.stuiversity.util.toString
 import java.util.*
 
 fun DayMap.mapToEntity() = DayEntity(

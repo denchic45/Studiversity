@@ -1,3 +1,3 @@
 rootProject.name = "com.denchic45.studiversity-backend"
-include(":common-api:api")
-project(":common-api:api").projectDir = file("../common-api/api")
+include(":common:api")
+project(":common:api").projectDir = file("../common/api")

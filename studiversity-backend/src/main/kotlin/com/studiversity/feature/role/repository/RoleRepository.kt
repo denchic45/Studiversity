@@ -6,7 +6,7 @@ import com.studiversity.feature.role.Permission
 import com.studiversity.feature.role.combinedPermission
 import com.studiversity.feature.role.mapper.toUserRolesResponse
 import com.studiversity.feature.role.mapper.toUsersWithRoles
-import com.stuiversity.api.role.model.*
+import com.denchic45.stuiversity.api.role.model.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.and

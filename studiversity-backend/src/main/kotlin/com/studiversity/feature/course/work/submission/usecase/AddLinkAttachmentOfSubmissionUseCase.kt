@@ -2,7 +2,7 @@ package com.studiversity.feature.course.work.submission.usecase
 
 import com.studiversity.feature.attachment.AttachmentRepository
 import com.studiversity.transaction.TransactionWorker
-import com.stuiversity.api.course.element.model.CreateLinkRequest
+import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import java.util.*
 
 class AddLinkAttachmentOfSubmissionUseCase(

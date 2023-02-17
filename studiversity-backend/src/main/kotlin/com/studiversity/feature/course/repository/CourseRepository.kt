@@ -4,9 +4,9 @@ import com.studiversity.database.exists
 import com.studiversity.database.table.*
 import com.studiversity.feature.course.toResponse
 import com.studiversity.supabase.deleteRecursive
-import com.stuiversity.api.course.model.CourseResponse
-import com.stuiversity.api.course.model.CreateCourseRequest
-import com.stuiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
+import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
 import io.github.jan.supabase.storage.BucketApi
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

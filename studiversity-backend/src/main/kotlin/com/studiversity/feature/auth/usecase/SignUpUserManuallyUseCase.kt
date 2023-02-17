@@ -4,7 +4,7 @@ import com.studiversity.feature.auth.PasswordGenerator
 import com.studiversity.feature.user.UserRepository
 import com.studiversity.transaction.SuspendTransactionWorker
 import com.studiversity.util.EmailSender
-import com.stuiversity.api.auth.model.CreateUserRequest
+import com.denchic45.stuiversity.api.auth.model.CreateUserRequest
 import org.mindrot.jbcrypt.BCrypt
 
 class SignUpUserManuallyUseCase(

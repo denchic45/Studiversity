@@ -2,7 +2,7 @@ package com.studiversity.feature.attachment
 
 import com.studiversity.database.table.AttachmentDao
 import com.studiversity.database.table.Attachments
-import com.stuiversity.api.course.element.model.*
+import com.denchic45.stuiversity.api.course.element.model.*
 import org.jetbrains.exposed.sql.ResultRow
 
 fun AttachmentDao.toResponse() = when (type) {

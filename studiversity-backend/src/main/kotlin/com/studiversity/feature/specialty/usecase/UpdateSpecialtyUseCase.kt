@@ -2,7 +2,7 @@ package com.studiversity.feature.specialty.usecase
 
 import com.studiversity.feature.specialty.SpecialtyRepository
 import com.studiversity.transaction.TransactionWorker
-import com.stuiversity.api.specialty.model.UpdateSpecialtyRequest
+import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
 import io.ktor.server.plugins.*
 import java.util.*
 

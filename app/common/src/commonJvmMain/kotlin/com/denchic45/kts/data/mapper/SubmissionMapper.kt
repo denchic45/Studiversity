@@ -8,7 +8,7 @@ import com.denchic45.kts.data.domain.model.TaskStatus
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.util.toToLocalDateTime
+import com.denchic45.stuiversity.util.toToLocalDateTime
 import java.util.*
 
 fun SubmissionMap.mapToEntity() = SubmissionEntity(

@@ -2,10 +2,10 @@ package com.studiversity.feature.membership.repository
 
 import com.studiversity.database.exists
 import com.studiversity.database.table.*
-import com.stuiversity.api.membership.model.Member
-import com.stuiversity.api.membership.model.MembershipResponse
-import com.stuiversity.api.membership.model.ScopeMember
-import com.stuiversity.api.role.model.Role
+import com.denchic45.stuiversity.api.membership.model.Member
+import com.denchic45.stuiversity.api.membership.model.MembershipResponse
+import com.denchic45.stuiversity.api.membership.model.ScopeMember
+import com.denchic45.stuiversity.api.role.model.Role
 import com.studiversity.feature.role.mapper.toRole
 import com.studiversity.logger.logger
 import com.studiversity.util.toUUID

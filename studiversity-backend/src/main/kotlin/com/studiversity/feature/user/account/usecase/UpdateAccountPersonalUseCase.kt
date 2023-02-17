@@ -2,7 +2,7 @@ package com.studiversity.feature.user.account.usecase
 
 import com.studiversity.feature.user.UserRepository
 import com.studiversity.transaction.TransactionWorker
-import com.stuiversity.api.account.model.UpdateAccountPersonalRequest
+import com.denchic45.stuiversity.api.account.model.UpdateAccountPersonalRequest
 import java.util.*
 
 class UpdateAccountPersonalUseCase(

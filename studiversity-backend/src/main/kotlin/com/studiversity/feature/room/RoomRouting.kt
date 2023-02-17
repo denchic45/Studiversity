@@ -8,7 +8,7 @@ import com.studiversity.feature.room.usecase.RemoveRoomUseCase
 import com.studiversity.feature.room.usecase.UpdateRoomUseCase
 import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getUuid
-import com.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.role.model.Capability
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

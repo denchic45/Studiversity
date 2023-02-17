@@ -3,7 +3,7 @@ package com.denchic45.kts.domain.model
 import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.util.UUIDS
-import com.denchic45.kts.util.toString
+import com.denchic45.stuiversity.util.toString
 import java.time.LocalDateTime
 import java.util.*
 

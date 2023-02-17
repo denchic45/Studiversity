@@ -2,8 +2,8 @@ package com.studiversity.database.table
 
 import com.studiversity.database.exists
 import com.studiversity.util.varcharMax
-import com.stuiversity.api.user.model.Account
-import com.stuiversity.api.user.model.User
+import com.denchic45.stuiversity.api.user.model.Account
+import com.denchic45.stuiversity.api.user.model.User
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

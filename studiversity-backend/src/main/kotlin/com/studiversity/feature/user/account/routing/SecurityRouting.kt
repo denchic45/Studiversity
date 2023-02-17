@@ -6,9 +6,9 @@ import com.studiversity.feature.user.account.usecase.UpdatePasswordUseCase
 import com.studiversity.ktor.currentUserId
 import com.studiversity.util.isEmail
 import com.studiversity.validation.buildValidationResult
-import com.stuiversity.api.account.model.UpdateEmailRequest
-import com.stuiversity.api.account.model.UpdatePasswordRequest
-import com.stuiversity.api.auth.AuthErrors
+import com.denchic45.stuiversity.api.account.model.UpdateEmailRequest
+import com.denchic45.stuiversity.api.account.model.UpdatePasswordRequest
+import com.denchic45.stuiversity.api.auth.AuthErrors
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.requestvalidation.*

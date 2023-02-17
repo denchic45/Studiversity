@@ -9,7 +9,7 @@ import com.studiversity.feature.user.usecase.SearchUsersUseCase
 import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getUuid
 import com.studiversity.util.tryToUUID
-import com.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.role.model.Capability
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

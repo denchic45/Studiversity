@@ -6,10 +6,10 @@ import com.denchic45.kts.domain.model.*
 import com.denchic45.kts.domain.model.Event.Companion.createEmpty
 import com.denchic45.kts.domain.model.SimpleEventDetails.Companion.dinner
 import com.denchic45.kts.domain.model.SimpleEventDetails.Companion.practice
-import com.denchic45.kts.util.DatePatterns
-import com.denchic45.kts.util.Dates
+import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.Dates
 import com.denchic45.kts.util.UUIDS
-import com.denchic45.kts.util.toLocalDate
+import com.denchic45.stuiversity.util.toLocalDate
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.poi.xwpf.usermodel.XWPFTable
 import org.apache.poi.xwpf.usermodel.XWPFTableCell

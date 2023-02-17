@@ -8,7 +8,7 @@ import com.denchic45.kts.data.domain.model.EventType
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.model.*
 import com.denchic45.kts.util.FireMap
-import com.denchic45.kts.util.toDate
+import com.denchic45.stuiversity.util.toDate
 import java.time.LocalDate
 import java.util.*
 

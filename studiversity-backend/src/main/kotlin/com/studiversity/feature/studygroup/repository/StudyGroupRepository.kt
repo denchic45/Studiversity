@@ -7,9 +7,9 @@ import com.studiversity.database.table.StudyGroupDao
 import com.studiversity.database.table.StudyGroups
 import com.studiversity.feature.studygroup.mapper.toResponse
 import com.studiversity.util.toUUID
-import com.stuiversity.api.studygroup.model.CreateStudyGroupRequest
-import com.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.like

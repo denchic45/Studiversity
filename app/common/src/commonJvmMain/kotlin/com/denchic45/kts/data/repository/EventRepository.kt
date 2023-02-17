@@ -17,10 +17,10 @@ import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.model.EventsOfDay
 import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.model.GroupTimetable
-import com.denchic45.kts.util.DatePatterns
+import com.denchic45.stuiversity.util.DatePatterns
 import com.denchic45.kts.util.NetworkException
-import com.denchic45.kts.util.toDateUTC
-import com.denchic45.kts.util.toString
+import com.denchic45.stuiversity.util.toDateUTC
+import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

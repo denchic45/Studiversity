@@ -4,8 +4,8 @@ import com.studiversity.database.table.CourseDao
 import com.studiversity.database.table.Courses
 import com.studiversity.database.table.SubjectDao
 import com.studiversity.database.table.Subjects
-import com.stuiversity.api.course.subject.model.CreateSubjectRequest
-import com.stuiversity.api.course.subject.model.UpdateSubjectRequest
+import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
+import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.lowerCase

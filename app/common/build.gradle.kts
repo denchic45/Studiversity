@@ -4,7 +4,7 @@ plugins {
     id("com.android.library")
     id("com.squareup.sqldelight")
     id("kotlin-kapt")
-    kotlin("plugin.serialization") version "1.8.0"
+    kotlin("plugin.serialization") version "1.7.20"
     id("com.google.devtools.ksp")
 }
 
@@ -25,7 +25,7 @@ kotlin {
 
         val commonJvmMain by creating {
             dependencies {
-                implementation(project(":common-api:api"))
+                api(project(":common:api"))
 
                 implementation(kotlin("stdlib-common"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")

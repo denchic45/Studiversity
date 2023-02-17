@@ -1,8 +1,8 @@
 package com.studiversity.feature.studygroup
 
 import com.studiversity.feature.studygroup.usecase.*
-import com.stuiversity.api.studygroup.model.CreateStudyGroupRequest
-import com.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
+import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.studiversity.util.onlyDigits
 import com.studiversity.util.toUUID
 import com.studiversity.validation.buildValidationResult
