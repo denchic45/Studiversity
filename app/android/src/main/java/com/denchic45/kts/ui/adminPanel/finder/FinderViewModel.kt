@@ -8,8 +8,6 @@ import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.error.NetworkError
-import com.denchic45.kts.domain.error.NotFound
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.usecase.*
@@ -29,7 +27,7 @@ class FinderViewModel @Inject constructor(
     @Named("options_group") groupOptions: List<ListItem>,
     @Named("options_subject") subjectOptions: List<ListItem>,
     private val interactor: FinderInteractor,
-    private val removeGroupUseCase: RemoveGroupUseCase,
+    private val removeStudyGroupUseCase: RemoveStudyGroupUseCase,
     private val confirmInteractor: ConfirmInteractor,
 
     findUserByContainsNameUseCase: FindUserByContainsNameUseCase,
@@ -252,7 +250,7 @@ class FinderViewModel @Inject constructor(
                     if (confirmInteractor.receiveConfirm()) {
                         viewModelScope.launch {
                             try {
-                                removeGroupUseCase(selectedEntity!!.id)
+                                removeStudyGroupUseCase(selectedEntity!!.id)
                             } catch (e: Exception) {
                                 if (e is NetworkException) {
                                     showToast(R.string.error_check_network)

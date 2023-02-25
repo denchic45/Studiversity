@@ -1,15 +1,19 @@
 package com.denchic45.kts.domain.usecase
 
-import com.denchic45.kts.domain.model.Task
-import com.denchic45.kts.data.repository.CourseRepository
-import kotlinx.coroutines.flow.Flow
+import com.denchic45.kts.data.repository.CourseElementRepository
+import com.denchic45.kts.domain.Resource
+import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
+import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import javax.inject.Inject
 
 class FindUpcomingTasksForYourGroupUseCase @Inject constructor(
-   private val courseRepository: CourseRepository
+    private val courseElementRepository: CourseElementRepository,
 ) {
 
-    operator fun invoke(): Flow<List<Task>> {
-        return courseRepository.findUpcomingTasksForYourGroup()
+    operator fun invoke(): Resource<List<CourseElementResponse>> {
+        return courseElementRepository.findByStudent(
+            late = false,
+            statuses = SubmissionState.notSubmitted()
+        )
     }
 }

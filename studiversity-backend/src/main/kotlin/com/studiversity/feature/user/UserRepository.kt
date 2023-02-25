@@ -1,19 +1,22 @@
 package com.studiversity.feature.user
 
+import com.denchic45.stuiversity.api.account.model.UpdateAccountPersonalRequest
+import com.denchic45.stuiversity.api.account.model.UpdateEmailRequest
+import com.denchic45.stuiversity.api.account.model.UpdatePasswordRequest
+import com.denchic45.stuiversity.api.auth.AuthErrors
+import com.denchic45.stuiversity.api.auth.model.SignupRequest
+import com.denchic45.stuiversity.api.user.model.CreateUserRequest
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.studiversity.database.exists
-import com.studiversity.database.table.*
+import com.studiversity.database.table.MagicLinks
+import com.studiversity.database.table.RefreshTokens
+import com.studiversity.database.table.UserDao
+import com.studiversity.database.table.Users
 import com.studiversity.feature.auth.model.MagicLinkToken
 import com.studiversity.feature.auth.model.RefreshToken
 import com.studiversity.feature.auth.model.UserByEmail
 import com.studiversity.feature.role.ScopeType
 import com.studiversity.feature.role.repository.AddScopeRepoExt
-import com.denchic45.stuiversity.api.account.model.UpdateAccountPersonalRequest
-import com.denchic45.stuiversity.api.account.model.UpdateEmailRequest
-import com.denchic45.stuiversity.api.account.model.UpdatePasswordRequest
-import com.denchic45.stuiversity.api.auth.AuthErrors
-import com.denchic45.stuiversity.api.auth.model.CreateUserRequest
-import com.denchic45.stuiversity.api.auth.model.SignupRequest
-import com.denchic45.stuiversity.api.user.model.User
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -34,18 +37,18 @@ class UserRepository(
         add(signupRequest.toCreateUser(), hashed)
     }
 
-    fun add(user: CreateUserRequest, password: String): User = UserDao.new {
+    fun add(user: CreateUserRequest, password: String): UserResponse = UserDao.new {
         firstName = user.firstName
         surname = user.surname
         patronymic = user.patronymic
         email = user.email
         this.password = password
-    }.toDomain().apply {
+    }.toUserResponse().apply {
         addScope(id, ScopeType.User, organizationId)
     }
 
-    fun findById(id: UUID): User? {
-        return UserDao.findById(id)?.toDomain()
+    fun findById(id: UUID): UserResponse? {
+        return UserDao.findById(id)?.toUserResponse()
     }
 
     fun remove(userId: UUID): Boolean {
@@ -78,8 +81,8 @@ class UserRepository(
         UserDao.findById(userId)!!.email = updateEmailRequest.email
     }
 
-    fun findUserByEmail(email: String): User? {
-        return UserDao.find(Users.email eq email).singleOrNull()?.toDomain()
+    fun findUserByEmail(email: String): UserResponse? {
+        return UserDao.find(Users.email eq email).singleOrNull()?.toUserResponse()
     }
 
     fun findEmailPasswordByEmail(email: String): UserByEmail? {
@@ -143,9 +146,9 @@ class UserRepository(
         }
     }
 
-    fun find(query: String): List<User> = UserDao.find(
+    fun find(query: String): List<UserResponse> = UserDao.find(
         Users.firstName.lowerCase() like "$query%"
                 or (Users.surname.lowerCase() like "$query%")
                 or (Users.patronymic.lowerCase() like "$query%")
-    ).map(UserDao::toDomain)
+    ).map(UserDao::toUserResponse)
 }

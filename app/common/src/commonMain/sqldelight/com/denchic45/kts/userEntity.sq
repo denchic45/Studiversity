@@ -1,16 +1,13 @@
+import com.denchic45.stuiversity.api.user.model.Gender;
+
 CREATE TABLE IF NOT EXISTS userEntity (
     user_id TEXT NOT NULL UNIQUE PRIMARY KEY,
     first_name TEXT NOT NULL,
     surname TEXT NOT NULL,
     patronymic TEXT,
-    user_group_id TEXT,
-    role TEXT NOT NULL,
     email TEXT NOT NULL,
-    photo_url TEXT NOT NULL,
-    gender INTEGER AS Int NOT NULL,
-    admin INTEGER AS Boolean NOT NULL,
-    generated_avatar INTEGER AS Boolean NOT NULL,
-    timestamp INTEGER NOT NULL
+    avatar_url TEXT NOT NULL,
+    gender TEXT AS Gender NOT NULL
 );
 
 
@@ -22,13 +19,9 @@ DO UPDATE SET
 first_name = excluded.first_name,
 surname = excluded.surname,
 patronymic = excluded.patronymic,
-user_group_id = excluded.user_group_id,
-role = excluded.role,
 email = excluded.email,
-photo_url = excluded.photo_url,
-gender = excluded.gender,
-admin = excluded.admin,
-generated_avatar = excluded.generated_avatar;
+avatar_url = excluded.avatar_url,
+gender = excluded.gender;
 
 getById:
 SELECT *
@@ -45,47 +38,43 @@ SELECT * FROM userEntity
 WHERE user_id = :id
 );
 
-getByGroupId:
-SELECT * FROM userEntity
-WHERE user_group_id =: groupId
-ORDER BY surname;
+-- getByGroupId:
+-- SELECT * FROM userEntity
+-- WHERE user_group_id =: groupId
+-- ORDER BY surname;
 
-getGroupId:
-SELECT user_group_id FROM userEntity
-WHERE user_id =: userId;
+-- getGroupId:
+-- SELECT user_group_id FROM userEntity
+-- WHERE user_id =: userId;
 
-isExistByIdAndGroupId:
-SELECT EXISTS(
-SELECT * FROM userEntity WHERE user_id =: id
-AND user_group_id =: groupId
-);
+-- isExistByIdAndGroupId:
+-- SELECT EXISTS(
+-- SELECT * FROM userEntity WHERE user_id =: id
+-- AND user_group_id =: groupId
+-- );
 
-clearTeachers:
-DELETE FROM userEntity
-WHERE role = 'TEACHER';
+-- deleteMissingStudentsByGroup:
+-- DELETE FROM userEntity
+-- WHERE user_group_id =: groupId
+-- AND gender
+-- AND user_id NOT IN ?;
 
-deleteMissingStudentsByGroup:
-DELETE FROM userEntity
-WHERE user_group_id =: groupId
-AND gender
-AND user_id NOT IN ?;
+-- getStudentIdsOfCourseByCourseId:
+-- SELECT u.user_id
+-- FROM userEntity  u
+-- JOIN groupCourseEntity gc
+-- ON u.user_group_id = gc.group_id
+-- WHERE gc.course_id =: courseId;
 
-getStudentIdsOfCourseByCourseId:
-SELECT u.user_id
-FROM userEntity  u
-JOIN groupCourseEntity gc
-ON u.user_group_id = gc.group_id
-WHERE gc.course_id =: courseId;
+-- getStudentsWithCuratorByGroupId:
+-- SELECT u.*, g.group_id, g.headman_id, g.curator_id FROM groupEntity g
+-- JOIN userEntity u
+-- ON u.user_group_id = g.group_id
+-- OR u.user_id = g.curator_id
+-- WHERE group_id =: groupId
+-- ORDER BY surname;
 
-getStudentsWithCuratorByGroupId:
-SELECT u.*, g.group_id, g.headman_id, g.curator_id FROM groupEntity g
-JOIN userEntity u
-ON u.user_group_id = g.group_id
-OR u.user_id = g.curator_id
-WHERE group_id =: groupId
-ORDER BY surname;
-
-deleteMissingTeachersByGroup:
-DELETE FROM userEntity
-WHERE user_group_id =: groupId
-AND user_id NOT IN(?);
+-- deleteMissingTeachersByGroup:
+-- DELETE FROM userEntity
+-- WHERE user_group_id =: groupId
+-- AND user_id NOT IN(?);

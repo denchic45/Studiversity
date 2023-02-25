@@ -13,3 +13,9 @@ object AuthErrors {
     const val INVALID_PASSWORD = "INVALID_PASSWORD"
     const val INVALID_MAGIC_LINK = "INVALID_MAGIC_LINK"
 }
+
+enum class AuthErrs:ErrorReason { REFRESH_TOKEN_REQUIRED, USER_ALREADY_REGISTERED}
+
+interface ErrorReason {
+//    val reason:String
+}

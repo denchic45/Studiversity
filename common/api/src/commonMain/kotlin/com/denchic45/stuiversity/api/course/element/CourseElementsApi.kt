@@ -4,7 +4,7 @@ import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
-import com.denchic45.stuiversity.api.course.element.model.SortingCourseElements
+import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
 import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
 import com.denchic45.stuiversity.util.parametersOf
 import io.ktor.client.*
@@ -12,8 +12,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import java.util.*
 
-interface CourseElementApi {
-
+interface CourseElementsApi {
     suspend fun update(
         courseId: UUID,
         elementId: UUID,
@@ -22,13 +21,14 @@ interface CourseElementApi {
 
     suspend fun getByCourseId(
         courseId: UUID,
-        sorting: List<SortingCourseElements> = listOf()
+        sorting: List<CourseElementsSorting> = listOf()
     ): ResponseResult<List<CourseElementResponse>>
+
 
     suspend fun delete(courseId: UUID, elementId: UUID): EmptyResponseResult
 }
 
-class CourseElementApiImpl(private val client: HttpClient) : CourseElementApi {
+class CourseElementsApiImpl(private val client: HttpClient) : CourseElementsApi {
     override suspend fun update(
         courseId: UUID,
         elementId: UUID,
@@ -42,7 +42,7 @@ class CourseElementApiImpl(private val client: HttpClient) : CourseElementApi {
 
     override suspend fun getByCourseId(
         courseId: UUID,
-        sorting: List<SortingCourseElements>
+        sorting: List<CourseElementsSorting>
     ): ResponseResult<List<CourseElementResponse>> {
         return client.get("/courses/$courseId/elements") {
             parametersOf(values = sorting)

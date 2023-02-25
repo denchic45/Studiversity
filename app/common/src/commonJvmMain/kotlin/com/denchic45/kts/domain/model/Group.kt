@@ -4,7 +4,7 @@ import com.denchic45.kts.data.domain.model.DomainModel
 import java.util.*
 
 data class Group constructor(
-    override var id: String,
+    override var id: UUID,
     var name: String,
     var course: Int,
     var specialty: Specialty,

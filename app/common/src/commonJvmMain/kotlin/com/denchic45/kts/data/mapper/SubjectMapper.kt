@@ -4,6 +4,7 @@ import com.denchic45.kts.SubjectEntity
 import com.denchic45.kts.data.db.remote.model.SubjectMap
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.util.SearchKeysGenerator
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 
 fun SubjectEntity.entityToSubjectDomain() = Subject(
     id = subject_id,
@@ -21,13 +22,14 @@ fun SubjectMap.mapToSubjectDomain() = Subject(
     iconName = iconName
 )
 
-fun SubjectMap.mapToSubjectEntity() = SubjectEntity(
-    subject_id = id,
+fun SubjectResponse.toSubjectEntity() = SubjectEntity(
+    subject_id = id.toString(),
     subject_name = name,
+    subject_shortname = shortname,
     icon_name = iconName
 )
 
-fun List<SubjectMap>.mapsToSubjectEntities() = map { it.mapToSubjectEntity() }
+fun List<SubjectResponse>.toSubjectEntities() = map { it.toSubjectEntity() }
 
 fun Subject.domainToMap() = mapOf(
     "id" to id,

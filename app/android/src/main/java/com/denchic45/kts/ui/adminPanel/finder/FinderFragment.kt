@@ -108,17 +108,17 @@ class FinderFragment :
                     is Resource.Success -> {
                         listStateLayout.showList()
                         currentAdapter.submitList(
-                            resource.data,
+                            resource.value,
                             listStateLayout.getCommitCallback(currentAdapter)
                         )
                     }
                     Resource.Loading -> {}
                     is Resource.Error -> {
-                        when (resource.error) {
+                        when (resource.failure) {
                             is NetworkException -> {
                                 listStateLayout.showView(ListStateLayout.NETWORK_VIEW)
                             }
-                            else -> toast("Ошибка: ${resource.error}")
+                            else -> toast("Ошибка: ${resource.failure}")
                         }
                     }
                     is Resource.Next -> throw IllegalStateException()

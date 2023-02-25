@@ -3,9 +3,9 @@ package com.studiversity.client.course
 import com.github.michaelbull.result.*
 import com.studiversity.KtorClientTest
 import com.studiversity.util.assertResultIsOk
-import com.studiversity.util.toUUID
+import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.element.CourseElementApi
+import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
@@ -51,7 +51,7 @@ class SubmissionsTest : KtorClientTest() {
     private val submissionsApiOfStudent: SubmissionsApi by inject { parametersOf(studentClient) }
     private val submissionsApiOfTeacher: SubmissionsApi by inject { parametersOf(teacherClient) }
     private val coursesApi: CoursesApi by inject { parametersOf(client) }
-    private val courseElementApi: CourseElementApi by inject { parametersOf(client) }
+    private val CourseElementsApi: CourseElementsApi by inject { parametersOf(client) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(client) }
     private val membershipsApi: MembershipsApi by inject { parametersOf(client) }
 
@@ -87,7 +87,7 @@ class SubmissionsTest : KtorClientTest() {
     @AfterEach
     fun tearDown(): Unit = runBlocking {
         // delete course element
-        courseElementApi.delete(course.id, courseWork.id).apply { assertNotNull(get()) { unwrapError().toString() } }
+        CourseElementsApi.delete(course.id, courseWork.id).apply { assertNotNull(get()) { unwrapError().toString() } }
         // unroll users
         unrollUser(student1Id)
         unrollUser(student2Id)

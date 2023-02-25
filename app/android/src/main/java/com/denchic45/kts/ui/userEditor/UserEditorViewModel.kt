@@ -14,7 +14,6 @@ import com.denchic45.kts.domain.model.User.Companion.isStudent
 import com.denchic45.kts.domain.model.User.Companion.isTeacher
 import com.denchic45.kts.domain.usecase.FindGroupByContainsNameUseCase
 import com.denchic45.kts.domain.usecase.ObserveGroupInfoUseCase
-import com.denchic45.kts.domain.usecase.RemoveStudentUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.ui.login.groupChooser.GroupChooserInteractor
@@ -310,7 +309,7 @@ open class UserEditorViewModel @Inject constructor(
                         if (resource.status == "LOAD_AVATAR") photoUrl.value =
                             resource.data.photoUrl
                     }
-                    is Resource.Error -> if (resource.error is NetworkException) {
+                    is Resource.Error -> if (resource.failure is NetworkException) {
                         showToast(R.string.error_check_network)
                     }
                     else -> throw IllegalStateException()

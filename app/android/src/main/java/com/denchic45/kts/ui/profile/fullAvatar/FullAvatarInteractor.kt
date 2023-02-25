@@ -24,7 +24,7 @@ class FullAvatarInteractor @Inject constructor(
     }
 
     suspend fun removeUserAvatar(user: User) {
-        val photoUrl = userRepository.loadAvatar(
+        val photoUrl = userRepository.updateUserAvatar(
             avatarGenerator.name(user.firstName)
                 .initFrom(AvatarBuilderTemplate())
                 .generateBytes(), user.id

@@ -11,7 +11,7 @@ import javax.inject.Inject
 class FinderInteractor @Inject constructor(
     private val subjectRepository: SubjectRepository,
     private val userRepository: UserRepository,
-    private val groupRepository: GroupRepository,
+    private val studyGroupRepository: StudyGroupRepository,
     private val studentRepository: StudentRepository,
     private val teacherRepository: TeacherRepository,
     private val specialtyRepository: SpecialtyRepository
@@ -19,7 +19,7 @@ class FinderInteractor @Inject constructor(
 
     override fun removeListeners() {
         userRepository.removeListeners()
-        groupRepository.removeListeners()
+        studyGroupRepository.removeListeners()
         subjectRepository.removeListeners()
         specialtyRepository.removeListeners()
     }

@@ -10,12 +10,9 @@ import com.studiversity.feature.role.repository.RoleRepository
 import com.studiversity.logger.logger
 import com.studiversity.transaction.TransactionWorker
 import io.ktor.server.plugins.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import java.util.*
 
 abstract class Membership {
@@ -78,10 +75,10 @@ abstract class ExternalMembership(private val coroutineScope: CoroutineScope) : 
 
     private fun syncMembersPeriodically(): Job {
         return CoroutineScope(Dispatchers.IO).launch {
-//            while (isActive) {
-//                delay(SYNC_PERIOD)
-//                syncMembers()
-//            }
+            while (isActive) {
+                delay(SYNC_PERIOD)
+                syncMembers()
+            }
         }
     }
 

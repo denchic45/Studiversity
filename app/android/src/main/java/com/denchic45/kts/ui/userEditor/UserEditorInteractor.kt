@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 class UserEditorInteractor @Inject constructor(
     context: Context,
-    private val groupRepository: GroupRepository,
+    private val studyGroupRepository: StudyGroupRepository,
     private val userRepository: UserRepository,
     private val studentRepository: StudentRepository,
     private val teacherRepository: TeacherRepository,
@@ -29,7 +29,7 @@ class UserEditorInteractor @Inject constructor(
     private val avatarGenerator: AvatarGenerator.Builder = AvatarGenerator.Builder(context)
 
     private suspend fun loadAvatar(avatarBytes: ByteArray, id: String): String {
-        return userRepository.loadAvatar(avatarBytes, id)
+        return userRepository.updateUserAvatar(avatarBytes, id)
     }
 
     fun addUser(user: User): Flow<Resource<User>> {
@@ -89,7 +89,7 @@ class UserEditorInteractor @Inject constructor(
 
     override fun removeListeners() {
         userRepository.removeListeners()
-        groupRepository.removeListeners()
+        studyGroupRepository.removeListeners()
     }
 
     suspend fun signUpUser(email: String, password: String) {

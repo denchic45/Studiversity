@@ -1,20 +1,19 @@
 package com.studiversity.feature.course
 
+import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
+import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.util.toUUID
 import com.studiversity.config
 import com.studiversity.feature.course.element.courseElementRoutes
 import com.studiversity.feature.course.topic.courseTopicsRoutes
 import com.studiversity.feature.course.usecase.*
 import com.studiversity.feature.course.work.courseWorksRoutes
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
-import com.studiversity.ktor.claimId
-import com.studiversity.ktor.getUuid
-import com.studiversity.ktor.jwtPrincipal
+import com.studiversity.ktor.*
 import com.studiversity.util.onlyDigits
-import com.studiversity.util.toUUID
 import com.studiversity.validation.buildValidationResult
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
-import com.denchic45.stuiversity.api.role.model.Capability
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -23,7 +22,6 @@ import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
 import java.util.*
 
@@ -46,8 +44,9 @@ fun Application.courseRoutes() {
                 val searchCourses: SearchCoursesUseCase by inject()
 
                 get {
-                    val q: String = call.request.queryParameters.getOrFail("q")
-                    call.respond(HttpStatusCode.OK, searchCourses(q))
+                    val q = call.request.queryParameters["q"]
+                    val memberId = call.request.queryParameters.getUuid("member_id")
+                    call.respond(HttpStatusCode.OK, searchCourses(q, memberId))
                 }
 
                 post {
@@ -62,7 +61,24 @@ fun Application.courseRoutes() {
                 }
                 courseByIdRoutes()
             }
+            get("/me/courses") {
+                call.respondRedirect {
+                    appendPathSegments("courses")
+                    parameters.append("member_id", call.currentUserId().toString())
+                }
+            }
+            studentWorksRoute()
         }
+    }
+}
+
+fun Route.studentWorksRoute() {
+    get {
+        val studentId = call.getUserUuidByQueryParameterOrMe("student_id")
+        val overdue = call.request.queryParameters["overdue"]?.toBoolean()
+        val statuses = call.request.queryParameters.getAll("status")?.map { SubmissionState.valueOf(it) }
+
+        // TODO: complete
     }
 }
 
@@ -160,7 +176,7 @@ private fun Route.courseStudyGroups() {
 
                 val studyGroupId = call.parameters["studyGroupId"]!!.toUUID()
                 attachStudyGroupToCourse(courseId, studyGroupId)
-                call.respond(HttpStatusCode.OK, "")
+                call.respond(HttpStatusCode.OK)
             }
             delete {
                 val currentUserId = call.jwtPrincipal().payload.claimId
@@ -169,10 +185,8 @@ private fun Route.courseStudyGroups() {
                 requireCapability(currentUserId, Capability.WriteCourseStudyGroups, courseId)
 
                 val studyGroupId = call.parameters["studyGroupId"]!!.toUUID()
-                val deleted = detachStudyGroupToCourse(studyGroupId, courseId)
-                if (deleted) {
-                    call.respond(HttpStatusCode.NoContent)
-                } else call.respond(HttpStatusCode.Gone, "Study group has gone")
+                detachStudyGroupToCourse(studyGroupId, courseId)
+                call.respond(HttpStatusCode.NoContent)
             }
         }
     }

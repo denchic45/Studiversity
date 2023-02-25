@@ -12,7 +12,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "KtsApp"
+rootProject.name = "Studiversity"
 
 include(":android")
 include(":appbarcontroller")

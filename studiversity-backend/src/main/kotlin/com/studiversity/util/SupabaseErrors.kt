@@ -1,9 +1,9 @@
 package com.studiversity.util
 
-import com.studiversity.supabase.model.SupabaseErrorResponse
+import com.denchic45.stuiversity.util.CompositeError
 import com.denchic45.stuiversity.util.ErrorInfo
 import com.denchic45.stuiversity.util.ErrorResponse
-import com.denchic45.stuiversity.util.ErrorValidation
+import com.studiversity.supabase.model.SupabaseErrorResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -19,7 +19,7 @@ suspend fun ApplicationCall.respondWithError(statusCode: HttpStatusCode, error: 
     respond(statusCode, ErrorResponse(statusCode.value, error))
 }
 
-suspend fun ApplicationCall.respondWithErrors(statusCode: HttpStatusCode, errors: ErrorValidation) {
+suspend fun ApplicationCall.respondWithErrors(statusCode: HttpStatusCode, errors: CompositeError) {
     respond(statusCode, ErrorResponse(statusCode.value, errors))
 }
 

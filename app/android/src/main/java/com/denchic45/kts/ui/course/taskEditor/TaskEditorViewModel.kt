@@ -34,10 +34,10 @@ class TaskEditorViewModel @Inject constructor(
     @Named(TaskEditorFragment.COURSE_ID) private val courseId: String,
     @Named(TaskEditorFragment.SECTION_ID) sectionId: String?,
     private val confirmInteractor: ConfirmInteractor,
-    private val findTaskUseCase: FindTaskUseCase,
+    private val findCourseWorkUseCase: FindCourseWorkUseCase,
     private val findAttachmentsUseCase: FindAttachmentsUseCase,
     private val findSectionUseCase: FindSectionUseCase,
-    private val addTaskUseCase: AddTaskUseCase,
+    private val addCourseWorkUseCase: AddCourseWorkUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
 ) : BaseViewModel() {
 
@@ -165,7 +165,7 @@ class TaskEditorViewModel @Inject constructor(
 
     private fun setupForExist() {
         viewModelScope.launch {
-            findTaskUseCase(taskId)
+            findCourseWorkUseCase(taskId)
                 .onEach { if (it == null) finish() }
                 .filterNotNull()
                 .collect {
@@ -333,7 +333,7 @@ class TaskEditorViewModel @Inject constructor(
         if (uiValidator.runValidates() && uiEditor.hasBeenChanged()) {
             viewModelScope.launch {
                 if (uiEditor.isNew) {
-                    addTaskUseCase(uiEditor.item, attachments)
+                    addCourseWorkUseCase(uiEditor.item, attachments)
                 } else {
                     updateTaskUseCase(uiEditor.item, attachments)
                 }

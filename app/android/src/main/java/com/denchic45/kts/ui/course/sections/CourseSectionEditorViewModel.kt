@@ -2,7 +2,7 @@ package com.denchic45.kts.ui.course.sections
 
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.domain.model.Section
-import com.denchic45.kts.domain.usecase.AddCourseSectionsUseCase
+import com.denchic45.kts.domain.usecase.AddCourseTopicUseCase
 import com.denchic45.kts.domain.usecase.FindCourseSectionsUseCase
 import com.denchic45.kts.domain.usecase.RemoveCourseSectionsUseCase
 import com.denchic45.kts.domain.usecase.UpdateCourseSectionsUseCase
@@ -20,7 +20,7 @@ class CourseSectionEditorViewModel @Inject constructor(
     @Named(CourseSectionEditorFragment.COURSE_ID)
     private val courseId: String,
     findCourseSectionsUseCase: FindCourseSectionsUseCase,
-    private val addCourseSectionsUseCase: AddCourseSectionsUseCase,
+    private val addCourseTopicUseCase: AddCourseTopicUseCase,
     val updateCourseSectionsUseCase: UpdateCourseSectionsUseCase,
     val removeCourseSectionsUseCase: RemoveCourseSectionsUseCase
 ) : BaseViewModel() {
@@ -84,7 +84,7 @@ class CourseSectionEditorViewModel @Inject constructor(
     fun onSectionAdd(name: String) {
         if (name.isEmpty()) return
         viewModelScope.launch {
-            addCourseSectionsUseCase(
+            addCourseTopicUseCase(
                 Section(courseId, name, sections.first().lastOrNull()?.order?.plus(1024) ?: 1024)
             )
         }

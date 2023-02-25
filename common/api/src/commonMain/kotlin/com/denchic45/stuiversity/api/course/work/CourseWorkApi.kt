@@ -6,6 +6,7 @@ import com.denchic45.stuiversity.api.common.toAttachmentResult
 import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
+import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -17,6 +18,12 @@ interface CourseWorkApi {
     suspend fun create(
         courseId: UUID,
         createCourseWorkRequest: CreateCourseWorkRequest
+    ): ResponseResult<CourseElementResponse>
+
+    suspend fun update(
+        courseId: UUID,
+        workId:UUID,
+        updateCourseWorkRequest: UpdateCourseWorkRequest
     ): ResponseResult<CourseElementResponse>
 
     suspend fun getById(courseId: UUID, workId: UUID): ResponseResult<CourseElementResponse>
@@ -32,21 +39,21 @@ interface CourseWorkApi {
         attachmentId: UUID
     ): ResponseResult<Attachment>
 
-    suspend fun uploadFileToSubmission(
+    suspend fun uploadFileToWork(
         courseId: UUID,
         courseWorkId: UUID,
         file: File
     ): ResponseResult<FileAttachmentHeader>
 
-    suspend fun addLinkToSubmission(
+    suspend fun addLinkToWork(
         courseId: UUID,
         courseWorkId: UUID,
         link: CreateLinkRequest
     ): ResponseResult<LinkAttachmentHeader>
 
-    suspend fun deleteAttachmentOfSubmission(
+    suspend fun deleteAttachmentFromWork(
         courseId: UUID,
-        courseWorkId: UUID,
+        workId: UUID,
         attachmentId: UUID
     ): EmptyResponseResult
 }
@@ -59,6 +66,17 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
         return client.post("/courses/$courseId/works") {
             contentType(ContentType.Application.Json)
             setBody(createCourseWorkRequest)
+        }.toResult()
+    }
+
+    override suspend fun update(
+        courseId: UUID,
+        workId: UUID,
+        updateCourseWorkRequest: UpdateCourseWorkRequest,
+    ): ResponseResult<CourseElementResponse> {
+        return client.post("/courses/$courseId/works/$workId") {
+            contentType(ContentType.Application.Json)
+            setBody(updateCourseWorkRequest)
         }.toResult()
     }
 
@@ -82,7 +100,7 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
         return client.get("/courses/$courseId/works/$courseWorkId/attachments/$attachmentId").toAttachmentResult()
     }
 
-    override suspend fun uploadFileToSubmission(
+    override suspend fun uploadFileToWork(
         courseId: UUID,
         courseWorkId: UUID,
         file: File
@@ -102,7 +120,7 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
             )
         }.toResult()
 
-    override suspend fun addLinkToSubmission(
+    override suspend fun addLinkToWork(
         courseId: UUID,
         courseWorkId: UUID,
         link: CreateLinkRequest
@@ -113,12 +131,12 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
             setBody(link)
         }.toResult()
 
-    override suspend fun deleteAttachmentOfSubmission(
+    override suspend fun deleteAttachmentFromWork(
         courseId: UUID,
-        courseWorkId: UUID,
+        workId: UUID,
         attachmentId: UUID
     ): EmptyResponseResult {
-        return client.delete("/courses/$courseId/works/$courseWorkId/attachments/$attachmentId")
+        return client.delete("/courses/$courseId/works/$workId/attachments/$attachmentId")
             .toResult()
     }
 }

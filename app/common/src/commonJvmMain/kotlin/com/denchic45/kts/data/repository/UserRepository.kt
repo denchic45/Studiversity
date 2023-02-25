@@ -1,118 +1,64 @@
 package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.db.local.source.UserLocalDataSource
-import com.denchic45.kts.data.db.remote.source.UserRemoteDataSource
-import com.denchic45.kts.data.domain.model.UserRole
-import com.denchic45.kts.data.mapper.*
+import com.denchic45.kts.data.fetchResource
+import com.denchic45.kts.data.mapper.toEntity
+import com.denchic45.kts.data.mapper.toUserResponse
+import com.denchic45.kts.data.observeResource
 import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
-import com.denchic45.kts.data.storage.remote.UserRemoteStorage
-import com.denchic45.kts.domain.error.SearchError
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.User
-import com.github.michaelbull.result.Result
-import kotlinx.coroutines.flow.*
+import com.denchic45.kts.domain.toResource
+import com.denchic45.stuiversity.api.user.UserApi
+import com.denchic45.stuiversity.api.user.model.CreateUserRequest
+import com.denchic45.stuiversity.api.user.model.Gender
+import com.denchic45.stuiversity.api.user.model.UserResponse
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import java.util.*
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
-open class UserRepository @Inject constructor(
+class UserRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     private val userPreferences: UserPreferences,
     override val networkService: NetworkService,
     private val userLocalDataSource: UserLocalDataSource,
-    private val userRemoteDataSource: UserRemoteDataSource,
-    private val userRemoteStorage: UserRemoteStorage,
-) : Repository(), FindByContainsNameRepository<User>,FindByContainsName3Repository<User> {
+    private val userApi: UserApi,
+) : Repository(), FindByContainsNameRepository<UserResponse>, NetworkServiceOwner {
 
-    override fun findByContainsName(text: String): Flow<List<User>> {
-        return userRemoteDataSource.findByContainsName(text)
-            .map { users ->
-                userLocalDataSource.upsert(users.mapsToUserEntities())
-                users.mapsToUsers()
-            }
-    }
-
-    override fun findByContainsName3(text: String): Flow<Result<List<User>, SearchError>> {
-        return observeByContainsName {
-            userRemoteDataSource.findByContainsName(text)
-                .map { users ->
-                    userLocalDataSource.upsert(users.mapsToUserEntities())
-                    users.mapsToUsers()
-                }
-        }
-    }
-
-    private fun saveUserPreference(user: User) {
-        userPreferences.apply {
-            id = user.id
-            firstName = user.firstName
-            patronymic = user.patronymic ?: ""
-            surname = user.surname
-            role = user.role.toString()
-            gender = user.gender
-            photoUrl = user.photoUrl
-            email = user.email
-            isAdmin = user.admin
-            timestamp = user.timestamp!!.time
-            isGeneratedAvatar = user.generatedAvatar
-            user.groupId?.let { groupId = it }
+    override suspend fun findByContainsName(text: String): Resource<List<UserResponse>> {
+        return fetchResource {
+            userApi.search(text)
         }
     }
 
     fun findSelf(): User = User(
-        userPreferences.id,
+        UUID.fromString(userPreferences.id),
         userPreferences.firstName,
         userPreferences.surname,
         userPreferences.patronymic,
-        userPreferences.groupId.let {
-            if (userPreferences.groupId.isNotEmpty()) it else null
-        },
-        UserRole.valueOf(userPreferences.role),
         userPreferences.email,
-        userPreferences.photoUrl,
-        Date(userPreferences.timestamp), userPreferences.gender,
-        userPreferences.isGeneratedAvatar, userPreferences.isAdmin
+        userPreferences.avatarUrl,
+        Gender.valueOf(userPreferences.gender)
     )
 
-
-    suspend fun loadAvatar(avatarBytes: ByteArray, userId: String): String {
-        return userRemoteStorage.uploadAvatar(avatarBytes, userId)
+    suspend fun updateUserAvatar(avatarBytes: ByteArray, userId: String): String {
+       TODO("Not implemented")
     }
 
-    suspend fun findAndSaveByEmail(email: String) {
-        saveUserPreference(userRemoteDataSource.findByEmail(email).mapToUser())
+    suspend fun add(createUserRequest: CreateUserRequest): Resource<UserResponse> {
+        return userApi.create(createUserRequest).toResource()
     }
 
-    val thisUserObserver: Flow<User?> = userPreferences.observeId
-        .filter(String::isNotEmpty)
-        .flatMapConcat(userRemoteDataSource::observeById)
-        .map { value ->
-            if (value == null) {
-                return@map null
-            } else {
-                val user = value.mapToUser()
-                if (user.timestamp != null) {
-                    saveUserPreference(user)
-                }
-                return@map user
-            }
-        }
-
-
-    fun observeById(userId: String): Flow<User?> = flow {
-        if (!userLocalDataSource.isExist(userId)) {
-            userRemoteDataSource.observeById(userId)
-                .collect { map ->
-                    map?.let {
-                        userLocalDataSource.upsert(map.mapToUserEntity())
-                    }
-                }
-        }
-        emitAll(
-            userLocalDataSource.observe(userId)
-                .distinctUntilChanged()
-                .map { it?.toUserDomain() }
-        )
-    }
+    fun observeById(userId: UUID): Flow<Resource<UserResponse?>> = observeResource(
+        query = userLocalDataSource.observe(userId.toString())
+            .distinctUntilChanged()
+            .map { it?.toUserResponse() },
+        fetch = { userApi.getById(userId) },
+        saveFetch = { userLocalDataSource.upsert(it.toEntity()) }
+    )
 }

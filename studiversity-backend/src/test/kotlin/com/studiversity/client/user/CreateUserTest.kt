@@ -4,9 +4,9 @@ import com.github.michaelbull.result.unwrap
 import com.studiversity.KtorClientTest
 import com.studiversity.util.assertResultIsOk
 import com.studiversity.util.unwrapAsserted
-import com.denchic45.stuiversity.api.auth.model.CreateUserRequest
+import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.User
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.koin.core.component.inject
@@ -23,7 +23,7 @@ class CreateUserTest : KtorClientTest() {
 
     @Test
     fun test(): Unit = runBlocking {
-        val user: User = userApi.create(CreateUserRequest(expectedFirstName, expectedSurname, null, email))
+        val user: UserResponse = userApi.create(CreateUserRequest(expectedFirstName, expectedSurname, null, email))
             .unwrapAsserted()
 
         userApiOfModerator.getById(user.id).also(::assertResultIsOk).unwrap().apply {

@@ -1,6 +1,7 @@
 CREATE TABLE subjectEntity (
 subject_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 subject_name TEXT NOT NULL,
+subject_shortname TEXT NOT NULL,
 icon_name TEXT NOT NULL
 );
 

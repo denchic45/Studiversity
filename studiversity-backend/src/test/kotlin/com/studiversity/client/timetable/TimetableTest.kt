@@ -4,7 +4,7 @@ import com.github.michaelbull.result.unwrap
 import com.studiversity.KtorClientTest
 import com.studiversity.util.UNKNOWN_LONG_ID
 import com.studiversity.util.assertResultIsOk
-import com.studiversity.util.toUUID
+import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
@@ -260,7 +260,7 @@ class TimetableTest : KtorClientTest() {
         val response = timetableApi.getTimetable(
             weekOfYear = weekOfYear,
             courseIds = listOf(mathCourse.id),
-            sorting = listOf(SortingPeriods.StudyGroup())
+            sorting = listOf(PeriodsSorting.StudyGroup())
         ).also(::assertResultIsOk).unwrap()
 
         val expectedTimetableResponse = TimetableResponse(
@@ -423,7 +423,7 @@ class TimetableTest : KtorClientTest() {
         val response = timetableApi.getTimetable(
             weekOfYear,
             roomIds = listOf(room10.id),
-            sorting = listOf(SortingPeriods.Order(), SortingPeriods.StudyGroup())
+            sorting = listOf(PeriodsSorting.Order(), PeriodsSorting.StudyGroup())
         ).also(::assertResultIsOk).unwrap()
 
         expectedResponse.toFlatPeriods().zip(response.toFlatPeriods())

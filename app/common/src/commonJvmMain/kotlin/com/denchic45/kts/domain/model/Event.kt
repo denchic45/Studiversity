@@ -7,7 +7,7 @@ import java.time.LocalDate
 import java.util.*
 
 data class Event(
-    override val id: String = UUIDS.createShort(),
+    override val id: UUID,
     val groupHeader: GroupHeader,
     val timestamp: Date? = null,
     val room: String = "",

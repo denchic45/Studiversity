@@ -1,26 +1,17 @@
 package com.denchic45.stuiversity.api.course.element.model
 
+import kotlinx.serialization.Serializable
+
 sealed interface Attachment
 
-data class FileAttachment(
+class FileAttachment(
     val bytes: ByteArray,
-    val name: String
-) : Attachment {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+    val name: String,
+) : Attachment
 
-        other as FileAttachment
-
-        if (!bytes.contentEquals(other.bytes)) return false
-        if (name != other.name) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = bytes.contentHashCode()
-        result = 31 * result + name.hashCode()
-        return result
-    }
-}
+@Serializable
+data class Link(
+    val url: String,
+    val name: String,
+    val thumbnailUrl: String?
+) : Attachment

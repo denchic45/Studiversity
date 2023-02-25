@@ -1,9 +1,9 @@
 package com.denchic45.kts.domain.usecase
 
-import com.denchic45.kts.domain.model.Specialty
 import com.denchic45.kts.data.repository.SpecialtyRepository
+import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 import javax.inject.Inject
 
 class FindSpecialtyByContainsNameUseCase @Inject constructor(
-    specialtyRepository: SpecialtyRepository
-) : FindByContainsNameUseCase2<Specialty>(specialtyRepository)
+    specialtyRepository: SpecialtyRepository,
+) : FindByContainsNameUseCase<SpecialtyResponse>(specialtyRepository)

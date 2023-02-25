@@ -9,6 +9,6 @@ class DetachStudyGroupToCourseUseCase(
     private val courseRepository: CourseRepository
 ) {
     operator fun invoke(studyGroupId: UUID, courseId: UUID) = transactionWorker {
-        courseRepository.removeCourseStudyGroup(courseId, studyGroupId)
+        courseRepository.removeStudyGroupFromCourse(courseId, studyGroupId)
     }
 }

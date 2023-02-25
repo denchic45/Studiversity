@@ -6,7 +6,7 @@ import com.studiversity.database.table.SpecialtyDao
 import com.studiversity.database.table.StudyGroupDao
 import com.studiversity.database.table.StudyGroups
 import com.studiversity.feature.studygroup.mapper.toResponse
-import com.studiversity.util.toUUID
+import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest

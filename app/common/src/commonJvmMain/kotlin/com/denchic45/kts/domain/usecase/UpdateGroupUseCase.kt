@@ -1,14 +1,14 @@
 package com.denchic45.kts.domain.usecase
 
 import com.denchic45.kts.domain.model.Group
-import com.denchic45.kts.data.repository.GroupRepository
+import com.denchic45.kts.data.repository.StudyGroupRepository
 import javax.inject.Inject
 
 class UpdateGroupUseCase @Inject constructor(
-    private val groupRepository: GroupRepository
+    private val studyGroupRepository: StudyGroupRepository
 ) {
 
     suspend operator fun invoke(group: Group) {
-        groupRepository.update(group)
+        studyGroupRepository.update(group)
     }
 }

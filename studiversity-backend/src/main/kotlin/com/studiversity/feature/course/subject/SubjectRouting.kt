@@ -6,11 +6,11 @@ import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.ktor.claimId
 import com.studiversity.ktor.jwtPrincipal
 import com.studiversity.util.onlyDigits
-import com.studiversity.util.toUUID
 import com.studiversity.validation.buildValidationResult
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
 import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.util.toUUID
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

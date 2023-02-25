@@ -9,7 +9,7 @@ import java.util.*
 
 
 data class Task(
-    override var id: String,
+    override var id: UUID,
     override val courseId: String,
     override val sectionId: String,
     override val name: String,
@@ -27,7 +27,7 @@ data class Task(
         get() = completionDate?.toString("w_y")
 
     private constructor() : this(
-        "",
+        UUID.randomUUID(),
         "",
         "",
         "",
@@ -57,7 +57,7 @@ data class Task(
         val content: Content,
         val status: SubmissionStatus,
         val contentUpdateDate: LocalDateTime,
-        override var id: String
+        override var id: UUID
     ) : DomainModel {
 
         val submitted: Boolean
@@ -71,7 +71,7 @@ data class Task(
                     Content.createEmpty(),
                     SubmissionStatus.NotSubmitted,
                     LocalDateTime.now(),
-                    UUIDS.createShort()
+                    UUID.randomUUID()
                 )
             }
         }
@@ -119,7 +119,7 @@ data class Task(
     }
 
     data class Comment(
-        override val id: String,
+        override val id: UUID,
         val content: String,
         val author: User,
         val createdDate: LocalDateTime,

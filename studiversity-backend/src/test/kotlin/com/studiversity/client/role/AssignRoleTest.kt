@@ -5,11 +5,11 @@ import com.studiversity.config
 import com.studiversity.util.assertedResultIsError
 import com.studiversity.util.assertedResultIsOk
 import com.studiversity.util.unwrapAsserted
-import com.denchic45.stuiversity.api.auth.model.CreateUserRequest
+import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.role.RoleApi
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.User
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -26,7 +26,7 @@ class AssignRoleTest : KtorClientTest() {
 
     private val organizationId: UUID = config.organization.id
 
-    private lateinit var user: User
+    private lateinit var user: UserResponse
 
     @BeforeEach
     fun init(): Unit = runBlocking {

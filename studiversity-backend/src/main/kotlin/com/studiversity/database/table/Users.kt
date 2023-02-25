@@ -1,9 +1,8 @@
 package com.studiversity.database.table
 
+import com.denchic45.stuiversity.api.user.model.Gender
 import com.studiversity.database.exists
 import com.studiversity.util.varcharMax
-import com.denchic45.stuiversity.api.user.model.Account
-import com.denchic45.stuiversity.api.user.model.User
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -17,6 +16,9 @@ object Users : UUIDTable("user", "user_id") {
     val patronymic = varcharMax("patronymic").nullable()
     val email = varcharMax("email")
     val password = varcharMax("password")
+    val avatarUrl = text("avatar_url")
+    val generatedAvatar = bool("generated_avatar")
+    val gender = enumerationByName<Gender>("gender", 10)
 }
 
 class UserDao(id: EntityID<UUID>) : UUIDEntity(id) {
@@ -31,12 +33,7 @@ class UserDao(id: EntityID<UUID>) : UUIDEntity(id) {
     var patronymic by Users.patronymic
     var email by Users.email
     var password by Users.password
+    var avatarUrl by Users.avatarUrl
+    var generatedAvatar by Users.generatedAvatar
+    var gender by Users.gender
 }
-
-fun UserDao.toDomain(): User = User(
-    id = id.value,
-    firstName = firstName,
-    surname = surname,
-    patronymic = patronymic,
-    account = Account(email)
-)

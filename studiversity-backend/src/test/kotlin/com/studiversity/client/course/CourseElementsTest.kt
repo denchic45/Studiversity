@@ -3,19 +3,19 @@ package com.studiversity.client.course
 import com.github.michaelbull.result.*
 import com.studiversity.KtorClientTest
 import com.studiversity.util.assertResultIsOk
-import com.studiversity.util.toUUID
+import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.element.CourseElementApi
+import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.membership.MembershipsApi
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.common.SortOrder
+import com.denchic45.stuiversity.api.course.topic.CourseTopicsApi
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -46,8 +46,8 @@ class CourseElementsTest : KtorClientTest() {
     private val studentClient by lazy { createAuthenticatedClient("slavik@gmail.com", "GHBO043g54gh") }
 
     private val coursesApi: CoursesApi by inject { parametersOf(client) }
-    private val courseElementApi: CourseElementApi by inject { parametersOf(client) }
-    private val courseTopicApi: CourseTopicApi by inject { parametersOf(teacherClient) }
+    private val courseElementsApi: CourseElementsApi by inject { parametersOf(client) }
+    private val courseTopicsApi: CourseTopicsApi by inject { parametersOf(teacherClient) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(teacherClient) }
     private val courseWorkApiOfTeacher: CourseWorkApi by inject { parametersOf(teacherClient) }
     private val courseWorkApiOfStudent: CourseWorkApi by inject { parametersOf(studentClient) }
@@ -86,7 +86,7 @@ class CourseElementsTest : KtorClientTest() {
     @AfterEach
     fun tearDown(): Unit = runBlocking {
         // delete course element
-        courseElementApi.delete(course.id, courseWork.id).also(::assertResultIsOk)
+        courseElementsApi.delete(course.id, courseWork.id).also(::assertResultIsOk)
         // unroll users
         unrollUser(student1Id)
         unrollUser(student2Id)
@@ -125,7 +125,7 @@ class CourseElementsTest : KtorClientTest() {
                 )
             ).unwrap()
         }
-        courseElementApi.getByCourseId(course.id)
+        courseElementsApi.getByCourseId(course.id)
             .apply { assertResultIsOk(this) }
             .unwrap()
             .apply {
@@ -137,7 +137,7 @@ class CourseElementsTest : KtorClientTest() {
 
     @Test
     fun testGetElementsByCourseAndSortingByTopic(): Unit = runBlocking {
-        val topic1 = courseTopicApi.createTopic(course.id)
+        val topic1 = courseTopicsApi.createTopic(course.id)
         repeat(3) {
             courseWorkApi.create(
                 course.id, CreateCourseWorkRequest(
@@ -149,7 +149,7 @@ class CourseElementsTest : KtorClientTest() {
                 )
             ).unwrap()
         }
-        val topic2 = courseTopicApi.createTopic(course.id)
+        val topic2 = courseTopicsApi.createTopic(course.id)
         repeat(3) {
             courseWorkApi.create(
                 course.id, CreateCourseWorkRequest(
@@ -163,7 +163,7 @@ class CourseElementsTest : KtorClientTest() {
         }
 
         // sort by topic asc
-        courseElementApi.getByCourseId(course.id, listOf(SortingCourseElements.TopicId()))
+        courseElementsApi.getByCourseId(course.id, listOf(CourseElementsSorting.TopicId()))
             .apply { assertResultIsOk(this) }
             .unwrap()
             .map { it.topicId }
@@ -171,7 +171,7 @@ class CourseElementsTest : KtorClientTest() {
             .apply { assertEquals(listOf(topic1.id, topic2.id), this) }
 
         // sort by topic desc
-        courseElementApi.getByCourseId(course.id, listOf(SortingCourseElements.TopicId(SortOrder.DESC)))
+        courseElementsApi.getByCourseId(course.id, listOf(CourseElementsSorting.TopicId(SortOrder.DESC)))
             .apply { assertResultIsOk(this) }
             .unwrap()
             .map { it.topicId }
@@ -182,13 +182,13 @@ class CourseElementsTest : KtorClientTest() {
     @Test
     fun testAddRemoveAttachment(): Unit = runBlocking {
         enrolStudent(student1Id)
-        courseWorkApiOfTeacher.uploadFileToSubmission(course.id, courseWork.id, file).apply {
+        courseWorkApiOfTeacher.uploadFileToWork(course.id, courseWork.id, file).apply {
             assertNotNull(get()) { unwrapError().toString() }
             assertEquals("data.txt", unwrap().fileItem.name)
         }
 
         // Prevent upload attachment by student
-        courseWorkApiOfStudent.uploadFileToSubmission(course.id, courseWork.id, file).apply {
+        courseWorkApiOfStudent.uploadFileToWork(course.id, courseWork.id, file).apply {
             assertNotNull(getError()?.code == HttpStatusCode.Forbidden.value) { unwrap().toString() }
         }
 
@@ -230,7 +230,7 @@ class CourseElementsTest : KtorClientTest() {
 
     @Test
     fun testDownloadAttachments(): Unit = runBlocking {
-        val fileAttachment = courseWorkApiOfTeacher.uploadFileToSubmission(course.id, courseWork.id, file).apply {
+        val fileAttachment = courseWorkApiOfTeacher.uploadFileToWork(course.id, courseWork.id, file).apply {
             assertNotNull(get(), getError().toString())
             assertEquals("data.txt", unwrap().fileItem.name)
         }.unwrap()
@@ -253,7 +253,7 @@ class CourseElementsTest : KtorClientTest() {
     }
 
     private suspend fun deleteAttachment(attachmentId: UUID) {
-        courseWorkApiOfTeacher.deleteAttachmentOfSubmission(course.id, courseWork.id, attachmentId).apply {
+        courseWorkApiOfTeacher.deleteAttachmentFromWork(course.id, courseWork.id, attachmentId).apply {
             assertNotNull(get()) { unwrapError().toString() }
         }
     }

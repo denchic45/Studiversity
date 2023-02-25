@@ -52,7 +52,7 @@ class TimetableRepository {
         memberIds: List<UUID>? = null,
         courseIds: List<UUID>? = null,
         roomIds: List<UUID>? = null,
-        sorting: List<SortingPeriods>? = null
+        sorting: List<PeriodsSorting>? = null
     ): TimetableResponse {
         val query = getPeriodsQuery(
             startDate = startDate,
@@ -87,7 +87,7 @@ class TimetableRepository {
         memberIds: List<UUID>? = null,
         courseIds: List<UUID>? = null,
         roomIds: List<UUID>? = null,
-        sorting: List<SortingPeriods>? = null
+        sorting: List<PeriodsSorting>? = null
     ): TimetableOfDayResponse {
         val query = getPeriodsQuery(
             startDate = date,
@@ -111,7 +111,7 @@ class TimetableRepository {
         courseIds: List<UUID>?,
         memberIds: List<UUID>?,
         roomIds: List<UUID>?,
-        sorting: List<SortingPeriods>?
+        sorting: List<PeriodsSorting>?
     ): Query {
         val query = Periods.innerJoin(Lessons, { id }, { id })
             .innerJoin(PeriodsMembers, { Periods.id }, { periodId })
@@ -132,26 +132,26 @@ class TimetableRepository {
         sorting?.forEach {
             query.orderBy(
                 column = when (it) {
-                    is SortingPeriods.Course -> {
+                    is PeriodsSorting.Course -> {
                         query.adjustColumnSet { innerJoin(Courses, { Lessons.courseId }, { id }) }
                             .adjustSlice { slice(fields + Courses.name) }
                         Courses.name
                     }
 
-                    is SortingPeriods.Member -> {
+                    is PeriodsSorting.Member -> {
                         query.adjustColumnSet { innerJoin(Users, { PeriodsMembers.memberId }, { id }) }
                             .adjustSlice { slice(fields + Users.surname) }
                         Users.surname
                     }
 
-                    is SortingPeriods.Order -> Periods.order
-                    is SortingPeriods.Room -> {
+                    is PeriodsSorting.Order -> Periods.order
+                    is PeriodsSorting.Room -> {
                         query.adjustColumnSet { innerJoin(Rooms, { Periods.roomId }, { id }) }
                             .adjustSlice { slice(fields + Rooms.name) }
                         Rooms.name
                     }
 
-                    is SortingPeriods.StudyGroup -> {
+                    is PeriodsSorting.StudyGroup -> {
                         query.adjustColumnSet { innerJoin(StudyGroups, { Periods.studyGroupId }, { id }) }
                             .adjustSlice { slice(fields + StudyGroups.name) }
                         StudyGroups.name

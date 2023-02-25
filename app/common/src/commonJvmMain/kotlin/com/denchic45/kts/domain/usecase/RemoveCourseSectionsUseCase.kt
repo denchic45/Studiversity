@@ -6,6 +6,6 @@ import javax.inject.Inject
 
 class RemoveCourseSectionsUseCase @Inject constructor(private val courseRepository: CourseRepository) {
     suspend operator fun invoke(section: Section) {
-        courseRepository.removeSection(section)
+        courseRepository.removeTopic(section)
     }
 }

@@ -1,14 +1,14 @@
 package com.studiversity.feature.timetable
 
+import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting
+import com.denchic45.stuiversity.util.toUUID
 import com.studiversity.config
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.feature.timetable.usecase.*
 import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getSortingBy
 import com.studiversity.ktor.getUuid
-import com.studiversity.util.toUUID
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.denchic45.stuiversity.api.timetable.model.SortingPeriods
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -52,7 +52,7 @@ fun Application.timetableRoutes() {
                         memberIds = memberIds,
                         roomIds = roomIds,
                         weekOfYear = weekOfYear,
-                        sorting = call.request.queryParameters.getSortingBy(SortingPeriods)
+                        sorting = call.request.queryParameters.getSortingBy(PeriodsSorting)
                     )
                     call.respond(HttpStatusCode.OK, timetable)
                 }
@@ -91,7 +91,7 @@ fun Application.timetableRoutes() {
                             roomIds = roomIds,
                             weekOfYear = weekOfYear,
                             dayOfWeek = dayOfWeek,
-                            sorting = call.request.queryParameters.getSortingBy(SortingPeriods)
+                            sorting = call.request.queryParameters.getSortingBy(PeriodsSorting)
                         )
                         call.respond(HttpStatusCode.OK, timetable)
                     }

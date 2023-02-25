@@ -1,33 +1,31 @@
 package com.denchic45.kts.domain
 
 import com.denchic45.kts.data.db.local.DbHelper
+import com.denchic45.kts.data.domain.NotFound
 import com.denchic45.kts.data.repository.CourseRepository
 import com.denchic45.kts.data.repository.EventRepository
-import com.denchic45.kts.data.repository.GroupRepository
+import com.denchic45.kts.data.repository.StudyGroupRepository
 import com.denchic45.kts.data.repository.UserRepository
 import com.denchic45.kts.data.service.AuthService
-import com.denchic45.kts.domain.model.CourseHeader
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.util.SystemDirs
 import com.denchic45.kts.util.databaseFile
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
 class MainInteractor @Inject constructor(
     private val coroutineScope: CoroutineScope,
-    private val groupRepository: GroupRepository,
+    private val studyGroupRepository: StudyGroupRepository,
     private val authService: AuthService,
     private val userRepository: UserRepository,
     private val eventRepository: EventRepository,
     private val courseRepository: CourseRepository,
     private val dbHelper: DbHelper,
-    private val systemDirs: SystemDirs
+    private val systemDirs: SystemDirs,
 ) : Interactor {
 
     val listenAuthState: Flow<Boolean> = authService.observeIsAuthenticated
@@ -39,23 +37,23 @@ class MainInteractor @Inject constructor(
     }
 
     override fun removeListeners() {
-        groupRepository.removeListeners()
+        studyGroupRepository.removeListeners()
     }
 
-    suspend fun observeHasGroup(): Flow<Boolean> = flow {
-        coroutineScope {
-            groupRepository.observeHasGroup().collect {
-                if (it) {
-                    launch { eventRepository.observeEventsOfYourGroup() }
-                }
-                emit(it)
-            }
-        }
-    }
+//    suspend fun observeHasGroup(): Flow<Boolean> = flow {
+//        coroutineScope {
+//            groupRepository.observeHasGroup().collect {
+//                if (it) {
+//                    launch { eventRepository.observeEventsOfYourGroup() }
+//                }
+//                emit(it)
+//            }
+//        }
+//    }
 
     fun findThisUser(): User = userRepository.findSelf()
 
-    fun observeThisUser(): Flow<User?> = userRepository.thisUserObserver
+    fun observeThisUser(): Flow<Resource<UserResponse>> = authService.observeCurrentUser
 
     suspend fun startListeners() {
         observeThisUser().collect { user ->
@@ -66,29 +64,21 @@ class MainInteractor @Inject constructor(
                     }
                 }
             }
-            user?.let {
-                if (user.isTeacher) {
-                    coroutineScope.launch {
-                        groupRepository.listenGroupsWhereThisUserIsTeacher(user)
-                    }
+            user.onFailure {
+                if (it is NotFound) {
+                    clearAllData()
+                    authService.signOut()
                 }
-                coroutineScope.launch {
-                    groupRepository.listenYourGroupById()
-                }
-                courseRepository.observeByYourGroup()
-            } ?: run {
-                clearAllData()
-                authService.signOut()
             }
         }
     }
 
-    fun findOwnCourses(): Flow<List<CourseHeader>> {
-        val thisUser = findThisUser()
-        return when {
-            thisUser.isTeacher -> courseRepository.findByYourAsTeacher()
-            thisUser.isStudent -> courseRepository.findByYourGroup()
-            else -> emptyFlow()
-        }
-    }
+//    fun findOwnCourses(): Flow<List<CourseHeader>> {
+//        val thisUser = findThisUser()
+//        return when {
+//            thisUser.isTeacher -> courseRepository.findByYourAsTeacher()
+//            thisUser.isStudent -> courseRepository.findByYourGroup()
+//            else -> emptyFlow()
+//        }
+//    }
 }

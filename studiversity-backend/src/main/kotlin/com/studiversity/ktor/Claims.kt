@@ -1,7 +1,7 @@
 package com.studiversity.ktor
 
 import com.auth0.jwt.interfaces.Payload
-import com.studiversity.util.toUUID
+import com.denchic45.stuiversity.util.toUUID
 import java.util.*
 
 val Payload.claimId: UUID

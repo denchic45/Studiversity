@@ -1,9 +1,13 @@
 CREATE TABLE IF NOT EXISTS courseEntity (
 course_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 name TEXT NOT NULL,
-subject_id TEXT NOT NULL,
-teacher_id TEXT NOT NULL
+subject_id TEXT,
+archived INTEGER AS Boolean NOT NULL
 );
+
+CREATE VIEW courseWithSubjectEntity AS
+SELECT* FROM courseEntity c
+LEFT JOIN subjectEntity s ON c.subject_id = s.subject_id;
 
 upsert:
 INSERT INTO courseEntity
@@ -12,29 +16,29 @@ ON CONFLICT(course_id)
 DO UPDATE SET
 name = excluded.name,
 subject_id = excluded.subject_id,
-teacher_id = excluded.teacher_id;
+archived = excluded.archived;
+
+getById:
+SELECT * FROM courseWithSubjectEntity WHERE course_id =: id;
 
 getCourseWithSubjectWithTeacherAndGroupsById:
-SELECT c.*, s.*, u.*, g.group_id, g.group_name, g.specialty_id FROM courseEntity c
+SELECT c.*, s.* FROM courseEntity c
 JOIN subjectEntity s ON s.subject_id = c.subject_id
-JOIN userEntity u ON u.user_id = c.teacher_id
 JOIN groupCourseEntity gc ON gc.course_id = c.course_id
-JOIN groupEntity g ON g.group_id = gc.group_id
 WHERE c.course_id =: id;
 
-getCoursesWithSubjectAndTeacherByGroupId:
-SELECT c.*,u.*,s.* FROM courseEntity c
+getCoursesByStudyGroupId:
+SELECT c.*, s.* FROM courseEntity c
 JOIN groupCourseEntity gc ON gc.course_id =c.course_id
 JOIN subjectEntity s ON s.subject_id = c.subject_id
-JOIN userEntity u ON u.user_id = c.teacher_id
-WHERE gc.group_id =:groupId;
+WHERE gc.group_id =: groupId;
 
-hasRelatedTeacherToGroup:
-SELECT EXISTS (
-SELECT 1 FROM courseEntity c
-JOIN groupCourseEntity gc ON gc.group_id =:groupId
-WHERE teacher_id=:teacherId
-);
+-- hasRelatedTeacherToGroup:
+-- SELECT EXISTS (
+-- SELECT 1 FROM courseEntity c
+-- JOIN groupCourseEntity gc ON gc.group_id =:groupId
+-- WHERE teacher_id=:teacherId
+-- );
 
 hasRelatedSubjectToGroup:
 SELECT EXISTS (
@@ -43,22 +47,22 @@ JOIN groupCourseEntity gc ON gc.group_id =:groupId
 WHERE subject_id=:subjectId
 );
 
-getCourseWithSubjectAndTeacherByTeacherId:
-SELECT * FROM courseEntity c
-JOIN subjectEntity s ON s.subject_id = c.subject_id
-JOIN userEntity u ON u.user_id = c.teacher_id
-WHERE teacher_id =: id;
+-- getCourseWithSubjectAndTeacherByTeacherId:
+-- SELECT * FROM courseEntity c
+-- JOIN subjectEntity s ON s.subject_id = c.subject_id
+-- JOIN userEntity u ON u.user_id = c.teacher_id
+-- WHERE teacher_id =: id;
 
 deleteById:
 DELETE FROM courseEntity
 WHERE course_id =: courseId;
 
-isCourseTeacher:
-SELECT EXISTS (
-SELECT * FROM courseEntity
-WHERE course_id =: courseId
-AND teacher_id =: teacherId
-);
+-- isCourseTeacher:
+-- SELECT EXISTS (
+-- SELECT * FROM courseEntity
+-- WHERE course_id =: courseId
+-- AND teacher_id =: teacherId
+-- );
 
 getCourseIdByContentId:
 SELECT cc.course_id FROM courseContentEntity cc

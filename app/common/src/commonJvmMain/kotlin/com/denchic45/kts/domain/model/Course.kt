@@ -1,12 +1,12 @@
 package com.denchic45.kts.domain.model
 
 import com.denchic45.kts.data.domain.model.DomainModel
+import java.util.UUID
 
 data class Course(
-    override var id: String,
+    override var id: UUID,
     val name: String,
     val subject: Subject,
-    val teacher: User,
     val groupHeaders: List<GroupHeader>,
 ) : DomainModel {
 
@@ -14,12 +14,11 @@ data class Course(
         fun createEmpty() = Course()
     }
 
-    private constructor() : this("", "", Subject.createEmpty(), User.createEmpty(), emptyList())
+    private constructor() : this(UUID.randomUUID(), "", Subject.createEmpty(), emptyList())
 }
 
 data class CourseHeader(
-    override var id: String,
+    override var id: UUID,
     val name: String,
     val subject: Subject,
-    val teacher: User
 ): DomainModel

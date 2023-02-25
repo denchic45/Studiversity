@@ -3,7 +3,7 @@ package com.denchic45.kts.ui.course.submission
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.model.Task
-import com.denchic45.kts.domain.usecase.FindTaskSubmissionUseCase
+import com.denchic45.kts.domain.usecase.FindSubmissionUseCase
 import com.denchic45.kts.domain.usecase.GradeSubmissionUseCase
 import com.denchic45.kts.domain.usecase.RejectSubmissionUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
@@ -16,12 +16,12 @@ import kotlin.properties.Delegates
 class SubmissionViewModel @Inject constructor(
     @Named(SubmissionDialog.TASK_ID) private val taskId: String,
     @Named(SubmissionDialog.STUDENT_ID) private val studentId: String,
-    findTaskSubmissionUseCase: FindTaskSubmissionUseCase,
+    findSubmissionUseCase: FindSubmissionUseCase,
     private val gradeSubmissionUseCase: GradeSubmissionUseCase,
     private val rejectSubmissionUseCase: RejectSubmissionUseCase
 ) : BaseViewModel() {
 
-    val showSubmission: SharedFlow<Task.Submission> = findTaskSubmissionUseCase(taskId, studentId)
+    val showSubmission: SharedFlow<Task.Submission> = findSubmissionUseCase(taskId, studentId)
         .shareIn(viewModelScope, SharingStarted.Lazily, 1)
 
     private var grade by Delegates.notNull<Int>()

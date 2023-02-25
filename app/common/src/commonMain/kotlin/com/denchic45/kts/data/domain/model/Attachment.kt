@@ -4,15 +4,12 @@ import com.denchic45.kts.util.Files
 import com.denchic45.kts.util.getExtension
 import java.io.File
 
-data class Attachment(
-    val file: File
-) : DomainModel {
+sealed interface Attachment
 
+data class AttachmentFile(val file: File) : Attachment {
     val shortName: String = Files.nameWithoutTimestamp(file.name)
-
     val name: String = file.name
-
-    override var id: String = shortName
-
     val extension: String = file.getExtension()
 }
+
+data class AttachmentLink(val url: String) : Attachment

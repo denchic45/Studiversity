@@ -1,15 +1,16 @@
 package com.denchic45.kts.domain.usecase
 
-import com.denchic45.kts.domain.model.Task
-import com.denchic45.kts.data.repository.CourseRepository
-import kotlinx.coroutines.flow.Flow
+import com.denchic45.kts.data.repository.SubmissionRepository
+import com.denchic45.kts.domain.Resource
+import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
+import java.util.*
 import javax.inject.Inject
 
-class FindTaskSubmissionsUseCase @Inject constructor(
-    private val courseRepository: CourseRepository
+class FindCourseWorkSubmissionsUseCase @Inject constructor(
+    private val submissionRepository: SubmissionRepository,
 ) {
 
-      operator fun invoke(taskId: String): Flow<List<Task.Submission>> {
-        return courseRepository.findTaskSubmissions(taskId)
+    suspend operator fun invoke(courseId: UUID, workId: UUID): Resource<List<SubmissionResponse>> {
+        return submissionRepository.findSubmissionsByWork(courseId, workId)
     }
 }

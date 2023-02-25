@@ -16,7 +16,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.*
 
-interface CourseTopicApi {
+interface CourseTopicsApi {
     suspend fun create(courseId: UUID, createTopicRequest: CreateTopicRequest): ResponseResult<TopicResponse>
 
     suspend fun update(
@@ -41,7 +41,7 @@ enum class RelatedTopicElements {
     CLEAR_TOPIC
 }
 
-class CourseTopicApiImpl(private val client: HttpClient) : CourseTopicApi {
+class CourseTopicsApiImpl(private val client: HttpClient) : CourseTopicsApi {
     override suspend fun create(courseId: UUID, createTopicRequest: CreateTopicRequest): ResponseResult<TopicResponse> {
         return client.post("/courses/$courseId/topics") {
             contentType(ContentType.Application.Json)

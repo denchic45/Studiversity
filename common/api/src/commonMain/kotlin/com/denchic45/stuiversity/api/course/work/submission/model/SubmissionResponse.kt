@@ -30,7 +30,7 @@ data class AssignmentSubmissionResponse(
     override val content: AssignmentSubmission?,
     override val grade: Short? = null,
     @Serializable(UUIDSerializer::class)
-    override val gradedBy: UUID? = null
+    override val gradedBy: UUID? = null,
 ) : SubmissionResponse() {
     override val type: CourseElementType = CourseElementType.WORK
 }
@@ -40,7 +40,18 @@ sealed interface SubmissionContent
 
 @Serializable
 data class AssignmentSubmission(
-    val attachmentHeaders: List<AttachmentHeader>
+    val attachmentHeaders: List<AttachmentHeader>,
 ) : SubmissionContent
 
-enum class SubmissionState { NEW, CREATED, SUBMITTED, RETURNED, CANCELED_BY_AUTHOR }
+enum class SubmissionState {
+    NEW, CREATED, SUBMITTED, RETURNED, CANCELED_BY_AUTHOR;
+
+    companion object {
+        fun notSubmitted() = listOf(
+            NEW,
+            CREATED,
+            RETURNED,
+            CANCELED_BY_AUTHOR
+        )
+    }
+}

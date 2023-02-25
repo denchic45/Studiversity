@@ -2,7 +2,7 @@ package com.studiversity.feature.timetable.usecase
 
 import com.studiversity.feature.timetable.TimetableRepository
 import com.studiversity.transaction.TransactionWorker
-import com.denchic45.stuiversity.api.timetable.model.SortingPeriods
+import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder
 import java.util.*
@@ -18,7 +18,7 @@ class FindTimetableOfDayUseCase(
         roomIds: List<UUID>?,
         weekOfYear: String,
         dayOfWeek: Int,
-        sorting: List<SortingPeriods>?
+        sorting: List<PeriodsSorting>?
     ) = transactionWorker {
         timetableRepository.findByDate(
             date = LocalDate.parse(

@@ -4,7 +4,7 @@ import com.studiversity.feature.course.element.usecase.*
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.ktor.*
-import com.denchic45.stuiversity.api.course.element.model.SortingCourseElements
+import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -20,7 +20,7 @@ fun Route.courseElementRoutes() {
 
         get {
             val courseId = call.parameters.getUuid("courseId")
-            val sorting = call.request.queryParameters.getSortingBy(SortingCourseElements)
+            val sorting = call.request.queryParameters.getSortingBy(CourseElementsSorting)
 
             requireCapability(
                 userId = call.currentUserId(),

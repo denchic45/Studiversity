@@ -13,7 +13,6 @@ import com.denchic45.kts.domain.model.Course
 import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.domain.usecase.FindTeacherByContainsNameUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.ui.login.groupChooser.GroupChooserInteractor

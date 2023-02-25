@@ -29,9 +29,9 @@ import javax.inject.Named
 class GroupEditorViewModel @Inject constructor(
     @Named(GroupEditorFragment.GROUP_ID) id: String?,
     private val teacherChooserInteractor: TeacherChooserInteractor,
-    private val addGroupUseCase: AddGroupUseCase,
+    private val addStudyGroupUseCase: AddStudyGroupUseCase,
     private val updateGroupUseCase: UpdateGroupUseCase,
-    private val removeGroupUseCase: RemoveGroupUseCase,
+    private val removeStudyGroupUseCase: RemoveStudyGroupUseCase,
     private val findGroupUseCase: FindGroupUseCase,
     private val confirmInteractor: ConfirmInteractor,
     private val findSpecialtyByContainsNameUseCase: FindSpecialtyByContainsNameUseCase,
@@ -181,7 +181,7 @@ class GroupEditorViewModel @Inject constructor(
             if (confirmInteractor.receiveConfirm()) {
                 try {
                     finish()
-                    removeGroupUseCase(uiEditor.item.id)
+                    removeStudyGroupUseCase(uiEditor.item.id)
                 } catch (e: Exception) {
                     if (e is NetworkException) {
                         showToast(R.string.error_check_network)
@@ -222,7 +222,7 @@ class GroupEditorViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (uiEditor.isNew) {
-                    addGroupUseCase(uiEditor.item)
+                    addStudyGroupUseCase(uiEditor.item)
                 } else {
                     updateGroupUseCase(uiEditor.item)
                 }

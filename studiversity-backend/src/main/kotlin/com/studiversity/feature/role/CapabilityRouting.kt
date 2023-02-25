@@ -1,7 +1,7 @@
 package com.studiversity.feature.role
 
 import com.studiversity.feature.role.usecase.CheckCapabilitiesByUserInScopeUseCase
-import com.studiversity.ktor.getUserUuidByParamOrMe
+import com.studiversity.ktor.getUserUuidByParameterOrMe
 import com.studiversity.ktor.getUuid
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -14,7 +14,7 @@ fun Route.capabilitiesRoutes() {
     route("/users/{userId}/scopes/{scopeId}/capabilities") {
         val checkCapabilitiesByUserInScope: CheckCapabilitiesByUserInScopeUseCase by inject()
         post("/check") {
-            val userId = call.getUserUuidByParamOrMe("userId")
+            val userId = call.getUserUuidByParameterOrMe("userId")
             val scopeId = call.parameters.getUuid("scopeId")
             val capabilities: List<String> = call.receive()
 

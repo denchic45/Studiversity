@@ -45,11 +45,11 @@ deleteById:
 DELETE FROM groupEntity
 WHERE group_id =:groupId;
 
-getWithCuratorAndSpecialtyByStudentId:
-SELECT * FROM groupEntity g
-JOIN userEntity u ON g.group_id = u.user_group_id
-JOIN specialtyEntity s ON g.specialty_id = s.specialty_id
-WHERE u.user_id =:userId;
+-- getWithCuratorAndSpecialtyByStudentId:
+-- SELECT * FROM groupEntity g
+-- JOIN userEntity u ON g.group_id = u.user_group_id
+-- JOIN specialtyEntity s ON g.specialty_id = s.specialty_id
+-- WHERE u.user_id =:userId;
 
 getWithCuratorAndSpecialtyByCuratorId:
 SELECT * FROM groupWithCuratorAndSpecialty

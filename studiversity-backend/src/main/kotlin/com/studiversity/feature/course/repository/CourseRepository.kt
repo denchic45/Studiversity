@@ -1,16 +1,15 @@
 package com.studiversity.feature.course.repository
 
+import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
+import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
 import com.studiversity.database.exists
 import com.studiversity.database.table.*
 import com.studiversity.feature.course.toResponse
 import com.studiversity.supabase.deleteRecursive
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
 import io.github.jan.supabase.storage.BucketApi
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import java.util.*
 
 class CourseRepository(private val bucket: BucketApi) {
@@ -29,14 +28,26 @@ class CourseRepository(private val bucket: BucketApi) {
         return CourseDao.findById(id)?.toResponse()
     }
 
-    fun find(query: String) = CourseDao.wrapRows(
-        Courses.leftJoin(Subjects, { subjectId }, { Subjects.id })
-            .select(
-                Courses.name.lowerCase() like "%$query%"
-                        or (Subjects.name.lowerCase() like "%$query%")
-                        or (Subjects.shortname.lowerCase() like "%$query%")
-            )
-    ).map(CourseDao::toResponse)
+    fun find(q: String?, memberId: UUID?): List<CourseResponse> {
+        val query = Courses.selectAll()
+        q?.let {
+            query.adjustColumnSet { leftJoin(Subjects, { Courses.subjectId }, { Subjects.id }) }
+                .adjustSlice { slice(fields + Subjects.id) }
+                .andWhere {
+                    Courses.name.lowerCase() like "%$q%" or
+                            (Subjects.name.lowerCase() like "%$q%") or
+                            (Subjects.shortname.lowerCase() like "%$q%")
+                }
+        }
+        memberId?.let {
+            query.adjustColumnSet {
+                innerJoin(MembershipsInnerUserMemberships,
+                    { Courses.id },
+                    { Memberships.scopeId })
+            }.andWhere { UsersRolesScopes.userId eq memberId }
+        }
+        return CourseDao.wrapRows(query).map(CourseDao::toResponse)
+    }
 
     fun update(id: UUID, request: UpdateCourseRequest): CourseResponse? = CourseDao.findById(id)?.apply {
         request.name.ifPresent { name = it }
@@ -78,19 +89,19 @@ class CourseRepository(private val bucket: BucketApi) {
         }
     }
 
-    fun removeCourseStudyGroup(courseId: UUID, studyGroupId: UUID): Boolean {
-        val membershipByGroupId = Memberships.slice(Memberships.id).select(
-            Memberships.scopeId eq courseId and
-                    (Memberships.type eq "by_group")
+    fun removeStudyGroupFromCourse(courseId: UUID, studyGroupId: UUID): Boolean {
+        val membershipOfCourseByGroupId = Memberships.slice(Memberships.id).select(
+            Memberships.scopeId eq courseId and (Memberships.type eq "by_group")
         ).first()[Memberships.id]
         val courseStudyGroupDeleted = ExternalStudyGroupsMemberships.deleteWhere {
             ExternalStudyGroupsMemberships.studyGroupId eq studyGroupId and
-                    (membershipId eq membershipByGroupId)
+                    (membershipId eq membershipOfCourseByGroupId)
         } > 0
+        // Remove course membership for groups if no groups remain
         if (!ExternalStudyGroupsMemberships.exists {
-                ExternalStudyGroupsMemberships.membershipId eq membershipByGroupId
+                ExternalStudyGroupsMemberships.membershipId eq membershipOfCourseByGroupId
             })
-            Memberships.deleteWhere { Memberships.id eq membershipByGroupId }
+            Memberships.deleteWhere { Memberships.id eq membershipOfCourseByGroupId }
         return courseStudyGroupDeleted
     }
 

@@ -10,8 +10,8 @@ fun Application.configureMembership() {
     val membershipService: MembershipService by inject()
     val coroutineScope: CoroutineScope by inject()
 
-    val memberships =
-        membershipService.getExternalMemberships().associateBy(ExternalMembership::membershipId).toMutableMap()
+    val memberships = membershipService.getExternalMemberships()
+        .associateBy(ExternalMembership::membershipId).toMutableMap()
     logger.info { "started ${memberships.size} memberships" }
 
     membershipRoutes(memberships)

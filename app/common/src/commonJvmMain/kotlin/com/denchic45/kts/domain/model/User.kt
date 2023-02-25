@@ -3,46 +3,36 @@ package com.denchic45.kts.domain.model
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.util.UUIDS
-import java.util.*
+import com.denchic45.stuiversity.api.user.model.Gender
+import java.util.UUID
 
 data class User(
-    override var id: String = UUIDS.createShort(),
+    override var id: UUID,
     val firstName: String,
     val surname: String,
     val patronymic: String?,
-    val groupId: String?,
-    val role: UserRole,
     val email: String,
     val photoUrl: String,
-    val timestamp: Date?,
-    val gender: Int,
-    val generatedAvatar: Boolean,
-    val admin: Boolean
+    val gender: Gender,
 ) : DomainModel {
 
-    private constructor() : this(
-        "",
-        "",
-        "",
-        "",
-        "",
-        UserRole.STUDENT,
-        "",
-        "",
-        null,
-        0,
-        false,
-        false
-    )
+//    private constructor() : this(
+//        ,
+//        "",
+//        "",
+//        "",
+//        "",
+//        Gender.UNKNOWN
+//    )
 
 
-    val isTeacher: Boolean
-        get() = role == UserRole.TEACHER || role == UserRole.HEAD_TEACHER
-    val isStudent: Boolean
-        get() = role == UserRole.STUDENT
+//    val isTeacher: Boolean
+//        get() = role == UserRole.TEACHER || role == UserRole.HEAD_TEACHER
+//    val isStudent: Boolean
+//        get() = role == UserRole.STUDENT
 
 
-    fun hasAdminPerms() = admin || role == UserRole.HEAD_TEACHER
+//    fun hasAdminPerms() = admin || role == UserRole.HEAD_TEACHER
 
     val fullName: String
         get() = "$firstName $surname"
@@ -57,18 +47,11 @@ data class User(
             firstName,
             surname,
             patronymic,
-            groupId,
-            role,
             email,
             photoUrl,
-            timestamp,
-            gender,
-            generatedAvatar,
-            admin
+            gender
         )
     }
-
-    fun curatorFor(groupId: String): Boolean = isTeacher && groupId == this.groupId
 
     companion object {
         fun isTeacher(role: UserRole): Boolean {
@@ -79,8 +62,8 @@ data class User(
             return role == UserRole.STUDENT
         }
 
-        fun createEmpty(): User {
-            return User()
-        }
+//        fun createEmpty(): User {
+//            return User()
+//        }
     }
 }

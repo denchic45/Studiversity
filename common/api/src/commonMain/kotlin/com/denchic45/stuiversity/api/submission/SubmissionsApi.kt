@@ -17,12 +17,12 @@ import java.util.*
 interface SubmissionsApi {
     suspend fun getAllByCourseWorkId(
         courseId: UUID,
-        courseWorkId: UUID
+        workId: UUID
     ): ResponseResult<List<SubmissionResponse>>
 
     suspend fun getByStudent(
         courseId: UUID,
-        courseWorkId: UUID,
+        workId: UUID,
         userId: UUID
     ): ResponseResult<SubmissionResponse>
 
@@ -33,7 +33,7 @@ interface SubmissionsApi {
 
     suspend fun gradeSubmission(
         courseId: UUID,
-        courseWorkId: UUID,
+        workId: UUID,
         submissionId: UUID,
         grade: Short
     ): ResponseResult<SubmissionResponse>
@@ -82,16 +82,16 @@ interface SubmissionsApi {
 class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
     override suspend fun getAllByCourseWorkId(
         courseId: UUID,
-        courseWorkId: UUID
+        workId: UUID
     ): ResponseResult<List<SubmissionResponse>> {
-        return client.get("/courses/${courseId}/works/${courseWorkId}/submissions").toResult()
+        return client.get("/courses/${courseId}/works/${workId}/submissions").toResult()
     }
 
     override suspend fun getByStudent(
         courseId: UUID,
-        courseWorkId: UUID, userId: UUID
+        workId: UUID, userId: UUID
     ): ResponseResult<SubmissionResponse> {
-        return client.get("/courses/$courseId/works/$courseWorkId/submissionsByStudentId/${userId}")
+        return client.get("/courses/$courseId/works/$workId/submissionsByStudentId/${userId}")
             .toResult()
     }
 
@@ -106,11 +106,11 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
 
     override suspend fun gradeSubmission(
         courseId: UUID,
-        courseWorkId: UUID,
+        workId: UUID,
         submissionId: UUID,
         grade: Short,
     ): ResponseResult<SubmissionResponse> {
-        return client.put("/courses/${courseId}/works/${courseWorkId}/submissions/${submissionId}/grade") {
+        return client.put("/courses/${courseId}/works/${workId}/submissions/${submissionId}/grade") {
             contentType(ContentType.Application.Json)
             setBody(GradeRequest(grade))
         }.toResult()

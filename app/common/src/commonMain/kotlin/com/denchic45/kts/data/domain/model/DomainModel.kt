@@ -1,8 +1,10 @@
 package com.denchic45.kts.data.domain.model
 
- interface DomainModel : Equatable {
+import java.util.UUID
 
-     val id: String
+interface DomainModel : Equatable {
+
+     val id: UUID
 
     fun copy(): DomainModel {
         throw IllegalStateException("You must override copy function")

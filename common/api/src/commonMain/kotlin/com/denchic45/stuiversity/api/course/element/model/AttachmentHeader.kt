@@ -43,10 +43,3 @@ data class LinkAttachmentHeader(
     @EncodeDefault
     override val type: AttachmentType = AttachmentType.LINK
 }
-
-@Serializable
-data class Link(
-    val url: String,
-    val name: String,
-    val thumbnailUrl: String?
-) : Attachment

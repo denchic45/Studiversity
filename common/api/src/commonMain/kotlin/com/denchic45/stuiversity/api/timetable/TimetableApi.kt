@@ -8,12 +8,14 @@ import com.denchic45.stuiversity.util.parametersOf
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 interface TimetableApi {
     suspend fun putTimetable(
         weekOfYear: String,
-        putTimetableRequest: PutTimetableRequest
+        putTimetableRequest: PutTimetableRequest,
     ): ResponseResult<TimetableResponse>
 
     suspend fun getTimetable(
@@ -22,13 +24,23 @@ interface TimetableApi {
         courseIds: List<UUID>? = null,
         memberIds: List<UUID>? = null,
         roomIds: List<UUID>? = null,
-        sorting: List<SortingPeriods> = listOf()
+        sorting: List<PeriodsSorting> = listOf(),
     ): ResponseResult<TimetableResponse>
+
+    suspend fun getTimetableByStudyGroupId(
+        date:LocalDate,
+        studyGroupId: UUID,
+        sorting: List<PeriodsSorting> = listOf(),
+    ): ResponseResult<TimetableResponse> = getTimetable(
+        weekOfYear = date.format(DateTimeFormatter.ofPattern("YYYY_ww")),
+        studyGroupIds = listOf(studyGroupId),
+        sorting = sorting
+    )
 
     suspend fun getTimetableByStudyGroupId(
         weekOfYear: String,
         studyGroupId: UUID,
-        sorting: List<SortingPeriods> = listOf()
+        sorting: List<PeriodsSorting> = listOf(),
     ): ResponseResult<TimetableResponse> = getTimetable(
         weekOfYear = weekOfYear,
         studyGroupIds = listOf(studyGroupId),
@@ -42,20 +54,37 @@ interface TimetableApi {
     ): ResponseResult<TimetableOfDayResponse>
 
     suspend fun getTimetableOfDay(
+        date: LocalDate,
+        studyGroupIds: List<UUID>? = null,
+        courseIds: List<UUID>? = null,
+        memberIds: List<UUID>? = null,
+        roomIds: List<UUID>? = null,
+        sorting: List<PeriodsSorting> = listOf(),
+    ): ResponseResult<TimetableOfDayResponse> = getTimetableOfDay(
+        weekOfYear = date.format(DateTimeFormatter.ofPattern("YYYY_ww")),
+        dayOfWeek = date.dayOfWeek.value,
+        studyGroupIds = studyGroupIds,
+        courseIds = courseIds,
+        memberIds = memberIds,
+        roomIds = roomIds,
+        sorting = sorting
+    )
+
+    suspend fun getTimetableOfDay(
         weekOfYear: String,
         dayOfWeek: Int,
         studyGroupIds: List<UUID>? = null,
         courseIds: List<UUID>? = null,
         memberIds: List<UUID>? = null,
         roomIds: List<UUID>? = null,
-        sorting: List<SortingPeriods> = listOf()
+        sorting: List<PeriodsSorting> = listOf(),
     ): ResponseResult<TimetableOfDayResponse>
 
     suspend fun getTimetableOfDayByStudyGroupId(
         weekOfYear: String,
         dayOfWeek: Int,
         studyGroupId: UUID,
-        sorting: List<SortingPeriods> = listOf()
+        sorting: List<PeriodsSorting> = listOf(),
     ): ResponseResult<TimetableOfDayResponse> = getTimetableOfDay(
         weekOfYear = weekOfYear,
         dayOfWeek = dayOfWeek,
@@ -65,20 +94,20 @@ interface TimetableApi {
 
     suspend fun deleteTimetable(
         weekOfYear: String,
-        studyGroupId: UUID
+        studyGroupId: UUID,
     ): EmptyResponseResult
 
     suspend fun deleteTimetable(
         weekOfYear: String,
         dayOfWeek: Int,
-        studyGroupId: UUID
+        studyGroupId: UUID,
     ): EmptyResponseResult
 }
 
 class TimetableApiImpl(private val client: HttpClient) : TimetableApi {
     override suspend fun putTimetable(
         weekOfYear: String,
-        putTimetableRequest: PutTimetableRequest
+        putTimetableRequest: PutTimetableRequest,
     ): ResponseResult<TimetableResponse> {
         return client.put("/timetables/$weekOfYear") {
             contentType(ContentType.Application.Json)
@@ -92,7 +121,7 @@ class TimetableApiImpl(private val client: HttpClient) : TimetableApi {
         courseIds: List<UUID>?,
         memberIds: List<UUID>?,
         roomIds: List<UUID>?,
-        sorting: List<SortingPeriods>
+        sorting: List<PeriodsSorting>,
     ): ResponseResult<TimetableResponse> = client.get("/timetables/$weekOfYear") {
         studyGroupIds?.forEach { parameter("studyGroupId", it) }
         courseIds?.forEach { parameter("courseId", it) }
@@ -104,7 +133,7 @@ class TimetableApiImpl(private val client: HttpClient) : TimetableApi {
     override suspend fun putTimetableOfDay(
         weekOfYear: String,
         dayOfWeek: Int,
-        putTimetableOfDayRequest: PutTimetableOfDayRequest
+        putTimetableOfDayRequest: PutTimetableOfDayRequest,
     ): ResponseResult<TimetableOfDayResponse> = client.put("/timetables/$weekOfYear/$dayOfWeek") {
         contentType(ContentType.Application.Json)
         setBody(putTimetableOfDayRequest)
@@ -117,7 +146,7 @@ class TimetableApiImpl(private val client: HttpClient) : TimetableApi {
         courseIds: List<UUID>?,
         memberIds: List<UUID>?,
         roomIds: List<UUID>?,
-        sorting: List<SortingPeriods>
+        sorting: List<PeriodsSorting>,
     ): ResponseResult<TimetableOfDayResponse> = client.get("/timetables/$weekOfYear/$dayOfWeek") {
         studyGroupIds?.forEach { parameter("studyGroupId", it) }
         courseIds?.forEach { parameter("courseId", it) }
@@ -126,13 +155,20 @@ class TimetableApiImpl(private val client: HttpClient) : TimetableApi {
         parametersOf(values = sorting)
     }.toResult()
 
-    override suspend fun deleteTimetable(weekOfYear: String, studyGroupId: UUID): EmptyResponseResult {
+    override suspend fun deleteTimetable(
+        weekOfYear: String,
+        studyGroupId: UUID,
+    ): EmptyResponseResult {
         return client.delete("/timetables/$weekOfYear") {
             parameter("studyGroupId", studyGroupId)
         }.toResult()
     }
 
-    override suspend fun deleteTimetable(weekOfYear: String, dayOfWeek: Int, studyGroupId: UUID): EmptyResponseResult {
+    override suspend fun deleteTimetable(
+        weekOfYear: String,
+        dayOfWeek: Int,
+        studyGroupId: UUID,
+    ): EmptyResponseResult {
         return client.delete("/timetables/$weekOfYear/$dayOfWeek") {
             parameter("studyGroupId", studyGroupId)
         }.toResult()

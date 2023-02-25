@@ -16,9 +16,15 @@ interface StudyGroupApi {
 
     suspend fun getById(studyGroupId: UUID): ResponseResult<StudyGroupResponse>
 
+    suspend fun getList(
+        memberId: UUID? = null,
+        roleId: Long? = null,
+        specialtyId: UUID? = null,
+    ): ResponseResult<List<StudyGroupResponse>>
+
     suspend fun update(
         studyGroupId: UUID,
-        updateStudyGroupRequest: UpdateStudyGroupRequest
+        updateStudyGroupRequest: UpdateStudyGroupRequest,
     ): ResponseResult<StudyGroupResponse>
 
     suspend fun search(query: String): ResponseResult<List<StudyGroupResponse>>
@@ -38,9 +44,21 @@ class StudyGroupApiImpl(private val client: HttpClient) : StudyGroupApi {
         return client.get("/studygroups/$studyGroupId").toResult()
     }
 
+    override suspend fun getList(
+        memberId: UUID?,
+        roleId: Long?,
+        specialtyId: UUID?,
+    ): ResponseResult<List<StudyGroupResponse>> {
+        return client.get("/studygroups") {
+            parameter("member_id", memberId)
+            parameter("role_id", roleId)
+            parameter("specialty_id", specialtyId)
+        }.toResult()
+    }
+
     override suspend fun update(
         studyGroupId: UUID,
-        updateStudyGroupRequest: UpdateStudyGroupRequest
+        updateStudyGroupRequest: UpdateStudyGroupRequest,
     ): ResponseResult<StudyGroupResponse> {
         return client.put("/studygroups/$studyGroupId") {
             contentType(ContentType.Application.Json)

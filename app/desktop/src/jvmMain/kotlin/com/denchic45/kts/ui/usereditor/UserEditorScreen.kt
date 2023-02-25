@@ -105,7 +105,7 @@ fun UserEditorDialog(component: UserEditorComponent, onDismissRequest: () -> Uni
 @Composable
 private fun UserEditorContent(component: UserEditorComponent) {
     Column(Modifier.padding(horizontal = 16.dp)) {
-        val photoUrl by component.photoUrl.collectAsState()
+        val photoUrl by component.avatarUrl.collectAsState()
         AsyncImage(
             load = { loadImageBitmap(photoUrl) },
             painterFor = { BitmapPainter(it) },

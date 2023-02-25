@@ -3,7 +3,7 @@ package com.denchic45.kts.ui.course.submissions
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.model.Task
-import com.denchic45.kts.domain.usecase.FindTaskSubmissionsUseCase
+import com.denchic45.kts.domain.usecase.FindCourseWorkSubmissionsUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,7 +15,7 @@ import javax.inject.Named
 
 class SubmissionsViewModel @Inject constructor(
     @Named(SubmissionsFragment.TASK_ID) private val taskId: String,
-    findTaskSubmissionsUseCase: FindTaskSubmissionsUseCase
+    findCourseWorkSubmissionsUseCase: FindCourseWorkSubmissionsUseCase
 ) : BaseViewModel() {
 
     val openSubmission = SingleLiveData<Pair<String, String>>()
@@ -28,7 +28,7 @@ class SubmissionsViewModel @Inject constructor(
     }
 
     val showSubmissions: SharedFlow<List<Task.Submission>> =
-        findTaskSubmissionsUseCase(taskId).shareIn(
+        findCourseWorkSubmissionsUseCase(taskId).shareIn(
             viewModelScope,
             SharingStarted.Lazily, 1
         )

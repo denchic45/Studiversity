@@ -7,7 +7,7 @@ import com.studiversity.feature.course.element.toResponse
 import com.studiversity.util.toSqlSortOrder
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
-import com.denchic45.stuiversity.api.course.element.model.SortingCourseElements
+import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
 import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -102,11 +102,11 @@ class CourseElementRepository {
         }
     }
 
-    fun findElementsByCourseId(courseId: UUID, sorting: List<SortingCourseElements>?): List<CourseElementResponse> {
+    fun findElementsByCourseId(courseId: UUID, sorting: List<CourseElementsSorting>?): List<CourseElementResponse> {
         val query = CourseElements.select(CourseElements.courseId eq courseId)
         sorting?.forEach {
             when (it) {
-                is SortingCourseElements.TopicId -> {
+                is CourseElementsSorting.TopicId -> {
                     query.adjustColumnSet { innerJoin(CourseTopics, { CourseElements.topicId }, { CourseTopics.id }) }
                         .orderBy(CourseTopics.order, it.order.toSqlSortOrder())
                 }

@@ -9,6 +9,8 @@ import com.denchic45.kts.domain.model.SimpleEventDetails.Companion.practice
 import com.denchic45.stuiversity.util.DatePatterns
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.kts.util.UUIDS
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.toLocalDate
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.poi.xwpf.usermodel.XWPFTable
@@ -210,7 +212,7 @@ class TimetableParser {
         }
     }
 
-    private fun findTeachersBySubject(subject: Subject): List<User> {
+    private fun findTeachersBySubject(subject: SubjectResponse): List<UserResponse> {
         return currentGroupCourse.courses
             .filter { it.subject == subject }
             .map { it.teacher }

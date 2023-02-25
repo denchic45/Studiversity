@@ -7,7 +7,7 @@ import com.denchic45.stuiversity.api.account.AccountApi
 import com.denchic45.stuiversity.api.account.model.UpdateAccountPersonalRequest
 import com.denchic45.stuiversity.api.auth.model.SignupRequest
 import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.User
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.optPropertyOf
 import io.ktor.client.*
 import kotlinx.coroutines.runBlocking
@@ -27,7 +27,7 @@ class AccountPersonalTest : KtorClientTest() {
     private val email = "petya@gmail.com"
     private val password = "h9gf90G90v854"
 
-    private lateinit var user: User
+    private lateinit var user: UserResponse
     private lateinit var userClient: HttpClient
 
     @BeforeEach

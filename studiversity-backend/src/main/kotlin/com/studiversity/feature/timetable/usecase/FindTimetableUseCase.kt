@@ -2,7 +2,7 @@ package com.studiversity.feature.timetable.usecase
 
 import com.studiversity.feature.timetable.TimetableRepository
 import com.studiversity.transaction.TransactionWorker
-import com.denchic45.stuiversity.api.timetable.model.SortingPeriods
+import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder
@@ -19,7 +19,7 @@ class FindTimetableUseCase(
         memberIds: List<UUID>?,
         roomIds: List<UUID>?,
         weekOfYear: String,
-        sorting: List<SortingPeriods>?
+        sorting: List<PeriodsSorting>?
     ) = transactionWorker {
         val monday = LocalDate.parse(
             weekOfYear, DateTimeFormatterBuilder()

@@ -3,7 +3,6 @@ package com.denchic45.kts.ui.teacherChooser
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.domain.error.SearchError
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.domain.usecase.FindTeacherByContainsNameUseCase
 import com.denchic45.kts.ui.base.chooser.ChooserViewModel
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.model.toUserItem

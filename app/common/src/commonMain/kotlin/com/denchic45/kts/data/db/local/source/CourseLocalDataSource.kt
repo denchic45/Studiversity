@@ -20,8 +20,8 @@ class CourseLocalDataSource @Inject constructor(private val db: AppDatabase) {
 //        }
     }
 
-    fun observe(id: String): Flow<List<GetCourseWithSubjectWithTeacherAndGroupsById>> {
-        return queries.getCourseWithSubjectWithTeacherAndGroupsById(id).asFlow()
+    fun observeById(id: String): Flow<List<CourseWithSubjectEntity>> {
+        return queries.getById(id).asFlow()
             .mapToList(Dispatchers.IO)
     }
 
@@ -30,27 +30,8 @@ class CourseLocalDataSource @Inject constructor(private val db: AppDatabase) {
             queries.getCourseWithSubjectWithTeacherAndGroupsById(id).executeAsList()
         }
 
-    fun observeCoursesByGroupId(groupId: String): Flow<List<CourseWithSubjectAndTeacherEntities>> {
-        return queries.getCoursesWithSubjectAndTeacherByGroupId(groupId) { course_id, name, subject_id, teacher_id, user_id, first_name, surname, patronymic, user_group_id, role, email, photo_url, gender, admin, generated_avatar, timestamp, subject_id_, name_, icon_name ->
-            CourseWithSubjectAndTeacherEntities(
-                CourseEntity(course_id, name, subject_id, teacher_id),
-                SubjectEntity(subject_id_, name_, icon_name),
-                UserEntity(
-                    user_id,
-                    first_name,
-                    surname,
-                    patronymic,
-                    user_group_id,
-                    role,
-                    email,
-                    photo_url,
-                    gender,
-                    admin,
-                    generated_avatar,
-                    timestamp
-                )
-            )
-        }
+    fun observeCoursesByStudyGroupId(groupId: String): Flow<List<CourseWithSubjectEntity>> {
+        return queries.getCoursesByStudyGroupId(groupId)
             .asFlow()
             .mapToList(Dispatchers.IO)
     }
@@ -99,25 +80,21 @@ class CourseLocalDataSource @Inject constructor(private val db: AppDatabase) {
     }
 
     fun saveCourse(
-        courseId: String,
-        teacherEntity: UserEntity,
-        subjectEntity: SubjectEntity,
-        courseEntity: CourseEntity,
-        sectionEntities: List<SectionEntity>,
-        groupCourseEntities: List<GroupCourseEntity>,
+        subjectEntity: SubjectEntity?,
+        courseEntity: CourseEntity
     ) {
         db.transaction {
-            db.groupCourseEntityQueries.apply {
-                deleteByCourseId(courseId)
-                groupCourseEntities.forEach { upsert(it) }
-            }
-            db.userEntityQueries.upsert(teacherEntity)
-            db.subjectEntityQueries.upsert(subjectEntity)
+//            db.groupCourseEntityQueries.apply {
+//                deleteByCourseId(courseId)
+//                groupCourseEntities.forEach { upsert(it) }
+//            }
+//            db.userEntityQueries.upsert(teacherEntity)
+            subjectEntity?.let { db.subjectEntityQueries.upsert(it) }
             queries.upsert(courseEntity)
-            db.sectionEntityQueries.apply {
-                deleteByCourseId(courseId)
-                sectionEntities.forEach { upsert(it) }
-            }
+//            db.sectionEntityQueries.apply {
+//                deleteByCourseId(courseId)
+//                sectionEntities.forEach { upsert(it) }
+//            }
         }
     }
 }

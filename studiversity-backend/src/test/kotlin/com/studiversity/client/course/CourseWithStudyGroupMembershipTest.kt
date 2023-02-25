@@ -4,7 +4,7 @@ import com.studiversity.KtorClientTest
 import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.studiversity.util.toUUID
+import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.membership.model.ManualJoinMemberRequest
@@ -94,7 +94,7 @@ class CourseWithStudyGroupMembershipTest : KtorClientTest() {
             assertEquals(listOf(user1Id, user2Id).sorted(), map(ScopeMember::userId).sorted())
         }
 
-        // delete first group and check members of course
+        // detach first group and check members of course
         client.delete("/courses/${course.id}/studygroups/${studyGroup1.id}")
 
         syncMembership(course.id)
@@ -104,7 +104,7 @@ class CourseWithStudyGroupMembershipTest : KtorClientTest() {
             assertEquals(listOf(user1Id), map(ScopeMember::userId))
         }
 
-        // delete second group and check members of course
+        // detach second group and check members of course
         client.delete("/courses/${course.id}/studygroups/${studyGroup2.id}")
 
         syncMembership(course.id)

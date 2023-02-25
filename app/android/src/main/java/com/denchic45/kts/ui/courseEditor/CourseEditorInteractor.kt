@@ -11,7 +11,7 @@ import javax.inject.Inject
 class CourseEditorInteractor @Inject constructor(
     private val teacherRepository: TeacherRepository,
     private val subjectRepository: SubjectRepository,
-    private val groupRepository: GroupRepository,
+    private val studyGroupRepository: StudyGroupRepository,
     private val courseRepository: CourseRepository
 ) : Interactor {
 
@@ -37,7 +37,7 @@ class CourseEditorInteractor @Inject constructor(
 
     override fun removeListeners() {
         courseRepository.removeListeners()
-        groupRepository.removeListeners()
+        studyGroupRepository.removeListeners()
         teacherRepository.removeListeners()
         subjectRepository.removeListeners()
     }

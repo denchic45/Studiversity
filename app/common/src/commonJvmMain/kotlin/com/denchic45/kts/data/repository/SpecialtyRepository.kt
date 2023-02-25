@@ -1,75 +1,61 @@
 package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.db.local.source.SpecialtyLocalDataSource
-import com.denchic45.kts.data.db.remote.source.SpecialtyRemoteDataSource
-import com.denchic45.kts.data.mapper.*
+import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
-import com.denchic45.kts.domain.error.SearchError
-import com.denchic45.kts.domain.model.Specialty
-import com.github.michaelbull.result.Result
+import com.denchic45.stuiversity.api.specialty.SpecialtyApi
+import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
+import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
 class SpecialtyRepository @Inject constructor(
     override val appVersionService: AppVersionService,
-    private val coroutineScope: CoroutineScope,
     private val specialtyLocalDataSource: SpecialtyLocalDataSource,
-    private val specialtyRemoteDataSource: SpecialtyRemoteDataSource,
     override val networkService: NetworkService,
-) : Repository(), FindByContainsNameRepository<Specialty>,
-    FindByContainsName3Repository<Specialty> {
+    private val specialtyApi: SpecialtyApi,
+) : Repository(), NetworkServiceOwner,
+    FindByContainsNameRepository<SpecialtyResponse> {
 
-    override fun findByContainsName(text: String): Flow<List<Specialty>> {
-        return specialtyRemoteDataSource.findByContainsName(text)
-            .map { maps ->
-                specialtyLocalDataSource.upsert(maps.mapsToSpecialEntities())
-                maps.mapsToDomains()
-            }
+
+    override suspend fun findByContainsName(text: String) = fetchResource {
+        specialtyApi.search(text)
     }
 
-    override fun findByContainsName3(text: String): Flow<Result<List<Specialty>, SearchError>> {
-        return observeByContainsName {
-            specialtyRemoteDataSource.findByContainsName(text)
-                .map { maps ->
-                    specialtyLocalDataSource.upsert(maps.mapsToSpecialEntities())
-                    maps.mapsToDomains()
-                }
+    suspend fun findById(specialtyId: UUID) = fetchResource {
+        specialtyApi.getById(specialtyId)
+    }
+
+//    fun observe(id: String): Flow<Specialty?> {
+//        coroutineScope.launch {
+//            specialtyLocalDataSource.upsert(
+//                specialtyRemoteDataSource.findById(id).mapToSpecialtyEntity()
+//            )
+//        }
+//        return specialtyLocalDataSource.observe(id)
+//            .map { entity -> entity?.toDomain() }
+//    }
+
+//    fun findAllSpecialties(): Flow<List<Specialty>> {
+//        return specialtyRemoteDataSource.findAllSpecialties()
+//            .map { it.mapsToDomains() }
+//    }
+
+
+    suspend fun add(createSpecialtyRequest: CreateSpecialtyRequest) = fetchResource {
+        specialtyApi.create(createSpecialtyRequest)
+    }
+
+    suspend fun update(specialtyId: UUID, updateSpecialtyRequest: UpdateSpecialtyRequest) =
+        fetchResource {
+            specialtyApi.update(specialtyId, updateSpecialtyRequest)
         }
-    }
 
-    fun observe(id: String): Flow<Specialty?> {
-        coroutineScope.launch {
-            specialtyLocalDataSource.upsert(
-                specialtyRemoteDataSource.findById(id).mapToSpecialtyEntity()
-            )
-        }
-        return specialtyLocalDataSource.observe(id)
-            .map { entity -> entity?.toDomain() }
-    }
-
-    fun findAllSpecialties(): Flow<List<Specialty>> {
-        return specialtyRemoteDataSource.findAllSpecialties()
-            .map { it.mapsToDomains() }
-    }
-
-
-    suspend fun add(specialty: Specialty) {
-        requireAllowWriteData()
-        specialtyRemoteDataSource.add(specialty.toMap())
-    }
-
-    suspend fun update(specialty: Specialty) {
-        requireAllowWriteData()
-        specialtyRemoteDataSource.update(specialty.toMap())
-    }
-
-    suspend fun remove(specialty: Specialty) {
-        requireAllowWriteData()
-        specialtyRemoteDataSource.remove(specialty.id)
+    suspend fun remove(specialtyId: UUID) = fetchResource {
+        specialtyApi.delete(specialtyId)
     }
 }

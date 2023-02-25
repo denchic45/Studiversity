@@ -1,9 +1,5 @@
 package com.studiversity.client.role
 
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertedResultIsOk
-import com.studiversity.util.unwrapAsserted
-import com.denchic45.stuiversity.api.auth.model.CreateUserRequest
 import com.denchic45.stuiversity.api.membership.MembershipsApi
 import com.denchic45.stuiversity.api.role.CapabilityApi
 import com.denchic45.stuiversity.api.role.RoleApi
@@ -14,7 +10,11 @@ import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.User
+import com.denchic45.stuiversity.api.user.model.CreateUserRequest
+import com.denchic45.stuiversity.api.user.model.UserResponse
+import com.studiversity.KtorClientTest
+import com.studiversity.util.assertedResultIsOk
+import com.studiversity.util.unwrapAsserted
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -31,7 +31,7 @@ class CapabilitiesTest : KtorClientTest() {
     private val studyGroupApi: StudyGroupApi by inject { parametersOf(client) }
     private val membershipsApi: MembershipsApi by inject { parametersOf(client) }
 
-    private lateinit var user: User
+    private lateinit var user: UserResponse
     private lateinit var studyGroup: StudyGroupResponse
 
     @BeforeEach

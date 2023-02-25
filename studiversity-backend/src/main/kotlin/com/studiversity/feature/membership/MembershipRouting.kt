@@ -1,5 +1,9 @@
 package com.studiversity.feature.membership
 
+import com.denchic45.stuiversity.api.membership.model.ManualJoinMemberRequest
+import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.role.model.UpdateUserRolesRequest
+import com.denchic45.stuiversity.util.toUUID
 import com.studiversity.config
 import com.studiversity.feature.membership.usecase.FindMembershipByScopeUseCase
 import com.studiversity.feature.membership.usecase.RemoveMemberFromScopeUseCase
@@ -13,11 +17,7 @@ import com.studiversity.ktor.ForbiddenException
 import com.studiversity.ktor.claimId
 import com.studiversity.ktor.jwtPrincipal
 import com.studiversity.util.hasNotDuplicates
-import com.studiversity.util.toUUID
 import com.studiversity.validation.buildValidationResult
-import com.denchic45.stuiversity.api.membership.model.ManualJoinMemberRequest
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.denchic45.stuiversity.api.role.model.UpdateUserRolesRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

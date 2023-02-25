@@ -41,24 +41,24 @@ SELECT * FROM submissionEntity s
 JOIN userEntity u ON u.user_id = s.student_id
 WHERE content_id =: taskId;
 
-getStudentsWithoutSubmission:
-SELECT
-  u.*
-FROM
-  userEntity u
-  LEFT JOIN submissionEntity s ON s.student_id = u.user_id
-WHERE
-  u.user_group_id IN(
-    SELECT
-      u.user_group_id
-    FROM
-      userEntity uu
-      JOIN groupCourseEntity gc ON u.user_group_id = gc.group_id
-      JOIN courseContentEntity cc ON gc.course_id = cc.course_id
-    WHERE
-      cc.content_id =:taskId
-  )
-  AND s.student_id IS NULL;
+-- getStudentsWithoutSubmission:
+-- SELECT
+--   u.*
+-- FROM
+--   userEntity u
+--   LEFT JOIN submissionEntity s ON s.student_id = u.user_id
+-- WHERE
+--   u.user_group_id IN(
+--     SELECT
+--       u.user_group_id
+--     FROM
+--       userEntity uu
+--       JOIN groupCourseEntity gc ON u.user_group_id = gc.group_id
+--       JOIN courseContentEntity cc ON gc.course_id = cc.course_id
+--     WHERE
+--       cc.content_id =:taskId
+--   )
+--   AND s.student_id IS NULL;
 
 deleteByContentId:
 DELETE FROM submissionEntity

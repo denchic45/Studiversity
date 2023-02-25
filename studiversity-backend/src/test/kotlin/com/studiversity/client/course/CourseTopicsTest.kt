@@ -5,14 +5,14 @@ import com.github.michaelbull.result.unwrap
 import com.github.michaelbull.result.unwrapError
 import com.studiversity.KtorClientTest
 import com.studiversity.util.assertResultIsOk
-import com.studiversity.util.toUUID
+import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.element.CourseElementApi
-import com.denchic45.stuiversity.api.course.element.model.SortingCourseElements
+import com.denchic45.stuiversity.api.course.element.CourseElementsApi
+import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
 import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
+import com.denchic45.stuiversity.api.course.topic.CourseTopicsApi
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CreateTopicRequest
 import com.denchic45.stuiversity.api.course.topic.model.UpdateTopicRequest
@@ -40,9 +40,9 @@ class CourseTopicsTest : KtorClientTest() {
     private val teacherClient by lazy { createAuthenticatedClient("stefan@gmail.com", "FSg54g45dg") }
 
     private val coursesApi: CoursesApi by inject { parametersOf(client) }
-    private val courseTopicApi: CourseTopicApi by inject { parametersOf(teacherClient) }
+    private val CourseTopicsApi: CourseTopicsApi by inject { parametersOf(teacherClient) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(teacherClient) }
-    private val courseElementApi: CourseElementApi by inject { parametersOf(teacherClient) }
+    private val CourseElementsApi: CourseElementsApi by inject { parametersOf(teacherClient) }
     private val membershipsApi: MembershipsApi by inject { parametersOf(client) }
 
     @BeforeEach
@@ -68,16 +68,16 @@ class CourseTopicsTest : KtorClientTest() {
 
     @Test
     fun testAddUpdateRemoveTopic(): Unit = runBlocking {
-        val topic = courseTopicApi.createTopic(course.id)
+        val topic = CourseTopicsApi.createTopic(course.id)
 
         assertEquals("My Topic", topic.name)
 
-        courseTopicApi.getByCourseId(course.id).also(::assertResultIsOk).apply {
+        CourseTopicsApi.getByCourseId(course.id).also(::assertResultIsOk).apply {
             assertEquals(1, unwrap().size)
             assertEquals(topic, unwrap()[0])
         }
 
-        val updatedTopic = courseTopicApi.update(
+        val updatedTopic = CourseTopicsApi.update(
             courseId = course.id,
             topicId = topic.id,
             updateTopicRequest = UpdateTopicRequest(OptionalProperty.Present("Updated Topic"))
@@ -90,7 +90,7 @@ class CourseTopicsTest : KtorClientTest() {
 
     @Test
     fun testClearRemovedTopicOfCourseElements(): Unit = runBlocking {
-        val topic = courseTopicApi.createTopic(course.id)
+        val topic = CourseTopicsApi.createTopic(course.id)
 
         val courseWork = courseWorkApi.create(
             course.id, CreateCourseWorkRequest(
@@ -133,7 +133,7 @@ class CourseTopicsTest : KtorClientTest() {
             )
         ).apply { assertEquals(2, get()?.order) { unwrapError().error.toString() } }.unwrap()
 
-        val topic = courseTopicApi.createTopic(course.id)
+        val topic = CourseTopicsApi.createTopic(course.id)
 
         // creating element immediately with a topic
         val elemWithTopic1 = courseWorkApi.create(
@@ -161,7 +161,7 @@ class CourseTopicsTest : KtorClientTest() {
         ).apply {
             assertEquals(null, get()?.topicId) { unwrapError().error.toString() }
         }.unwrap().let { element ->
-            courseElementApi.update(
+            CourseElementsApi.update(
                 course.id,
                 element.id,
                 UpdateCourseElementRequest(topicId = OptionalProperty.Present(topic.id))
@@ -191,8 +191,8 @@ class CourseTopicsTest : KtorClientTest() {
                 maxGrade = 5
             )
         ).unwrap()
-        val topic = courseTopicApi.createTopic(course.id)
-        courseElementApi.update(
+        val topic = CourseTopicsApi.createTopic(course.id)
+        CourseElementsApi.update(
             course.id, element.id,
             UpdateCourseElementRequest(OptionalProperty.Present(topic.id))
         ).unwrap().apply {
@@ -200,7 +200,7 @@ class CourseTopicsTest : KtorClientTest() {
             assertEquals(1, order)
         }
 
-        courseElementApi.update(
+        CourseElementsApi.update(
             course.id, element.id, UpdateCourseElementRequest(OptionalProperty.Present(null))
         ).unwrap().apply {
             assertNull(topicId)
@@ -210,8 +210,8 @@ class CourseTopicsTest : KtorClientTest() {
 
     @Test
     fun testUpdateOrderOnMoveBetweenTopics(): Unit = runBlocking {
-        val topic1 = courseTopicApi.createTopic(course.id, "Topic 1")
-        val topic2 = courseTopicApi.createTopic(course.id, "Topic 2")
+        val topic1 = CourseTopicsApi.createTopic(course.id, "Topic 1")
+        val topic2 = CourseTopicsApi.createTopic(course.id, "Topic 2")
 
         val firstElements = List(5) {
             courseWorkApi.create(
@@ -236,20 +236,20 @@ class CourseTopicsTest : KtorClientTest() {
             ).unwrap()
         }
 
-        courseElementApi.update(
+        CourseElementsApi.update(
             course.id, firstElements[2].id, UpdateCourseElementRequest(OptionalProperty.Present(topic2.id))
         ).unwrap().apply {
             assertEquals(topic2.id, this.topicId)
             assertEquals(6, this.order)
         }
 
-        courseElementApi.update(
+        CourseElementsApi.update(
             course.id, secondElements[4].id, UpdateCourseElementRequest(OptionalProperty.Present(topic1.id))
         ).also(::assertResultIsOk)
 
-        courseElementApi.delete(course.id, secondElements[0].id).also(::assertResultIsOk)
+        CourseElementsApi.delete(course.id, secondElements[0].id).also(::assertResultIsOk)
 
-        courseElementApi.getByCourseId(course.id, listOf(SortingCourseElements.TopicId()))
+        CourseElementsApi.getByCourseId(course.id, listOf(CourseElementsSorting.TopicId()))
             .also(::assertResultIsOk).unwrap().apply {
                 assertTrue(this.all { it.id != secondElements[0].id })
                 groupBy { it.topicId }.values.forEach { value ->
@@ -262,9 +262,9 @@ class CourseTopicsTest : KtorClientTest() {
     }
 
     private suspend fun removeTopic(topicId: UUID, relatedTopicElements: RelatedTopicElements) {
-        courseTopicApi.delete(course.id, topicId, relatedTopicElements).also(::assertResultIsOk)
+        CourseTopicsApi.delete(course.id, topicId, relatedTopicElements).also(::assertResultIsOk)
     }
 }
 
-suspend fun CourseTopicApi.createTopic(courseId: UUID, name: String = "My Topic") =
+suspend fun CourseTopicsApi.createTopic(courseId: UUID, name: String = "My Topic") =
     create(courseId, CreateTopicRequest(name)).also(::assertResultIsOk).unwrap()

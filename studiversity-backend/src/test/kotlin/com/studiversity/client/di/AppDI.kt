@@ -6,14 +6,16 @@ import com.denchic45.stuiversity.api.auth.AuthApi
 import com.denchic45.stuiversity.api.auth.AuthApiImpl
 import com.denchic45.stuiversity.api.course.CourseApiImpl
 import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.element.CourseElementApi
-import com.denchic45.stuiversity.api.course.element.CourseElementApiImpl
+import com.denchic45.stuiversity.api.course.element.CourseElementsApi
+import com.denchic45.stuiversity.api.course.element.CourseElementsApiImpl
 import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.SubjectApiImpl
-import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
-import com.denchic45.stuiversity.api.course.topic.CourseTopicApiImpl
+import com.denchic45.stuiversity.api.course.topic.CourseTopicsApi
+import com.denchic45.stuiversity.api.course.topic.CourseTopicsApiImpl
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.CourseWorkApiImpl
+import com.denchic45.stuiversity.api.member.MembersApi
+import com.denchic45.stuiversity.api.member.MembersApiImpl
 import com.denchic45.stuiversity.api.membership.MembershipsApi
 import com.denchic45.stuiversity.api.membership.MembershipsApiImpl
 import com.denchic45.stuiversity.api.role.CapabilityApi
@@ -47,11 +49,12 @@ internal val apiModule = module {
     factory<SubjectApi> { SubjectApiImpl(it.get()) }
     factory<SpecialtyApi> { SpecialtyApiImpl(it.get()) }
     factory<CoursesApi> { CourseApiImpl(it.get()) }
-    factory<CourseElementApi> { CourseElementApiImpl(it.get()) }
+    factory<CourseElementsApi> { CourseElementsApiImpl(it.get()) }
     factory<CourseWorkApi> { CourseWorkApiImpl(it.get()) }
     factory<SubmissionsApi> { SubmissionsApiImpl(it.get()) }
-    factory<CourseTopicApi> { CourseTopicApiImpl(it.get()) }
+    factory<CourseTopicsApi> { CourseTopicsApiImpl(it.get()) }
     factory<MembershipsApi> { MembershipsApiImpl(it.get()) }
+    factory<MembersApi> { MembersApiImpl(it.get()) }
     factory<TimetableApi> { TimetableApiImpl(it.get()) }
     factory<RoomApi> { RoomApiImpl(it.get()) }
 }

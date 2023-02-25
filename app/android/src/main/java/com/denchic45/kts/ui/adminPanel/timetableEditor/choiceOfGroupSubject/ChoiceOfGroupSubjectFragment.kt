@@ -51,9 +51,9 @@ class ChoiceOfGroupSubjectFragment :
                 viewModel.showSubjectsOfGroup.collectWhenStarted(lifecycleScope) { resource ->
                     if (resource is Resource.Success) {
                         listStateLayout.showList()
-                        adapter.submitList(resource.data)
+                        adapter.submitList(resource.value)
                     } else if (resource is Resource.Error) {
-                        if (resource.error is NetworkException) {
+                        if (resource.failure is NetworkException) {
                             listStateLayout.showView(ListStateLayout.NETWORK_VIEW)
                         }
                     }

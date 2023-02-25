@@ -4,7 +4,7 @@ import com.studiversity.database.table.ExternalStudyGroupsMemberships
 import com.studiversity.database.table.Memberships
 import com.denchic45.stuiversity.api.membership.model.CreateMembershipRequest
 import com.studiversity.logger.logger
-import com.studiversity.util.toUUID
+import com.denchic45.stuiversity.util.toUUID
 import io.github.jan.supabase.realtime.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*

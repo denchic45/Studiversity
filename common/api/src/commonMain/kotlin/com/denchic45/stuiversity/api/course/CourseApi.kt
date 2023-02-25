@@ -16,7 +16,24 @@ interface CoursesApi {
 
     suspend fun getById(courseId: UUID): ResponseResult<CourseResponse>
 
-    suspend fun update(courseId: UUID, updateCourseRequest: UpdateCourseRequest): ResponseResult<CourseResponse>
+    suspend fun getList(
+        memberId: UUID? = null,
+        studyGroupId: UUID? = null,
+        subjectId: UUID? = null,
+    ): ResponseResult<List<CourseResponse>>
+
+    suspend fun getCoursesByMe(): ResponseResult<CourseResponse>
+
+    suspend fun update(
+        courseId: UUID,
+        updateCourseRequest: UpdateCourseRequest,
+    ): ResponseResult<CourseResponse>
+
+    suspend fun getStudyGroupIds(courseId: UUID): ResponseResult<List<UUID>>
+
+    suspend fun putStudyGroup(courseId: UUID, studyGroupId: UUID): EmptyResponseResult
+
+    suspend fun deleteStudyGroup(courseId: UUID, studyGroupId: UUID): EmptyResponseResult
 
     suspend fun setArchive(courseId: UUID): EmptyResponseResult
 
@@ -39,14 +56,42 @@ class CourseApiImpl(private val client: HttpClient) : CoursesApi {
         return client.get("/courses/$courseId").toResult()
     }
 
+    override suspend fun getList(
+        memberId: UUID?,
+        studyGroupId: UUID?,
+        subjectId: UUID?,
+    ): ResponseResult<List<CourseResponse>> {
+        return client.get("/courses") {
+            parameter("member_id", memberId)
+            parameter("study_group_id", studyGroupId)
+            parameter("subject_id", subjectId)
+        }.toResult()
+    }
+
+    override suspend fun getCoursesByMe(): ResponseResult<CourseResponse> {
+        return client.get("/me/courses").toResult()
+    }
+
     override suspend fun update(
         courseId: UUID,
-        updateCourseRequest: UpdateCourseRequest
+        updateCourseRequest: UpdateCourseRequest,
     ): ResponseResult<CourseResponse> {
         return client.patch("/courses/$courseId") {
             contentType(ContentType.Application.Json)
             setBody(updateCourseRequest)
         }.toResult()
+    }
+
+    override suspend fun getStudyGroupIds(courseId: UUID): ResponseResult<List<UUID>> {
+        return client.get("/courses/$courseId/studygroups").toResult()
+    }
+
+    override suspend fun putStudyGroup(courseId: UUID, studyGroupId: UUID): EmptyResponseResult {
+        return client.put("/courses/$courseId/studygroups/$studyGroupId").toResult()
+    }
+
+    override suspend fun deleteStudyGroup(courseId: UUID, studyGroupId: UUID): EmptyResponseResult {
+        return client.delete("/courses/$courseId/studygroups/$studyGroupId").toResult()
     }
 
     override suspend fun setArchive(courseId: UUID): EmptyResponseResult {

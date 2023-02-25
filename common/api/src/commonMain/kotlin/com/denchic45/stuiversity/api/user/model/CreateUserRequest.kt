@@ -1,4 +1,4 @@
-package com.denchic45.stuiversity.api.auth.model
+package com.denchic45.stuiversity.api.user.model
 
 import kotlinx.serialization.Serializable
 

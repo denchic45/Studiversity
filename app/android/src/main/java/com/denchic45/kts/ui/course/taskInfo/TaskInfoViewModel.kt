@@ -27,9 +27,9 @@ class TaskInfoViewModel @Inject constructor(
     @Named(TaskInfoFragment.TASK_ID) val taskId: String,
     @Named(TaskInfoFragment.COURSE_ID) val courseId: String,
     findSelfUserUseCase: FindSelfUserUseCase,
-    findTaskUseCase: FindTaskUseCase,
+    findCourseWorkUseCase: FindCourseWorkUseCase,
     findTaskAttachmentsUseCase: FindAttachmentsUseCase,
-    findSelfTaskSubmissionUseCase: FindSelfTaskSubmissionUseCase,
+    findOwnSubmissionUseCase: FindOwnSubmissionUseCase,
     private val updateSubmissionFromStudentUseCase: UpdateSubmissionFromStudentUseCase,
 ) : BaseViewModel() {
 
@@ -37,7 +37,7 @@ class TaskInfoViewModel @Inject constructor(
         const val ALLOW_EDIT_TASK = "ALLOW_EDIT_TASK"
     }
 
-    private val taskFlow = findTaskUseCase(taskId).shareIn(
+    private val taskFlow = findCourseWorkUseCase(taskId).shareIn(
         viewModelScope,
         replay = 1,
         started = SharingStarted.WhileSubscribed()
@@ -95,7 +95,7 @@ class TaskInfoViewModel @Inject constructor(
         viewModelScope.launch {
             if (findSelfUserUseCase().isStudent) {
                 _submissionViewState.emitAll(
-                    findSelfTaskSubmissionUseCase(task().id)
+                    findOwnSubmissionUseCase(task().id)
                         .onEach {
                             oldContent = it.content
                             content = oldContent

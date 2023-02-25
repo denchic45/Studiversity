@@ -1,14 +1,14 @@
 package com.studiversity.feature.membership.repository
 
-import com.studiversity.database.exists
-import com.studiversity.database.table.*
 import com.denchic45.stuiversity.api.membership.model.Member
 import com.denchic45.stuiversity.api.membership.model.MembershipResponse
 import com.denchic45.stuiversity.api.membership.model.ScopeMember
 import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.stuiversity.util.toUUID
+import com.studiversity.database.exists
+import com.studiversity.database.table.*
 import com.studiversity.feature.role.mapper.toRole
 import com.studiversity.logger.logger
-import com.studiversity.util.toUUID
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.realtime.createChannel
@@ -87,14 +87,7 @@ class UserMembershipRepository(
             )
         }
 
-    fun findMemberIdsByScopeAndRole(scopeId: UUID, roleId: Long) = Memberships
-        .innerJoin(UsersMemberships, { Memberships.id }, { membershipId })
-        .innerJoin(
-            UsersRolesScopes,
-            { UsersRolesScopes.userId },
-            { UsersMemberships.memberId },
-            { UsersRolesScopes.scopeId eq Memberships.scopeId })
-        .slice(UsersMemberships.memberId)
+    fun findMemberIdsByScopeAndRole(scopeId: UUID, roleId: Long) = MembershipsInnerUserMembershipsInnerUsersRolesScopes
         .select(Memberships.scopeId eq scopeId and (UsersRolesScopes.roleId eq roleId))
         .map { it[UsersMemberships.memberId] }
 

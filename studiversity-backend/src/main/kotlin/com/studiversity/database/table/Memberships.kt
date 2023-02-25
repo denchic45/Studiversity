@@ -5,6 +5,7 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.innerJoin
 import java.util.*
 
 object Memberships : UUIDTable("membership", "membership_id") {
@@ -22,3 +23,13 @@ class MembershipDao(id: EntityID<UUID>) : UUIDEntity(id) {
 
     var scope by ScopeDao referencedOn Memberships.scopeId
 }
+
+val MembershipsInnerUserMembershipsInnerUsersRolesScopes = Memberships
+    .innerJoin(UsersMemberships, { Memberships.id }, { membershipId })
+    .innerJoin(UsersRolesScopes,
+        { UsersRolesScopes.userId },
+        { UsersMemberships.memberId },
+        { UsersRolesScopes.scopeId eq Memberships.scopeId })
+
+val MembershipsInnerUserMemberships = Memberships
+    .innerJoin(UsersMemberships, { Memberships.id }, { membershipId })

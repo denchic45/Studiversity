@@ -1,8 +1,7 @@
 package com.denchic45.kts.data.service
 
-import com.denchic45.kts.domain.error.NetworkError
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Result
+import com.denchic45.kts.data.domain.NoConnection
+import com.denchic45.kts.domain.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -12,18 +11,18 @@ expect class NetworkService {
     fun observeNetwork(): Flow<Boolean>
 }
 
-fun <T, E> NetworkService.withHasNetwork(
-    block: () -> Result<T, E>
-): Result<T, E> = if (isNetworkAvailable) {
+suspend fun <T> NetworkService.withHasNetwork(
+    block: suspend () -> Resource<T>,
+): Resource<T> = if (isNetworkAvailable) {
     block()
-} else Err(NetworkError) as Result<T, E>
+} else Resource.Error(NoConnection)
 
-fun <T, E> NetworkService.withCollectHasNetwork(
-    block: () -> Flow<Result<T, E>>
-): Flow<Result<T, E>> = observeNetwork().flatMapLatest {
+fun <T> NetworkService.withCollectHasNetwork(
+    block: () -> Flow<Resource<T>>,
+): Flow<Resource<T>> = observeNetwork().flatMapLatest {
     if (it) {
         block()
     } else {
-        flowOf(Err(NetworkError) as Result<T, E>)
+        flowOf(Resource.Error(NoConnection))
     }
 }

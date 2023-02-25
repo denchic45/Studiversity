@@ -12,22 +12,22 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 
 interface AuthApi {
-    suspend fun signup(signupRequest: com.denchic45.stuiversity.api.auth.model.SignupRequest): EmptyResponseResult
+    suspend fun signup(signupRequest: SignupRequest): EmptyResponseResult
 
-    suspend fun signInByEmailPassword(signInByEmailPasswordRequest: com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest): ResponseResult<com.denchic45.stuiversity.api.auth.model.TokenResponse>
+    suspend fun signInByEmailPassword(signInByEmailPasswordRequest: SignInByEmailPasswordRequest): ResponseResult<TokenResponse>
 
-    suspend fun refreshToken(refreshTokenRequest: com.denchic45.stuiversity.api.auth.model.RefreshTokenRequest): ResponseResult<com.denchic45.stuiversity.api.auth.model.TokenResponse>
+    suspend fun refreshToken(refreshTokenRequest: RefreshTokenRequest): ResponseResult<TokenResponse>
 }
 
-class AuthApiImpl(private val client: HttpClient) : com.denchic45.stuiversity.api.auth.AuthApi {
-    override suspend fun signup(signupRequest: com.denchic45.stuiversity.api.auth.model.SignupRequest): EmptyResponseResult {
+class AuthApiImpl(private val client: HttpClient) : AuthApi {
+    override suspend fun signup(signupRequest: SignupRequest): EmptyResponseResult {
         return client.post("/auth/signup") {
             contentType(ContentType.Application.Json)
             setBody(signupRequest)
         }.toResult()
     }
 
-    override suspend fun signInByEmailPassword(signInByEmailPasswordRequest: com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest): ResponseResult<com.denchic45.stuiversity.api.auth.model.TokenResponse> {
+    override suspend fun signInByEmailPassword(signInByEmailPasswordRequest: SignInByEmailPasswordRequest): ResponseResult<TokenResponse> {
         return client.post("/auth/token") {
             contentType(ContentType.Application.Json)
             setBody(signInByEmailPasswordRequest)
@@ -35,7 +35,7 @@ class AuthApiImpl(private val client: HttpClient) : com.denchic45.stuiversity.ap
         }.toResult()
     }
 
-    override suspend fun refreshToken(refreshTokenRequest: com.denchic45.stuiversity.api.auth.model.RefreshTokenRequest): ResponseResult<com.denchic45.stuiversity.api.auth.model.TokenResponse> {
+    override suspend fun refreshToken(refreshTokenRequest: RefreshTokenRequest): ResponseResult<TokenResponse> {
         return client.post("/auth/token") {
             contentType(ContentType.Application.Json)
             parameter("grant_type", "refresh_token")

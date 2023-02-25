@@ -4,7 +4,7 @@ import com.studiversity.feature.studygroup.usecase.*
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.studiversity.util.onlyDigits
-import com.studiversity.util.toUUID
+import com.denchic45.stuiversity.util.toUUID
 import com.studiversity.validation.buildValidationResult
 import io.ktor.http.*
 import io.ktor.server.application.*
