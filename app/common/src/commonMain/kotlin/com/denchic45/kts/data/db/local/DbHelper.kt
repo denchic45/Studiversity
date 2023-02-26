@@ -1,11 +1,9 @@
 package com.denchic45.kts.data.db.local
 
-import com.denchic45.kts.AppDatabase
-import com.denchic45.kts.CourseContentEntity
-import com.denchic45.kts.EventEntity
-import com.denchic45.kts.SubmissionEntity
+import com.denchic45.kts.*
 import com.denchic45.kts.data.mapper.ListMapper
 import com.squareup.sqldelight.ColumnAdapter
+import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
 
 class ListColumnAdapter : ColumnAdapter<List<String>, String> {
@@ -53,7 +51,11 @@ class DbHelper(val driver: SqlDriver) {
             ),
             eventEntityAdapter = EventEntity.Adapter(
                 teacher_idsAdapter = ListColumnAdapter()
-            ))
+            ),
+            userEntityAdapter = UserEntity.Adapter(
+                EnumColumnAdapter()
+            )
+        )
     }
 
     private var version: Int

@@ -1,8 +1,11 @@
 package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.domain.model.Attachment
+import com.denchic45.kts.data.domain.model.AttachmentFile
+import com.denchic45.kts.data.domain.model.AttachmentLink
 import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.service.NetworkService
+import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import com.denchic45.stuiversity.api.submission.SubmissionsApi
 import java.util.*
 
@@ -21,12 +24,21 @@ class SubmissionRepository(
         submissionId: UUID,
         attachment: Attachment,
     ) = fetchResource {
-        submissionsApi.uploadFileToSubmission(
-            courseId,
-            workId,
-            submissionId,
-            attachment.file
-        )
+        when(attachment) {
+            is AttachmentFile ->   submissionsApi.uploadFileToSubmission(
+                courseId,
+                workId,
+                submissionId,
+                attachment.file
+            )
+            is AttachmentLink ->   submissionsApi.addLinkToSubmission(
+                courseId,
+                workId,
+                submissionId,
+                CreateLinkRequest(attachment.url)
+            )
+        }
+
     }
 
     suspend fun gradeSubmission(

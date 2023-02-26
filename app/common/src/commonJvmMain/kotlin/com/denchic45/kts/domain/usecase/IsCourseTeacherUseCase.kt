@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class IsCourseTeacherUseCase @Inject constructor(private val courseRepository: CourseRepository) {
 
-    suspend operator fun invoke(userId:String, courseId: String): Boolean {
-      return  courseRepository.isCourseTeacher(userId, courseId)
+    suspend operator fun invoke(userId: String, courseId: String): Boolean {
+        return courseRepository.isCourseTeacher(userId, courseId)
     }
 }

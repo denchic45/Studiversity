@@ -61,10 +61,10 @@ class CourseLocalDataSource @Inject constructor(private val db: AppDatabase) {
     ): List<String> = subjectIds
         .filter { subjectId -> !hasRelatedSubjectToGroup(subjectId, groupId) }
 
-    fun getByTeacherId(id: String): Flow<List<GetCourseWithSubjectAndTeacherByTeacherId>> {
-        return queries.getCourseWithSubjectAndTeacherByTeacherId(id).asFlow()
-            .mapToList(Dispatchers.IO)
-    }
+//    fun getByTeacherId(id: String): Flow<List<GetCourseWithSubjectAndTeacherByTeacherId>> {
+//        return queries.getCourseWithSubjectAndTeacherByTeacherId(id).asFlow()
+//            .mapToList(Dispatchers.IO)
+//    }
 
     suspend fun deleteById(courseId: String) = withContext(Dispatchers.IO) {
         queries.deleteById(courseId)
