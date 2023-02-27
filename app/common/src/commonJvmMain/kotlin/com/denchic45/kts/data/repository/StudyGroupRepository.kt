@@ -3,7 +3,6 @@ package com.denchic45.kts.data.repository
 import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.fetchObservingResource
 import com.denchic45.kts.data.fetchResource
-import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.TimestampPreferences
 import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.AppVersionService
@@ -18,9 +17,7 @@ import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import java.util.*
 import javax.inject.Inject
 
@@ -30,7 +27,6 @@ class StudyGroupRepository @Inject constructor(
     override val groupLocalDataSource: GroupLocalDataSource,
     override val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val timestampPreferences: TimestampPreferences,
-    private val groupPreferences: GroupPreferences,
     private val userPreferences: UserPreferences,
     override val networkService: NetworkService,
     override val groupCourseLocalDataSource: GroupCourseLocalDataSource,
@@ -119,12 +115,6 @@ class StudyGroupRepository @Inject constructor(
 //        return groupRemoteDataSource.findBySpecialtyId(specialtyId).mapsToGroupHeaders()
 //    }
 
-    val yourGroupId: String
-        get() = groupPreferences.groupId
-
-    val yourGroupName: String
-        get() = groupPreferences.groupName
-
 //    fun observeById(groupId: String): Flow<Group?> = callbackFlow {
 //        launch { observeAndSaveGroupFlow(groupId).collect() }
 //        groupLocalDataSource.observe(groupId)
@@ -209,10 +199,6 @@ class StudyGroupRepository @Inject constructor(
 //            )
 //        }
 //    }
-
-    fun observeHasGroup(): Flow<Boolean> {
-        return groupPreferences.observeGroupId.map(String::isNotEmpty).distinctUntilChanged()
-    }
 
 //    fun findGroupByStudent(user: User): Flow<Group> = flow {
 //        if (!userLocalDataSource.isExistByIdAndGroupId(user.id, user.groupId!!)) findById(user.groupId)

@@ -19,12 +19,6 @@ class PreferencesModule(private val factory: SettingsFactory) {
     }
 
     @Provides
-    fun provideGroupPreferences(): GroupPreferences {
-        return GroupPreferences(factory.createObservable("Group")
-        )
-    }
-
-    @Provides
     fun provideTimestampPreferences(): TimestampPreferences {
         return TimestampPreferences(factory.createObservable("Timestamp"))
     }
