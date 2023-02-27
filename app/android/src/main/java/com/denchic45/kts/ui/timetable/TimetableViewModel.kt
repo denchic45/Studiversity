@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.model.Event
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.domain.usecase.FindEventsOfDayByThisUserUseCase
+import com.denchic45.kts.domain.usecase.FindYourTimetableOfDayUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.util.capitalized
 import com.denchic45.stuiversity.util.Dates
@@ -19,7 +19,7 @@ import javax.inject.Named
 class TimetableViewModel @Inject constructor(
     @Named(TimetableFragment.GROUP_ID) receivedGroupId: String?,
     private val interactor: TimetableInteractor,
-    findEventsOfDayByThisUserUseCase: FindEventsOfDayByThisUserUseCase
+    findYourTimetableOfDayUseCase: FindYourTimetableOfDayUseCase
 ) : BaseViewModel() {
     val initTimetable = MutableSharedFlow<Boolean>(replay = 1)
     val events: StateFlow<EventsState>
@@ -72,7 +72,7 @@ class TimetableViewModel @Inject constructor(
                     receivedGroupId
                 )
                     .map { EventsState.Events(it.events) }
-                else -> findEventsOfDayByThisUserUseCase(selectedDate).map { EventsState.Events(it.events) }
+                else -> findYourTimetableOfDayUseCase(selectedDate).map { EventsState.Events(it.events) }
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, EventsState.Events(emptyList()))
 

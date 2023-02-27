@@ -5,7 +5,7 @@ import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.domain.model.EmptyEventDetails
 import com.denchic45.kts.domain.model.Lesson
 import com.denchic45.kts.domain.model.SimpleEventDetails
-import com.denchic45.kts.domain.usecase.FindEventsOfWeekByThisUserUseCase
+import com.denchic45.kts.domain.usecase.FindYourTimetableByUseCase
 import com.denchic45.kts.util.capitalized
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.util.toString
@@ -17,7 +17,7 @@ import java.time.LocalDate
 
 @Inject
 class TimetableComponent(
-    findEventsOfWeekByThisUserUseCase: FindEventsOfWeekByThisUserUseCase,
+    findYourTimetableByUseCase: FindYourTimetableByUseCase,
     metaRepository: MetaRepository,
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -31,7 +31,7 @@ class TimetableComponent(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val timetable =
-        combine(selectedDate.flatMapLatest { date -> findEventsOfWeekByThisUserUseCase(date) },
+        combine(selectedDate.flatMapLatest { date -> findYourTimetableByUseCase(date) },
             metaRepository.observeBellSchedule) { eventsOfDays, bellSchedule ->
             val hasZeroEvents = eventsOfDays.any { it.startsAtZero }
             val latestEventOrder = eventsOfDays.maxOf { it.last()?.order ?: 0 }.let {

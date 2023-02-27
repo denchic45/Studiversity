@@ -15,7 +15,7 @@ private val useCaseModule = module {
     single { RemoveRoleFromUserInScopeUseCase(get(), get()) }
     single { FindMembersInScopeUseCase(get(), get()) }
 
-    single { CheckCapabilitiesByUserInScopeUseCase(get(), get()) }
+    single { CheckUserCapabilitiesInScopeUseCase(get(), get()) }
 }
 
 private val repositoryModule = module {

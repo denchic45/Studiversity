@@ -3,7 +3,7 @@ import kotlin.collections.List;
 CREATE TABLE submissionEntity (
 submission_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 student_id TEXT NOT NULL,
-content_id TEXT NOT NULL,
+work_id TEXT NOT NULL,
 course_id TEXT NOT NULL,
 status TEXT NOT NULL,
 text TEXT ,
@@ -31,15 +31,14 @@ rejectd_date = excluded.rejectd_date,
 submitted_date = excluded.submitted_date,
 timestamp = excluded.timestamp;
 
-getSubmissionAndStudentByTaskIdAndUserId:
+getByWorkIdAndUserId:
 SELECT * FROM submissionEntity s
-JOIN userEntity u ON u.user_id = s.student_id
-WHERE content_id =: contentId AND student_id =: studentId;
+WHERE work_id =: contentId AND student_id =: studentId;
 
 getSubmissionsAndStudentsByTaskId:
 SELECT * FROM submissionEntity s
 JOIN userEntity u ON u.user_id = s.student_id
-WHERE content_id =: taskId;
+WHERE work_id =: taskId;
 
 -- getStudentsWithoutSubmission:
 -- SELECT
@@ -62,4 +61,4 @@ WHERE content_id =: taskId;
 
 deleteByContentId:
 DELETE FROM submissionEntity
-WHERE content_id =: id;
+WHERE work_id =: id;

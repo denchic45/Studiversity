@@ -4,7 +4,7 @@ import com.studiversity.feature.role.repository.RoleRepository
 import com.studiversity.transaction.TransactionWorker
 import java.util.*
 
-class CheckCapabilitiesByUserInScopeUseCase(
+class CheckUserCapabilitiesInScopeUseCase(
     private val transactionWorker: TransactionWorker,
     private val roleRepository: RoleRepository
 ) {

@@ -1,22 +1,17 @@
 package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.AppDatabase
-import com.denchic45.kts.GetStudentsWithCuratorByGroupId
 import com.denchic45.kts.UserEntity
 import com.denchic45.kts.UserEntityQueries
-import com.denchic45.kts.data.mapper.ListMapper
 import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
-import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
-class UserLocalDataSource @Inject constructor (db: AppDatabase) {
+class UserLocalDataSource @Inject constructor(db: AppDatabase) {
 
     private val queries: UserEntityQueries = db.userEntityQueries
 
@@ -42,40 +37,7 @@ class UserLocalDataSource @Inject constructor (db: AppDatabase) {
         return queries.getById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
     }
 
-    fun observeByGroupId(groupId: String): Flow<List<UserEntity>> {
-        return queries.getByGroupId(groupId).asFlow().mapToList()
-    }
-
     suspend fun isExist(id: String) = withContext(Dispatchers.IO) {
         queries.isExist(id).executeAsOne()
-    }
-
-    suspend fun clearTeachers() = withContext(Dispatchers.IO) {
-        queries.clearTeachers()
-    }
-
-    suspend fun deleteMissingStudentsByGroup(groupId: String, availableStudents: List<String>) =
-        withContext(Dispatchers.IO) {
-            queries.deleteMissingStudentsByGroup(groupId, availableStudents)
-        }
-
-    suspend fun getGroupId(userId: String): String? = withContext(Dispatchers.IO) {
-        queries.getGroupId(userId).executeAsOne().user_group_id
-    }
-
-    suspend fun isExistByIdAndGroupId(id: String, groupId: String): Boolean =
-        withContext(Dispatchers.IO) {
-            queries.isExistByIdAndGroupId(id, groupId).executeAsOne()
-        }
-
-    suspend fun getStudentIdsOfCourseByCourseId(courseId: String): List<String> =
-        withContext(Dispatchers.IO) {
-            queries.getStudentIdsOfCourseByCourseId(courseId).executeAsList()
-        }
-
-    fun observeStudentsWithCuratorByGroupId(groupId: String): Flow<List<GetStudentsWithCuratorByGroupId>> {
-        return queries.getStudentsWithCuratorByGroupId(groupId)
-            .asFlow()
-            .mapToList()
     }
 }

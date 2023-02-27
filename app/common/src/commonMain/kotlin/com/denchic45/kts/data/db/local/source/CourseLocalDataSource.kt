@@ -30,30 +30,29 @@ class CourseLocalDataSource @Inject constructor(private val db: AppDatabase) {
             queries.getCourseWithSubjectWithTeacherAndGroupsById(id).executeAsList()
         }
 
-    fun observeCoursesByStudyGroupId(groupId: String): Flow<List<CourseWithSubjectEntity>> {
-        return queries.getCoursesByStudyGroupId(groupId)
-            .asFlow()
-            .mapToList(Dispatchers.IO)
-    }
+//    fun observeCoursesByStudyGroupId(groupId: String): Flow<List<CourseWithSubjectEntity>> {
+//        return queries.getCoursesByStudyGroupId(groupId)
+//            .asFlow()
+//            .mapToList(Dispatchers.IO)
+//    }
 
-    private suspend fun hasRelatedTeacherToGroup(teacherId: String, groupId: String): Boolean =
-        withContext(Dispatchers.IO) {
-            queries.hasRelatedTeacherToGroup(groupId, teacherId).executeAsOne()
-        }
+//    private suspend fun hasRelatedTeacherToGroup(teacherId: String, groupId: String): Boolean =
+//        withContext(Dispatchers.IO) {
+//            queries.hasRelatedTeacherToGroup(groupId, teacherId).executeAsOne()
+//        }
 
     suspend fun hasRelatedSubjectToGroup(subjectId: String, groupId: String): Boolean =
         withContext(Dispatchers.IO) {
             queries.hasRelatedSubjectToGroup(groupId, subjectId).executeAsOne()
         }
 
-    suspend fun getNotRelatedTeacherIdsToGroup(
-        teacherIds: List<String>,
-        groupId: String,
-    ): List<String> {
-        return teacherIds
-            .filter { teacherId: String -> !hasRelatedTeacherToGroup(teacherId, groupId) }
-
-    }
+//    suspend fun getNotRelatedTeacherIdsToGroup(
+//        teacherIds: List<String>,
+//        groupId: String,
+//    ): List<String> {
+//        return teacherIds
+//            .filter { teacherId: String -> !hasRelatedTeacherToGroup(teacherId, groupId) }
+//    }
 
     suspend fun getNotRelatedSubjectIdsToGroup(
         subjectIds: List<String>,
@@ -70,10 +69,10 @@ class CourseLocalDataSource @Inject constructor(private val db: AppDatabase) {
         queries.deleteById(courseId)
     }
 
-    suspend fun isCourseTeacher(courseId: String, teacherId: String): Boolean =
-        withContext(Dispatchers.IO) {
-            queries.isCourseTeacher(courseId, teacherId).executeAsOne()
-        }
+//    suspend fun isCourseTeacher(courseId: String, teacherId: String): Boolean =
+//        withContext(Dispatchers.IO) {
+//            queries.isCourseTeacher(courseId, teacherId).executeAsOne()
+//        }
 
     suspend fun getCourseIdByContentId(taskId: String): String = withContext(Dispatchers.IO) {
         queries.getCourseIdByContentId(taskId).executeAsOne()

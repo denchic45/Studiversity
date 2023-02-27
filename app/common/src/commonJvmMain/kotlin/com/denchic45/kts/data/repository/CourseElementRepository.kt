@@ -6,6 +6,7 @@ import com.denchic45.kts.data.domain.model.AttachmentLink
 import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.model.Task
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
@@ -16,6 +17,7 @@ import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.github.michaelbull.result.*
+import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 

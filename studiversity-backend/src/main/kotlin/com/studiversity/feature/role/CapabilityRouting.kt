@@ -1,6 +1,6 @@
 package com.studiversity.feature.role
 
-import com.studiversity.feature.role.usecase.CheckCapabilitiesByUserInScopeUseCase
+import com.studiversity.feature.role.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.studiversity.ktor.getUserUuidByParameterOrMe
 import com.studiversity.ktor.getUuid
 import io.ktor.http.*
@@ -12,7 +12,7 @@ import org.koin.ktor.ext.inject
 
 fun Route.capabilitiesRoutes() {
     route("/users/{userId}/scopes/{scopeId}/capabilities") {
-        val checkCapabilitiesByUserInScope: CheckCapabilitiesByUserInScopeUseCase by inject()
+        val checkCapabilitiesByUserInScope: CheckUserCapabilitiesInScopeUseCase by inject()
         post("/check") {
             val userId = call.getUserUuidByParameterOrMe("userId")
             val scopeId = call.parameters.getUuid("scopeId")

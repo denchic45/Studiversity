@@ -7,7 +7,7 @@ import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.usecase.AddUserUseCase
-import com.denchic45.kts.domain.usecase.ObserveGroupInfoUseCase
+import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.kts.domain.usecase.ObserveUserUseCase
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.MenuItem
@@ -35,7 +35,7 @@ import java.util.*
 class UserEditorComponent(
     observeUserUseCase: ObserveUserUseCase,
     private val addUserUseCase: AddUserUseCase,
-    private val observeGroupInfoUseCase: ObserveGroupInfoUseCase,
+    private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     componentContext: ComponentContext,
     private val onFinish: () -> Unit,
@@ -103,7 +103,7 @@ class UserEditorComponent(
     }
 
     val groupField: StateFlow<GroupHeader> =
-        this.groupId.filterNotNull().flatMapLatest { observeGroupInfoUseCase(it) }
+        this.groupId.filterNotNull().flatMapLatest { findStudyGroupByIdUseCase(it) }
             .stateIn(componentScope, SharingStarted.Lazily, GroupHeader.createEmpty())
 
     val avatarUrl = MutableStateFlow("")

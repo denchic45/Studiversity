@@ -9,9 +9,9 @@ import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.toResource
 import com.denchic45.stuiversity.api.user.UserApi
+import com.denchic45.stuiversity.api.user.model.Account
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.model.Gender
 import com.denchic45.stuiversity.api.user.model.UserResponse
@@ -36,18 +36,18 @@ class UserRepository @Inject constructor(
         }
     }
 
-    fun findSelf(): User = User(
+    fun findSelf() = UserResponse(
         UUID.fromString(userPreferences.id),
         userPreferences.firstName,
         userPreferences.surname,
         userPreferences.patronymic,
-        userPreferences.email,
+        Account(userPreferences.email),
         userPreferences.avatarUrl,
         Gender.valueOf(userPreferences.gender)
     )
 
     suspend fun updateUserAvatar(avatarBytes: ByteArray, userId: String): String {
-       TODO("Not implemented")
+        TODO("Not implemented")
     }
 
     suspend fun add(createUserRequest: CreateUserRequest): Resource<UserResponse> {

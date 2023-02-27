@@ -9,4 +9,10 @@ data class CheckCapabilitiesResponse(
     fun hasCapability(capability: Capability): Boolean {
         return permissions[capability.resource] ?: false
     }
+
+    fun onHasCapability(capability: Capability, action: ()->Unit) {
+        if (hasCapability(capability)) {
+            action()
+        }
+    }
 }

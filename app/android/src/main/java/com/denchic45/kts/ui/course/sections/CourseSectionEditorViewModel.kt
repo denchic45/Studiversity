@@ -4,8 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.domain.model.Section
 import com.denchic45.kts.domain.usecase.AddCourseTopicUseCase
 import com.denchic45.kts.domain.usecase.FindCourseSectionsUseCase
-import com.denchic45.kts.domain.usecase.RemoveCourseSectionsUseCase
-import com.denchic45.kts.domain.usecase.UpdateCourseSectionsUseCase
+import com.denchic45.kts.domain.usecase.RemoveCourseTopicUseCase
+import com.denchic45.kts.domain.usecase.UpdateCourseTopicUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.util.Orders
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,8 +21,8 @@ class CourseSectionEditorViewModel @Inject constructor(
     private val courseId: String,
     findCourseSectionsUseCase: FindCourseSectionsUseCase,
     private val addCourseTopicUseCase: AddCourseTopicUseCase,
-    val updateCourseSectionsUseCase: UpdateCourseSectionsUseCase,
-    val removeCourseSectionsUseCase: RemoveCourseSectionsUseCase
+    val updateCourseTopicUseCase: UpdateCourseTopicUseCase,
+    val removeCourseTopicUseCase: RemoveCourseTopicUseCase
 ) : BaseViewModel() {
 
     private var oldPosition = -1
@@ -63,7 +63,7 @@ class CourseSectionEditorViewModel @Inject constructor(
 
 
 
-            updateCourseSectionsUseCase(
+            updateCourseTopicUseCase(
                 sections.toMutableList().apply {
                     set(
                         position,
@@ -92,7 +92,7 @@ class CourseSectionEditorViewModel @Inject constructor(
 
     fun onSectionRename(name: String, position: Int) {
         viewModelScope.launch {
-            updateCourseSectionsUseCase(
+            updateCourseTopicUseCase(
                 sections.first().toMutableList().apply {
                     set(
                         position,
@@ -104,7 +104,7 @@ class CourseSectionEditorViewModel @Inject constructor(
     }
 
     fun onSectionRemove(position: Int) {
-        viewModelScope.launch { removeCourseSectionsUseCase(sections.first()[position]) }
+        viewModelScope.launch { removeCourseTopicUseCase(sections.first()[position]) }
     }
 
 }

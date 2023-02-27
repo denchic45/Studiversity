@@ -38,7 +38,7 @@ class TaskEditorViewModel @Inject constructor(
     private val findAttachmentsUseCase: FindAttachmentsUseCase,
     private val findSectionUseCase: FindSectionUseCase,
     private val addCourseWorkUseCase: AddCourseWorkUseCase,
-    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val updateCourseWorkUseCase: UpdateCourseWorkUseCase,
 ) : BaseViewModel() {
 
     val nameField = MutableLiveData<String>()
@@ -335,7 +335,7 @@ class TaskEditorViewModel @Inject constructor(
                 if (uiEditor.isNew) {
                     addCourseWorkUseCase(uiEditor.item, attachments)
                 } else {
-                    updateTaskUseCase(uiEditor.item, attachments)
+                    updateCourseWorkUseCase(uiEditor.item, attachments)
                 }
                 finish()
             }

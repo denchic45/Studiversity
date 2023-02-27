@@ -13,7 +13,7 @@ interface CapabilityApi {
     suspend fun check(
         userId: UUID,
         scopeId: UUID,
-        vararg capabilities: Capability
+         capabilities: List<Capability>
     ): ResponseResult<CheckCapabilitiesResponse>
 }
 
@@ -21,7 +21,7 @@ class CapabilityApiImpl(private val client: HttpClient) : CapabilityApi {
     override suspend fun check(
         userId: UUID,
         scopeId: UUID,
-        vararg capabilities:Capability
+        capabilities: List<Capability>
     ): ResponseResult<CheckCapabilitiesResponse> {
         return client.post("/users/$userId/scopes/$scopeId/capabilities/check") {
             contentType(ContentType.Application.Json)

@@ -2,26 +2,19 @@ package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.db.remote.model.DayMap
-import com.denchic45.kts.data.db.remote.source.EventRemoteDataSource
-import com.denchic45.kts.data.db.remote.source.GroupRemoteDataSource
-import com.denchic45.kts.data.db.remote.source.SubjectRemoteDataSource
-import com.denchic45.kts.data.db.remote.source.UserRemoteDataSource
 import com.denchic45.kts.data.fetchObservingResource
 import com.denchic45.kts.data.fetchResource
-import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.pref.AppPreferences
-import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
-import com.denchic45.kts.domain.model.EventsOfDay
-import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.util.NetworkException
 import com.denchic45.stuiversity.api.timetable.TimetableApi
+import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting
 import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
 import com.denchic45.stuiversity.util.toDateUTC
 import com.denchic45.stuiversity.util.toUUID
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.flow
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
@@ -33,7 +26,6 @@ class EventRepository @Inject constructor(
     override val networkService: NetworkService,
     private val eventLocalDataSource: EventLocalDataSource,
     private val courseLocalDataSource: CourseLocalDataSource,
-    private val groupPreferences: GroupPreferences,
     private val dayLocalDataSource: DayLocalDataSource,
     private val userPreferences: UserPreferences,
     private val appPreferences: AppPreferences,
@@ -44,7 +36,7 @@ class EventRepository @Inject constructor(
     private val timetableApi: TimetableApi,
 ) : Repository(), NetworkServiceOwner, SaveGroupOperation {
 
-    fun findEventOfDay(
+    fun findEventsOfDay(
         date: LocalDate,
         memberIds: List<UUID>? = null,
         studyGroupIds: List<UUID>? = null,
@@ -58,6 +50,17 @@ class EventRepository @Inject constructor(
                 )
             )
         }
+    }
+
+    suspend fun findTimetable(
+        weekOfYear: String,
+        studyGroupIds: List<UUID>? = null,
+        courseIds: List<UUID>? = null,
+        memberIds: List<UUID>? = null,
+        roomIds: List<UUID>? = null,
+        sorting: List<PeriodsSorting> = emptyList(),
+    ) = fetchResource {
+        timetableApi.getTimetable(weekOfYear, studyGroupIds, courseIds, memberIds, roomIds, sorting)
     }
 
 //    fun findEventsOfDayByGroupIdAndDate(groupId: String, date: LocalDate): Flow<EventsOfDay> {
@@ -99,20 +102,17 @@ class EventRepository @Inject constructor(
 //        }
 //    }
 
-    suspend fun finTimetableByStudyGroup(monday: LocalDate, studyGroupId: UUID) = fetchResource {
+    suspend fun findTimetableByStudyGroup(monday: LocalDate, studyGroupId: UUID) = fetchResource {
         timetableApi.getTimetableByStudyGroupId(monday, studyGroupId)
     }
 
-    fun findEventOfDayByMeAndDate(date: LocalDate) = fetchObservingResource {
-        flow {
-            emit(
-                timetableApi.getTimetableOfDay(
-                    date,
-                    memberIds = listOf(userPreferences.id.toUUID())
-                )
-            )
-        }
+    suspend fun findEventOfDayByMeAndDate(date: LocalDate) = fetchResource {
+        timetableApi.getTimetableOfDay(
+            date,
+            memberIds = listOf(userPreferences.id.toUUID())
+        )
     }
+
 
 //    fun findEventsForDayForTeacherByDate(date: LocalDate): Flow<EventsOfDay> = callbackFlow {
 //        val teacherId = userPreferences.id

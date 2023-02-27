@@ -20,10 +20,10 @@ import javax.inject.Named
 
 class CourseViewModel @Inject constructor(
     @Named(CourseFragment.COURSE_ID) private val courseId: String,
-    findCourseUseCase: FindCourseUseCase,
-    private val removeCourseContentUseCase: RemoveCourseContentUseCase,
+    findCourseByIdUseCase: FindCourseByIdUseCase,
+    private val removeCourseElementUseCase: RemoveCourseElementUseCase,
     private val updateCourseContentOrderUseCase: UpdateCourseContentOrderUseCase,
-    private val findCourseContentUseCase: FindCourseContentUseCase,
+    private val findCourseElementsUseCase: FindCourseElementsUseCase,
     findSelfUserUseCase: FindSelfUserUseCase,
 ) : BaseViewModel() {
     val openTaskEditor = SingleLiveData<Triple<String?, String, String>>()
@@ -34,7 +34,7 @@ class CourseViewModel @Inject constructor(
     val openCourseSectionEditor = SingleLiveData<String>()
     val courseName = MutableStateFlow("")
     val showContents: MutableLiveData<MutableList<DomainModel>> = MutableLiveData()
-    private val findCourseFlow = findCourseUseCase(courseId)
+    private val findCourseFlow = findCourseByIdUseCase(courseId)
 
     private val uiPermissions: UiPermissions = UiPermissions(findSelfUserUseCase())
 
@@ -43,7 +43,7 @@ class CourseViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            findCourseContentUseCase(courseId).collect {
+            findCourseElementsUseCase(courseId).collect {
                 showContents.value = it.toMutableList()
             }
         }

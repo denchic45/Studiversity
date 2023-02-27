@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.model.CourseHeader
-import com.denchic45.kts.domain.usecase.ObserveCoursesByGroupUseCase
+import com.denchic45.kts.domain.usecase.FindCoursesByGroupUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.base.NavigationCommand
 import com.denchic45.kts.ui.course.CourseFragmentDirections
@@ -18,14 +18,14 @@ import javax.inject.Named
 
 class GroupCoursesViewModel @Inject constructor(
     interactor: GroupCoursesInteractor,
-    observeCoursesByGroupUseCase: ObserveCoursesByGroupUseCase,
+    findCoursesByGroupUseCase: FindCoursesByGroupUseCase,
     @Named(GroupCoursesFragment.GROUP_ID) groupId: String?,
 ) : BaseViewModel() {
     val clearItemsSelection = SingleLiveData<Set<Int>>()
     val selectItem = MutableLiveData<Pair<Int, Boolean>>()
     private val groupId: String = groupId ?: interactor.yourGroupId
 
-    var courses: StateFlow<List<CourseHeader>> = observeCoursesByGroupUseCase(this.groupId).stateIn(
+    var courses: StateFlow<List<CourseHeader>> = findCoursesByGroupUseCase(this.groupId).stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         emptyList())

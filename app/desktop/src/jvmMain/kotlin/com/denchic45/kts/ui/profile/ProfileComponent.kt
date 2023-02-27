@@ -6,11 +6,11 @@ import com.arkivanov.decompose.router.stack.push
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.domain.usecase.ObserveGroupInfoUseCase
-import com.denchic45.kts.domain.usecase.ObserveGroupNameByCuratorUseCase
+import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.kts.domain.usecase.ObserveUserUseCase
 import com.denchic45.kts.ui.navigation.GroupConfig
 import com.denchic45.kts.util.componentScope
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
@@ -18,7 +18,7 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class ProfileComponent(
     observeUserUseCase: ObserveUserUseCase,
-    private val observeGroupInfoUseCase: ObserveGroupInfoUseCase,
+    private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     private val observeGroupNameByCuratorUseCase: ObserveGroupNameByCuratorUseCase,
     componentContext: ComponentContext,
     private val navigator: StackNavigator<in GroupConfig.Group>,
@@ -28,13 +28,13 @@ class ProfileComponent(
 
     private val componentScope = componentScope()
 
-    private val userFlow: Flow<User?> = observeUserUseCase(userId)
+    private val userFlow = observeUserUseCase(userId)
 
     @OptIn(FlowPreview::class)
     private val groupInfoFlow: StateFlow<GroupHeader?> =
         userFlow.filterNotNull().flatMapMerge { user ->
             when (user.role) {
-                UserRole.STUDENT -> observeGroupInfoUseCase(user.groupId!!)
+                UserRole.STUDENT -> findStudyGroupByIdUseCase(user.groupId!!)
                 UserRole.TEACHER, UserRole.HEAD_TEACHER -> observeGroupNameByCuratorUseCase(user.id)
             }
         }.stateIn(componentScope, SharingStarted.Lazily, null)

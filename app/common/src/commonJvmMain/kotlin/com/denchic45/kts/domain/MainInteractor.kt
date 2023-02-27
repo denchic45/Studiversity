@@ -51,7 +51,7 @@ class MainInteractor @Inject constructor(
 //        }
 //    }
 
-    fun findThisUser(): User = userRepository.findSelf()
+    fun findThisUser() = userRepository.findSelf()
 
     fun observeThisUser(): Flow<Resource<UserResponse>> = authService.observeCurrentUser
 

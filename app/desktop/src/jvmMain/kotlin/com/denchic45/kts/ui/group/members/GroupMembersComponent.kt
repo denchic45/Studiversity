@@ -6,8 +6,8 @@ import com.arkivanov.decompose.value.Value
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.model.GroupMembers
 import com.denchic45.kts.domain.usecase.FindGroupMembersUseCase
-import com.denchic45.kts.domain.usecase.RemoveHeadmanUseCase
-import com.denchic45.kts.domain.usecase.SetHeadmanUseCase
+import com.denchic45.kts.domain.usecase.RemoveUserRoleFromScopeUseCase
+import com.denchic45.kts.domain.usecase.AssignUserRoleInScopeUseCase
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.model.toUserItem
@@ -23,8 +23,8 @@ import me.tatarka.inject.annotations.Inject
 class GroupMembersComponent(
     findGroupMembersUseCase: FindGroupMembersUseCase,
     componentContext: ComponentContext,
-    private val setHeadmanUseCase: SetHeadmanUseCase,
-    private val removeHeadmanUseCase: RemoveHeadmanUseCase,
+    private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
+    private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
     profileComponent: (navigator: StackNavigator<in GroupConfig.Group>, groupClickable: Boolean, userId: String) -> ProfileComponent,
     userEditorComponent: (onFinish: () -> Unit, config: UserEditorConfig) -> UserEditorComponent,
     navigator: StackNavigator<in GroupConfig>,
@@ -94,8 +94,8 @@ class GroupMembersComponent(
     fun onClickMemberAction(action: StudentAction) {
         componentScope.launch {
             when (action) {
-                StudentAction.SetHeadman -> setHeadmanUseCase(studentAction.value.second, groupId)
-                StudentAction.RemoveHeadman -> removeHeadmanUseCase(groupId)
+                StudentAction.SetHeadman -> assignUserRoleInScopeUseCase(studentAction.value.second, groupId)
+                StudentAction.RemoveHeadman -> removeUserRoleFromScopeUseCase(groupId)
                 StudentAction.Edit -> {
                     navigation.bringToFront(
                         UserEditorConfig(

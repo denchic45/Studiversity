@@ -1,0 +1,44 @@
+import java.lang.String;
+import java.util.List;
+
+CREATE TABLE IF NOT EXISTS studyGroupEntity (
+study_group_id TEXT NOT NULL UNIQUE PRIMARY KEY,
+group_name TEXT NOT NULL,
+academic_year TEXT AS List<String> NOT NULL,
+specialty_id TEXT NOT NULL,
+created_at INTEGER,
+update_at INTEGER
+);
+
+CREATE VIEW studyGroupWithSpecialty AS
+SELECT * FROM studyGroupEntity g
+JOIN specialtyEntity s ON s.specialty_id = g.specialty_id;
+
+upsert:
+INSERT INTO studyGroupEntity
+VALUES ?
+ON CONFLICT(study_group_id)
+DO UPDATE SET
+group_name = excluded.group_name,
+academic_year = excluded.academic_year,
+specialty_id = excluded.specialty_id,
+created_at = excluded.created_at,
+update_at = excluded.update_at;
+
+getById:
+SELECT * FROM studyGroupWithSpecialty g
+WHERE study_group_id =:groupId;
+
+getNameById:
+SELECT * FROM studyGroupEntity
+WHERE study_group_id =:groupId;
+
+isExist:
+SELECT EXISTS(
+SELECT * FROM studyGroupEntity
+WHERE study_group_id = :id
+);
+
+deleteById:
+DELETE FROM studyGroupEntity
+WHERE study_group_id =:groupId;

@@ -1,6 +1,5 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.db.local.model.SubmissionWithStudentEntities
 import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.fetchResource
@@ -22,7 +21,6 @@ import com.denchic45.stuiversity.api.course.topic.CourseTopicsApi
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CreateTopicRequest
 import com.denchic45.stuiversity.api.course.topic.model.UpdateTopicRequest
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -33,7 +31,6 @@ import javax.inject.Inject
 class CourseRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     private val coursePreferences: CoursePreferences,
-    private val groupPreferences: GroupPreferences,
     override val networkService: NetworkService,
     private val contentAttachmentStorage: ContentAttachmentStorage,
     private val submissionAttachmentStorage: SubmissionAttachmentStorage,
@@ -320,15 +317,6 @@ class CourseRepository @Inject constructor(
 //        }.distinctUntilChanged()
 //    }
 
-    private suspend fun getSubmissionAttachments(entities: SubmissionWithStudentEntities) =
-        entities.submissionEntity.attachments?.let {
-            submissionAttachmentStorage.get(
-                entities.submissionEntity.content_id,
-                entities.submissionEntity.student_id,
-                it
-            )
-        } ?: emptyList()
-
 //    suspend fun updateSubmissionFromStudent(submission: Task.Submission) {
 //        requireNetworkAvailable()
 //        val studentId = submission.student.id
@@ -371,9 +359,9 @@ class CourseRepository @Inject constructor(
 //    }
 
 
-    suspend fun isCourseTeacher(userId: String, courseId: String): Boolean {
-        return courseLocalDataSource.isCourseTeacher(courseId, userId)
-    }
+//    suspend fun isCourseTeacher(userId: String, courseId: String): Boolean {
+//        return courseLocalDataSource.isCourseTeacher(courseId, userId)
+//    }
 
     suspend fun updateTopic(
         courseId: UUID,

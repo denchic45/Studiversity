@@ -15,13 +15,14 @@ group_id TEXT NOT NULL,
 FOREIGN KEY (day_id) REFERENCES dayEntity(day_id) ON DELETE CASCADE
 );
 
+
 CREATE VIEW eventWithSubjectAndGroupAndTeachers AS
 SELECT e.*, s.*, te.teacher_id, g.*, u.*
 FROM eventEntity e
 LEFT OUTER JOIN subjectEntity s ON s.subject_id = e.subject_id
 LEFT OUTER JOIN teacherEventEntity te ON te.event_id = e.event_id
 LEFT OUTER JOIN userEntity u ON u.user_id = te.teacher_id
-JOIN groupEntity g ON g.group_id == e.group_id;
+JOIN studyGroupEntity g ON g.study_group_id == e.group_id;
 
 upsert:
 INSERT INTO eventEntity

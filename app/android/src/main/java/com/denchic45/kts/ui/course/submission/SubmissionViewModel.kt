@@ -5,7 +5,7 @@ import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.domain.usecase.FindSubmissionUseCase
 import com.denchic45.kts.domain.usecase.GradeSubmissionUseCase
-import com.denchic45.kts.domain.usecase.RejectSubmissionUseCase
+import com.denchic45.kts.domain.usecase.ReturnSubmissionUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -18,7 +18,7 @@ class SubmissionViewModel @Inject constructor(
     @Named(SubmissionDialog.STUDENT_ID) private val studentId: String,
     findSubmissionUseCase: FindSubmissionUseCase,
     private val gradeSubmissionUseCase: GradeSubmissionUseCase,
-    private val rejectSubmissionUseCase: RejectSubmissionUseCase
+    private val returnSubmissionUseCase: ReturnSubmissionUseCase
 ) : BaseViewModel() {
 
     val showSubmission: SharedFlow<Task.Submission> = findSubmissionUseCase(taskId, studentId)
@@ -67,7 +67,7 @@ class SubmissionViewModel @Inject constructor(
     fun onRejectConfirmClick() {
         viewModelScope.launch {
             if (cause.isNotEmpty())
-                rejectSubmissionUseCase(taskId, studentId, cause)
+                returnSubmissionUseCase(taskId, studentId, cause)
             closeRejectConfirmation.call()
         }
     }

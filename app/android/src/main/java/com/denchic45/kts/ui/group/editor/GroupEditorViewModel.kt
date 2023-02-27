@@ -30,7 +30,7 @@ class GroupEditorViewModel @Inject constructor(
     @Named(GroupEditorFragment.GROUP_ID) id: String?,
     private val teacherChooserInteractor: TeacherChooserInteractor,
     private val addStudyGroupUseCase: AddStudyGroupUseCase,
-    private val updateGroupUseCase: UpdateGroupUseCase,
+    private val updateStudyGroupUseCase: UpdateStudyGroupUseCase,
     private val removeStudyGroupUseCase: RemoveStudyGroupUseCase,
     private val findGroupUseCase: FindGroupUseCase,
     private val confirmInteractor: ConfirmInteractor,
@@ -224,7 +224,7 @@ class GroupEditorViewModel @Inject constructor(
                 if (uiEditor.isNew) {
                     addStudyGroupUseCase(uiEditor.item)
                 } else {
-                    updateGroupUseCase(uiEditor.item)
+                    updateStudyGroupUseCase(uiEditor.item)
                 }
                 finish()
             } catch (e: Exception) {

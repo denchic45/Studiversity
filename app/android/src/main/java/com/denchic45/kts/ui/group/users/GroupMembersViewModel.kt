@@ -27,8 +27,8 @@ class GroupMembersViewModel @Inject constructor(
     findSelfUserUseCase: FindSelfUserUseCase,
     findGroupMembersUseCase: FindGroupMembersUseCase,
     private val removeStudentUseCase: RemoveStudentUseCase,
-    private val setHeadmanUseCase: SetHeadmanUseCase,
-    private val removeHeadmanUseCase: RemoveHeadmanUseCase,
+    private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
+    private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
     private val teacherChooserInteractor: TeacherChooserInteractor,
     @Named(GroupMembersFragment.GROUP_ID) groupId: String?
 ) : BaseViewModel() {
@@ -139,10 +139,10 @@ class GroupMembersViewModel @Inject constructor(
                     }
                 }
                 OPTION_SET_HEADMAN -> {
-                    setHeadmanUseCase(selectedUserId, groupId)
+                    assignUserRoleInScopeUseCase(selectedUserId, groupId)
                 }
                 OPTION_REMOVE_HEADMAN -> {
-                    removeHeadmanUseCase(groupId)
+                    removeUserRoleFromScopeUseCase(groupId)
                 }
                 OPTION_CHANGE_CURATOR -> {
                     navigateTo(MobileNavigationDirections.actionGlobalTeacherChooserFragment())

@@ -1,7 +1,7 @@
 package com.denchic45.kts.domain.model
 
 import com.denchic45.kts.data.domain.model.DomainModel
-import java.util.UUID
+import java.util.*
 
 data class Course(
     override var id: UUID,
@@ -21,4 +21,4 @@ data class CourseHeader(
     override var id: UUID,
     val name: String,
     val subject: Subject,
-): DomainModel
+) : DomainModel
