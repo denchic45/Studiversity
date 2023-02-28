@@ -37,7 +37,7 @@ data class FileItem(
 data class LinkAttachmentHeader(
     @Serializable(UUIDSerializer::class)
     override val id: UUID,
-    val link: Link
+    val linkAttachmentResponse: LinkAttachmentResponse
 ) : AttachmentHeader() {
     @OptIn(ExperimentalSerializationApi::class)
     @EncodeDefault

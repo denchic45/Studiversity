@@ -218,7 +218,7 @@ class CourseElementsTest : KtorClientTest() {
         val attachments = courseWorkApiOfTeacher.getAttachments(course.id, courseWork.id).unwrap().apply {
             assertEquals(2, size)
             assertTrue(any { it is FileAttachmentHeader && it.fileItem.name == "data.txt" })
-            assertTrue(any { it is LinkAttachmentHeader && it.link.url == linkUrl })
+            assertTrue(any { it is LinkAttachmentHeader && it.linkAttachmentResponse.url == linkUrl })
         }
 
         deleteAttachment(attachments[0].id)
@@ -236,7 +236,7 @@ class CourseElementsTest : KtorClientTest() {
         }.unwrap()
 
         courseWorkApiOfTeacher.getAttachment(course.id, courseWork.id, fileAttachment.id).apply {
-            val downloadedFile = unwrap() as FileAttachment
+            val downloadedFile = unwrap() as FileAttachmentResponse
             assertEquals("data.txt", downloadedFile.name)
             assertEquals(file.readText(), downloadedFile.bytes.decodeToString())
         }
@@ -248,7 +248,7 @@ class CourseElementsTest : KtorClientTest() {
         ).unwrap()
 
         courseWorkApiOfTeacher.getAttachment(course.id, courseWork.id, linkAttachment.id).apply {
-            assertEquals(linkUrl, (unwrap() as Link).url)
+            assertEquals(linkUrl, (unwrap() as LinkAttachmentResponse).url)
         }
     }
 

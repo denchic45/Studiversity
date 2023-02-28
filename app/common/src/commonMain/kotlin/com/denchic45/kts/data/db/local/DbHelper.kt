@@ -36,15 +36,7 @@ class DbHelper(val driver: SqlDriver) {
         AppDatabase(
             driver,
             courseContentEntityAdapter = CourseContentEntity.Adapter(
-                attachmentsAdapter = object : ColumnAdapter<List<String>, String> {
-                    override fun decode(databaseValue: String): List<String> {
-                        return ListMapper.tolList(databaseValue)
-                    }
-
-                    override fun encode(value: List<String>): String {
-                        return ListMapper.fromList(value)
-                    }
-                }
+                attachmentsAdapter = ListColumnAdapter()
             ),
             submissionEntityAdapter = SubmissionEntity.Adapter(
                 attachmentsAdapter = ListColumnAdapter()
@@ -54,6 +46,9 @@ class DbHelper(val driver: SqlDriver) {
             ),
             userEntityAdapter = UserEntity.Adapter(
                 EnumColumnAdapter()
+            ),
+            studyGroupEntityAdapter = StudyGroupEntity.Adapter(
+                ListColumnAdapter()
             )
         )
     }

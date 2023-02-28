@@ -2,16 +2,16 @@ package com.denchic45.stuiversity.api.course.element.model
 
 import kotlinx.serialization.Serializable
 
-sealed interface Attachment
+sealed interface AttachmentResponse
 
-class FileAttachment(
+class FileAttachmentResponse(
     val bytes: ByteArray,
     val name: String,
-) : Attachment
+) : AttachmentResponse
 
 @Serializable
-data class Link(
+data class LinkAttachmentResponse(
     val url: String,
     val name: String,
     val thumbnailUrl: String?
-) : Attachment
+) : AttachmentResponse

@@ -1,27 +1,27 @@
 package com.studiversity.feature.attachment
 
-import com.denchic45.stuiversity.api.course.element.model.Attachment
-import com.denchic45.stuiversity.api.course.element.model.FileAttachment
-import com.denchic45.stuiversity.api.course.element.model.Link
+import com.denchic45.stuiversity.api.course.element.model.AttachmentResponse
+import com.denchic45.stuiversity.api.course.element.model.FileAttachmentResponse
+import com.denchic45.stuiversity.api.course.element.model.LinkAttachmentResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 
-suspend fun ApplicationCall.respondAttachment(attachment: Attachment) {
-    when (attachment) {
-        is FileAttachment -> {
+suspend fun ApplicationCall.respondAttachment(attachmentResponse: AttachmentResponse) {
+    when (attachmentResponse) {
+        is FileAttachmentResponse -> {
             response.header(
                 HttpHeaders.ContentDisposition,
-                ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, attachment.name)
+                ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, attachmentResponse.name)
                     .toString()
             )
             respondBytes(
-                bytes = attachment.bytes,
-                contentType = ContentType.defaultForFileExtension(attachment.name),
+                bytes = attachmentResponse.bytes,
+                contentType = ContentType.defaultForFileExtension(attachmentResponse.name),
                 status = HttpStatusCode.OK
             )
         }
 
-        is Link -> respond(HttpStatusCode.OK, attachment)
+        is LinkAttachmentResponse -> respond(HttpStatusCode.OK, attachmentResponse)
     }
 }

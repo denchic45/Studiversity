@@ -11,7 +11,7 @@ fun AttachmentDao.toResponse() = when (type) {
 }
 
 fun AttachmentDao.toLinkAttachmentHeader() =
-    LinkAttachmentHeader(id.value, Link(url!!, name, thumbnailUrl))
+    LinkAttachmentHeader(id.value, LinkAttachmentResponse(url!!, name, thumbnailUrl))
 
 fun AttachmentDao.toFileAttachmentHeader() =
     FileAttachmentHeader(id.value, FileItem(name, thumbnailUrl))
@@ -26,7 +26,7 @@ fun ResultRow.toLinkAttachmentHeader() = LinkAttachmentHeader(
     toLink()
 )
 
-fun ResultRow.toLink() = Link(
+fun ResultRow.toLink() = LinkAttachmentResponse(
     url = this[Attachments.url]!!,
     name = this[Attachments.name],
     thumbnailUrl = this[Attachments.thumbnailUrl]

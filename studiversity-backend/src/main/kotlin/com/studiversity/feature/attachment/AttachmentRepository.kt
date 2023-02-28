@@ -196,7 +196,7 @@ class AttachmentRepository(private val bucket: BucketApi) {
         Attachments.deleteWhere { ownerId inList ownerIds }
     }
 
-    suspend fun findAttachmentByIdAndCourseElementId(courseId: UUID, workId: UUID, attachmentId: UUID): Attachment? {
+    suspend fun findAttachmentByIdAndCourseElementId(courseId: UUID, workId: UUID, attachmentId: UUID): AttachmentResponse? {
         return if (CourseElementDao.existByCourseId(workId, courseId)) {
             val attachment = Attachments.innerJoin(AttachmentsCourseElements,
                 { Attachments.id },
@@ -215,7 +215,7 @@ class AttachmentRepository(private val bucket: BucketApi) {
         workId: UUID,
         submissionId: UUID,
         attachmentId: UUID
-    ): Attachment? {
+    ): AttachmentResponse? {
         val existSubmissionByElementId = Submissions.exists {
             Submissions.id eq submissionId and (Submissions.courseWorkId eq workId)
         }
@@ -232,10 +232,10 @@ class AttachmentRepository(private val bucket: BucketApi) {
         } else null
     }
 
-    private suspend fun toAttachment(attachment: ResultRow?): Attachment? {
+    private suspend fun toAttachment(attachment: ResultRow?): AttachmentResponse? {
         return attachment?.let {
             when (attachment[Attachments.type]) {
-                AttachmentType.FILE -> FileAttachment(
+                AttachmentType.FILE -> FileAttachmentResponse(
                     bucket.downloadPublic(attachment[Attachments.path]!!),
                     attachment[Attachments.name]
                 )

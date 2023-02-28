@@ -42,48 +42,6 @@ fun List<EventEntity>.toTeacherEventEntities(): List<TeacherEventEntity> {
         }
 }
 
-//fun List<EventWithSubjectAndGroupAndTeachers>.entityToUserDomain(): Event = first().run {
-//    Event(
-//        id = event_id,
-//        groupHeader = GroupHeader(
-//            id = group_id,
-//            name = group_name,
-//            specialtyId = specialty_id
-//        ),
-//        timestamp = Date(timestamp),
-//        details = when (EventType.valueOf(type)) {
-//            EventType.LESSON -> Lesson(
-//                Subject(
-//                    id = subject_id!!,
-//                    name = subject_name!!,
-//                    iconName = icon_name!!
-//                ),
-//                map {
-//                    User(
-//                        id = user_id!!,
-//                        firstName = first_name!!,
-//                        surname = surname!!,
-//                        patronymic = patronymic,
-//                        photoUrl = photo_url!!,
-//                        email = email!!,
-//                        gender = gender!!
-//                    )
-//                }
-//            )
-//            EventType.SIMPLE -> SimpleEventDetails(
-//                id = event_id,
-//                name = event_name!!,
-//                iconUrl = event_icon_name!!,
-//                color = color!!
-//            )
-//            EventType.EMPTY -> EmptyEventDetails()
-//        },
-//        room = room)
-//}
-
-//fun List<EventWithSubjectAndGroupAndTeachers>.entitiesToDomains(): List<Event> =
-//    groupBy { it.event_id }.map { it.value.entityToUserDomain() }
-
 fun Event.domainToMap() = mutableMapOf<String, Any?>(
     "id" to id,
     "date" to date.toDate(),
@@ -92,8 +50,6 @@ fun Event.domainToMap() = mutableMapOf<String, Any?>(
     "groupId" to groupHeader.id,
     "eventDetailsDoc" to details.detailsToDetailsMap()
 )
-
-fun List<Event>.domainsToMaps() = map { it.domainToMap() }
 
 fun EventDetails.detailsToDetailsMap(): FireMap {
     return HashMap<String, Any>().apply {

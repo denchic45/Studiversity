@@ -291,7 +291,7 @@ class SubmissionsTest : KtorClientTest() {
             assertNotNull(get()) { unwrapError().error.toString() }
             assertEquals(
                 linkUrl,
-                unwrap().link.url
+                unwrap().linkAttachmentResponse.url
             )
         }
 
@@ -303,7 +303,7 @@ class SubmissionsTest : KtorClientTest() {
             .unwrap().apply {
                 assertEquals(2, size)
                 kotlin.test.assertTrue(any { it is FileAttachmentHeader && it.fileItem.name == "data.txt" })
-                kotlin.test.assertTrue(any { it is LinkAttachmentHeader && it.link.url == linkUrl })
+                kotlin.test.assertTrue(any { it is LinkAttachmentHeader && it.linkAttachmentResponse.url == linkUrl })
             }
 
         submissionsApiOfStudent.deleteAttachmentOfSubmission(course.id, courseWork.id, submission.id, attachments[0].id)
@@ -347,7 +347,7 @@ class SubmissionsTest : KtorClientTest() {
             attachmentId = fileAttachment.id
         ).apply {
             assertNotNull(get()) { unwrapError().error.toString() }
-            val downloadedFile = unwrap() as FileAttachment
+            val downloadedFile = unwrap() as FileAttachmentResponse
             assertEquals("data.txt", downloadedFile.name)
             assertEquals(file.readText(), downloadedFile.bytes.decodeToString())
         }
@@ -365,7 +365,7 @@ class SubmissionsTest : KtorClientTest() {
             submissionId = submissionId,
             attachmentId = linkAttachment.id
         ).apply {
-            assertEquals(linkUrl, (unwrap() as Link).url)
+            assertEquals(linkUrl, (unwrap() as LinkAttachmentResponse).url)
         }
     }
 

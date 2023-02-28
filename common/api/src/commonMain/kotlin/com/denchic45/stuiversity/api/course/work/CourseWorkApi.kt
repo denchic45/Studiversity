@@ -37,7 +37,7 @@ interface CourseWorkApi {
         courseId: UUID,
         courseWorkId: UUID,
         attachmentId: UUID
-    ): ResponseResult<Attachment>
+    ): ResponseResult<AttachmentResponse>
 
     suspend fun uploadFileToWork(
         courseId: UUID,
@@ -96,7 +96,7 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
         courseId: UUID,
         courseWorkId: UUID,
         attachmentId: UUID
-    ): ResponseResult<Attachment> {
+    ): ResponseResult<AttachmentResponse> {
         return client.get("/courses/$courseId/works/$courseWorkId/attachments/$attachmentId").toAttachmentResult()
     }
 
