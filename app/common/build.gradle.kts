@@ -77,6 +77,8 @@ kotlin {
                 api("com.russhwolf:multiplatform-settings:0.9")
                 api("com.russhwolf:multiplatform-settings-coroutines:0.9")
 
+                implementation("com.squareup.okio:okio:3.3.0")
+
                 // kotlin-inject
                 configurations["ksp"].dependencies.add(project.dependencies.create("me.tatarka.inject:kotlin-inject-compiler-ksp:0.5.1"))
                 implementation("me.tatarka.inject:kotlin-inject-runtime:0.5.1")
@@ -106,6 +108,8 @@ kotlin {
                 implementation("com.squareup.sqldelight:android-driver:$sqlDelightVersion")
 
                 api("com.squareup.retrofit2:retrofit:2.9.0")
+
+                api("androidx.work:work-runtime-ktx:2.8.0")
 
                 // Dagger
                 api("com.google.dagger:dagger-android:$daggerVersion")
