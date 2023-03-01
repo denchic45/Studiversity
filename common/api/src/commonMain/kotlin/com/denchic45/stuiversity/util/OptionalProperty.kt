@@ -6,7 +6,7 @@ sealed class OptionalProperty<out T> {
 
     data class Present<T>(val value: T) : OptionalProperty<T>()
 
-    fun ifPresent(onPresent: (value: T) -> Unit) {
+    inline fun ifPresent(onPresent: (value: T) -> Unit) {
         if (this is Present) onPresent(value)
     }
 

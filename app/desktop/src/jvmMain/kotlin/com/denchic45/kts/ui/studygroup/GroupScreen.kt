@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group
+package com.denchic45.kts.ui.studygroup
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,8 +23,8 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.components.Tab
 import com.denchic45.kts.ui.components.TabIndicator
-import com.denchic45.kts.ui.group.courses.GroupCoursesScreen
-import com.denchic45.kts.ui.group.members.GroupMembersScreen
+import com.denchic45.kts.ui.studygroup.courses.GroupCoursesScreen
+import com.denchic45.kts.ui.studygroup.members.GroupMembersScreen
 import com.denchic45.kts.ui.navigation.GroupChild
 import com.denchic45.kts.ui.navigation.GroupTabsChild
 import com.denchic45.kts.ui.theme.toDrawablePath

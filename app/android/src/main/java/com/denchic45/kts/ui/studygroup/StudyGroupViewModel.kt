@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group
+package com.denchic45.kts.ui.studygroup
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
@@ -15,9 +15,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
-class GroupViewModel @Inject constructor(
-    @Named(GroupFragment.GROUP_ID) groupId: String?,
-    private val interactor: GroupInteractor
+class StudyGroupViewModel @Inject constructor(
+    @Named(StudyGroupFragment.GROUP_ID) groupId: String?,
+    private val interactor: StudyGroupInteractor
 ) : BaseViewModel() {
 
     val initTabs = MutableLiveData(2)
@@ -28,7 +28,7 @@ class GroupViewModel @Inject constructor(
 
     val groupId: String = groupId ?: interactor.yourGroupId
 
-    val isExist = interactor.isExistGroup(this@GroupViewModel.groupId).onEach { exist ->
+    val isExist = interactor.isExistGroup(this@StudyGroupViewModel.groupId).onEach { exist ->
         Log.d("lol", "exist isExistGroup: $exist")
         if (!exist) {
             finish()
@@ -87,7 +87,7 @@ class GroupViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            interactor.getNameByGroupId(this@GroupViewModel.groupId).collect {
+            interactor.getNameByGroupId(this@StudyGroupViewModel.groupId).collect {
                 toolbarTitle = it
             }
         }
@@ -96,7 +96,7 @@ class GroupViewModel @Inject constructor(
         uiPermissions = UiPermissions(interactor.findThisUser())
         uiPermissions.putPermissions(
             Permission(
-                ALLOW_EDIT_GROUP, { hasAdminPerms() }, { curatorFor(this@GroupViewModel.groupId) }
+                ALLOW_EDIT_GROUP, { hasAdminPerms() }, { curatorFor(this@StudyGroupViewModel.groupId) }
             )
         )
         if (uiPermissions.isAllowed(ALLOW_EDIT_GROUP)) {

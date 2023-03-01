@@ -19,7 +19,7 @@ import com.denchic45.kts.databinding.FragmentFinderBinding
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.adapter.*
 import com.denchic45.kts.ui.course.CourseFragment
-import com.denchic45.kts.ui.group.editor.GroupEditorFragment
+import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
 import com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog
 import com.denchic45.kts.util.*
@@ -134,7 +134,7 @@ class FinderFragment :
         viewModel.openGroupEditor.observe(viewLifecycleOwner) { groupId ->
             navController.navigate(
                 R.id.action_global_groupEditorFragment,
-                bundleOf(GroupEditorFragment.GROUP_ID to groupId)
+                bundleOf(StudyGroupEditorFragment.GROUP_ID to groupId)
             )
         }
         viewModel.openSpecialtyEditor.observe(viewLifecycleOwner) { id ->

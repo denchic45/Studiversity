@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group.editor
+package com.denchic45.kts.ui.studygroup.editor
 
 import android.os.Bundle
 import android.view.View
@@ -19,14 +19,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding4.widget.textChanges
 
-class GroupEditorFragment :
-    BaseFragment<GroupEditorViewModel, FragmentGroupEditorBinding>(
+class StudyGroupEditorFragment :
+    BaseFragment<StudyGroupEditorViewModel, FragmentGroupEditorBinding>(
         R.layout.fragment_group_editor,
         R.menu.options_group_editor
     ) {
 
     override val binding: FragmentGroupEditorBinding by viewBinding(FragmentGroupEditorBinding::bind)
-    override val viewModel: GroupEditorViewModel by viewModels { viewModelFactory }
+    override val viewModel: StudyGroupEditorViewModel by viewModels { viewModelFactory }
     private val viewBinding: FragmentGroupEditorBinding by viewBinding(FragmentGroupEditorBinding::bind)
     private var specialtyAdapter: ListPopupWindowAdapter? = null
 
@@ -68,7 +68,7 @@ class GroupEditorFragment :
             ) { navController.navigate(R.id.teacherChooserFragment) }
 
             viewModel.curatorField.observe(viewLifecycleOwner) { user: User ->
-                Glide.with(this@GroupEditorFragment)
+                Glide.with(this@StudyGroupEditorFragment)
                     .load(user.photoUrl)
                     .transition(DrawableTransitionOptions.withCrossFade(100))
                     .into(ivCuratorAvatar)

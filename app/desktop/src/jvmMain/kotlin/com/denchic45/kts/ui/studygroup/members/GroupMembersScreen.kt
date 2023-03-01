@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group.members
+package com.denchic45.kts.ui.studygroup.members
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState

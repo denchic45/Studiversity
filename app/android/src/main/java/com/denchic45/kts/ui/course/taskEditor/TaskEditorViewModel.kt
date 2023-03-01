@@ -35,7 +35,7 @@ class TaskEditorViewModel @Inject constructor(
     @Named(TaskEditorFragment.SECTION_ID) sectionId: String?,
     private val confirmInteractor: ConfirmInteractor,
     private val findCourseWorkUseCase: FindCourseWorkUseCase,
-    private val findAttachmentsUseCase: FindAttachmentsUseCase,
+    private val findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
     private val findSectionUseCase: FindSectionUseCase,
     private val addCourseWorkUseCase: AddCourseWorkUseCase,
     private val updateCourseWorkUseCase: UpdateCourseWorkUseCase,
@@ -197,7 +197,7 @@ class TaskEditorViewModel @Inject constructor(
 
     private fun observeAttachments() {
         viewModelScope.launch {
-            findAttachmentsUseCase(taskId).collect {
+            findCourseWorkAttachmentsUseCase(taskId).collect {
                 attachments.clear()
                 attachments.addAll(it)
                 postAttachments()

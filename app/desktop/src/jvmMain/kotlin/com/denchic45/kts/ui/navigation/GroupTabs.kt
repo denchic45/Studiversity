@@ -1,8 +1,8 @@
 package com.denchic45.kts.ui.navigation
 
 import com.arkivanov.essenty.parcelable.Parcelable
-import com.denchic45.kts.ui.group.courses.GroupCoursesComponent
-import com.denchic45.kts.ui.group.members.GroupMembersComponent
+import com.denchic45.kts.ui.studygroup.courses.GroupCoursesComponent
+import com.denchic45.kts.ui.studygroup.members.GroupMembersComponent
 
 sealed class GroupTabsConfig : Parcelable {
     object Members : GroupTabsConfig()

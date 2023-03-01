@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group.members
+package com.denchic45.kts.ui.studygroup.members
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*

@@ -11,10 +11,10 @@ abstract class Storage {
 
     abstract val path: Path
 
-    protected abstract fun download(): ResponseResult<FileAttachmentResponse>
+    protected abstract suspend fun download(): ResponseResult<FileAttachmentResponse>
 
-    fun downloadAndSave() {
-        download().onSuccess {
+    suspend fun downloadAndSave(): ResponseResult<FileAttachmentResponse> {
+        return download().onSuccess {
             FileSystem.SYSTEM.write(path / it.name) { write(it.bytes) }
         }
     }

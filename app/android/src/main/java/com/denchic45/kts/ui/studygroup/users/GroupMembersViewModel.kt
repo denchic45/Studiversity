@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group.users
+package com.denchic45.kts.ui.studygroup.users
 
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections

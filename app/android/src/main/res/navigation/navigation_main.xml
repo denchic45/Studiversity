@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/menu_group"
-        android:name="com.denchic45.kts.ui.group.GroupFragment"
+        android:name="com.denchic45.kts.ui.studygroup.StudyGroupFragment"
         android:label="@string/menu_title_group"
         tools:layout="@layout/fragment_group">
         <argument
@@ -159,7 +159,7 @@
         app:destination="@id/confirmDialog" />
     <fragment
         android:id="@+id/groupEditorFragment"
-        android:name="com.denchic45.kts.ui.group.editor.GroupEditorFragment"
+        android:name="com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment"
         android:label="GroupEditorFragment" />
     <action
         android:id="@+id/action_global_groupEditorFragment"

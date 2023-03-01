@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group
+package com.denchic45.kts.ui.studygroup
 
 import android.content.Context
 import android.os.Bundle
@@ -17,21 +17,21 @@ import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentGroupBinding
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.base.HasNavArgs
-import com.denchic45.kts.ui.group.courses.GroupCoursesFragment
-import com.denchic45.kts.ui.group.editor.GroupEditorFragment
-import com.denchic45.kts.ui.group.users.GroupMembersFragment
+import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
+import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
+import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
 import com.denchic45.kts.ui.timetable.TimetableFragment
 import com.denchic45.kts.util.collectWhenResumed
 import com.example.appbarcontroller.appbarcontroller.AppBarController
 
-class GroupFragment : BaseFragment<GroupViewModel, FragmentGroupBinding>(
+class StudyGroupFragment : BaseFragment<StudyGroupViewModel, FragmentGroupBinding>(
     R.layout.fragment_group,
     R.menu.options_group
 ), HasNavArgs<GroupFragmentArgs> {
 
     override val navArgs: GroupFragmentArgs by navArgs()
     override val binding: FragmentGroupBinding by viewBinding(FragmentGroupBinding::bind)
-    override val viewModel: GroupViewModel by viewModels { viewModelFactory }
+    override val viewModel: StudyGroupViewModel by viewModels { viewModelFactory }
     private lateinit var appBarController: AppBarController
 
     @Deprecated("Deprecated in Java")
@@ -57,7 +57,7 @@ class GroupFragment : BaseFragment<GroupViewModel, FragmentGroupBinding>(
         viewModel.openGroupEditor.observe(viewLifecycleOwner) { groupId ->
             navController.navigate(
                 R.id.action_global_groupEditorFragment,
-                bundleOf(GroupEditorFragment.GROUP_ID to groupId)
+                bundleOf(StudyGroupEditorFragment.GROUP_ID to groupId)
             )
         }
         with(binding) {

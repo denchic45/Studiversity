@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group.courses
+package com.denchic45.kts.ui.studygroup.courses
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.BorderStroke

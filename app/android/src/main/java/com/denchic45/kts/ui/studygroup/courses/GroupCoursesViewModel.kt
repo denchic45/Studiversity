@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group.courses
+package com.denchic45.kts.ui.studygroup.courses
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData

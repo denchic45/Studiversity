@@ -6,6 +6,8 @@ import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.domain.model.DomainModel
+import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.mapBoth
 import com.denchic45.kts.domain.model.SubmissionSettings
 import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.domain.model.User
@@ -13,7 +15,9 @@ import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.course.taskEditor.AddAttachmentItem
 import com.denchic45.kts.ui.model.UiText
+import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.util.toString
+import com.denchic45.stuiversity.util.toUUID
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -24,53 +28,57 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class TaskInfoViewModel @Inject constructor(
-    @Named(TaskInfoFragment.TASK_ID) val taskId: String,
-    @Named(TaskInfoFragment.COURSE_ID) val courseId: String,
+    @Named(TaskInfoFragment.TASK_ID) val _taskId: String,
+    @Named(TaskInfoFragment.COURSE_ID) val _courseId: String,
     findSelfUserUseCase: FindSelfUserUseCase,
     findCourseWorkUseCase: FindCourseWorkUseCase,
-    findTaskAttachmentsUseCase: FindAttachmentsUseCase,
+    findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
     findOwnSubmissionUseCase: FindOwnSubmissionUseCase,
-    private val updateSubmissionFromStudentUseCase: UpdateSubmissionFromStudentUseCase,
+    private val uploadAttachmentToSubmissionUseCase: UploadAttachmentToSubmissionUseCase
 ) : BaseViewModel() {
 
-    companion object {
-        const val ALLOW_EDIT_TASK = "ALLOW_EDIT_TASK"
-    }
+    private val courseId = _courseId.toUUID()
+    private val courseWorkId = _taskId.toUUID()
 
-    private val taskFlow = findCourseWorkUseCase(taskId).shareIn(
+    private val courseWorkFlow = flow {emit(findCourseWorkUseCase(courseId, courseWorkId))}.shareIn(
         viewModelScope,
         replay = 1,
         started = SharingStarted.WhileSubscribed()
     )
-    val attachments = findTaskAttachmentsUseCase(taskId).stateIn(
+    val attachments = flow { emit(findCourseWorkAttachmentsUseCase(courseId, courseWorkId))}.stateIn(
         viewModelScope,
         SharingStarted.Lazily,
-        emptyList()
+        Resource.Loading()
     )
-    val taskViewState = taskFlow.onEach { task ->
+    val taskViewState = courseWorkFlow.onEach { task ->
         if (task == null) {
             finish()
         }
     }
         .filterNotNull()
-        .map { task ->
-            TaskViewState(
-                name = task.name,
-                description = task.description,
-                dateWithTimeLeft = task.completionDate?.let { completionDate ->
-                    val pattern = DateTimeFormatter.ofPattern("dd MMM HH:mm")
-                    completionDate.format(pattern) to
-                            UiText.FormattedQuantityText(
-                                value = R.plurals.day,
-                                quantity = Period.between(
-                                    LocalDate.now(),
-                                    completionDate.toLocalDate()
-                                ).days,
-                                formatArgs = null
-                            )
+        .map { task: Resource<CourseElementResponse> ->
+            task.mapBoth(
+                onSuccess = {
+                    TaskViewState(
+                        name = task.name,
+                        description = task.description,
+                        dateWithTimeLeft = task.completionDate?.let { completionDate ->
+                            val pattern = DateTimeFormatter.ofPattern("dd MMM HH:mm")
+                            completionDate.format(pattern) to
+                                    UiText.FormattedQuantityText(
+                                        value = R.plurals.day,
+                                        quantity = Period.between(
+                                            LocalDate.now(),
+                                            completionDate.toLocalDate()
+                                        ).days,
+                                        formatArgs = null
+                                    )
 
+                        },
+                        submissionSettings = task.submissionSettings
+                    )
                 },
-                submissionSettings = task.submissionSettings
+                onFailure = {}
             )
         }
 
@@ -229,7 +237,7 @@ class TaskInfoViewModel @Inject constructor(
         updateSubmissionFromStudentUseCase(_submissionViewState.first())
     }
 
-    private suspend fun task() = taskFlow.filterNotNull().first()
+    private suspend fun task() = courseWorkFlow.filterNotNull().first()
 
     data class TaskViewState(
         val name: String,

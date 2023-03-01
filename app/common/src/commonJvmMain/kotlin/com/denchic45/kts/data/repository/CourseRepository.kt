@@ -239,13 +239,6 @@ class CourseRepository @Inject constructor(
     }
 
 
-    fun findAttachmentsByContentId(contentId: String): Flow<List<Attachment>> {
-        return courseContentLocalDataSource.getAttachmentsById(contentId).map { attachmentUrls ->
-            contentAttachmentStorage.getAttachments(contentId, attachmentUrls)
-        }
-    }
-
-
 //    suspend fun addTask(task: Task, attachments: List<Attachment>) {
 //        requireAllowWriteData()
 //        courseRemoteDataSource.addTask(

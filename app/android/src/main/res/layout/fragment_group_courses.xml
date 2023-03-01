@@ -8,4 +8,4 @@
     android:layout_width="match_parent"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     android:layout_height="match_parent"
-    tools:context=".ui.group.courses.GroupCoursesFragment" />
+    tools:context=".ui.studygroup.courses.GroupCoursesFragment" />

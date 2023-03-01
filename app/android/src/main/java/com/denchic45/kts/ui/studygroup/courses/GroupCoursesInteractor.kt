@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group.courses
+package com.denchic45.kts.ui.studygroup.courses
 
 import com.denchic45.kts.domain.Interactor
 import com.denchic45.kts.data.repository.StudyGroupRepository

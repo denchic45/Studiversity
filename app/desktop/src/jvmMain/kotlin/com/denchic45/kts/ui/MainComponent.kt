@@ -12,7 +12,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.denchic45.kts.domain.MainInteractor
-import com.denchic45.kts.ui.group.GroupRootComponent
+import com.denchic45.kts.ui.studygroup.GroupRootComponent
 import com.denchic45.kts.ui.navigation.*
 import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent

@@ -20,10 +20,10 @@ import com.denchic45.kts.ui.course.taskEditor.TaskEditorFragment
 import com.denchic45.kts.ui.course.taskInfo.TaskInfoFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
 import com.denchic45.kts.ui.creator.CreatorDialog
-import com.denchic45.kts.ui.group.GroupFragment
-import com.denchic45.kts.ui.group.courses.GroupCoursesFragment
-import com.denchic45.kts.ui.group.editor.GroupEditorFragment
-import com.denchic45.kts.ui.group.users.GroupMembersFragment
+import com.denchic45.kts.ui.studygroup.StudyGroupFragment
+import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
+import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
+import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
 import com.denchic45.kts.ui.iconPicker.IconPickerDialog
 import com.denchic45.kts.ui.login.auth.AuthFragment
 import com.denchic45.kts.ui.login.groupChooser.GroupChooserFragment
@@ -54,7 +54,7 @@ interface FragmentModule {
     fun contributeCourseEditorFragment(): CourseEditorFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
-    fun contributeGroupFragment(): GroupFragment
+    fun contributeGroupFragment(): StudyGroupFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
     fun contributeGroupUsersFragment(): GroupMembersFragment
@@ -81,7 +81,7 @@ interface FragmentModule {
     fun contributeEventEditorFragment(): EventEditorFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class, RawModule::class])
-    fun contributeGroupEditorFragment(): GroupEditorFragment
+    fun contributeGroupEditorFragment(): StudyGroupEditorFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
     fun contributeSpecialtyEditorDialog(): SpecialtyEditorDialog

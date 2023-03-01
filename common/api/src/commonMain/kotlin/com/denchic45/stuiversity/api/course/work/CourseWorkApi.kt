@@ -11,7 +11,6 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import java.io.File
 import java.util.*
 
 interface CourseWorkApi {
@@ -42,13 +41,13 @@ interface CourseWorkApi {
     suspend fun uploadFileToWork(
         courseId: UUID,
         courseWorkId: UUID,
-        file: File
+        createFileRequest: CreateFileRequest
     ): ResponseResult<FileAttachmentHeader>
 
     suspend fun addLinkToWork(
         courseId: UUID,
         courseWorkId: UUID,
-        link: CreateLinkRequest
+        createLinkRequest: CreateLinkRequest
     ): ResponseResult<LinkAttachmentHeader>
 
     suspend fun deleteAttachmentFromWork(
@@ -103,7 +102,7 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
     override suspend fun uploadFileToWork(
         courseId: UUID,
         courseWorkId: UUID,
-        file: File
+        createFileRequest: CreateFileRequest
     ): ResponseResult<FileAttachmentHeader> =
         client.post("/courses/$courseId/works/$courseWorkId/attachments") {
             parameter("upload", "file")
@@ -111,9 +110,9 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
             setBody(
                 MultiPartFormDataContent(
                     formData {
-                        append("file", file.readBytes(), Headers.build {
-                            append(HttpHeaders.ContentType, ContentType.defaultForFile(file))
-                            append(HttpHeaders.ContentDisposition, "filename=${file.name}")
+                        append("file", createFileRequest.bytes, Headers.build {
+                            append(HttpHeaders.ContentType, ContentType.defaultForFilePath(createFileRequest.name))
+                            append(HttpHeaders.ContentDisposition, "filename=${createFileRequest.name}")
                         })
                     }
                 )
@@ -123,12 +122,12 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
     override suspend fun addLinkToWork(
         courseId: UUID,
         courseWorkId: UUID,
-        link: CreateLinkRequest
+        createLinkRequest: CreateLinkRequest
     ): ResponseResult<LinkAttachmentHeader> =
         client.post("/courses/$courseId/works/$courseWorkId/attachments") {
             parameter("upload", "link")
             contentType(ContentType.Application.Json)
-            setBody(link)
+            setBody(createLinkRequest)
         }.toResult()
 
     override suspend fun deleteAttachmentFromWork(

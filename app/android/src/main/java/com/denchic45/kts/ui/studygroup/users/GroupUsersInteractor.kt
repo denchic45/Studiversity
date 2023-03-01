@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group.users
+package com.denchic45.kts.ui.studygroup.users
 
 import com.denchic45.kts.domain.Interactor
 import com.denchic45.kts.domain.model.User

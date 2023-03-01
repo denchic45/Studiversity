@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group.editor
+package com.denchic45.kts.ui.studygroup.editor
 
 import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
@@ -26,8 +26,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
-class GroupEditorViewModel @Inject constructor(
-    @Named(GroupEditorFragment.GROUP_ID) id: String?,
+class StudyGroupEditorViewModel @Inject constructor(
+    @Named(StudyGroupEditorFragment.GROUP_ID) id: String?,
     private val teacherChooserInteractor: TeacherChooserInteractor,
     private val addStudyGroupUseCase: AddStudyGroupUseCase,
     private val updateStudyGroupUseCase: UpdateStudyGroupUseCase,

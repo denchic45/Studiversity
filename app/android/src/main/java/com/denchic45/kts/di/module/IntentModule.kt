@@ -9,10 +9,10 @@ import com.denchic45.kts.ui.course.submissions.SubmissionsFragment
 import com.denchic45.kts.ui.course.taskEditor.TaskEditorFragment
 import com.denchic45.kts.ui.course.taskInfo.TaskInfoFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
-import com.denchic45.kts.ui.group.GroupFragment
-import com.denchic45.kts.ui.group.courses.GroupCoursesFragment
-import com.denchic45.kts.ui.group.editor.GroupEditorFragment
-import com.denchic45.kts.ui.group.users.GroupMembersFragment
+import com.denchic45.kts.ui.studygroup.StudyGroupFragment
+import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
+import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
+import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
 import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
@@ -38,10 +38,10 @@ object IntentModule {
         return groupCoursesFragment.requireArguments().getString(GroupCoursesFragment.GROUP_ID)
     }
 
-    @Named(GroupEditorFragment.GROUP_ID)
+    @Named(StudyGroupEditorFragment.GROUP_ID)
     @Provides
-    fun provideGroupIdFromGroupEditor(groupEditorFragment: GroupEditorFragment): String? {
-        return groupEditorFragment.requireArguments().getString(GroupEditorFragment.GROUP_ID)
+    fun provideGroupIdFromGroupEditor(studyGroupEditorFragment: StudyGroupEditorFragment): String? {
+        return studyGroupEditorFragment.requireArguments().getString(StudyGroupEditorFragment.GROUP_ID)
     }
 
     @Named(SubjectEditorDialog.SUBJECT_ID)
@@ -68,16 +68,16 @@ object IntentModule {
         return profileFragment.navArgs.userId
     }
 
-    @Named(GroupFragment.GROUP_ID)
+    @Named(StudyGroupFragment.GROUP_ID)
     @Provides
-    fun provideGroupIdFromGroup(groupFragment: GroupFragment): String? {
-        return groupFragment.navArgs.groupId
+    fun provideGroupIdFromGroup(studyGroupFragment: StudyGroupFragment): String? {
+        return studyGroupFragment.navArgs.groupId
     }
 
     @Named(GroupMembersFragment.GROUP_ID)
     @Provides
     fun provideGroupIdFromGroupUsers(groupMembersFragment: GroupMembersFragment): String? {
-        return (groupMembersFragment.requireParentFragment() as GroupFragment).navArgs.groupId
+        return (groupMembersFragment.requireParentFragment() as StudyGroupFragment).navArgs.groupId
     }
 
     @Named("UserEditor ${UserEditorFragment.USER_ID}")

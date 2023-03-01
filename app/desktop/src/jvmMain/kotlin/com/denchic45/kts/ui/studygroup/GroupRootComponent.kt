@@ -1,9 +1,8 @@
-package com.denchic45.kts.ui.group
+package com.denchic45.kts.ui.studygroup
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.StackNavigator
 import com.arkivanov.decompose.router.stack.childStack

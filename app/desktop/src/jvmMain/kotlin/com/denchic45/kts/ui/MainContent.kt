@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.ui.MainComponent.Child
 import com.denchic45.kts.ui.confirm.ConfirmDialog
-import com.denchic45.kts.ui.group.GroupScreen
+import com.denchic45.kts.ui.studygroup.GroupScreen
 import com.denchic45.kts.ui.navigation.ConfirmChild
 import com.denchic45.kts.ui.navigation.UserEditorChild
 import com.denchic45.kts.ui.theme.toDrawablePath

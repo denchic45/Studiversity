@@ -1,12 +1,12 @@
-package com.denchic45.kts.ui.group
+package com.denchic45.kts.ui.studygroup
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.StackNavigator
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
-import com.denchic45.kts.ui.group.courses.GroupCoursesComponent
-import com.denchic45.kts.ui.group.members.GroupMembersComponent
+import com.denchic45.kts.ui.studygroup.courses.GroupCoursesComponent
+import com.denchic45.kts.ui.studygroup.members.GroupMembersComponent
 import com.denchic45.kts.ui.navigation.GroupConfig
 import com.denchic45.kts.ui.navigation.GroupTabsChild
 import com.denchic45.kts.ui.navigation.GroupTabsConfig

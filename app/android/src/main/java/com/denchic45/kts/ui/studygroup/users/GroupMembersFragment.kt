@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group.users
+package com.denchic45.kts.ui.studygroup.users
 
 import android.os.Bundle
 import android.view.View

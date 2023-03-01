@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.group
+package com.denchic45.kts.ui.studygroup
 
 import com.denchic45.kts.domain.Interactor
 import com.denchic45.kts.domain.model.User
@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GroupInteractor @Inject constructor(
+class StudyGroupInteractor @Inject constructor(
     private val studyGroupRepository: StudyGroupRepository,
     private val userRepository: UserRepository
 ) : Interactor {
