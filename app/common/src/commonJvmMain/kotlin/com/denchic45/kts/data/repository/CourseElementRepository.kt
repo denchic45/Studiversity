@@ -48,6 +48,10 @@ class CourseElementRepository(
         courseWorkApi.getById(courseId, workId)
     }
 
+    suspend fun findWorkById(courseId: UUID, workId: UUID) = fetchResource {
+        courseWorkApi.getById(courseId, workId)
+    }
+
     suspend fun addCourseWork(
         courseId: UUID,
         createCourseWorkRequest: CreateCourseWorkRequest,

@@ -5,17 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.domain.model.Attachment
-import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.mapBoth
-import com.denchic45.kts.domain.model.SubmissionSettings
-import com.denchic45.kts.domain.model.Task
-import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.domain.map
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.ui.course.taskEditor.AddAttachmentItem
-import com.denchic45.kts.ui.model.UiText
-import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
+import com.denchic45.stuiversity.api.course.element.model.*
+import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.stuiversity.api.course.work.submission.model.*
+import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.toString
 import com.denchic45.stuiversity.util.toUUID
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -34,80 +33,70 @@ class TaskInfoViewModel @Inject constructor(
     findCourseWorkUseCase: FindCourseWorkUseCase,
     findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
     findOwnSubmissionUseCase: FindOwnSubmissionUseCase,
-    private val uploadAttachmentToSubmissionUseCase: UploadAttachmentToSubmissionUseCase
+    private val submitSubmissionUseCase: SubmitSubmissionUseCase,
+    private val cancelSubmissionUseCase: CancelSubmissionUseCase,
+    private val uploadAttachmentToSubmissionUseCase: UploadAttachmentToSubmissionUseCase,
+    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
 ) : BaseViewModel() {
 
     private val courseId = _courseId.toUUID()
     private val courseWorkId = _taskId.toUUID()
 
-    private val courseWorkFlow = flow {emit(findCourseWorkUseCase(courseId, courseWorkId))}.shareIn(
+    private val courseWorkFlow = flow {
+        emit(findCourseWorkUseCase(courseId, courseWorkId))
+    }.shareIn(
         viewModelScope,
         replay = 1,
         started = SharingStarted.WhileSubscribed()
     )
-    val attachments = flow { emit(findCourseWorkAttachmentsUseCase(courseId, courseWorkId))}.stateIn(
-        viewModelScope,
-        SharingStarted.Lazily,
-        Resource.Loading()
-    )
-    val taskViewState = courseWorkFlow.onEach { task ->
-        if (task == null) {
-            finish()
-        }
-    }
-        .filterNotNull()
-        .map { task: Resource<CourseElementResponse> ->
-            task.mapBoth(
-                onSuccess = {
-                    TaskViewState(
-                        name = task.name,
-                        description = task.description,
-                        dateWithTimeLeft = task.completionDate?.let { completionDate ->
-                            val pattern = DateTimeFormatter.ofPattern("dd MMM HH:mm")
-                            completionDate.format(pattern) to
-                                    UiText.FormattedQuantityText(
-                                        value = R.plurals.day,
-                                        quantity = Period.between(
-                                            LocalDate.now(),
-                                            completionDate.toLocalDate()
-                                        ).days,
-                                        formatArgs = null
-                                    )
+    val attachments =
+        flow { emit(findCourseWorkAttachmentsUseCase(courseId, courseWorkId)) }.stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            Resource.Loading()
+        )
 
-                        },
-                        submissionSettings = task.submissionSettings
-                    )
-                },
-                onFailure = {}
+    val workUiState = courseWorkFlow.map { resource ->
+        resource.map { element ->
+            WorkUiState(
+                name = element.name,
+                description = element.description,
+                dueDateTime = element.dueDate?.let { date ->
+                    val pattern = DateTimeFormatter.ofPattern("dd MMM")
+                    date.format(pattern)
+                } + element.dueTime?.let { time ->
+                    val pattern = DateTimeFormatter.ofPattern("HH:mm")
+                    time.format(pattern)
+                }
             )
         }
+    }
 
     val showSubmissionToolbar = MutableLiveData<Boolean>()
     val expandBottomSheet = MutableLiveData(BottomSheetBehavior.STATE_COLLAPSED)
     val focusOnTextField = SingleLiveData<Unit>()
 
-    private var oldContent = Task.Submission.Content.createEmpty()
+    private var oldContent: SubmissionContent? = null
+    private var contentUpdateDate: LocalDateTime? = null
 
-    private var content = oldContent
+    private val _submission = MutableSharedFlow<Resource<SubmissionResponse>>(replay = 1)
 
-    private lateinit var contentUpdateDate: LocalDateTime
-
-    private val _submissionViewState = MutableSharedFlow<Task.Submission>(replay = 1)
-
-    val submissionViewState2 = (_submissionViewState
-        .map { it.toSubmissionViewState() })
+    val submissionUiState = _submission
+        .map { it.map { response -> response.toSubmissionUiState(work()) } }
         .shareIn(viewModelScope, SharingStarted.Lazily)
 
 
     init {
         viewModelScope.launch {
-            if (findSelfUserUseCase().isStudent) {
-                _submissionViewState.emitAll(
-                    findOwnSubmissionUseCase(task().id)
-                        .onEach {
-                            oldContent = it.content
-                            content = oldContent
-                            contentUpdateDate = it.contentUpdateDate
+            checkUserCapabilitiesInScopeUseCase(
+                scopeId = courseId,
+                capabilities = listOf(Capability.SubmitSubmission)
+            ).onSuccess {
+                _submission.emit(
+                    findOwnSubmissionUseCase(courseId, courseWorkId)
+                        .onSuccess { submissionResponse: SubmissionResponse ->
+                            oldContent = submissionResponse.content
+                            contentUpdateDate = submissionResponse.updatedAt
                         }
                 )
             }
@@ -121,13 +110,13 @@ class TaskInfoViewModel @Inject constructor(
         viewModelScope.launch {
             if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                 showSubmissionToolbar.value = false
-                val submission = _submissionViewState.first()
-                if (expandBottomSheet.value == BottomSheetBehavior.STATE_EXPANDED
-                    && submission.status is Task.SubmissionStatus.NotSubmitted
-                    && oldContent != content
-                ) {
-                    updateSubmissionFromStudentUseCase(submission)
-                }
+                val submission = _submission.first()
+//                if (expandBottomSheet.value == BottomSheetBehavior.STATE_EXPANDED
+//                    && submission.status is Task.SubmissionStatus.NotSubmitted
+//                    && oldContent != content
+//                ) {
+//                    updateSubmissionFromStudentUseCase(submission)
+//                }
             } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                 showSubmissionToolbar.value = true
             }
@@ -141,7 +130,12 @@ class TaskInfoViewModel @Inject constructor(
 
     fun onSubmissionAttachmentClick(position: Int) {
         viewModelScope.launch {
-            openAttachment.value = _submissionViewState.first().content.attachments[position].file
+            attachments.value.onSuccess {
+                when (val attachment = it[position]) {
+                    is FileAttachmentHeader -> openAttachment.value = attachment.fileItem
+                    is LinkAttachmentHeader -> TODO()
+                }
+            }
         }
     }
 
@@ -151,7 +145,7 @@ class TaskInfoViewModel @Inject constructor(
     fun onSelectedFile(file: File) {
         viewModelScope.launch {
             content = content.copy(attachments = content.attachments + Attachment(file))
-            _submissionViewState.emit(_submissionViewState.first().copy(content = content))
+            _submission.emit(_submission.first().copy(content = content))
         }
     }
 
@@ -165,14 +159,14 @@ class TaskInfoViewModel @Inject constructor(
         viewModelScope.launch {
             content =
                 content.copy(attachments = content.attachments - content.attachments[position])
-            _submissionViewState.emit(_submissionViewState.first().copy(content = content))
+            _submission.emit(_submission.first().copy(content = content))
         }
     }
 
     fun onSubmissionTextType(text: String) {
         viewModelScope.launch {
             content = content.copy(text = text)
-            _submissionViewState.emit(_submissionViewState.first().copy(content = content))
+            _submission.emit(_submission.first().copy(content = content))
         }
     }
 
@@ -187,173 +181,132 @@ class TaskInfoViewModel @Inject constructor(
 
     fun onActionClick() {
         viewModelScope.launch {
-            when (_submissionViewState.first().status) {
-                is Task.SubmissionStatus.NotSubmitted,
-                is Task.SubmissionStatus.Graded,
-                is Task.SubmissionStatus.Rejected,
-                -> {
-                    onSubmitActionClick()
-                }
-                is Task.SubmissionStatus.Submitted -> {
-                    onCancelSubmitClick()
+            _submission.first().onSuccess {
+                when (it.state) {
+                    SubmissionState.NEW,
+                    SubmissionState.CREATED,
+                    SubmissionState.CANCELED_BY_AUTHOR,
+                    -> onSubmitActionClick()
+                    SubmissionState.SUBMITTED -> {
+                        onCancelSubmitClick()
+                    }
                 }
             }
         }
     }
 
     private suspend fun onSubmitActionClick() {
-        if (content.isEmpty()) {
+        if (content!!.isEmpty()) {
             expandBottomSheet.value = BottomSheetBehavior.STATE_EXPANDED
-            val submissionSettings = task().submissionSettings
-            when {
-                submissionSettings.onlyTextAvailable() -> {
-                    focusOnTextField.call()
-                }
-                submissionSettings.onlyAttachmentsAvailable() || submissionSettings.allAvailable() -> {
-                    openFilePicker.call()
-                }
-            }
         } else {
             val contentUpdateDate =
                 if (contentIsChangeAndNotEmpty()) LocalDateTime.now()
                 else this.contentUpdateDate
 
-            _submissionViewState.emit(
-                _submissionViewState.first().copy(
-                    status = Task.SubmissionStatus.Submitted(),
-                    contentUpdateDate = contentUpdateDate
+            _submission.first().onSuccess { submissionResponse: SubmissionResponse ->
+                _submission.emit(
+                    Resource.Success(
+                        when (submissionResponse) {
+                            is WorkSubmissionResponse -> submissionResponse.copy(
+                                state = SubmissionState.SUBMITTED,
+                                updatedAt = contentUpdateDate
+                            )
+                        }
+                    )
                 )
-            )
-            updateSubmissionFromStudentUseCase(_submissionViewState.first())
+                submitSubmissionUseCase(courseId, courseWorkId, submissionResponse.id)
+            }
         }
     }
 
-    private fun contentIsChangeAndNotEmpty() = oldContent != content && content.isNotEmpty()
+    private fun contentIsChangeAndNotEmpty() = oldContent != content && !content!!.isEmpty()
 
     private suspend fun onCancelSubmitClick() {
-        _submissionViewState.emit(
-            _submissionViewState.first().copy(status = Task.SubmissionStatus.NotSubmitted)
-        )
-        updateSubmissionFromStudentUseCase(_submissionViewState.first())
+        _submission.first().onSuccess { submissionResponse: SubmissionResponse ->
+            _submission.emit(
+                Resource.Success(
+                    when (submissionResponse) {
+                        is WorkSubmissionResponse -> submissionResponse.copy(
+                            state = SubmissionState.CANCELED_BY_AUTHOR,
+                            updatedAt = contentUpdateDate
+                        )
+                    }
+                )
+            )
+            cancelSubmissionUseCase(courseId, courseWorkId, submissionResponse.id)
+        }
     }
 
-    private suspend fun task() = courseWorkFlow.filterNotNull().first()
+    private suspend fun work() = courseWorkFlow
+        .map { it as? Resource.Success }.filterNotNull().first().value
 
-    data class TaskViewState(
+    data class WorkUiState(
         val name: String,
-        val description: String,
-        val dateWithTimeLeft: Pair<String, UiText.FormattedQuantityText>?,
-        val submissionSettings: SubmissionSettings,
+        val description: String?,
+        val dueDateTime: String?,
     )
 
-    data class SubmissionViewState(
-        val btnVisibility: Boolean,
-        val btnText: String = "",
-        val btnTextColor: Int = R.color.white,
-        val btnBackgroundColor: Int = R.color.blue,
+    sealed class SubmissionUiState {
+        abstract val title: String
+        abstract val subtitle: String?
 
-        val title: String,
-        val subtitleVisibility: Boolean = false,
-        val subtitle: String = "",
+        data class Work(
+            override val title: String,
+            override val subtitle: String?,
+            val btnText: String?,
+            val btnTextColor: Int = R.color.blue,
+            val btnBackgroundColor: Int = R.color.alpha_blue_10,
+            val gradedBy: UserResponse? = null,
+            val attachments: List<AttachmentHeader>?,
+            val allowEditContent: Boolean,
+        ) : SubmissionUiState()
+    }
 
-        val teacher: User? = null,
+    private fun SubmissionResponse.toSubmissionUiState(courseWorkResponse: CourseWorkResponse): SubmissionUiState {
+        return when (this) {
+            is WorkSubmissionResponse -> {
+                val allowEditContent = state !in SubmissionState.notSubmitted()
+                val attachments = content?.attachments
 
-        val textContent: String,
-        val attachments: List<DomainModel>,
-        val allowEditContent: Boolean,
-
-        val submissionSettings: SubmissionSettings,
-    )
-
-    private suspend fun Task.Submission.toSubmissionViewState(): SubmissionViewState {
-
-        val submissionSettings = task().submissionSettings
-        val allowEditContent = status !is Task.SubmissionStatus.Submitted
-
-        val attachments: List<DomainModel> =
-            if (content.attachments.size == submissionSettings.attachmentsLimit || !allowEditContent)
-                content.attachments
-            else
-                content.attachments + AddAttachmentItem
-
-        return when (val status = status) {
-            Task.SubmissionStatus.NotSubmitted ->
-                SubmissionViewState(
-                    btnVisibility = true,
-                    btnText = if (content.isEmpty()) "Добавить" else "Отправить",
-
-                    title = "Не сдано",
-
-                    submissionSettings = submissionSettings,
-
-                    textContent = content.text,
-                    attachments = attachments,
-                    allowEditContent = allowEditContent,
-                )
-
-            is Task.SubmissionStatus.Submitted -> {
-                val submittedDate = status.submittedDate
-                val submittedDateText = task().completionDate?.let {
-                    if (it > submittedDate) {
-                        "вовремя: "
-                    } else {
-                        "с опозданием: "
-                    } + submittedDate.toString("dd MMM HH:mm")
-                } ?: run {
-                    submittedDate.toString("dd MMM HH:mm")
+                grade?.let { grade ->
+                    SubmissionUiState.Work(
+                        title = "Оценено: ${grade}/5",
+                        subtitle = null,
+                        btnText = null,
+                        attachments = attachments,
+                        allowEditContent = allowEditContent,
+                    )
+                } ?: when (val status = state) {
+                    SubmissionState.NEW,
+                    SubmissionState.CREATED,
+                    -> SubmissionUiState.Work(
+                        title = "Не сдано",
+                        subtitle = null,
+                        btnText = if (content == null) "Добавить" else "Отправить",
+                        attachments = attachments,
+                        allowEditContent = allowEditContent,
+                    )
+                    SubmissionState.SUBMITTED -> SubmissionUiState.Work(
+                        title = "Сдано",
+                        subtitle = if (courseWorkResponse.late)
+                            "с опозданием: "
+                        else
+                            "вовремя:" + doneAt!!.toString("dd MMM HH:mm"),
+                        btnText = "Отменить",
+                        btnTextColor = R.color.red,
+                        btnBackgroundColor = R.color.alpha_red_10,
+                        attachments = attachments,
+                        allowEditContent = allowEditContent
+                    )
+                    SubmissionState.CANCELED_BY_AUTHOR -> SubmissionUiState.Work(
+                        title = "Не сдано",
+                        subtitle = "Было отменено вами",
+                        btnText = if (content == null) "Добавить" else "Отправить",
+                        attachments = attachments,
+                        allowEditContent = allowEditContent,
+                    )
                 }
-
-
-                SubmissionViewState(
-                    btnVisibility = true,
-                    btnText = "Отменить",
-                    btnTextColor = R.color.red,
-                    btnBackgroundColor = R.color.alpha_red_10,
-
-                    title = "Сдано на проверку",
-                    subtitleVisibility = true,
-                    subtitle = submittedDateText,
-
-                    submissionSettings = submissionSettings,
-
-                    textContent = content.text,
-                    attachments = attachments,
-                    allowEditContent = allowEditContent,
-                )
             }
-            is Task.SubmissionStatus.Graded ->
-                SubmissionViewState(
-                    btnVisibility = contentIsChangeAndNotEmpty(),
-                    btnText = "Отправить повторно",
-                    title = "Оценено: ${status.grade}/5",
-
-                    subtitleVisibility = false,
-
-                    teacher = status.teacher,
-
-                    submissionSettings = submissionSettings,
-
-                    textContent = content.text,
-                    attachments = attachments,
-                    allowEditContent = allowEditContent,
-                )
-
-            is Task.SubmissionStatus.Rejected ->
-                SubmissionViewState(
-                    btnVisibility = contentIsChangeAndNotEmpty(),
-                    btnText = "Отправить повторно",
-                    title = "Отклонено",
-                    subtitleVisibility = true,
-                    subtitle = status.cause,
-
-                    teacher = status.teacher,
-
-                    submissionSettings = submissionSettings,
-
-                    textContent = content.text,
-                    attachments = attachments,
-                    allowEditContent = allowEditContent,
-                )
         }
     }
 

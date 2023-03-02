@@ -15,5 +15,5 @@ data class CourseElementResponse(
     @Serializable(UUIDSerializer::class)
     val topicId: UUID?,
     val order: Int,
-    val details: CourseElementDetails
+    val details: CourseElementDetails,
 )

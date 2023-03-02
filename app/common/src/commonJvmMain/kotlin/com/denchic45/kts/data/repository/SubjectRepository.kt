@@ -4,7 +4,6 @@ import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
-import com.denchic45.kts.data.storage.remote.SubjectRemoteStorage
 import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse

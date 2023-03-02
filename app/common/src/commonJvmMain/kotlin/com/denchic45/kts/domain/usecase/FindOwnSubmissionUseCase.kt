@@ -8,13 +8,9 @@ import java.util.*
 import javax.inject.Inject
 
 class FindOwnSubmissionUseCase @Inject constructor(
-    private val submissionRepository: SubmissionRepository,
-    private val userRepository: UserRepository,
+    private val submissionRepository: SubmissionRepository
 ) {
-    suspend operator fun invoke(workId: UUID): Resource<List<SubmissionResponse>> {
-        return submissionRepository.findSubmissionsByWork(
-            workId,
-            userRepository.findSelf().id
-        )
+    suspend operator fun invoke(courseId:UUID,workId: UUID): Resource<SubmissionResponse> {
+        return submissionRepository.findOwnSubmissionByWork(courseId, workId)
     }
 }

@@ -8,7 +8,7 @@ import java.util.*
 
 class CheckUserCapabilitiesInScopeUseCase(private val roleRepository: RoleRepository) {
     suspend operator fun invoke(
-        userId: UUID,
+        userId: UUID? = null,
         scopeId: UUID,
         capabilities: List<Capability>,
     ): Resource<CheckCapabilitiesResponse> {

@@ -1,44 +1,48 @@
 package com.denchic45.kts.ui.courseEditor
 
-import com.denchic45.kts.domain.Interactor
-import com.denchic45.kts.domain.model.Course
-import com.denchic45.kts.domain.model.GroupHeader
-import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.data.repository.*
-import kotlinx.coroutines.flow.Flow
+import com.denchic45.kts.domain.EmptyResource
+import com.denchic45.kts.domain.Interactor
+import com.denchic45.kts.domain.Resource
+import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
+import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import java.util.*
 import javax.inject.Inject
 
 class CourseEditorInteractor @Inject constructor(
-    private val teacherRepository: TeacherRepository,
     private val subjectRepository: SubjectRepository,
     private val studyGroupRepository: StudyGroupRepository,
-    private val courseRepository: CourseRepository
+    private val courseRepository: CourseRepository,
 ) : Interactor {
 
-    fun findSubjectByTypedName(name: String): Flow<List<Subject>> {
+    suspend fun findSubjectByTypedName(name: String): Resource<List<SubjectResponse>> {
         return subjectRepository.findByContainsName(name)
     }
 
-    fun findCourse(courseId: String): Flow<Course?> {
-        return courseRepository.find(courseId)
+    suspend fun findById(courseId: UUID): Resource<CourseResponse> {
+        return courseRepository.findById(courseId)
     }
 
-    suspend fun addCourse(course: Course) {
-        return courseRepository.add(course)
+    suspend fun addCourse(createCourseRequest: CreateCourseRequest): Resource<CourseResponse> {
+        return courseRepository.add(createCourseRequest)
     }
 
-    suspend fun updateCourse(course: Course) {
-        return courseRepository.updateCourse(course)
+    suspend fun updateCourse(
+        courseId: UUID,
+        updateCourseRequest: UpdateCourseRequest,
+    ): Resource<CourseResponse> {
+        return courseRepository.updateCourse(courseId, updateCourseRequest)
     }
 
-    suspend fun removeCourse(course: Course) {
-        return courseRepository.removeCourse(course.id, course.groupHeaders.map(GroupHeader::id))
+    suspend fun removeCourse(courseId: UUID): EmptyResource {
+        return courseRepository.removeCourse(courseId)
     }
 
     override fun removeListeners() {
         courseRepository.removeListeners()
         studyGroupRepository.removeListeners()
-        teacherRepository.removeListeners()
         subjectRepository.removeListeners()
     }
 }

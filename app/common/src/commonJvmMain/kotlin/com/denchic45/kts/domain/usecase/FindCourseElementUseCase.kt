@@ -7,11 +7,11 @@ import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import java.util.*
 import javax.inject.Inject
 
-class FindCourseWorkUseCase @Inject constructor(
+class FindCourseElementUseCase @Inject constructor(
     private val courseElementRepository: CourseElementRepository,
 ) {
     suspend operator fun invoke(
         courseId: UUID,
         workId: UUID,
-    ): Resource<CourseWorkResponse> = courseElementRepository.findById(courseId, workId)
+    ): Resource<CourseElementResponse> = courseElementRepository.findById(courseId, workId)
 }

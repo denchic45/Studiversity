@@ -24,21 +24,36 @@ class SubmissionRepository(
         submissionId: UUID,
         attachment: Attachment,
     ) = fetchResource {
-        when(attachment) {
-            is AttachmentFile ->   submissionsApi.uploadFileToSubmission(
+        when (attachment) {
+            is AttachmentFile -> submissionsApi.uploadFileToSubmission(
                 courseId,
                 workId,
                 submissionId,
                 attachment.file
             )
-            is AttachmentLink ->   submissionsApi.addLinkToSubmission(
+            is AttachmentLink -> submissionsApi.addLinkToSubmission(
                 courseId,
                 workId,
                 submissionId,
                 CreateLinkRequest(attachment.url)
             )
         }
+    }
 
+    suspend fun submitSubmission(
+        courseId: UUID,
+        workId: UUID,
+        submissionId: UUID
+    ) = fetchResource {
+        submissionsApi.submitSubmission(courseId, workId, submissionId)
+    }
+
+    suspend fun cancelSubmission(
+        courseId: UUID,
+        workId: UUID,
+        submissionId: UUID
+    ) = fetchResource {
+        submissionsApi.cancelSubmission(courseId, workId, submissionId)
     }
 
     suspend fun gradeSubmission(
@@ -54,7 +69,11 @@ class SubmissionRepository(
         submissionsApi.getAllByCourseWorkId(courseId, workId)
     }
 
-   suspend fun returnSubmission(courseId: UUID, workId: UUID, submissionId: UUID) {
+    suspend fun findOwnSubmissionByWork(courseId: UUID, workId: UUID) = fetchResource {
+        submissionsApi.getByStudent(courseId, workId)
+    }
+
+    suspend fun returnSubmission(courseId: UUID, workId: UUID, submissionId: UUID) {
         TODO()
     }
 }

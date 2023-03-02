@@ -4,29 +4,29 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
-import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.customPopup.ListPopupWindowAdapter
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.*
 import com.denchic45.kts.data.repository.SameCoursesException
-import com.denchic45.kts.domain.model.Course
+import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.model.GroupHeader
-import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.usecase.FindCourseByIdUseCase
+import com.denchic45.kts.domain.usecase.FindGroupByContainsNameUseCase
+import com.denchic45.kts.domain.usecase.FindSubjectByContainsNameUseCase
+import com.denchic45.kts.domain.usecase.FindUserByContainsNameUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
-import com.denchic45.kts.ui.login.groupChooser.GroupChooserInteractor
 import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.uieditor.UIEditor
 import com.denchic45.kts.uivalidator.Rule
 import com.denchic45.kts.uivalidator.UIValidator
 import com.denchic45.kts.uivalidator.Validation
 import com.denchic45.kts.util.NetworkException
-import com.github.michaelbull.result.mapBoth
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -34,41 +34,54 @@ import javax.inject.Named
 
 class CourseEditorViewModel @Inject constructor(
     @Named(CourseEditorFragment.COURSE_ID)
-    courseId: String?,
+    _courseId: String?,
     private val interactor: CourseEditorInteractor,
+    private val findSubjectByContainsNameUseCase: FindSubjectByContainsNameUseCase,
     private val confirmInteractor: ConfirmInteractor,
-    private var groupChooserInteractor: GroupChooserInteractor,
-    private val findTeacherByContainsNameUseCase: FindTeacherByContainsNameUseCase
+    private val findCourseByIdUseCase: FindCourseByIdUseCase,
+    private val findGroupByContainsNameUseCase: FindGroupByContainsNameUseCase,
+    private val findUserByContainsNameUseCase: FindUserByContainsNameUseCase,
 ) : BaseViewModel() {
-    val selectSubject = MutableLiveData<Subject>()
-    val selectTeacher = MutableLiveData<User>()
-    val nameField = MutableLiveData<String>()
-    val showFoundTeachers = MutableSharedFlow<List<ListItem>>()
-    val showFoundSubjects = SingleLiveData<List<ListItem>>()
 
-    val subjectNameTypeEnable = MutableLiveData<Boolean>()
-    val teacherNameTypeEnable = MutableLiveData<Boolean>()
-    val groupList = MutableLiveData(addAdderGroupItem())
-    val title = MutableLiveData<String>()
-//    val openChoiceOfGroup = SingleLiveData<Unit>()
+    data class CourseEditingState(
+        val name: String = "",
+        val subjectName: String = "",
+        val subjectIconUrl: String = "",
+    )
 
-    private val courseId: String = courseId ?: UUID.randomUUID().toString()
-    private var foundTeachers: List<User>? = null
-    private var foundSubjects: List<Subject>? = null
-    private val subjectId: String? = null
-    private val teacherId: String? = null
+    val uiState = MutableStateFlow(CourseEditingState())
 
     private val typedSubjectName = MutableSharedFlow<String>()
     private val typedTeacherName = MutableSharedFlow<String>()
-    private var groupHeaders: MutableList<GroupHeader> = mutableListOf()
-    private val uiEditor: UIEditor<Course> = UIEditor(courseId == null) {
-        Course(
-            this.courseId,
-            nameField.value ?: "",
-            selectSubject.value ?: Subject.createEmpty(),
-            selectTeacher.value ?: User.createEmpty(),
-            groupHeaders
-        )
+
+    val selectSubject = MutableLiveData<SubjectResponse>()
+
+    val showFoundSubjects = typedSubjectName
+        .map { name: String -> findSubjectByContainsNameUseCase(name) }
+        .map { resource ->
+            resource.map {
+                foundSubjects = it
+                it.map { (id, name, iconUrl) ->
+                    ListItem(
+                        id = id.toString(),
+                        title = name,
+                        icon = UiImage.Url(iconUrl)
+                    )
+                }
+            }
+        }
+
+    val subjectNameTypeEnable = MutableLiveData<Boolean>()
+    val title = MutableLiveData<String>()
+
+    private val courseId: UUID? = _courseId?.toUUID()
+    private var foundTeachers: List<User>? = null
+    private var foundSubjects: List<SubjectResponse>? = null
+    private val subjectId: String? = null
+    private val teacherId: String? = null
+
+    private val uiEditor: UIEditor<CourseEditingState> = UIEditor(_courseId == null) {
+        uiState.value
     }
 
     init {
@@ -81,56 +94,34 @@ class CourseEditorViewModel @Inject constructor(
     )
 
     private fun setup() {
-        viewModelScope.launch {
-            try {
-                typedTeacherName
-                    .flatMapLatest { name -> findTeacherByContainsNameUseCase(name) }
-                    .collect { result ->
-                        result.mapBoth( //TODO Refactor
-                            success = {
-                                foundTeachers = it
-                                showFoundTeachers.emit(
-                                    it.map { user: User ->
-                                        ListItem(
-                                            id = user.id,
-                                            title = user.fullName,
-                                            icon = UiImage.Url(user.photoUrl),
-                                            type = ListPopupWindowAdapter.TYPE_AVATAR
-                                        )
-                                    }
-                                )
-                            },
-                            failure = {}
-                        )
-                    }
-            } catch (e: Exception) {
-                if (e is NetworkException) {
-                    showToast(R.string.error_check_network)
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            try {
-                typedSubjectName
-                    .flatMapLatest { name: String -> interactor.findSubjectByTypedName(name) }
-                    .map { list ->
-                        foundSubjects = list
-                        list.map { (id, name, iconUrl) ->
-                            ListItem(
-                                id = id,
-                                title = name,
-                                icon = UiImage.Url(iconUrl)
-                            )
-                        }
-                    }
-                    .collect { t: List<ListItem> -> showFoundSubjects.setValue(t) }
-            } catch (e: Exception) {
-                if (e is NetworkException) {
-                    showToast(R.string.error_check_network)
-                }
-            }
-        }
+//        viewModelScope.launch {
+//            try {
+//                typedTeacherName
+//                    .flatMapLatest { name -> findTeacherByContainsNameUseCase(name) }
+//                    .collect { result ->
+//                        result.mapBoth( //TODO Refactor
+//                            success = {
+//                                foundTeachers = it
+//                                showFoundTeachers.emit(
+//                                    it.map { user: User ->
+//                                        ListItem(
+//                                            id = user.id,
+//                                            title = user.fullName,
+//                                            icon = UiImage.Url(user.photoUrl),
+//                                            type = ListPopupWindowAdapter.TYPE_AVATAR
+//                                        )
+//                                    }
+//                                )
+//                            },
+//                            failure = {}
+//                        )
+//                    }
+//            } catch (e: Exception) {
+//                if (e is NetworkException) {
+//                    showToast(R.string.error_check_network)
+//                }
+//            }
+//        }
 
         if (uiEditor.isNew) setupForNewItem() else setupForExistItem()
     }
@@ -140,25 +131,39 @@ class CourseEditorViewModel @Inject constructor(
     }
 
     private fun setupForExistItem() {
-        existCourse
         title.value = "Редактировать курс"
     }
 
-    private val existCourse: Unit
-        get() {
-            viewModelScope.launch {
-                interactor.findCourse(courseId).collect { course: Course? ->
-                    course?.let {
-                        uiEditor.oldItem = course
-                        nameField.value = course.name
-                        selectTeacher.value = course.teacher
-                        selectSubject.value = course.subject
-                        groupHeaders = course.groupHeaders.toMutableList()
-                        groupList.value = addAdderGroupItem(groupHeaders)
-                    } ?: finish()
+    private val course = flow {
+        if (courseId != null) {
+            emit(findCourseByIdUseCase(courseId).onSuccess { course ->
+                uiEditor.oldItem = course
+                uiState.update {
+                    CourseEditingState(
+                        name = course.name,
+                        subjectName = course.subject?.name,
+                        subjectIconUrl = course.subject?.iconName
+                    )
                 }
-            }
+                selectSubject.value = course.subject
+            })
         }
+    }
+
+//    private val existCourse: Unit
+//        get() {
+//            viewModelScope.launch {
+//               findCourseByIdUseCase(courseId).onSuccess { course ->
+//                        uiEditor.oldItem = course
+//                        uiState.update { CourseEditingState(
+//                            name =
+//                        ) }
+//                        selectTeacher.value = course.teacher
+//                        selectSubject.value = course.subject
+//                        groupHeaders = course.groupHeaders.toMutableList()
+//                }
+//            }
+//        }
 
     private fun addAdderGroupItem(groupHeaders: List<GroupHeader> = emptyList()): List<DomainModel> =
         groupHeaders.map { ListItem(id = it.id, title = it.name, type = 1) } + ListItem(
@@ -269,7 +274,7 @@ class CourseEditorViewModel @Inject constructor(
     fun onGroupAddClick() {
         viewModelScope.launch {
             navigateTo(MobileNavigationDirections.actionGlobalGroupChooserFragment())
-            groupChooserInteractor.receiveSelectedGroup()
+            findGroupByContainsNameUseCase.receiveSelectedGroup()
                 .let { courseGroup ->
                     groupHeaders.add(courseGroup)
                     groupList.value = addAdderGroupItem(groupHeaders)

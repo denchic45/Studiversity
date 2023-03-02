@@ -11,23 +11,22 @@ import java.util.*
 
 interface CapabilityApi {
     suspend fun check(
-        userId: UUID,
+        userId: UUID? =null,
         scopeId: UUID,
-         capabilities: List<Capability>
+        capabilities: List<Capability>
     ): ResponseResult<CheckCapabilitiesResponse>
 }
 
 class CapabilityApiImpl(private val client: HttpClient) : CapabilityApi {
     override suspend fun check(
-        userId: UUID,
+        userId: UUID?,
         scopeId: UUID,
         capabilities: List<Capability>
     ): ResponseResult<CheckCapabilitiesResponse> {
-        return client.post("/users/$userId/scopes/$scopeId/capabilities/check") {
+        return client.post("/users/${userId ?: "me"}/scopes/$scopeId/capabilities/check") {
             contentType(ContentType.Application.Json)
             setBody(capabilities.map(Capability::resource))
         }.toResult()
     }
 
 }
-

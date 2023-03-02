@@ -7,6 +7,7 @@ import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toAttachmentResult
 import com.denchic45.stuiversity.api.common.toResult
+import com.denchic45.stuiversity.util.orMe
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -23,7 +24,7 @@ interface SubmissionsApi {
     suspend fun getByStudent(
         courseId: UUID,
         workId: UUID,
-        userId: UUID
+        userId: UUID? = null
     ): ResponseResult<SubmissionResponse>
 
     suspend fun getById(
@@ -77,6 +78,12 @@ interface SubmissionsApi {
         courseWorkId: UUID,
         submissionId: UUID
     ): ResponseResult<SubmissionResponse>
+
+    suspend fun cancelSubmission(
+        courseId: UUID,
+        courseWorkId: UUID,
+        submissionId: UUID
+    ): ResponseResult<SubmissionResponse>
 }
 
 class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
@@ -89,9 +96,10 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
 
     override suspend fun getByStudent(
         courseId: UUID,
-        workId: UUID, userId: UUID
+        workId: UUID,
+        userId: UUID?
     ): ResponseResult<SubmissionResponse> {
-        return client.get("/courses/$courseId/works/$workId/submissionsByStudentId/${userId}")
+        return client.get("/courses/$courseId/works/$workId/submissionsByStudentId/${userId.orMe}")
             .toResult()
     }
 
@@ -185,4 +193,13 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
     ): ResponseResult<SubmissionResponse> {
         return client.post("/courses/$courseId/works/$courseWorkId/submissions/${submissionId}/submit").toResult()
     }
+
+    override suspend fun cancelSubmission(
+        courseId: UUID,
+        courseWorkId: UUID,
+        submissionId: UUID
+    ): ResponseResult<SubmissionResponse> {
+        return client.post("/courses/$courseId/works/$courseWorkId/submissions/${submissionId}/cancel").toResult()
+    }
 }
+

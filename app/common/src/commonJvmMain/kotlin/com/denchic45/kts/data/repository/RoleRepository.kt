@@ -25,7 +25,7 @@ class RoleRepository(
     }
 
     suspend fun findUserCapabilitiesIdAndScopeId(
-        userId: UUID,
+        userId: UUID?  = null,
         scopeId: UUID,
         capabilities: List<Capability>,
     ): Resource<CheckCapabilitiesResponse> = fetchResource {

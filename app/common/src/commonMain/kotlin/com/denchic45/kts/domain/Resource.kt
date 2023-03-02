@@ -19,6 +19,8 @@ fun <T> Resource<T>.getData() = (this as Resource.Success).value
 
 typealias EmptyResource = Resource<Unit>
 
+fun emptyResource():EmptyResource = Resource.Success(Unit)
+
 fun <T> ResponseResult<T>.toResource(): Resource<T> = mapBoth(
     success = { Resource.Success(it) },
     failure = { Resource.Error(it.toFailure()) }
@@ -41,17 +43,19 @@ inline infix fun <T> Resource<T>.onFailure(action: (Failure) -> Unit): Resource<
     }
 }
 
-inline fun <V, E, U> Result<V, E>.map(transform: (V) -> U): Result<U, E> {
+inline fun <T,V> Resource<T>.map(transform: (T) -> V): Resource<V>{
     return when (this) {
-        is Ok -> Ok(transform(value))
-        is Err -> this
+        is Resource.Success -> Resource.Success(transform(value))
+        is Resource.Error -> this
+        is Resource.Loading -> Resource.Loading(value?.let { transform(it) })
     }
 }
 
-inline fun <V, E, F> Result<V, E>.mapError(transform: (E) -> F): Result<V, F> {
+inline fun<T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T> {
     return when (this) {
-        is Ok -> this
-        is Err -> Err(transform(error))
+        is Resource.Error -> Resource.Error(transform(failure))
+        is Resource.Success,
+        is Resource.Loading ->  this
     }
 }
 

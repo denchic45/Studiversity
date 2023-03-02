@@ -11,14 +11,14 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.denchic45.kts.data.storage.Storage
+import com.denchic45.kts.data.storage.TestStorage
 import com.github.michaelbull.result.fold
 
-class DownloadWorker(
+abstract class DownloadWorker<T : Storage>(
     context: Context,
     params: WorkerParameters,
-    private val storage: Storage
+    private val storage: T,
 ) : CoroutineWorker(context, params) {
-
     companion object {
         const val CHANNEL_ID = "DOWNLOAD_FILES"
     }
@@ -64,3 +64,6 @@ class DownloadWorker(
         return CHANNEL_ID
     }
 }
+
+class DownloadTestWorker(context: Context, params: WorkerParameters, testStorage: TestStorage) :
+    DownloadWorker<TestStorage>(context, params, testStorage)
