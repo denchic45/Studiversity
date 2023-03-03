@@ -16,9 +16,11 @@ abstract class Storage {
 
     suspend fun downloadAndSave(attachmentId: UUID): ResponseResult<FileAttachmentResponse> {
         return download(attachmentId).onSuccess {
-            FileSystem.SYSTEM.write(path / it.name) { write(it.bytes) }
+            FileSystem.SYSTEM.write(getFilePath(it.name)) { write(it.bytes) }
         }
     }
+
+    fun getFilePath(name: String) = path / name
 }
 
 class TestStorage(override val path: Path) : Storage() {

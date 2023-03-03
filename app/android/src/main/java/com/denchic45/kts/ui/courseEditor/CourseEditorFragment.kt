@@ -6,7 +6,6 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.AdapterView
 import android.widget.TextView.OnEditorActionListener
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.fragment.app.viewModels
@@ -18,45 +17,25 @@ import com.denchic45.kts.R
 import com.denchic45.kts.SvgColorListener
 import com.denchic45.kts.customPopup.ListPopupWindowAdapter
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.databinding.FragmentCourseEditorBinding
 import com.denchic45.kts.databinding.ItemGroupInCourseBinding
-import com.denchic45.kts.glideSvg.GlideApp
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.rx.EditTextTransformer
-import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.adapter.BaseViewHolder
+import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.util.*
-import com.denchic45.widget.extendedAdapter.ItemAdapterDelegate
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
-import com.denchic45.widget.extendedAdapter.adapter
-import com.denchic45.widget.extendedAdapter.extension.clickBuilder
 import com.jakewharton.rxbinding4.widget.textChanges
 import io.reactivex.rxjava3.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate
 
-class CourseEditorFragment :
-    BaseFragment<CourseEditorViewModel, FragmentCourseEditorBinding>(
-        layoutId = R.layout.fragment_course_editor,
-        menuResId = R.menu.options_course_editor
-    ) {
+class CourseEditorFragment : BaseFragment<CourseEditorViewModel, FragmentCourseEditorBinding>(
+    layoutId = R.layout.fragment_course_editor,
+    menuResId = R.menu.options_course_editor
+) {
     override val viewModel: CourseEditorViewModel by viewModels { viewModelFactory }
     private var popupWindow: ListPopupWindow? = null
 
     override val binding: FragmentCourseEditorBinding by viewBinding(FragmentCourseEditorBinding::bind)
-
-    private val adapter = adapter {
-        delegates(CourseGroupsAdapterDelegate(), ItemAdapterDelegate())
-        extensions {
-            clickBuilder<ItemAdapterDelegate.ItemHolder> {
-                onClick = { viewModel.onGroupAddClick() }
-            }
-            clickBuilder<CourseGroupsAdapterDelegate.GroupHolder> {
-                view = { it.itemGroupInCourseBinding.ivRemove }
-                onClick = { position ->
-                    viewModel.onGroupRemoveClick(position)
-                }
-            }
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,19 +43,11 @@ class CourseEditorFragment :
 
         binding.apply {
             tvSubjectName.setOnClickListener { viewModel.onSubjectNameClick() }
-            tvTeacherName.setOnClickListener { viewModel.onTeacherNameClick() }
             ivSubjectEdit.setOnClickListener { viewModel.onSubjectEditClick() }
-            ivTeacherEdit.setOnClickListener { viewModel.onTeacherEditClick() }
-
-            rvGroups.adapter = adapter
 
             etSubjectName.onFocusChangeListener =
                 OnFocusChangeListener { _: View?, focus: Boolean ->
                     viewModel.onSubjectNameFocusChange(focus)
-                }
-            etTeacherName.onFocusChangeListener =
-                OnFocusChangeListener { _: View?, focus: Boolean ->
-                    viewModel.onTeacherNameFocusChange(focus)
                 }
 
             etCourseName.textChanges()
@@ -91,23 +62,34 @@ class CourseEditorFragment :
                 }
                 false
             })
-            etTeacherName.setOnEditorActionListener(OnEditorActionListener { _, actionId: Int, _ ->
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    viewModel.onTeacherNameType(etTeacherName.text.toString())
-                    etTeacherName.closeKeyboard()
-                    return@OnEditorActionListener true
-                }
-                false
-            })
-
-            viewModel.groupList.observe(viewLifecycleOwner) {
-                adapter.submit(it)
-            }
-
             viewModel.title.observe(viewLifecycleOwner, this@CourseEditorFragment::setActivityTitle)
 
-            viewModel.nameField.observe(viewLifecycleOwner) {
-                if (etCourseName.text.toString() != it) etCourseName.setText(it)
+            viewModel.uiState.collectWhenStarted(lifecycleScope) {
+                when (it) {
+                    is Resource.Error -> TODO()
+                    is Resource.Loading -> TODO()
+                    is Resource.Success -> {
+                        with(it.value) {
+                            if (etCourseName.text.toString() != name) etCourseName.setText(name)
+
+                            Glide.with(requireActivity())
+                                .`as`(PictureDrawable::class.java)
+                                .transition(DrawableTransitionOptions.withCrossFade())
+                                .listener(
+                                    SvgColorListener(
+                                        ivSubjectIcon,
+                                        R.color.dark_blue,
+                                        requireContext()
+                                    )
+                                )
+                                .load(subjectIconUrl)
+                                .into(ivSubjectIcon)
+
+                            tvSubjectName.text = name
+                            etSubjectName.setText("")
+                        }
+                    }
+                }
             }
 
             viewModel.subjectNameTypeEnable.observe(viewLifecycleOwner) { visible: Boolean ->
@@ -120,60 +102,21 @@ class CourseEditorFragment :
                 }
             }
 
-            viewModel.teacherNameTypeEnable.observe(
-                viewLifecycleOwner
-            ) { visible: Boolean ->
-                vsTeacherName.displayedChild = if (visible) 1 else 0
-                ivTeacherEdit.setImageResource(if (visible) R.drawable.ic_arrow_left else R.drawable.ic_edit)
-                if (visible) {
-                    etTeacherName.showKeyboard()
-                } else {
-                    etTeacherName.closeKeyboard()
+            viewModel.showFoundSubjects.collectWhenStarted(lifecycleScope) { resource ->
+                when (resource) {
+                    is Resource.Error -> TODO()
+                    is Resource.Loading -> TODO()
+                    is Resource.Success -> {
+                        val subjects = resource.value
+                        popupWindow!!.anchorView = etSubjectName
+                        popupWindow!!.setAdapter(ListPopupWindowAdapter(requireContext(), subjects))
+                        popupWindow!!.setOnItemClickListener { _, _, position: Int, _ ->
+                            popupWindow!!.dismiss()
+                            viewModel.onSubjectSelect(position)
+                        }
+                        popupWindow!!.show()
+                    }
                 }
-            }
-            viewModel.selectSubject.observe(viewLifecycleOwner) { (_, name, iconUrl) ->
-                GlideApp.with(requireActivity())
-                    .`as`(PictureDrawable::class.java)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .listener(
-                        SvgColorListener(
-                            ivSubjectIcon,
-                            R.color.dark_blue,
-                            requireContext()
-                        )
-                    )
-                    .load(iconUrl)
-                    .into(ivSubjectIcon)
-                tvSubjectName.text = name
-                etSubjectName.setText("")
-            }
-
-            viewModel.selectTeacher.observe(viewLifecycleOwner) { teacher: User ->
-                Glide.with(requireActivity())
-                    .load(teacher.photoUrl)
-                    .transition(DrawableTransitionOptions.withCrossFade(100))
-                    .into(ivTeacherAvatar)
-                tvTeacherName.text = teacher.fullName
-                etTeacherName.setText("")
-            }
-            viewModel.showFoundTeachers.collectWhenStarted(lifecycleScope) { items: List<ListItem> ->
-                popupWindow!!.anchorView = etTeacherName
-                popupWindow!!.setAdapter(ListPopupWindowAdapter(requireContext(), items))
-                popupWindow!!.setOnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
-                    popupWindow!!.dismiss()
-                    viewModel.onTeacherSelect(position)
-                }
-                popupWindow!!.show()
-            }
-
-            viewModel.showFoundSubjects.observe(viewLifecycleOwner) { items: List<ListItem> ->
-                popupWindow!!.anchorView = etSubjectName
-                popupWindow!!.setAdapter(ListPopupWindowAdapter(requireContext(), items))
-                popupWindow!!.setOnItemClickListener { _, _, position: Int, _ ->
-                    popupWindow!!.dismiss()
-                    viewModel.onSubjectSelect(position)
-                }
-                popupWindow!!.show()
             }
 
             etSubjectName.textChanges()
@@ -184,10 +127,6 @@ class CourseEditorFragment :
                         subjectName
                     )
                 }
-            etTeacherName.textChanges()
-                .compose(EditTextTransformer())
-                .filter(NonThrowingPredicate { charSequence: CharSequence -> charSequence.length > 3 && etTeacherName.hasFocus() } as NonThrowingPredicate<CharSequence>)
-                .subscribe { teacherName: String -> viewModel.onTeacherNameType(teacherName) }
         }
     }
 

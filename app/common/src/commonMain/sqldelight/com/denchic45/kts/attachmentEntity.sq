@@ -1,0 +1,24 @@
+CREATE TABLE attachmentEntity (
+attachment_id TEXT NOT NULL UNIQUE PRIMARY KEY,
+attachment_name TEXT NOT NULL,
+file_path TEXT NOT NULL,
+sync INTEGER AS Boolean NOT NULL
+);
+
+upsert:
+INSERT INTO attachmentEntity
+VALUES ?
+ON CONFLICT(attachment_id)
+DO UPDATE SET
+attachment_name = excluded.attachment_name,
+file_path = excluded.file_path,
+sync = excluded.sync;
+
+updateSync:
+UPDATE attachmentEntity
+SET sync =: sync
+WHERE attachment_id =: id;
+
+getByDirPath:
+SELECT * FROM attachmentEntity
+WHERE file_path LIKE (:path || '%');

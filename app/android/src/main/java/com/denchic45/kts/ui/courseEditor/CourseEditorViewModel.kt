@@ -2,19 +2,13 @@ package com.denchic45.kts.ui.courseEditor
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.*
-import com.denchic45.kts.data.repository.SameCoursesException
-import com.denchic45.kts.domain.map
+import com.denchic45.kts.domain.*
 import com.denchic45.kts.domain.model.GroupHeader
-import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.FindCourseByIdUseCase
-import com.denchic45.kts.domain.usecase.FindGroupByContainsNameUseCase
 import com.denchic45.kts.domain.usecase.FindSubjectByContainsNameUseCase
-import com.denchic45.kts.domain.usecase.FindUserByContainsNameUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.ui.model.UiImage
@@ -22,8 +16,10 @@ import com.denchic45.kts.uieditor.UIEditor
 import com.denchic45.kts.uivalidator.Rule
 import com.denchic45.kts.uivalidator.UIValidator
 import com.denchic45.kts.uivalidator.Validation
-import com.denchic45.kts.util.NetworkException
+import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
+import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.stuiversity.util.optPropertyOf
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -38,23 +34,19 @@ class CourseEditorViewModel @Inject constructor(
     private val interactor: CourseEditorInteractor,
     private val findSubjectByContainsNameUseCase: FindSubjectByContainsNameUseCase,
     private val confirmInteractor: ConfirmInteractor,
-    private val findCourseByIdUseCase: FindCourseByIdUseCase,
-    private val findGroupByContainsNameUseCase: FindGroupByContainsNameUseCase,
-    private val findUserByContainsNameUseCase: FindUserByContainsNameUseCase,
+    private val findCourseByIdUseCase: FindCourseByIdUseCase
 ) : BaseViewModel() {
 
     data class CourseEditingState(
         val name: String = "",
-        val subjectName: String = "",
-        val subjectIconUrl: String = "",
+        val subjectId: UUID?,
+        val subjectName: String?,
+        val subjectIconUrl: String?,
     )
 
-    val uiState = MutableStateFlow(CourseEditingState())
+    val uiState = MutableStateFlow<Resource<CourseEditingState>>(Resource.Loading())
 
     private val typedSubjectName = MutableSharedFlow<String>()
-    private val typedTeacherName = MutableSharedFlow<String>()
-
-    val selectSubject = MutableLiveData<SubjectResponse>()
 
     val showFoundSubjects = typedSubjectName
         .map { name: String -> findSubjectByContainsNameUseCase(name) }
@@ -75,12 +67,10 @@ class CourseEditorViewModel @Inject constructor(
     val title = MutableLiveData<String>()
 
     private val courseId: UUID? = _courseId?.toUUID()
-    private var foundTeachers: List<User>? = null
     private var foundSubjects: List<SubjectResponse>? = null
     private val subjectId: String? = null
-    private val teacherId: String? = null
 
-    private val uiEditor: UIEditor<CourseEditingState> = UIEditor(_courseId == null) {
+    private val uiEditor: UIEditor<Resource<CourseEditingState>> = UIEditor(_courseId == null) {
         uiState.value
     }
 
@@ -89,40 +79,10 @@ class CourseEditorViewModel @Inject constructor(
     }
 
     private val uiValidator: UIValidator = UIValidator.of(
-        Validation(Rule({ subjectId.isNullOrEmpty() }, "Предмет отсутствует")),
-        Validation(Rule({ teacherId.isNullOrEmpty() }, "Преподаватель отсутствует"))
+        Validation(Rule({ subjectId.isNullOrEmpty() }, "Предмет отсутствует"))
     )
 
     private fun setup() {
-//        viewModelScope.launch {
-//            try {
-//                typedTeacherName
-//                    .flatMapLatest { name -> findTeacherByContainsNameUseCase(name) }
-//                    .collect { result ->
-//                        result.mapBoth( //TODO Refactor
-//                            success = {
-//                                foundTeachers = it
-//                                showFoundTeachers.emit(
-//                                    it.map { user: User ->
-//                                        ListItem(
-//                                            id = user.id,
-//                                            title = user.fullName,
-//                                            icon = UiImage.Url(user.photoUrl),
-//                                            type = ListPopupWindowAdapter.TYPE_AVATAR
-//                                        )
-//                                    }
-//                                )
-//                            },
-//                            failure = {}
-//                        )
-//                    }
-//            } catch (e: Exception) {
-//                if (e is NetworkException) {
-//                    showToast(R.string.error_check_network)
-//                }
-//            }
-//        }
-
         if (uiEditor.isNew) setupForNewItem() else setupForExistItem()
     }
 
@@ -132,38 +92,22 @@ class CourseEditorViewModel @Inject constructor(
 
     private fun setupForExistItem() {
         title.value = "Редактировать курс"
-    }
-
-    private val course = flow {
         if (courseId != null) {
-            emit(findCourseByIdUseCase(courseId).onSuccess { course ->
-                uiEditor.oldItem = course
-                uiState.update {
-                    CourseEditingState(
-                        name = course.name,
-                        subjectName = course.subject?.name,
-                        subjectIconUrl = course.subject?.iconName
-                    )
+            viewModelScope.launch {
+                findCourseByIdUseCase(courseId).onSuccess { course ->
+                    uiState.updateResource {
+                        CourseEditingState(
+                            name = course.name,
+                            subjectId = course.subject?.id,
+                            subjectName = course.subject?.name,
+                            subjectIconUrl = course.subject?.iconName
+                        )
+                    }
+                    uiEditor.oldItem = uiState.value
                 }
-                selectSubject.value = course.subject
-            })
+            }
         }
     }
-
-//    private val existCourse: Unit
-//        get() {
-//            viewModelScope.launch {
-//               findCourseByIdUseCase(courseId).onSuccess { course ->
-//                        uiEditor.oldItem = course
-//                        uiState.update { CourseEditingState(
-//                            name =
-//                        ) }
-//                        selectTeacher.value = course.teacher
-//                        selectSubject.value = course.subject
-//                        groupHeaders = course.groupHeaders.toMutableList()
-//                }
-//            }
-//        }
 
     private fun addAdderGroupItem(groupHeaders: List<GroupHeader> = emptyList()): List<DomainModel> =
         groupHeaders.map { ListItem(id = it.id, title = it.name, type = 1) } + ListItem(
@@ -173,23 +117,23 @@ class CourseEditorViewModel @Inject constructor(
         )
 
     private fun onSaveClick() {
-        viewModelScope.launch {
-            try {
-                if (uiEditor.isNew)
-                    interactor.addCourse(uiEditor.item)
-                else
-                    interactor.updateCourse(uiEditor.item)
-                finish()
-            } catch (e: Exception) {
-                when (e) {
-                    is NetworkException -> {
-                        showToast(R.string.error_check_network)
-                    }
-                    is SameCoursesException -> {
-                        showSnackBar("Такой курс уже существует!")
-                    }
+        (uiState.value as? Resource.Success)?.value?.let { state ->
+            viewModelScope.launch {
+                val result = if (uiEditor.isNew) {
+                    interactor.addCourse(CreateCourseRequest(state.name, state.subjectId))
+                } else {
+                    interactor.updateCourse(
+                        courseId!!, UpdateCourseRequest(
+                            optPropertyOf(state.name),
+                            optPropertyOf(state.subjectId)
+                        )
+                    )
                 }
-                e.printStackTrace()
+                when (result) {
+                    is Resource.Error -> {}
+                    is Resource.Loading -> {}
+                    is Resource.Success -> finish()
+                }
             }
         }
     }
@@ -198,20 +142,12 @@ class CourseEditorViewModel @Inject constructor(
         viewModelScope.launch { typedSubjectName.emit(subjectName) }
     }
 
-    fun onTeacherNameType(teacherName: String) {
-        viewModelScope.launch { typedTeacherName.emit(teacherName) }
-    }
 
     fun onCourseNameType(name: String) {
-        nameField.postValue(name)
-        enablePositiveBtn()
-    }
-
-    fun onTeacherSelect(position: Int) {
-        val teacher = foundTeachers!![position]
-        teacherNameTypeEnable.value = false
-        selectTeacher.value = teacher
-        enablePositiveBtn()
+        uiState.updateResource {
+            enablePositiveBtn()
+            it.copy(name = name)
+        }
     }
 
     private fun enablePositiveBtn() {
@@ -230,11 +166,13 @@ class CourseEditorViewModel @Inject constructor(
     fun onSubjectSelect(position: Int) {
         val subject = foundSubjects!![position]
         subjectNameTypeEnable.value = false
-        selectSubject.value = subject
         enablePositiveBtn()
-
-        if ((nameField.value ?: "").isEmpty()) {
-            nameField.value = subject.name
+        uiState.updateResource {
+            it.copy(
+                subjectId = subject.id,
+                subjectName = subject.name,
+                subjectIconUrl = subject.iconName
+            )
         }
     }
 
@@ -243,18 +181,8 @@ class CourseEditorViewModel @Inject constructor(
         setSaveOptionVisibility(false)
     }
 
-    fun onTeacherNameClick() {
-        teacherNameTypeEnable.value = true
-        setSaveOptionVisibility(false)
-    }
-
     fun onSubjectEditClick() {
         subjectNameTypeEnable.value = !(subjectNameTypeEnable.value ?: false)
-        enablePositiveBtn()
-    }
-
-    fun onTeacherEditClick() {
-        teacherNameTypeEnable.value = !(teacherNameTypeEnable.value ?: false)
         enablePositiveBtn()
     }
 
@@ -262,31 +190,9 @@ class CourseEditorViewModel @Inject constructor(
         subjectNameTypeEnable.value = focus
     }
 
-    fun onTeacherNameFocusChange(focus: Boolean) {
-        teacherNameTypeEnable.value = focus
-    }
-
     override fun onCleared() {
         super.onCleared()
         interactor.removeListeners()
-    }
-
-    fun onGroupAddClick() {
-        viewModelScope.launch {
-            navigateTo(MobileNavigationDirections.actionGlobalGroupChooserFragment())
-            findGroupByContainsNameUseCase.receiveSelectedGroup()
-                .let { courseGroup ->
-                    groupHeaders.add(courseGroup)
-                    groupList.value = addAdderGroupItem(groupHeaders)
-                    enablePositiveBtn()
-                }
-        }
-    }
-
-    fun onGroupRemoveClick(position: Int) {
-        groupHeaders.removeAt(position)
-        groupList.value = addAdderGroupItem(groupHeaders)
-        enablePositiveBtn()
     }
 
     override fun onOptionClick(itemId: Int) {
@@ -342,13 +248,10 @@ class CourseEditorViewModel @Inject constructor(
     }
 
     private suspend fun removeCourse() {
-        try {
-            finish()
-            interactor.removeCourse(uiEditor.item)
-        } catch (e: Exception) {
-            if (e is NetworkException) {
-                showToast(R.string.error_check_network)
-            }
+        when (interactor.removeCourse(courseId!!)) {
+            is Resource.Loading -> {}
+            is Resource.Success -> finish()
+            is Resource.Error -> {}
         }
     }
 

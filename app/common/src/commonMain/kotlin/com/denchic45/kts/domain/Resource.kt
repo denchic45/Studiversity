@@ -3,10 +3,9 @@ package com.denchic45.kts.domain
 import com.denchic45.kts.data.domain.Failure
 import com.denchic45.kts.data.domain.toFailure
 import com.denchic45.stuiversity.api.common.ResponseResult
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Ok
-import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapBoth
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 
 sealed interface Resource<out T> {
     data class Loading<T>(val value: T? = null) : Resource<T>
@@ -19,7 +18,13 @@ fun <T> Resource<T>.getData() = (this as Resource.Success).value
 
 typealias EmptyResource = Resource<Unit>
 
-fun emptyResource():EmptyResource = Resource.Success(Unit)
+fun emptyResource(): EmptyResource = Resource.Success(Unit)
+
+fun <T> Resource<T>.success() = this as Resource.Success
+
+fun <T> Resource.Success<T>.updateResource(function: (T) -> T): Resource.Success<T> {
+    return Resource.Success(function(value))
+}
 
 fun <T> ResponseResult<T>.toResource(): Resource<T> = mapBoth(
     success = { Resource.Success(it) },
@@ -43,7 +48,7 @@ inline infix fun <T> Resource<T>.onFailure(action: (Failure) -> Unit): Resource<
     }
 }
 
-inline fun <T,V> Resource<T>.map(transform: (T) -> V): Resource<V>{
+inline fun <T, V> Resource<T>.map(transform: (T) -> V): Resource<V> {
     return when (this) {
         is Resource.Success -> Resource.Success(transform(value))
         is Resource.Error -> this
@@ -51,11 +56,11 @@ inline fun <T,V> Resource<T>.map(transform: (T) -> V): Resource<V>{
     }
 }
 
-inline fun<T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T> {
+inline fun <T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T> {
     return when (this) {
         is Resource.Error -> Resource.Error(transform(failure))
         is Resource.Success,
-        is Resource.Loading ->  this
+        is Resource.Loading -> this
     }
 }
 
@@ -64,5 +69,32 @@ inline fun <T, V> Resource<T>.mapBoth(onSuccess: (T) -> V, onFailure: (Failure) 
         is Resource.Success -> onSuccess(value)
         is Resource.Error -> onFailure(failure)
         is Resource.Loading -> TODO()
+    }
+}
+
+fun <T> Flow<Resource<T>>.updateResource(onSuccess: (T) -> T): Flow<Resource<T>> = map {
+    when (it) {
+        is Resource.Error -> it
+        is Resource.Loading -> it
+        is Resource.Success -> Resource.Success(onSuccess(it.value))
+    }
+}
+
+fun <T, V> Flow<Resource<T>>.mapResource(function: (T) -> V): Flow<Resource<V>> = map {
+    when (it) {
+        is Resource.Error -> it
+        is Resource.Loading -> Resource.Loading(it.value?.run { function(this) })
+        is Resource.Success -> Resource.Success(function(it.value))
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <T, V> Flow<Resource<T>>.flatMapResource(function: (T) -> Flow<Resource<V>>): Flow<Resource<V>> {
+    return flatMapLatest {
+        when (it) {
+            is Resource.Error -> flowOf(it)
+            is Resource.Loading -> it.value?.run { function(this) } ?: emptyFlow()
+            is Resource.Success -> function(it.value)
+        }
     }
 }

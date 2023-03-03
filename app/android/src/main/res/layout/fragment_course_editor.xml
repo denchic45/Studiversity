@@ -90,85 +90,8 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:srcCompat="@drawable/ic_edit"
                 tools:ignore="ContentDescription" />
-
         </LinearLayout>
 
         <View style="@style/Divider" />
-
-        <LinearLayout
-            android:id="@+id/layout_teacher_content"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <androidx.constraintlayout.utils.widget.ImageFilterView
-                android:id="@+id/iv_teacher_avatar"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                app:roundPercent="1"
-                app:srcCompat="@drawable/ic_teacher" />
-
-            <ViewSwitcher
-                android:id="@+id/vs_teacher_name"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
-
-                <TextView
-                    android:id="@+id/tv_teacher_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:ellipsize="end"
-                    android:gravity="center_vertical"
-                    android:maxLines="1"
-                    android:text="Преподаватель"
-                    android:textSize="16sp" />
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_teacher_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:ellipsize="end"
-                    android:hint="Преподаватель"
-                    android:imeOptions="actionSearch"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:textSize="16sp" />
-            </ViewSwitcher>
-
-            <ImageView
-                android:id="@+id/iv_teacher_edit"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_margin="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:srcCompat="@drawable/ic_edit"
-                tools:ignore="ContentDescription" />
-        </LinearLayout>
-
-        <View style="@style/Divider" />
-
-        <TextView
-            android:id="@+id/tv_header"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:fontFamily="@font/gilroy_semi_bold"
-            android:gravity="center_vertical"
-            android:text="Группы"
-            android:textSize="16sp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_groups"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:itemCount="3"
-            tools:listitem="@layout/item_icon_content" />
-
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

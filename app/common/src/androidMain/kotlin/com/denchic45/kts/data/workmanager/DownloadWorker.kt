@@ -12,6 +12,7 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.denchic45.kts.data.storage.Storage
 import com.denchic45.kts.data.storage.TestStorage
+import com.denchic45.stuiversity.util.toUUID
 import com.github.michaelbull.result.fold
 
 abstract class DownloadWorker<T : Storage>(
@@ -25,7 +26,7 @@ abstract class DownloadWorker<T : Storage>(
 
     override suspend fun doWork(): Result {
         setForeground(createForegroundInfo())
-        return storage.downloadAndSave()
+        return storage.downloadAndSave(inputData.getString("id")!!.toUUID())
             .fold(success = { Result.success() }, failure = { Result.failure() })
     }
 

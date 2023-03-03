@@ -5,5 +5,6 @@ import kotlinx.coroutines.flow.Flow
 import java.util.*
 
 expect class DownloadsService() {
-     inline fun <reified T:Storage> download(attachmentId: UUID): Flow<DownloadState>
+    inline fun <reified T: Storage> download(attachmentId: UUID): Flow<DownloadState>
+    fun get
 }

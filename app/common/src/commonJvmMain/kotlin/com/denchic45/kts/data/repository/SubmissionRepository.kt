@@ -72,8 +72,4 @@ class SubmissionRepository(
     suspend fun findOwnSubmissionByWork(courseId: UUID, workId: UUID) = fetchResource {
         submissionsApi.getByStudent(courseId, workId)
     }
-
-    suspend fun returnSubmission(courseId: UUID, workId: UUID, submissionId: UUID) {
-        TODO()
-    }
 }
