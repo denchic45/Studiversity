@@ -31,7 +31,7 @@ data class WorkSubmissionResponse(
     override val state: SubmissionState,
     @Serializable(UUIDSerializer::class)
     override val courseWorkId: UUID,
-    override val content: WorkSubmissionContent?,
+    override val content: WorkSubmissionContent = WorkSubmissionContent(emptyList()),
     @Serializable(LocalDateTimeSerializer::class)
     override val doneAt: LocalDateTime?,
     @Serializable(LocalDateTimeSerializer::class)

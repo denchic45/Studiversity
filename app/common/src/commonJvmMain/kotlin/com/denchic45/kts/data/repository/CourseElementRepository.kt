@@ -2,6 +2,9 @@ package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.AttachmentEntity
 import com.denchic45.kts.data.db.local.source.AttachmentLocalDataSource
+import com.denchic45.kts.data.domain.model.FileAttachment2
+import com.denchic45.kts.data.domain.model.FileState
+import com.denchic45.kts.data.domain.model.LinkAttachment2
 import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.observeResource
 import com.denchic45.kts.data.service.NetworkService
@@ -15,8 +18,14 @@ import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
-import com.github.michaelbull.result.*
+import com.denchic45.stuiversity.util.toUUID
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.unwrap
+import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
+import okio.Path.Companion.toPath
 import java.util.*
 
 @Inject
@@ -64,7 +73,7 @@ class CourseElementRepository(
     suspend fun addAttachmentToWork(
         courseId: UUID,
         workId: UUID,
-        attachment: AttachmentRequest
+        attachment: AttachmentRequest,
     ): Resource<AttachmentHeader> = fetchResource {
         when (attachment) {
             is CreateFileRequest -> courseWorkApi.uploadFileToWork(
@@ -78,6 +87,13 @@ class CourseElementRepository(
                 attachment
             )
         }
+    }
+
+    suspend fun removeAttachmentFromWork(
+        courseId: UUID,
+        workId: UUID, attachmentId: UUID,
+    ) = fetchResource {
+        courseWorkApi.deleteAttachmentFromWork(courseId, workId, attachmentId)
     }
 
     suspend fun updateWork(
@@ -96,25 +112,58 @@ class CourseElementRepository(
         TODO("Not yet implemented")
     }
 
-    suspend fun findAttachments(courseId: UUID, workId: UUID) = observeResource(
-        query = attachmentLocalDataSource.getByDirPath(courseWorkStorage.path.toString()),
-        fetch = { courseWorkApi.getAttachments(courseId, workId) },
-        saveFetch = {
-            it.forEach { attachment ->
-                (attachment as? FileAttachmentHeader)?.let { fileAttachment ->
-                    val fileName = fileAttachment.fileItem.name
-                    attachmentLocalDataSource.upsert(
-                        AttachmentEntity(
-                            attachment_id = fileAttachment.id.toString(),
-                            attachment_name = fileName,
-                            file_path = courseWorkStorage.getFilePath(fileName).toString(),
-                            sync = false
-                        )
-                    )
-                }
-            }
-        }
-    )
+//    fun findAttachments(courseId: UUID, workId: UUID) = observeResource(
+//        query = attachmentLocalDataSource.getByDirPath(courseWorkStorage.path.toString()).map {
+//            it.map { entity ->
+//                val id = entity.attachment_id.toUUID()
+//                when (entity.type) {
+//                    AttachmentType.FILE -> FileAttachment2(
+//                        id = id,
+//                        path = entity.path!!.toPath(),
+//                        state = if (entity.sync) FileState.Downloaded else FileState.Preview
+//                    )
+//                    AttachmentType.LINK -> {
+//                        LinkAttachment2(id, entity.url!!)
+//                    }
+//                }
+//            }
+//        },
+//        fetch = { courseWorkApi.getAttachments(courseId, workId) },
+//        saveFetch = {
+//            it.forEach { attachment ->
+//                attachmentLocalDataSource.upsert(
+//                    when (attachment) {
+//                        is FileAttachmentHeader -> {
+//                            val fileName = attachment.fileItem.name
+//                            AttachmentEntity(
+//                                attachment_id = attachment.id.toString(),
+//                                attachment_name = fileName,
+//                                url = null,
+//                                thumbnail_url = null,
+//                                type = AttachmentType.FILE,
+//                                path = courseWorkStorage.getFilePath(fileName).toString(),
+//                                owner_id = null,
+//                                sync = false
+//                            )
+//                        }
+//                        is LinkAttachmentHeader -> {
+//                            val linkAttachmentResponse = attachment.linkAttachmentResponse
+//                            AttachmentEntity(
+//                                attachment_id = attachment.id.toString(),
+//                                attachment_name = linkAttachmentResponse.name,
+//                                url = linkAttachmentResponse.url,
+//                                thumbnail_url = linkAttachmentResponse.thumbnailUrl,
+//                                type = AttachmentType.FILE,
+//                                path = null,
+//                                owner_id = null,
+//                                sync = true
+//                            )
+//                        }
+//                    }
+//                )
+//            }
+//        }
+//    )
 
     suspend fun removeElement(courseId: UUID, elementId: UUID) = fetchResource {
         courseElementsApi.delete(courseId, elementId)

@@ -4,7 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.data.domain.model.Attachment
+import com.denchic45.kts.data.domain.model.Attachment2
+import com.denchic45.kts.data.domain.model.FileAttachment2
+import com.denchic45.kts.data.domain.model.LinkAttachment2
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.onSuccess
@@ -26,16 +28,18 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Named
 
-class TaskInfoViewModel @Inject constructor(
+class CourseWorkViewModel @Inject constructor(
     @Named(TaskInfoFragment.TASK_ID) val _taskId: String,
     @Named(TaskInfoFragment.COURSE_ID) val _courseId: String,
     findSelfUserUseCase: FindSelfUserUseCase,
     findCourseWorkUseCase: FindCourseWorkUseCase,
     findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
+    findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
     findOwnSubmissionUseCase: FindOwnSubmissionUseCase,
     private val submitSubmissionUseCase: SubmitSubmissionUseCase,
     private val cancelSubmissionUseCase: CancelSubmissionUseCase,
     private val uploadAttachmentToSubmissionUseCase: UploadAttachmentToSubmissionUseCase,
+    private val removeAttachmentToSubmissionUseCase: RemoveAttachmentToSubmissionUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
 ) : BaseViewModel() {
 
@@ -49,12 +53,13 @@ class TaskInfoViewModel @Inject constructor(
         replay = 1,
         started = SharingStarted.WhileSubscribed()
     )
-    val attachments =
-        flow { emit(findCourseWorkAttachmentsUseCase(courseId, courseWorkId)) }.stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            Resource.Loading()
-        )
+
+
+    private val _workAttachments = MutableStateFlow<Resource<List<Attachment2>>>(Resource.Loading)
+    val workAttachments = _workAttachments.asStateFlow()
+
+    private val _submissionAttachments = MutableStateFlow<List<Attachment2>>(emptyList())
+    val submissionAttachments = _submissionAttachments.asStateFlow()
 
     val workUiState = courseWorkFlow.map { resource ->
         resource.map { element ->
@@ -76,10 +81,9 @@ class TaskInfoViewModel @Inject constructor(
     val expandBottomSheet = MutableLiveData(BottomSheetBehavior.STATE_COLLAPSED)
     val focusOnTextField = SingleLiveData<Unit>()
 
-    private var oldContent: SubmissionContent? = null
     private var contentUpdateDate: LocalDateTime? = null
 
-    private val _submission = MutableSharedFlow<Resource<SubmissionResponse>>(replay = 1)
+    private val _submission = MutableSharedFlow<Resource<WorkSubmissionResponse>>(replay = 1)
 
     val submissionUiState = _submission
         .map { it.map { response -> response.toSubmissionUiState(work()) } }
@@ -94,12 +98,25 @@ class TaskInfoViewModel @Inject constructor(
             ).onSuccess {
                 _submission.emit(
                     findOwnSubmissionUseCase(courseId, courseWorkId)
-                        .onSuccess { submissionResponse: SubmissionResponse ->
-                            oldContent = submissionResponse.content
+                        .map { it as WorkSubmissionResponse }
+                        .onSuccess { submissionResponse ->
+                            _submissionAttachments.value = submissionResponse.content.attachments
+//                            oldSubmissionAttachments = submissionResponse.content
+//                            updatedContent = oldSubmissionAttachments
                             contentUpdateDate = submissionResponse.updatedAt
                         }
                 )
             }
+        }
+
+        viewModelScope.launch {
+            findCourseWorkAttachmentsUseCase(courseId, courseWorkId).collect { resource ->
+                _workAttachments.update { resource }
+            }
+        }
+
+        viewModelScope.launch {
+
         }
     }
 
@@ -130,10 +147,10 @@ class TaskInfoViewModel @Inject constructor(
 
     fun onSubmissionAttachmentClick(position: Int) {
         viewModelScope.launch {
-            attachments.value.onSuccess {
+            _oldWorkAttachments.value.onSuccess {
                 when (val attachment = it[position]) {
-                    is FileAttachmentHeader -> openAttachment.value = attachment.fileItem
-                    is LinkAttachmentHeader -> TODO()
+                    is FileAttachment2 -> openAttachment.value = attachment.path.toFile()
+                    is LinkAttachment2 -> TODO()
                 }
             }
         }
@@ -144,31 +161,44 @@ class TaskInfoViewModel @Inject constructor(
 
     fun onSelectedFile(file: File) {
         viewModelScope.launch {
-            content = content.copy(attachments = content.attachments + Attachment(file))
-            _submission.emit(_submission.first().copy(content = content))
+            when (uploadAttachmentToSubmissionUseCase(
+                courseId,
+                courseWorkId,
+                CreateFileRequest(file.name, file.readBytes())
+            )) {
+                is Resource.Error -> toast.emit("Произошла ошибка при загрузке...")
+                Resource.Loading -> toast.emit("Загрузка файла...")
+                is Resource.Success -> toast.emit("Произошла ошибка...")
+            }
         }
     }
 
-    fun onTaskFileClick(position: Int) {
+    fun onAttachmentClick(position: Int) {
         viewModelScope.launch {
-            openAttachment.value = attachments.value[position].file
+            workAttachments.value.onSuccess { attachments ->
+                openAttachment.value = attachments[position].
+            }
         }
     }
 
     fun onRemoveSubmissionFileClick(position: Int) {
         viewModelScope.launch {
-            content =
-                content.copy(attachments = content.attachments - content.attachments[position])
-            _submission.emit(_submission.first().copy(content = content))
+            workAttachments.value.onSuccess { attachments ->
+                removeAttachmentToSubmissionUseCase(
+                    courseId,
+                    courseWorkId,
+                    attachments[position].id
+                )
+            }
         }
     }
 
-    fun onSubmissionTextType(text: String) {
-        viewModelScope.launch {
-            content = content.copy(text = text)
-            _submission.emit(_submission.first().copy(content = content))
-        }
-    }
+//    fun onSubmissionTextType(text: String) {
+//        viewModelScope.launch {
+//            content = content.copy(text = text)
+//            _submission.emit(_submission.first().copy(content = content))
+//        }
+//    }
 
     fun onBackPress() {
         if (expandBottomSheet.value != BottomSheetBehavior.STATE_COLLAPSED) {
@@ -219,7 +249,8 @@ class TaskInfoViewModel @Inject constructor(
         }
     }
 
-    private fun contentIsChangeAndNotEmpty() = oldContent != content && !content!!.isEmpty()
+    private fun contentIsChangeAndNotEmpty() =
+        oldSubmissionAttachments != content && !content!!.isEmpty()
 
     private suspend fun onCancelSubmitClick() {
         _submission.first().onSuccess { submissionResponse: SubmissionResponse ->
@@ -266,7 +297,7 @@ class TaskInfoViewModel @Inject constructor(
         return when (this) {
             is WorkSubmissionResponse -> {
                 val allowEditContent = state !in SubmissionState.notSubmitted()
-                val attachments = content?.attachments
+                val attachments = content.attachments
 
                 grade?.let { grade ->
                     SubmissionUiState.Work(

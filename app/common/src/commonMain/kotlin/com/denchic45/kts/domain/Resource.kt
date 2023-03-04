@@ -8,7 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
 sealed interface Resource<out T> {
-    data class Loading<T>(val value: T? = null) : Resource<T>
+    object Loading: Resource<Nothing>
     data class Success<T>(val value: T) : Resource<T>
     data class Error(val failure: Failure) : Resource<Nothing>
 }
@@ -50,27 +50,36 @@ inline infix fun <T> Resource<T>.onFailure(action: (Failure) -> Unit): Resource<
 
 inline fun <T, V> Resource<T>.map(transform: (T) -> V): Resource<V> {
     return when (this) {
-        is Resource.Success -> Resource.Success(transform(value))
         is Resource.Error -> this
-        is Resource.Loading -> Resource.Loading(value?.let { transform(it) })
+        is Resource.Loading -> this
+        is Resource.Success -> Resource.Success(transform(value))
     }
+}
+
+fun <T, V> Resource<T>.flatMap(function: (T) -> Resource<V>): Resource<V> {
+    return when (this) {
+            is Resource.Error -> this
+            is Resource.Loading -> this
+            is Resource.Success -> function(value)
+        }
+
 }
 
 inline fun <T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T> {
     return when (this) {
         is Resource.Error -> Resource.Error(transform(failure))
-        is Resource.Success,
-        is Resource.Loading -> this
+        is Resource.Loading,
+        is Resource.Success -> this
     }
 }
 
-inline fun <T, V> Resource<T>.mapBoth(onSuccess: (T) -> V, onFailure: (Failure) -> V): V {
-    return when (this) {
-        is Resource.Success -> onSuccess(value)
-        is Resource.Error -> onFailure(failure)
-        is Resource.Loading -> TODO()
-    }
-}
+//inline fun <T, V> Resource<T>.mapBoth(onSuccess: (T) -> V, onFailure: (Failure) -> V): V {
+//    return when (this) {
+//        is Resource.Error -> onFailure(failure)
+//        is Resource.Loading -> this
+//        is Resource.Success -> onSuccess(value)
+//    }
+//}
 
 fun <T> Flow<Resource<T>>.updateResource(onSuccess: (T) -> T): Flow<Resource<T>> = map {
     when (it) {
@@ -83,7 +92,7 @@ fun <T> Flow<Resource<T>>.updateResource(onSuccess: (T) -> T): Flow<Resource<T>>
 fun <T, V> Flow<Resource<T>>.mapResource(function: (T) -> V): Flow<Resource<V>> = map {
     when (it) {
         is Resource.Error -> it
-        is Resource.Loading -> Resource.Loading(it.value?.run { function(this) })
+        is Resource.Loading -> it
         is Resource.Success -> Resource.Success(function(it.value))
     }
 }
@@ -93,7 +102,7 @@ fun <T, V> Flow<Resource<T>>.flatMapResource(function: (T) -> Flow<Resource<V>>)
     return flatMapLatest {
         when (it) {
             is Resource.Error -> flowOf(it)
-            is Resource.Loading -> it.value?.run { function(this) } ?: emptyFlow()
+            is Resource.Loading -> flowOf(it)
             is Resource.Success -> function(it.value)
         }
     }

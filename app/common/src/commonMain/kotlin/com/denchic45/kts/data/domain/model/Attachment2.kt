@@ -1,13 +1,15 @@
 package com.denchic45.kts.data.domain.model
 
 import com.denchic45.kts.util.Files
-import com.denchic45.kts.util.getExtension
 import okio.Path
-import java.io.File
+import java.util.*
 
-sealed interface Attachment2
+sealed interface Attachment2 {
+    val id: UUID
+}
 
-data class Attachment2File( val path:Path, val state: FileState) : Attachment {
+data class FileAttachment2(override val id: UUID, val path: Path, val state: FileState) :
+    Attachment2 {
     val name: String = path.name
     val shortName: String = Files.nameWithoutTimestamp(name)
 //    val extension: String = file.getExtension()
@@ -17,6 +19,8 @@ sealed class FileState {
     object Preview : FileState()
     object Downloading : FileState()
     object Downloaded : FileState()
+
+    object FailDownload : FileState()
 }
 
-data class Attachment2Link(val url: String) : Attachment
+data class LinkAttachment2(override val id: UUID, val url: String) : Attachment2

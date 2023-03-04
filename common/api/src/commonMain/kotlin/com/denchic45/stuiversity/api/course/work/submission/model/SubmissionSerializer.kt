@@ -8,7 +8,7 @@ object SubmissionSerializer :
     JsonContentPolymorphicSerializer<SubmissionResponse>(SubmissionResponse::class) {
     override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out SubmissionResponse> =
         when (Json.decodeFromJsonElement<CourseElementType>(element.jsonObject.getValue("type"))) {
-            CourseElementType.WORK -> AssignmentSubmissionResponse.serializer()
+            CourseElementType.WORK -> WorkSubmissionResponse.serializer()
             CourseElementType.MATERIAL -> TODO()
         }
 }

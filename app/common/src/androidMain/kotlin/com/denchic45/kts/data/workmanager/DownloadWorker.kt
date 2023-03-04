@@ -10,15 +10,14 @@ import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
-import com.denchic45.kts.data.storage.Storage
-import com.denchic45.kts.data.storage.TestStorage
+import com.denchic45.kts.data.storage.AttachmentStorage
 import com.denchic45.stuiversity.util.toUUID
 import com.github.michaelbull.result.fold
 
-abstract class DownloadWorker<T : Storage>(
+class DownloadWorker(
     context: Context,
     params: WorkerParameters,
-    private val storage: T,
+    private val storage: AttachmentStorage,
 ) : CoroutineWorker(context, params) {
     companion object {
         const val CHANNEL_ID = "DOWNLOAD_FILES"
@@ -65,6 +64,3 @@ abstract class DownloadWorker<T : Storage>(
         return CHANNEL_ID
     }
 }
-
-class DownloadTestWorker(context: Context, params: WorkerParameters, testStorage: TestStorage) :
-    DownloadWorker<TestStorage>(context, params, testStorage)

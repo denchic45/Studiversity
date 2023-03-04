@@ -3,9 +3,8 @@ package com.denchic45.kts.data.service
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkRequest
 import androidx.work.workDataOf
-import com.denchic45.kts.data.storage.TestStorage
+import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.data.workmanager.DownloadTestWorker
-import com.denchic45.kts.data.workmanager.DownloadWorker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -15,8 +14,8 @@ actual class DownloadUnit private actual constructor() {
     }
 
     private lateinit var workRequest: WorkRequest
-    private val _state = MutableSharedFlow<DownloadState>()
-    actual val state: Flow<DownloadState> = _state
+    private val _state = MutableSharedFlow<FileState>()
+    actual val state: Flow<FileState> = _state
 
 
     actual companion object {

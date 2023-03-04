@@ -4,7 +4,7 @@ import com.denchic45.kts.data.domain.model.Attachment2
 import com.denchic45.kts.data.domain.model.FileAttachment2
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.data.domain.model.LinkAttachment2
-import com.denchic45.kts.data.repository.CourseElementRepository
+import com.denchic45.kts.data.repository.AttachmentRepository
 import com.denchic45.kts.data.service.DownloadsService
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.flatMapResource
@@ -14,15 +14,19 @@ import kotlinx.coroutines.flow.map
 import java.util.*
 import javax.inject.Inject
 
-class FindCourseWorkAttachmentsUseCase @Inject constructor(
-    private val courseElementRepository: CourseElementRepository,
+class FindSubmissionAttachmentsUseCase @Inject constructor(
+    private val attachmentRepository: AttachmentRepository,
     private val downloadService: DownloadsService,
 ) {
-     operator fun invoke(
+
+    val observableDownloads: Map<UUID, Flow<FileState>> = mutableMapOf()
+
+    operator fun invoke(
         courseId: UUID,
         workId: UUID,
+        submissionId: UUID,
     ): Flow<Resource<List<Attachment2>>> {
-        return courseElementRepository.findAttachments(courseId, workId)
+        return attachmentRepository.observeBySubmission(courseId, workId, submissionId)
             .flatMapResource { attachments ->
                 downloadingFilesFlow(
                     attachments.filterIsInstance<FileAttachment2>()

@@ -11,7 +11,7 @@ object SubmissionContentSerializer :
     override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out SubmissionContent> {
         // TODO: Rewrite serialization
         return when {
-            element.jsonObject["attachments"] != null -> AssignmentSubmission.serializer()
+            element.jsonObject["attachments"] != null -> WorkSubmissionContent.serializer()
             else -> throw SerializationException("UNKNOWN_CONTENT_TYPE")
         }
     }

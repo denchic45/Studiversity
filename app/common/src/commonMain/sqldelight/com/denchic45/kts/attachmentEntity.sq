@@ -1,7 +1,13 @@
+import com.denchic45.stuiversity.api.course.element.model.AttachmentType;
+
 CREATE TABLE attachmentEntity (
 attachment_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 attachment_name TEXT NOT NULL,
-file_path TEXT NOT NULL,
+url TEXT,
+thumbnail_url TEXT,
+type TEXT AS AttachmentType NOT NULL,
+path TEXT,
+owner_id TEXT,
 sync INTEGER AS Boolean NOT NULL
 );
 
@@ -11,7 +17,7 @@ VALUES ?
 ON CONFLICT(attachment_id)
 DO UPDATE SET
 attachment_name = excluded.attachment_name,
-file_path = excluded.file_path,
+path = excluded.path,
 sync = excluded.sync;
 
 updateSync:
@@ -21,4 +27,4 @@ WHERE attachment_id =: id;
 
 getByDirPath:
 SELECT * FROM attachmentEntity
-WHERE file_path LIKE (:path || '%');
+WHERE path LIKE (:path || '%');

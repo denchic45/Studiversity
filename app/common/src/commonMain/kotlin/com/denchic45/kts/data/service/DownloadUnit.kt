@@ -1,9 +1,10 @@
 package com.denchic45.kts.data.service
 
+import com.denchic45.kts.data.domain.model.FileState
 import kotlinx.coroutines.flow.Flow
 
 expect class DownloadUnit private constructor() {
-    val state: Flow<DownloadState>
+    val state: Flow<FileState>
 
     companion object {
         fun startWork():DownloadUnit
@@ -11,9 +12,9 @@ expect class DownloadUnit private constructor() {
     }
 }
 
-sealed class DownloadState {
-    object Begin : DownloadState()
-    class Downloading(progress: Int) : DownloadState()
-    object Done : DownloadState()
-    object Failed : DownloadState()
-}
+//sealed class DownloadState {
+//    object Begin : DownloadState()
+//    class Downloading(progress: Int) : DownloadState()
+//    object Done : DownloadState()
+//    object Failed : DownloadState()
+//}

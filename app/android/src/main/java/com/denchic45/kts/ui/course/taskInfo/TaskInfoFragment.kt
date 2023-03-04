@@ -34,10 +34,10 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.jakewharton.rxbinding4.widget.textChanges
 
 class TaskInfoFragment :
-    BaseFragment<TaskInfoViewModel, FragmentTaskInfoBinding>(R.layout.fragment_task_info) {
+    BaseFragment<CourseWorkViewModel, FragmentTaskInfoBinding>(R.layout.fragment_task_info) {
 
     override val binding: FragmentTaskInfoBinding by viewBinding(FragmentTaskInfoBinding::bind)
-    override val viewModel: TaskInfoViewModel by viewModels { viewModelFactory }
+    override val viewModel: CourseWorkViewModel by viewModels { viewModelFactory }
     private lateinit var appBarController: AppBarController
     private val btnActionSubmission: Button by lazy {
         View.inflate(requireContext(), R.layout.btn_action_submission, null) as Button
@@ -46,7 +46,7 @@ class TaskInfoFragment :
         delegates(AttachmentAdapterDelegate(false))
         extensions {
             clickBuilder<AttachmentHolder> {
-                onClick = { viewModel.onTaskFileClick(it) }
+                onClick = { viewModel.onAttachmentClick(it) }
             }
         }
     }
@@ -211,7 +211,7 @@ class TaskInfoFragment :
         }
 
         lifecycleScope.launchWhenStarted {
-            viewModel.attachments.collect {
+            viewModel._attachments.collect {
                 binding.tvAttachmentsHeader.visibility =
                     if (it.isEmpty()) View.GONE else View.VISIBLE
                 adapter.submit(it)
