@@ -49,6 +49,9 @@ class DbHelper(val driver: SqlDriver) {
             ),
             studyGroupEntityAdapter = StudyGroupEntity.Adapter(
                 ListColumnAdapter()
+            ),
+            attachmentEntityAdapter = AttachmentEntity.Adapter(
+                EnumColumnAdapter()
             )
         )
     }

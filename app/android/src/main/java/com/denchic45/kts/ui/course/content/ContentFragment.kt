@@ -13,8 +13,8 @@ import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentContentBinding
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.course.submissions.SubmissionsFragment
-import com.denchic45.kts.ui.course.taskEditor.TaskEditorFragment
-import com.denchic45.kts.ui.course.taskInfo.TaskInfoFragment
+import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
+import com.denchic45.kts.ui.course.taskInfo.CourseWorkFragment
 import com.denchic45.kts.util.setActivityTitle
 import com.example.appbarcontroller.appbarcontroller.AppBarController
 import com.google.android.material.tabs.TabLayoutMediator
@@ -65,8 +65,8 @@ class ContentFragment :
             findNavController().navigate(
                 R.id.action_global_taskEditorFragment,
                 bundleOf(
-                    TaskEditorFragment.TASK_ID to taskId,
-                    TaskEditorFragment.COURSE_ID to courseId
+                    CourseWorkEditorFragment.WORK_ID to taskId,
+                    CourseWorkEditorFragment.COURSE_ID to courseId
                 )
             )
         }
@@ -84,7 +84,7 @@ class ContentFragment :
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                0 -> TaskInfoFragment()
+                0 -> CourseWorkFragment()
                 1 -> SubmissionsFragment()
                 else -> throw IllegalStateException()
             }

@@ -22,8 +22,8 @@ import com.denchic45.kts.ui.adapter.CourseSectionAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskHolder
 import com.denchic45.kts.ui.course.content.ContentFragment
-import com.denchic45.kts.ui.course.sections.CourseSectionEditorFragment
-import com.denchic45.kts.ui.course.taskEditor.TaskEditorFragment
+import com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment
+import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
 import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.widget.extendedAdapter.adapter
@@ -163,9 +163,9 @@ class CourseFragment : BaseFragment<CourseViewModel, FragmentCourseBinding>(
             navController.navigate(
                 R.id.action_courseFragment_to_taskEditorFragment,
                 bundleOf(
-                    TaskEditorFragment.TASK_ID to taskId,
-                    TaskEditorFragment.COURSE_ID to courseId,
-                    TaskEditorFragment.SECTION_ID to sectionId
+                    CourseWorkEditorFragment.WORK_ID to taskId,
+                    CourseWorkEditorFragment.COURSE_ID to courseId,
+                    CourseWorkEditorFragment.SECTION_ID to sectionId
                 )
             )
         }
@@ -180,7 +180,7 @@ class CourseFragment : BaseFragment<CourseViewModel, FragmentCourseBinding>(
         viewModel.openCourseSectionEditor.observe(viewLifecycleOwner) {
             navController.navigate(
                 R.id.action_courseFragment_to_courseSectionsFragment,
-                bundleOf(CourseSectionEditorFragment.COURSE_ID to it)
+                bundleOf(CourseTopicEditorFragment.COURSE_ID to it)
             )
         }
     }

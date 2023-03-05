@@ -1,8 +1,8 @@
 package com.studiversity.feature.course.work.submission
 
+import com.denchic45.stuiversity.api.course.element.model.*
 import com.studiversity.feature.attachment.receiveAttachment
 import com.studiversity.feature.attachment.respondAttachment
-import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.work.submission.model.GradeRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionGrade
 import com.studiversity.feature.course.work.submission.usecase.*
@@ -11,8 +11,6 @@ import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.ktor.claimId
 import com.studiversity.ktor.getUuid
 import com.studiversity.ktor.jwtPrincipal
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*

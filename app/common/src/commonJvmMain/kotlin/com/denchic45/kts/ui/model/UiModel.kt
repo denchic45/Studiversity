@@ -5,4 +5,5 @@ import java.util.UUID
 
 interface UiModel : DomainModel {
     override val id: UUID
+    get() = UUID.randomUUID() // TODO: убрать потом
 }

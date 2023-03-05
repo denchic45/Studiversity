@@ -31,4 +31,16 @@ class AttachmentLocalDataSource(db: AppDatabase) {
     fun getByDirPath(dirPath: String): Flow<List<AttachmentEntity>> {
         return queries.getByDirPath(dirPath).asFlow().mapToList(Dispatchers.IO)
     }
+
+    fun getByReferenceId(referenceId: String): Flow<List<AttachmentEntity>> {
+        return queries.getByReference(referenceId).asFlow().mapToList()
+    }
+
+    suspend fun getUnreferenced() = withContext(Dispatchers.IO) {
+        queries.getUnreferenced().executeAsList()
+    }
+
+    suspend fun delete(id: String) = withContext(Dispatchers.IO) {
+        queries.delete(id)
+    }
 }

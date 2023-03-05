@@ -81,6 +81,8 @@ inline fun <T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T
 //    }
 //}
 
+fun <T> Flow<Resource<T>>.filterSuccess():Flow<Resource.Success<T>> = filterIsInstance()
+
 fun <T> Flow<Resource<T>>.updateResource(onSuccess: (T) -> T): Flow<Resource<T>> = map {
     when (it) {
         is Resource.Error -> it

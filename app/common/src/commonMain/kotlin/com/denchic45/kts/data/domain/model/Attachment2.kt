@@ -11,8 +11,6 @@ sealed interface Attachment2 {
 data class FileAttachment2(override val id: UUID, val path: Path, val state: FileState) :
     Attachment2 {
     val name: String = path.name
-    val shortName: String = Files.nameWithoutTimestamp(name)
-//    val extension: String = file.getExtension()
 }
 
 sealed class FileState {

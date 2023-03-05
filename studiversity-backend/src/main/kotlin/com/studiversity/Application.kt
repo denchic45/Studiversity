@@ -2,6 +2,7 @@ package com.studiversity
 
 import com.studiversity.database.DatabaseFactory
 import com.studiversity.di.configureDI
+import com.studiversity.feature.attachment.configureAttachments
 import com.studiversity.feature.auth.configureAuth
 import com.studiversity.feature.course.configureCourses
 import com.studiversity.feature.membership.configureMembership
@@ -52,6 +53,7 @@ fun Application.module() = runBlocking {
         configureRoles()
         configureMembership()
         configureTeachers()
+        configureAttachments()
         configureStudyGroups()
         configureSpecialties()
         configureCourses()

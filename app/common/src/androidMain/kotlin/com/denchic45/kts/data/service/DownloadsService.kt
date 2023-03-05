@@ -5,8 +5,7 @@ import androidx.lifecycle.asFlow
 import androidx.work.*
 import com.denchic45.kts.data.db.local.source.AttachmentLocalDataSource
 import com.denchic45.kts.data.domain.model.FileState
-import com.denchic45.kts.data.storage.AttachmentStorage
-import com.denchic45.kts.data.workmanager.DownloadTestWorker
+import com.denchic45.kts.data.workmanager.DownloadWorker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
@@ -17,15 +16,15 @@ actual class DownloadsService actual constructor() {
     lateinit var attachmentLocalDataSource: AttachmentLocalDataSource
 
     @Inject
-    constructor(context: Context,attachmentLocalDataSource: AttachmentLocalDataSource) : this() {
+    constructor(context: Context, attachmentLocalDataSource: AttachmentLocalDataSource) : this() {
         this.context = context
         this.attachmentLocalDataSource = attachmentLocalDataSource
     }
 
-    val workManager = WorkManager.getInstance(context)
+    private val workManager = WorkManager.getInstance(context)
 
-    actual inline fun <reified T : AttachmentStorage> download(attachmentId: UUID): Flow<FileState> {
-        val request = OneTimeWorkRequestBuilder<DownloadTestWorker>()
+    actual fun download(attachmentId: UUID): Flow<FileState> {
+        val request = OneTimeWorkRequestBuilder<DownloadWorker>()
             .setInputData(workDataOf("id" to attachmentId))
             .build()
         workManager.enqueueUniqueWork(
@@ -55,5 +54,9 @@ actual class DownloadsService actual constructor() {
                     }
                 } ?: FileState.Preview
             }
+    }
+
+    actual fun cancel(attachmentId: UUID) {
+        workManager.cancelUniqueWork(attachmentId.toString())
     }
 }

@@ -28,7 +28,6 @@ class TimetableParser {
         "ПЯТНИЦА",
         "СУББОТА"
     )
-    private val specialSubjects: MutableList<Subject> = ArrayList()
     private var cellOfGroupPos = 0
     private lateinit var table: XWPFTable
     private var currentRow = 0
@@ -195,7 +194,7 @@ class TimetableParser {
         }
     }
 
-    private fun findSubjectByName(subjectName: String): Subject? {
+    private fun findSubjectByName(subjectName: String): SubjectResponse? {
         return currentGroupCourse.courses
             .firstOrNull { course ->
                 course.subject.name.resetFormatting().contains(

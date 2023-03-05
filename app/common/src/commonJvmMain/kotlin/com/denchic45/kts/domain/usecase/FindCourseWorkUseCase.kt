@@ -13,5 +13,5 @@ class FindCourseWorkUseCase @Inject constructor(
     suspend operator fun invoke(
         courseId: UUID,
         workId: UUID,
-    ): Resource<CourseWorkResponse> = courseElementRepository.findById(courseId, workId)
+    ): Resource<CourseWorkResponse> = courseElementRepository.findWorkById(courseId, workId)
 }

@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CreateSpecialtyRequest(
     val name: String,
-    val shortname: String
+    val shortname: String?
 )

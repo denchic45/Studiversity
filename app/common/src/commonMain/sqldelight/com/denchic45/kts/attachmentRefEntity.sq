@@ -1,0 +1,15 @@
+CREATE TABLE attachmentRefEntity (
+attachment_ref_id INTEGER NOT NULL UNIQUE PRIMARY KEY AUTOINCREMENT,
+attachment_id TEXT NOT NULL,
+entity_id TEXT NOT NULL,
+entity_type TEXT NOT NULL,
+FOREIGN KEY (attachment_id) REFERENCES attachmentEntity(attachment_id) ON DELETE CASCADE
+);
+
+insert:
+INSERT INTO attachmentRefEntity
+VALUES ?;
+
+deleteByNotContainsId:
+DELETE FROM attachmentRefEntity
+WHERE attachment_id NOT IN ? AND entity_id =: referenceId;

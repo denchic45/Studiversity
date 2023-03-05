@@ -22,7 +22,7 @@ fun <T, R> NetworkServiceOwner.observeResource(
 ): Flow<Resource<T>> = flow {
     val first = query.first()
     if (shouldFetch(first) && networkService.isNetworkAvailable) {
-        emit(Resource.Loading(first))
+        emit(Resource.Loading)
         runCatching {
             fetch()
         }.fold(onSuccess = { result ->
@@ -42,7 +42,7 @@ fun <T, R> NetworkServiceOwner.observeResource(
 ): Flow<Resource<T>> = flow {
     val first = query.first()
     if (shouldObserve(first)) {
-        emit(Resource.Loading(first))
+        emit(Resource.Loading)
         coroutineScope {
             val fetchResultFlow: MutableSharedFlow<Resource<R>> = MutableSharedFlow(replay = 1)
             launch {

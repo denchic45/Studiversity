@@ -42,32 +42,32 @@ fun List<EventEntity>.toTeacherEventEntities(): List<TeacherEventEntity> {
         }
 }
 
-fun Event.domainToMap() = mutableMapOf<String, Any?>(
-    "id" to id,
-    "date" to date.toDate(),
-    "position" to order,
-    "room" to room,
-    "groupId" to groupHeader.id,
-    "eventDetailsDoc" to details.detailsToDetailsMap()
-)
+//fun Event.domainToMap() = mutableMapOf<String, Any?>(
+//    "id" to id,
+//    "date" to date.toDate(),
+//    "position" to order,
+//    "room" to room,
+//    "groupId" to groupHeader.id,
+//    "eventDetailsDoc" to details.detailsToDetailsMap()
+//)
 
-fun EventDetails.detailsToDetailsMap(): FireMap {
-    return HashMap<String, Any>().apply {
-        put("eventType", eventType.name)
-        when (this@detailsToDetailsMap) {
-            is Lesson -> {
-                put("subjectId", subject.id)
-                put("teacherIds", teachers.map(User::id))
-            }
-            is SimpleEventDetails -> {
-                put("name", name)
-                put("iconUrl", iconUrl)
-                put("color", color)
-            }
-            is EmptyEventDetails -> {}
-        }
-    }
-}
+//fun EventDetails.detailsToDetailsMap(): FireMap {
+//    return HashMap<String, Any>().apply {
+//        put("eventType", eventType.name)
+//        when (this@detailsToDetailsMap) {
+//            is Lesson -> {
+//                put("subjectId", subject.id)
+//                put("teacherIds", teachers.map(User::id))
+//            }
+//            is SimpleEventDetails -> {
+//                put("name", name)
+//                put("iconUrl", iconUrl)
+//                put("color", color)
+//            }
+//            is EmptyEventDetails -> {}
+//        }
+//    }
+//}
 
 //fun List<EventWithSubjectAndGroupAndTeachers>.entitiesToEventsOfDay(date: LocalDate): EventsOfDay {
 //    return EventsOfDay(date, entitiesToDomains(), id = first().day_id)

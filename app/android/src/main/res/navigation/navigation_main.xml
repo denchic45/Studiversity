@@ -109,7 +109,7 @@
         tools:layout="@layout/fragment_course_editor" />
     <fragment
         android:id="@+id/taskEditorFragment"
-        android:name="com.denchic45.kts.ui.course.taskEditor.TaskEditorFragment"
+        android:name="com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment"
         android:label="fragment_task_editor"
         tools:layout="@layout/fragment_task_editor" />
     <action
@@ -132,7 +132,7 @@
         app:destination="@id/submissionFragment" />
     <fragment
         android:id="@+id/courseSectionsFragment"
-        android:name="com.denchic45.kts.ui.course.sections.CourseSectionEditorFragment"
+        android:name="com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment"
         android:label="fragment_course_sections"
         tools:layout="@layout/fragment_course_section_editor" />
     <fragment

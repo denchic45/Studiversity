@@ -29,22 +29,30 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class CourseWorkViewModel @Inject constructor(
-    @Named(TaskInfoFragment.TASK_ID) val _taskId: String,
-    @Named(TaskInfoFragment.COURSE_ID) val _courseId: String,
-    findSelfUserUseCase: FindSelfUserUseCase,
+    @Named(CourseWorkFragment.TASK_ID) val _taskId: String,
+    @Named(CourseWorkFragment.COURSE_ID) val _courseId: String,
     findCourseWorkUseCase: FindCourseWorkUseCase,
-    findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
+    findSubmissionAttachmentsUseCase: FindSubmissionAttachmentsUseCase,
     findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
     findOwnSubmissionUseCase: FindOwnSubmissionUseCase,
     private val submitSubmissionUseCase: SubmitSubmissionUseCase,
     private val cancelSubmissionUseCase: CancelSubmissionUseCase,
-    private val uploadAttachmentToSubmissionUseCase: UploadAttachmentToSubmissionUseCase,
-    private val removeAttachmentToSubmissionUseCase: RemoveAttachmentToSubmissionUseCase,
+    private val uploadAttachmentToCourseWorkUseCase: UploadAttachmentToCourseWorkUseCase,
+    private val removeAttachmentFromCourseWorkUseCase: RemoveAttachmentFromCourseWorkUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
 ) : BaseViewModel() {
 
     private val courseId = _courseId.toUUID()
     private val courseWorkId = _taskId.toUUID()
+
+    private val capabilities = flow {
+        emit(
+            checkUserCapabilitiesInScopeUseCase(
+                scopeId = courseId,
+                capabilities = listOf(Capability.SubmitSubmission)
+            )
+        )
+    }.shareIn(viewModelScope, SharingStarted.Lazily, 1)
 
     private val courseWorkFlow = flow {
         emit(findCourseWorkUseCase(courseId, courseWorkId))
@@ -58,7 +66,8 @@ class CourseWorkViewModel @Inject constructor(
     private val _workAttachments = MutableStateFlow<Resource<List<Attachment2>>>(Resource.Loading)
     val workAttachments = _workAttachments.asStateFlow()
 
-    private val _submissionAttachments = MutableStateFlow<List<Attachment2>>(emptyList())
+    private val _submissionAttachments =
+        MutableStateFlow<Resource<List<Attachment2>>>(Resource.Loading)
     val submissionAttachments = _submissionAttachments.asStateFlow()
 
     val workUiState = courseWorkFlow.map { resource ->
@@ -79,9 +88,6 @@ class CourseWorkViewModel @Inject constructor(
 
     val showSubmissionToolbar = MutableLiveData<Boolean>()
     val expandBottomSheet = MutableLiveData(BottomSheetBehavior.STATE_COLLAPSED)
-    val focusOnTextField = SingleLiveData<Unit>()
-
-    private var contentUpdateDate: LocalDateTime? = null
 
     private val _submission = MutableSharedFlow<Resource<WorkSubmissionResponse>>(replay = 1)
 
@@ -92,20 +98,15 @@ class CourseWorkViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            checkUserCapabilitiesInScopeUseCase(
-                scopeId = courseId,
-                capabilities = listOf(Capability.SubmitSubmission)
-            ).onSuccess {
-                _submission.emit(
-                    findOwnSubmissionUseCase(courseId, courseWorkId)
-                        .map { it as WorkSubmissionResponse }
-                        .onSuccess { submissionResponse ->
-                            _submissionAttachments.value = submissionResponse.content.attachments
-//                            oldSubmissionAttachments = submissionResponse.content
-//                            updatedContent = oldSubmissionAttachments
-                            contentUpdateDate = submissionResponse.updatedAt
-                        }
-                )
+            capabilities.collect { resource ->
+                resource.onSuccess { response ->
+                    response.onHasCapability(Capability.SubmitSubmission) {
+                        _submission.emit(
+                            findOwnSubmissionUseCase(courseId, courseWorkId)
+                                .map { it as WorkSubmissionResponse }
+                        )
+                    }
+                }
             }
         }
 
@@ -116,7 +117,15 @@ class CourseWorkViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-
+            _submission.first().onSuccess { workSubmissionResponse ->
+                findSubmissionAttachmentsUseCase(
+                    courseId,
+                    courseWorkId,
+                    workSubmissionResponse.id
+                ).collect { resource ->
+                    _submissionAttachments.update { resource }
+                }
+            }
         }
     }
 
@@ -127,13 +136,6 @@ class CourseWorkViewModel @Inject constructor(
         viewModelScope.launch {
             if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                 showSubmissionToolbar.value = false
-                val submission = _submission.first()
-//                if (expandBottomSheet.value == BottomSheetBehavior.STATE_EXPANDED
-//                    && submission.status is Task.SubmissionStatus.NotSubmitted
-//                    && oldContent != content
-//                ) {
-//                    updateSubmissionFromStudentUseCase(submission)
-//                }
             } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                 showSubmissionToolbar.value = true
             }
@@ -147,12 +149,16 @@ class CourseWorkViewModel @Inject constructor(
 
     fun onSubmissionAttachmentClick(position: Int) {
         viewModelScope.launch {
-            _oldWorkAttachments.value.onSuccess {
-                when (val attachment = it[position]) {
-                    is FileAttachment2 -> openAttachment.value = attachment.path.toFile()
-                    is LinkAttachment2 -> TODO()
-                }
+            submissionAttachments.value.onSuccess {
+                openAttachment(it[position])
             }
+        }
+    }
+
+    private fun openAttachment(attachment: Attachment2) {
+        when (attachment) {
+            is FileAttachment2 -> openAttachment.value = attachment.path.toFile()
+            is LinkAttachment2 -> TODO()
         }
     }
 
@@ -161,7 +167,7 @@ class CourseWorkViewModel @Inject constructor(
 
     fun onSelectedFile(file: File) {
         viewModelScope.launch {
-            when (uploadAttachmentToSubmissionUseCase(
+            when (uploadAttachmentToCourseWorkUseCase(
                 courseId,
                 courseWorkId,
                 CreateFileRequest(file.name, file.readBytes())
@@ -176,7 +182,7 @@ class CourseWorkViewModel @Inject constructor(
     fun onAttachmentClick(position: Int) {
         viewModelScope.launch {
             workAttachments.value.onSuccess { attachments ->
-                openAttachment.value = attachments[position].
+                openAttachment(attachments[position])
             }
         }
     }
@@ -184,7 +190,7 @@ class CourseWorkViewModel @Inject constructor(
     fun onRemoveSubmissionFileClick(position: Int) {
         viewModelScope.launch {
             workAttachments.value.onSuccess { attachments ->
-                removeAttachmentToSubmissionUseCase(
+                removeAttachmentFromCourseWorkUseCase(
                     courseId,
                     courseWorkId,
                     attachments[position].id
@@ -192,13 +198,6 @@ class CourseWorkViewModel @Inject constructor(
             }
         }
     }
-
-//    fun onSubmissionTextType(text: String) {
-//        viewModelScope.launch {
-//            content = content.copy(text = text)
-//            _submission.emit(_submission.first().copy(content = content))
-//        }
-//    }
 
     fun onBackPress() {
         if (expandBottomSheet.value != BottomSheetBehavior.STATE_COLLAPSED) {
@@ -226,45 +225,26 @@ class CourseWorkViewModel @Inject constructor(
     }
 
     private suspend fun onSubmitActionClick() {
-        if (content!!.isEmpty()) {
-            expandBottomSheet.value = BottomSheetBehavior.STATE_EXPANDED
-        } else {
-            val contentUpdateDate =
-                if (contentIsChangeAndNotEmpty()) LocalDateTime.now()
-                else this.contentUpdateDate
-
-            _submission.first().onSuccess { submissionResponse: SubmissionResponse ->
-                _submission.emit(
-                    Resource.Success(
-                        when (submissionResponse) {
-                            is WorkSubmissionResponse -> submissionResponse.copy(
-                                state = SubmissionState.SUBMITTED,
-                                updatedAt = contentUpdateDate
-                            )
-                        }
+        _submissionAttachments.value.onSuccess { attachments ->
+            if (attachments.isEmpty()) {
+                expandBottomSheet.value = BottomSheetBehavior.STATE_EXPANDED
+            } else {
+                _submission.first().onSuccess { submissionResponse: SubmissionResponse ->
+                    _submission.emit(
+                        submitSubmissionUseCase(courseId, courseWorkId, submissionResponse.id)
+                            .map { it as WorkSubmissionResponse }
                     )
-                )
-                submitSubmissionUseCase(courseId, courseWorkId, submissionResponse.id)
+                }
             }
         }
     }
 
-    private fun contentIsChangeAndNotEmpty() =
-        oldSubmissionAttachments != content && !content!!.isEmpty()
-
     private suspend fun onCancelSubmitClick() {
-        _submission.first().onSuccess { submissionResponse: SubmissionResponse ->
+        _submission.first().onSuccess { submissionResponse ->
             _submission.emit(
-                Resource.Success(
-                    when (submissionResponse) {
-                        is WorkSubmissionResponse -> submissionResponse.copy(
-                            state = SubmissionState.CANCELED_BY_AUTHOR,
-                            updatedAt = contentUpdateDate
-                        )
-                    }
-                )
+                cancelSubmissionUseCase(courseId, courseWorkId, submissionResponse.id)
+                    .map { it as WorkSubmissionResponse }
             )
-            cancelSubmissionUseCase(courseId, courseWorkId, submissionResponse.id)
         }
     }
 
@@ -277,68 +257,65 @@ class CourseWorkViewModel @Inject constructor(
         val dueDateTime: String?,
     )
 
-    sealed class SubmissionUiState {
-        abstract val title: String
-        abstract val subtitle: String?
 
-        data class Work(
-            override val title: String,
-            override val subtitle: String?,
-            val btnText: String?,
-            val btnTextColor: Int = R.color.blue,
-            val btnBackgroundColor: Int = R.color.alpha_blue_10,
-            val gradedBy: UserResponse? = null,
-            val attachments: List<AttachmentHeader>?,
-            val allowEditContent: Boolean,
-        ) : SubmissionUiState()
-    }
+    data class WorkSubmissionUiState(
+        val title: String,
+        val subtitle: String?,
+        val btnVisibility: Boolean,
+        val btnText: String?,
+        val btnTextColor: Int = R.color.blue,
+        val btnBackgroundColor: Int = R.color.alpha_blue_10,
+        val gradedBy: UserResponse? = null,
+        val attachments: List<AttachmentHeader>?,
+        val allowEditContent: Boolean,
+    )
 
-    private fun SubmissionResponse.toSubmissionUiState(courseWorkResponse: CourseWorkResponse): SubmissionUiState {
-        return when (this) {
-            is WorkSubmissionResponse -> {
-                val allowEditContent = state !in SubmissionState.notSubmitted()
-                val attachments = content.attachments
 
-                grade?.let { grade ->
-                    SubmissionUiState.Work(
-                        title = "Оценено: ${grade}/5",
-                        subtitle = null,
-                        btnText = null,
-                        attachments = attachments,
-                        allowEditContent = allowEditContent,
-                    )
-                } ?: when (val status = state) {
-                    SubmissionState.NEW,
-                    SubmissionState.CREATED,
-                    -> SubmissionUiState.Work(
-                        title = "Не сдано",
-                        subtitle = null,
-                        btnText = if (content == null) "Добавить" else "Отправить",
-                        attachments = attachments,
-                        allowEditContent = allowEditContent,
-                    )
-                    SubmissionState.SUBMITTED -> SubmissionUiState.Work(
-                        title = "Сдано",
-                        subtitle = if (courseWorkResponse.late)
-                            "с опозданием: "
-                        else
-                            "вовремя:" + doneAt!!.toString("dd MMM HH:mm"),
-                        btnText = "Отменить",
-                        btnTextColor = R.color.red,
-                        btnBackgroundColor = R.color.alpha_red_10,
-                        attachments = attachments,
-                        allowEditContent = allowEditContent
-                    )
-                    SubmissionState.CANCELED_BY_AUTHOR -> SubmissionUiState.Work(
-                        title = "Не сдано",
-                        subtitle = "Было отменено вами",
-                        btnText = if (content == null) "Добавить" else "Отправить",
-                        attachments = attachments,
-                        allowEditContent = allowEditContent,
-                    )
-                }
-            }
+    private fun WorkSubmissionResponse.toSubmissionUiState(courseWorkResponse: CourseWorkResponse): WorkSubmissionUiState {
+        val allowEditContent = state !in SubmissionState.notSubmitted()
+        val attachments = content.attachments
+
+        return grade?.let { grade ->
+            WorkSubmissionUiState(
+                title = "Оценено: ${grade}/5",
+                subtitle = null,
+                btnVisibility = false,
+                btnText = null,
+                attachments = attachments,
+                allowEditContent = allowEditContent,
+            )
+        } ?: when (state) {
+            SubmissionState.NEW,
+            SubmissionState.CREATED,
+            -> WorkSubmissionUiState(
+                title = "Не сдано",
+                subtitle = null,
+                btnVisibility = true,
+                btnText = if (content.isEmpty()) "Добавить" else "Отправить",
+                attachments = attachments,
+                allowEditContent = allowEditContent,
+            )
+            SubmissionState.SUBMITTED -> WorkSubmissionUiState(
+                title = "Сдано",
+                subtitle = if (courseWorkResponse.late)
+                    "с опозданием: "
+                else
+                    "вовремя:" + doneAt!!.toString("dd MMM HH:mm"),
+                btnVisibility = false,
+                btnText = "Отменить",
+                btnTextColor = R.color.red,
+                btnBackgroundColor = R.color.alpha_red_10,
+                attachments = attachments,
+                allowEditContent = allowEditContent
+            )
+            SubmissionState.CANCELED_BY_AUTHOR -> WorkSubmissionUiState(
+                title = "Не сдано",
+                subtitle = "Было отменено вами",
+                btnVisibility = true,
+                btnText = if (content == null) "Добавить" else "Отправить",
+                attachments = attachments,
+                allowEditContent = allowEditContent,
+            )
         }
     }
-
 }

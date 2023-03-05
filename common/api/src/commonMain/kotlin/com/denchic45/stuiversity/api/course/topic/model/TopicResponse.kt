@@ -8,5 +8,6 @@ import java.util.*
 @Serializable
 data class TopicResponse(
     val id: @Serializable(UUIDSerializer::class) UUID,
-    val name: String
+    val name: String,
+    val order:Int
 )

@@ -1,14 +1,8 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.AttachmentEntity
 import com.denchic45.kts.data.db.local.source.AttachmentLocalDataSource
-import com.denchic45.kts.data.domain.model.FileAttachment2
-import com.denchic45.kts.data.domain.model.FileState
-import com.denchic45.kts.data.domain.model.LinkAttachment2
 import com.denchic45.kts.data.fetchResource
-import com.denchic45.kts.data.observeResource
 import com.denchic45.kts.data.service.NetworkService
-import com.denchic45.kts.data.storage.CourseWorkStorage
 import com.denchic45.kts.domain.Resource
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.*
@@ -18,21 +12,17 @@ import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
-import com.denchic45.stuiversity.util.toUUID
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.unwrap
-import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
-import okio.Path.Companion.toPath
 import java.util.*
 
 @Inject
 class CourseElementRepository(
     override val networkService: NetworkService,
     private val attachmentLocalDataSource: AttachmentLocalDataSource,
-    private val courseWorkStorage: CourseWorkStorage,
     private val courseTopicsApi: CourseTopicsApi,
     private val courseElementsApi: CourseElementsApi,
     private val courseWorkApi: CourseWorkApi,
@@ -53,10 +43,6 @@ class CourseElementRepository(
                 put(topicResponse, elements.filter { it.topicId == topicResponse.id })
             }
         })
-    }
-
-    suspend fun findById(courseId: UUID, workId: UUID) = fetchResource {
-        courseWorkApi.getById(courseId, workId)
     }
 
     suspend fun findWorkById(courseId: UUID, workId: UUID) = fetchResource {

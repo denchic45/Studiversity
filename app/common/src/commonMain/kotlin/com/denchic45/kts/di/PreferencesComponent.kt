@@ -21,12 +21,6 @@ abstract class PreferencesComponent(@get:Provides val factory: SettingsFactory) 
 
     @LayerScope
     @Provides
-    fun provideGroupPreferences(): GroupPreferences {
-        return GroupPreferences(factory.createObservable("Group"))
-    }
-
-    @LayerScope
-    @Provides
     fun provideTimestampPreferences(): TimestampPreferences {
         return TimestampPreferences(factory.createObservable("Timestamp"))
     }

@@ -3,10 +3,8 @@ package com.denchic45.kts.ui.courseEditor
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
-import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.*
 import com.denchic45.kts.domain.*
-import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.usecase.FindCourseByIdUseCase
 import com.denchic45.kts.domain.usecase.FindSubjectByContainsNameUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
@@ -44,7 +42,7 @@ class CourseEditorViewModel @Inject constructor(
         val subjectIconUrl: String?,
     )
 
-    val uiState = MutableStateFlow<Resource<CourseEditingState>>(Resource.Loading())
+    val uiState = MutableStateFlow<Resource<CourseEditingState>>(Resource.Loading)
 
     private val typedSubjectName = MutableSharedFlow<String>()
 
@@ -108,13 +106,6 @@ class CourseEditorViewModel @Inject constructor(
             }
         }
     }
-
-    private fun addAdderGroupItem(groupHeaders: List<GroupHeader> = emptyList()): List<DomainModel> =
-        groupHeaders.map { ListItem(id = it.id, title = it.name, type = 1) } + ListItem(
-            id = "ADD_GROUP",
-            title = "Добавить",
-            icon = UiImage.IdImage(R.drawable.ic_add)
-        )
 
     private fun onSaveClick() {
         (uiState.value as? Resource.Success)?.value?.let { state ->

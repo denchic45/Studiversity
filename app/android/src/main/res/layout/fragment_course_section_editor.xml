@@ -6,4 +6,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    tools:context=".ui.course.sections.CourseSectionEditorFragment" />
+    tools:context=".ui.course.sections.CourseTopicEditorFragment" />

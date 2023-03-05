@@ -1,17 +1,18 @@
 package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.db.local.source.*
-import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.observeResource
-import com.denchic45.kts.data.pref.*
+import com.denchic45.kts.data.pref.AppPreferences
+import com.denchic45.kts.data.pref.CoursePreferences
+import com.denchic45.kts.data.pref.TimestampPreferences
+import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.data.storage.ContentAttachmentStorage
 import com.denchic45.kts.data.storage.SubmissionAttachmentStorage
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.model.Section
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
@@ -20,6 +21,7 @@ import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
 import com.denchic45.stuiversity.api.course.topic.CourseTopicsApi
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CreateTopicRequest
+import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import com.denchic45.stuiversity.api.course.topic.model.UpdateTopicRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -288,12 +290,20 @@ class CourseRepository @Inject constructor(
 //        getLastContentOrderByCourseIdAndSectionId(task.courseId, task.sectionId) + 1024
 
 
-    fun findSectionsByCourseId(courseId: String) =
-        sectionLocalDataSource.getByCourseId(courseId).map { it.entitiesToDomains() }
-
-    suspend fun findSection(sectionId: String): Section? {
-        return sectionLocalDataSource.get(sectionId)?.entityToUserDomain()
+    fun findTopicsByCourseId(courseId: UUID): Flow<Resource<List<TopicResponse>>> {
+        return observeResource(
+            query = sectionLocalDataSource.getByCourseId(courseId.toString())
+                .map { it.toTopicResponses() },
+            fetch = { courseTopicsApi.getByCourseId(courseId) },
+            saveFetch = { sectionLocalDataSource.upsert(it.toTopicEntities(courseId)) }
+        )
     }
+
+    suspend fun findTopic(courseId: UUID, topicId: UUID) = observeResource(
+        query = sectionLocalDataSource.observe(topicId.toString()).map { it.toResponse() },
+        fetch = { courseTopicsApi.getById(courseId, topicId) },
+        saveFetch = { sectionLocalDataSource.upsert(it.toEntity(courseId)) }
+    )
 
 //    fun findTaskSubmissionByContentIdAndStudentId(
 //        taskId: String,

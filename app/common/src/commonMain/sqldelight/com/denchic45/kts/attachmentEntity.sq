@@ -17,8 +17,11 @@ VALUES ?
 ON CONFLICT(attachment_id)
 DO UPDATE SET
 attachment_name = excluded.attachment_name,
+url = excluded.url,
+thumbnail_url = excluded.thumbnail_url,
+type = excluded.type,
 path = excluded.path,
-sync = excluded.sync;
+owner_id = excluded.owner_id;
 
 updateSync:
 UPDATE attachmentEntity
@@ -28,3 +31,16 @@ WHERE attachment_id =: id;
 getByDirPath:
 SELECT * FROM attachmentEntity
 WHERE path LIKE (:path || '%');
+
+getByReference:
+SELECT a.* FROM attachmentEntity a
+JOIN attachmentRefEntity ar ON a.attachment_id = ar.attachment_id
+WHERE ar.entity_id =: entityID;
+
+getUnreferenced:
+SELECT a.attachment_id FROM attachmentEntity a
+LEFT JOIN attachmentRefEntity ar ON a.attachment_id = ar.attachment_id
+WHERE ar.attachment_id ISNULL;
+
+delete:
+DELETE FROM attachmentEntity WHERE attachment_id =: id;

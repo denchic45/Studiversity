@@ -7,7 +7,7 @@
     android:layout_marginBottom="?actionBarSize"
     android:saveEnabled="true"
     android:windowSoftInputMode="adjustResize"
-    tools:context=".ui.course.taskInfo.TaskInfoFragment">
+    tools:context=".ui.course.taskInfo.CourseWorkFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -83,7 +83,7 @@
             tools:text="12 фев. 10:40" />
 
         <TextView
-            android:id="@+id/tv_time_left"
+            android:id="@+id/tv_due_date_time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"

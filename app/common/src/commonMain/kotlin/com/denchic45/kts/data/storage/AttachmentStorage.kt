@@ -14,6 +14,7 @@ import java.util.*
 class AttachmentStorage(private val attachmentApi: AttachmentApi) {
 
     val path: Path = "/attachments".toPath()
+    private val fileSystem = FileSystem.SYSTEM
 
     private suspend fun download(attachmentId: UUID): ResponseResult<FileAttachmentResponse?> {
         return attachmentApi.getById(attachmentId).map {
@@ -26,10 +27,13 @@ class AttachmentStorage(private val attachmentApi: AttachmentApi) {
     suspend fun downloadAndSave(attachmentId: UUID): ResponseResult<FileAttachmentResponse?> {
         return download(attachmentId).onSuccess { fileAttachment ->
             fileAttachment?.let {
-                FileSystem.SYSTEM.write(getFilePath(it.name)) { write(it.bytes) }
+                fileSystem.write(getFilePath(it.id)) { write(it.bytes) }
             }
         }
     }
 
-    fun getFilePath(name: String) = path / name
+    fun getFilePath(attachmentId: UUID) = path / attachmentId.toString()
+    fun delete(attachmentId: UUID) {
+        fileSystem.delete(getFilePath(attachmentId))
+    }
 }

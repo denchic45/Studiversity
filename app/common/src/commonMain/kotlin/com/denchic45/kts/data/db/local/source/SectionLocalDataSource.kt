@@ -5,6 +5,7 @@ import com.denchic45.kts.SectionEntity
 import com.denchic45.kts.SectionEntityQueries
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
+import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -25,9 +26,7 @@ class SectionLocalDataSource @Inject constructor(db: AppDatabase) {
         }
     }
 
-    suspend fun get(sectionId: String): SectionEntity? = withContext(Dispatchers.IO) {
-        queries.getById(sectionId).executeAsOneOrNull()
-    }
+    fun observe(topicId: String) = queries.getById(topicId).asFlow().mapToOne()
 
     fun getByCourseId(courseId: String): Flow<List<SectionEntity>> {
         return queries.getByCourseId(courseId).asFlow().mapToList()

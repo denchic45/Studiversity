@@ -19,8 +19,10 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.denchic45.kts.R
-import com.denchic45.kts.ui.model.UiModel
 import com.denchic45.kts.data.domain.model.Attachment
+import com.denchic45.kts.data.domain.model.AttachmentFile
+import com.denchic45.kts.data.domain.model.AttachmentLink
+import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.databinding.FragmentTaskEditorBinding
 import com.denchic45.kts.databinding.ItemAddAttachmentBinding
 import com.denchic45.kts.databinding.ItemAttachmentBinding
@@ -30,6 +32,7 @@ import com.denchic45.kts.ui.adapter.BaseViewHolder
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.course.sectionPicker.SectionPickerFragment
 import com.denchic45.kts.ui.course.sectionPicker.SectionPickerViewModel
+import com.denchic45.kts.ui.model.UiModel
 import com.denchic45.kts.util.*
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
 import com.denchic45.widget.extendedAdapter.adapter
@@ -42,18 +45,20 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import com.jakewharton.rxbinding4.widget.textChanges
+import java.io.File
+import java.util.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
 
-class TaskEditorFragment :
-    BaseFragment<TaskEditorViewModel, FragmentTaskEditorBinding>(
+class CourseWorkEditorFragment :
+    BaseFragment<CourseWorkEditorViewModel, FragmentTaskEditorBinding>(
         R.layout.fragment_task_editor,
         R.menu.options_task_editor
     ) {
 
     companion object {
-        const val TASK_ID = "TaskEditor TASK_ID"
+        const val WORK_ID = "TaskEditor TASK_ID"
         const val COURSE_ID = "TaskEditor COURSE_ID"
         const val SECTION_ID = "SECTION_ID"
     }
@@ -78,7 +83,7 @@ class TaskEditorFragment :
             clickBuilder<AttachmentHolder> {
                 view = { it.binding.ivFileRemove }
                 onClick = { position ->
-                    viewModel.onRemoveFileClick(position)
+                    viewModel.onRemoveAttachmentClick(position)
                 }
             }
             clickBuilder<AttachmentHolder> {
@@ -89,7 +94,7 @@ class TaskEditorFragment :
 
     private lateinit var filePicker: FilePicker
 
-    override val viewModel: TaskEditorViewModel by viewModels { viewModelFactory }
+    override val viewModel: CourseWorkEditorViewModel by viewModels { viewModelFactory }
 
     @Inject
     lateinit var sectionPickerViewModelFactory: ViewModelFactory<SectionPickerViewModel>
@@ -104,7 +109,7 @@ class TaskEditorFragment :
         super.onCreate(savedInstanceState)
 
         filePicker = FilePicker(this, {
-            it?.let { viewModel.onAttachmentsSelect(it) }
+            it?.let { viewModel.onFilesSelect(it) }
         }, true)
     }
 
@@ -129,28 +134,21 @@ class TaskEditorFragment :
                 .compose(EditTextTransformer())
                 .subscribe(viewModel::onDescriptionType)
 
-            etCharsLimit.textChanges()
-                .compose(EditTextTransformer())
-                .subscribe(viewModel::onCharsLimitType)
+//            etAttachmentsLimit.textChanges()
+//                .compose(EditTextTransformer())
+//                .subscribe(viewModel::onAttachmentsLimitType)
 
-            etAttachmentsLimit.textChanges()
-                .compose(EditTextTransformer())
-                .subscribe(viewModel::onAttachmentsLimitType)
-
-            etAttachmentsSizeLimit.textChanges()
-                .compose(EditTextTransformer())
-                .subscribe(viewModel::onAttachmentsSizeLimitType)
-
-            etCharsLimit.filters = arrayOf(ValueFilter(0, 2000), InputFilter.LengthFilter(4))
+//            etAttachmentsSizeLimit.textChanges()
+//                .compose(EditTextTransformer())
+//                .subscribe(viewModel::onAttachmentsSizeLimitType)
 
             etAttachmentsLimit.filters = arrayOf(ValueFilter(0, 99), InputFilter.LengthFilter(2))
 
-            etAttachmentsSizeLimit.filters =
-                arrayOf(ValueFilter(0, 999), InputFilter.LengthFilter(3))
+            etAttachmentsSizeLimit.filters = arrayOf(ValueFilter(0, 999), InputFilter.LengthFilter(3))
 
             actSection.setOnTouchListener { _, event ->
                 if (MotionEvent.ACTION_DOWN == event.action)
-                    viewModel.onSectionClick()
+                    viewModel.onTopicClick()
                 false
             }
 
@@ -160,14 +158,6 @@ class TaskEditorFragment :
 
             cbAvailabilitySend.setOnCheckedChangeListener { _, check ->
                 viewModel.onAvailabilitySendCheck(check)
-            }
-
-            swText.setOnCheckedChangeListener { _, check ->
-                viewModel.onTextAvailableAnswerCheck(check)
-            }
-
-            swAttachments.setOnCheckedChangeListener { _, check ->
-                viewModel.onAttachmentsAvailableAnswerCheck(check)
             }
 
             cbCommentsEnable.setOnCheckedChangeListener { _, check ->
@@ -229,17 +219,19 @@ class TaskEditorFragment :
                 )
             }
 
-            viewModel.sectionField.observe(viewLifecycleOwner, actSection::setText)
+            viewModel.selectedTopic.collectWhenStarted(lifecycleScope) {
+                actSection.setText(it?.name ?: "Без темы")
+            }
 
-            viewModel.openCourseSections.observe(viewLifecycleOwner) { (courseId, selectedSection) ->
-                sectionPickerViewModel.currentSelectedSection = selectedSection
+            viewModel.openCourseTopics.observe(viewLifecycleOwner) { (courseId, selectedSection) ->
+                sectionPickerViewModel.selectedTopic = selectedSection
                 SectionPickerFragment.newInstance(courseId)
                     .show(childFragmentManager, null)
             }
 
             lifecycleScope.launchWhenStarted {
                 sectionPickerViewModel.selectedSectionId.collect {
-                    viewModel.onSectionSelected(it)
+                    viewModel.onTopicSelected(it)
                 }
             }
 
@@ -299,28 +291,6 @@ class TaskEditorFragment :
                 if (cbCommentsEnable.isChecked != it)
                     cbCommentsEnable.isChecked = it
             }
-
-            lifecycleScope.launchWhenStarted {
-                viewModel.submissionSettings.collect {
-                    swText.isChecked = it.textAvailable
-                    tvCharsLimit.isEnabled = it.textAvailable
-                    etCharsLimit.isEnabled = it.textAvailable
-                    if (etCharsLimit.text.toString() != it.charsLimit)
-                        etCharsLimit.setText(it.charsLimit)
-
-                    swAttachments.isChecked = it.attachmentsAvailable
-                    tvAttachmentsLimit.isEnabled = it.attachmentsAvailable
-                    etAttachmentsLimit.isEnabled = it.attachmentsAvailable
-                    if (etAttachmentsLimit.text.toString() != it.attachmentsLimit)
-                        etAttachmentsLimit.setText(it.attachmentsLimit)
-
-                    tvAttachmentsSizeLimit.isEnabled = it.attachmentsAvailable
-                    etAttachmentsSizeLimit.isEnabled = it.attachmentsAvailable
-                    tvAttachmentsLimitMb.isEnabled = it.attachmentsAvailable
-                    if (etAttachmentsSizeLimit.text.toString() != it.attachmentsSizeLimit)
-                        etAttachmentsSizeLimit.setText(it.attachmentsSizeLimit)
-                }
-            }
         }
     }
 
@@ -360,6 +330,30 @@ class AddAttachmentAdapterDelegate :
 
 }
 
+sealed interface AttachmentItem {
+    val name: String
+    val previewUrl: String?
+    val attachmentId: UUID?
+
+    data class FileAttachmentItem(
+        override val name: String,
+        override val previewUrl: String?,
+        override val attachmentId: UUID?,
+        val state: FileState,
+        val file: File
+    ) : AttachmentItem {
+        val shortName: String = Files.nameWithoutTimestamp(name)
+        val extension: String = file.getExtension()
+    }
+
+    data class LinkAttachmentItem(
+        override val name: String,
+        override val previewUrl: String?,
+        override val attachmentId: UUID?,
+        val url: String
+    ) : AttachmentItem
+}
+
 object AddAttachmentItem : UiModel {
     override fun equals(other: Any?): Boolean = other is AddAttachmentItem
 }
@@ -382,41 +376,47 @@ class AttachmentHolder(
                 ivFileRemove.visibility = View.GONE
             }
             ivOverlay.setImageDrawable(null)
-            tvName.text = item.shortName
-            val glide = Glide.with(ivFile)
-            val load: RequestBuilder<Drawable> = when (item.file.getType()) {
-                "image" -> {
-                    glide.load(item.file)
+            when(item) {
+                is AttachmentFile -> {
+                    tvName.text = item.shortName
+                    val glide = Glide.with(ivFile)
+                    val load: RequestBuilder<Drawable> = when (item.file.getType()) {
+                        "image" -> {
+                            glide.load(item.file)
+                        }
+                        "video" -> {
+                            ivOverlay.setImageResource(R.drawable.play_video_btn)
+                            glide.load(item.file)
+                        }
+                        "audio" -> {
+                            glide.load(R.drawable.ic_audio_file)
+                        }
+                        "document" -> {
+                            glide.load(R.drawable.ic_document_file)
+                        }
+                        "sheet" -> {
+                            glide.load(R.drawable.ic_sheet_file)
+                        }
+                        "presentation" -> {
+                            glide.load(R.drawable.ic_presentation_file)
+                        }
+                        "text" -> {
+                            glide.load(R.drawable.ic_text_file)
+                        }
+                        "pdf" -> {
+                            glide.load(R.drawable.ic_pdf_file)
+                        }
+                        else -> {
+                            glide.load(R.drawable.ic_unknow_file)
+                        }
+                    }
+                    load
+                        .placeholder(R.drawable.loading_attachment)
+                        .into(ivFile)
                 }
-                "video" -> {
-                    ivOverlay.setImageResource(R.drawable.play_video_btn)
-                    glide.load(item.file)
-                }
-                "audio" -> {
-                    glide.load(R.drawable.ic_audio_file)
-                }
-                "document" -> {
-                    glide.load(R.drawable.ic_document_file)
-                }
-                "sheet" -> {
-                    glide.load(R.drawable.ic_sheet_file)
-                }
-                "presentation" -> {
-                    glide.load(R.drawable.ic_presentation_file)
-                }
-                "text" -> {
-                    glide.load(R.drawable.ic_text_file)
-                }
-                "pdf" -> {
-                    glide.load(R.drawable.ic_pdf_file)
-                }
-                else -> {
-                    glide.load(R.drawable.ic_unknow_file)
-                }
+                is AttachmentLink -> TODO()
             }
-            load
-                .placeholder(R.drawable.loading_attachment)
-                .into(ivFile)
+
         }
     }
 

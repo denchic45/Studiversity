@@ -1,7 +1,6 @@
 package com.denchic45.kts.ui.course.taskInfo
 
 import android.os.Bundle
-import android.text.InputFilter
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -16,24 +15,22 @@ import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.denchic45.kts.R
+import com.denchic45.kts.data.domain.model.Attachment2
 import com.denchic45.kts.databinding.FragmentTaskInfoBinding
-import com.denchic45.kts.data.domain.model.DomainModel
-import com.denchic45.kts.domain.model.SubmissionSettings
-import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.rx.EditTextTransformer
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.course.taskEditor.AddAttachmentAdapterDelegate
 import com.denchic45.kts.ui.course.taskEditor.AddAttachmentHolder
 import com.denchic45.kts.ui.course.taskEditor.AttachmentAdapterDelegate
 import com.denchic45.kts.ui.course.taskEditor.AttachmentHolder
 import com.denchic45.kts.util.*
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.widget.extendedAdapter.adapter
 import com.denchic45.widget.extendedAdapter.extension.clickBuilder
 import com.example.appbarcontroller.appbarcontroller.AppBarController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.jakewharton.rxbinding4.widget.textChanges
 
-class TaskInfoFragment :
+class CourseWorkFragment :
     BaseFragment<CourseWorkViewModel, FragmentTaskInfoBinding>(R.layout.fragment_task_info) {
 
     override val binding: FragmentTaskInfoBinding by viewBinding(FragmentTaskInfoBinding::bind)
@@ -108,17 +105,12 @@ class TaskInfoFragment :
 
         val bsBehavior = BottomSheetBehavior.from(binding.bsSubmission)
 
-        binding.submissionExpanded.etText.textChanges()
-            .compose(EditTextTransformer())
-            .subscribe { viewModel.onSubmissionTextType(it) }
-
         binding.submissionExpanded.rvSubmissionAttachments.adapter = submissionAttachmentsAdapter
 
         bsBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 viewModel.onBottomSheetStateChanged(newState)
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    binding.submissionExpanded.etText.closeKeyboard()
                     view.postDelayed({
                         appBarController.showToolbar()
                     }, 100)
@@ -186,35 +178,37 @@ class TaskInfoFragment :
             }
 
         lifecycleScope.launchWhenStarted {
-            viewModel.taskViewState.collect { it ->
+            viewModel.workUiState.collect { resource ->
                 with(binding) {
-                    tvTaskName.text = it.name
-                    tvDescription.text = it.description
-                    tvDescription.visibility =
-                        if (it.description.isEmpty()) View.GONE else View.VISIBLE
-                    it.dateWithTimeLeft?.let {
-                        chpDate.visibility = View.VISIBLE
-                        tvTimeLeft.visibility = View.VISIBLE
-                        chpDate.text = it.first
-                        tvTimeLeft.text = "Осталось " + resources.getQuantityString(
-                            R.plurals.day,
-                            it.second.quantity,
-                            it.second.quantity
-                        )
-                    } ?: run {
-                        chpDate.visibility = View.GONE
-                        tvTimeLeft.visibility = View.GONE
+                    resource.onSuccess {
+                        tvTaskName.text = it.name
+                        tvDescription.text = it.description
+                        tvDescription.visibility = if (it.description?.isNotEmpty() == true)
+                            View.VISIBLE
+                        else View.GONE
+
+                        it.dueDateTime?.let { dueDateTime ->
+                            chpDate.visibility = View.VISIBLE
+                            tvDueDateTime.visibility = View.VISIBLE
+                            chpDate.text = "Напомнить"
+                            tvDueDateTime.text = dueDateTime
+                        } ?: run {
+                            chpDate.visibility = View.GONE
+                            tvDueDateTime.visibility = View.GONE
+                        }
+                        tvComments.text = "Написать комментарий"
                     }
-                    tvComments.text = "Написать комментарий"
                 }
             }
         }
 
         lifecycleScope.launchWhenStarted {
-            viewModel._attachments.collect {
-                binding.tvAttachmentsHeader.visibility =
-                    if (it.isEmpty()) View.GONE else View.VISIBLE
-                adapter.submit(it)
+            viewModel.workAttachments.collect {
+                it.onSuccess {
+                    binding.tvAttachmentsHeader.visibility =
+                        if (it.isEmpty()) View.GONE else View.VISIBLE
+                    adapter.submit(it)
+                }
             }
         }
 
@@ -222,12 +216,12 @@ class TaskInfoFragment :
             btnActionSubmission.setOnClickListener { viewModel.onActionClick() }
             submissionCollapsed.btnAction.setOnClickListener { viewModel.onActionClick() }
 
-            fun setTeacherData(teacher: User?) {
-                teacher?.let {
+            fun setTeacherData(gradedBy: UserResponse?) {
+                gradedBy?.let {
                     Glide.with(requireContext())
-                        .load(teacher.photoUrl)
+                        .load(gradedBy.avatarUrl)
                         .into(submissionExpanded.ivAvatar)
-                    submissionExpanded.tvTeacherName.text = teacher.fullName
+                    submissionExpanded.tvTeacherName.text = gradedBy.fullName
                     submissionExpanded.grpTeacher.visibility = View.VISIBLE
                 } ?: run {
                     submissionExpanded.grpTeacher.visibility = View.GONE
@@ -235,51 +229,45 @@ class TaskInfoFragment :
             }
 
             lifecycleScope.launchWhenStarted {
-                viewModel.submissionViewState2.collect { viewState ->
+                viewModel.submissionUiState.collect { resource ->
 
-                    applyActionButtonProperties {
-                        if (viewState.btnVisibility) {
-                            visibility = View.VISIBLE
-                            setTextColor(requireContext().colors(viewState.btnTextColor))
-                            setBackgroundColor(requireContext().colors(viewState.btnBackgroundColor))
-                            text = viewState.btnText
+                    resource.onSuccess { uiState ->
+                        applyActionButtonProperties {
+                            if (uiState.btnVisibility) {
+                                visibility = View.VISIBLE
+                                setTextColor(requireContext().colors(uiState.btnTextColor))
+                                setBackgroundColor(requireContext().colors(uiState.btnBackgroundColor))
+                                text = uiState.btnText
 
-                        } else {
-                            visibility = View.GONE
+                            } else {
+                                visibility = View.GONE
+                            }
                         }
+
+                        submissionExpanded.tvExpandState.text = uiState.title
+                        submissionCollapsed.tvCollapseState.text = uiState.title
+                        uiState.subtitle?.let { subtitle ->
+                            submissionCollapsed.tvCollapseDescription.visibility = View.VISIBLE
+                            submissionExpanded.tvExpandDescription.visibility = View.VISIBLE
+                            submissionCollapsed.tvCollapseDescription.text = subtitle
+                            submissionExpanded.tvExpandDescription.text = subtitle
+                        } ?: run {
+                            submissionCollapsed.tvCollapseDescription.visibility = View.GONE
+                            submissionExpanded.tvExpandDescription.visibility = View.GONE
+                        }
+
+                        setTeacherData(uiState.gradedBy)
+
+
+                        measureBottomSheetPeek(bsBehavior)
                     }
-
-                    submissionExpanded.tvExpandState.text = viewState.title
-                    submissionCollapsed.tvCollapseState.text = viewState.title
-
-                    if (viewState.subtitleVisibility) {
-                        submissionCollapsed.tvCollapseDescription.visibility = View.VISIBLE
-                        submissionExpanded.tvExpandDescription.visibility = View.VISIBLE
-                        submissionCollapsed.tvCollapseDescription.text = viewState.subtitle
-                        submissionExpanded.tvExpandDescription.text = viewState.subtitle
-                    } else {
-                        submissionCollapsed.tvCollapseDescription.visibility = View.GONE
-                        submissionExpanded.tvExpandDescription.visibility = View.GONE
-                    }
-
-                    setTeacherData(viewState.teacher)
-                    setSubmissionContent(
-                        viewState.textContent,
-                        viewState.attachments,
-                        viewState.allowEditContent
-                    )
-                    setSubmissionContentVisibility(
-                        viewState.submissionSettings,
-                        viewState.attachments.isNotEmpty()
-                    )
-
-                    measureBottomSheetPeek(bsBehavior)
                 }
             }
 
-
-            viewModel.focusOnTextField.observe(viewLifecycleOwner) {
-                submissionExpanded.etText.showKeyboard()
+            viewModel.submissionAttachments.collectWhenStarted(lifecycleScope) {
+                it.onSuccess { attachments ->
+                    setSubmissionContent(attachments)
+                }
             }
         }
 
@@ -289,41 +277,8 @@ class TaskInfoFragment :
     }
 
 
-    private fun setSubmissionContent(
-        textContent: String,
-        attachments: List<DomainModel>,
-        allowEditContent: Boolean
-    ) {
+    private fun setSubmissionContent(attachments: List<Attachment2>) {
         submissionAttachmentsAdapter.submit(attachments)
-
-        with(binding.submissionExpanded) {
-            if (!etText.text.contentEquals(textContent)) {
-                etText.setText(textContent)
-            }
-            etText.isEnabled = allowEditContent
-        }
-    }
-
-    private fun setSubmissionContentVisibility(
-        submissionSettings: SubmissionSettings,
-        isAttachmentsNotEmpty: Boolean
-    ) {
-        with(binding.submissionExpanded) {
-            val textVisibility =
-                if (submissionSettings.textAvailable) View.VISIBLE
-                else View.GONE
-
-            tvTextHeader.visibility = textVisibility
-            etText.filters = arrayOf(InputFilter.LengthFilter(submissionSettings.charsLimit))
-            tilText.visibility = textVisibility
-
-            val attachmentsVisibility =
-                if (submissionSettings.attachmentsAvailable && isAttachmentsNotEmpty) View.VISIBLE
-                else View.GONE
-
-            tvAttachmentsHeader.visibility = attachmentsVisibility
-            rvSubmissionAttachments.visibility = attachmentsVisibility
-        }
     }
 
     private fun measureBottomSheetPeek(bsBehavior: BottomSheetBehavior<FrameLayout>) {

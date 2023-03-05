@@ -2,7 +2,6 @@ package com.denchic45.stuiversity.api.course.work
 
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
-import com.denchic45.stuiversity.api.common.toAttachmentResult
 import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
@@ -18,7 +17,7 @@ interface CourseWorkApi {
     suspend fun create(
         courseId: UUID,
         createCourseWorkRequest: CreateCourseWorkRequest
-    ): ResponseResult<CourseElementResponse>
+    ): ResponseResult<CourseWorkResponse>
 
     suspend fun update(
         courseId: UUID,
@@ -62,7 +61,7 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
     override suspend fun create(
         courseId: UUID,
         createCourseWorkRequest: CreateCourseWorkRequest
-    ): ResponseResult<CourseElementResponse> {
+    ): ResponseResult<CourseWorkResponse> {
         return client.post("/courses/$courseId/works") {
             contentType(ContentType.Application.Json)
             setBody(createCourseWorkRequest)
@@ -97,7 +96,7 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
         courseWorkId: UUID,
         attachmentId: UUID
     ): ResponseResult<AttachmentResponse> {
-        return client.get("/courses/$courseId/works/$courseWorkId/attachments/$attachmentId").toAttachmentResult()
+        return client.get("/courses/$courseId/works/$courseWorkId/attachments/$attachmentId").toResult()
     }
 
     override suspend fun uploadFileToWork(

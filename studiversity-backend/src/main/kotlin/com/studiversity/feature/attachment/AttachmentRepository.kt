@@ -1,9 +1,9 @@
 package com.studiversity.feature.attachment
 
+import com.denchic45.stuiversity.api.course.element.model.*
 import com.studiversity.database.exists
 import com.studiversity.database.table.*
 import com.studiversity.supabase.deleteRecursive
-import com.denchic45.stuiversity.api.course.element.model.*
 import io.github.jan.supabase.storage.BucketApi
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -196,7 +196,18 @@ class AttachmentRepository(private val bucket: BucketApi) {
         Attachments.deleteWhere { ownerId inList ownerIds }
     }
 
-    suspend fun findAttachmentByIdAndCourseElementId(courseId: UUID, workId: UUID, attachmentId: UUID): AttachmentResponse? {
+    suspend fun findAttachmentById(attachmentId: UUID): AttachmentResponse? {
+        val attachment = Attachments.select(
+            AttachmentsCourseElements.attachmentId eq attachmentId
+        ).singleOrNull()
+        return toAttachment(attachment)
+    }
+
+    suspend fun findAttachmentByIdAndCourseElementId(
+        courseId: UUID,
+        workId: UUID,
+        attachmentId: UUID
+    ): AttachmentResponse? {
         return if (CourseElementDao.existByCourseId(workId, courseId)) {
             val attachment = Attachments.innerJoin(AttachmentsCourseElements,
                 { Attachments.id },
@@ -236,6 +247,7 @@ class AttachmentRepository(private val bucket: BucketApi) {
         return attachment?.let {
             when (attachment[Attachments.type]) {
                 AttachmentType.FILE -> FileAttachmentResponse(
+                    attachment[Attachments.id].value,
                     bucket.downloadPublic(attachment[Attachments.path]!!),
                     attachment[Attachments.name]
                 )
@@ -243,5 +255,9 @@ class AttachmentRepository(private val bucket: BucketApi) {
                 AttachmentType.LINK -> attachment.toLink()
             }
         }
+    }
+
+    fun checkIsOwner(ownerId: UUID, attachmentId: UUID): Boolean {
+        return AttachmentDao.findById(attachmentId)?.ownerId == ownerId
     }
 }

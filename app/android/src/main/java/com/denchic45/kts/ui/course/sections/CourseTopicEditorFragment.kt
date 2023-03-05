@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.ui.model.UiModel
-import com.denchic45.kts.domain.model.Section
 import com.denchic45.kts.databinding.FragmentCourseSectionEditorBinding
 import com.denchic45.kts.databinding.ItemAddSectionBinding
 import com.denchic45.kts.databinding.ItemEditSectionBinding
@@ -22,18 +21,19 @@ import com.denchic45.kts.util.closeKeyboard
 import com.denchic45.kts.util.setActivityTitle
 import com.denchic45.kts.util.showKeyboard
 import com.denchic45.kts.util.viewBinding
+import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
 import com.denchic45.widget.extendedAdapter.adapter
 
-class CourseSectionEditorFragment :
-    BaseFragment<CourseSectionEditorViewModel, FragmentCourseSectionEditorBinding>(R.layout.fragment_course_section_editor) {
+class CourseTopicEditorFragment :
+    BaseFragment<CourseTopicEditorViewModel, FragmentCourseSectionEditorBinding>(R.layout.fragment_course_section_editor) {
 
 
     override val binding: FragmentCourseSectionEditorBinding by viewBinding(
         FragmentCourseSectionEditorBinding::bind
     )
 
-    override val viewModel: CourseSectionEditorViewModel by viewModels { viewModelFactory }
+    override val viewModel: CourseTopicEditorViewModel by viewModels { viewModelFactory }
 
     companion object {
         const val COURSE_ID = "CourseSectionEditor COURSE_ID"
@@ -104,7 +104,7 @@ class CourseSectionEditorFragment :
                     viewHolder: RecyclerView.ViewHolder
                 ) {
                     super.clearView(recyclerView, viewHolder)
-                    viewModel.onSectionMoved()
+//                    viewModel.onSectionMoved()
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
@@ -116,7 +116,7 @@ class CourseSectionEditorFragment :
             rvSections.adapter = adapter
             (rvSections.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             lifecycleScope.launchWhenStarted {
-                viewModel.sections.collect {
+                viewModel.topics.collect {
                     adapter.submit(listOf(EditSectionAdapterDelegate.AddSectionItem) + it)
                 }
             }
@@ -128,15 +128,15 @@ class EditSectionAdapterDelegate(
     private val renameCallback: (name: String, position: Int) -> Unit,
     private val removeCallback: (position: Int) -> Unit
 ) :
-    ListItemAdapterDelegate<Section, EditSectionAdapterDelegate.EditSectionHolder>() {
+    ListItemAdapterDelegate<TopicResponse, EditSectionAdapterDelegate.EditSectionHolder>() {
 
     object AddSectionItem : UiModel {
         override fun equals(other: Any?): Boolean = other is AddSectionItem
     }
 
-    override fun isForViewType(item: Any): Boolean = item is Section
+    override fun isForViewType(item: Any): Boolean = item is TopicResponse
 
-    override fun onBindViewHolder(item: Section, holder: EditSectionHolder) = holder.onBind(item)
+    override fun onBindViewHolder(item: TopicResponse, holder: EditSectionHolder) = holder.onBind(item)
 
     override fun onCreateViewHolder(parent: ViewGroup): EditSectionHolder {
         return EditSectionHolder(
@@ -151,8 +151,8 @@ class EditSectionAdapterDelegate(
         private val renameCallback: (name: String, position: Int) -> Unit,
         private val removeCallback: (position: Int) -> Unit
     ) :
-        BaseViewHolder<Section, ItemEditSectionBinding>(itemEditSectionBinding) {
-        override fun onBind(item: Section) {
+        BaseViewHolder<TopicResponse, ItemEditSectionBinding>(itemEditSectionBinding) {
+        override fun onBind(item: TopicResponse) {
             with(binding) {
 
                 fun closeEditing() {

@@ -8,14 +8,15 @@ import io.ktor.client.call.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 
-suspend fun HttpResponse.toAttachmentResult(): ResponseResult<AttachmentResponse> = toResult { response ->
-    if (response.headers.contains(HttpHeaders.ContentDisposition)) {
-        FileAttachmentResponse(
-            response.body(),
-            ContentDisposition.parse(response.headers[HttpHeaders.ContentDisposition]!!)
-                .parameter(ContentDisposition.Parameters.FileName)!!
-        )
-    } else {
-        response.body<LinkAttachmentResponse>()
-    }
-}
+//suspend fun HttpResponse.toAttachmentResult(): ResponseResult<AttachmentResponse> = toResult { response ->
+//    if (response.headers.contains(HttpHeaders.ContentDisposition)) {
+//        FileAttachmentResponse(
+//            response.id,
+//            response.body(),
+//            ContentDisposition.parse(response.headers[HttpHeaders.ContentDisposition]!!)
+//                .parameter(ContentDisposition.Parameters.FileName)!!
+//        )
+//    } else {
+//        response.body<LinkAttachmentResponse>()
+//    }
+//}

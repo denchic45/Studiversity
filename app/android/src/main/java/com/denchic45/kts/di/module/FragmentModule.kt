@@ -13,11 +13,11 @@ import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.course.CourseFragment
 import com.denchic45.kts.ui.course.content.ContentFragment
 import com.denchic45.kts.ui.course.sectionPicker.SectionPickerFragment
-import com.denchic45.kts.ui.course.sections.CourseSectionEditorFragment
+import com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment
 import com.denchic45.kts.ui.course.submission.SubmissionDialog
 import com.denchic45.kts.ui.course.submissions.SubmissionsFragment
-import com.denchic45.kts.ui.course.taskEditor.TaskEditorFragment
-import com.denchic45.kts.ui.course.taskInfo.TaskInfoFragment
+import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
+import com.denchic45.kts.ui.course.taskInfo.CourseWorkFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
 import com.denchic45.kts.ui.creator.CreatorDialog
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
@@ -117,7 +117,7 @@ interface FragmentModule {
     fun contributeCourseFragment(): CourseFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
-    fun contributeTaskEditorFragment(): TaskEditorFragment
+    fun contributeTaskEditorFragment(): CourseWorkEditorFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
     fun contributeSectionPickerFragment(): SectionPickerFragment
@@ -129,7 +129,7 @@ interface FragmentModule {
     fun contributeContentFragment(): ContentFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
-    fun contributeTaskFragment(): TaskInfoFragment
+    fun contributeTaskFragment(): CourseWorkFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
     fun contributeSubmissionsFragment(): SubmissionsFragment
@@ -153,7 +153,7 @@ interface FragmentModule {
     fun contributeCompletedTasksFragment(): CompletedTasksFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
-    fun contributeCourseSectionsFragment(): CourseSectionEditorFragment
+    fun contributeCourseSectionsFragment(): CourseTopicEditorFragment
 
     @ContributesAndroidInjector
     fun contributeIconPickerDialog(): IconPickerDialog

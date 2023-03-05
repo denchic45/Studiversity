@@ -48,7 +48,7 @@ class SectionPickerFragment : DialogFragment(R.layout.fragment_section_picker) {
             adapter.addAll(it)
         }
 
-        viewModel.selectedSectionPosition.observe(viewLifecycleOwner) {
+        viewModel.selectedTopicPosition.observe(viewLifecycleOwner) {
             (dialog as AlertDialog).listView.apply {
                 if (!isItemChecked(it))
                     setItemChecked(it, true)
