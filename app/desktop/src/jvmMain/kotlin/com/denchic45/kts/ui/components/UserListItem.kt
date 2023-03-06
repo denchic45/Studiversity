@@ -48,9 +48,9 @@ fun UserListItem(
             ).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                load = { loadImageBitmap(photoUrl) },
+                load = { loadImageBitmap(avatarUrl) },
                 painterFor = { BitmapPainter(it) },
-                photoUrl,
+                avatarUrl,
                 null,
                 Modifier.size(40.dp).clip(CircleShape),
                 contentScale = ContentScale.Crop

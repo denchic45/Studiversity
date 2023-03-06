@@ -21,7 +21,6 @@ fun Application.studyGroupRoutes() {
     routing {
         authenticate("auth-jwt") {
             route("/studygroups") {
-
                 val addStudyGroup: AddStudyGroupUseCase by inject()
                 val searchStudyGroups: SearchStudyGroupsUseCase by inject()
 

@@ -3,6 +3,7 @@ package com.denchic45.stuiversity.api.studygroup
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
+import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
@@ -20,6 +21,8 @@ interface StudyGroupApi {
         memberId: UUID? = null,
         roleId: Long? = null,
         specialtyId: UUID? = null,
+        academicYear: Int? = null,
+        query: String? = null
     ): ResponseResult<List<StudyGroupResponse>>
 
     suspend fun update(
@@ -27,7 +30,7 @@ interface StudyGroupApi {
         updateStudyGroupRequest: UpdateStudyGroupRequest,
     ): ResponseResult<StudyGroupResponse>
 
-    suspend fun search(query: String): ResponseResult<List<StudyGroupResponse>>
+    suspend fun search(query: String): ResponseResult<List<StudyGroupResponse>> = getList(query = query)
 
     suspend fun delete(studyGroupId: UUID): EmptyResponseResult
 }
@@ -48,11 +51,15 @@ class StudyGroupApiImpl(private val client: HttpClient) : StudyGroupApi {
         memberId: UUID?,
         roleId: Long?,
         specialtyId: UUID?,
+        academicYear: Int?,
+        query: String?
     ): ResponseResult<List<StudyGroupResponse>> {
         return client.get("/studygroups") {
             parameter("member_id", memberId)
             parameter("role_id", roleId)
             parameter("specialty_id", specialtyId)
+            parameter("academic_year", academicYear)
+            parameter("q", query)
         }.toResult()
     }
 
@@ -63,12 +70,6 @@ class StudyGroupApiImpl(private val client: HttpClient) : StudyGroupApi {
         return client.put("/studygroups/$studyGroupId") {
             contentType(ContentType.Application.Json)
             setBody(updateStudyGroupRequest)
-        }.toResult()
-    }
-
-    override suspend fun search(query: String): ResponseResult<List<StudyGroupResponse>> {
-        return client.get("/studygroups") {
-            parameter("q", query)
         }.toResult()
     }
 

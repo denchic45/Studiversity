@@ -14,8 +14,8 @@ import com.denchic45.kts.uieditor.UIEditor
 import com.denchic45.kts.uivalidator.Rule
 import com.denchic45.kts.uivalidator.UIValidator
 import com.denchic45.kts.uivalidator.Validation
-import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
@@ -23,9 +23,7 @@ import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.util.optPropertyOf
 import com.denchic45.stuiversity.util.toUUID
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.*
@@ -42,6 +40,7 @@ class CourseWorkEditorViewModel @Inject constructor(
     private val findCourseWorkUseCase: FindCourseWorkUseCase,
     private val findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
     private val uploadAttachmentToCourseWorkUseCase: UploadAttachmentToCourseWorkUseCase,
+    private val downloadFileUseCase: DownloadFileUseCase,
     private val removeAttachmentFromCourseWorkUseCase: RemoveAttachmentFromCourseWorkUseCase,
     private val findCourseTopicUseCase: FindCourseTopicUseCase,
     private val addCourseWorkUseCase: AddCourseWorkUseCase,
@@ -59,7 +58,6 @@ class CourseWorkEditorViewModel @Inject constructor(
     val selectedTopic = MutableStateFlow<TopicResponse?>(null)
 
     val availabilityDateRemoveVisibility = MutableLiveData<Boolean>()
-    val showAttachments = MutableLiveData<List<Attachment>>()
     val openCourseTopics = SingleLiveData<Pair<String, TopicResponse?>>()
     val filesVisibility = MutableLiveData(false)
     val commentsEnabled = MutableLiveData<Boolean>()
@@ -76,12 +74,25 @@ class CourseWorkEditorViewModel @Inject constructor(
     private val _oldAttachments = MutableStateFlow<List<Attachment2>>(emptyList())
 
     //    private val _attachments = MutableStateFlow<List<Attachment2>>(emptyList())
-    private val addedAttachments = mutableListOf<AttachmentRequest>()
+
+    private val _addedAttachmentItems = MutableStateFlow<List<AttachmentItem>>(emptyList())
+    private val _attachmentItems = MutableStateFlow<List<AttachmentItem>>(emptyList())
+    val attachmentItems = combine(_attachmentItems, _addedAttachmentItems) { items, addedItems ->
+        items + addedItems
+    }
+
+    private val _addedAttachmentsRequests = _addedAttachmentItems.map {
+        it.map { attachmentItem ->
+            when (attachmentItem) {
+                is AttachmentItem.FileAttachmentItem -> CreateFileRequest(
+                    attachmentItem.name,
+                    attachmentItem.file.readBytes()
+                )
+                is AttachmentItem.LinkAttachmentItem -> CreateLinkRequest(attachmentItem.url)
+            }
+        }
+    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 1)
     private val removedAttachments = mutableListOf<UUID>()
-
-    private val attachmentItems = MutableStateFlow<List<AttachmentItem>>(emptyList())
-
-//    private var topic: TopicResponse? = null
 
     private var createdAt: LocalDateTime? = null
 
@@ -151,11 +162,10 @@ class CourseWorkEditorViewModel @Inject constructor(
 
                 commentsEnabled.value = false // TODO: stub
                 selectedTopic.value = findCourseTopicUseCase(courseId, courseWork.topicId).first()
-//                postSelection()
                 findCourseWorkAttachmentsUseCase(courseId, workId).collect {
                     it.onSuccess { attachments ->
                         _oldAttachments.value = attachments
-                        attachmentItems.update {
+                        _attachmentItems.update {
                             attachments.map { attachment ->
                                 when (attachment) {
                                     is FileAttachment2 -> AttachmentItem.FileAttachmentItem(
@@ -248,16 +258,12 @@ class CourseWorkEditorViewModel @Inject constructor(
     }
 
     fun onFilesSelect(selectedFiles: List<File>) {
-        addedAttachments.addAll(selectedFiles.map { file ->
-            CreateFileRequest(file.name, file.readBytes())
-        })
-
-        attachmentItems.update {
+        _addedAttachmentItems.update {
             it + selectedFiles.map { file ->
                 AttachmentItem.FileAttachmentItem(
                     file.name,
                     null, null,
-                    FileState.Preview,
+                    FileState.Downloaded,
                     file
                 )
             }
@@ -268,18 +274,26 @@ class CourseWorkEditorViewModel @Inject constructor(
         openConfirmation("Убрать файл" to "подтвердите ваш выбор")
         viewModelScope.launch {
             if (confirmInteractor.receiveConfirm()) {
-                val item = attachmentItems.value[position]
+                val item = _attachmentItems.value[position]
                 item.attachmentId?.let {
                     removedAttachments.add(it)
                 }
-                attachmentItems.update { it.minusElement(it[position]) }
+                _attachmentItems.update { it.minusElement(it[position]) }
             }
         }
     }
 
     fun onAttachmentClick(position: Int) {
-        when (val item = attachmentItems.value[position]) {
-            is AttachmentItem.FileAttachmentItem -> openAttachment.postValue(item.file)
+        when (val item = _attachmentItems.value[position]) {
+            is AttachmentItem.FileAttachmentItem -> when (item.state) {
+                FileState.Downloaded -> openAttachment.postValue(item.file)
+                FileState.Preview -> viewModelScope.launch {
+                    downloadFileUseCase(item.attachmentId!!).collect {
+                        openAttachment.postValue(item.file)
+                    }
+                }
+                else -> {}
+            }
             is AttachmentItem.LinkAttachmentItem -> TODO()
         }
     }
@@ -313,8 +327,14 @@ class CourseWorkEditorViewModel @Inject constructor(
                             5
                         )
                     ).onSuccess { courseWork ->
-                        addedAttachments.map {
-                            uploadAttachmentToCourseWorkUseCase(courseId, courseWork.id, it)
+                        _addedAttachmentsRequests.map {
+                            it.map { attachmentRequest ->
+                                uploadAttachmentToCourseWorkUseCase(
+                                    courseId = courseId,
+                                    workId = courseWork.id,
+                                    attachmentRequest = attachmentRequest
+                                )
+                            }
                         }
                     }
 
@@ -332,8 +352,14 @@ class CourseWorkEditorViewModel @Inject constructor(
                         removedAttachments.map {
                             removeAttachmentFromCourseWorkUseCase(courseId, courseWork.id, it)
                         }
-                        addedAttachments.map {
-                            uploadAttachmentToCourseWorkUseCase(courseId, courseWork.id, it)
+                        _addedAttachmentsRequests.map {
+                            it.map { attachmentRequest ->
+                                uploadAttachmentToCourseWorkUseCase(
+                                    courseId = courseId,
+                                    workId = courseWork.id,
+                                    attachmentRequest = attachmentRequest
+                                )
+                            }
                         }
                     }
                 }
@@ -352,10 +378,6 @@ class CourseWorkEditorViewModel @Inject constructor(
     fun onTopicSelected(topic: TopicResponse) {
         selectedTopic.value = topic
     }
-
-//    private fun postSelection() {
-//        selectedTopic.value = topic.name
-//    }
 
     data class SubmissionSettingsState(
         val textAvailable: Boolean,

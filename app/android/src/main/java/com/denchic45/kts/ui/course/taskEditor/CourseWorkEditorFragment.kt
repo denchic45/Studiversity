@@ -278,7 +278,7 @@ class CourseWorkEditorFragment :
                 filePicker.selectFiles()
             }
 
-            viewModel.showAttachments.observe(viewLifecycleOwner) {
+            viewModel.attachmentItems.collectWhenStarted(lifecycleScope) {
                 adapter.submit(it)
             }
 

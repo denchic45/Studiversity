@@ -1,16 +1,18 @@
-package com.denchic45.kts.domain
+package com.denchic45.kts.domain.timetable
 
-import com.denchic45.kts.domain.model.GroupCourses
-import com.denchic45.kts.domain.model.GroupTimetable
 import com.denchic45.kts.domain.model.*
 import com.denchic45.kts.domain.model.Event.Companion.createEmpty
 import com.denchic45.kts.domain.model.SimpleEventDetails.Companion.dinner
 import com.denchic45.kts.domain.model.SimpleEventDetails.Companion.practice
+import com.denchic45.kts.util.UUIDS
+import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
+import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import com.denchic45.stuiversity.api.user.UserApi
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.DatePatterns
 import com.denchic45.stuiversity.util.Dates
-import com.denchic45.kts.util.UUIDS
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.toLocalDate
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.poi.xwpf.usermodel.XWPFTable
@@ -19,7 +21,11 @@ import java.io.File
 import java.time.LocalDate
 import java.util.*
 
-class TimetableParser {
+class TimetableParser(
+    private val studyGroupApi: StudyGroupApi,
+    private val userApi: UserApi,
+    private val courseApi: UserApi
+) {
     private val days = listOf(
         "ПОНЕДЕЛЬНИК ",
         "ВТОРНИК",
@@ -34,12 +40,19 @@ class TimetableParser {
     private var currentDayOfWeek = 0
     private lateinit var currentGroupCourse: GroupCourses
 
+    private val cachedCourses = mutableMapOf<String, CourseResponse>()
+    private val cachedUsers = mutableMapOf<String, UserResponse>()
+
+    private fun findUserBySurname(surname: String) {
+        return cachedCourses.get(surname) ?:
+    }
+
     suspend fun parseDoc(
         docFile: File,
-        callbackGroupInfo: suspend (Int) -> List<GroupCourses>,
-    ): List<GroupTimetable> {
+//        callbackGroupInfo: suspend (Int) -> List<GroupCourses>,
+    ): Map<UUID, TimetableResponse> {
 
-        val groupTimetableList: MutableList<GroupTimetable> = ArrayList()
+        val timetables: MutableMap<UUID,TimetableResponse> = mutableMapOf()
 
         try {
             val wordDoc = XWPFDocument(docFile.inputStream())
@@ -49,24 +62,25 @@ class TimetableParser {
             cellsInGroups.addAll(table.getRow(1).tableCells)
             cellsInGroups.addAll(table.getRow(2).tableCells)
 
-            val groupCoursesList = callbackGroupInfo(findCourseNumber())
+            val studyGroupsByAcademicYear = studyGroupApi.getByAcademicYear()
 
             val cellsCount = table.getRow(1).tableCells.size
 
-            for (groupCourses in groupCoursesList) {
-                currentGroupCourse = groupCourses
+            for (groupCoursesItem in studyGroupsByAcademicYear) {
+                currentGroupCourse = groupCoursesItem
                 cellOfGroupPos = cellsInGroups.indexOf(
                     getCellByGroupName(
                         cellsInGroups,
-                        groupCourses.groupHeader.name
+                        groupCoursesItem.groupHeader.name
                     )
                 )
                 if (cellOfGroupPos == -1) continue
                 cellOfGroupPos =
                     if (cellOfGroupPos > cellsCount) cellOfGroupPos - cellsCount else cellOfGroupPos
-                groupTimetableList.add(
+                timetables.put(
+                    gr
                     GroupTimetable(
-                        groupCourses.groupHeader,
+                        groupCoursesItem.groupHeader,
                         getLessonsOfGroup()
                     )
                 )
@@ -76,7 +90,7 @@ class TimetableParser {
             throw e
         }
 
-        return groupTimetableList
+        return timetables
     }
 
     private fun findCourseNumber(): Int {
@@ -135,7 +149,7 @@ class TimetableParser {
                 if (orderText == "0" && subjectAndRoomText.isEmpty()) {
                     continue
                 }
-                events.add(createEvent(orderText.toInt(), subjectAndRoomText, date))
+                events.add(createPeriod(orderText.toInt(), subjectAndRoomText, date))
             } else if (subjectAndRoomText.isNotEmpty()) {
                 throw TimetableOrderLessonException(
                     """
@@ -160,10 +174,11 @@ class TimetableParser {
             )
     }
 
-    private fun createEvent(order: Int, subjectAndRoom: String, date: LocalDate): Event {
+    private fun createPeriod(order: Int, subjectAndRoom: String, date: LocalDate): Event {
         var subjectAndRoom = subjectAndRoom
         if (subjectAndRoom.isEmpty()) {
-            return createEmpty(groupHeader = currentGroupCourse.groupHeader,
+            return createEmpty(
+                groupHeader = currentGroupCourse.groupHeader,
 //                order = order
             )
         }

@@ -20,6 +20,7 @@ interface CoursesApi {
         memberId: UUID? = null,
         studyGroupId: UUID? = null,
         subjectId: UUID? = null,
+        query: String? = null
     ): ResponseResult<List<CourseResponse>>
 
     suspend fun getCoursesByMe(): ResponseResult<CourseResponse>
@@ -39,7 +40,7 @@ interface CoursesApi {
 
     suspend fun unarchive(courseId: UUID): EmptyResponseResult
 
-    suspend fun search(query: String): ResponseResult<List<CourseResponse>>
+    suspend fun search(query: String): ResponseResult<List<CourseResponse>> = getList(query = query)
 
     suspend fun delete(courseId: UUID): EmptyResponseResult
 }
@@ -60,11 +61,13 @@ class CourseApiImpl(private val client: HttpClient) : CoursesApi {
         memberId: UUID?,
         studyGroupId: UUID?,
         subjectId: UUID?,
+        query: String?,
     ): ResponseResult<List<CourseResponse>> {
         return client.get("/courses") {
             parameter("member_id", memberId)
             parameter("study_group_id", studyGroupId)
             parameter("subject_id", subjectId)
+            parameter("q", query)
         }.toResult()
     }
 
@@ -100,12 +103,6 @@ class CourseApiImpl(private val client: HttpClient) : CoursesApi {
 
     override suspend fun unarchive(courseId: UUID): EmptyResponseResult {
         return client.delete("/courses/${courseId}/archived").toResult()
-    }
-
-    override suspend fun search(query: String): ResponseResult<List<CourseResponse>> {
-        return client.get("/courses") {
-            parameter("q", query)
-        }.toResult()
     }
 
     override suspend fun delete(courseId: UUID): EmptyResponseResult {

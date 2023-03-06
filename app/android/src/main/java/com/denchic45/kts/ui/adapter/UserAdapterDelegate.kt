@@ -27,7 +27,7 @@ class UserAdapterDelegate : ListItemAdapterDelegate<UserItem, UserAdapterDelegat
         override fun onBind(item: UserItem) {
             with(binding) {
                 Glide.with(itemView)
-                    .load(item.photoUrl)
+                    .load(item.avatarUrl)
                     .transition(DrawableTransitionOptions.withCrossFade(100))
                     .into(ivAvatar)
 

@@ -8,7 +8,7 @@ import java.util.UUID
 data class UserItem(
     override val id: UUID,
     val title: String,
-    val photoUrl: String,
+    val avatarUrl: String,
     val subtitle: String? = null,
 ) : UiModel
 
@@ -16,7 +16,7 @@ fun GroupMember.toUserItem(groupMembers: GroupMembers): UserItem {
     return UserItem(
         id = id,
         title = fullName,
-        photoUrl = photoUrl,
+        avatarUrl = photoUrl,
         subtitle = if (groupMembers.isHeadman(this)) "Староста" else null
     )
 }
@@ -25,7 +25,7 @@ fun User.toUserItem(): UserItem {
     return UserItem(
         id = id,
         title = fullName,
-        photoUrl = photoUrl,
+        avatarUrl = photoUrl,
         subtitle = null
     )
 }
