@@ -1,8 +1,8 @@
 package com.denchic45.kts.util
 
 import android.content.Context
+import me.tatarka.inject.annotations.Inject
 import java.io.File
-import javax.inject.Inject
 
 actual class SystemDirs  actual constructor() {
 

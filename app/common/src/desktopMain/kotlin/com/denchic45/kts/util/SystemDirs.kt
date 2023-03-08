@@ -1,11 +1,11 @@
 package com.denchic45.kts.util
 
+import me.tatarka.inject.annotations.Inject
 import net.harawata.appdirs.AppDirsFactory
 import java.io.File
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-actual class SystemDirs @Inject actual constructor() {
+@Inject
+actual class SystemDirs actual constructor() {
     actual val appDirectory: File
         get() = File(appPath)
 
@@ -15,6 +15,6 @@ actual class SystemDirs @Inject actual constructor() {
     companion object {
         val appPath: String = AppDirsFactory
             .getInstance()
-            .getUserDataDir("KtsApp", null, null, true)
+            .getUserDataDir("Studiversity", null, null, true)
     }
 }
