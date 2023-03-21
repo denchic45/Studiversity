@@ -3,7 +3,6 @@ package com.denchic45.stuiversity.api.studygroup
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
-import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
@@ -30,9 +29,13 @@ interface StudyGroupApi {
         updateStudyGroupRequest: UpdateStudyGroupRequest,
     ): ResponseResult<StudyGroupResponse>
 
-    suspend fun search(query: String): ResponseResult<List<StudyGroupResponse>> = getList(query = query)
+    suspend fun search(query: String): ResponseResult<List<StudyGroupResponse>> =
+        getList(query = query)
 
     suspend fun delete(studyGroupId: UUID): EmptyResponseResult
+
+
+    suspend fun getByAcademicYear(academicYear: Int): ResponseResult<List<StudyGroupResponse>>
 }
 
 class StudyGroupApiImpl(private val client: HttpClient) : StudyGroupApi {
@@ -75,5 +78,11 @@ class StudyGroupApiImpl(private val client: HttpClient) : StudyGroupApi {
 
     override suspend fun delete(studyGroupId: UUID): EmptyResponseResult {
         return client.delete("/studygroups/$studyGroupId").toResult()
+    }
+
+    override suspend fun getByAcademicYear(academicYear: Int): ResponseResult<List<StudyGroupResponse>> {
+        return client.get("/studygroups") {
+            parameter("academic_year", academicYear)
+        }.toResult()
     }
 }

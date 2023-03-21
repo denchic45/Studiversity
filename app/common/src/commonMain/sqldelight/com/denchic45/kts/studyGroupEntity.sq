@@ -1,13 +1,14 @@
 import java.lang.String;
-import java.util.List;
+import java.util.Date;
 
 CREATE TABLE IF NOT EXISTS studyGroupEntity (
 study_group_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 group_name TEXT NOT NULL,
-academic_year TEXT AS List<String> NOT NULL,
 specialty_id TEXT NOT NULL,
 created_at INTEGER,
-update_at INTEGER
+update_at INTEGER,
+start_academic_year TEXT AS Date NOT NULL,
+end_academic_year TEXT AS Date NOT NULL
 );
 
 CREATE VIEW studyGroupWithSpecialty AS
@@ -20,10 +21,11 @@ VALUES ?
 ON CONFLICT(study_group_id)
 DO UPDATE SET
 group_name = excluded.group_name,
-academic_year = excluded.academic_year,
 specialty_id = excluded.specialty_id,
 created_at = excluded.created_at,
-update_at = excluded.update_at;
+update_at = excluded.update_at,
+start_academic_year = excluded.start_academic_year,
+end_academic_year = excluded.end_academic_year;
 
 getById:
 SELECT * FROM studyGroupWithSpecialty g

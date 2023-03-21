@@ -14,6 +14,7 @@ import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.DatePatterns
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.stuiversity.util.toLocalDate
+import com.github.michaelbull.result.unwrap
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.poi.xwpf.usermodel.XWPFTable
 import org.apache.poi.xwpf.usermodel.XWPFTableCell
@@ -43,9 +44,9 @@ class TimetableParser(
     private val cachedCourses = mutableMapOf<String, CourseResponse>()
     private val cachedUsers = mutableMapOf<String, UserResponse>()
 
-    private fun findUserBySurname(surname: String) {
-        return cachedCourses.get(surname) ?:
-    }
+//    private fun findUserBySurname(surname: String) {
+//        return cachedCourses.get(surname) ?:
+//    }
 
     suspend fun parseDoc(
         docFile: File,
@@ -62,7 +63,7 @@ class TimetableParser(
             cellsInGroups.addAll(table.getRow(1).tableCells)
             cellsInGroups.addAll(table.getRow(2).tableCells)
 
-            val studyGroupsByAcademicYear = studyGroupApi.getByAcademicYear()
+            val studyGroupsByAcademicYear = studyGroupApi.getByAcademicYear(findCourseNumber()).unwrap()
 
             val cellsCount = table.getRow(1).tableCells.size
 
@@ -78,7 +79,6 @@ class TimetableParser(
                 cellOfGroupPos =
                     if (cellOfGroupPos > cellsCount) cellOfGroupPos - cellsCount else cellOfGroupPos
                 timetables.put(
-                    gr
                     GroupTimetable(
                         groupCoursesItem.groupHeader,
                         getLessonsOfGroup()
