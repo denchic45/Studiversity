@@ -1,14 +1,12 @@
 package com.denchic45.kts.domain.timetable
 
-import com.denchic45.kts.domain.model.*
-import com.denchic45.kts.domain.model.Event.Companion.createEmpty
-import com.denchic45.kts.domain.model.SimpleEventDetails.Companion.dinner
-import com.denchic45.kts.domain.model.SimpleEventDetails.Companion.practice
-import com.denchic45.kts.util.UUIDS
+import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.stuiversity.api.timetable.model.*
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.DatePatterns
@@ -25,7 +23,8 @@ import java.util.*
 class TimetableParser(
     private val studyGroupApi: StudyGroupApi,
     private val userApi: UserApi,
-    private val courseApi: UserApi
+    private val courseApi: CoursesApi,
+    private val subjectApi: SubjectApi
 ) {
     private val days = listOf(
         "ПОНЕДЕЛЬНИК ",
@@ -39,22 +38,20 @@ class TimetableParser(
     private lateinit var table: XWPFTable
     private var currentRow = 0
     private var currentDayOfWeek = 0
-    private lateinit var currentGroupCourse: GroupCourses
+    private lateinit var currentStudyGroup: StudyGroupResponse
 
     private val cachedCourses = mutableMapOf<String, CourseResponse>()
+    private val cachedCoursesByStudyGroup = mutableMapOf<Pair<String, UUID>, CourseResponse>()
+    private val cachedSubjects = mutableListOf<SubjectResponse>()
     private val cachedUsers = mutableMapOf<String, UserResponse>()
 
-//    private fun findUserBySurname(surname: String) {
-//        return cachedCourses.get(surname) ?:
-//    }
+    private suspend fun findUserBySurname(surname: String): UserResponse {
+        return cachedUsers[surname] ?: userApi.getBySurname(surname).unwrap()
+            .apply { cachedUsers[surname] = this }
+    }
 
-    suspend fun parseDoc(
-        docFile: File,
-//        callbackGroupInfo: suspend (Int) -> List<GroupCourses>,
-    ): Map<UUID, TimetableResponse> {
-
-        val timetables: MutableMap<UUID,TimetableResponse> = mutableMapOf()
-
+    suspend fun parseDoc(docFile: File): Map<UUID, TimetableResponse> {
+        val timetables: MutableMap<UUID, TimetableResponse> = mutableMapOf()
         try {
             val wordDoc = XWPFDocument(docFile.inputStream())
             table = wordDoc.tables[0]
@@ -63,33 +60,25 @@ class TimetableParser(
             cellsInGroups.addAll(table.getRow(1).tableCells)
             cellsInGroups.addAll(table.getRow(2).tableCells)
 
-            val studyGroupsByAcademicYear = studyGroupApi.getByAcademicYear(findCourseNumber()).unwrap()
+            val studyGroupsByAcademicYear = studyGroupApi.getByAcademicYear(findCourseNumber())
+                .unwrap()
 
             val cellsCount = table.getRow(1).tableCells.size
 
-            for (groupCoursesItem in studyGroupsByAcademicYear) {
-                currentGroupCourse = groupCoursesItem
+            for (studyGroup in studyGroupsByAcademicYear) {
+                currentStudyGroup = studyGroup
                 cellOfGroupPos = cellsInGroups.indexOf(
-                    getCellByGroupName(
-                        cellsInGroups,
-                        groupCoursesItem.groupHeader.name
-                    )
+                    getCellByGroupName(cellsInGroups, studyGroup.name)
                 )
                 if (cellOfGroupPos == -1) continue
-                cellOfGroupPos =
-                    if (cellOfGroupPos > cellsCount) cellOfGroupPos - cellsCount else cellOfGroupPos
-                timetables.put(
-                    GroupTimetable(
-                        groupCoursesItem.groupHeader,
-                        getLessonsOfGroup()
-                    )
-                )
+                cellOfGroupPos = if (cellOfGroupPos > cellsCount) cellOfGroupPos - cellsCount
+                else cellOfGroupPos
+                timetables[studyGroup.id] = createTimetable()
             }
         } catch (e: Exception) {
             e.printStackTrace()
             throw e
         }
-
         return timetables
     }
 
@@ -109,8 +98,8 @@ class TimetableParser(
             }
     }
 
-    private fun getLessonsOfGroup(): List<EventsOfDay> {
-        val weekLessons: MutableList<EventsOfDay> = ArrayList()
+    private suspend fun createTimetable(): TimetableResponse {
+        val weekLessons = mutableListOf<List<PeriodResponse>>()
         currentRow = 3
         currentDayOfWeek = 0
         while (!table.getRow(currentRow).getCell(0).text.contains("ПОНЕДЕЛЬНИК")) currentRow++
@@ -119,26 +108,31 @@ class TimetableParser(
             currentRow++
             val date = dateInCell.substring(dateInCell.lastIndexOf(" ") + 1)
             if (Dates.isValidDate(date, DatePatterns.DD_MM_yy)) {
-                weekLessons.add(getEventsOfTheDay(date))
+                weekLessons.add(getPeriodsOfDay(date))
                 currentDayOfWeek++
             } else {
                 throw  TimetableInvalidDateException("Некоректная дата: $dateInCell")
             }
         }
-        return weekLessons
+        return TimetableResponse(
+            weekLessons[0],
+            weekLessons[1],
+            weekLessons[2],
+            weekLessons[3],
+            weekLessons[4],
+            weekLessons[5],
+        )
     }
 
-    private fun getEventsOfTheDay(dateText: String): EventsOfDay {
+    private suspend fun getPeriodsOfDay(dateText: String): List<PeriodResponse> {
         val date = dateText.toLocalDate(DatePatterns.DD_MM_yy)
-        val events: MutableList<Event> = mutableListOf()
-        if (currentRow == table.rows.size) return EventsOfDay.createEmpty(date)
+        val periods = mutableListOf<PeriodResponse>()
+        if (currentRow == table.rows.size) return emptyList()
         var cells = table.getRow(currentRow).tableCells
-
-        val startAtZero = cells[0].text == "0" && cells[cellOfGroupPos].text.isNotEmpty()
 
         while (hasRowsOfCurrentDate()) {
             val orderText = cells[0].text
-            val subjectAndRoomText: String = cells[cellOfGroupPos].text
+            val cellContent: String = cells[cellOfGroupPos].text
                 .replace("\\(.*\\)".toRegex(), "")
                 .trim { it <= ' ' }
             currentRow++
@@ -146,91 +140,130 @@ class TimetableParser(
                 cells = table.getRow(currentRow).tableCells
             }
             if (orderText.isNotEmpty()) {
-                if (orderText == "0" && subjectAndRoomText.isEmpty()) {
+                if (orderText == "0" && cellContent.isEmpty()) {
                     continue
                 }
-                events.add(createPeriod(orderText.toInt(), subjectAndRoomText, date))
-            } else if (subjectAndRoomText.isNotEmpty()) {
+                createPeriod(orderText.toInt(), date, cellContent)?.let { periods.add(it) }
+            } else if (cellContent.isNotEmpty()) {
                 throw TimetableOrderLessonException(
                     """
     У урока нет порядкового номера! 
     Дата: $dateText
-    Поле урока: $subjectAndRoomText
-    Группа: ${currentGroupCourse.groupHeader.name}
+    Поле урока: $cellContent
+    Группа: ${currentStudyGroup.name}
     """.trimIndent()
                 )
             }
         }
-
-        return EventsOfDay(date, events, startAtZero, UUIDS.createShort())
+        return periods
     }
 
     private fun hasRowsOfCurrentDate(): Boolean {
         if (currentRow == table.rows.size - 1) return false
         return if (currentDayOfWeek == 5) true
         else !table.getRow(currentRow)
-            .getCell(0).text.contains(
-                days[currentDayOfWeek + 1]
-            )
+            .getCell(0).text.contains(days[currentDayOfWeek + 1])
     }
 
-    private fun createPeriod(order: Int, subjectAndRoom: String, date: LocalDate): Event {
-        var subjectAndRoom = subjectAndRoom
-        if (subjectAndRoom.isEmpty()) {
-            return createEmpty(
-                groupHeader = currentGroupCourse.groupHeader,
-//                order = order
-            )
+    private suspend fun createPeriod(
+        order: Int,
+        date: LocalDate,
+        content: String
+    ): PeriodResponse? {
+        if (content.isEmpty()) {
+            return null
         }
-        val separatorSubjectRoomPos = subjectAndRoom.indexOf('\\')
-        val eventName: String
-        val room: String
-        subjectAndRoom = subjectAndRoom.replace("\\(.*\\)".toRegex(), "")
-        if (separatorSubjectRoomPos != -1) {
-            eventName = subjectAndRoom.substring(0, separatorSubjectRoomPos)
-            room = subjectAndRoom.substring(separatorSubjectRoomPos + 1)
-        } else {
-            eventName = subjectAndRoom
-            room = ""
-        }
-        val subject = findSubjectByName(eventName)
-        return if (subject != null) {
-            Event(
-                groupHeader = currentGroupCourse.groupHeader,
-                room = room,
-                details = Lesson(subject, teachers = findTeachersBySubject(subject))
+        val separatedContent = content.lines()
+        val subjectName = separatedContent[0].substringBefore('\\')
+        val roomName = separatedContent[0].substringAfter('\\')
+
+        val subject = findSubjectByName(subjectName)
+        val course = subject?.let { findCourseBySubjectAndStudyGroupId(it, currentStudyGroup.id) }
+        return if (course != null) {
+            LessonResponse(
+                id = -1,
+                date = date,
+                order = order.toShort(),
+                roomId = null,
+                studyGroupId = currentStudyGroup.id,
+                memberIds = findTeacherByContent(separatedContent),
+                details = LessonDetails(course.id)
             )
         } else {
-            Event(
-                groupHeader = currentGroupCourse.groupHeader,
-                room = room,
-                details = createEventDetails(eventName)
+            EventResponse(
+                id = -1,
+                date = date,
+                order = order.toShort(),
+                roomId = null,
+                studyGroupId = currentStudyGroup.id,
+                memberIds = findTeacherByContent(separatedContent),
+                details = EventDetails(subjectName, "blue", "")
             )
         }
     }
 
-    private fun findSubjectByName(subjectName: String): SubjectResponse? {
-        return currentGroupCourse.courses
-            .firstOrNull { course ->
-                course.subject.name.resetFormatting().contains(
-                    subjectName.resetFormatting()
-                )
-            }?.subject
-    }
-
-    private fun createEventDetails(eventName: String): EventDetails {
-        return when (eventName.lowercase(Locale.getDefault())) {
-            "обед" -> dinner()
-            "практика" -> practice()
-            else -> SimpleEventDetails(eventName)
+    private suspend fun findTeacherByContent(separatedContent: List<String>): List<UUID> {
+        return if (separatedContent.size == 1) {
+            emptyList()
+        } else separatedContent.subList(1, separatedContent.size).map { line ->
+            findUserBySurname(line.split(" ")[0]).id
         }
     }
 
-    private fun findTeachersBySubject(subject: SubjectResponse): List<UserResponse> {
-        return currentGroupCourse.courses
-            .filter { it.subject == subject }
-            .map { it.teacher }
+    private suspend fun findCourseBySubjectAndStudyGroupId(
+        subject: SubjectResponse,
+        studyGroupId: UUID
+    ): CourseResponse? {
+        val subjectName = subject.name
+
+        // try to get cached course by group
+        val cachedByGroup = cachedCoursesByStudyGroup[subjectName to studyGroupId]
+        if (cachedByGroup != null) {
+            return cachedByGroup
+        }
+
+        // try to get just cached course
+        val cachedCourse = cachedCourses[subjectName]
+        if (cachedCourse != null) {
+            cachedCoursesByStudyGroup[subjectName to studyGroupId] = cachedCourse
+            return cachedCourse
+        }
+
+        // get course by subject name and group id or subject name only
+        val subjectResponse = subjectApi.getList(name = subjectName).unwrap().firstOrNull()
+        val courseResponse = subjectResponse?.let {
+            courseApi.getList(studyGroupId = studyGroupId, subjectId = subjectResponse.id)
+                .unwrap().firstOrNull()
+                ?: courseApi.getList(subjectId = subjectResponse.id)
+                    .unwrap().first()
+        }
+
+        return courseResponse?.also {
+            cachedCourses[subjectName] = it
+            cachedCoursesByStudyGroup[subjectName to studyGroupId] = it
+        }
     }
+
+    private suspend fun findSubjectByName(subjectName: String): SubjectResponse? {
+        return cachedSubjects.find { it.name.resetFormatting() == subjectName.resetFormatting() }
+            ?: run {
+                subjectApi.getList(name = subjectName).unwrap().firstOrNull()
+            }?.also(cachedSubjects::add)
+    }
+
+//    private fun createEventDetails(eventName: String): EventDetails {
+//        return when (eventName.lowercase(Locale.getDefault())) {
+//            "обед" -> dinner()
+//            "практика" -> practice()
+//            else -> SimpleEventDetails(eventName)
+//        }
+//    }
+
+//    private fun findTeachersBySubject(subject: SubjectResponse): List<UserResponse> {
+//        return currentStudyGroup.courses
+//            .filter { it.subject == subject }
+//            .map { it.teacher }
+//    }
 
     private fun String.resetFormatting(): String {
         return replace(" ", "")
@@ -247,5 +280,4 @@ class TimetableParser(
     companion object {
         const val STUDY_DAY_COUNT = 6
     }
-
 }

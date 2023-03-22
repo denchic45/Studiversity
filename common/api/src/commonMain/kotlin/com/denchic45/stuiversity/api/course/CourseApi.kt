@@ -43,6 +43,8 @@ interface CoursesApi {
     suspend fun search(query: String): ResponseResult<List<CourseResponse>> = getList(query = query)
 
     suspend fun delete(courseId: UUID): EmptyResponseResult
+
+//    suspend fun getBySubjectNameAndStudyGroupId(subjectName: String, studyGroupId: UUID):ResponseResult<CourseResponse>
 }
 
 class CourseApiImpl(private val client: HttpClient) : CoursesApi {
@@ -108,4 +110,11 @@ class CourseApiImpl(private val client: HttpClient) : CoursesApi {
     override suspend fun delete(courseId: UUID): EmptyResponseResult {
         return client.delete("/courses/$courseId").toResult()
     }
+
+//    override suspend fun getBySubjectNameAndStudyGroupId(subjectName: String, studyGroupId: UUID): ResponseResult<CourseResponse> {
+//        return client.get("/courses") {
+//            parameter("subjectName", subjectName)
+//            parameter("studyGroupId", studyGroupId)
+//        }.toResult()
+//    }
 }

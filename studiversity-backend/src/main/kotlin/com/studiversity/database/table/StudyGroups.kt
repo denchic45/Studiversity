@@ -31,4 +31,8 @@ class StudyGroupDao(id: EntityID<UUID>) : UUIDEntity(id) {
     var name by StudyGroups.name
     var academicYear by StudyGroups.academicYear
     var specialty by SpecialtyDao optionalReferencedOn StudyGroups.specialtyId
+    var createdAt by StudyGroups.createdAt
+    var updatedAt by StudyGroups.updatedAt
+    var startAcademicYear by StudyGroups.startAcademicYear
+    var endAcademicYear by StudyGroups.endAcademicYear
 }

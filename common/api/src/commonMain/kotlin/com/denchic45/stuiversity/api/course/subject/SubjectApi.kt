@@ -16,7 +16,12 @@ interface SubjectApi {
 
     suspend fun getById(subjectId: UUID): ResponseResult<SubjectResponse>
 
-    suspend fun update(subjectId: UUID, updateSubjectRequest: UpdateSubjectRequest): ResponseResult<SubjectResponse>
+    suspend fun getList(name: String? = null): ResponseResult<List<SubjectResponse>>
+
+    suspend fun update(
+        subjectId: UUID,
+        updateSubjectRequest: UpdateSubjectRequest
+    ): ResponseResult<SubjectResponse>
 
     suspend fun search(query: String): ResponseResult<List<SubjectResponse>>
 
@@ -35,7 +40,16 @@ class SubjectApiImpl(private val client: HttpClient) : SubjectApi {
         return client.get("/subjects/$subjectId").toResult()
     }
 
-    override suspend fun update(subjectId: UUID, updateSubjectRequest: UpdateSubjectRequest): ResponseResult<SubjectResponse> {
+    override suspend fun getList(name: String?): ResponseResult<List<SubjectResponse>> {
+        return client.get("/subjects") {
+            parameter("name", name)
+        }.toResult()
+    }
+
+    override suspend fun update(
+        subjectId: UUID,
+        updateSubjectRequest: UpdateSubjectRequest
+    ): ResponseResult<SubjectResponse> {
         return client.patch("/subjects/$subjectId") {
             contentType(ContentType.Application.Json)
             setBody(updateSubjectRequest)

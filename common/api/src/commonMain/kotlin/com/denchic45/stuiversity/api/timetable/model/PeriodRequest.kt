@@ -14,7 +14,6 @@ sealed interface PeriodModel {
     val details: PeriodDetails
 }
 
-
 @Serializable(PeriodRequestSerializer::class)
 sealed interface PeriodRequest:PeriodModel
 
