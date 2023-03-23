@@ -1,10 +1,11 @@
 package com.denchic45.firebasemultiplatform.ktor
 
-import com.denchic45.kts.ApiKeys
+
 
 class PathReference : CollectionReference, DocumentReference, OperationReference {
+    private val firebaseProjectId:String = TODO()
     private val segments: MutableList<String> =
-        mutableListOf("projects/${ApiKeys.firebaseProjectId}/databases/(default)/documents")
+        mutableListOf("projects/${firebaseProjectId}/databases/(default)/documents")
 
     override fun collection(name: String): CollectionReference = apply {
         append("/$name")

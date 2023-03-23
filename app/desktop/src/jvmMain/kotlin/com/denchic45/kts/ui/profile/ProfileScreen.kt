@@ -45,7 +45,7 @@ fun ProfileScreen(
         )
         profileViewState?.let { profile ->
             ProfileHeader(
-                profile.photoUrl, profile.fullName, when (profile.role) {
+                profile.avatarUrl, profile.fullName, when (profile.role) {
                     UserRole.STUDENT -> "Студент"
                     UserRole.TEACHER -> "Преподаватель"
                     UserRole.HEAD_TEACHER -> "Завуч"

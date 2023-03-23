@@ -12,11 +12,11 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.model.User.Companion.isStudent
 import com.denchic45.kts.domain.model.User.Companion.isTeacher
-import com.denchic45.kts.domain.usecase.FindGroupByContainsNameUseCase
+import com.denchic45.kts.domain.usecase.FindStudyGroupByContainsNameUseCase
 import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
-import com.denchic45.kts.ui.login.groupChooser.GroupChooserInteractor
+import com.denchic45.kts.domain.usecase.GroupChooserInteractor
 import com.denchic45.kts.uieditor.UIEditor
 import com.denchic45.kts.uivalidator.Rule
 import com.denchic45.kts.uivalidator.UIValidator
@@ -39,7 +39,7 @@ open class UserEditorViewModel @Inject constructor(
     private val interactor: UserEditorInteractor,
     private val removeStudentUseCase: RemoveStudentUseCase,
     private val confirmInteractor: ConfirmInteractor,
-    private val findGroupByContainsNameUseCase: FindGroupByContainsNameUseCase,
+    private val findStudyGroupByContainsNameUseCase: FindStudyGroupByContainsNameUseCase,
     private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     private val groupChooserInteractor: GroupChooserInteractor
 ) : BaseViewModel() {
@@ -400,7 +400,7 @@ open class UserEditorViewModel @Inject constructor(
     fun onSelectGroupClick() {
         viewModelScope.launch {
             navigateTo(MobileNavigationDirections.actionGlobalGroupChooserFragment())
-            groupChooserInteractor.receiveSelectedGroup().let {
+            groupChooserInteractor.receiveSelectedGroupId().let {
                 groupId = it.id
                 groupField.value = it.name
             }

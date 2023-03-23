@@ -1,14 +1,16 @@
 package com.denchic45.kts.domain
 
 import com.denchic45.kts.data.domain.Failure
+import com.denchic45.kts.data.domain.NotFound
 import com.denchic45.kts.data.domain.toFailure
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.github.michaelbull.result.mapBoth
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
 sealed interface Resource<out T> {
-    object Loading: Resource<Nothing>
+    object Loading : Resource<Nothing>
     data class Success<T>(val value: T) : Resource<T>
     data class Error(val failure: Failure) : Resource<Nothing>
 }
@@ -58,11 +60,20 @@ inline fun <T, V> Resource<T>.map(transform: (T) -> V): Resource<V> {
 
 fun <T, V> Resource<T>.flatMap(function: (T) -> Resource<V>): Resource<V> {
     return when (this) {
-            is Resource.Error -> this
-            is Resource.Loading -> this
-            is Resource.Success -> function(value)
-        }
+        is Resource.Error -> this
+        is Resource.Loading -> this
+        is Resource.Success -> function(value)
+    }
+}
 
+fun <T> Resource<T?>.notNullOrFailure(error: Failure = NotFound): Resource<T> {
+    return when (this) {
+        is Resource.Error -> this
+        is Resource.Loading -> this
+        is Resource.Success -> value?.let {
+            Resource.Success(it)
+        } ?: Resource.Error(error)
+    }
 }
 
 inline fun <T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T> {
@@ -81,7 +92,7 @@ inline fun <T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T
 //    }
 //}
 
-fun <T> Flow<Resource<T>>.filterSuccess():Flow<Resource.Success<T>> = filterIsInstance()
+fun <T> Flow<Resource<T>>.filterSuccess(): Flow<Resource.Success<T>> = filterIsInstance()
 
 fun <T> Flow<Resource<T>>.updateResource(onSuccess: (T) -> T): Flow<Resource<T>> = map {
     when (it) {
@@ -99,8 +110,12 @@ fun <T, V> Flow<Resource<T>>.mapResource(function: (T) -> V): Flow<Resource<V>> 
     }
 }
 
+fun <T, V> Flow<Resource<T>>.flatMapResource(function: (T) -> Resource<V>): Flow<Resource<V>> {
+    return map { it.flatMap(function) }
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
-fun <T, V> Flow<Resource<T>>.flatMapResource(function: (T) -> Flow<Resource<V>>): Flow<Resource<V>> {
+fun <T, V> Flow<Resource<T>>.flatMapResourceFlow(function: (T) -> Flow<Resource<V>>): Flow<Resource<V>> {
     return flatMapLatest {
         when (it) {
             is Resource.Error -> flowOf(it)
@@ -109,3 +124,13 @@ fun <T, V> Flow<Resource<T>>.flatMapResource(function: (T) -> Flow<Resource<V>>)
         }
     }
 }
+
+fun <T> Flow<Resource<T?>>.notNullOrFailure(error: Failure = NotFound): Flow<Resource<T>> {
+    return map { it.notNullOrFailure() }
+}
+
+fun <T> Flow<Resource<T>>.stateInResource(
+    scope: CoroutineScope,
+    started: SharingStarted = SharingStarted.Lazily,
+    initialValue: Resource<T> = Resource.Loading
+): StateFlow<Resource<T>> = stateIn(scope, started, initialValue)

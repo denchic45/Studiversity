@@ -1,5 +1,4 @@
-import java.lang.String;
-import java.util.Date;
+import java.time.LocalDate;
 
 CREATE TABLE IF NOT EXISTS studyGroupEntity (
 study_group_id TEXT NOT NULL UNIQUE PRIMARY KEY,
@@ -7,8 +6,8 @@ group_name TEXT NOT NULL,
 specialty_id TEXT NOT NULL,
 created_at INTEGER,
 update_at INTEGER,
-start_academic_year TEXT AS Date NOT NULL,
-end_academic_year TEXT AS Date NOT NULL
+start_academic_year TEXT AS LocalDate NOT NULL,
+end_academic_year TEXT AS LocalDate NOT NULL
 );
 
 CREATE VIEW studyGroupWithSpecialty AS

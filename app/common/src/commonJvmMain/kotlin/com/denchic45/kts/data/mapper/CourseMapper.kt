@@ -33,7 +33,7 @@ fun CourseWithSubjectEntity.toCourseResponse() = CourseResponse(
     archived = archived
 )
 
-fun List<CourseWithSubjectEntity>.toCourseEntities() = map(CourseWithSubjectEntity::toCourseResponse)
+fun List<CourseWithSubjectEntity>.toCourseResponse() = map(CourseWithSubjectEntity::toCourseResponse)
 
 //fun List<CourseMap>.mapsToCourseHeaderDomains() = map { it.toCourseHeader() }
 

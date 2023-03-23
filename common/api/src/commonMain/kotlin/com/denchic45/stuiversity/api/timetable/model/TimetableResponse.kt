@@ -10,4 +10,7 @@ data class TimetableResponse(
     val thursday: List<PeriodResponse>,
     val friday: List<PeriodResponse>,
     val saturday: List<PeriodResponse>
-)
+) {
+    val days: List<List<PeriodResponse>>
+    get() = listOf(monday , tuesday , wednesday , thursday , friday , saturday)
+}

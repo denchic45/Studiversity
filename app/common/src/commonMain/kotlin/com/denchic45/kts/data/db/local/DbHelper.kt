@@ -5,6 +5,8 @@ import com.denchic45.kts.data.mapper.ListMapper
 import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ListColumnAdapter : ColumnAdapter<List<String>, String> {
     override fun decode(databaseValue: String): List<String> {
@@ -13,6 +15,16 @@ class ListColumnAdapter : ColumnAdapter<List<String>, String> {
 
     override fun encode(value: List<String>): String {
         return ListMapper.fromList(value)
+    }
+}
+
+class LocalDateColumnAdapter : ColumnAdapter<LocalDate, String> {
+    override fun decode(databaseValue: String): LocalDate {
+        return LocalDate.parse(databaseValue)
+    }
+
+    override fun encode(value: LocalDate): String {
+        return value.format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 }
 
@@ -48,7 +60,8 @@ class DbHelper(val driver: SqlDriver) {
                 EnumColumnAdapter()
             ),
             studyGroupEntityAdapter = StudyGroupEntity.Adapter(
-                ListColumnAdapter()
+                LocalDateColumnAdapter(),
+                LocalDateColumnAdapter()
             ),
             attachmentEntityAdapter = AttachmentEntity.Adapter(
                 EnumColumnAdapter()

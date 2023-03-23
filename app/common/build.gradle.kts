@@ -80,8 +80,8 @@ kotlin {
                 implementation("com.squareup.okio:okio:3.3.0")
 
                 // kotlin-inject
-                configurations["ksp"].dependencies.add(project.dependencies.create("me.tatarka.inject:kotlin-inject-compiler-ksp:0.5.1"))
-                implementation("me.tatarka.inject:kotlin-inject-runtime:0.5.1")
+//                configurations["ksp"].dependencies.add(project.dependencies.create("me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1"))
+                implementation("me.tatarka.inject:kotlin-inject-runtime:0.6.1")
 
                 // kotlin-result
                 api("com.michael-bull.kotlin-result:kotlin-result:1.1.16")
@@ -99,6 +99,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 dependsOn(commonJvmMain)
+                kotlin.srcDir("build/generated/ksp/android/androidDebug")
 
                 api("androidx.appcompat:appcompat:1.4.2")
                 api("androidx.core:core-ktx:1.8.0")
@@ -133,6 +134,8 @@ kotlin {
                 implementation("io.grpc:grpc-okhttp:1.44.1") {
                     exclude("com.squareup.okhttp")
                 }
+
+                api("io.coil-kt:coil-compose:2.2.2")
 
                 api("com.google.android.play:core:1.10.3")
                 api("com.google.android.play:core-ktx:1.8.1")
@@ -176,6 +179,11 @@ kotlin {
             }
         }
     }
+}
+
+dependencies {
+    add("kspAndroid", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
+    add("kspDesktop", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
 }
 
 android {

@@ -50,8 +50,8 @@ class TimetableParser(
             .apply { cachedUsers[surname] = this }
     }
 
-    suspend fun parseDoc(docFile: File): Map<UUID, TimetableResponse> {
-        val timetables: MutableMap<UUID, TimetableResponse> = mutableMapOf()
+    suspend fun parseDoc(docFile: File): kotlin.collections.List<Pair<StudyGroupResponse, TimetableResponse>> {
+        val timetables: MutableList<Pair<StudyGroupResponse, TimetableResponse>> = mutableListOf()
         try {
             val wordDoc = XWPFDocument(docFile.inputStream())
             table = wordDoc.tables[0]
@@ -73,7 +73,7 @@ class TimetableParser(
                 if (cellOfGroupPos == -1) continue
                 cellOfGroupPos = if (cellOfGroupPos > cellsCount) cellOfGroupPos - cellsCount
                 else cellOfGroupPos
-                timetables[studyGroup.id] = createTimetable()
+                timetables.add(studyGroup to createTimetable())
             }
         } catch (e: Exception) {
             e.printStackTrace()

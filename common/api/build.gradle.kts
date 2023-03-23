@@ -27,7 +27,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 // Ktor client
-                implementation("io.ktor:ktor-client-cio:$ktorVersion")
+                api("io.ktor:ktor-client-cio:$ktorVersion")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-client-auth:$ktorVersion")

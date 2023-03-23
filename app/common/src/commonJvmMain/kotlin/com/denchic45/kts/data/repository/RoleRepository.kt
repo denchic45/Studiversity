@@ -3,13 +3,14 @@ package com.denchic45.kts.data.repository
 import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
-import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.role.CapabilityApi
 import com.denchic45.stuiversity.api.role.RoleApi
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.api.role.model.CheckCapabilitiesResponse
+import me.tatarka.inject.annotations.Inject
 import java.util.*
 
+@Inject
 class RoleRepository(
     private val roleApi: RoleApi,
     private val capabilityApi: CapabilityApi,
@@ -25,7 +26,7 @@ class RoleRepository(
     }
 
     suspend fun findUserCapabilitiesIdAndScopeId(
-        userId: UUID?  = null,
+        userId: UUID? = null,
         scopeId: UUID,
         capabilities: List<Capability>,
     ): Resource<CheckCapabilitiesResponse> = fetchResource {

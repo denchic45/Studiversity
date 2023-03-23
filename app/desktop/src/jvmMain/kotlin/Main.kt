@@ -9,18 +9,11 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import com.denchic45.kts.data.db.local.DriverFactory
 import com.denchic45.kts.di.*
 import com.denchic45.kts.ui.MainContent
 import com.denchic45.kts.ui.login.LoginScreen
 import com.denchic45.kts.ui.theme.AppTheme
 import java.awt.Toolkit
-
-val appComponent = JvmAppComponent::class.create(
-    PreferencesComponent::class.create(SettingsFactory()),
-    DatabaseComponent::class.create(DriverFactory()),
-    NetworkComponent::class.create()
-)
 
 val splashComponent = appComponent.splashComponent
 

@@ -9,7 +9,7 @@ import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
 import com.denchic45.stuiversity.api.member.MembersApi
-import com.denchic45.stuiversity.api.membership.MembershipsApi
+import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.RoleApi
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
@@ -35,7 +35,7 @@ class StudyGroupRepository @Inject constructor(
     override val sectionLocalDataSource: SectionLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val studyGroupApi: StudyGroupApi,
-    private val membershipsApi: MembershipsApi,
+    private val membershipApi: MembershipApi,
     private val membersApi: MembersApi,
     private val roleApi: RoleApi,
 ) : Repository(), NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,

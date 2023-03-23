@@ -6,7 +6,6 @@ import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.domain.model.Event
-import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.model.GroupTimetable
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.ui.adapter.EventAdapter
@@ -15,9 +14,11 @@ import com.denchic45.kts.ui.adapter.PreferenceItem
 import com.denchic45.kts.ui.adapter.PreferenceSwitchItem
 import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorInteractor
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.ui.login.groupChooser.GroupChooserInteractor
+import com.denchic45.kts.domain.usecase.GroupChooserInteractor
 import com.denchic45.kts.util.NetworkException
 import com.denchic45.kts.util.updated
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +37,7 @@ class TimetableLoaderViewModel @Inject constructor(
     private var eventEditorInteractor: EventEditorInteractor,
     private var groupChooserInteractor: GroupChooserInteractor
 ) : BaseViewModel() {
+
     val openFilePicker = SingleLiveData<Unit>()
     val showErrorDialog = SingleLiveData<String>()
     val openEventEditor = SingleLiveData<Void>()
@@ -47,7 +49,7 @@ class TimetableLoaderViewModel @Inject constructor(
     val enableEditMode = MutableLiveData(false)
     val showPage = MutableLiveData<Int>()
 
-    private val groupHeaders: MutableList<GroupHeader> = mutableListOf()
+    private val groups: MutableList<StudyGroupResponse> = mutableListOf()
 
     val preferences = MutableStateFlow<List<PreferenceItem>>(
         listOf(
@@ -66,7 +68,7 @@ class TimetableLoaderViewModel @Inject constructor(
 
     private lateinit var firstDateOfTimetable: LocalDate
     private var positionOfCurrentTimetable = 0
-    private val groupsTimetables: MutableList<GroupTimetable> = mutableListOf()
+    private val groupsTimetables: MutableList<Pair<StudyGroupResponse, TimetableResponse>> = mutableListOf()
     val groupNames: MutableList<String> = mutableListOf()
 
     fun onLoadTimetableDocClick() {
@@ -82,9 +84,9 @@ class TimetableLoaderViewModel @Inject constructor(
 
                 withContext(Dispatchers.Main) {
                     for (groupTimetable in groupsTimetables) {
-                        firstDateOfTimetable = groupTimetable.weekEvents[0].date
-                        groupHeaders.add(groupTimetable.groupHeader)
-                        groupNames.add(groupTimetable.groupHeader.name)
+                        firstDateOfTimetable = groupTimetable.second.monday[0].date
+                        groups.add(groupTimetable.first)
+                        groupNames.add(groupTimetable.first.name)
                     }
                     postStartedTimetables()
                     postAllowEditTimetablePreferences()
@@ -114,9 +116,9 @@ class TimetableLoaderViewModel @Inject constructor(
         return groupsTimetables.map { it.toTimetableItems() }
     }
 
-    private fun GroupTimetable.toTimetableItems(): List<List<DomainModel>> {
+    private fun Pair<StudyGroupResponse,TimetableResponse>.toTimetableItems(): List<List<DomainModel>> {
         val timetable = mutableListOf<List<DomainModel>>()
-        for (eventsOfTheDay in this.weekEvents) {
+        for (eventsOfTheDay in this.second.days) {
             val listOfDayEvents = mutableListOf<DomainModel>()
             listOfDayEvents.add(
                 ListItem(
@@ -262,7 +264,7 @@ class TimetableLoaderViewModel @Inject constructor(
         eventEditorInteractor.setEditedEvent(
             eventsOfDay = groupsTimetables[positionOfCurrentTimetable].weekEvents[dayOfWeek],
             event = Event.createEmpty(
-                groupHeader = groupHeaders[positionOfCurrentTimetable],
+                groupHeader = groups[positionOfCurrentTimetable],
 //                order = if (eventsOfTheDay.isEmpty()) 1 else eventsOfTheDay.last().order + 1
             )
         )
@@ -297,9 +299,9 @@ class TimetableLoaderViewModel @Inject constructor(
     fun onAddGroupClick() {
         openChoiceOfGroup.call()
         viewModelScope.launch {
-            groupChooserInteractor.receiveSelectedGroup()
+            groupChooserInteractor.receiveSelectedGroupId()
                 .let { group ->
-                    groupHeaders.add(group)
+                    groups.add(group)
                     groupNames.add(group.name)
                     groupsTimetables.add(GroupTimetable.createEmpty(group, firstDateOfTimetable))
 

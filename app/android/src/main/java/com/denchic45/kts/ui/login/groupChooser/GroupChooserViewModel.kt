@@ -1,86 +1,41 @@
 package com.denchic45.kts.ui.login.groupChooser
 
 import androidx.lifecycle.viewModelScope
-import com.denchic45.kts.data.domain.model.DomainModel
-import com.denchic45.kts.domain.model.GroupHeader
-import com.denchic45.kts.domain.model.Specialty
-import com.denchic45.kts.ui.base.BaseViewModel
-import kotlinx.coroutines.flow.*
+import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.usecase.FindStudyGroupByContainsNameUseCase
+import com.denchic45.kts.domain.usecase.GroupChooserInteractor
+import com.denchic45.kts.ui.base.chooser.ChooserViewModel
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.set
 
 class GroupChooserViewModel @Inject constructor(
-    private val groupChooserInteractor: GroupChooserInteractor
-) : BaseViewModel() {
-    private val expandableSpecialties: MutableMap<String, Boolean> = HashMap()
+    private val groupChooserInteractor: GroupChooserInteractor,
+    private val findStudyGroupByContainsNameUseCase: FindStudyGroupByContainsNameUseCase
+) : ChooserViewModel<StudyGroupResponse>() {
 
-    private var selectedSpecialtyId = MutableSharedFlow<String>()
+//    fun onGroupItemClick(position: Int) {
+//        viewModelScope.launch {
+//            val groupId = _groupAndSpecialtyList.value[position].id
+//            groupChooserInteractor.findById(groupId)
+//            finish()
+//            groupChooserInteractor.postSelectGroupId((_groupAndSpecialtyList.value[position] as GroupHeader))
+//        }
+//    }
 
-    private var groupsBySpecialty: Flow<List<GroupHeader>> =
-        selectedSpecialtyId.flatMapLatest { id ->
-            flow { emit(groupChooserInteractor.findGroupsBySpecialtyId(id)) }
-        }
-
-    private var _groupAndSpecialtyList = MutableStateFlow<List<DomainModel>>(emptyList())
-
-    val groupAndSpecialtyList = _groupAndSpecialtyList.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            _groupAndSpecialtyList.emitAll(groupAndSpecialtyList)
-        }
-
-        viewModelScope.launch {
-            groupChooserInteractor.allSpecialties.collect { list ->
-                for (specialty in list) {
-                    expandableSpecialties[specialty.name] = false
-                }
-                _groupAndSpecialtyList.emit(sortedList(list))
-            }
-        }
-
-        viewModelScope.launch {
-            groupsBySpecialty.collect {
-                val list = _groupAndSpecialtyList.value.plus(it)
-                _groupAndSpecialtyList.emit(
-                    sortedList(list.distinctBy(DomainModel::id))
-                )
-            }
-        }
+    override val sourceFlow: (String) -> Flow<Resource<List<StudyGroupResponse>>> = {
+        flow { emit(findStudyGroupByContainsNameUseCase(it)) }
     }
 
-
-    private fun sortedList(list: List<DomainModel>): List<DomainModel> {
-        return list.sortedWith(compareBy { item ->
-            when (item) {
-                is Specialty -> item.id
-                is GroupHeader -> item.specialtyId
-                else -> throw IllegalStateException("Not correct type: $item")
+    override fun onItemClick(position: Int) {
+        items.value.onSuccess {
+            viewModelScope.launch {
+                groupChooserInteractor.postSelectGroupId(it[position].id)
+                finish()
             }
-        })
-    }
-
-    fun onSpecialtyItemClick(position: Int) {
-        viewModelScope.launch {
-            val (specialityId, specialtyName) = _groupAndSpecialtyList.value[position] as Specialty
-            if (expandableSpecialties.getValue(specialtyName)) {
-                _groupAndSpecialtyList.emit(
-                    _groupAndSpecialtyList.value.filterNot { it is GroupHeader && it.specialtyId == specialityId }
-                )
-            } else {
-                selectedSpecialtyId.emit(specialityId)
-            }
-            expandableSpecialties.replace(specialtyName, !expandableSpecialties[specialtyName]!!)
-        }
-    }
-
-    fun onGroupItemClick(position: Int) {
-        viewModelScope.launch {
-            val groupId = _groupAndSpecialtyList.value[position].id
-            groupChooserInteractor.findGroupInfoById(groupId)
-            finish()
-            groupChooserInteractor.postSelectGroup((_groupAndSpecialtyList.value[position] as GroupHeader))
         }
     }
 }

@@ -15,8 +15,10 @@ class AppPreferences(val settings: ObservableSettings) : Settings by settings {
 
     var bellSchedule by string()
 
-    var token by nullableString()
-    var refreshToken by nullableString()
+    var token by string(defaultValue = "")
+    var refreshToken by string(defaultValue = "")
+
+    var url by string()
 
     val observeLessonTime: Flow<Int> = settings.getIntFlow("lessonTime", 45)
     val observeToken: Flow<String?> = settings.getStringOrNullFlow("token")

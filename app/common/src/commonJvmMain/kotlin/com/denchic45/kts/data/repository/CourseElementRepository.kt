@@ -6,7 +6,7 @@ import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.*
-import com.denchic45.stuiversity.api.course.topic.CourseTopicsApi
+import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
@@ -23,14 +23,14 @@ import java.util.*
 class CourseElementRepository(
     override val networkService: NetworkService,
     private val attachmentLocalDataSource: AttachmentLocalDataSource,
-    private val courseTopicsApi: CourseTopicsApi,
+    private val courseTopicApi: CourseTopicApi,
     private val courseElementsApi: CourseElementsApi,
     private val courseWorkApi: CourseWorkApi,
 ) : NetworkServiceOwner {
     suspend fun findElementsByCourse(
         courseId: UUID,
     ): Resource<Map<TopicResponse?, List<CourseElementResponse>>> = fetchResource {
-        val topics = courseTopicsApi.getByCourseId(courseId)
+        val topics = courseTopicApi.getByCourseId(courseId)
             .onFailure { return@fetchResource Err(it) }
             .unwrap()
         val elements = courseElementsApi.getByCourseId(courseId)

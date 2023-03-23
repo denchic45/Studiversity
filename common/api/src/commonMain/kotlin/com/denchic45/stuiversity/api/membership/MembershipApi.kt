@@ -10,13 +10,13 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import java.util.*
 
-interface MembershipsApi {
+interface MembershipApi {
     suspend fun joinToScopeManually(userId: UUID, scopeId: UUID, roleIds: List<Long>): ResponseResult<ScopeMember>
 
     suspend fun leaveFromScope(userId: UUID, scopeId: UUID, action: String): EmptyResponseResult
 }
 
-class MembershipsApiImpl(private val client: HttpClient) : MembershipsApi {
+class MembershipApiImpl(private val client: HttpClient) : MembershipApi {
     override suspend fun joinToScopeManually(
         userId: UUID,
         scopeId: UUID,

@@ -1,25 +1,18 @@
 package com.denchic45.kts
 
-import com.denchic45.kts.di.SettingsFactory
-import com.denchic45.kts.di.component.DaggerAndroidAppComponent
-import com.denchic45.kts.di.module.AndroidAppModule
-import com.denchic45.kts.di.module.PreferencesModule
+import android.app.Application
+import com.denchic45.kts.data.db.local.DriverFactory
+import com.denchic45.kts.di.*
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
+import io.ktor.client.engine.android.*
 
-class AndroidApp : DaggerApplication() {
-    private val androidAppComponent: AndroidInjector<AndroidApp> = DaggerAndroidAppComponent.builder()
-        .appModule(AndroidAppModule(this))
-        .preferencesModule(PreferencesModule(SettingsFactory(this)))
-        .create(this)
-
-    override fun onCreate() {
-        super.onCreate()
-        androidAppComponent.inject(this)
-    }
-
-    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-
-        return androidAppComponent
+class AndroidApp : Application() {
+    val appComponent by lazy {
+        AndroidAppComponent::class.create(
+            PreferencesComponent::class.create(SettingsFactory(applicationContext)),
+            DatabaseComponent::class.create(DriverFactory(applicationContext)),
+            NetworkComponent::class.create(Android)
+        )
     }
 }

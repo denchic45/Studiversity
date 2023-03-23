@@ -16,14 +16,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import me.tatarka.inject.annotations.Inject
 import java.util.*
 
+@Inject
 class AuthService(
     private val authApi: AuthApi,
     private val userApi: UserApi,
     private val userPreferences: UserPreferences,
 ) {
-
     val isAuthenticated: Boolean
         get() = userPreferences.token.isNotEmpty()
 

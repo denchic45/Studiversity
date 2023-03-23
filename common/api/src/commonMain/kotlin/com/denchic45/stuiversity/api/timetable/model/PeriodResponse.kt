@@ -9,15 +9,20 @@ import java.time.LocalDate
 import java.util.*
 
 @Serializable(PeriodResponseSerializer::class)
-sealed interface PeriodResponse:PeriodModel {
+sealed interface PeriodResponse : PeriodModel {
     val id: Long
     val date: LocalDate
     val studyGroupId: UUID
+
+    fun copy(): PeriodResponse = when (this) {
+        is EventResponse -> copy(id)
+        is LessonResponse -> copy(id)
+    }
 }
 
 @Serializable
 data class LessonResponse(
-    override val id:Long,
+    override val id: Long,
     @Serializable(LocalDateSerializer::class)
     override val date: LocalDate,
     override val order: Short,

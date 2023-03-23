@@ -2,78 +2,81 @@ package com.denchic45.kts.domain.model
 
 import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.swap
+import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.util.toString
 import java.time.LocalDate
 
 class EventsOfDay constructor(
     val date: LocalDate,
-    events: List<Event> = listOf(),
-    val startsAtZero: Boolean = false,
+    events: List<PeriodResponse> = listOf(),
     val id: String,
 ) {
 
-    val events: List<Event> = removeRedundantEmptyEvents(events.onEach { it.eventsOfDay = this })
+    val events: List<PeriodResponse> =
+//        removeRedundantEmptyEvents(events.onEach {  })
+        events
 
     val size: Int = events.size
 
     val dayOfWeek: Int
         get() = date.dayOfWeek.value
 
-    fun add(event: Event): EventsOfDay = copy(events.map(Event::copy) + event)
+    fun add(event: PeriodResponse): EventsOfDay = copy(events.map(PeriodResponse::copy) + event)
 
-    fun add(event: Event, order: Int): EventsOfDay {
+    fun add(event: PeriodResponse, order: Int): EventsOfDay {
         return copy(
-            events.map(Event::copy).toMutableList().apply { add(indexOfOrder(order), event) }
+            events.map(PeriodResponse::copy).toMutableList()
+                .apply { add(indexOfOrder(order), event) }
         )
     }
 
-    fun update(editedEvent: Event, index: Int = orderOf(editedEvent)): EventsOfDay {
+    fun update(editedEvent: PeriodResponse, index: Int = orderOf(editedEvent)): EventsOfDay {
         return copy(events.toMutableList().apply {
             set(indexOfOrder(index), editedEvent)
         })
     }
 
-    private fun indexOfOrder(order: Int): Int = order - offsetIndex
+    private fun indexOfOrder(order: Int): Int = order
 
-    private val offsetIndex: Int
-        get() = if (startsAtZero) 0 else 1
+//    private val offsetIndex: Int
+//        get() = if (startsAtZero) 0 else 1
 
     fun swap(oldIndex: Int, newIndex: Int): EventsOfDay {
-        return copy(events.swap(oldIndex, newIndex).map(Event::copy))
+        return copy(events.swap(oldIndex, newIndex).map(PeriodResponse::copy))
     }
 
-    private fun removeRedundantEmptyEvents(events: List<Event>): List<Event> {
-        if (events.isEmpty()) return events
-        val updatedEvents: MutableList<Event> = events.toMutableList()
+//    private fun removeRedundantEmptyEvents(events: List<PeriodResponse>): List<PeriodResponse> {
+//        if (events.isEmpty()) return events
+//        val updatedEvents: MutableList<PeriodResponse> = events.toMutableList()
+//
+//        while (true) {
+//            if (updatedEvents.last().isEmpty) {
+//                updatedEvents.removeLast()
+//                if (updatedEvents.isEmpty())
+//                    break
+//            } else {
+//                break
+//            }
+//        }
+//        return updatedEvents
+//    }
 
-        while (true) {
-            if (updatedEvents.last().isEmpty) {
-                updatedEvents.removeLast()
-                if (updatedEvents.isEmpty())
-                    break
-            } else {
-                break
-            }
-        }
-        return updatedEvents
-    }
-
-    fun remove(event: Event): EventsOfDay {
-        return copy(events.map(Event::copy) - event)
+    fun remove(event: PeriodResponse): EventsOfDay {
+        return copy(events.map(PeriodResponse::copy) - event)
     }
 
     fun isEmpty(): Boolean = events.isEmpty()
 
-    fun last(): Event? = events.lastOrNull()
+    fun last(): PeriodResponse? = events.lastOrNull()
 
-    fun orderOf(event: Event): Int {
-        return events.indexOfFirst { event.id == it.id } + offsetIndex
+    private fun orderOf(event: PeriodResponse): Int {
+        return events.indexOfFirst { event.id == it.id }
     }
 
     val weekName: String
         get() = date.toString("EEE")
 
-    fun copy(events: List<Event>): EventsOfDay = EventsOfDay(date, events, startsAtZero, id)
+    fun copy(events: List<PeriodResponse>): EventsOfDay = EventsOfDay(date, events, id)
 
     companion object {
         fun createEmpty(date: LocalDate): EventsOfDay =

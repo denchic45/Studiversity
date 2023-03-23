@@ -10,7 +10,7 @@ import com.denchic45.kts.domain.model.Event
 import com.denchic45.kts.domain.model.EventsOfDay
 import com.denchic45.kts.domain.model.GroupHeader
 import com.denchic45.kts.domain.model.Lesson
-import com.denchic45.kts.domain.usecase.FindGroupByContainsNameUseCase
+import com.denchic45.kts.domain.usecase.FindStudyGroupByContainsNameUseCase
 import com.denchic45.kts.ui.adapter.EventAdapter
 import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorInteractor
 import com.denchic45.kts.ui.base.BaseViewModel
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class TimetableFinderViewModel @Inject constructor(
     var eventEditorInteractor: EventEditorInteractor,
     private val interactor: TimetableFinderInteractor,
-    private val findGroupByContainsNameUseCase: FindGroupByContainsNameUseCase,
+    private val findStudyGroupByContainsNameUseCase: FindStudyGroupByContainsNameUseCase,
 ) : BaseViewModel() {
     val showFoundGroups = MutableSharedFlow<List<ListItem>>()
 
@@ -180,7 +180,7 @@ class TimetableFinderViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             typedGroupName.filter { s -> s.length > 1 }
-                .flatMapLatest { groupName -> findGroupByContainsNameUseCase(groupName) }
+                .flatMapLatest { groupName -> findStudyGroupByContainsNameUseCase(groupName) }
                 .collect { result ->
                     result.mapBoth(success = {
                         foundGroupHeaders = it

@@ -7,24 +7,18 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.StackNavigator
 import com.arkivanov.decompose.router.stack.childStack
 import com.denchic45.kts.data.domain.model.UserRole
-import com.denchic45.kts.data.pref.GroupPreferences
 import com.denchic45.kts.ui.navigation.GroupChild
 import com.denchic45.kts.ui.navigation.GroupConfig
 import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.navigation.UserEditorConfig
 import me.tatarka.inject.annotations.Inject
 
-
 @Inject
 class GroupRootComponent(
     lazyGroupComponent: (navigator: StackNavigator<in GroupConfig>, groupId: String) -> GroupComponent,
     private val overlayNavigator: OverlayNavigation<OverlayConfig>,
     componentContext: ComponentContext,
-    groupPreferences: GroupPreferences,
 ) : ComponentContext by componentContext {
-
-    private val groupId: String = groupPreferences.groupId
-
     private val navigation = StackNavigation<GroupConfig>()
 
     private val groupComponent = lazyGroupComponent(navigation, groupId)

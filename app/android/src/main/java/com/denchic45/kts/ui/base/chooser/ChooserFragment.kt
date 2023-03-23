@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
+import com.denchic45.kts.data.domain.*
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.databinding.FragmentChooserBinding
@@ -64,14 +65,19 @@ abstract class ChooserFragment<VM : ChooserViewModel<out DomainModel>> :
 
             viewModel.items.collectWhenStarted(lifecycleScope) { state ->
                 when (state) {
-                    SearchState.Start -> {} //TODO
-                    is SearchState.Found -> {
-                        lsl.showList()
-                        adapter.submit(state.items)
+                    is Resource.Error -> when(state.failure) {
+                        is Cause -> TODO()
+                        is ClientError -> TODO()
+                        Forbidden -> TODO()
+                        NoConnection -> lsl.showView(ListStateLayout.NETWORK_VIEW)
+                        NotFound -> TODO()
+                        ServerError -> TODO()
                     }
-                    SearchState.Loading -> lsl.showView(ListStateLayout.LOADING_VIEW)
-                    SearchState.NoConnection -> lsl.showView(ListStateLayout.NETWORK_VIEW)
-                    SearchState.NotFound -> {} //TODO
+                    Resource.Loading -> lsl.showView(ListStateLayout.LOADING_VIEW)
+                    is Resource.Success -> {
+                        lsl.showList()
+                        adapter.submit(state.value)
+                    }
                 }
             }
         }

@@ -6,7 +6,7 @@ import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.data.domain.model.LinkAttachment2
 import com.denchic45.kts.data.service.DownloadsService
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.flatMapResource
+import com.denchic45.kts.domain.flatMapResourceFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -20,7 +20,7 @@ abstract class FindAttachmentsUseCase constructor(
     protected fun observeAttachments(
         flow: Flow<Resource<List<Attachment2>>>
     ): Flow<Resource<List<Attachment2>>> {
-        return flow.flatMapResource { attachments ->
+        return flow.flatMapResourceFlow { attachments ->
             observeDownloadsFlow(attachments).map { states ->
                 Resource.Success(
                     attachments.map { attachment ->

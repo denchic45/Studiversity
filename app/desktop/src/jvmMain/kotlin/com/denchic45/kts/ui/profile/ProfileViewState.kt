@@ -1,23 +1,16 @@
 package com.denchic45.kts.ui.profile
 
-import com.denchic45.kts.data.domain.model.UserRole
-import com.denchic45.kts.domain.model.User
+import com.denchic45.stuiversity.api.user.model.UserResponse
 
 data class ProfileViewState(
     val fullName: String,
-    val role: UserRole,
-    val photoUrl: String,
-    val groupInfo: String?,
-    val groupClickable: Boolean,
+    val avatarUrl: String,
     val personalDate: PersonalData?,
 ) {
     data class PersonalData(val email: String)
 }
 
-fun User.toProfileViewState(groupName: String? = null, groupClickable: Boolean) = ProfileViewState(
+fun UserResponse.toProfileViewState() = ProfileViewState(
     fullName = fullName,
-    role = role,
-    photoUrl = photoUrl,
-    groupInfo = groupName,
-    groupClickable = groupClickable,
-    personalDate = email?.let { ProfileViewState.PersonalData(it) })
+    avatarUrl = avatarUrl,
+    personalDate = account.email.let { ProfileViewState.PersonalData(it) })

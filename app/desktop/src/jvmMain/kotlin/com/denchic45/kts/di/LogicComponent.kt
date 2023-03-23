@@ -6,9 +6,4 @@ import com.denchic45.kts.ui.splash.SplashComponent
 
 interface LogicComponent {
 
-    val splashComponent: SplashComponent
-
-    val mainComponent: () -> MainComponent
-
-    val loginComponent: () -> LoginComponent
 }

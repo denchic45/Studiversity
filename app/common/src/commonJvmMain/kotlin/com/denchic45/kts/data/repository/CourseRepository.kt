@@ -18,7 +18,7 @@ import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
-import com.denchic45.stuiversity.api.course.topic.CourseTopicsApi
+import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CreateTopicRequest
 import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
@@ -49,7 +49,7 @@ class CourseRepository @Inject constructor(
     override val groupCourseLocalDataSource: GroupCourseLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val coursesApi: CoursesApi,
-    private val courseTopicsApi: CourseTopicsApi,
+    private val courseTopicApi: CourseTopicApi,
 ) : Repository(), NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
     FindByContainsNameRepository<CourseResponse> {
 
@@ -59,7 +59,7 @@ class CourseRepository @Inject constructor(
 
     fun observeById(courseId: UUID) = observeResource(
         query = courseLocalDataSource.observeById(courseId.toString())
-            .map { it.toCourseEntities() },
+            .map { it.toCourseResponse() },
         observe = { flow { emit(coursesApi.getById(courseId)) } },
         saveObserved = { saveCourse(it) }
     )
@@ -294,14 +294,14 @@ class CourseRepository @Inject constructor(
         return observeResource(
             query = sectionLocalDataSource.getByCourseId(courseId.toString())
                 .map { it.toTopicResponses() },
-            fetch = { courseTopicsApi.getByCourseId(courseId) },
+            fetch = { courseTopicApi.getByCourseId(courseId) },
             saveFetch = { sectionLocalDataSource.upsert(it.toTopicEntities(courseId)) }
         )
     }
 
     suspend fun findTopic(courseId: UUID, topicId: UUID) = observeResource(
         query = sectionLocalDataSource.observe(topicId.toString()).map { it.toResponse() },
-        fetch = { courseTopicsApi.getById(courseId, topicId) },
+        fetch = { courseTopicApi.getById(courseId, topicId) },
         saveFetch = { sectionLocalDataSource.upsert(it.toEntity(courseId)) }
     )
 
@@ -371,7 +371,7 @@ class CourseRepository @Inject constructor(
         topicId: UUID,
         updateTopicRequest: UpdateTopicRequest,
     ) = fetchResource {
-        courseTopicsApi.update(courseId, topicId, updateTopicRequest)
+        courseTopicApi.update(courseId, topicId, updateTopicRequest)
     }
 
 //    suspend fun updateCourseSections(sections: List<Section>) {
@@ -380,7 +380,7 @@ class CourseRepository @Inject constructor(
 //    }
 
     suspend fun addTopic(courseId: UUID, createTopicRequest: CreateTopicRequest) = fetchResource {
-        courseTopicsApi.create(courseId, createTopicRequest)
+        courseTopicApi.create(courseId, createTopicRequest)
     }
 
     suspend fun removeTopic(
@@ -388,7 +388,7 @@ class CourseRepository @Inject constructor(
         topicId: UUID,
         relatedTopicElements: RelatedTopicElements,
     ) = fetchResource {
-        courseTopicsApi.delete(courseId, topicId, relatedTopicElements)
+        courseTopicApi.delete(courseId, topicId, relatedTopicElements)
     }
 
 //    suspend fun updateContentOrder(contentId: String, order: Int) {

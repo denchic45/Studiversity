@@ -1,6 +1,5 @@
 package com.denchic45.kts.data.service
 
-import com.denchic45.kts.ApiKeys
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -8,7 +7,6 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class AvatarService(private val client: HttpClient) {
-
     val colors = listOf(
         "3473E1",
         "FCBF49",
@@ -26,5 +24,4 @@ class AvatarService(private val client: HttpClient) {
             parameter("image_size", 192)
             parameter("char_limit", 1)
         }.readBytes()
-
 }

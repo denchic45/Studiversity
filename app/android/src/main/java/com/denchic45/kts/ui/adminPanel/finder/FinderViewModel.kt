@@ -31,7 +31,7 @@ class FinderViewModel @Inject constructor(
     private val confirmInteractor: ConfirmInteractor,
 
     findUserByContainsNameUseCase: FindUserByContainsNameUseCase,
-    findGroupByContainsNameUseCase: FindGroupByContainsNameUseCase,
+    findStudyGroupByContainsNameUseCase: FindStudyGroupByContainsNameUseCase,
     findSubjectByContainsNameUseCase: FindSubjectByContainsNameUseCase,
     findSpecialtyByContainsNameUseCase: FindSpecialtyByContainsNameUseCase,
     findCourseByContainsNameUseCase: FindCourseByContainsNameUseCase
@@ -103,7 +103,7 @@ class FinderViewModel @Inject constructor(
 
     private val findUseCases = listOf(
         findUserByContainsNameUseCase,
-        findGroupByContainsNameUseCase,
+        findStudyGroupByContainsNameUseCase,
         findSubjectByContainsNameUseCase,
         findSpecialtyByContainsNameUseCase,
         findCourseByContainsNameUseCase
