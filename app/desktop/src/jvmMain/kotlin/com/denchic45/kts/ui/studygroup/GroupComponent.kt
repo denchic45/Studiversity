@@ -8,19 +8,20 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesComponent
 import com.denchic45.kts.ui.studygroup.members.GroupMembersComponent
 import com.denchic45.kts.ui.navigation.GroupConfig
-import com.denchic45.kts.ui.navigation.GroupTabsChild
+import com.denchic45.kts.ui.navigation.StudyGroupTabsChild
 import com.denchic45.kts.ui.navigation.GroupTabsConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
 @Inject
 class GroupComponent(
-    lazyGroupMembersComponent: (navigator: StackNavigator<in GroupConfig>, groupId: String) -> GroupMembersComponent,
-    lazyGroupCourseComponent: (groupId: String) -> GroupCoursesComponent,
+    lazyGroupMembersComponent: (navigator: StackNavigator<in GroupConfig>, groupId: UUID) -> GroupMembersComponent,
+    lazyGroupCourseComponent: (groupId: UUID) -> GroupCoursesComponent,
     componentContext: ComponentContext,
     private val navigator: StackNavigator<in GroupConfig>,
-    private val groupId: String,
+    private val groupId: UUID,
 ) : ComponentContext by componentContext {
 
     private val groupMembersComponent by lazy {
@@ -33,8 +34,8 @@ class GroupComponent(
         initialConfiguration = GroupTabsConfig.Members,
         childFactory = { tabConfig: GroupTabsConfig, _ ->
             when (tabConfig) {
-                is GroupTabsConfig.Members -> GroupTabsChild.Members(groupMembersComponent)
-                is GroupTabsConfig.Courses -> GroupTabsChild.Courses(groupCourseComponent)
+                is GroupTabsConfig.Members -> StudyGroupTabsChild.Members(groupMembersComponent)
+                is GroupTabsConfig.Courses -> StudyGroupTabsChild.Courses(groupCourseComponent)
             }
         })
 

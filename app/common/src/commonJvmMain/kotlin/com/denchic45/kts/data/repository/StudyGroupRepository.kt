@@ -8,6 +8,9 @@ import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.model.GroupCurator
+import com.denchic45.kts.domain.model.GroupMembers
+import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.member.MembersApi
 import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.RoleApi
@@ -16,6 +19,9 @@ import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.stuiversity.util.uuidOf
+import com.denchic45.stuiversity.util.uuidOfMe
+import com.github.michaelbull.result.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.*
@@ -65,7 +71,7 @@ class StudyGroupRepository @Inject constructor(
 //    }
 
     suspend fun findByCurator(userId: UUID) = fetchResource {
-        studyGroupApi.getList(userId, Role.Curator.id)
+        studyGroupApi.getList(memberId = uuidOf(userId), Role.Curator.id)
     }
 
 //    fun findGroupByCuratorId(userId: String): Flow<Group?> {
@@ -207,5 +213,9 @@ class StudyGroupRepository @Inject constructor(
 
     suspend fun findGroupMembersByGroupId(studyGroupId: UUID) = fetchResource {
         membersApi.getByScope(studyGroupId)
+    }
+
+    suspend fun findByMe(): ResponseResult<List<StudyGroupResponse>> {
+        return studyGroupApi.getList(memberId = uuidOfMe())
     }
 }

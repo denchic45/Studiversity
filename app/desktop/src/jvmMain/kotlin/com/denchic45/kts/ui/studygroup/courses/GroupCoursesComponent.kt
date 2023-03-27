@@ -18,12 +18,10 @@ import java.util.UUID
 class GroupCoursesComponent(
     findCoursesByGroupUseCase: FindCoursesByGroupUseCase,
     componentContext: ComponentContext,
-    _groupId: String,
+    groupId: UUID,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
-
-    private val groupId = _groupId.toUUID()
 
     val courses = flow {
         emit(findCoursesByGroupUseCase(groupId).map { list -> list.map(CourseResponse::toGroupCourseItem) })

@@ -11,14 +11,20 @@ import com.denchic45.kts.ui.navigation.GroupChild
 import com.denchic45.kts.ui.navigation.GroupConfig
 import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.navigation.UserEditorConfig
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import java.util.*
 
 @Inject
 class GroupRootComponent(
-    lazyGroupComponent: (navigator: StackNavigator<in GroupConfig>, groupId: String) -> GroupComponent,
+    lazyGroupComponent: (navigator: StackNavigator<in GroupConfig>, groupId: UUID) -> GroupComponent,
+    @Assisted
     private val overlayNavigator: OverlayNavigation<OverlayConfig>,
+    @Assisted
+    private val groupId: UUID,
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
+
     private val navigation = StackNavigation<GroupConfig>()
 
     private val groupComponent = lazyGroupComponent(navigation, groupId)
@@ -27,7 +33,7 @@ class GroupRootComponent(
         initialConfiguration = GroupConfig.Group(groupId),
         childFactory = { configuration: GroupConfig, _ ->
             when (configuration) {
-                is GroupConfig -> GroupChild.Group(groupComponent)
+                is GroupConfig.Group -> GroupChild.Group(groupComponent)
             }
         })
 

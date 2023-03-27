@@ -9,7 +9,7 @@ sealed class GroupTabsConfig : Parcelable {
     object Courses : GroupTabsConfig()
 }
 
-sealed class GroupTabsChild {
-    class Members(val membersComponent: GroupMembersComponent) : GroupTabsChild()
-    class Courses(val coursesComponent: GroupCoursesComponent) : GroupTabsChild()
+sealed class StudyGroupTabsChild {
+    class Members(val membersComponent: GroupMembersComponent) : StudyGroupTabsChild()
+    class Courses(val coursesComponent: GroupCoursesComponent) : StudyGroupTabsChild()
 }

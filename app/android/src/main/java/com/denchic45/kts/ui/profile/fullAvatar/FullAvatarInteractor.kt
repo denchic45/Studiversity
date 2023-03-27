@@ -2,39 +2,27 @@ package com.denchic45.kts.ui.profile.fullAvatar
 
 import android.content.Context
 import com.denchic45.avatarGenerator.AvatarGenerator
-import com.denchic45.kts.AvatarBuilderTemplate
-import com.denchic45.kts.domain.Interactor
-import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.data.repository.StudentRepository
-import com.denchic45.kts.data.repository.TeacherRepository
 import com.denchic45.kts.data.repository.UserRepository
-import javax.inject.Inject
+import com.denchic45.kts.data.service.AvatarService
+import com.denchic45.kts.domain.Interactor
+import com.denchic45.stuiversity.api.user.model.UserResponse
+import me.tatarka.inject.annotations.Inject
 
-class FullAvatarInteractor @Inject constructor(
-    context: Context,
+@Inject
+class FullAvatarInteractor constructor(
+    private val avatarService: AvatarService,
     private val userRepository: UserRepository,
-    private val studentRepository: StudentRepository,
-    private val teacherRepository: TeacherRepository,
 ) : Interactor {
 
-    private val avatarGenerator: AvatarGenerator.Builder = AvatarGenerator.Builder(context)
-
-    fun findThisUser(): User {
+    fun findThisUser(): UserResponse {
         return userRepository.findSelf()
     }
 
-    suspend fun removeUserAvatar(user: User) {
-        val photoUrl = userRepository.updateUserAvatar(
-            avatarGenerator.name(user.firstName)
-                .initFrom(AvatarBuilderTemplate())
-                .generateBytes(), user.id
+    suspend fun removeUserAvatar(user: UserResponse) {
+        userRepository.updateUserAvatar(
+            avatarService.generateAvatar(user.firstName),
+            user.id
         )
-        val updatedUser = user.copy(photoUrl = photoUrl, generatedAvatar = true)
-        when {
-            updatedUser.isStudent -> studentRepository.update(updatedUser)
-            updatedUser.isTeacher -> teacherRepository.update(updatedUser)
-            else -> throw IllegalStateException()
-        }
     }
 
     override fun removeListeners() {}

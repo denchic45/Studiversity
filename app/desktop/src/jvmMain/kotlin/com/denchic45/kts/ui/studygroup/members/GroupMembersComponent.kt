@@ -4,20 +4,24 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.denchic45.kts.data.domain.model.UserRole
+import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.model.GroupMembers
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.usecase.AssignUserRoleInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindGroupMembersUseCase
 import com.denchic45.kts.domain.usecase.RemoveUserRoleFromScopeUseCase
-import com.denchic45.kts.domain.usecase.AssignUserRoleInScopeUseCase
 import com.denchic45.kts.ui.model.MenuAction
-import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.model.toUserItem
 import com.denchic45.kts.ui.navigation.*
 import com.denchic45.kts.ui.profile.ProfileComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
+import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import java.util.*
 
 @Inject
 class GroupMembersComponent(
@@ -25,10 +29,10 @@ class GroupMembersComponent(
     componentContext: ComponentContext,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
-    profileComponent: (navigator: StackNavigator<in GroupConfig.Group>, groupClickable: Boolean, userId: String) -> ProfileComponent,
+    profileComponent: (navigator: StackNavigator<in GroupConfig.Group>, groupClickable: Boolean, userId: UUID) -> ProfileComponent,
     userEditorComponent: (onFinish: () -> Unit, config: UserEditorConfig) -> UserEditorComponent,
     navigator: StackNavigator<in GroupConfig>,
-    private val groupId: String,
+    private val groupId: UUID,
 ) : ComponentContext by componentContext {
 
     private val navigation = StackNavigation<GroupMembersConfig>()
@@ -50,18 +54,28 @@ class GroupMembersComponent(
 
     private val componentScope = componentScope()
 
-    private val groupMembers: StateFlow<GroupMembers?> =
-        findGroupMembersUseCase(groupId).stateIn(componentScope, SharingStarted.Lazily, null)
+    val members: StateFlow<Resource<GroupMembers>> =
+        flow { emit(findGroupMembersUseCase(groupId)) }.mapResource { scopeMembers ->
+            val curatorMember = scopeMembers.firstOrNull { member -> Role.Curator in member.roles }
+            val groupCurator = curatorMember?.user?.toUserItem()
+            val students = (curatorMember?.let { scopeMembers - it }
+                ?: scopeMembers).map { it.user.toUserItem() }
+            GroupMembers(
+                groupId = groupId,
+                curator = groupCurator,
+                headmanId = scopeMembers.find { member -> Role.Headman in member.roles }?.user?.id,
+                students = students
+            )
 
-    val memberItems: StateFlow<Pair<UserItem, List<UserItem>>?> =
-        groupMembers.filterNotNull().map { members ->
-            members.curator.toUserItem(members) to members.students.map { it.toUserItem(members) }
-        }.stateIn(componentScope, SharingStarted.Lazily, null)
+        }.stateIn(
+            componentScope,
+            SharingStarted.Lazily,
+            Resource.Loading
+        )
 
-    val selectedMember = MutableStateFlow<String?>(null)
+    val selectedMember = MutableStateFlow<UUID?>(null)
 
-    val studentAction: MutableStateFlow<Pair<List<StudentAction>, String>> =
-        MutableStateFlow(Pair(emptyList(), ""))
+    val memberAction = MutableStateFlow<Pair<List<StudentAction>, UUID>?>(null)
 
     init {
         componentScope.launch {
@@ -73,7 +87,7 @@ class GroupMembersComponent(
         }
     }
 
-    fun onMemberSelect(userId: String) {
+    fun onMemberSelect(userId: UUID) {
         selectedMember.value = userId
     }
 
@@ -81,25 +95,35 @@ class GroupMembersComponent(
         selectedMember.value = null
     }
 
-    fun onExpandMemberAction(memberId: String) {
-        studentAction.update {
-            listOf(
-                if (groupMembers.value?.headmanId == memberId) StudentAction.RemoveHeadman
-                else StudentAction.SetHeadman,
-                StudentAction.Edit
-            ) to memberId
+    fun onExpandMemberAction(memberId: UUID) {
+        members.value.onSuccess { members ->
+            memberAction.update {
+                listOf(
+                    if (members.headmanId == memberId) StudentAction.RemoveHeadman
+                    else StudentAction.SetHeadman,
+                    StudentAction.Edit
+                ) to memberId
+            }
         }
     }
 
     fun onClickMemberAction(action: StudentAction) {
         componentScope.launch {
             when (action) {
-                StudentAction.SetHeadman -> assignUserRoleInScopeUseCase(studentAction.value.second, groupId)
-                StudentAction.RemoveHeadman -> removeUserRoleFromScopeUseCase(groupId)
+                StudentAction.SetHeadman -> assignUserRoleInScopeUseCase(
+                    memberAction.value!!.second,
+                    Role.Headman.id,
+                    groupId
+                )
+                StudentAction.RemoveHeadman -> removeUserRoleFromScopeUseCase(
+                    groupId,
+                    Role.Headman.id,
+                    groupId
+                )
                 StudentAction.Edit -> {
                     navigation.bringToFront(
                         UserEditorConfig(
-                            userId = studentAction.value.second,
+                            userId = memberAction.value!!.second,
                             role = UserRole.STUDENT,
                             groupId = groupId
                         )
@@ -110,7 +134,7 @@ class GroupMembersComponent(
     }
 
     fun onDismissAction() {
-        studentAction.value = Pair(listOf(), "")
+        memberAction.value = null
     }
 
 

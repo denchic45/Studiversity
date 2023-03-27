@@ -26,12 +26,12 @@ import com.denchic45.kts.ui.components.TabIndicator
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesScreen
 import com.denchic45.kts.ui.studygroup.members.GroupMembersScreen
 import com.denchic45.kts.ui.navigation.GroupChild
-import com.denchic45.kts.ui.navigation.GroupTabsChild
+import com.denchic45.kts.ui.navigation.StudyGroupTabsChild
 import com.denchic45.kts.ui.theme.toDrawablePath
 
 
 @Composable
-fun GroupScreen(appBarMediator: AppBarMediator, groupRootComponent: GroupRootComponent) {
+fun StudyGroupScreen(appBarMediator: AppBarMediator, groupRootComponent: GroupRootComponent) {
     appBarMediator.title = "Группа"
     appBarMediator.content = {
         Spacer(Modifier.weight(1f))
@@ -87,8 +87,8 @@ fun GroupContent(groupComponent: GroupComponent) {
         val childStack by groupComponent.stack.subscribeAsState()
 
         when (val child = childStack.active.instance) {
-            is GroupTabsChild.Members -> GroupMembersScreen(child.membersComponent)
-            is GroupTabsChild.Courses -> GroupCoursesScreen(child.coursesComponent)
+            is StudyGroupTabsChild.Members -> GroupMembersScreen(child.membersComponent)
+            is StudyGroupTabsChild.Courses -> GroupCoursesScreen(child.coursesComponent)
         }
     }
 }

@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.domain.usecase.FindStudyGroupByContainsNameUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
 
 @Inject
@@ -14,5 +15,5 @@ class GroupChooserComponent(
 ) : ComponentContext by componentContext {
 
     private val typedText = MutableStateFlow("")
-    val items = typedText.flatMapLatest { findStudyGroupByContainsNameUseCase(it) }
+    val items = typedText.map { findStudyGroupByContainsNameUseCase(it) }
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.components.HeaderItem
 import com.denchic45.kts.ui.components.UserListItem
 import com.denchic45.kts.ui.model.UserItem
@@ -24,27 +25,30 @@ import com.denchic45.kts.ui.navigation.UserEditorChild
 import com.denchic45.kts.ui.profile.ProfileScreen
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.ui.usereditor.UserEditorScreen
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
     Row {
-        val curatorWithStudents by groupMembersComponent.memberItems.collectAsState()
+        val members by groupMembersComponent.members.collectAsState()
         val selectedItemId by groupMembersComponent.selectedMember.collectAsState()
 
-        curatorWithStudents?.let {
-            val options by groupMembersComponent.studentAction.collectAsState()
-            MemberList(
-                modifier = Modifier.weight(3f),
-                curator = it.first,
-                students = it.second,
-                selectedItemId = selectedItemId,
-                actions = options,
-                onClick = groupMembersComponent::onMemberSelect,
-                onExpandActions = groupMembersComponent::onExpandMemberAction,
-                onClickAction = groupMembersComponent::onClickMemberAction,
-                onDismissAction = groupMembersComponent::onDismissAction
-            )
+        members.let {
+            val options by groupMembersComponent.memberAction.collectAsState()
+            it.onSuccess {
+                MemberList(
+                    modifier = Modifier.weight(3f),
+                    curator = it.curator,
+                    students = it.students,
+                    selectedItemId = selectedItemId,
+                    actions = options,
+                    onClick = groupMembersComponent::onMemberSelect,
+                    onExpandActions = groupMembersComponent::onExpandMemberAction,
+                    onClickAction = groupMembersComponent::onClickMemberAction,
+                    onDismissAction = groupMembersComponent::onDismissAction
+                )
+            }
         }
         val stack by groupMembersComponent.stack.subscribeAsState()
 
@@ -69,11 +73,11 @@ fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
 private fun StudentListItem(
     userItem: UserItem,
     selected: Boolean,
-    onClick: (id: String) -> Unit,
-    onExpandActions: (memberId: String) -> Unit,
+    onClick: (id: UUID) -> Unit,
+    onExpandActions: (memberId: UUID) -> Unit,
     onClickAction: (GroupMembersComponent.StudentAction) -> Unit,
     onDismissAction: () -> Unit,
-    actions: Pair<List<GroupMembersComponent.StudentAction>, String>,
+    actions: Pair<List<GroupMembersComponent.StudentAction>, UUID>?,
 ) {
     val interactionSource = remember(::MutableInteractionSource)
 
@@ -94,14 +98,14 @@ private fun StudentListItem(
         }) {
             Icon(painterResource("ic_more_vert".toDrawablePath()), null)
         }
-        DropdownMenu(expanded = expanded && actions.second == userItem.id,
+        DropdownMenu(expanded = expanded && actions?.second == userItem.id,
             modifier = Modifier.width(240.dp),
             onDismissRequest = {
                 expanded = false
                 onDismissAction()
             }) {
 
-            actions.first.forEach { action ->
+            actions?.first?.forEach { action ->
                 DropdownMenuItem(onClick = {
                     expanded = false
                     onClickAction(action)
@@ -116,32 +120,34 @@ private fun StudentListItem(
 @Composable
 fun MemberList(
     modifier: Modifier = Modifier,
-    curator: UserItem,
+    curator: UserItem?,
     students: List<UserItem>,
-    selectedItemId: String?,
-    onClick: (String) -> Unit,
-    onExpandActions: (memberId: String) -> Unit,
+    selectedItemId: UUID?,
+    onClick: (UUID) -> Unit,
+    onExpandActions: (memberId: UUID) -> Unit,
     onClickAction: (GroupMembersComponent.StudentAction) -> Unit,
     onDismissAction: () -> Unit,
-    actions: Pair<List<GroupMembersComponent.StudentAction>, String>,
+    actions: Pair<List<GroupMembersComponent.StudentAction>, UUID>?,
 ) {
     LazyColumn(
         modifier,
         contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp, start = 24.dp, end = 24.dp)
     ) {
-        item { HeaderItem("Куратор") }
 
-        item {
-            UserListItem(
-                item = curator,
-                onClick = onClick,
-                actionsVisible = false,
-                selected = curator.id == selectedItemId
-            )
+        curator?.let {
+            item { HeaderItem("Куратор") }
+
+            item {
+                UserListItem(
+                    item = curator,
+                    onClick = onClick,
+                    actionsVisible = false,
+                    selected = curator.id == selectedItemId
+                )
+            }
         }
 
         item { HeaderItem("Студенты") }
-
 
         items(students) {
             StudentListItem(
