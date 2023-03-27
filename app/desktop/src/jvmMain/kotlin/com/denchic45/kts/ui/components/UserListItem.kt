@@ -23,11 +23,12 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.util.AsyncImage
 import com.denchic45.kts.util.loadImageBitmap
+import java.util.*
 
 @Composable
 fun UserListItem(
     modifier: Modifier = Modifier,
-    onClick: (id: String) -> Unit,
+    onClick: (id: UUID) -> Unit,
     item: UserItem,
     actionsVisible: Boolean = true,
     selected: Boolean = false,
@@ -76,7 +77,7 @@ fun UserItemPreview() {
     UserListItem(modifier,
         {},
         UserItem(
-            "",
+            UUID.randomUUID(),
             "User",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Android_new_logo_2019.svg/2560px-Android_new_logo_2019.svg.png",
             "Sub"

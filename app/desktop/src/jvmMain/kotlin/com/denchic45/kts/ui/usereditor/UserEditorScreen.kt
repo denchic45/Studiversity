@@ -3,18 +3,12 @@
 package com.denchic45.kts.ui.usereditor
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Link
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,9 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.components.HeaderItem
 import com.denchic45.kts.ui.components.Spinner
@@ -37,10 +28,11 @@ import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.util.AsyncImage
 import com.denchic45.kts.util.loadImageBitmap
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifier) {
     Column(modifier) {
-        SmallTopAppBar(
+        TopAppBar(
             title = { Text(component.toolbarTitle) },
             navigationIcon = {
                 IconButton(onClick = component::onCloseClick) {
@@ -56,8 +48,7 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
                     onClick = component::onSaveClick,
                     Modifier.padding(horizontal = 16.dp)
                 ) { Text("Сохранить") }
-            },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
+            }, colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
         )
         Column(Modifier.verticalScroll(rememberScrollState())) {
             UserEditorContent(component)
@@ -163,19 +154,19 @@ private fun UserEditorContent(component: UserEditorComponent) {
             activeAction = gender
         )
         val availableRoles by component.availableRoles.collectAsState()
-        val role by component.roleField.collectAsState()
-        availableRoles?.let { roles ->
-            var expandedRoles by remember { mutableStateOf(false) }
-            Spinner(
-                items = roles,
-                onActionClick = component::onRoleSelect,
-                Modifier.padding(top = 4.dp).fillMaxWidth(),
-                expanded = expandedRoles,
-                onExpandedChange = { expandedRoles = it },
-                placeholder = "Роль",
-                activeAction = role
-            )
-        }
+//        val role by component.roleField.collectAsState()
+//        availableRoles?.let { roles ->
+//            var expandedRoles by remember { mutableStateOf(false) }
+//            Spinner(
+//                items = roles,
+//                onActionClick = component::onRoleSelect,
+//                Modifier.padding(top = 4.dp).fillMaxWidth(),
+//                expanded = expandedRoles,
+//                onExpandedChange = { expandedRoles = it },
+//                placeholder = "Роль",
+//                activeAction = role
+//            )
+//        }
 
         val accountFieldsVisibility by component.accountFieldsVisibility.collectAsState()
         if (accountFieldsVisibility) {
@@ -192,56 +183,57 @@ private fun UserEditorContent(component: UserEditorComponent) {
             )
             SupportingText(errorState.emailMessage ?: "", true)
 
-            val password by component.passwordField.collectAsState()
-            var passwordVisible by remember { mutableStateOf(false) }
-            OutlinedTextField(
-                value = password,
-                onValueChange = component::onPasswordType,
-                Modifier.padding(top = 4.dp).fillMaxWidth(),
-                label = { Text("Пароль") },
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                trailingIcon = {
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(
-                            imageVector = if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
-                            if (passwordVisible) "Hide password" else "Show password"
-                        )
-                    }
-                },
-                singleLine = true,
-                isError = errorState.passwordMessage != null,
-            )
-            SupportingText(errorState.passwordMessage ?: "", true)
+//            val password by component.passwordField.collectAsState()
+//            var passwordVisible by remember { mutableStateOf(false) }
+//            OutlinedTextField(
+//                value = password,
+//                onValueChange = component::onPasswordType,
+//                Modifier.padding(top = 4.dp).fillMaxWidth(),
+//                label = { Text("Пароль") },
+//                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+//                trailingIcon = {
+//                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+//                        Icon(
+//                            imageVector = if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
+//                            if (passwordVisible) "Hide password" else "Show password"
+//                        )
+//                    }
+//                },
+//                singleLine = true,
+//                isError = errorState.passwordMessage != null,
+//            )
+//            SupportingText(errorState.passwordMessage ?: "", true)
 
         }
-        val groupVisibility by component.groupFieldVisibility.collectAsState()
-        if (groupVisibility) {
-            val groupHeader by component.groupField.collectAsState()
-            androidx.compose.material.Divider(
-                Modifier.padding(top = 24.dp).fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = groupHeader.name,
-                onValueChange = component::onPasswordType,
-                Modifier.padding(top = 16.dp).fillMaxWidth()
-                    .clickable(onClick = component::onGroupClick),
-                label = { Text("Группа") },
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-                    disabledLabelColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-                    disabledBorderColor = MaterialTheme.colorScheme.outline
-                ),
-                trailingIcon = {
-                    IconButton(onClick = component::onGroupClick) {
-                        Icon(imageVector = Icons.Outlined.Link, "Select group")
-                    }
-                },
-                enabled = false,
-                singleLine = true,
-                isError = errorState.groupMessage != null,
-            )
-        }
-        SupportingText(errorState.groupMessage ?: "", true)
+
+//        val groupVisibility by component.groupFieldVisibility.collectAsState()
+//        if (groupVisibility) {
+//            val groupHeader by component.groupField.collectAsState()
+//            androidx.compose.material.Divider(
+//                Modifier.padding(top = 24.dp).fillMaxWidth()
+//            )
+//            OutlinedTextField(
+//                value = groupHeader.name,
+//                onValueChange = component::onPasswordType,
+//                Modifier.padding(top = 16.dp).fillMaxWidth()
+//                    .clickable(onClick = component::onGroupClick),
+//                label = { Text("Группа") },
+//                colors = TextFieldDefaults.outlinedTextFieldColors(
+//                    disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+//                    disabledLabelColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+//                    disabledBorderColor = MaterialTheme.colorScheme.outline
+//                ),
+//                trailingIcon = {
+//                    IconButton(onClick = component::onGroupClick) {
+//                        Icon(imageVector = Icons.Outlined.Link, "Select group")
+//                    }
+//                },
+//                enabled = false,
+//                singleLine = true,
+//                isError = errorState.groupMessage != null,
+//            )
+//        }
+//        SupportingText(errorState.groupMessage ?: "", true)
     }
 }

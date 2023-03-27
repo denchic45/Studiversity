@@ -12,17 +12,18 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.denchic45.kts.domain.MainInteractor
-import com.denchic45.kts.ui.studygroup.GroupRootComponent
 import com.denchic45.kts.ui.navigation.*
+import com.denchic45.kts.ui.studygroups.StudyGroupsComponent
 import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Inject
 
-@me.tatarka.inject.annotations.Inject
+@Inject
 class MainComponent constructor(
     lazyTimetableComponent: Lazy<TimetableComponent>,
-    lazyGroupRootComponent: Lazy<GroupRootComponent>,
+    lazyStudyGroupsComponent: Lazy<StudyGroupsComponent>,
     mainInteractor: MainInteractor,
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     componentContext: ComponentContext,
@@ -33,7 +34,7 @@ class MainComponent constructor(
 ) : ComponentContext by componentContext {
 
     private val timetableComponent by lazyTimetableComponent
-    private val groupRootComponent by lazyGroupRootComponent
+    private val studyGroupsComponent by lazyStudyGroupsComponent
 
     private val coroutineScope = componentScope()
 
@@ -43,10 +44,10 @@ class MainComponent constructor(
 
     val stack: Value<ChildStack<Config, Child>> = childStack(source = navigation,
         initialConfiguration = Config.Timetable,
-        childFactory = { config: Config, componentContext: ComponentContext ->
+        childFactory = { config, componentContext ->
             when (config) {
                 is Config.Timetable -> Child.Timetable(timetableComponent)
-                is Config.Group -> Child.Group(groupRootComponent)
+                is Config.StudyGroups -> Child.StudyGroups(studyGroupsComponent)
             }
         })
 
@@ -55,16 +56,16 @@ class MainComponent constructor(
         handleBackButton = true
     ) { config, _ ->
         when (config) {
-            is UserEditorConfig -> {
-                UserEditorChild(userEditorComponent(overlayNavigation::dismiss, config))
-            }
+            is UserEditorConfig -> UserEditorChild(
+                userEditorComponent(overlayNavigation::dismiss, config)
+            )
             is ConfirmConfig -> ConfirmChild(config)
         }
     }
 
     init {
         coroutineScope.launch { mainInteractor.startListeners() }
-        coroutineScope.launch { mainInteractor.observeHasGroup() }
+//        coroutineScope.launch { mainInteractor.observeHasGroup() }
     }
 
     fun onTimetableClick() {
@@ -72,7 +73,7 @@ class MainComponent constructor(
     }
 
     fun onGroupClick() {
-        navigation.bringToFront(Config.Group)
+        navigation.bringToFront(Config.StudyGroups)
     }
 
     fun onOverlayDismiss() {
@@ -81,11 +82,11 @@ class MainComponent constructor(
 
     sealed class Config : Parcelable {
         object Timetable : Config()
-        object Group : Config()
+        object StudyGroups : Config()
     }
 
     sealed interface Child {
         class Timetable(val timetableComponent: TimetableComponent) : Child
-        class Group(val groupRootComponent: GroupRootComponent) : Child
+        class StudyGroups(val studyGroupsComponent: StudyGroupsComponent) : Child
     }
 }

@@ -26,7 +26,6 @@ class GroupMembersViewModel @Inject constructor(
     private val interactor: GroupUsersInteractor,
     findSelfUserUseCase: FindSelfUserUseCase,
     findGroupMembersUseCase: FindGroupMembersUseCase,
-    private val removeStudentUseCase: RemoveStudentUseCase,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
     private val teacherChooserInteractor: TeacherChooserInteractor,

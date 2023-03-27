@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.ui.MainComponent.Child
 import com.denchic45.kts.ui.confirm.ConfirmDialog
-import com.denchic45.kts.ui.studygroup.GroupScreen
 import com.denchic45.kts.ui.navigation.ConfirmChild
 import com.denchic45.kts.ui.navigation.UserEditorChild
+import com.denchic45.kts.ui.studygroups.StudyGroupsScreen
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.ui.timetable.TimetableScreen
 import com.denchic45.kts.ui.usereditor.UserEditorDialog
@@ -50,7 +50,7 @@ fun MainContent(mainComponent: MainComponent) {
                     onClick = { mainComponent.onTimetableClick() })
                 NavigationRailItem(
                     icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
-                    selected = activeComponent is Child.Group,
+                    selected = activeComponent is Child.StudyGroups,
                     onClick = { mainComponent.onGroupClick() })
                 Spacer(Modifier.weight(1f))
             }
@@ -93,7 +93,7 @@ fun MainContent(mainComponent: MainComponent) {
 
                 when (val child = childStack.active.instance) {
                     is Child.Timetable -> TimetableScreen(appBarMediator, child.timetableComponent)
-                    is Child.Group -> GroupScreen(appBarMediator, child.groupRootComponent)
+                    is Child.StudyGroups -> StudyGroupsScreen(appBarMediator, child.studyGroupsComponent)
                 }
 
                 val overlay by mainComponent.childOverlay.subscribeAsState()

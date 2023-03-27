@@ -46,7 +46,7 @@ class UserRepository @Inject constructor(
         Gender.valueOf(userPreferences.gender)
     )
 
-    suspend fun updateUserAvatar(avatarBytes: ByteArray, userId: String): String {
+    suspend fun updateUserAvatar(avatarBytes: ByteArray, userId: UUID): String {
         TODO("Not implemented")
     }
 

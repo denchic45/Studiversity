@@ -3,6 +3,8 @@ package com.denchic45.kts.ui.model
 import com.denchic45.kts.domain.model.GroupMember
 import com.denchic45.kts.domain.model.GroupMembers
 import com.denchic45.kts.domain.model.User
+import com.denchic45.stuiversity.api.membership.model.ScopeMember
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import java.util.UUID
 
 data class UserItem(
@@ -21,11 +23,11 @@ fun GroupMember.toUserItem(groupMembers: GroupMembers): UserItem {
     )
 }
 
-fun User.toUserItem(): UserItem {
+fun UserResponse.toUserItem(): UserItem {
     return UserItem(
         id = id,
         title = fullName,
-        avatarUrl = photoUrl,
+        avatarUrl = avatarUrl,
         subtitle = null
     )
 }

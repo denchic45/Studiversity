@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.components.TextButtonContent
 import com.denchic45.stuiversity.util.DatePatterns
@@ -32,58 +33,60 @@ import java.time.LocalDate
 @Composable
 fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: TimetableComponent) {
     val timetable by timetableComponent.timetable.collectAsState()
-    appBarMediator.apply {
-        title = timetable.title
-        content = {
-            val contentHeight = 40.dp
+    timetable.onSuccess { state ->
+        appBarMediator.apply {
+            title = state.title
+            content = {
+                val contentHeight = 40.dp
 //            Spacer(Modifier.width(24.dp))
-            Spacer(Modifier.weight(1f))
+                Spacer(Modifier.weight(1f))
 
-            OutlinedButton(
-                modifier = Modifier.height(contentHeight),
-                onClick = timetableComponent::onTodayClick,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-            ) {
-                TextButtonContent("Сегодня")
-            }
-            Spacer(Modifier.width(16.dp))
-            OutlinedButton(
-                onClick = timetableComponent::onPreviousWeekClick,
-                modifier = Modifier.size(contentHeight),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = "previous week arrow icon"
-                )
-            }
-            Spacer(Modifier.width(16.dp))
-            OutlinedButton(
-                onClick = timetableComponent::onNextWeekClick,
-                modifier = Modifier.size(contentHeight),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = "next week arrow icon"
-                )
-            }
+                OutlinedButton(
+                    modifier = Modifier.height(contentHeight),
+                    onClick = timetableComponent::onTodayClick,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                ) {
+                    TextButtonContent("Сегодня")
+                }
+                Spacer(Modifier.width(16.dp))
+                OutlinedButton(
+                    onClick = timetableComponent::onPreviousWeekClick,
+                    modifier = Modifier.size(contentHeight),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        contentDescription = "previous week arrow icon"
+                    )
+                }
+                Spacer(Modifier.width(16.dp))
+                OutlinedButton(
+                    onClick = timetableComponent::onNextWeekClick,
+                    modifier = Modifier.size(contentHeight),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowRight,
+                        contentDescription = "next week arrow icon"
+                    )
+                }
 
 //            Spacer(Modifier.weight(1f))
 //            Spinner() TODO add later
 //            Spacer(Modifier.width(24.dp))
+            }
         }
-    }
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
-        elevation = 0.dp
-    ) {
-        TimetableContent(timetable)
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
+            elevation = 0.dp
+        ) {
+            TimetableContent(state)
+        }
     }
 }
 
@@ -106,7 +109,7 @@ fun TimetableContent(timetableViewState: TimetableViewState) {
                 if (maxWidth < 1000.dp) Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
                 else Modifier
             Column {
-                DaysOfWeekHeader(modifierHorScroll, timetableViewState.monday)
+                DaysOfWeekHeader(modifierHorScroll, timetableViewState.mondayDate)
                 LessonCells(modifierHorScroll, verticalScroll, timetableViewState)
             }
         }
@@ -185,7 +188,7 @@ fun LessonCells(modifier: Modifier, verticalScroll: ScrollState, timetable: Time
                 }
                 Column(Modifier.fillMaxWidth()) {
                     repeat(timetable.maxEventsSize) { eventOrder ->
-                        LessonCell(timetable.events[dayOfWeek][eventOrder])
+                        LessonCell(timetable.periods[dayOfWeek][eventOrder])
                         if (eventOrder != 7) Divider(Modifier.fillMaxWidth().height(1.dp))
                     }
                 }

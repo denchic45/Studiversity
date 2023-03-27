@@ -30,7 +30,7 @@ private fun mainApp() {
                 }
 
                 Window(
-                    title = "KtsApp",
+                    title = "Studiversity",
                     onCloseRequest = ::exitApplication,
                     state = WindowState(size = size, position = WindowPosition(Alignment.Center))
                 ) {
@@ -42,7 +42,7 @@ private fun mainApp() {
                 }
             } else {
                 Window(
-                    title = "KtsApp - Авторизация",
+                    title = "Studiversity - Авторизация",
                     onCloseRequest = ::exitApplication,
                     state = WindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))
                 ) {

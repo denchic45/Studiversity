@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.data.domain.model.UserRole
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.components.ListItem
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.util.AsyncImage
@@ -43,25 +44,19 @@ fun ProfileScreen(
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
         )
-        profileViewState?.let { profile ->
-            ProfileHeader(
-                profile.avatarUrl, profile.fullName, when (profile.role) {
-                    UserRole.STUDENT -> "Студент"
-                    UserRole.TEACHER -> "Преподаватель"
-                    UserRole.HEAD_TEACHER -> "Завуч"
-                }
-            )
+        profileViewState.onSuccess { profile ->
+            ProfileHeader(profile.avatarUrl, profile.fullName)
             Divider(Modifier.fillMaxWidth())
-            if (profile.groupInfo != null) {
-                ListItem(Modifier.clickable(
-                    profile.groupClickable,
-                    onClick = profileComponent::onGroupClick
-                ),
-                    icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
-                    text = {
-                        Text(text = profile.groupInfo, style = MaterialTheme.typography.bodyLarge)
-                    })
-            }
+//            if (profile.groupInfo != null) {
+//                ListItem(Modifier.clickable(
+//                    profile.groupClickable,
+//                    onClick = profileComponent::onGroupClick
+//                ),
+//                    icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
+//                    text = {
+//                        Text(text = profile.groupInfo, style = MaterialTheme.typography.bodyLarge)
+//                    })
+//            }
             Divider(Modifier.fillMaxWidth())
             profile.personalDate?.let { personalDate ->
                 ListItem(icon = {
@@ -75,7 +70,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun ProfileHeader(photoUrl: String, title: String, subtitle: String) {
+fun ProfileHeader(photoUrl: String, title: String) {
     Row(
         modifier = Modifier.height(100.dp).padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -92,7 +87,6 @@ fun ProfileHeader(photoUrl: String, title: String, subtitle: String) {
         }
         Column(Modifier.padding(start = 16.dp)) {
             Text(title, style = MaterialTheme.typography.titleLarge)
-            Text(subtitle, style = MaterialTheme.typography.titleMedium)
         }
     }
 }

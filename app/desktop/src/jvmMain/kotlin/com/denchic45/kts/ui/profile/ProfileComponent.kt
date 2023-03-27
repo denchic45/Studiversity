@@ -14,17 +14,17 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
 @Inject
 class ProfileComponent(
     observeUserUseCase: ObserveUserUseCase,
     componentContext: ComponentContext,
-    _userId: String,
+    private val userId: UUID,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
 
-    private val userId = _userId.toUUID()
     private val userFlow = observeUserUseCase(userId)
 
     val profileViewState: StateFlow<Resource<ProfileViewState>> =

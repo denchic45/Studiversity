@@ -3,9 +3,12 @@ package com.denchic45.kts.ui.usereditor
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
+import com.denchic45.kts.UIEditor
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.model.GroupHeader
+import com.denchic45.kts.domain.onFailure
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.AddUserUseCase
 import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.kts.domain.usecase.ObserveUserUseCase
@@ -15,17 +18,17 @@ import com.denchic45.kts.ui.navigation.ConfirmConfig
 import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.navigation.UserEditorConfig
 import com.denchic45.kts.util.componentScope
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.stuiversity.api.user.model.Account
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.model.Gender
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.uivalidator.experimental2.Operator
 import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.condition.observable
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
 import com.denchic45.uivalidator.isEmail
-import com.github.michaelbull.result.onFailure
-import com.github.michaelbull.result.onSuccess
-import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -44,23 +47,23 @@ class UserEditorComponent(
 
     private val componentScope = componentScope()
 
-    private var userId: UUID? = config.userId?.toUUID()
+    private val userId: UUID? = config.userId
 
-//    private val uiEditor: UIEditor<UserResponse> = UIEditor(config.userId == null) {
-//        UserResponse(
-//            this.userId!!,
-//            firstNameField.value,
-//            surnameField.value,
-//            patronymicField.value,
-//            Account(emailField.value),
-//            avatarUrl.value,
-//            when (genderField.value) {
-//                GenderAction.Undefined -> Gender.UNKNOWN
-//                GenderAction.Female -> Gender.FEMALE
-//                GenderAction.Male -> Gender.MALE
-//            },
-//        )
-//    }
+    private val uiEditor: UIEditor<UserResponse> = UIEditor(config.userId == null) {
+        UserResponse(
+            this.userId!!,
+            firstNameField.value,
+            surnameField.value,
+            patronymicField.value,
+            Account(emailField.value),
+            avatarUrl.value,
+            when (genderField.value) {
+                GenderAction.Undefined -> Gender.UNKNOWN
+                GenderAction.Female -> Gender.FEMALE
+                GenderAction.Male -> Gender.MALE
+            },
+        )
+    }
 
     val errorState = MutableStateFlow(ErrorState())
 
@@ -90,7 +93,6 @@ class UserEditorComponent(
         }
     )
 
-
 //    val roleField: StateFlow<RoleAction> =
 //        selectedRole
 //            .map { it.toRoleAction() }
@@ -102,9 +104,9 @@ class UserEditorComponent(
         UserRole.HEAD_TEACHER -> RoleAction.HeadTeacher
     }
 
-    val groupField: StateFlow<GroupHeader> =
-        this.groupId.filterNotNull().flatMapLatest { findStudyGroupByIdUseCase(it) }
-            .stateIn(componentScope, SharingStarted.Lazily, GroupHeader.createEmpty())
+    val groupField: StateFlow<Resource<StudyGroupResponse>> = groupId.filterNotNull()
+        .map { findStudyGroupByIdUseCase(it) }
+        .stateInResource(componentScope)
 
     val avatarUrl = MutableStateFlow("")
 
@@ -233,19 +235,14 @@ class UserEditorComponent(
 
     private fun saveChanges() {
         componentScope.launch {
-            if (uiEditor.isNew) {
-                addUserUseCase(
-                    CreateUserRequest(
+            addUserUseCase(
+                CreateUserRequest(
                     firstNameField.value,
                     surnameField.value,
                     patronymicField.value,
                     emailField.value
                 )
-                )
-            } else {
-                updateUserUseCase(uiEditor.item)
-            }
-                .onSuccess { onFinish() }
+            ).onSuccess { onFinish() }
                 .onFailure { TODO("Уведомление о подключении к интернету") }
         }
     }

@@ -183,18 +183,18 @@ class TimetableParser(
             LessonResponse(
                 id = -1,
                 date = date,
-                order = order.toShort(),
-                roomId = null,
+                order = order,
+                room = null,
                 studyGroupId = currentStudyGroup.id,
                 memberIds = findTeacherByContent(separatedContent),
-                details = LessonDetails(course.id)
+                details = LessonDetails(course.id, subject)
             )
         } else {
             EventResponse(
                 id = -1,
                 date = date,
-                order = order.toShort(),
-                roomId = null,
+                order = order,
+                room = null,
                 studyGroupId = currentStudyGroup.id,
                 memberIds = findTeacherByContent(separatedContent),
                 details = EventDetails(subjectName, "blue", "")
