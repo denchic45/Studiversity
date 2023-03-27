@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
     id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin") apply false
-    id("com.google.gms.google-services")
+//    id("com.google.gms.google-services")
 }
 
 apply(plugin = "androidx.navigation.safeargs.kotlin")

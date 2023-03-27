@@ -20,7 +20,7 @@ kotlin {
         val ktorVersion = "2.0.3"
         val koinVersion = "3.2.0"
         val sqlDelightVersion = "1.5.3"
-        val decomposeVersion = "1.0.0-alpha-06"
+        val decomposeVersion = "1.0.0"
         val daggerVersion = "2.44"
 
         val commonJvmMain by creating {
@@ -81,7 +81,7 @@ kotlin {
 
                 // kotlin-inject
 //                configurations["ksp"].dependencies.add(project.dependencies.create("me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1"))
-                implementation("me.tatarka.inject:kotlin-inject-runtime:0.6.1")
+                api("me.tatarka.inject:kotlin-inject-runtime:0.6.1")
 
                 // kotlin-result
                 api("com.michael-bull.kotlin-result:kotlin-result:1.1.16")

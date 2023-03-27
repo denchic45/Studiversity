@@ -38,8 +38,7 @@ kotlin {
                 configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
 
                 // kotlin-inject
-                implementation("me.tatarka.inject:kotlin-inject-runtime:0.5.1")
-                configurations["ksp"].dependencies.add(project.dependencies.create("me.tatarka.inject:kotlin-inject-compiler-ksp:0.5.1"))
+                configurations["ksp"].dependencies.add(project.dependencies.create("me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1"))
 
                 // Kamel
                 implementation("com.alialbaali.kamel:kamel-image:0.4.0")
@@ -49,9 +48,6 @@ kotlin {
 }
 
 compose.desktop {
-//    compose {
-//        this.kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.2.0")
-//    }
     application {
         mainClass = "MainKt"
         nativeDistributions {
