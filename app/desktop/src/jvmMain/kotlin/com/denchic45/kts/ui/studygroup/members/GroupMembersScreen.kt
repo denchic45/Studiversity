@@ -29,13 +29,13 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
+fun GroupMembersScreen(studyGroupMembersComponent: StudyGroupMembersComponent) {
     Row {
-        val members by groupMembersComponent.members.collectAsState()
-        val selectedItemId by groupMembersComponent.selectedMember.collectAsState()
+        val members by studyGroupMembersComponent.members.collectAsState()
+        val selectedItemId by studyGroupMembersComponent.selectedMember.collectAsState()
 
         members.let {
-            val options by groupMembersComponent.memberAction.collectAsState()
+            val options by studyGroupMembersComponent.memberAction.collectAsState()
             it.onSuccess {
                 MemberList(
                     modifier = Modifier.weight(3f),
@@ -43,14 +43,14 @@ fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
                     students = it.students,
                     selectedItemId = selectedItemId,
                     actions = options,
-                    onClick = groupMembersComponent::onMemberSelect,
-                    onExpandActions = groupMembersComponent::onExpandMemberAction,
-                    onClickAction = groupMembersComponent::onClickMemberAction,
-                    onDismissAction = groupMembersComponent::onDismissAction
+                    onClick = studyGroupMembersComponent::onMemberSelect,
+                    onExpandActions = studyGroupMembersComponent::onExpandMemberAction,
+                    onClickAction = studyGroupMembersComponent::onClickMemberAction,
+                    onDismissAction = studyGroupMembersComponent::onDismissAction
                 )
             }
         }
-        val stack by groupMembersComponent.stack.subscribeAsState()
+        val stack by studyGroupMembersComponent.stack.subscribeAsState()
 
         when (val child = stack.active.instance) {
             GroupMembersChild.Unselected -> {
@@ -59,7 +59,7 @@ fun GroupMembersScreen(groupMembersComponent: GroupMembersComponent) {
             is ProfileChild -> {
                 ProfileScreen(
                     Modifier.width(422.dp), child.profileComponent
-                ) { groupMembersComponent.onCloseProfileClick() }
+                ) { studyGroupMembersComponent.onCloseProfileClick() }
             }
             is UserEditorChild -> UserEditorScreen(
                 child.userEditorComponent,
@@ -75,9 +75,9 @@ private fun StudentListItem(
     selected: Boolean,
     onClick: (id: UUID) -> Unit,
     onExpandActions: (memberId: UUID) -> Unit,
-    onClickAction: (GroupMembersComponent.StudentAction) -> Unit,
+    onClickAction: (StudyGroupMembersComponent.StudentAction) -> Unit,
     onDismissAction: () -> Unit,
-    actions: Pair<List<GroupMembersComponent.StudentAction>, UUID>?,
+    actions: Pair<List<StudyGroupMembersComponent.StudentAction>, UUID>?,
 ) {
     val interactionSource = remember(::MutableInteractionSource)
 
@@ -125,9 +125,9 @@ fun MemberList(
     selectedItemId: UUID?,
     onClick: (UUID) -> Unit,
     onExpandActions: (memberId: UUID) -> Unit,
-    onClickAction: (GroupMembersComponent.StudentAction) -> Unit,
+    onClickAction: (StudyGroupMembersComponent.StudentAction) -> Unit,
     onDismissAction: () -> Unit,
-    actions: Pair<List<GroupMembersComponent.StudentAction>, UUID>?,
+    actions: Pair<List<StudyGroupMembersComponent.StudentAction>, UUID>?,
 ) {
     LazyColumn(
         modifier,

@@ -24,14 +24,13 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class GroupMembersComponent(
+class StudyGroupMembersComponent(
     findGroupMembersUseCase: FindGroupMembersUseCase,
     componentContext: ComponentContext,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
-    profileComponent: (navigator: StackNavigator<in GroupConfig.Group>, groupClickable: Boolean, userId: UUID) -> ProfileComponent,
+    profileComponent: (userId: UUID) -> ProfileComponent,
     userEditorComponent: (onFinish: () -> Unit, config: UserEditorConfig) -> UserEditorComponent,
-    navigator: StackNavigator<in GroupConfig>,
     private val groupId: UUID,
 ) : ComponentContext by componentContext {
 
@@ -43,9 +42,7 @@ class GroupMembersComponent(
         childFactory = { config, _ ->
             when (config) {
                 GroupMembersConfig.Unselected -> GroupMembersChild.Unselected
-                is ProfileConfig -> ProfileChild(
-                    profileComponent(navigator, false, config.userId)
-                )
+                is ProfileConfig -> ProfileChild(profileComponent(config.userId))
                 is UserEditorConfig -> UserEditorChild(
                     userEditorComponent(navigation::pop, config)
                 )
@@ -54,24 +51,25 @@ class GroupMembersComponent(
 
     private val componentScope = componentScope()
 
-    val members: StateFlow<Resource<GroupMembers>> =
-        flow { emit(findGroupMembersUseCase(groupId)) }.mapResource { scopeMembers ->
-            val curatorMember = scopeMembers.firstOrNull { member -> Role.Curator in member.roles }
-            val groupCurator = curatorMember?.user?.toUserItem()
-            val students = (curatorMember?.let { scopeMembers - it }
-                ?: scopeMembers).map { it.user.toUserItem() }
-            GroupMembers(
-                groupId = groupId,
-                curator = groupCurator,
-                headmanId = scopeMembers.find { member -> Role.Headman in member.roles }?.user?.id,
-                students = students
-            )
-
-        }.stateIn(
-            componentScope,
-            SharingStarted.Lazily,
-            Resource.Loading
+    val members: StateFlow<Resource<GroupMembers>> = flow {
+        emit(findGroupMembersUseCase(groupId))
+    }.mapResource { scopeMembers ->
+        val curatorMember = scopeMembers.firstOrNull { member -> Role.Curator in member.roles }
+        val groupCurator = curatorMember?.user?.toUserItem()
+        val students = (curatorMember?.let { scopeMembers - it }
+            ?: scopeMembers).map { it.user.toUserItem() }
+        GroupMembers(
+            groupId = groupId,
+            curator = groupCurator,
+            headmanId = scopeMembers.find { member -> Role.Headman in member.roles }?.user?.id,
+            students = students
         )
+
+    }.stateIn(
+        componentScope,
+        SharingStarted.Lazily,
+        Resource.Loading
+    )
 
     val selectedMember = MutableStateFlow<UUID?>(null)
 
@@ -141,8 +139,7 @@ class GroupMembersComponent(
     enum class StudentAction(
         override val title: String,
         override val iconName: String? = null,
-    ) :
-        MenuAction {
+    ) : MenuAction {
         SetHeadman("Назначить старостой"),
         RemoveHeadman("Лишить прав старосты"),
         Edit("Редактировать")

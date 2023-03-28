@@ -1,7 +1,5 @@
 package com.denchic45.kts.ui.profile.fullAvatar
 
-import android.content.Context
-import com.denchic45.avatarGenerator.AvatarGenerator
 import com.denchic45.kts.data.repository.UserRepository
 import com.denchic45.kts.data.service.AvatarService
 import com.denchic45.kts.domain.Interactor

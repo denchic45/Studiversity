@@ -6,7 +6,7 @@ import com.arkivanov.decompose.router.stack.StackNavigator
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesComponent
-import com.denchic45.kts.ui.studygroup.members.GroupMembersComponent
+import com.denchic45.kts.ui.studygroup.members.StudyGroupMembersComponent
 import com.denchic45.kts.ui.navigation.GroupConfig
 import com.denchic45.kts.ui.navigation.StudyGroupTabsChild
 import com.denchic45.kts.ui.navigation.GroupTabsConfig
@@ -17,7 +17,7 @@ import java.util.UUID
 
 @Inject
 class GroupComponent(
-    lazyGroupMembersComponent: (navigator: StackNavigator<in GroupConfig>, groupId: UUID) -> GroupMembersComponent,
+    lazyStudyGroupMembersComponent: (navigator: StackNavigator<in GroupConfig>, groupId: UUID) -> StudyGroupMembersComponent,
     lazyGroupCourseComponent: (groupId: UUID) -> GroupCoursesComponent,
     componentContext: ComponentContext,
     private val navigator: StackNavigator<in GroupConfig>,
@@ -25,7 +25,7 @@ class GroupComponent(
 ) : ComponentContext by componentContext {
 
     private val groupMembersComponent by lazy {
-        lazyGroupMembersComponent(navigator, groupId)
+        lazyStudyGroupMembersComponent(navigator, groupId)
     }
     private val groupCourseComponent by lazy { lazyGroupCourseComponent(groupId) }
 

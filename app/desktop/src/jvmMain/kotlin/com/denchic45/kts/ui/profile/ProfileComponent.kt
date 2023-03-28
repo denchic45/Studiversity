@@ -13,6 +13,7 @@ import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
@@ -20,7 +21,8 @@ import java.util.UUID
 class ProfileComponent(
     observeUserUseCase: ObserveUserUseCase,
     componentContext: ComponentContext,
-    private val userId: UUID,
+    @Assisted
+    userId: UUID,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()

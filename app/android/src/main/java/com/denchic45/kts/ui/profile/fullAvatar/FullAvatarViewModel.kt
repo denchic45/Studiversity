@@ -6,21 +6,23 @@ import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.ui.avatar.FullImageActivity
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.util.NetworkException
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
 class FullAvatarViewModel @Inject constructor(
-    @Named(FullImageActivity.IMAGE_URL) private val photoUrl: String,
+    @Named(FullImageActivity.IMAGE_URL)
+    private val photoUrl: String,
     private val interactor: FullAvatarInteractor
 ) : BaseViewModel() {
 
-    private var thisUser: User? = null
+    private var thisUser: UserResponse? = null
     override fun onCreateOptions() {
         super.onCreateOptions()
         thisUser = interactor.findThisUser()
         viewModelScope.launch {
-            if (photoUrl != thisUser!!.photoUrl) {
+            if (photoUrl != thisUser!!.avatarUrl) {
                 setMenuItemVisible(R.id.menu_delete_avatar to false)
             }
         }
