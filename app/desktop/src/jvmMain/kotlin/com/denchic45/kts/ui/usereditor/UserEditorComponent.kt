@@ -162,7 +162,7 @@ class UserEditorComponent(
                             is Resource.Error -> TODO()
                             is Resource.Loading -> TODO()
                             is Resource.Success -> {
-                                resource.value?.let { user ->
+                                resource.value.let { user ->
                                     uiEditor.oldItem = user
                                     firstNameField.value = user.firstName
                                     surnameField.value = user.surname
@@ -175,7 +175,7 @@ class UserEditorComponent(
                                     }
                                     emailField.value = user.account.email
                                     avatarUrl.value = user.avatarUrl
-                                } ?: onFinish()
+                                }
                             }
                         }
                     }

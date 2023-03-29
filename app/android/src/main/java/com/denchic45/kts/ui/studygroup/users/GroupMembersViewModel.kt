@@ -22,12 +22,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import me.tatarka.inject.annotations.Inject
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Named
 
 
-@Inject
-class GroupMembersViewModel(
+
+class GroupMembersViewModel @Inject constructor(
     private val interactor: GroupUsersInteractor,
     findGroupMembersUseCase: FindGroupMembersUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
@@ -35,13 +36,12 @@ class GroupMembersViewModel(
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
     private val teacherChooserInteractor: TeacherChooserInteractor,
-//    @Named(GroupMembersFragment.GROUP_ID) _groupId: String
-    private val savedStateHandle: SavedStateHandle
+    @Named(GroupMembersFragment.GROUP_ID) _groupId: String,
 ) : BaseViewModel() {
 
     val showUserOptions = SingleLiveData<Pair<Int, List<OptionItem>>>()
 
-    private var groupId = savedStateHandle.get<String>("groupId")!!.toUUID()
+    private var groupId = _groupId.toUUID()
 
     private val user = findSelfUserUseCase()
 

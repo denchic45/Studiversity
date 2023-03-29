@@ -2,7 +2,6 @@ package com.denchic45.kts.ui.userEditor
 
 import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
@@ -15,46 +14,39 @@ import com.denchic45.kts.domain.model.User.Companion.isStudent
 import com.denchic45.kts.domain.model.User.Companion.isTeacher
 import com.denchic45.kts.domain.usecase.FindStudyGroupByContainsNameUseCase
 import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
-import com.denchic45.kts.domain.usecase.GroupChooserInteractor
-import com.denchic45.kts.domain.usecase.ObserveUserUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
+import com.denchic45.kts.domain.usecase.GroupChooserInteractor
 import com.denchic45.kts.uieditor.UIEditor
 import com.denchic45.kts.uivalidator.Rule
 import com.denchic45.kts.uivalidator.UIValidator
 import com.denchic45.kts.uivalidator.Validation
 import com.denchic45.kts.util.NetworkException
+import com.denchic45.kts.util.UUIDS
 import com.denchic45.kts.util.Validations
 import com.denchic45.kts.util.randomAlphaNumericString
-import com.denchic45.stuiversity.api.user.model.Account
 import com.denchic45.stuiversity.api.user.model.Gender
-import com.denchic45.stuiversity.api.user.model.UserResponse
-import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 import javax.inject.Named
 
-open class UserEditorViewModel constructor(
+open class UserEditorViewModel @Inject constructor(
+    @Named("UserEditor ${UserEditorFragment.USER_ID}") userId: String?,
+    @Named(UserEditorFragment.USER_ROLE) role: String?,
     @Named("genders") genderList: List<ListItem>,
     private val interactor: UserEditorInteractor,
-    observeUserUseCase: ObserveUserUseCase,
+    private val removeStudentUseCase: RemoveUserUseCase,
     private val confirmInteractor: ConfirmInteractor,
     private val findStudyGroupByContainsNameUseCase: FindStudyGroupByContainsNameUseCase,
     private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     private val groupChooserInteractor: GroupChooserInteractor
-    private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
-
-    private val userId =
-        savedStateHandle.get<String>("UserEditor ${UserEditorFragment.USER_ID}")?.toUUID()
-
 
     val roles = MutableStateFlow(0)
 
     val genders = MutableLiveData<List<ListItem>>()
-
-//    val groupList = MutableLiveData<List<ListItem>>()
 
     val firstNameField = MutableStateFlow("")
 
@@ -86,23 +78,9 @@ open class UserEditorViewModel constructor(
 
     private val genderList: List<ListItem>
 
-    private val uiEditor: com.denchic45.kts.UIEditor<UserResponse> =
-        com.denchic45.kts.UIEditor(config.userId == null) {
-            UserResponse(
-                this.userId!!,
-                firstNameField.value,
-                surnameField.value,
-                patronymicField.value,
-                Account(emailField.value),
-                avatarUrl.value,
-                when (genderField.value) {
-                    GenderAction.Undefined -> Gender.UNKNOWN
-                    GenderAction.Female -> Gender.FEMALE
-                    GenderAction.Male -> Gender.MALE
-                },
-            )
-        }
-
+    private val uiEditor: UIEditor<User>
+    private var userId: String = userId ?: UUIDS.createShort()
+    private var role: UserRole = role?.let { UserRole.valueOf(it) } ?: UserRole.TEACHER
     private var gender = 0
     private var admin = false
     private var generatedAvatar = true
@@ -119,24 +97,8 @@ open class UserEditorViewModel constructor(
             )
         }, "Фамилия обязательна"))
             .sendMessageResult(R.id.til_surname, errorMessageField),
-//            Validation(
-//                Rule({
-//                    !TextUtils.isEmpty(
-//                        fieldPhoneNum.value
-//                    )
-//                }, "Номер обязателен"),
-//                Rule({
-//                    Validations.validPhoneNumber(
-//                        fieldPhoneNum.value
-//                    )
-//                }, "Номер некоректный")
-//            ).sendMessageResult(R.id.til_phoneNum, fieldErrorMessage),
         Validation(Rule({ gender != 0 }, "Пол обязателен"))
             .sendMessageResult(R.id.til_gender, errorMessageField),
-//            Validation(
-//                Rule({ !TextUtils.isEmpty(role) }, "Роль обязательна")
-//            ).sendMessageResult(R.id.til_role, fieldErrorMessage),
-
         Validation(
             Rule({
                 !accountFieldsVisibility.value || Validations.validEmail(
@@ -161,13 +123,13 @@ open class UserEditorViewModel constructor(
     init {
         when (uiEditor.isNew) {
             false -> {
-                viewModelScope.launch {
+                componentScope.launch {
                     observeUserUseCase(this@UserEditorComponent.userId!!).collect { resource ->
                         when (resource) {
                             is Resource.Error -> TODO()
                             is Resource.Loading -> TODO()
                             is Resource.Success -> {
-                                resource.value?.let { user ->
+                                resource.value.let { user ->
                                     uiEditor.oldItem = user
                                     firstNameField.value = user.firstName
                                     surnameField.value = user.surname
@@ -180,7 +142,7 @@ open class UserEditorViewModel constructor(
                                     }
                                     emailField.value = user.account.email
                                     avatarUrl.value = user.avatarUrl
-                                } ?: onFinish()
+                                }
                             }
                         }
                     }
@@ -201,19 +163,7 @@ open class UserEditorViewModel constructor(
         groupFieldVisibility.value = isStudent(role)
         roleFieldVisibility.value = isTeacher(role)
         genders.value = genderList
-//        viewModelScope.launch {
-//            typedNameGroup.flatMapLatest { name: String -> findGroupByContainsNameUseCase(name) }
-//                .collect { resource ->
-//                    if (resource is Resource.Success) {
-//                        groupList.value = resource.data.map { group ->
-//                            ListItem(
-//                                id = group.id,
-//                                title = group.name
-//                            )
-//                        }
-//                    }
-//                }
-//        }
+
         if (uiEditor.isNew) {
             setupForNewItem()
         } else {
