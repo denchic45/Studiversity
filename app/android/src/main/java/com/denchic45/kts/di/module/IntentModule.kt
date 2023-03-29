@@ -184,6 +184,4 @@ object IntentModule {
         return courseTopicEditorFragment.requireArguments()
             .getString(CourseTopicEditorFragment.COURSE_ID)!!
     }
-
-
 }

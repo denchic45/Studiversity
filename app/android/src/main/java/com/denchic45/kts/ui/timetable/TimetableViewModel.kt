@@ -2,6 +2,7 @@ package com.denchic45.kts.ui.timetable
 
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
+import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.model.Event
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.usecase.FindYourTimetableOfDayUseCase
@@ -72,7 +73,7 @@ class TimetableViewModel @Inject constructor(
                     receivedGroupId
                 )
                     .map { EventsState.Events(it.events) }
-                else -> findYourTimetableOfDayUseCase(selectedDate).map { EventsState.Events(it.events) }
+                else -> flowOf(findYourTimetableOfDayUseCase(selectedDate)).mapResource { EventsState.Events(it.events) }
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, EventsState.Events(emptyList()))
 

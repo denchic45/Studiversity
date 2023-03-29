@@ -1,33 +1,25 @@
 package com.denchic45.kts.di.component
 
-import com.denchic45.kts.AndroidApp
-import com.denchic45.kts.di.module.*
-import dagger.Component
-import dagger.android.AndroidInjectionModule
-import dagger.android.AndroidInjector
-import dagger.android.support.AndroidSupportInjectionModule
-import javax.inject.Singleton
+import com.denchic45.kts.di.AppScope
+import com.denchic45.kts.di.DatabaseComponent
+import com.denchic45.kts.di.NetworkComponent
+import com.denchic45.kts.di.PreferencesComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Provides
 
-@Singleton
-@Component(
-    modules = [
-        AndroidSupportInjectionModule::class,
-        AndroidAppModule::class,
-        DatabaseModule::class,
-        StorageModule::class,
-        PreferencesModule::class,
-        RawModule::class,
-        DispatcherModule::class,
-        FragmentModule::class,
-        ActivityModule::class,
-        AndroidInjectionModule::class
-    ]
-)
-interface AndroidAppComponent : AndroidInjector<AndroidApp> {
-    @Component.Builder
-    abstract class Builder : AndroidInjector.Builder<AndroidApp>() {
-        abstract fun appModule(androidAppModule: AndroidAppModule): Builder
-        abstract fun preferencesModule(preferenceModule: PreferencesModule):Builder
-        abstract override fun build(): AndroidAppComponent
-    }
+@AppScope
+@Component
+abstract class AndroidAppComponent(
+    @Component val preferencesComponent: PreferencesComponent,
+    @Component val databaseComponent: DatabaseComponent,
+    @Component val networkComponent: NetworkComponent,
+    @Component val viewModelComponent:ViewModelComponent
+) {
+
+    @AppScope
+    @Provides
+    fun provideApplicationScope() = CoroutineScope(SupervisorJob())
 }
+

@@ -12,9 +12,11 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.customPopup.OptionsPopupAdapter
 import com.denchic45.kts.databinding.FragmentGroupMembersBinding
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.adapter.HeaderAdapterDelegate
 import com.denchic45.kts.ui.adapter.UserAdapterDelegate
+import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.util.Dimensions
 import com.denchic45.kts.util.ViewUtils
 import com.denchic45.kts.util.collectWhenStarted
@@ -50,7 +52,7 @@ class GroupMembersFragment :
                 click<UserAdapterDelegate.UserHolder>(
                     onClick = { position -> viewModel.onUserItemClick(position) },
                     onLongClick = { position ->
-                        viewModel.onUserItemLongClick(position)
+                        viewModel.onMemberClick(position)
                         true
                     }
                 )
@@ -61,22 +63,27 @@ class GroupMembersFragment :
             rvUsers.adapter = userAdapter
             viewModel.showUserOptions.observe(
                 viewLifecycleOwner
-            ) {
+            ) { (memberPosition, options)->
                 val popupWindow = ListPopupWindow(requireActivity())
-                popupWindow.anchorView = rvUsers.layoutManager!!.findViewByPosition(it.first)
-                val adapter = OptionsPopupAdapter(requireContext(), it.second)
+                popupWindow.anchorView = rvUsers.layoutManager!!.findViewByPosition(memberPosition)
+                val adapter = OptionsPopupAdapter(requireContext(), options)
                 popupWindow.setAdapter(adapter)
                 popupWindow.width = ViewUtils.measureAdapter(adapter, requireContext())
                 popupWindow.horizontalOffset = Dimensions.dpToPx(12, requireActivity())
                 popupWindow.setOnItemClickListener { _, _, position, _ ->
                     popupWindow.dismiss()
-                    viewModel.onOptionUserClick(it.second[position].id)
+                    viewModel.onOptionUserClick(
+                        optionId = options[position].id,
+                        memberId = (userAdapter.listItems[memberPosition] as UserItem).id
+                    )
                 }
                 popupWindow.show()
             }
         }
 
-        viewModel.members.collectWhenStarted(lifecycleScope, userAdapter::submit)
+        viewModel._members.collectWhenStarted(lifecycleScope) {it.onSuccess {
+            userAdapter.submit(it)
+        }}
     }
 
 

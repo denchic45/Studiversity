@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.debounce
 import javax.inject.Inject
 
 interface HasViewModel<VM : BaseViewModel> {
-
     var viewModelFactory: ViewModelFactory<VM>
 
     val viewModel: VM

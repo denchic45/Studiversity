@@ -13,9 +13,6 @@ class GroupUsersInteractor @Inject constructor(
     private val studentRepository: StudentRepository
 ) : Interactor {
 
-    val yourGroupId: String
-        get() = studyGroupRepository.yourGroupId
-
     suspend fun updateGroupCurator(groupId: String, teacherId: User) {
         studyGroupRepository.updateGroupCurator(groupId, teacherId)
     }

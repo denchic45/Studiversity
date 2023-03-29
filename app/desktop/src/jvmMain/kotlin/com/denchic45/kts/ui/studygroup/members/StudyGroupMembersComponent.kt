@@ -118,15 +118,13 @@ class StudyGroupMembersComponent(
                     Role.Headman.id,
                     groupId
                 )
-                StudentAction.Edit -> {
-                    navigation.bringToFront(
-                        UserEditorConfig(
-                            userId = memberAction.value!!.second,
-                            role = UserRole.STUDENT,
-                            groupId = groupId
-                        )
+                StudentAction.Edit -> navigation.bringToFront(
+                    UserEditorConfig(
+                        userId = memberAction.value!!.second,
+                        role = UserRole.STUDENT,
+                        groupId = groupId
                     )
-                }
+                )
             }
         }
     }
@@ -134,7 +132,6 @@ class StudyGroupMembersComponent(
     fun onDismissAction() {
         memberAction.value = null
     }
-
 
     enum class StudentAction(
         override val title: String,

@@ -1,120 +1,149 @@
 package com.denchic45.kts.ui.studygroup.users
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.domain.model.UserRole
-import com.denchic45.kts.data.domain.model.DomainModel
+import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.model.GroupMembers
-import com.denchic45.kts.ui.model.OptionItem
-import com.denchic45.kts.ui.model.Header
-import com.denchic45.kts.ui.model.UiText
-import com.denchic45.kts.ui.model.toUserItem
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.BaseViewModel
+import com.denchic45.kts.ui.model.*
 import com.denchic45.kts.ui.teacherChooser.TeacherChooserInteractor
-import com.denchic45.kts.uipermissions.Permission
-import com.denchic45.kts.uipermissions.UiPermissions
-import com.denchic45.kts.util.NetworkException
-import kotlinx.coroutines.flow.*
+import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.stuiversity.util.toUUID
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Named
+import me.tatarka.inject.annotations.Inject
+import java.util.*
 
-class GroupMembersViewModel @Inject constructor(
+
+@Inject
+class GroupMembersViewModel(
     private val interactor: GroupUsersInteractor,
-    findSelfUserUseCase: FindSelfUserUseCase,
     findGroupMembersUseCase: FindGroupMembersUseCase,
+    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
+    private val findSelfUserUseCase: FindSelfUserUseCase,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
     private val teacherChooserInteractor: TeacherChooserInteractor,
-    @Named(GroupMembersFragment.GROUP_ID) groupId: String?
+//    @Named(GroupMembersFragment.GROUP_ID) _groupId: String
+    private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
 
     val showUserOptions = SingleLiveData<Pair<Int, List<OptionItem>>>()
 
-    private val uiPermissions: UiPermissions = UiPermissions(findSelfUserUseCase())
+    private var groupId = savedStateHandle.get<String>("groupId")!!.toUUID()
 
-    private var groupId: String = groupId ?: interactor.yourGroupId
+    private val user = findSelfUserUseCase()
 
-    private val _members: SharedFlow<GroupMembers> =
-        findGroupMembersUseCase(this.groupId).shareIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            replay = 1
+    private val _members: StateFlow<Resource<GroupMembers>> = flow {
+        emit(findGroupMembersUseCase(groupId))
+    }.mapResource { scopeMembers ->
+        val curatorMember = scopeMembers.firstOrNull { member -> Role.Curator in member.roles }
+        val groupCurator = curatorMember?.user?.toUserItem()
+        val students = (curatorMember?.let { scopeMembers - it }
+            ?: scopeMembers).map { it.user.toUserItem() }
+        GroupMembers(
+            groupId = groupId,
+            curator = groupCurator,
+            headmanId = scopeMembers.find { member -> Role.Headman in member.roles }?.user?.id,
+            students = students
         )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        Resource.Loading
+    )
 
-    val members: StateFlow<List<DomainModel>> =
-        _members.map { groupMembers ->
-            mutableListOf<DomainModel>().apply {
+    val members = _members.mapResource { groupMembers ->
+        mutableListOf<UiModel>().apply {
+            groupMembers.curator?.let { curator ->
                 add(Header("Куратор"))
-                add(groupMembers.curator.toUserItem(groupMembers))
-                add(Header("Студенты"))
-                addAll(
-                    groupMembers.students.map { student ->
-                        student.toUserItem(groupMembers)
-                    }
-                )
+                add(curator)
             }
-        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+            add(Header("Студенты"))
+            addAll(groupMembers.students)
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading)
 
-    private lateinit var selectedUserId: String
+    private val capabilities = flow {
+        emit(
+            checkUserCapabilitiesInScopeUseCase(
+                scopeId = groupId,
+                capabilities = listOf(Capability.WriteUser)
+            )
+        )
+    }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading)
 
     init {
-        uiPermissions.putPermissions(
-            Permission(ALLOW_EDIT_USERS, { isTeacher }, { hasAdminPerms() })
-        )
+//        uiPermissions.putPermissions(
+//            Permission(ALLOW_EDIT_USERS, { isTeacher }, { hasAdminPerms() })
+//        )
     }
 
-    fun onUserItemLongClick(position: Int) {
+    fun onMemberClick(position: Int) {
         viewModelScope.launch {
-            selectedUserId = members.value[position].id
-            if (uiPermissions.isAllowed(ALLOW_EDIT_USERS)
-                && _members.first().students.any { it.id == selectedUserId }
-            ) {
-                showUserOptions.value = position to buildUserOptions()
+            capabilities.value.onSuccess { capabilities ->
+                members.value.onSuccess { members ->
+                    val selectedMemberId = members[position].id
+                    if (capabilities.hasCapability(Capability.WriteUser)) {
+                        showUserOptions.value = position to buildUserOptions(selectedMemberId)
+                    }
+                }
             }
         }
     }
 
-    private suspend fun buildUserOptions(): List<OptionItem> {
+    private suspend fun buildUserOptions(selectedUserId: UUID): List<OptionItem> {
         return buildList {
-            with(_members.first()) {
-                add(
-                    if (headmanId == selectedUserId) {
-                        OptionItem(
-                            id = "OPTION_REMOVE_HEADMAN",
-                            title = UiText.IdText(R.string.option_remove_headman)
-                        )
-                    } else {
-                        OptionItem(
-                            id = "OPTION_SET_HEADMAN",
-                            title = UiText.IdText(R.string.option_set_headman)
-                        )
-                    }
-                )
-                add(
-                    OptionItem(
-                        id = "OPTION_EDIT_USER",
-                        title = UiText.IdText(R.string.option_edit_user)
+            _members.value.onSuccess {
+                with(it) {
+                    add(
+                        if (headmanId == selectedUserId) {
+                            OptionItem(
+                                id = "OPTION_REMOVE_HEADMAN",
+                                title = UiText.IdText(R.string.option_remove_headman)
+                            )
+                        } else {
+                            OptionItem(
+                                id = "OPTION_SET_HEADMAN",
+                                title = UiText.IdText(R.string.option_set_headman)
+                            )
+                        }
                     )
-                )
-                add(
-                    OptionItem(
-                        id = "OPTION_REMOVE_USER",
-                        title = UiText.IdText(R.string.option_remove_user)
+                    add(
+                        OptionItem(
+                            id = "OPTION_EDIT_USER",
+                            title = UiText.IdText(R.string.option_edit_user)
+                        )
                     )
-                )
+                    add(
+                        OptionItem(
+                            id = "OPTION_REMOVE_USER",
+                            title = UiText.IdText(R.string.option_remove_user)
+                        )
+                    )
+                }
             }
         }
     }
 
     fun onUserItemClick(position: Int) {
-        navigateTo(MobileNavigationDirections.actionGlobalProfileFragment(members.value[position].id))
+        members.value.onSuccess {
+            navigateTo(MobileNavigationDirections.actionGlobalProfileFragment(it[position].id.toString()))
+        }
     }
 
-    fun onOptionUserClick(optionId: String) {
+    fun onOptionUserClick(optionId: String, memberId: UUID) {
         viewModelScope.launch {
             when (optionId) {
                 OPTION_SHOW_PROFILE -> {
@@ -122,41 +151,17 @@ class GroupMembersViewModel @Inject constructor(
                 OPTION_EDIT_USER -> {
                     navigateTo(
                         MobileNavigationDirections.actionGlobalUserEditorFragment(
-                            userId = selectedUserId,
+                            userId = memberId.toString(),
                             role = UserRole.STUDENT.toString(),
-                            groupId = groupId
+                            groupId = groupId.toString()
                         )
                     )
                 }
-                OPTION_REMOVE_USER -> {
-                    try {
-                        removeStudentUseCase(selectedUserId)
-                    } catch (e: Exception) {
-                        if (e is NetworkException) {
-                            showToast(R.string.error_check_network)
-                        }
-                    }
-                }
                 OPTION_SET_HEADMAN -> {
-                    assignUserRoleInScopeUseCase(selectedUserId, groupId)
+                    assignUserRoleInScopeUseCase(memberId, Role.Headman.id, groupId)
                 }
                 OPTION_REMOVE_HEADMAN -> {
-                    removeUserRoleFromScopeUseCase(groupId)
-                }
-                OPTION_CHANGE_CURATOR -> {
-                    navigateTo(MobileNavigationDirections.actionGlobalTeacherChooserFragment())
-                    teacherChooserInteractor.receiveSelectTeacher().apply {
-                        try {
-                            interactor.updateGroupCurator(
-                                this@GroupMembersViewModel.groupId,
-                                this
-                            )
-                        } catch (e: Exception) {
-                            if (e is NetworkException) {
-                                showToast(R.string.error_check_network)
-                            }
-                        }
-                    }
+                    removeUserRoleFromScopeUseCase(memberId, Role.Headman.id, groupId)
                 }
             }
         }
@@ -171,8 +176,6 @@ class GroupMembersViewModel @Inject constructor(
         const val ALLOW_EDIT_USERS = "EDIT_USERS"
         const val OPTION_SHOW_PROFILE = "OPTION_SHOW_PROFILE"
         const val OPTION_EDIT_USER = "OPTION_EDIT_USER"
-        const val OPTION_REMOVE_USER = "OPTION_REMOVE_USER"
-        const val OPTION_CHANGE_CURATOR = "OPTION_CHANGE_CURATOR"
         const val OPTION_SET_HEADMAN = "OPTION_SET_HEADMAN"
         const val OPTION_REMOVE_HEADMAN = "OPTION_REMOVE_HEADMAN"
     }

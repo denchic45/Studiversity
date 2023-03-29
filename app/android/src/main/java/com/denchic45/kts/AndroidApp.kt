@@ -3,8 +3,7 @@ package com.denchic45.kts
 import android.app.Application
 import com.denchic45.kts.data.db.local.DriverFactory
 import com.denchic45.kts.di.*
-import dagger.android.AndroidInjector
-import dagger.android.DaggerApplication
+import com.denchic45.kts.di.component.AndroidAppComponent
 import io.ktor.client.engine.android.*
 
 class AndroidApp : Application() {
