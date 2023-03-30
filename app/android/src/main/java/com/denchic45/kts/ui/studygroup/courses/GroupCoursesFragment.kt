@@ -7,11 +7,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
-import com.denchic45.kts.domain.model.CourseHeader
 import com.denchic45.kts.databinding.FragmentGroupCoursesBinding
-import com.denchic45.kts.ui.base.BaseFragment
+import com.denchic45.kts.domain.model.CourseHeader
 import com.denchic45.kts.ui.adapter.CourseAdapter
+import com.denchic45.kts.ui.adapter.CourseAdapterDelegate
+import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.util.collectWhenStarted
+import com.denchic45.widget.extendedAdapter.adapter
+import com.denchic45.widget.extendedAdapter.extension.click
 
 class GroupCoursesFragment : BaseFragment<GroupCoursesViewModel, FragmentGroupCoursesBinding>(
     R.layout.fragment_group_courses
@@ -23,15 +26,23 @@ class GroupCoursesFragment : BaseFragment<GroupCoursesViewModel, FragmentGroupCo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = CourseAdapter(
-            viewModel::onCourseItemClick,
-            viewModel::onCourseLongItemClick
-        )
+        val adapter = adapter {
+            delegates(CourseAdapterDelegate())
+            extensions {
+                click<CourseAdapterDelegate.CourseHolder>(
+                    onClick = viewModel::onCourseItemClick,
+                    onLongClick = {
+                        viewModel.onCourseLongItemClick(it)
+                        true
+                    }
+                )
+            }
+        }
         with(binding) {
             rvCourse.adapter = adapter
         }
 
-        viewModel.courses.collectWhenStarted(lifecycleScope) { courses: List<CourseHeader> ->
+        viewModel.courses.collectWhenStarted(viewLifecycleOwner) { courses ->
             adapter.submitList(courses)
         }
 

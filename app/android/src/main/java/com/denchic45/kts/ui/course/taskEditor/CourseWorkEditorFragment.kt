@@ -30,8 +30,8 @@ import com.denchic45.kts.di.viewmodel.ViewModelFactory
 import com.denchic45.kts.rx.EditTextTransformer
 import com.denchic45.kts.ui.adapter.BaseViewHolder
 import com.denchic45.kts.ui.base.BaseFragment
-import com.denchic45.kts.ui.course.sectionPicker.SectionPickerFragment
-import com.denchic45.kts.ui.course.sectionPicker.SectionPickerViewModel
+import com.denchic45.kts.ui.course.courseTopicChooser.CourseTopicChooserFragment
+import com.denchic45.kts.ui.course.courseTopicChooser.CourseTopicChooserViewModel
 import com.denchic45.kts.ui.model.UiModel
 import com.denchic45.kts.util.*
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
@@ -97,10 +97,10 @@ class CourseWorkEditorFragment :
     override val viewModel: CourseWorkEditorViewModel by viewModels { viewModelFactory }
 
     @Inject
-    lateinit var sectionPickerViewModelFactory: ViewModelFactory<SectionPickerViewModel>
+    lateinit var courseTopicChooserViewModelFactory: ViewModelFactory<CourseTopicChooserViewModel>
 
-    private val sectionPickerViewModel: SectionPickerViewModel by viewModels(
-        ownerProducer = { this }, factoryProducer = { sectionPickerViewModelFactory }
+    private val courseTopicChooserViewModel: CourseTopicChooserViewModel by viewModels(
+        ownerProducer = { this }, factoryProducer = { courseTopicChooserViewModelFactory }
     )
 
     override val binding: FragmentTaskEditorBinding by viewBinding(FragmentTaskEditorBinding::bind)
@@ -224,13 +224,13 @@ class CourseWorkEditorFragment :
             }
 
             viewModel.openCourseTopics.observe(viewLifecycleOwner) { (courseId, selectedSection) ->
-                sectionPickerViewModel.selectedTopic = selectedSection
-                SectionPickerFragment.newInstance(courseId)
+                courseTopicChooserViewModel.selectedTopic = selectedSection
+                CourseTopicChooserFragment.newInstance(courseId)
                     .show(childFragmentManager, null)
             }
 
             lifecycleScope.launchWhenStarted {
-                sectionPickerViewModel.selectedSectionId.collect {
+                courseTopicChooserViewModel.selectedTopicId.collect {
                     viewModel.onTopicSelected(it)
                 }
             }

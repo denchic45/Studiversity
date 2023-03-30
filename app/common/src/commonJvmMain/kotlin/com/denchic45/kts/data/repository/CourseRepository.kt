@@ -290,7 +290,7 @@ class CourseRepository @Inject constructor(
 //        getLastContentOrderByCourseIdAndSectionId(task.courseId, task.sectionId) + 1024
 
 
-    fun findTopicsByCourseId(courseId: UUID): Flow<Resource<List<TopicResponse>>> {
+    fun observeTopicsByCourseId(courseId: UUID): Flow<Resource<List<TopicResponse>>> {
         return observeResource(
             query = sectionLocalDataSource.getByCourseId(courseId.toString())
                 .map { it.toTopicResponses() },

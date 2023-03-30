@@ -6,7 +6,7 @@ import java.util.*
 
 @Serializable
 data class GradeRequest(
-    val value: Short,
+    val value: Int,
 )
 
 

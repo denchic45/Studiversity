@@ -5,21 +5,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.denchic45.kts.R
-import com.denchic45.kts.domain.model.Task
 import com.denchic45.kts.databinding.FragmentSubmissionsBinding
 import com.denchic45.kts.databinding.ItemSubmissionBinding
-import com.denchic45.kts.ui.base.BaseFragment
+import com.denchic45.kts.domain.model.Task
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.adapter.BaseViewHolder
+import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.course.submission.SubmissionDialog
 import com.denchic45.kts.util.viewBinding
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
 import com.denchic45.widget.extendedAdapter.adapter
 import com.denchic45.widget.extendedAdapter.extension.click
+import kotlinx.coroutines.launch
 
 class SubmissionsFragment :
     BaseFragment<SubmissionsViewModel, FragmentSubmissionsBinding>(R.layout.fragment_submissions) {
@@ -32,26 +36,26 @@ class SubmissionsFragment :
             val adapter = adapter {
                 delegates(SubmissionAdapterDelegate())
                 extensions {
-                    click<SubmissionAdapterDelegate.SubmissionHolder>(
-                        onClick = {
-                            viewModel.onSubmissionClick(it)
-                        }
-                    )
+                    click<SubmissionAdapterDelegate.SubmissionHolder>(onClick = {
+                        viewModel.onSubmissionClick(it)
+                    })
                 }
             }
 
             rvSubmissions.adapter = adapter
 
-            lifecycleScope.launchWhenStarted {
-                viewModel.showSubmissions.collect(adapter::submit)
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.submissions.collect {
+                        it.onSuccess(adapter::submit)
+                    }
+                }
             }
 
             viewModel.openSubmission.observe(viewLifecycleOwner) { (taskId, studentId) ->
                 findNavController().navigate(
-                    R.id.action_global_submissionFragment,
-                    bundleOf(
-                        SubmissionDialog.TASK_ID to taskId,
-                        SubmissionDialog.STUDENT_ID to studentId
+                    R.id.action_global_submissionFragment, bundleOf(
+                        SubmissionDialog.TASK_ID to taskId, SubmissionDialog.STUDENT_ID to studentId
                     )
                 )
             }
@@ -72,9 +76,7 @@ class SubmissionAdapterDelegate :
         override fun onBind(item: Task.Submission) {
             with(binding) {
                 tvStudent.text = item.student.fullName
-                Glide.with(itemView)
-                    .load(item.student.photoUrl)
-                    .into(ivAvatar)
+                Glide.with(itemView).load(item.student.photoUrl).into(ivAvatar)
                 when (val status = item.status) {
                     is Task.SubmissionStatus.NotSubmitted -> {
                         tvStatus.text = "Не сдано"

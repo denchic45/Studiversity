@@ -41,74 +41,7 @@ class CourseAdapter(
         holder.onBind(getItem(position))
     }
 
-    class CourseHolder(
-        itemCourseBinding: ItemCourseBinding,
-        listener: OnItemClickListener,
-        longItemClickListener: OnItemLongClickListener
-    ) : BaseViewHolder<CourseHeader, ItemCourseBinding>(
-        itemCourseBinding,
-        listener,
-        longItemClickListener
-    ) {
-        private val ivSubjectIcon: ImageView = binding.ivSubjectIcon
-        private val ivTeacherAvatar: ImageView
-        private val tvSubjectName: TextView
-        private val tvTeacherFullName: TextView
-        override fun onBind(item: CourseHeader) {
-            val subject: Subject = item.subject
-            val teacher: User = item.teacher
-//            val resColor: Int = itemView.context
-//                .resources
-//                .getIdentifier(subject.colorName, "color", itemView.context.packageName)
-            GlideApp.with(itemView.context)
-                .`as`(PictureDrawable::class.java)
-                .transition(DrawableTransitionOptions.withCrossFade())
-//                .listener(
-//                    SvgColorListener(
-//                        ivSubjectIcon,
-//                        resColor,
-//                        itemView.context
-//                    )
-//                )
-                .load(subject.iconName)
-                .into(ivSubjectIcon)
-            Glide.with(itemView.context)
-                .load(teacher.photoUrl)
-                .transition(DrawableTransitionOptions.withCrossFade(100))
-                .into(ivTeacherAvatar)
-            tvSubjectName.text = item.name
-            tvTeacherFullName.text = teacher.fullName
-        }
 
-        fun setSelect(select: Boolean) {
-            val colorLightBlue = ContextCompat.getColor(itemView.context, R.color.light_blue)
-            val a: ObjectAnimator = if (select) {
-                ObjectAnimator.ofInt(
-                    itemView,
-                    "backgroundColor",
-                    Color.WHITE,
-                    colorLightBlue
-                )
-            } else {
-                ObjectAnimator.ofInt(
-                    itemView,
-                    "backgroundColor",
-                    colorLightBlue,
-                    Color.WHITE
-                )
-            }
-            a.interpolator = LinearInterpolator()
-            a.duration = 200
-            a.setEvaluator(ArgbEvaluator())
-            a.start()
-        }
-
-        init {
-            ivTeacherAvatar = binding.ivTeacherAvatar
-            tvSubjectName = binding.tvSubjectName
-            tvTeacherFullName = binding.tvTeacherFullName
-        }
-    }
 
     companion object {
         private val DIFF_CALLBACK: DiffUtil.ItemCallback<CourseHeader> =

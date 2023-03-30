@@ -12,7 +12,7 @@ import com.denchic45.kts.ui.adminPanel.timetableEditor.loader.TimetableLoaderFra
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.course.CourseFragment
 import com.denchic45.kts.ui.course.content.ContentFragment
-import com.denchic45.kts.ui.course.sectionPicker.SectionPickerFragment
+import com.denchic45.kts.ui.course.courseTopicChooser.CourseTopicChooserFragment
 import com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment
 import com.denchic45.kts.ui.course.submission.SubmissionDialog
 import com.denchic45.kts.ui.course.submissions.SubmissionsFragment
@@ -120,7 +120,7 @@ interface FragmentModule {
     fun contributeTaskEditorFragment(): CourseWorkEditorFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
-    fun contributeSectionPickerFragment(): SectionPickerFragment
+    fun contributeSectionPickerFragment(): CourseTopicChooserFragment
 
     @ContributesAndroidInjector
     fun contributeCreatorDialog(): CreatorDialog

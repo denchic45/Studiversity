@@ -3,7 +3,7 @@ package com.denchic45.kts.ui.course.submission
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.model.Task
+import com.denchic45.kts.domain.filterSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindSubmissionUseCase
 import com.denchic45.kts.domain.usecase.GradeSubmissionUseCase
@@ -20,7 +20,7 @@ class SubmissionViewModel @Inject constructor(
     @Named(SubmissionDialog.COURSE_ID)
     private val _courseId: String,
     @Named(SubmissionDialog.TASK_ID)
-    private val _taskId: String,
+    private val _workId: String,
     @Named(SubmissionDialog.STUDENT_ID)
     private val _studentId: String,
     findSubmissionUseCase: FindSubmissionUseCase,
@@ -28,11 +28,11 @@ class SubmissionViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     private val courseId = _courseId.toUUID()
-    private val taskId = _taskId.toUUID()
+    private val workId = _workId.toUUID()
     private val studentId = _studentId.toUUID()
 
     val showSubmission: StateFlow<Resource<SubmissionResponse>> = flow {
-        emit(findSubmissionUseCase(courseId,taskId, studentId))}
+        emit(findSubmissionUseCase(courseId,workId, studentId))}
         .stateInResource(viewModelScope)
 
     private var grade by Delegates.notNull<Int>()
@@ -45,13 +45,13 @@ class SubmissionViewModel @Inject constructor(
 
     val closeRejectConfirmation = SingleLiveData<Unit>()
 
-    private suspend fun submission() = showSubmission.first()
+    private suspend fun submission() = showSubmission.filterSuccess().first().value
 
     fun onGradeType(typedGrade: String) {
         grade = if (typedGrade.isNotEmpty()) typedGrade.toInt() else 0
         viewModelScope.launch {
             val submission = submission()
-            val oldGrade = (submission.status as? Task.SubmissionStatus.Graded)?.grade ?: 0
+            val oldGrade = submission.grade ?: 0
             gradeButtonVisibility.emit(oldGrade != grade && grade != 0)
         }
     }
@@ -63,11 +63,7 @@ class SubmissionViewModel @Inject constructor(
     fun onSendGradeClick() {
         viewModelScope.launch {
             val submission = submission()
-            if (submission.status !is Task.SubmissionStatus.Graded ||
-                (submission.status as Task.SubmissionStatus.Graded).grade != grade
-            ) {
-                gradeSubmissionUseCase(_taskId, _studentId, grade)
-            }
+                gradeSubmissionUseCase(courseId,workId, submission.id, grade)
         }
     }
 
@@ -77,8 +73,8 @@ class SubmissionViewModel @Inject constructor(
 
     fun onRejectConfirmClick() {
         viewModelScope.launch {
-            if (cause.isNotEmpty())
-                returnSubmissionUseCase(_taskId, _studentId, cause)
+//            if (cause.isNotEmpty())
+//                returnSubmissionUseCase(_workId, _studentId, cause)
             closeRejectConfirmation.call()
         }
     }

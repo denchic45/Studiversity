@@ -5,26 +5,32 @@ import android.view.View
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.customPopup.ListPopupWindowAdapter
-import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.data.domain.NoConnection
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.databinding.FragmentFinderBinding
-import com.denchic45.kts.ui.base.BaseFragment
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.ui.adapter.*
+import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.course.CourseFragment
-import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
+import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
 import com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog
-import com.denchic45.kts.util.*
+import com.denchic45.kts.util.Dimensions
+import com.denchic45.kts.util.ViewUtils
+import com.denchic45.kts.util.collectWhenStarted
+import com.denchic45.kts.util.toast
 import com.denchic45.sample.SearchBar
 import com.denchic45.widget.ListStateLayout
+import com.denchic45.widget.extendedAdapter.DelegationAdapterDsl
+import com.denchic45.widget.extendedAdapter.adapter
+import com.denchic45.widget.extendedAdapter.extension.click
 import com.example.appbarcontroller.appbarcontroller.AppBarController
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.flow.drop
@@ -33,12 +39,40 @@ class FinderFragment :
     BaseFragment<FinderViewModel, FragmentFinderBinding>(R.layout.fragment_finder),
     OnItemClickListener,
     OnItemLongClickListener {
+
+    private fun DelegationAdapterDsl.DelegationAdapterBuilder.adapterExtensions() {
+        extensions {
+            click<GroupHolder>(
+                onClick = viewModel::onFinderItemClick,
+                onLongClick = {
+                    viewModel.onFinderItemLongClick(it)
+                    true
+                }
+            )
+        }
+    }
+
     private val listAdapters = listOf(
-        UserAdapter(this, this),
-        GroupAdapter(this, this),
-        SubjectAdapter(this, this),
-        SpecialtyAdapter(this),
-        CourseAdapter(this, this)
+        adapter {
+            delegates(UserAdapterDelegate())
+            adapterExtensions()
+        },
+        adapter {
+            delegates(StudyGroupAdapterDelegate())
+            adapterExtensions()
+        },
+        adapter {
+            delegates(SubjectAdapterDelegate())
+            adapterExtensions()
+        },
+        adapter {
+            delegates(SpecialtyAdapterDelegate())
+            adapterExtensions()
+        },
+        adapter {
+            delegates(CourseAdapterDelegate())
+            adapterExtensions()
+        }
     )
 
     override val viewModel: FinderViewModel by viewModels { viewModelFactory }
@@ -82,7 +116,7 @@ class FinderFragment :
                 viewModel.onCurrentSearchSelect(position)
             }
 
-            viewModel.currentSearch.collectWhenStarted(lifecycleScope) { position: Int ->
+            viewModel.currentSearch.collectWhenStarted(viewLifecycleOwner) { position: Int ->
                 currentAdapter = listAdapters[position] as ListAdapter<DomainModel, *>
                 rvFoundItems.adapter = currentAdapter
                 AppBarController.findController(requireActivity())
@@ -103,7 +137,7 @@ class FinderFragment :
 
         viewModel.foundItems
             .drop(1)
-            .collectWhenStarted(lifecycleScope) { resource ->
+            .collectWhenStarted(viewLifecycleOwner) { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         listStateLayout.showList()
@@ -115,13 +149,12 @@ class FinderFragment :
                     Resource.Loading -> {}
                     is Resource.Error -> {
                         when (resource.failure) {
-                            is NetworkException -> {
+                            is NoConnection -> {
                                 listStateLayout.showView(ListStateLayout.NETWORK_VIEW)
                             }
                             else -> toast("Ошибка: ${resource.failure}")
                         }
                     }
-                    is Resource.Next -> throw IllegalStateException()
                 }
             }
 

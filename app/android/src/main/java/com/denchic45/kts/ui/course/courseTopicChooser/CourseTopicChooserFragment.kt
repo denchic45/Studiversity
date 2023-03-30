@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.course.sectionPicker
+package com.denchic45.kts.ui.course.courseTopicChooser
 
 import android.app.Dialog
 import android.content.Context
@@ -10,11 +10,13 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.denchic45.kts.R
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.util.collectWhenStarted
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.android.support.AndroidSupportInjection
 
-class SectionPickerFragment : DialogFragment(R.layout.fragment_section_picker) {
-    private val viewModel: SectionPickerViewModel by viewModels(
+class CourseTopicChooserFragment : DialogFragment(R.layout.fragment_section_picker) {
+    private val viewModel: CourseTopicChooserViewModel by viewModels(
         ownerProducer = { requireParentFragment() }
     )
 
@@ -43,12 +45,14 @@ class SectionPickerFragment : DialogFragment(R.layout.fragment_section_picker) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.sections.observe(viewLifecycleOwner) {
-            adapter.clear()
-            adapter.addAll(it)
+        viewModel.topics.collectWhenStarted(viewLifecycleOwner) {
+            it.onSuccess { topics ->
+                adapter.clear()
+                adapter.addAll(topics)
+            }
         }
 
-        viewModel.selectedTopicPosition.observe(viewLifecycleOwner) {
+        viewModel.selectedTopicPosition.collectWhenStarted(viewLifecycleOwner) {
             (dialog as AlertDialog).listView.apply {
                 if (!isItemChecked(it))
                     setItemChecked(it, true)
@@ -61,7 +65,7 @@ class SectionPickerFragment : DialogFragment(R.layout.fragment_section_picker) {
         const val COURSE_ID = "SECTION_PICKER_COURSE_ID"
 
         fun newInstance(courseId: String) =
-            SectionPickerFragment().apply {
+            CourseTopicChooserFragment().apply {
                 arguments = bundleOf(COURSE_ID to courseId)
             }
     }

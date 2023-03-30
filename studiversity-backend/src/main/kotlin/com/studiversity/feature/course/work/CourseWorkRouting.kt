@@ -116,6 +116,7 @@ private fun Route.courseWorkById() {
                         courseId
                     )
 
+
                     val attachment = findAttachmentOfCourseElement(courseId, workId, attachmentId)
                     call.respondAttachment(attachment)
                 }

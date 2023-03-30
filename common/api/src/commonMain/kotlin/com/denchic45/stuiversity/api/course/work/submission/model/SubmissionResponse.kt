@@ -18,7 +18,7 @@ sealed class SubmissionResponse {
     abstract val content: SubmissionContent?
     abstract val doneAt:LocalDateTime?
     abstract val updatedAt:LocalDateTime?
-    abstract val grade: Short?
+    abstract val grade: Int?
     abstract val gradedBy: UUID?
 }
 
@@ -36,7 +36,7 @@ data class WorkSubmissionResponse(
     override val doneAt: LocalDateTime?,
     @Serializable(LocalDateTimeSerializer::class)
     override val updatedAt: LocalDateTime?,
-    override val grade: Short? = null,
+    override val grade: Int? = null,
     @Serializable(UUIDSerializer::class)
     override val gradedBy: UUID? = null,
 ) : SubmissionResponse() {

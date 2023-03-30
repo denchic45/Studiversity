@@ -35,7 +35,7 @@ interface SubmissionsApi {
         courseId: UUID,
         workId: UUID,
         submissionId: UUID,
-        grade: Short
+        grade: Int
     ): ResponseResult<SubmissionResponse>
 
     suspend fun getAttachments(
@@ -115,7 +115,7 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
         courseId: UUID,
         workId: UUID,
         submissionId: UUID,
-        grade: Short,
+        grade: Int,
     ): ResponseResult<SubmissionResponse> {
         return client.put("/courses/${courseId}/works/${workId}/submissions/${submissionId}/grade") {
             contentType(ContentType.Application.Json)

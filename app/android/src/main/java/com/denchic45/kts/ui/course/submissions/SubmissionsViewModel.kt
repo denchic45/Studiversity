@@ -2,36 +2,41 @@ package com.denchic45.kts.ui.course.submissions
 
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.domain.model.Task
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindCourseWorkSubmissionsUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.shareIn
+import com.denchic45.stuiversity.util.toUUID
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
 class SubmissionsViewModel @Inject constructor(
-    @Named(SubmissionsFragment.TASK_ID) private val taskId: String,
+    @Named(SubmissionsFragment.COURSE_ID)
+    private val _courseId: String,
+    @Named(SubmissionsFragment.TASK_ID)
+    private val _taskId: String,
     findCourseWorkSubmissionsUseCase: FindCourseWorkSubmissionsUseCase
 ) : BaseViewModel() {
 
-    val openSubmission = SingleLiveData<Pair<String, String>>()
+    private val courseId = _courseId.toUUID()
+    private val taskId = _taskId.toUUID()
+
+    val submissions = flow {
+        emit(findCourseWorkSubmissionsUseCase(courseId, taskId))
+    }.stateInResource(viewModelScope)
+
+    val openSubmission = SingleLiveData<Triple<String, String, String>>()
 
     fun onSubmissionClick(position: Int) {
         viewModelScope.launch {
-            openSubmission.value =
-                showSubmissions.first()[position].contentId to showSubmissions.first()[position].student.id
+            submissions.value.onSuccess {
+                val submission = it[position]
+                openSubmission.value = Triple(_courseId, _taskId, submission.authorId.toString())
+            }
         }
     }
-
-    val showSubmissions: SharedFlow<List<Task.Submission>> =
-        findCourseWorkSubmissionsUseCase(taskId).shareIn(
-            viewModelScope,
-            SharingStarted.Lazily, 1
-        )
 
 
 }

@@ -2,7 +2,7 @@ package com.denchic45.kts.ui.course.sections
 
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.domain.usecase.AddCourseTopicUseCase
-import com.denchic45.kts.domain.usecase.FindCourseTopicsUseCase
+import com.denchic45.kts.domain.usecase.ObserveCourseTopicsUseCase
 import com.denchic45.kts.domain.usecase.RemoveCourseTopicUseCase
 import com.denchic45.kts.domain.usecase.UpdateCourseTopicUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
@@ -23,7 +23,7 @@ import javax.inject.Named
 class CourseTopicEditorViewModel @Inject constructor(
     @Named(CourseTopicEditorFragment.COURSE_ID)
     private val _courseId: String,
-    findCourseTopicsUseCase: FindCourseTopicsUseCase,
+    observeCourseTopicsUseCase: ObserveCourseTopicsUseCase,
     private val addCourseTopicUseCase: AddCourseTopicUseCase,
     val updateCourseTopicUseCase: UpdateCourseTopicUseCase,
     val removeCourseTopicUseCase: RemoveCourseTopicUseCase
@@ -37,7 +37,7 @@ class CourseTopicEditorViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            topics.emitAll(findCourseTopicsUseCase(courseId))
+            topics.emitAll(observeCourseTopicsUseCase(courseId))
         }
     }
 

@@ -27,33 +27,9 @@
         android:maxLines="1"
         android:text="Название предмета"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/iv_teacher_avatar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_subject_icon"
-        app:layout_constraintTop_toTopOf="@id/iv_subject_icon"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <androidx.constraintlayout.utils.widget.ImageFilterView
-        app:roundPercent="100"
-        android:id="@+id/iv_teacher_avatar"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        app:srcCompat="@drawable/circle"
-        android:layout_marginStart="16sp"
-        app:layout_constraintBottom_toBottomOf="@id/iv_subject_icon"
-        app:layout_constraintStart_toEndOf="@+id/iv_subject_icon"
-        app:layout_constraintTop_toBottomOf="@+id/tv_subject_name" />
-
-    <TextView
-        android:id="@+id/tv_teacher_fullName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/gilroy_semi_bold"
-        android:maxLines="1"
-        android:text="Преподаватель"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_teacher_avatar"
-        app:layout_constraintStart_toEndOf="@id/iv_teacher_avatar"
-        app:layout_constraintTop_toBottomOf="@id/tv_subject_name" />
 </androidx.constraintlayout.widget.ConstraintLayout>

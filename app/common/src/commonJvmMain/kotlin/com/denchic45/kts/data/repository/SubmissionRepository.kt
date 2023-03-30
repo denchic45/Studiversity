@@ -60,7 +60,7 @@ class SubmissionRepository(
         courseId: UUID,
         workId: UUID,
         submissionId: UUID,
-        grade: Short,
+        grade: Int,
     ) = fetchResource {
         submissionsApi.gradeSubmission(courseId, workId, submissionId, grade)
     }
