@@ -12,8 +12,6 @@ class FinderInteractor @Inject constructor(
     private val subjectRepository: SubjectRepository,
     private val userRepository: UserRepository,
     private val studyGroupRepository: StudyGroupRepository,
-    private val studentRepository: StudentRepository,
-    private val teacherRepository: TeacherRepository,
     private val specialtyRepository: SpecialtyRepository
 ) : Interactor {
 
@@ -25,15 +23,10 @@ class FinderInteractor @Inject constructor(
     }
 
    suspend fun removeUser(user: User) {
-        if (isStudent(user.role)) {
-            return studentRepository.remove(user.id)
-        } else if (isTeacher(user.role)) {
-            return teacherRepository.remove(user)
-        }
-        throw IllegalStateException()
+        userRepository.remove(user.id)
     }
 
-    suspend fun removeSubject(subject: Subject) {
+    suspend fun removeSubject(subject: Subjec) {
         return subjectRepository.remove(subject)
     }
 }

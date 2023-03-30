@@ -23,14 +23,11 @@ class ProfileComponent(
     componentContext: ComponentContext,
     @Assisted
     userId: UUID,
-) : ComponentContext by componentContext {
+) : ProfileUiLogic(observeUserUseCase,userId,componentContext),ComponentContext by componentContext {
 
     private val componentScope = componentScope()
 
-    private val userFlow = observeUserUseCase(userId)
-
-    val profileViewState: StateFlow<Resource<ProfileViewState>> =
-        userFlow.filterSuccess().mapResource {
-            it.toProfileViewState()
-        }.stateIn(componentScope, SharingStarted.Lazily, Resource.Loading)
+    override fun onAvatarClick() {
+        TODO("Not yet implemented")
+    }
 }

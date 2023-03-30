@@ -24,29 +24,28 @@ class UserEditorComponent(
     componentContext: ComponentContext,
     val _onFinish: () -> Unit,
     config: UserEditorConfig,
-) :
-    ComponentContext by componentContext,
-    UserEditorUiLogic by UserEditorUILogicDelegate((observeUserUseCase, addUserUseCase, config.userId, TODO(),{
-    overlayNavigation.activate(ConfirmConfig("Удалить студента", "Вы уверены?") {
-        componentContext.componentScope().launch {
-            removeUserUseCase(userId!!)
-                .onSuccess { onFinish() }
-                .onFailure {
-                    // TODO: check errors
-                }
-        }
-    })
-}) {
+) : ComponentContext by componentContext,
+    UserEditorUILogicDelegate(
+        observeUserUseCase,
+        addUserUseCase,
+        config.userId, componentContext
+    ) {
 
-     override fun onDeleteUser() {
+    private val componentScope = componentScope()
+
+    override fun onDeleteUser() {
         overlayNavigation.activate(ConfirmConfig("Удалить студента", "Вы уверены?") {
-           componentScope.launch {
-               removeUserUseCase(userId!!)
-                   .onSuccess { onFinish() }
-                   .onFailure {
-                       // TODO: check errors
-                   }
-           }
+            componentScope.launch {
+                removeUserUseCase(userId!!)
+                    .onSuccess { onFinish() }
+                    .onFailure {
+                        // TODO: check errors
+                    }
+            }
         })
+    }
+
+    override fun onFinish() {
+      _onFinish()
     }
 }

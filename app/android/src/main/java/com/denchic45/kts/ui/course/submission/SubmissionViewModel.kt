@@ -2,10 +2,14 @@ package com.denchic45.kts.ui.course.submission
 
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.SingleLiveData
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.Task
+import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindSubmissionUseCase
 import com.denchic45.kts.domain.usecase.GradeSubmissionUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
+import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
+import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,15 +17,23 @@ import javax.inject.Named
 import kotlin.properties.Delegates
 
 class SubmissionViewModel @Inject constructor(
-    @Named(SubmissionDialog.TASK_ID) private val taskId: String,
-    @Named(SubmissionDialog.STUDENT_ID) private val studentId: String,
+    @Named(SubmissionDialog.COURSE_ID)
+    private val _courseId: String,
+    @Named(SubmissionDialog.TASK_ID)
+    private val _taskId: String,
+    @Named(SubmissionDialog.STUDENT_ID)
+    private val _studentId: String,
     findSubmissionUseCase: FindSubmissionUseCase,
-    private val gradeSubmissionUseCase: GradeSubmissionUseCase,
-    private val returnSubmissionUseCase: ReturnSubmissionUseCase
+    private val gradeSubmissionUseCase: GradeSubmissionUseCase
 ) : BaseViewModel() {
 
-    val showSubmission: SharedFlow<Task.Submission> = findSubmissionUseCase(taskId, studentId)
-        .shareIn(viewModelScope, SharingStarted.Lazily, 1)
+    private val courseId = _courseId.toUUID()
+    private val taskId = _taskId.toUUID()
+    private val studentId = _studentId.toUUID()
+
+    val showSubmission: StateFlow<Resource<SubmissionResponse>> = flow {
+        emit(findSubmissionUseCase(courseId,taskId, studentId))}
+        .stateInResource(viewModelScope)
 
     private var grade by Delegates.notNull<Int>()
 
@@ -54,7 +66,7 @@ class SubmissionViewModel @Inject constructor(
             if (submission.status !is Task.SubmissionStatus.Graded ||
                 (submission.status as Task.SubmissionStatus.Graded).grade != grade
             ) {
-                gradeSubmissionUseCase(taskId, studentId, grade)
+                gradeSubmissionUseCase(_taskId, _studentId, grade)
             }
         }
     }
@@ -66,7 +78,7 @@ class SubmissionViewModel @Inject constructor(
     fun onRejectConfirmClick() {
         viewModelScope.launch {
             if (cause.isNotEmpty())
-                returnSubmissionUseCase(taskId, studentId, cause)
+                returnSubmissionUseCase(_taskId, _studentId, cause)
             closeRejectConfirmation.call()
         }
     }

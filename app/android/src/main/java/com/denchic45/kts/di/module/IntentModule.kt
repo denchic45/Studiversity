@@ -164,6 +164,14 @@ object IntentModule {
             .getString(ContentFragment.TASK_ID)!!
     }
 
+    @Named(SubmissionDialog.COURSE_ID)
+    @Provides
+    fun provideCourseIdToSubmission(submissionDialog: SubmissionDialog): String {
+        return submissionDialog
+            .requireArguments()
+            .getString(SubmissionDialog.COURSE_ID)!!
+    }
+
     @Named(SubmissionDialog.TASK_ID)
     @Provides
     fun provideTaskIdToSubmission(submissionDialog: SubmissionDialog): String {

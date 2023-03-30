@@ -1,7 +1,6 @@
 package com.denchic45.kts.ui.profile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
@@ -16,7 +15,6 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.components.ListItem
 import com.denchic45.kts.ui.theme.toDrawablePath

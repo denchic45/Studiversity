@@ -16,6 +16,7 @@ import com.denchic45.kts.ui.base.chooser.toSearchState
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.util.NetworkException
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.github.michaelbull.result.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -27,14 +28,19 @@ class FinderViewModel @Inject constructor(
     @Named("options_group") groupOptions: List<ListItem>,
     @Named("options_subject") subjectOptions: List<ListItem>,
     private val interactor: FinderInteractor,
-    private val removeStudyGroupUseCase: RemoveStudyGroupUseCase,
     private val confirmInteractor: ConfirmInteractor,
 
     findUserByContainsNameUseCase: FindUserByContainsNameUseCase,
     findStudyGroupByContainsNameUseCase: FindStudyGroupByContainsNameUseCase,
     findSubjectByContainsNameUseCase: FindSubjectByContainsNameUseCase,
     findSpecialtyByContainsNameUseCase: FindSpecialtyByContainsNameUseCase,
-    findCourseByContainsNameUseCase: FindCourseByContainsNameUseCase
+    findCourseByContainsNameUseCase: FindCourseByContainsNameUseCase,
+
+    removeUserUseCase: RemoveUserUseCase,
+    removeStudyGroupUseCase:RemoveStudyGroupUseCase,
+    removeSubjectUseCase:RemoveSubjectUseCase,
+
+
 ) : BaseViewModel() {
 
     val finderEntities = MutableLiveData<List<ListItem>>()
@@ -213,7 +219,6 @@ class FinderViewModel @Inject constructor(
             },
             "OPTION_DELETE_USER" to {
                 viewModelScope.launch {
-                    val selectedUser = selectedEntity as User
                     openConfirmation(
                         Pair(
                             "Удаление пользователя",
@@ -223,7 +228,7 @@ class FinderViewModel @Inject constructor(
 
                     if (confirmInteractor.receiveConfirm()) {
                         try {
-                            interactor.removeUser(selectedUser)
+                          removeUserUseCase(selectedEntity!!.id)
                         } catch (e: Exception) {
                             if (e is NetworkException) {
                                 showToast(R.string.error_check_network)
@@ -272,7 +277,7 @@ class FinderViewModel @Inject constructor(
                     if (confirmInteractor.receiveConfirm()) {
                         viewModelScope.launch {
                             try {
-                                interactor.removeSubject(selectedEntity as Subject)
+                                interactor.removeSubject(selectedEntity as SubjectResponse)
                             } catch (e: Exception) {
                                 if (e is NetworkException) {
                                     showToast(R.string.error_check_network)

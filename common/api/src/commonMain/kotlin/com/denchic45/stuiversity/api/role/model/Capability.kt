@@ -1,7 +1,5 @@
 package com.denchic45.stuiversity.api.role.model
 
-import java.util.*
-
 data class Capability(val resource: String) {
 
     override fun toString(): String = resource
@@ -38,8 +36,7 @@ data class Capability(val resource: String) {
         val ReadCourseElements: Capability = Capability("course/elements:read")
         val DeleteCourseElements: Capability = Capability("course/elements:delete")
 
-        val WriteCourseWork: Capability = Capability("course/work:write")
-        val WriteCourseMaterial: Capability = Capability("course/material:write")
+        val WriteCourseElement: Capability = Capability("course/element:write")
 
         val ReadSubmissions: Capability = Capability("course/submissions:read")
         val SubmitSubmission: Capability = Capability("course/submissions:submit")

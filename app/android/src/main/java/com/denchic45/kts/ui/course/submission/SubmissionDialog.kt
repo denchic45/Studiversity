@@ -50,6 +50,7 @@ class SubmissionDialog : BottomSheetDialogFragment() {
     private lateinit var behavior: BottomSheetBehavior<*>
 
     companion object {
+        const val COURSE_ID = "Submission COURSE_ID"
         const val TASK_ID = "Submission TASK_ID"
         const val STUDENT_ID = "Submission STUDENT_ID"
     }

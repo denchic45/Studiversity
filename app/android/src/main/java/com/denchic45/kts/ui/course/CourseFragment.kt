@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,11 +15,12 @@ import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentCourseBinding
-import com.denchic45.kts.ui.base.BaseFragment
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.adapter.CourseSectionAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskHolder
+import com.denchic45.kts.ui.base.BaseFragment2
 import com.denchic45.kts.ui.course.content.ContentFragment
 import com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment
 import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
@@ -32,14 +32,13 @@ import com.example.appbarcontroller.appbarcontroller.AppBarController
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class CourseFragment : BaseFragment<CourseViewModel, FragmentCourseBinding>(
+class CourseFragment : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
     R.layout.fragment_course
 ), HasNavArgs<CourseFragmentArgs> {
 
     override val navArgs: CourseFragmentArgs by navArgs()
 
     override val binding: FragmentCourseBinding by viewBinding(FragmentCourseBinding::bind)
-    override val viewModel: CourseViewModel by viewModels { viewModelFactory }
     private lateinit var collapsingToolbarLayout: CollapsingToolbarLayout
 
     private lateinit var mainToolbar: Toolbar
@@ -58,7 +57,7 @@ class CourseFragment : BaseFragment<CourseViewModel, FragmentCourseBinding>(
         appBarController = AppBarController.findController(requireActivity())
 
         requireActivity().findViewById<FloatingActionButton>(R.id.fab_main).setOnClickListener {
-            viewModel.onFabClick()
+            component.onFabClick()
         }
 
         with(binding) {
@@ -67,10 +66,10 @@ class CourseFragment : BaseFragment<CourseViewModel, FragmentCourseBinding>(
                 extensions {
                     clickBuilder<TaskHolder> {
                         onClick = {
-                            viewModel.onTaskItemClick(it)
+                            component.onItemClick(it)
                         }
                         onLongClick = {
-                            viewModel.onTaskItemLongClick(it)
+                            component.onTaskItemLongClick(it)
                             true
                         }
                     }
@@ -89,7 +88,7 @@ class CourseFragment : BaseFragment<CourseViewModel, FragmentCourseBinding>(
                     if (move) {
                         val oldPosition = viewHolder.absoluteAdapterPosition
                         val position = target.absoluteAdapterPosition
-                        viewModel.onContentMove(oldPosition, position)
+                        component.onContentMove(oldPosition, position)
                     }
                     return move
                 }
@@ -116,12 +115,11 @@ class CourseFragment : BaseFragment<CourseViewModel, FragmentCourseBinding>(
                         actionState == ItemTouchHelper.ACTION_STATE_DRAG && isCurrentlyActive
                 }
 
-                override fun clearView(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder
+                override fun clearView(recyclerView: RecyclerView,
+                                       viewHolder: RecyclerView.ViewHolder
                 ) {
                     super.clearView(recyclerView, viewHolder)
-                    viewModel.onContentMoved()
+                    component.onContentMoved()
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
@@ -130,36 +128,38 @@ class CourseFragment : BaseFragment<CourseViewModel, FragmentCourseBinding>(
 
             itemTouchHelper.attachToRecyclerView(rvCourseItems)
 
-            rvCourseItems.adapter = adapter
-            viewModel.showContents.observe(viewLifecycleOwner) {
-                adapter.submit(it.toList())
-            }
-
-            viewModel.courseName.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            component.course.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
                 .collectWhenStarted(lifecycleScope) {
-                    collapsingToolbarLayout.title = it
+                    it.onSuccess {
+                        collapsingToolbarLayout.title = it.name
+                    }
                 }
 
+            rvCourseItems.adapter = adapter
+            component.elements.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .collectWhenStarted(lifecycleScope) {
+                    it.onSuccess {
+                        TODO("Переиспользовать LazyColumn для desktop и android")
+                    }
+            }
 
-            viewModel.fabVisibility.collectWhenStarted(lifecycleScope) {
+            component.fabVisibility.collectWhenStarted(lifecycleScope) {
                 requireActivity().findViewById<FloatingActionButton>(R.id.fab_main)
                     .apply {
-                        if (it)
-                            show()
-                        else
-                            hide()
+                        if (it) show()
+                        else hide()
                     }
             }
         }
 
-        viewModel.openTask.observe(viewLifecycleOwner) { (taskId, courseId) ->
+        component.openTask.observe(viewLifecycleOwner) { (taskId, courseId) ->
             navController.navigate(
                 R.id.action_courseFragment_to_contentFragment,
                 bundleOf(ContentFragment.TASK_ID to taskId, ContentFragment.COURSE_ID to courseId)
             )
         }
 
-        viewModel.openTaskEditor.observe(viewLifecycleOwner) { (taskId, courseId, sectionId) ->
+        component.openTaskEditor.observe(viewLifecycleOwner) { (taskId, courseId, sectionId) ->
             navController.navigate(
                 R.id.action_courseFragment_to_taskEditorFragment,
                 bundleOf(
@@ -170,14 +170,14 @@ class CourseFragment : BaseFragment<CourseViewModel, FragmentCourseBinding>(
             )
         }
 
-        viewModel.openCourseEditor.observe(viewLifecycleOwner) {
+        component.openCourseEditor.observe(viewLifecycleOwner) {
             navController.navigate(
                 R.id.action_global_courseEditorFragment,
                 bundleOf(CourseEditorFragment.COURSE_ID to it)
             )
         }
 
-        viewModel.openCourseSectionEditor.observe(viewLifecycleOwner) {
+        component.openCourseSectionEditor.observe(viewLifecycleOwner) {
             navController.navigate(
                 R.id.action_courseFragment_to_courseSectionsFragment,
                 bundleOf(CourseTopicEditorFragment.COURSE_ID to it)
@@ -186,7 +186,7 @@ class CourseFragment : BaseFragment<CourseViewModel, FragmentCourseBinding>(
     }
 
     override fun collectOnOptionVisibility() {
-        viewModel.optionsVisibility.collectWhenStarted(lifecycleScope) { optionsVisibility ->
+        component.optionsVisibility.collectWhenStarted(lifecycleScope) { optionsVisibility ->
             optionsVisibility.forEach { (itemId, visible) ->
                 toolbar.menu.findItem(itemId).isVisible = visible
             }
@@ -208,10 +208,10 @@ class CourseFragment : BaseFragment<CourseViewModel, FragmentCourseBinding>(
                     requireActivity().onBackPressed()
                 }
                 setOnMenuItemClickListener {
-                    viewModel.onOptionClick(it.itemId)
+                    component.onOptionClick(it.itemId)
                     false
                 }
-                viewModel.onCreateOptions()
+                component.onCreateOptions()
             }
             setLiftOnScroll(true)
         }

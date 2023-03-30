@@ -1,5 +1,6 @@
 package com.denchic45.kts.ui.usereditor
 
+import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.UIEditor
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.Resource
@@ -10,6 +11,7 @@ import com.denchic45.kts.domain.usecase.ObserveUserUseCase
 import com.denchic45.kts.ui.BaseUiComponent
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.MenuItem
+import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.user.model.Account
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.model.Gender
@@ -26,21 +28,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.*
 
- class UserEditorUILogicDelegate(
-    override val observeUserUseCase: ObserveUserUseCase,
-    override val addUserUseCase: AddUserUseCase,
-    override val userId: UUID?,
-   override val uiComponent: BaseUiComponent,
-   private val _onFinish:()->Unit
-) : UserEditorUiLogic {
+abstract class UserEditorUILogicDelegate(
+    val observeUserUseCase: ObserveUserUseCase,
+    val addUserUseCase: AddUserUseCase,
+    val userId: UUID?,
+    componentContext: ComponentContext,
+) {
 
-     override fun onFinish() {
-         _onFinish()
-     }
-     override fun onDeleteUser() {
-         TODO("Not yet implemented")
-     }
-     override val uiEditor: UIEditor<UserResponse> = UIEditor(userId == null) {
+    private val componentScope = componentContext.componentScope()
+
+    val uiEditor: UIEditor<UserResponse> = UIEditor(userId == null) {
         UserResponse(
             this.userId!!,
             firstNameField.value,
@@ -55,26 +52,28 @@ import java.util.*
             },
         )
     }
-    override val errorState = MutableStateFlow(ErrorState())
+    val errorState = MutableStateFlow(ErrorState())
 
-    override val genders: List<MenuItem<GenderAction>> =
+    val genders: List<MenuItem<GenderAction>> =
         listOf(MenuItem(GenderAction.Male), MenuItem(GenderAction.Female))
 
-    override val firstNameField: MutableStateFlow<String> = MutableStateFlow("")
+    val firstNameField: MutableStateFlow<String> = MutableStateFlow("")
 
-    override   val surnameField: MutableStateFlow<String> = MutableStateFlow("")
+    val surnameField: MutableStateFlow<String> = MutableStateFlow("")
 
-  override  val patronymicField: MutableStateFlow<String> = MutableStateFlow("")
+    val patronymicField: MutableStateFlow<String> = MutableStateFlow("")
 
-  override  val emailField: MutableStateFlow<String> = MutableStateFlow("")
+    val emailField: MutableStateFlow<String> = MutableStateFlow("")
 
-   override val genderField: MutableStateFlow<GenderAction> = MutableStateFlow(GenderAction.Undefined)
+    val genderField: MutableStateFlow<GenderAction> =
+        MutableStateFlow(GenderAction.Undefined)
 
-  override  val avatarUrl: MutableStateFlow<String> = MutableStateFlow("")
+    val avatarUrl: MutableStateFlow<String> = MutableStateFlow("")
 
-    override   val accountFieldsVisibility: StateFlow<Boolean> = MutableStateFlow(uiEditor.isNew)
+    val accountFieldsVisibility: StateFlow<Boolean> = MutableStateFlow(uiEditor.isNew)
 
-    override     val toolbarTitle: String = if (uiEditor.isNew) "Новый пользователь" else "Редактировать пользователя"
+    val toolbarTitle: String =
+        if (uiEditor.isNew) "Новый пользователь" else "Редактировать пользователя"
 
 
     private val emailValidator = ValueValidator(
@@ -92,7 +91,7 @@ import java.util.*
         operator = Operator.all()
     )
 
-     override val validator: CompositeValidator<String> = CompositeValidator(
+    val validator: CompositeValidator<String> = CompositeValidator(
         listOf(
             ValueValidator(
                 value = firstNameField::value,
@@ -114,7 +113,12 @@ import java.util.*
         )
     )
 
-     init {
+    fun onSaveClick() {
+        validator.validate()
+        saveChanges()
+    }
+
+    init {
         when (uiEditor.isNew) {
             false -> {
                 componentScope.launch {
@@ -147,6 +151,48 @@ import java.util.*
             }
         }
     }
+
+    fun onFirstNameType(firstName: String) {
+        firstNameField.value = firstName
+    }
+
+    fun onSurnameType(surname: String) {
+        surnameField.value = surname
+    }
+
+    fun onPatronymicType(patronymic: String) {
+        patronymicField.value = patronymic
+    }
+
+    fun onEmailType(email: String) {
+        emailField.value = email
+    }
+
+    fun onGenderSelect(action: GenderAction) {
+        genderField.value = action
+    }
+
+    fun onRemoveClick() {
+        onDeleteUser()
+    }
+
+    abstract fun onDeleteUser()
+
+    abstract fun onFinish()
+
+    private fun saveChanges() {
+        componentScope.launch {
+            addUserUseCase(
+                CreateUserRequest(
+                    firstNameField.value,
+                    surnameField.value,
+                    patronymicField.value,
+                    emailField.value
+                )
+            ).onSuccess { onFinish() }
+                .onFailure { TODO("Уведомление о подключении к интернету") }
+        }
+    }
 }
 
 interface UserEditorUiLogic {
@@ -154,8 +200,6 @@ interface UserEditorUiLogic {
     val addUserUseCase: AddUserUseCase
     val userId: UUID?
     val uiComponent: BaseUiComponent
-
-    fun onFinish()
 
     val uiEditor: UIEditor<UserResponse>
 
@@ -181,59 +225,15 @@ interface UserEditorUiLogic {
 
     val avatarUrl: MutableStateFlow<String>
 
-
     val accountFieldsVisibility: StateFlow<Boolean>
 
     val toolbarTitle: String
 
     val validator: CompositeValidator<String>
 
-    fun onFirstNameType(firstName: String) {
-        firstNameField.value = firstName
-    }
+    fun onFinish()
 
-    fun onSurnameType(surname: String) {
-        surnameField.value = surname
-    }
 
-    fun onPatronymicType(patronymic: String) {
-        patronymicField.value = patronymic
-    }
-
-    fun onEmailType(email: String) {
-        emailField.value = email
-    }
-
-    fun onGenderSelect(action: GenderAction) {
-        genderField.value = action
-    }
-
-    fun onSaveClick() {
-        validator.validate()
-        saveChanges()
-    }
-
-    fun onCloseClick() = onFinish()
-
-    private fun saveChanges() {
-        componentScope.launch {
-            addUserUseCase(
-                CreateUserRequest(
-                    firstNameField.value,
-                    surnameField.value,
-                    patronymicField.value,
-                    emailField.value
-                )
-            ).onSuccess { onFinish() }
-                .onFailure { TODO("Уведомление о подключении к интернету") }
-        }
-    }
-
-    fun onRemoveClick() {
-        onDeleteUser()
-    }
-
-    abstract fun onDeleteUser()
 }
 
 data class ErrorState(

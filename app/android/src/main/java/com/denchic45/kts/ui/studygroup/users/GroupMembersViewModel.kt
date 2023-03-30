@@ -1,6 +1,5 @@
 package com.denchic45.kts.ui.studygroup.users
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
@@ -13,7 +12,6 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.model.*
-import com.denchic45.kts.ui.teacherChooser.TeacherChooserInteractor
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.util.toUUID
@@ -27,15 +25,12 @@ import javax.inject.Inject
 import javax.inject.Named
 
 
-
 class GroupMembersViewModel @Inject constructor(
-    private val interactor: GroupUsersInteractor,
     findGroupMembersUseCase: FindGroupMembersUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
-    private val findSelfUserUseCase: FindSelfUserUseCase,
+    findSelfUserUseCase: FindSelfUserUseCase,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
-    private val teacherChooserInteractor: TeacherChooserInteractor,
     @Named(GroupMembersFragment.GROUP_ID) _groupId: String,
 ) : BaseViewModel() {
 
@@ -165,11 +160,6 @@ class GroupMembersViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        interactor.removeListeners()
     }
 
     companion object {

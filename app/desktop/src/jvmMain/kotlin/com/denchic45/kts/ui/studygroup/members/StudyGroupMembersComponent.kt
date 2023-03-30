@@ -16,7 +16,6 @@ import com.denchic45.kts.ui.model.toUserItem
 import com.denchic45.kts.ui.navigation.*
 import com.denchic45.kts.ui.profile.ProfileComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
-import com.denchic45.kts.ui.usereditor.UserEditorUiLogic
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.flow.*

@@ -1,12 +1,14 @@
 package com.denchic45.kts.ui.userEditor
 
+import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.AndroidUiComponent
+import com.denchic45.kts.ui.base.AndroidUiComponentDelegate
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
-import com.denchic45.kts.ui.usereditor.UserEditorUiLogic
+import com.denchic45.kts.ui.usereditor.UserEditorUILogicDelegate
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.launch
 import java.util.*
@@ -20,9 +22,13 @@ class UserEditorViewModel @Inject constructor(
     addUserUseCase: AddUserUseCase,
     private val removeUserUseCase: RemoveUserUseCase,
     private val confirmInteractor: ConfirmInteractor,
-    private val androidUiComponent: AndroidUiComponent,
-) : UserEditorUiLogic(observeUserUseCase, addUserUseCase, _userId?.toUUID(), androidUiComponent),
-    AndroidUiComponent by androidUiComponent {
+    private val componentContext: ComponentContext,
+) : UserEditorUILogicDelegate(
+    observeUserUseCase,
+    addUserUseCase,
+    _userId?.toUUID(),
+    componentContext
+), AndroidUiComponent by AndroidUiComponentDelegate(componentContext) {
 
     override fun onOptionClick(itemId: Int) {
         when (itemId) {

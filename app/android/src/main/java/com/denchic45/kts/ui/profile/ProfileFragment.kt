@@ -8,22 +8,29 @@ import android.view.View
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentProfileBinding
-import com.denchic45.kts.ui.base.BaseFragment
-import com.denchic45.kts.ui.base.HasNavArgs
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.avatar.FullImageActivity
+import com.denchic45.kts.ui.base.BaseFragment
+import com.denchic45.kts.ui.base.BaseFragment2
+import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
 import com.example.appbarcontroller.appbarcontroller.AppBarController
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 class ProfileFragment :
-    BaseFragment<ProfileViewModel, FragmentProfileBinding>(
+    BaseFragment2<ProfileViewModel, FragmentProfileBinding>(
         R.layout.fragment_profile,
         R.menu.options_profile
     ), HasNavArgs<ProfileFragmentArgs> {
@@ -31,7 +38,6 @@ class ProfileFragment :
     override val navArgs: ProfileFragmentArgs by navArgs()
 
     override val binding: FragmentProfileBinding by viewBinding(FragmentProfileBinding::bind)
-    override val viewModel: ProfileViewModel by viewModels { viewModelFactory }
 
     // FIXME: Use other library
 //    private var galleryResult = registerForActivityResult(PickImageContract()) {
@@ -51,7 +57,7 @@ class ProfileFragment :
 //            }
 //        )
 //    }
-//
+
 //    private val cropImage =
 //        registerForActivityResult(CropImageContract()) {
 //            it.uriContent?.let { uri ->
@@ -59,7 +65,7 @@ class ProfileFragment :
 //                    val bitmap = MediaStore.Images.Media.getBitmap(
 //                        requireActivity().contentResolver, uri
 //                    )
-//                    viewModel.onImageLoad(getBytesFromBitmap(bitmap))
+//                    component.onImageLoad(getBytesFromBitmap(bitmap))
 //                } catch (e: IOException) {
 //                    e.printStackTrace()
 //                }
@@ -81,35 +87,29 @@ class ProfileFragment :
         )
 
         with(binding) {
-            viewModel.showAvatar.observe(viewLifecycleOwner) { s ->
-                Glide.with(this@ProfileFragment)
-                    .load(s)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .into(ivAvatar)
-            }
-            llGroup.setOnClickListener { viewModel.onGroupInfoClick() }
-            ivAvatar.setOnClickListener { viewModel.onAvatarClick() }
-            viewModel.showFullName.observe(
-                viewLifecycleOwner
-            ) { s -> tvFullName.text = s }
-            viewModel.showRole.observe(viewLifecycleOwner) { id ->
-                tvRole.setText(id)
-            }
-            viewModel.showGroupInfo.observe(
-                viewLifecycleOwner
-            ) { s -> tvGroupInfo.text = s }
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    component.profileViewState.collect {
+                        it.onSuccess {
+                            Glide.with(this@ProfileFragment)
+                                .load(it.avatarUrl)
+                                .transition(DrawableTransitionOptions.withCrossFade())
+                                .into(ivAvatar)
 
-            viewModel.showEmail.observe(viewLifecycleOwner) { s: String? -> tvEmail.text = s }
-            viewModel.infoVisibility.observe(
-                viewLifecycleOwner
-            ) { visible: Boolean -> llInfo.visibility = if (visible) View.VISIBLE else View.GONE }
-            viewModel.groupInfoVisibility.observe(
-                viewLifecycleOwner
-            ) { visible: Boolean ->
-                llGroup.visibility = if (visible) View.VISIBLE else View.GONE
+                            tvFullName.text = it.fullName
+
+                            it.personalDate?.let {
+                                llInfo.visibility = View.VISIBLE
+                                tvEmail.text = it.email
+                            } ?: run { llInfo.visibility = View.GONE }
+                        }
+                    }
+                }
             }
 
-            viewModel.openFullImage.observe(viewLifecycleOwner) { url: String ->
+            ivAvatar.setOnClickListener { component.onAvatarClick() }
+
+            component.openFullImage.observe(viewLifecycleOwner) { url: String ->
                 val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     requireActivity(),
                     androidx.core.util.Pair.create(
@@ -120,7 +120,7 @@ class ProfileFragment :
                 intent.putExtra(FullImageActivity.IMAGE_URL, url)
                 startActivity(intent, options.toBundle())
             }
-            viewModel.openGallery.observe(viewLifecycleOwner) {
+            component.openGallery.observe(viewLifecycleOwner) {
                 val intent = Intent(
                     Intent.ACTION_PICK
                 )

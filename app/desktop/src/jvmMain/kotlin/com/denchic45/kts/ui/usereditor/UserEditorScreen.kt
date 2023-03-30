@@ -33,7 +33,7 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
         TopAppBar(
             title = { Text(component.toolbarTitle) },
             navigationIcon = {
-                IconButton(onClick = component::onCloseClick) {
+                IconButton(onClick = component::onFinish) {
                     Icon(
                         imageVector = Icons.Outlined.ArrowBack,
                         null,
@@ -64,7 +64,7 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
 }
 
 @Composable
-fun UserEditorDialog(component: UserEditorUiLogic, onDismissRequest: () -> Unit) {
+fun UserEditorDialog(component: UserEditorComponent, onDismissRequest: () -> Unit) {
     AlertDialog(
         modifier = Modifier.heightIn(max = 648.dp),
         title = {
@@ -93,7 +93,7 @@ fun UserEditorDialog(component: UserEditorUiLogic, onDismissRequest: () -> Unit)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UserEditorContent(component: UserEditorUiLogic) {
+private fun UserEditorContent(component: UserEditorComponent) {
     Column(Modifier.padding(horizontal = 16.dp)) {
         val photoUrl by component.avatarUrl.collectAsState()
         AsyncImage(

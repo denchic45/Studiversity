@@ -33,17 +33,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/gilroy_semi_bold"
-            android:text="Имя Фамилия"
+            tools:text="Имя Фамилия"
             android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/tv_role"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/gilroy_medium"
-            android:text="роль"
-            android:textColor="@color/gray"
-            android:textSize="16sp" />
     </LinearLayout>
 
     <View
@@ -52,44 +44,14 @@
         android:layout_height="20sp"
         app:layout_constraintTop_toBottomOf="@id/iv_avatar" />
 
-    <LinearLayout
-        android:id="@+id/ll_group"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:foreground="?selectableItemBackgroundBorderless"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16sp"
-        app:layout_constraintTop_toBottomOf="@id/empty">
-
-        <ImageView
-            android:id="@+id/iv_group"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            app:srcCompat="@drawable/ic_group"
-            app:tint="@color/blue"
-            tools:ignore="ContentDescription" />
-
-        <TextView
-            android:id="@+id/tv_group_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16sp"
-            android:fontFamily="@font/gilroy_semi_bold"
-            android:maxLines="1"
-            android:letterSpacing="0"
-            android:text="Участник группы"
-            android:textAppearance="?attr/textAppearanceBody2"
-            android:textSize="16sp"/>
-    </LinearLayout>
-
     <View
         android:id="@+id/div_group"
         style="@style/Divider"
+        android:layout_marginTop="16dp"
         android:layout_alignParentBottom="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ll_group" />
+        app:layout_constraintTop_toBottomOf="@id/iv_avatar" />
 
     <LinearLayout
         android:id="@+id/ll_info"
