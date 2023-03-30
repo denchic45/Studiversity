@@ -15,7 +15,7 @@ import com.denchic45.kts.domain.MainInteractor
 import com.denchic45.kts.ui.navigation.*
 import com.denchic45.kts.ui.studygroups.StudyGroupsComponent
 import com.denchic45.kts.ui.timetable.TimetableComponent
-import com.denchic45.kts.ui.usereditor.UserEditorComponent
+import com.denchic45.kts.ui.usereditor.UserEditorUiLogic
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -30,7 +30,7 @@ class MainComponent constructor(
     userEditorComponent: (
         onFinish: () -> Unit,
         config: UserEditorConfig
-    ) -> UserEditorComponent,
+    ) -> UserEditorUiLogic,
 ) : ComponentContext by componentContext {
 
     private val timetableComponent by lazyTimetableComponent

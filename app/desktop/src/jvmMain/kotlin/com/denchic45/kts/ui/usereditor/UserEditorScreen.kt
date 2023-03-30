@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.denchic45.kts.ui.usereditor
 
 import androidx.compose.foundation.background
@@ -66,7 +64,7 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
 }
 
 @Composable
-fun UserEditorDialog(component: UserEditorComponent, onDismissRequest: () -> Unit) {
+fun UserEditorDialog(component: UserEditorUiLogic, onDismissRequest: () -> Unit) {
     AlertDialog(
         modifier = Modifier.heightIn(max = 648.dp),
         title = {
@@ -93,8 +91,9 @@ fun UserEditorDialog(component: UserEditorComponent, onDismissRequest: () -> Uni
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UserEditorContent(component: UserEditorComponent) {
+private fun UserEditorContent(component: UserEditorUiLogic) {
     Column(Modifier.padding(horizontal = 16.dp)) {
         val photoUrl by component.avatarUrl.collectAsState()
         AsyncImage(
@@ -153,20 +152,6 @@ private fun UserEditorContent(component: UserEditorComponent) {
             placeholder = "Пол",
             activeAction = gender
         )
-        val availableRoles by component.availableRoles.collectAsState()
-//        val role by component.roleField.collectAsState()
-//        availableRoles?.let { roles ->
-//            var expandedRoles by remember { mutableStateOf(false) }
-//            Spinner(
-//                items = roles,
-//                onActionClick = component::onRoleSelect,
-//                Modifier.padding(top = 4.dp).fillMaxWidth(),
-//                expanded = expandedRoles,
-//                onExpandedChange = { expandedRoles = it },
-//                placeholder = "Роль",
-//                activeAction = role
-//            )
-//        }
 
         val accountFieldsVisibility by component.accountFieldsVisibility.collectAsState()
         if (accountFieldsVisibility) {

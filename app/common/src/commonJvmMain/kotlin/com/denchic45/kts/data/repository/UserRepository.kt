@@ -8,6 +8,7 @@ import com.denchic45.kts.data.observeResource
 import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
+import com.denchic45.kts.domain.EmptyResource
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.toResource
 import com.denchic45.stuiversity.api.user.UserApi
@@ -61,4 +62,8 @@ class UserRepository @Inject constructor(
         fetch = { userApi.getById(userId) },
         saveFetch = { userLocalDataSource.upsert(it.toEntity()) }
     )
+
+    suspend fun remove(userId: UUID): EmptyResource {
+        return userApi.delete(userId).toResource()
+    }
 }
