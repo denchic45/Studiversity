@@ -101,10 +101,10 @@ kotlin {
                 dependsOn(commonJvmMain)
                 kotlin.srcDir("build/generated/ksp/android/androidDebug")
 
-                api("androidx.appcompat:appcompat:1.4.2")
-                api("androidx.core:core-ktx:1.8.0")
+                api("androidx.appcompat:appcompat:1.6.1")
+                api("androidx.core:core-ktx:1.9.0")
 
-                api("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+                api("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
 
                 api("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
@@ -112,7 +112,7 @@ kotlin {
 
                 api("com.squareup.retrofit2:retrofit:2.9.0")
 
-                api("androidx.work:work-runtime-ktx:2.8.0")
+                api("androidx.work:work-runtime-ktx:2.8.1")
 
                 // Dagger
                 api("com.google.dagger:dagger-android:$daggerVersion")
