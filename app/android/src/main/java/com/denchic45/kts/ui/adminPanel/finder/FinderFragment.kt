@@ -29,6 +29,7 @@ import com.denchic45.kts.util.toast
 import com.denchic45.sample.SearchBar
 import com.denchic45.widget.ListStateLayout
 import com.denchic45.widget.extendedAdapter.DelegationAdapterDsl
+import com.denchic45.widget.extendedAdapter.DelegationAdapterExtended
 import com.denchic45.widget.extendedAdapter.adapter
 import com.denchic45.widget.extendedAdapter.extension.click
 import com.example.appbarcontroller.appbarcontroller.AppBarController
@@ -77,7 +78,7 @@ class FinderFragment :
 
     override val viewModel: FinderViewModel by viewModels { viewModelFactory }
 
-    private lateinit var currentAdapter: ListAdapter<DomainModel, *>
+    private lateinit var currentAdapter: DelegationAdapterExtended
 
     private lateinit var appBarController: AppBarController
     private lateinit var rvFinderEntities: RecyclerView
@@ -117,7 +118,7 @@ class FinderFragment :
             }
 
             viewModel.currentSearch.collectWhenStarted(viewLifecycleOwner) { position: Int ->
-                currentAdapter = listAdapters[position] as ListAdapter<DomainModel, *>
+                currentAdapter = listAdapters[position]
                 rvFoundItems.adapter = currentAdapter
                 AppBarController.findController(requireActivity())
                     .setExpandableIfViewCanScroll(rvFoundItems, viewLifecycleOwner)
@@ -141,10 +142,7 @@ class FinderFragment :
                 when (resource) {
                     is Resource.Success -> {
                         listStateLayout.showList()
-                        currentAdapter.submitList(
-                            resource.value,
-                            listStateLayout.getCommitCallback(currentAdapter)
-                        )
+                        currentAdapter.submit(resource.value)
                     }
                     Resource.Loading -> {}
                     is Resource.Error -> {

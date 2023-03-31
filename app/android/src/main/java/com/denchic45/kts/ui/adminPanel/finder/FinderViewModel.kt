@@ -5,19 +5,26 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
+import com.denchic45.kts.data.domain.*
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.model.Subject
-import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.domain.onFailure
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.ui.base.chooser.toSearchState
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.util.NetworkException
+import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.stuiversity.api.user.model.UserResponse
+import com.denchic45.stuiversity.util.toUUID
 import com.github.michaelbull.result.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +34,6 @@ class FinderViewModel @Inject constructor(
     @Named("options_user") userOptions: List<ListItem>,
     @Named("options_group") groupOptions: List<ListItem>,
     @Named("options_subject") subjectOptions: List<ListItem>,
-    private val interactor: FinderInteractor,
     private val confirmInteractor: ConfirmInteractor,
 
     findUserByContainsNameUseCase: FindUserByContainsNameUseCase,
@@ -35,12 +41,9 @@ class FinderViewModel @Inject constructor(
     findSubjectByContainsNameUseCase: FindSubjectByContainsNameUseCase,
     findSpecialtyByContainsNameUseCase: FindSpecialtyByContainsNameUseCase,
     findCourseByContainsNameUseCase: FindCourseByContainsNameUseCase,
-
     removeUserUseCase: RemoveUserUseCase,
-    removeStudyGroupUseCase:RemoveStudyGroupUseCase,
-    removeSubjectUseCase:RemoveSubjectUseCase,
-
-
+    removeStudyGroupUseCase: RemoveStudyGroupUseCase,
+    removeSubjectUseCase: RemoveSubjectUseCase,
 ) : BaseViewModel() {
 
     val finderEntities = MutableLiveData<List<ListItem>>()
@@ -58,14 +61,21 @@ class FinderViewModel @Inject constructor(
     val openCourse = SingleLiveData<String>()
 
     val showOptions = SingleLiveData<Pair<Int, List<ListItem>>>()
-    private val queryByName = MutableSharedFlow<String>()
     private val onFinderItemClickActions: List<(String) -> Unit> = listOf(
         { navigateTo(MobileNavigationDirections.actionGlobalProfileFragment(it)) },
         { navigateTo(MobileNavigationDirections.actionGlobalMenuGroup(it)) },
         { openSubject.setValue(it) },
         { openSpecialtyEditor.setValue(it) },
         { navigateTo(MobileNavigationDirections.actionGlobalCourseFragment(it)) })
-    private val queryTexts = mutableListOf<String?>(null, null, null, null, null)
+
+
+    private val onGetItemId: List<(Any) -> String> = listOf(
+        { (it as UserResponse).id.toString() },
+        { (it as StudyGroupResponse).id.toString() },
+        { (it as SubjectResponse).id.toString() },
+        { (it as SpecialtyResponse).id.toString() },
+        { (it as CourseResponse).id.toString() })
+
     private val startEmptyList: List<DomainModel> = emptyList()
 
     val foundItems = MutableStateFlow<Resource<List<DomainModel>>>(Resource.Success(startEmptyList))
@@ -89,20 +99,15 @@ class FinderViewModel @Inject constructor(
         queryToSearchFlow(4),
     )
 
-    private fun queryToSearchFlow(index: Int): StateFlow<SearchState<out DomainModel>> =
-        queryNames[index].flatMapLatest { text ->
-            flow {
-                emit(SearchState.Loading)
-                findUseCases[index].invoke(text).map { result ->
-                    emit(
-                        result.toSearchState()
-                    )
-                }
-            }
-        }.stateIn(viewModelScope, SharingStarted.Lazily, SearchState.Start)
+    private fun queryToSearchFlow(index: Int): StateFlow<Resource<List<Any>>> {
+        return queryNames[index].map { text ->
+            findUseCases[index].invoke(text)
+        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading)
+    }
 
-    val currentSearchState: Flow<SearchState<out DomainModel>> =
-        currentSearch.flatMapLatest { index -> searchStates[index] }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentItems = currentSearch.flatMapLatest { index -> searchStates[index] }
+        .stateInResource(viewModelScope)
 
 
     private val onOptionItemClickActions: Map<String, () -> Unit>
@@ -116,7 +121,10 @@ class FinderViewModel @Inject constructor(
     )
 
     private val optionsList: List<List<ListItem>>
-    private var selectedEntity: DomainModel? = null
+
+
+    private var selectedEntityId: String? = null
+
     fun onQueryTextSubmit(queryName: String) {
 
         queryNames[currentSearch.value].value = queryName
@@ -147,16 +155,18 @@ class FinderViewModel @Inject constructor(
     }
 
     fun onFinderItemClick(position: Int) {
-//        val item = foundEntities[currentSelectedEntity.value][position]
-//        onFinderItemClickActions[currentSelectedEntity.value](item.id)
-
-        val clicked = (currentSearchState as SearchState.Found<out DomainModel>).items[position]
-        onFinderItemClickActions[currentSearch.value](clicked.id)
+        currentItems.value.onSuccess {
+            onFinderItemClickActions[currentSearch.value](
+                onGetItemId[currentSearch.value](it[position])
+            )
+        }
     }
 
     fun onFinderItemLongClick(position: Int) {
-//        selectedEntity = (foundItems.value as Resource.Success).data[position]
-//        showOptions.value = Pair(position, optionsList[currentSelectedEntity.value])
+        currentItems.value.onSuccess {
+            selectedEntityId = onGetItemId[currentSearch.value](it[position])
+            showOptions.value = Pair(position, optionsList[position])
+        }
     }
 
     companion object {
@@ -205,15 +215,12 @@ class FinderViewModel @Inject constructor(
 
         onOptionItemClickActions = mapOf(
             "OPTION_SHOW_PROFILE" to {
-                navigateTo(MobileNavigationDirections.actionGlobalProfileFragment(selectedEntity!!.id))
+                navigateTo(MobileNavigationDirections.actionGlobalProfileFragment(selectedEntityId!!))
             },
             "OPTION_EDIT_USER" to {
-                val selectedUser = selectedEntity as User
                 navigateTo(
                     MobileNavigationDirections.actionGlobalUserEditorFragment(
-                        userId = selectedUser.id,
-                        role = selectedUser.role.toString(),
-                        groupId = selectedUser.groupId
+                        userId = selectedEntityId!!
                     )
                 )
             },
@@ -228,7 +235,7 @@ class FinderViewModel @Inject constructor(
 
                     if (confirmInteractor.receiveConfirm()) {
                         try {
-                          removeUserUseCase(selectedEntity!!.id)
+                            removeUserUseCase(selectedEntityId!!.toUUID())
                         } catch (e: Exception) {
                             if (e is NetworkException) {
                                 showToast(R.string.error_check_network)
@@ -240,22 +247,18 @@ class FinderViewModel @Inject constructor(
             "OPTION_SHOW_GROUP" to {
                 navigateTo(
                     MobileNavigationDirections.actionGlobalMenuGroup(
-                        selectedEntity!!.id
+                        selectedEntityId!!
                     )
                 )
             },
-            "OPTION_EDIT_GROUP" to {
-                openGroupEditor.setValue(
-                    selectedEntity!!.id
-                )
-            },
+            "OPTION_EDIT_GROUP" to { openGroupEditor.setValue(selectedEntityId!!) },
             "OPTION_DELETE_GROUP" to {
                 viewModelScope.launch {
                     openConfirmation(Pair("Удалить группу", "Вы точно уверены???"))
                     if (confirmInteractor.receiveConfirm()) {
                         viewModelScope.launch {
                             try {
-                                removeStudyGroupUseCase(selectedEntity!!.id)
+                                removeStudyGroupUseCase(selectedEntityId!!.toUUID())
                             } catch (e: Exception) {
                                 if (e is NetworkException) {
                                     showToast(R.string.error_check_network)
@@ -267,22 +270,20 @@ class FinderViewModel @Inject constructor(
             },
             "OPTION_SHOW_SUBJECT" to {},
             "OPTION_EDIT_SUBJECT" to {
-                openSubjectEditor.setValue(
-                    selectedEntity!!.id
-                )
+                openSubjectEditor.setValue(selectedEntityId!!)
             },
             "OPTION_DELETE_SUBJECT" to {
                 viewModelScope.launch {
                     openConfirmation(Pair("Удалить предмет", "Вы точно уверены???"))
                     if (confirmInteractor.receiveConfirm()) {
                         viewModelScope.launch {
-                            try {
-                                interactor.removeSubject(selectedEntity as SubjectResponse)
-                            } catch (e: Exception) {
-                                if (e is NetworkException) {
-                                    showToast(R.string.error_check_network)
+                            removeSubjectUseCase(selectedEntityId!!.toUUID())
+                                .onFailure {
+                                    when (it) {
+                                        NoConnection -> showToast(R.string.error_check_network)
+                                        else -> showToast(R.string.error_check_network)
+                                    }
                                 }
-                            }
                         }
                     }
                 }
@@ -291,10 +292,10 @@ class FinderViewModel @Inject constructor(
     }
 }
 
-sealed class SearchState<T> {
-    object Start : SearchState<Nothing>()
-    object Loading : SearchState<Nothing>()
-    class Found<T>(val items: List<T>) : SearchState<T>()
-    object NotFound : SearchState<Nothing>()
-    object NoConnection : SearchState<Nothing>()
-}
+//sealed class SearchState<T> {
+//    object Start : SearchState<Nothing>()
+//    object Loading : SearchState<Nothing>()
+//    class Found<T>(val items: List<T>) : SearchState<T>()
+//    object NotFound : SearchState<Nothing>()
+//    object NoConnection : SearchState<Nothing>()
+//}
