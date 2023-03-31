@@ -3,8 +3,10 @@ package com.denchic45.kts.ui.specialtyEditor
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
-import com.denchic45.kts.domain.model.Specialty
+import com.denchic45.kts.data.domain.*
 import com.denchic45.kts.data.repository.SpecialtyRepository
+import com.denchic45.kts.domain.onFailure
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.uieditor.UIEditor
@@ -12,14 +14,20 @@ import com.denchic45.kts.uivalidator.Rule
 import com.denchic45.kts.uivalidator.UIValidator
 import com.denchic45.kts.uivalidator.Validation
 import com.denchic45.kts.util.NetworkException
+import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
+import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
+import com.denchic45.stuiversity.util.optPropertyOf
+import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 
 class SpecialtyEditorViewModel @Inject constructor(
-    @Named(SpecialtyEditorDialog.SPECIALTY_ID) id: String?,
+    @Named(SpecialtyEditorDialog.SPECIALTY_ID) _specialtyId: String?,
     private val specialtyRepository: SpecialtyRepository,
     private val confirmInteractor: ConfirmInteractor
 ) : BaseViewModel() {
@@ -31,10 +39,16 @@ class SpecialtyEditorViewModel @Inject constructor(
 
     val deleteBtnVisibility = MutableLiveData(true)
 
-    private val id = id ?: UUID.randomUUID().toString()
+    private val specialtyId = _specialtyId?.toUUID()
     private val uiValidator: UIValidator
-    private val uiEditor: UIEditor<Specialty> =
-        UIEditor(id == null) { Specialty(this.id, nameField.value) }
+    private val uiEditor: UIEditor<SpecialtyResponse> =
+        UIEditor(_specialtyId == null) {
+            SpecialtyResponse(
+                id = this.specialtyId!!,
+                name = nameField.value,
+                shortname = nameField.value
+            )
+        }
 
     private fun setupForNewItem() {
         deleteBtnVisibility.value = false
@@ -44,11 +58,13 @@ class SpecialtyEditorViewModel @Inject constructor(
     private fun setupForExistItem() {
         title.value = "Редактировать специальность"
         viewModelScope.launch {
-            specialtyRepository.observe(id).collect { specialty ->
-                specialty?.let {
+            flowOf(specialtyRepository.findById(specialtyId!!)).collect { resource ->
+                resource.onSuccess { specialty ->
                     uiEditor.oldItem = specialty
                     nameField.value = specialty.name
-                } ?: finish()
+                }.onFailure {
+                    finish()
+                }
             }
         }
     }
@@ -56,9 +72,20 @@ class SpecialtyEditorViewModel @Inject constructor(
     private suspend fun saveChanges() {
         try {
             if (uiEditor.isNew) {
-                specialtyRepository.add(uiEditor.item)
+                specialtyRepository.add(
+                    CreateSpecialtyRequest(
+                        nameField.value,
+                        nameField.value
+                    )
+                )
             } else {
-                specialtyRepository.update(uiEditor.item)
+                specialtyRepository.update(
+                    specialtyId!!,
+                    UpdateSpecialtyRequest(
+                        optPropertyOf(nameField.value),
+                        optPropertyOf(nameField.value)
+                    )
+                )
             }
             finish()
         } catch (e: Exception) {
@@ -78,12 +105,12 @@ class SpecialtyEditorViewModel @Inject constructor(
         viewModelScope.launch {
             openConfirmation(Pair("Удалить несколько предметов группы", "Вы точно уверены???"))
             if (confirmInteractor.receiveConfirm()) {
-                try {
-                    specialtyRepository.remove(uiEditor.item)
+                specialtyRepository.remove(specialtyId!!).onSuccess {
                     finish()
-                } catch (e: Exception) {
-                    if (e is NetworkException) {
-                        showToast(R.string.error_check_network)
+                }.onFailure {
+                    when (it) {
+                        NoConnection -> showToast(R.string.error_check_network)
+                        else -> {}
                     }
                 }
             }

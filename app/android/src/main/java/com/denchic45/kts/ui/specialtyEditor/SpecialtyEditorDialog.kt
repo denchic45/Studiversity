@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentSpecialtyEditorBinding
@@ -51,9 +50,9 @@ class SpecialtyEditorDialog :
                 .compose(EditTextTransformer())
                 .subscribe(viewModel::onNameType)
 
-            viewModel.nameField.collectWhenStarted(
-                lifecycleScope
-            ) { name -> if (!etName.text.contentEquals(name)) etName.setText(name) }
+            viewModel.nameField.collectWhenStarted(viewLifecycleOwner) { name ->
+                if (!etName.text.contentEquals(name)) etName.setText(name)
+            }
         }
         viewModel.deleteBtnVisibility.observe(viewLifecycleOwner) { visibility: Boolean ->
             alertDialog.getButton(
