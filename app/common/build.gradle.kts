@@ -163,8 +163,8 @@ kotlin {
                 api("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 // Dagger
-                api("com.google.dagger:dagger:$daggerVersion")
-                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
+//                api("com.google.dagger:dagger:$daggerVersion")
+//                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
 
                 // Decompose
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
