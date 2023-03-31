@@ -39,7 +39,7 @@ abstract class UserEditorUILogicDelegate(
 
     val uiEditor: UIEditor<UserResponse> = UIEditor(userId == null) {
         UserResponse(
-            this.userId!!,
+            this.userId ?: UUID.randomUUID(),
             firstNameField.value,
             surnameField.value,
             patronymicField.value,
