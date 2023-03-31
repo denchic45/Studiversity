@@ -31,6 +31,8 @@
     <string name="course_5">5 Course</string>
     <string name="timetable">Timetable</string>
 
+    <string name="error_unknown">Unknown error</string>
+
     <string name="error_check_network">Check network</string>
     <string name="error_not_curator">Group curator not selected</string>
 
