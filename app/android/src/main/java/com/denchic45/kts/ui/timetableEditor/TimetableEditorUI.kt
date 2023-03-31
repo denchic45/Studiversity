@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.adminPanel.timetableEditor
+package com.denchic45.kts.ui.timetableEditor
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -20,6 +20,7 @@ import com.denchic45.kts.domain.timetable.model.EventDetails
 import com.denchic45.kts.domain.timetable.model.LessonDetails
 import com.denchic45.kts.domain.timetable.model.PeriodItem
 import java.util.*
+import com.denchic45.kts.R
 
 @Composable
 fun TimetableEditorUI() {
@@ -28,7 +29,7 @@ fun TimetableEditorUI() {
 
 @Composable
 fun PeriodItemUI(item: PeriodItem, groupShowing: Boolean = false, isEdit: Boolean = false) {
-    Column() {
+    Column {
         Row(
             modifier = Modifier
                 .height(56.dp)
@@ -73,7 +74,7 @@ fun PeriodItemUI(item: PeriodItem, groupShowing: Boolean = false, isEdit: Boolea
             if (groupShowing)
                 Row {
                     Image(
-                        painter = painterResource(id = com.denchic45.kts.R.drawable.ic_group),
+                        painter = painterResource(id = R.drawable.ic_group),
                         contentDescription = null,
                         modifier = Modifier.padding(8.dp)
                     )

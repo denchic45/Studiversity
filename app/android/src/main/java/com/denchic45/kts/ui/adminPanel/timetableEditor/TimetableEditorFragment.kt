@@ -12,6 +12,7 @@ import com.denchic45.kts.databinding.FragmentTimetableEditorBinding
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.finder.TimetableFinderFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.loader.TimetableLoaderFragment
+import com.denchic45.kts.ui.timetableEditor.TimetableEditorViewModel
 
 class TimetableEditorFragment :
     BaseFragment<TimetableEditorViewModel, FragmentTimetableEditorBinding>(R.layout.fragment_timetable_editor) {
