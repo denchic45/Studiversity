@@ -4,10 +4,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.Subject
+import com.denchic45.kts.domain.onFailure
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.updateResource
+import com.denchic45.kts.domain.usecase.FindSubjectByIdUseCase
 import com.denchic45.kts.util.SameSubjectIconException
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
+import com.denchic45.kts.ui.courseEditor.CourseEditorViewModel
 import com.denchic45.kts.ui.iconPicker.IconPickerInteractor
 import com.denchic45.kts.uieditor.UIEditor
 import com.denchic45.kts.uivalidator.Rule
@@ -16,24 +22,33 @@ import com.denchic45.kts.uivalidator.Validation
 import com.denchic45.kts.util.Colors
 import com.denchic45.kts.util.NetworkException
 import com.denchic45.kts.util.UUIDS
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.stuiversity.util.toUUID
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 
 class SubjectEditorViewModel @Inject constructor(
-    @Named(SubjectEditorDialog.SUBJECT_ID) subjectId: String?,
+    @Named(SubjectEditorDialog.SUBJECT_ID) _subjectId: String?,
     private val interactor: SubjectEditorInteractor,
+    private val findSubjectByIdUseCase: FindSubjectByIdUseCase,
     private val iconPickerInteractor: IconPickerInteractor,
     private val confirmInteractor: ConfirmInteractor
 ) : BaseViewModel() {
 
+    data class EditableSubjectState(
+        val name: String = "",
+        val shortname: String = "",
+    val iconName:String = ""
+    )
+
+    val uiState = MutableStateFlow<Resource<EditableSubjectState>>(Resource.Loading)
+
     val title = MutableLiveData<String>()
 
-    val icon = MutableLiveData<String>()
-
-//    val colorIcon = MutableLiveData(R.color.blue)
-
-    val nameField = MutableLiveData<String>()
+//    val icon = MutableLiveData<String>()
 
     val deleteBtnVisibility = MutableLiveData(true)
 
@@ -44,9 +59,18 @@ class SubjectEditorViewModel @Inject constructor(
     val openIconPicker = SingleLiveData<Void>()
 
     val showColors = MutableLiveData<Pair<List<Int>, Int>>()
-    private val uiValidator: UIValidator
-    private val uiEditor: UIEditor<Subject>
-    private val id: String = subjectId ?: UUIDS.createShort()
+    private val uiValidator: UIValidator = UIValidator.of(
+        Validation(Rule { uiEditor.hasBeenChanged() }),
+        Validation(Rule({ !uiState.value.isNullOrEmpty() }, "Нет названия")),
+        Validation(Rule({ !icon.value.isNullOrEmpty() }, "Нет иконки"))
+    )
+
+    private val uiEditor: UIEditor<Resource<EditableSubjectState>> = UIEditor(_subjectId == null) {
+        uiState.value
+    }
+
+    private val subjectId = _subjectId?.toUUID()
+
     private var colorName = ""
 
     fun onColorSelect(position: Int) {
@@ -88,10 +112,19 @@ class SubjectEditorViewModel @Inject constructor(
     private fun setupForExistItem() {
         title.value = "Редактировать предмет"
         viewModelScope.launch {
-            interactor.find(id).collect { subject: Subject? ->
-                subject?.let {
-                    uiEditor.oldItem = subject
-                    nameField.value = subject.name
+            findSubjectByIdUseCase(subjectId!!)
+                .onSuccess {subject->
+
+                    uiState.updateResource {
+                        EditableSubjectState(
+                            name = subject.name,
+                            shortname = subject.shortname,
+                            iconName = subject.iconName
+                        )
+                    }
+
+                    uiEditor.oldItem = uiState.value
+
 //                    colorIcon.value = Colors.colorIdOfName[subject.colorName]
 
 //                    currentSelectedColorPosition.value = IntStream.range(0, Colors.names.size)
@@ -108,10 +141,10 @@ class SubjectEditorViewModel @Inject constructor(
 //                        }
 
 //                    colorName = subject.colorName
-                } ?: run {
+                }.onFailure {
                     finish()
                 }
-            }
+
         }
     }
 
@@ -122,7 +155,7 @@ class SubjectEditorViewModel @Inject constructor(
 //    }
 
     fun onNameType(name: String) {
-        nameField.postValue(name)
+        uiState.updateResource { it.copy(name = name) }
         enablePositiveBtn.postValue(uiValidator.runValidates())
     }
 
@@ -155,25 +188,14 @@ class SubjectEditorViewModel @Inject constructor(
         viewModelScope.launch {
             openIconPicker.call()
             iconPickerInteractor.observeSelectedIcon().apply {
-                icon.value = this
+                uiState.updateResource { it.copy(iconName = this) }
                 enablePositiveBtn.postValue(uiValidator.runValidates())
             }
         }
     }
 
     init {
-        uiEditor = UIEditor(subjectId == null) {
-            Subject(
-                id,
-                nameField.value ?: "",
-                icon.value ?: ""
-            )
-        }
-        uiValidator = UIValidator.of(
-            Validation(Rule { uiEditor.hasBeenChanged() }),
-            Validation(Rule({ !nameField.value.isNullOrEmpty() }, "Нет названия")),
-            Validation(Rule({ !icon.value.isNullOrEmpty() }, "Нет иконки"))
-        )
+        uiValidator =
         if (uiEditor.isNew) setupForNewItem() else setupForExistItem()
     }
 }

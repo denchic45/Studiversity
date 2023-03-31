@@ -1,40 +1,21 @@
 package com.denchic45.kts.ui.adminPanel.timetableEditor.subjectChooser
 
-import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.model.Subject
-import com.denchic45.kts.data.repository.SubjectRepository
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.mapLatest
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SubjectChooserInteractor @Inject constructor(
-    private val subjectRepository: SubjectRepository,
-) {
-    var groupName: String = ""
-    var groupId: String = ""
+class SubjectChooserInteractor @Inject constructor() {
 
-    private val selectedSubject = Channel<Subject>()
+    private val selectedSubject = Channel<SubjectResponse>()
 
-    suspend fun receiveSelectedSubject(): Subject {
+    suspend fun receive(): SubjectResponse {
         return selectedSubject.receive()
     }
 
 
-    fun subjectsOfGroup(): Flow<Resource<List<Subject>>> = flow {
-        try {
-            emitAll(subjectRepository.findByGroup(groupId).mapLatest { Resource.Success(it) })
-        } catch (e: Exception) {
-            emit(Resource.Error(e))
-        }
-    }
-
-
-    suspend fun postSelectedSubject(subject: Subject) {
+    suspend fun postSelectedSubject(subject: SubjectResponse) {
         selectedSubject.send(subject)
     }
 }
