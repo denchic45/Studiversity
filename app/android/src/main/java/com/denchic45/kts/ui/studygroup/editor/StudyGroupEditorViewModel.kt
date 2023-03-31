@@ -6,52 +6,55 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.domain.model.Group
-import com.denchic45.kts.domain.model.Specialty
-import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.domain.onFailure
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
-import com.denchic45.kts.ui.teacherChooser.TeacherChooserInteractor
 import com.denchic45.kts.uieditor.UIEditor
 import com.denchic45.kts.uivalidator.Rule
 import com.denchic45.kts.uivalidator.UIValidator
 import com.denchic45.kts.uivalidator.Validation
 import com.denchic45.kts.util.NetworkException
-import com.denchic45.kts.util.UUIDS
-import com.github.michaelbull.result.onSuccess
+import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
+import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.stuiversity.util.optPropertyOf
+import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
 class StudyGroupEditorViewModel @Inject constructor(
-    @Named(StudyGroupEditorFragment.GROUP_ID) id: String?,
-    private val teacherChooserInteractor: TeacherChooserInteractor,
+    @Named(StudyGroupEditorFragment.GROUP_ID) _studyGroupId: String?,
+    private val userChooserInteractor: UserChooserInteractor,
     private val addStudyGroupUseCase: AddStudyGroupUseCase,
     private val updateStudyGroupUseCase: UpdateStudyGroupUseCase,
     private val removeStudyGroupUseCase: RemoveStudyGroupUseCase,
-    private val findGroupUseCase: FindGroupUseCase,
+    private val findStudyGroupUseCase: FindStudyGroupUseCase,
     private val confirmInteractor: ConfirmInteractor,
     private val findSpecialtyByContainsNameUseCase: FindSpecialtyByContainsNameUseCase,
     @Named("courses") val courseList: List<ListItem>
 ) : BaseViewModel() {
     val enableSpecialtyField = MutableLiveData<Boolean>()
     val nameField = MutableLiveData<String>()
-    val specialtyField = MutableLiveData<Specialty>()
+    val specialtyField = MutableLiveData<SpecialtyResponse?>()
     val showSpecialties = MutableLiveData<List<ListItem>>()
-    val courseField = MutableLiveData<String>()
-    val curatorField = MutableLiveData<User>()
+    val startYearField = MutableLiveData<Int?>()
+    val endYearField = MutableLiveData<Int?>()
     val fieldErrorMessage = SingleLiveData<Pair<Int, String?>>()
     val openTeacherChooser = SingleLiveData<Void>()
     private val typedSpecialtyByName = MutableSharedFlow<String>()
     private val uiValidator: UIValidator
-    private val uiEditor: UIEditor<Group>
-    private val id: String = id ?: UUIDS.createShort()
-    private var course: Int = 0
+    private val uiEditor: UIEditor<StudyGroupResponse>
 
-    private var foundSpecialties: List<Specialty>? = null
+    private val studyGroupId = _studyGroupId?.toUUID()
+
+    private var foundSpecialties: List<SpecialtyResponse>? = null
 
     companion object {
         const val GROUP_ID = "GroupEditor GROUP_ID"
@@ -59,27 +62,28 @@ class StudyGroupEditorViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            typedSpecialtyByName.flatMapLatest { specialtyName: String ->
+            typedSpecialtyByName.map { specialtyName: String ->
                 findSpecialtyByContainsNameUseCase(specialtyName)
             }.collect { result ->
                 result.onSuccess {
                     foundSpecialties = it
                     showSpecialties.postValue(
                         it.map { specialty ->
-                            ListItem(id = specialty.id, title = specialty.name)
+                            ListItem(id = specialty.id.toString(), title = specialty.name)
                         }
                     )
                 }
             }
         }
-        uiEditor = UIEditor(id == null) {
-            Group(
-                this.id,
-                nameField.value ?: "",
-                course,
-                specialtyField.value ?: Specialty.createEmpty(),
-                curatorField.value ?: User.createEmpty()
-
+        uiEditor = UIEditor(studyGroupId == null) {
+            StudyGroupResponse(
+                id = studyGroupId!!,
+                name = nameField.value ?: "",
+                academicYear = AcademicYear(
+                    startYearField.value!!.toInt(),
+                    endYearField.value!!.toInt()
+                ),
+                specialty = specialtyField.value
             )
         }
         uiValidator = UIValidator.of(
@@ -98,10 +102,12 @@ class StudyGroupEditorViewModel @Inject constructor(
                 )
             )
                 .sendMessageResult(R.id.til_specialty, fieldErrorMessage),
-            Validation(Rule({ !TextUtils.isEmpty(courseField.value) }, "Курс группы обязателен"))
-                .sendMessageResult(R.id.til_course, fieldErrorMessage),
-            Validation(Rule({ curatorField.value != null }, R.string.error_not_curator))
-                .onErrorRun { showSnackBar(R.string.error_not_curator) }
+            Validation(
+                Rule(
+                    { startYearField.value != null && endYearField != null },
+                    "Курс группы обязателен"
+                )
+            )
         )
 
         if (uiEditor.isNew)
@@ -123,24 +129,27 @@ class StudyGroupEditorViewModel @Inject constructor(
 
     private fun existGroup() {
         viewModelScope.launch {
-            findGroupUseCase(id).collect { group ->
-                group?.let {
+            findStudyGroupUseCase(studyGroupId!!).collect { resource ->
+                resource.onSuccess { group ->
                     uiEditor.oldItem = group
-                    uiEditor.oldItem = group
-                    curatorField.value = group.curator
                     nameField.value = group.name
                     specialtyField.value = group.specialty
-                    courseField.value = courseList[group.course - 1].title
-
-                    course = group.course
-                } ?: finish()
+                    startYearField.value = group.academicYear.start
+                    endYearField.value = group.academicYear.end
+                }.onFailure {
+                    showToast(R.string.error_unknown)
+                    finish()
+                }
             }
         }
     }
 
-    fun onCourseSelect(position: Int) {
-        courseField.value = courseList[position].title
-        course = (courseList[position].content as Double).toInt()
+    fun onStartYearType(startYear: String) {
+        startYearField.value = startYear.toInt()
+    }
+
+    fun onEndYearType(endYear: String) {
+        endYearField.value = endYear.toInt()
     }
 
     fun onGroupNameType(name: String) {
@@ -204,16 +213,6 @@ class StudyGroupEditorViewModel @Inject constructor(
         }
     }
 
-    fun onCuratorClick() {
-        viewModelScope.launch {
-            openTeacherChooser.call()
-            teacherChooserInteractor.receiveSelectTeacher().apply {
-                uiEditor.item.curator = this
-                curatorField.setValue(this)
-            }
-        }
-    }
-
     fun onFabClick() {
         uiValidator.runValidates { saveChanges() }
     }
@@ -222,9 +221,30 @@ class StudyGroupEditorViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (uiEditor.isNew) {
-                    addStudyGroupUseCase(uiEditor.item)
+                    addStudyGroupUseCase(
+                        CreateStudyGroupRequest(
+                            name = nameField.value!!,
+                            academicYear = AcademicYear(
+                                startYearField.value!!,
+                                endYearField.value!!
+                            ),
+                            specialtyId = specialtyField.value?.id,
+                            curatorId = null
+                        )
+                    )
                 } else {
-                    updateStudyGroupUseCase(uiEditor.item)
+                    updateStudyGroupUseCase(
+                        studyGroupId!!, UpdateStudyGroupRequest(
+                            name = optPropertyOf(nameField.value!!),
+                            academicYear = optPropertyOf(
+                                AcademicYear(
+                                    startYearField.value!!,
+                                    endYearField.value!!
+                                )
+                            ),
+                            specialtyId = optPropertyOf(specialtyField.value?.id)
+                        )
+                    )
                 }
                 finish()
             } catch (e: Exception) {

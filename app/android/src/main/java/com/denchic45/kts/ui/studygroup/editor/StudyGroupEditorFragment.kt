@@ -6,12 +6,9 @@ import android.widget.AdapterView
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.kts.R
 import com.denchic45.kts.customPopup.ListPopupWindowAdapter
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.databinding.FragmentGroupEditorBinding
 import com.denchic45.kts.rx.EditTextTransformer
 import com.denchic45.kts.ui.base.BaseFragment
@@ -36,10 +33,10 @@ class StudyGroupEditorFragment :
         specialtyAdapter = ListPopupWindowAdapter(requireContext(), ArrayList())
         viewBinding.apply {
             etSpecialty.setAdapter(specialtyAdapter)
-            etCourse.setAdapter(ListPopupWindowAdapter(requireContext(), viewModel.courseList))
-            etCourse.setOnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
-                viewModel.onCourseSelect(position)
-            }
+//            etCourse.setAdapter(ListPopupWindowAdapter(requireContext(), viewModel.courseList))
+//            etCourse.setOnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+//                viewModel.onAcademicYearSelect(position)
+//            }
             etSpecialty.setOnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                 viewModel.onSpecialtySelect(position)
             }
@@ -50,7 +47,7 @@ class StudyGroupEditorFragment :
                 setOnClickListener { viewModel.onFabClick() }
             }
 
-            rlCurator.setOnClickListener { viewModel.onCuratorClick() }
+
             curatorHeader.text = "Куратор"
             etSpecialty.textChanges()
                 .compose(EditTextTransformer())
@@ -58,6 +55,14 @@ class StudyGroupEditorFragment :
             etGroupName.textChanges()
                 .compose(EditTextTransformer())
                 .subscribe { name: String -> viewModel.onGroupNameType(name) }
+
+            etStartYear.textChanges()
+                .compose(EditTextTransformer())
+                .subscribe { viewModel.onStartYearType(it) }
+
+            etEndYear.textChanges()
+                .compose(EditTextTransformer())
+                .subscribe { viewModel.onEndYearType(it) }
 
             viewModel.enableSpecialtyField.observe(viewLifecycleOwner) { enable: Boolean ->
                 etSpecialty.isEnabled = enable
@@ -67,48 +72,47 @@ class StudyGroupEditorFragment :
                 viewLifecycleOwner
             ) { navController.navigate(R.id.teacherChooserFragment) }
 
-            viewModel.curatorField.observe(viewLifecycleOwner) { user: User ->
-                Glide.with(this@StudyGroupEditorFragment)
-                    .load(user.photoUrl)
-                    .transition(DrawableTransitionOptions.withCrossFade(100))
-                    .into(ivCuratorAvatar)
-                tvCuratorName.text = user.fullName
-            }
+
             viewModel.nameField.observe(
                 viewLifecycleOwner
             ) { text: String -> if (etGroupName.text.toString() != text) etGroupName.setText(text) }
             viewModel.specialtyField.observe(
                 viewLifecycleOwner
             ) { specialty ->
-                if (etSpecialty.text.toString() != specialty.name) etSpecialty.setText(
-                    specialty.name
+                if (etSpecialty.text.toString() != specialty?.name) etSpecialty.setText(
+                    specialty?.name
                 )
             }
-            viewModel.courseField.observe(viewLifecycleOwner) { courseResName: String? ->
-                val resId =
-                    resources.getIdentifier(courseResName, "string", requireActivity().packageName)
-                etCourse.setText(resId)
+            viewModel.startYearField.observe(viewLifecycleOwner) { start ->
+                start?.let {
+                    etStartYear.setText(it.toString())
+                }
             }
-        }
 
-        viewModel.fieldErrorMessage.observe(viewLifecycleOwner) { idWithMessagePair: Pair<Int, String?> ->
-            val textInputLayout: TextInputLayout = binding.root.findViewById(
-                idWithMessagePair.first
-            )
-            if (idWithMessagePair.second != null) {
-                textInputLayout.error = idWithMessagePair.second
-            } else {
-                textInputLayout.error = null
+            viewModel.endYearField.observe(viewLifecycleOwner) {end->
+                end?.let {
+                    etEndYear.setText(it.toString())
+                }
             }
+
+            viewModel.fieldErrorMessage.observe(viewLifecycleOwner) { idWithMessagePair: Pair<Int, String?> ->
+                val textInputLayout: TextInputLayout = binding.root.findViewById(
+                    idWithMessagePair.first
+                )
+                if (idWithMessagePair.second != null) {
+                    textInputLayout.error = idWithMessagePair.second
+                } else {
+                    textInputLayout.error = null
+                }
+            }
+
+            viewModel.showSpecialties.observe(
+                viewLifecycleOwner
+            ) { listItems: List<ListItem> -> specialtyAdapter!!.updateList(listItems) }
+
+        }}
+
+        companion object {
+            const val GROUP_ID = "GroupEditorFragment GROUP_ID"
         }
-
-        viewModel.showSpecialties.observe(
-            viewLifecycleOwner
-        ) { listItems: List<ListItem> -> specialtyAdapter!!.updateList(listItems) }
-
     }
-
-    companion object {
-        const val GROUP_ID = "GroupEditorFragment GROUP_ID"
-    }
-}

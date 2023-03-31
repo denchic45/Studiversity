@@ -4,10 +4,9 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.ui.base.BaseViewModel
+import com.denchic45.kts.ui.model.UiImage
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,34 +19,20 @@ class CreatorViewModel @Inject constructor() : BaseViewModel() {
         when (position) {
             0 -> {
                 navigateTo(
-                    MobileNavigationDirections.actionGlobalUserEditorFragment(
-                        userId = null,
-                        role = UserRole.STUDENT.toString(),
-                        groupId = null
-                    )
+                    MobileNavigationDirections.actionGlobalUserEditorFragment(null)
                 )
             }
-            1 -> {
-                navigateTo(
-                    MobileNavigationDirections.actionGlobalUserEditorFragment(
-                        userId = null,
-                        role = UserRole.TEACHER.toString(),
-                        groupId = null
-                    )
-                )
-            }
-            2 -> openGroupEditor.call()
-            3 -> openSubjectEditor.call()
-            4 -> openSpecialtyEditor.call()
-            5 -> openCourseEditor.call()
+            1 -> openGroupEditor.call()
+            2 -> openSubjectEditor.call()
+            3 -> openSpecialtyEditor.call()
+            4 -> openCourseEditor.call()
         }
         viewModelScope.launch { finish() }
     }
 
     fun createEntityList(): List<ListItem> {
         return listOf(
-            ListItem(title = "Студента", icon = UiImage.IdImage(R.drawable.ic_student)),
-            ListItem(title = "Преподавателя", icon = UiImage.IdImage(R.drawable.ic_teacher)),
+            ListItem(title = "Пользователя", icon = UiImage.IdImage(R.drawable.ic_user)),
             ListItem(title = "Группу", icon = UiImage.IdImage(R.drawable.ic_group)),
             ListItem(title = "Предмет", icon = UiImage.IdImage(R.drawable.ic_subject)),
             ListItem(title = "Специальность", icon = UiImage.IdImage(R.drawable.ic_specialty)),

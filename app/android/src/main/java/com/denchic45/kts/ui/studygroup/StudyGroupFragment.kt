@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -27,9 +26,9 @@ import com.example.appbarcontroller.appbarcontroller.AppBarController
 class StudyGroupFragment : BaseFragment<StudyGroupViewModel, FragmentGroupBinding>(
     R.layout.fragment_group,
     R.menu.options_group
-), HasNavArgs<GroupFragmentArgs> {
+), HasNavArgs<StudyGroupFragmentArgs> {
 
-    override val navArgs: GroupFragmentArgs by navArgs()
+    override val navArgs: StudyGroupFragmentArgs by navArgs()
     override val binding: FragmentGroupBinding by viewBinding(FragmentGroupBinding::bind)
     override val viewModel: StudyGroupViewModel by viewModels { viewModelFactory }
     private lateinit var appBarController: AppBarController
@@ -43,15 +42,11 @@ class StudyGroupFragment : BaseFragment<StudyGroupViewModel, FragmentGroupBindin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.isExist.collectWhenResumed(lifecycleScope)
+        viewModel.isExist.collectWhenResumed(viewLifecycleOwner)
 
-        viewModel.menuItemVisibility.observe(
-            viewLifecycleOwner
-        ) { idAndVisiblePair: Pair<Int, Boolean> ->
-            val menuItem = menu.findItem(
-                idAndVisiblePair.first
-            )
-            if (menuItem != null) menuItem.isVisible = idAndVisiblePair.second
+        viewModel.menuItemVisibility.observe(viewLifecycleOwner) { (id, visible) ->
+            val menuItem = menu.findItem(id)
+            if (menuItem != null) menuItem.isVisible = visible
         }
 
         viewModel.openGroupEditor.observe(viewLifecycleOwner) { groupId ->

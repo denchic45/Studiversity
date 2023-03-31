@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import java.util.*
 import javax.inject.Inject
 
-class FindGroupUseCase @Inject constructor(
+class FindStudyGroupUseCase @Inject constructor(
     private val studyGroupRepository: StudyGroupRepository,
 ) {
 

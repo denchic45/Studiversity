@@ -11,19 +11,18 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.denchic45.kts.R
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.ui.model.onId
 import com.denchic45.kts.databinding.ItemEntityBinding
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
-import com.denchic45.kts.ui.base.HasViewModel
-import com.denchic45.kts.ui.base.NavigationCommand
 import com.denchic45.kts.ui.adapter.BaseViewHolder
 import com.denchic45.kts.ui.adapter.OnItemClickListener
+import com.denchic45.kts.ui.base.HasViewModel
+import com.denchic45.kts.ui.base.NavigationCommand
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
+import com.denchic45.kts.ui.model.onId
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
 import com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog
 import com.denchic45.kts.util.collectWhenResumed
@@ -51,14 +50,17 @@ class CreatorDialog : BottomSheetDialogFragment(), HasViewModel<CreatorViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        viewModel.navigate.collectWhenResumed(viewLifecycleOwner.lifecycleScope) { command ->
+        viewModel.navigate.collectWhenResumed(viewLifecycleOwner) { command ->
             when (command) {
                 is NavigationCommand.To -> findNavController().navigate(command.directions)
                 NavigationCommand.Back -> findNavController().popBackStack()
                 is NavigationCommand.BackTo ->
                     findNavController().popBackStack(command.destinationId, false)
                 NavigationCommand.ToRoot ->
-                    findNavController().popBackStack(findNavController().graph.startDestinationId, false)
+                    findNavController().popBackStack(
+                        findNavController().graph.startDestinationId,
+                        false
+                    )
             }
         }
 

@@ -3,22 +3,45 @@ package com.denchic45.kts.ui.studygroup
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.data.domain.model.UserRole
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.stateInResource
+import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.uipermissions.Permission
 import com.denchic45.kts.uipermissions.UiPermissions
+import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.util.toUUID
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
 class StudyGroupViewModel @Inject constructor(
-    @Named(StudyGroupFragment.GROUP_ID) groupId: String?,
-    private val interactor: StudyGroupInteractor
+    @Named(StudyGroupFragment.GROUP_ID) _studyGroupId: String,
+    private val interactor: StudyGroupInteractor,
+    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase
 ) : BaseViewModel() {
+
+    private val studyGroupId = _studyGroupId.toUUID()
+
+    private val capabilities = flow {
+        emit(
+            checkUserCapabilitiesInScopeUseCase(
+                scopeId = studyGroupId,
+                capabilities = listOf(Capability.WriteStudyGroup)
+            )
+        )
+    }.onEach { resource ->
+        resource.onSuccess {
+            if (it.hasCapability(Capability.WriteStudyGroup)) {
+                initTabs.setValue(3)
+            } else {
+                initTabs.setValue(2)
+            }
+        }
+    }.stateInResource(viewModelScope)
 
     val initTabs = MutableLiveData(2)
 
@@ -26,7 +49,7 @@ class StudyGroupViewModel @Inject constructor(
 
     val openGroupEditor = SingleLiveData<String>()
 
-    val groupId: String = groupId ?: interactor.yourGroupId
+    val groupId: String = _studyGroupId ?: interactor.yourGroupId
 
     val isExist = interactor.isExistGroup(this@StudyGroupViewModel.groupId).onEach { exist ->
         Log.d("lol", "exist isExistGroup: $exist")
@@ -34,37 +57,33 @@ class StudyGroupViewModel @Inject constructor(
             finish()
         }
     }
-    private val uiPermissions: UiPermissions
 
     fun onPrepareOptions(currentItem: Int) {
-        menuItemVisibility.value = Pair(
-            R.id.option_edit_group,
-            uiPermissions.isAllowed(ALLOW_EDIT_GROUP)
-        )
-        when (currentItem) {
-            PAGE_GROUP_USERS -> menuItemVisibility.setValue(
-                Pair(
-                    R.id.option_add_student, uiPermissions.isAllowed(
-                        ALLOW_EDIT_GROUP
-                    )
-                )
+        capabilities.value.onSuccess {
+            menuItemVisibility.value = Pair(
+                R.id.option_edit_group,
+                it.hasCapability(Capability.WriteStudyGroup)
             )
-            PAGE_GROUP_SUBJECTS -> menuItemVisibility.setValue(Pair(R.id.option_add_student, false))
+            when (currentItem) {
+                PAGE_GROUP_USERS -> {
+//                menuItemVisibility.setValue(
+//                    Pair(
+//                        R.id.option_add_student, uiPermissions.isAllowed(
+//                            ALLOW_EDIT_GROUP
+//                        )
+//                    )
+//                )
+                }
+                PAGE_GROUP_SUBJECTS -> {
+//                menuItemVisibility.setValue(Pair(R.id.option_add_student, false))
+                }
+            }
         }
     }
 
     override fun onOptionClick(itemId: Int) {
         when (itemId) {
             R.id.option_edit_group -> openGroupEditor.setValue(groupId)
-            R.id.option_add_student -> {
-                navigateTo(
-                    MobileNavigationDirections.actionGlobalUserEditorFragment(
-                        userId = null,
-                        role = UserRole.STUDENT.toString(),
-                        groupId = groupId
-                    )
-                )
-            }
         }
     }
 
@@ -90,19 +109,6 @@ class StudyGroupViewModel @Inject constructor(
             interactor.getNameByGroupId(this@StudyGroupViewModel.groupId).collect {
                 toolbarTitle = it
             }
-        }
-
-
-        uiPermissions = UiPermissions(interactor.findThisUser())
-        uiPermissions.putPermissions(
-            Permission(
-                ALLOW_EDIT_GROUP, { hasAdminPerms() }, { curatorFor(this@StudyGroupViewModel.groupId) }
-            )
-        )
-        if (uiPermissions.isAllowed(ALLOW_EDIT_GROUP)) {
-            initTabs.setValue(3)
-        } else {
-            initTabs.setValue(2)
         }
     }
 }

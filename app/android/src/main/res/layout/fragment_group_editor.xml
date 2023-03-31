@@ -57,68 +57,52 @@
                     android:scrollHorizontally="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_course"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:errorEnabled="true"
-                app:hintEnabled="false">
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_start_year"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="16dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Год начала"
+                    app:errorEnabled="true">
 
-                <AutoCompleteTextView
-                    android:id="@+id/et_course"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:cursorVisible="false"
-                    android:ellipsize="end"
-                    android:focusable="false"
-                    android:hint="Выберите курс"
-                    android:inputType="none"
-                    android:maxLines="1"
-                    android:scrollHorizontally="true" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_start_year"
 
-            <include layout="@layout/item_header" />
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:ellipsize="end"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1"
+                        android:scrollHorizontally="true" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <RelativeLayout
-                android:id="@+id/rl_curator"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground"
-                android:gravity="center_vertical">
-
-                <androidx.constraintlayout.utils.widget.ImageFilterView
-                    android:id="@+id/iv_curator_avatar"
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
-                    app:roundPercent="1"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_end_year"
+                    android:layout_weight="1"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
                     android:layout_marginStart="16dp"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/ic_user" />
+                    android:layout_height="wrap_content"
+                    android:hint="Год окончания"
+                    app:errorEnabled="true">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="16sp"
-                    android:layout_toEndOf="@id/iv_curator_avatar"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_end_year"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:ellipsize="end"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1"
+                        android:scrollHorizontally="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tv_curator_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/gilroy_medium"
-                        android:text="Добавьте куратора"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-            </RelativeLayout>
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

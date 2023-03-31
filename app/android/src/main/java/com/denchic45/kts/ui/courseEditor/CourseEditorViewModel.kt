@@ -35,14 +35,14 @@ class CourseEditorViewModel @Inject constructor(
     private val findCourseByIdUseCase: FindCourseByIdUseCase
 ) : BaseViewModel() {
 
-    data class CourseEditingState(
+    data class EditableCourseState(
         val name: String = "",
         val subjectId: UUID?,
         val subjectName: String?,
         val subjectIconUrl: String?,
     )
 
-    val uiState = MutableStateFlow<Resource<CourseEditingState>>(Resource.Loading)
+    val uiState = MutableStateFlow<Resource<EditableCourseState>>(Resource.Loading)
 
     private val typedSubjectName = MutableSharedFlow<String>()
 
@@ -68,7 +68,7 @@ class CourseEditorViewModel @Inject constructor(
     private var foundSubjects: List<SubjectResponse>? = null
     private val subjectId: String? = null
 
-    private val uiEditor: UIEditor<Resource<CourseEditingState>> = UIEditor(_courseId == null) {
+    private val uiEditor: UIEditor<Resource<EditableCourseState>> = UIEditor(_courseId == null) {
         uiState.value
     }
 
@@ -94,7 +94,7 @@ class CourseEditorViewModel @Inject constructor(
             viewModelScope.launch {
                 findCourseByIdUseCase(courseId).onSuccess { course ->
                     uiState.updateResource {
-                        CourseEditingState(
+                        EditableCourseState(
                             name = course.name,
                             subjectId = course.subject?.id,
                             subjectName = course.subject?.name,

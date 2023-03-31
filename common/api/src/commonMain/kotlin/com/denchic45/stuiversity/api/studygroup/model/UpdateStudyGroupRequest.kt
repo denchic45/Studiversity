@@ -13,7 +13,7 @@ data class UpdateStudyGroupRequest(
     @Serializable(with = OptionalPropertySerializer::class)
     val academicYear: OptionalProperty<AcademicYear> = OptionalProperty.NotPresent,
     @Serializable(with = OptionalPropertySerializer::class)
-    val specialtyId: OptionalProperty<String?> = OptionalProperty.NotPresent,
+    val specialtyId: OptionalProperty<@Serializable(UUIDSerializer::class) UUID?> = OptionalProperty.NotPresent,
     @Serializable(with = OptionalPropertySerializer::class)
     val curatorId: OptionalProperty<@Serializable(UUIDSerializer::class) UUID?> = OptionalProperty.NotPresent
 )
