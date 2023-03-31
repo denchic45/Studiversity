@@ -14,7 +14,7 @@ import com.denchic45.kts.ui.adapter.PreferenceItem
 import com.denchic45.kts.ui.adapter.PreferenceSwitchItem
 import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorInteractor
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.domain.usecase.GroupChooserInteractor
+import com.denchic45.kts.ui.login.groupChooser.GroupChooserInteractor
 import com.denchic45.kts.util.NetworkException
 import com.denchic45.kts.util.updated
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse

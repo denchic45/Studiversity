@@ -18,6 +18,7 @@ import org.apache.poi.xwpf.usermodel.XWPFTable
 import org.apache.poi.xwpf.usermodel.XWPFTableCell
 import java.io.File
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class TimetableParser(
@@ -50,7 +51,7 @@ class TimetableParser(
             .apply { cachedUsers[surname] = this }
     }
 
-    suspend fun parseDoc(docFile: File): kotlin.collections.List<Pair<StudyGroupResponse, TimetableResponse>> {
+    suspend fun parseDoc(docFile: File): List<Pair<StudyGroupResponse, TimetableResponse>> {
         val timetables: MutableList<Pair<StudyGroupResponse, TimetableResponse>> = mutableListOf()
         try {
             val wordDoc = XWPFDocument(docFile.inputStream())
@@ -103,6 +104,11 @@ class TimetableParser(
         currentRow = 3
         currentDayOfWeek = 0
         while (!table.getRow(currentRow).getCell(0).text.contains("ПОНЕДЕЛЬНИК")) currentRow++
+
+        val weekOfYear = table.getRow(currentRow).getCell(0).text
+            .toLocalDate(DatePatterns.DD_MM_yy)
+            .format(DateTimeFormatter.ofPattern("YYYY_ww"))
+
         for (i in 0 until STUDY_DAY_COUNT) {
             val dateInCell = table.getRow(currentRow).getCell(0).text
             currentRow++
@@ -115,6 +121,7 @@ class TimetableParser(
             }
         }
         return TimetableResponse(
+            weekOfYear,
             weekLessons[0],
             weekLessons[1],
             weekLessons[2],

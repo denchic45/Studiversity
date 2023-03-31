@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TimetableResponse(
+    val weekOfYear: String,
     val monday: List<PeriodResponse>,
     val tuesday: List<PeriodResponse>,
     val wednesday: List<PeriodResponse>,
