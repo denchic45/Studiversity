@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.FindStudyGroupByContainsNameUseCase
-import com.denchic45.kts.domain.usecase.GroupChooserInteractor
 import com.denchic45.kts.ui.base.chooser.ChooserViewModel
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.flow.Flow

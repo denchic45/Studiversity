@@ -1,4 +1,4 @@
-package com.denchic45.kts.domain.usecase
+package com.denchic45.kts.ui.login.groupChooser
 
 
 import com.denchic45.kts.data.repository.StudyGroupRepository

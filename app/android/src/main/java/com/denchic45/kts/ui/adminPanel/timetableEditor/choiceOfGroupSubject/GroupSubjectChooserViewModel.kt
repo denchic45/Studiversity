@@ -7,6 +7,7 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.ui.adminPanel.timetableEditor.subjectChooser.SubjectChooserInteractor
 import com.denchic45.kts.ui.base.BaseViewModel
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -17,7 +18,7 @@ class GroupSubjectChooserViewModel @Inject constructor(
     private val chooserInteractor: SubjectChooserInteractor
 ) : BaseViewModel() {
 
-    val showSubjectsOfGroup: StateFlow<Resource<List<Subject>>> =
+    val showSubjectsOfGroup: StateFlow<Resource<List<SubjectResponse>>> =
         chooserInteractor.subjectsOfGroup()
             .stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading)
 
@@ -41,7 +42,7 @@ class GroupSubjectChooserViewModel @Inject constructor(
     init {
         toolbarTitle = "Предметы " + chooserInteractor.groupName
         viewModelScope.launch {
-            chooserInteractor.receiveSelectedSubject()
+            chooserInteractor.receive()
             finish()
         }
     }

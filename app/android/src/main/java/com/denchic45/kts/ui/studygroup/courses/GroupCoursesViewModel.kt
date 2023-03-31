@@ -1,41 +1,44 @@
 package com.denchic45.kts.ui.studygroup.courses
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.domain.model.CourseHeader
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindCoursesByGroupUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.base.NavigationCommand
 import com.denchic45.kts.ui.course.CourseFragmentDirections
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import com.denchic45.stuiversity.util.toUUID
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
 class GroupCoursesViewModel @Inject constructor(
-    interactor: GroupCoursesInteractor,
     findCoursesByGroupUseCase: FindCoursesByGroupUseCase,
-    @Named(GroupCoursesFragment.GROUP_ID) groupId: String?,
+    @Named(GroupCoursesFragment.GROUP_ID) _studyGroupId: String,
 ) : BaseViewModel() {
     val clearItemsSelection = SingleLiveData<Set<Int>>()
     val selectItem = MutableLiveData<Pair<Int, Boolean>>()
-    private val groupId: String = groupId ?: interactor.yourGroupId
 
-    var courses: StateFlow<List<CourseHeader>> = findCoursesByGroupUseCase(this.groupId).stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        emptyList())
+    private val studyGroupId = _studyGroupId.toUUID()
+
+    var courses = flow {
+        emit(findCoursesByGroupUseCase(studyGroupId))
+    }.stateInResource(viewModelScope)
 
     fun onCourseItemClick(position: Int) {
-        Log.d("lol", "onCourseItemClick: ")
-        viewModelScope.launch {
-            Log.d("lol", "onCourseItemClick emit: ")
-            navigate.emit(NavigationCommand.To(CourseFragmentDirections.actionGlobalCourseFragment(
-                courses.value[position].id)))
+        courses.value.onSuccess { courses ->
+            viewModelScope.launch {
+                navigate.emit(
+                    NavigationCommand.To(
+                        CourseFragmentDirections.actionGlobalCourseFragment(
+                            courses[position].id.toString()
+                        )
+                    )
+                )
+            }
         }
     }
 

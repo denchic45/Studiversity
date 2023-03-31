@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentGroupCoursesBinding
-import com.denchic45.kts.domain.model.CourseHeader
-import com.denchic45.kts.ui.adapter.CourseAdapter
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.adapter.CourseAdapterDelegate
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.util.collectWhenStarted
@@ -43,7 +41,7 @@ class GroupCoursesFragment : BaseFragment<GroupCoursesViewModel, FragmentGroupCo
         }
 
         viewModel.courses.collectWhenStarted(viewLifecycleOwner) { courses ->
-            adapter.submitList(courses)
+            courses.onSuccess(adapter::submit)
         }
 
         viewModel.selectItem.observe(viewLifecycleOwner) { (position, select) ->
@@ -56,8 +54,8 @@ class GroupCoursesFragment : BaseFragment<GroupCoursesViewModel, FragmentGroupCo
     }
 
     private fun selectSubjectTeacherItem(position: Int, select: Boolean) {
-        val holder =
-            binding.rvCourse.findViewHolderForLayoutPosition(position) as CourseAdapter.CourseHolder?
+        val holder = binding.rvCourse
+            .findViewHolderForLayoutPosition(position) as CourseAdapterDelegate.CourseHolder?
         holder!!.setSelect(select)
     }
 
