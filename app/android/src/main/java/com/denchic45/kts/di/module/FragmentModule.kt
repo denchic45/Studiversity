@@ -36,7 +36,6 @@ import com.denchic45.kts.ui.tasks.TasksFragment
 import com.denchic45.kts.ui.tasks.completed.CompletedTasksFragment
 import com.denchic45.kts.ui.tasks.overdue.OverdueTasksFragment
 import com.denchic45.kts.ui.tasks.upcoming.UpcomingTasksFragment
-import com.denchic45.kts.ui.teacherChooser.TeacherChooserFragment
 import com.denchic45.kts.ui.timetable.TimetableFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -94,9 +93,6 @@ interface FragmentModule {
 
     @ContributesAndroidInjector
     fun contributeChoiceOfGroupSubjectFragment(): ChoiceOfGroupSubjectFragment
-
-    @ContributesAndroidInjector
-    fun contributeTeacherChooserFragment(): TeacherChooserFragment
 
     @ContributesAndroidInjector
     fun contributeGroupChooserFragment(): GroupChooserFragment
