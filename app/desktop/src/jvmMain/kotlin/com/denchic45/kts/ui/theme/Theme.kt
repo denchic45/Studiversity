@@ -85,5 +85,3 @@ fun AppTheme(
         MaterialTheme(colorScheme = colors, typography = AppTypography, content = content)
     }
 }
-
-internal val LocalSpacing = staticCompositionLocalOf { Spacing() }
