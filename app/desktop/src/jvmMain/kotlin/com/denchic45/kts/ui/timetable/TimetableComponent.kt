@@ -41,9 +41,7 @@ class TimetableComponent(
         metaRepository.observeBellSchedule
     ) { timetableResource, bellSchedule ->
         timetableResource.map { timetable ->
-            val latestEventOrder = max(timetable.days.maxOf { it.last().order }, 6)
-
-            timetable.toTimetableViewState(latestEventOrder, bellSchedule)
+            timetable.toTimetableViewState(bellSchedule)
         }
     }.stateInResource(coroutineScope)
 

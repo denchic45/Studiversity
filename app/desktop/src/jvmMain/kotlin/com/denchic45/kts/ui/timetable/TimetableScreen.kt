@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.timetable.model.PeriodDetails
+import com.denchic45.kts.domain.timetable.model.PeriodItem
 import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.components.TextButtonContent
 import com.denchic45.stuiversity.util.DatePatterns
@@ -92,7 +94,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
 
 @Composable
 @Preview
-fun TimetableContent(timetableViewState: TimetableViewState) {
+fun TimetableContent(weekTimetableViewState: WeekTimetableViewState) {
     val verticalScroll: ScrollState = rememberScrollState()
     val horizontalScroll: ScrollState = rememberScrollState()
 
@@ -102,29 +104,29 @@ fun TimetableContent(timetableViewState: TimetableViewState) {
                 Divider(Modifier.height(24.dp).width(1.dp))
             }
             Divider(Modifier.fillMaxWidth().height(1.dp))
-            LessonOrders(verticalScroll, timetableViewState.orders)
+            LessonOrders(verticalScroll, weekTimetableViewState.orders)
         }
         BoxWithConstraints(Modifier) {
             val modifierHorScroll =
                 if (maxWidth < 1000.dp) Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
                 else Modifier
             Column {
-                DaysOfWeekHeader(modifierHorScroll, timetableViewState.mondayDate)
-                LessonCells(modifierHorScroll, verticalScroll, timetableViewState)
+                DaysOfWeekHeader(modifierHorScroll, weekTimetableViewState.mondayDate)
+                LessonCells(modifierHorScroll, verticalScroll, weekTimetableViewState)
             }
         }
     }
 }
 
 @Composable
-fun LessonOrders(state: ScrollState, orders: List<TimetableViewState.CellOrder>) {
+fun LessonOrders(state: ScrollState, orders: List<CellOrder>) {
     Column(Modifier.fillMaxWidth().verticalScroll(state), horizontalAlignment = Alignment.End) {
         repeat(orders.size) { LessonsOrder(orders[it]) }
     }
 }
 
 @Composable
-private fun LessonsOrder(cellOrder: TimetableViewState.CellOrder) {
+private fun LessonsOrder(cellOrder: CellOrder) {
     Row(Modifier.height(129.dp)) {
         Column(horizontalAlignment = Alignment.End) {
             Text(
@@ -147,9 +149,9 @@ private fun LessonsOrder(cellOrder: TimetableViewState.CellOrder) {
 
 
 @Composable
-private fun DaysOfWeekHeader(modifierHorScroll: Modifier, selectedDate: LocalDate) {
+private fun DaysOfWeekHeader(modifierHorScroll: Modifier, mondayDate: LocalDate) {
     Row(modifierHorScroll) {
-        repeat(6) { DayOfWeekCell(selectedDate.plusDays(it.toLong())) }
+        repeat(6) { DayOfWeekCell(mondayDate.plusDays(it.toLong())) }
     }
     Divider(Modifier.fillMaxWidth().height(1.dp))
 }
@@ -179,7 +181,11 @@ fun RowScope.DayOfWeekCell(date: LocalDate) {
 
 @Composable
 @Preview
-fun LessonCells(modifier: Modifier, verticalScroll: ScrollState, timetable: TimetableViewState) {
+fun LessonCells(
+    modifier: Modifier,
+    verticalScroll: ScrollState,
+    timetable: WeekTimetableViewState
+) {
     Row(modifier.verticalScroll(verticalScroll)) {
         repeat(6) { dayOfWeek ->
             Row(Modifier.weight(1F).height(IntrinsicSize.Max)) {
@@ -200,36 +206,38 @@ fun LessonCells(modifier: Modifier, verticalScroll: ScrollState, timetable: Time
 @OptIn(ExperimentalUnitApi::class)
 @Composable
 @Preview
-fun LessonCell(cell: TimetableViewState.Cell) {
+fun LessonCell(item: PeriodItem?) {
     Column(Modifier.widthIn(min = 196.dp).height(128.dp).padding(18.dp)) {
-        when (cell) {
-            is TimetableViewState.Cell.Event -> {
-                Icon(
-                    painter = painterResource("drawable/${cell.iconName}.xml"),
-                    modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.secondary,
-                    contentDescription = null
-                )
-                Text(
-                    cell.name,
-                    Modifier.padding(top = 8.dp),
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    "2-й корпус",
-                    Modifier.padding(top = 4.dp),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            TimetableViewState.Cell.Empty -> {
-                Text(
+        item?.let {
+            when (val details = item.details) {
+                is PeriodDetails.Lesson -> {
+                    Icon(
+                        painter = painterResource("drawable/${details.subjectIconUrl}.xml"),
+                        modifier = Modifier.size(28.dp),
+                        tint = MaterialTheme.colorScheme.secondary,
+                        contentDescription = null
+                    )
+                    Text(
+                        details.subjectName,
+                        Modifier.padding(top = 8.dp),
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Text(
+                        "2-й корпус",
+                        Modifier.padding(top = 4.dp),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                is PeriodDetails.Event -> Text(
                     "Пусто",
                     fontSize = TextUnit(18F, TextUnitType.Sp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.titleLarge
                 )
             }
+        } ?: run {
+
         }
     }
 }

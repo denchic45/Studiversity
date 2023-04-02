@@ -1,104 +1,126 @@
 package com.denchic45.kts.ui.timetable
 
 import com.denchic45.kts.data.service.model.BellSchedule
+import com.denchic45.kts.domain.model.StudyGroupNameItem
+import com.denchic45.kts.domain.timetable.model.PeriodDetails
+import com.denchic45.kts.domain.timetable.model.PeriodItem
+import com.denchic45.kts.ui.model.toUserItem
 import com.denchic45.kts.util.capitalized
 import com.denchic45.stuiversity.api.room.model.RoomResponse
 import com.denchic45.stuiversity.api.timetable.model.EventDetails
 import com.denchic45.stuiversity.api.timetable.model.LessonDetails
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.util.toString
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 
-data class TimetableViewState(
-    val mondayDate: LocalDate,
-    val periods: List<List<Cell>>,
-    val orders: List<CellOrder>,
-    val maxEventsSize: Int,
-    val isEdit: Boolean = false
-) {
+sealed class Cell {
+    data class Event(val iconName: String, val name: String, val room: RoomResponse?) : Cell()
+    object Empty : Cell()
+}
 
-    val title = getMonthTitle(mondayDate)
+data class CellOrder(val order: Int, val time: String)
 
-    private fun getMonthTitle(monday: LocalDate): String {
-        val saturday: LocalDate = monday.plusDays(5)
-        return if (monday.monthValue != saturday.monthValue) {
-            if (monday.year != saturday.year) {
-
-                "${monday.toString("LLL yy").capitalized().replace(".", "")} - ${
-                    saturday.toString("LLL yy").replace(".", "")
-                }"
-            } else {
-                "${
-                    (monday.toString("LLL").replace(".", "")).capitalized()
-                } - ${saturday.toString("LLL").replace(".", "")}"
-            }
+fun toCells(
+    periods: List<PeriodResponse>,
+    latestPeriodOrder: Int
+) = buildList {
+    periods.forEachIndexed { index, period ->
+        val diffOrders = period.order - index
+        if (diffOrders > 1) {
+            repeat(diffOrders) { add(Cell.Empty) }
         } else {
-            monday.toString("LLLL").capitalized()
+            add(period.toCell())
         }
     }
 
-    sealed class Cell {
-        data class Event(val iconName: String, val name: String, val room: RoomResponse?) : Cell()
-        object Empty : Cell()
+    val diffOrders = latestPeriodOrder - periods.size
+    if (diffOrders > 0) {
+        repeat(diffOrders) { add(Cell.Empty) }
     }
-
-    data class CellOrder(val order: Int, val time: String)
 }
 
-fun TimetableResponse.toTimetableViewState(
-    latestEventOrder: Int,
-    bellSchedule: BellSchedule,
-) = TimetableViewState(
-    mondayDate = LocalDate.parse(
-        weekOfYear, DateTimeFormatterBuilder()
-            .appendPattern("YYYY_ww")
-            .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.value.toLong())
-            .toFormatter()
-    ),
-    periods = toCellItems(this, latestEventOrder),
-    orders = buildList {
-        bellSchedule.schedule.take(latestEventOrder)
-            .forEachIndexed { index, period ->
-                add(TimetableViewState.CellOrder(index + 1, period.first))
-            }
-    },
-    maxEventsSize = latestEventOrder
+
+private fun PeriodResponse.toCell() = when (val details = details) {
+    is LessonDetails -> Cell.Event(
+        details.subject.iconName,
+        details.subject.name,
+        room
+    )
+    is EventDetails -> Cell.Event(
+        details.iconUrl,
+        details.name,
+        room
+    )
+}
+
+fun toItems(
+    periods: List<PeriodResponse>,
+    latestPeriodOrder: Int
+) = buildList {
+    periods.forEachIndexed { index, period ->
+        val diffOrders = period.order - index
+        if (diffOrders > 1) {
+            repeat(diffOrders) { add(null) }
+        } else {
+            add(period.toItem())
+        }
+    }
+
+    val diffOrders = latestPeriodOrder - periods.size
+    if (diffOrders > 0) {
+        repeat(diffOrders) { add(null) }
+    }
+}
+
+private fun PeriodResponse.toItem() = PeriodItem(
+    id = id,
+    studyGroup = StudyGroupNameItem(studyGroup.id, studyGroup.name),
+    room = room?.name,
+    members = members.map { it.toUserItem() },
+    order = order,
+    details = when (val details = details) {
+        is EventDetails -> with(details) {
+            PeriodDetails.Event(name, iconUrl, color)
+        }
+        is LessonDetails -> with(details) {
+            PeriodDetails.Lesson(courseId, subject.iconName, subject.name)
+        }
+    }
 )
 
-private fun toCellItems(
-    timetable: TimetableResponse,
-    latestPeriodOrder: Int
-): List<List<TimetableViewState.Cell>> {
-    return buildList {
-        var lastOrder = 0
-        timetable.days.forEach { periods ->
-            add(buildList {
-                periods.forEach { period ->
-                    val diffOrders = period.order - lastOrder
-                    if (diffOrders > 1) {
-                        repeat(diffOrders) { add(TimetableViewState.Cell.Empty) }
-                    } else {
-                        add(
-                            when (val details = period.details) {
-                                is LessonDetails -> TimetableViewState.Cell.Event(
-                                    details.subject.iconName,
-                                    details.subject.name,
-                                    period.room
-                                )
-                                is EventDetails -> TimetableViewState.Cell.Event(
-                                    details.iconUrl,
-                                    details.name,
-                                    period.room
-                                )
-                            }
-                        )
-                    }
-                    lastOrder++
-                }
-            })
+fun BellSchedule.toItemOrders(
+    latestEventOrder: Int
+) = buildList {
+    schedule.take(latestEventOrder)
+        .forEachIndexed { index, period ->
+            add(CellOrder(index + 1, period.first))
         }
+}
+
+fun getMonthTitle(date: LocalDate): String {
+    val saturday: LocalDate = date.plusDays(5)
+    return if (date.monthValue != saturday.monthValue) {
+        if (date.year != saturday.year) {
+
+            "${date.toString("LLL yy").capitalized().replace(".", "")} - ${
+                saturday.toString("LLL yy").replace(".", "")
+            }"
+        } else {
+            "${
+                (date.toString("LLL").replace(".", "")).capitalized()
+            } - ${saturday.toString("LLL").replace(".", "")}"
+        }
+    } else {
+        date.toString("LLLL").capitalized()
     }
 }
+
+fun String.toLocalDateOfWeekOfYear() = LocalDate.parse(
+    this, DateTimeFormatterBuilder()
+        .appendPattern("YYYY_ww")
+        .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.value.toLong())
+        .toFormatter()
+)
