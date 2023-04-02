@@ -27,7 +27,8 @@ class StudyGroupsComponent(
     private val groups = flow { emit(findYourStudyGroupsUseCase()) }
     private val navigation = StackNavigation<StudyGroupsConfig>()
 
-    val stack = childStack(source = navigation,
+    val stack = childStack(
+        source = navigation,
         initialConfiguration = StudyGroupsConfig.Empty,
         childFactory = { config, _ ->
             when (config) {
@@ -40,7 +41,7 @@ class StudyGroupsComponent(
 
 }
 
-@Parcelize
+
 sealed class StudyGroupsConfig : Parcelable {
     @Parcelize
     object Empty : StudyGroupsConfig()

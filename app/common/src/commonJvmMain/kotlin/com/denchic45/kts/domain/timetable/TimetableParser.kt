@@ -13,6 +13,7 @@ import com.denchic45.stuiversity.util.DatePatterns
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.stuiversity.util.toLocalDate
 import com.github.michaelbull.result.unwrap
+import me.tatarka.inject.annotations.Inject
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.poi.xwpf.usermodel.XWPFTable
 import org.apache.poi.xwpf.usermodel.XWPFTableCell
@@ -21,6 +22,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+@Inject
 class TimetableParser(
     private val studyGroupApi: StudyGroupApi,
     private val userApi: UserApi,
@@ -117,7 +119,7 @@ class TimetableParser(
                 weekLessons.add(getPeriodsOfDay(date))
                 currentDayOfWeek++
             } else {
-                throw  TimetableInvalidDateException("Некоректная дата: $dateInCell")
+                throw TimetableInvalidDateException("Некоректная дата: $dateInCell")
             }
         }
         return TimetableResponse(
@@ -192,8 +194,8 @@ class TimetableParser(
                 date = date,
                 order = order,
                 room = null,
-                studyGroupId = currentStudyGroup.id,
-                memberIds = findTeacherByContent(separatedContent),
+                studyGroup = StudyGroupName(currentStudyGroup.id, currentStudyGroup.name),
+                members = findTeacherByContent(separatedContent),
                 details = LessonDetails(course.id, subject)
             )
         } else {
@@ -202,18 +204,25 @@ class TimetableParser(
                 date = date,
                 order = order,
                 room = null,
-                studyGroupId = currentStudyGroup.id,
-                memberIds = findTeacherByContent(separatedContent),
+                studyGroup = StudyGroupName(currentStudyGroup.id, currentStudyGroup.name),
+                members = findTeacherByContent(separatedContent),
                 details = EventDetails(subjectName, "blue", "")
             )
         }
     }
 
-    private suspend fun findTeacherByContent(separatedContent: List<String>): List<UUID> {
+    private suspend fun findTeacherByContent(separatedContent: List<String>): List<PeriodMember> {
         return if (separatedContent.size == 1) {
             emptyList()
         } else separatedContent.subList(1, separatedContent.size).map { line ->
-            findUserBySurname(line.split(" ")[0]).id
+            findUserBySurname(line.split(" ")[0]).let {
+                PeriodMember(
+                    it.id,
+                    it.firstName,
+                    it.surname,
+                    it.avatarUrl
+                )
+            }
         }
     }
 

@@ -34,5 +34,4 @@ class TimetableInteractor @Inject constructor(
 
     val role: UserRole
         get() = UserRole.valueOf(userPreferences.role)
-
 }

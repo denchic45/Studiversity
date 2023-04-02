@@ -10,22 +10,19 @@ data class PeriodItem(
     val room: String?,
     val members: List<UserItem>,
     val order: Int,
-    val time:String,
     val details: PeriodDetails
 )
 
-sealed interface PeriodDetails
+sealed interface PeriodDetails {
+    data class Lesson(
+        val courseId: UUID,
+        val subjectIconUrl: String,
+        val subjectName: String
+    ) : PeriodDetails
 
-data class LessonDetails(
-    val courseId: UUID,
-    val subjectAvatarUrl: String,
-    val subjectName: String
-) : PeriodDetails
-
-data class EventDetails(
-    val name: String,
-    val iconUrl: String,
-    val color: String
-) : PeriodDetails
-
-object EmptyPeriod : PeriodDetails
+    data class Event(
+        val name: String,
+        val iconUrl: String,
+        val color: String
+    ) : PeriodDetails
+}

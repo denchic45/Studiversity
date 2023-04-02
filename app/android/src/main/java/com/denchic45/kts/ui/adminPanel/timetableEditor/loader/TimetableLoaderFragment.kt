@@ -205,11 +205,11 @@ class TimetableLoaderFragment :
         }
 
 
-        viewModel.updateEventsOfGroup.collectWhenStarted(lifecycleScope) { (position, events) ->
+        viewModel.updateEventsOfGroup.collectWhenStarted(viewLifecycleOwner) { (position, events) ->
             groupTimetablesAdapter.updateTimetable(position, events)
         }
 
-        viewModel.preferences.collectWhenStarted(lifecycleScope) {
+        viewModel.preferences.collectWhenStarted(viewLifecycleOwner) {
             preferenceAdapter.submit(it)
         }
 

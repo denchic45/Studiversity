@@ -13,7 +13,7 @@ import java.util.*
 sealed interface PeriodResponse : PeriodModel {
     val id: Long
     val date: LocalDate
-    val studyGroupId: UUID
+    val studyGroup: StudyGroupName
 
     fun copy(): PeriodResponse = when (this) {
         is EventResponse -> copy(id)
@@ -29,8 +29,8 @@ data class LessonResponse(
     override val order: Int,
     override val room: RoomResponse?,
     @Serializable(UUIDSerializer::class)
-    override val studyGroupId: UUID,
-    override val memberIds: List<@Serializable(UUIDSerializer::class) UUID>,
+    override val studyGroup: StudyGroupName,
+    override val members: List<PeriodMember>,
     override val details: LessonDetails
 ) : PeriodResponse {
     @OptIn(ExperimentalSerializationApi::class)
@@ -45,12 +45,30 @@ data class EventResponse(
     override val date: LocalDate,
     override val order: Int,
     override val room: RoomResponse?,
-    @Serializable(UUIDSerializer::class)
-    override val studyGroupId: UUID,
-    override val memberIds: List<@Serializable(UUIDSerializer::class) UUID>,
+    override val studyGroup: StudyGroupName,
+    override val members: List<PeriodMember>,
     override val details: EventDetails
 ) : PeriodResponse {
     @OptIn(ExperimentalSerializationApi::class)
     @EncodeDefault
     override val type: PeriodType = PeriodType.EVENT
+}
+
+@Serializable
+data class StudyGroupName(
+    @Serializable(UUIDSerializer::class)
+    val id: UUID,
+    val name: String
+)
+
+@Serializable
+data class PeriodMember(
+    @Serializable(UUIDSerializer::class)
+    val id: UUID,
+    val firstName: String,
+    val surname: String,
+    val avatarUrl: String
+) {
+    val fullName: String
+        get() = "$firstName $surname"
 }

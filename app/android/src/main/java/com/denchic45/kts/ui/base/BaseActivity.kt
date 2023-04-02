@@ -35,7 +35,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding>(
         super.onCreate(savedInstanceState)
         AndroidInjection.inject(this)
 
-        viewModel.navigate.collectWhenStarted(lifecycleScope) { command ->
+        viewModel.navigate.collectWhenStarted(this) { command ->
             when (command) {
                 is NavigationCommand.To -> navController.navigate(command.directions)
                 NavigationCommand.Back -> navController.popBackStack()
@@ -46,24 +46,24 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding>(
             }
         }
 
-        viewModel.finish.collectWhenStarted(lifecycleScope) {
+        viewModel.finish.collectWhenStarted(this) {
             finish()
         }
 
-        viewModel.toast.collectWhenStarted(lifecycleScope) {
+        viewModel.toast.collectWhenStarted(this) {
             toast(it)
             Log.d("lol", "showToast: $it")
         }
 
-        viewModel.toastRes.collectWhenStarted(lifecycleScope, this::toast)
+        viewModel.toastRes.collectWhenStarted(this, this::toast)
 
-        viewModel.snackBar.collectWhenStarted(lifecycleScope) { (message, action) ->
+        viewModel.snackBar.collectWhenStarted(this) { (message, action) ->
             val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
             action?.let { snackbar.setAction(action) { viewModel.onSnackbarActionClick(message) } }
             snackbar.show()
         }
 
-        viewModel.snackBarRes.collectWhenStarted(lifecycleScope) { (messageRes, action) ->
+        viewModel.snackBarRes.collectWhenStarted(this) { (messageRes, action) ->
             val snackbar = Snackbar.make(binding.root, messageRes, Snackbar.LENGTH_LONG)
             action?.let {
                 snackbar.setAction(action) {
@@ -73,7 +73,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding>(
             snackbar.show()
         }
 
-        viewModel.openConfirmation.collectWhenStarted(lifecycleScope) { (title, message) ->
+        viewModel.openConfirmation.collectWhenStarted(this) { (title, message) ->
             navController.navigate(
                 R.id.action_global_confirmDialog,
                 bundleOf(

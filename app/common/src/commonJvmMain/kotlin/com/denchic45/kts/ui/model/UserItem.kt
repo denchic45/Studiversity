@@ -2,10 +2,9 @@ package com.denchic45.kts.ui.model
 
 import com.denchic45.kts.domain.model.GroupMember
 import com.denchic45.kts.domain.model.GroupMembers
-import com.denchic45.kts.domain.model.User
-import com.denchic45.stuiversity.api.membership.model.ScopeMember
+import com.denchic45.stuiversity.api.timetable.model.PeriodMember
 import com.denchic45.stuiversity.api.user.model.UserResponse
-import java.util.UUID
+import java.util.*
 
 data class UserItem(
     override val id: UUID,
@@ -24,6 +23,15 @@ fun GroupMember.toUserItem(groupMembers: GroupMembers): UserItem {
 }
 
 fun UserResponse.toUserItem(): UserItem {
+    return UserItem(
+        id = id,
+        title = fullName,
+        avatarUrl = avatarUrl,
+        subtitle = null
+    )
+}
+
+fun PeriodMember.toUserItem(): UserItem {
     return UserItem(
         id = id,
         title = fullName,

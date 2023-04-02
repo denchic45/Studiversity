@@ -1,7 +1,6 @@
 package com.denchic45.stuiversity.api.timetable.model
 
 import com.denchic45.stuiversity.api.room.model.RoomResponse
-import com.denchic45.stuiversity.util.UUIDSerializer
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -11,7 +10,7 @@ sealed interface PeriodModel {
     val order: Int
     val room: RoomResponse?
     val type: PeriodType
-    val memberIds: List<UUID>
+    val members: List<PeriodMember>
     val details: PeriodDetails
 }
 
@@ -22,7 +21,7 @@ sealed interface PeriodRequest : PeriodModel
 data class LessonRequest(
     override val order: Int,
     override val room: RoomResponse?,
-    override val memberIds: List<@Serializable(UUIDSerializer::class) UUID>,
+    override val members: List<PeriodMember>,
     override val details: LessonDetails
 ) : PeriodRequest {
     @OptIn(ExperimentalSerializationApi::class)
@@ -34,7 +33,7 @@ data class LessonRequest(
 data class EventRequest(
     override val order: Int,
     override val room: RoomResponse?,
-    override val memberIds: List<@Serializable(UUIDSerializer::class) UUID>,
+    override val members: List<PeriodMember>,
     override val details: EventDetails
 ) : PeriodRequest {
     @OptIn(ExperimentalSerializationApi::class)
