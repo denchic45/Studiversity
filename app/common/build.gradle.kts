@@ -5,6 +5,7 @@ plugins {
     id("com.squareup.sqldelight")
     id("kotlin-kapt")
     kotlin("plugin.serialization") version "1.7.20"
+    id("kotlin-parcelize")
     id("com.google.devtools.ksp")
 }
 
@@ -49,11 +50,13 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
+                // Compose
                 api(compose.runtime)
                 api(compose.foundation)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 api(compose.material3)
                 api(compose.materialIconsExtended)
+                api("ca.gosyer:compose-material-dialogs-datetime:0.9.2")
 
                 // Ktor
                 api("io.ktor:ktor-client-core:$ktorVersion")
@@ -114,13 +117,28 @@ kotlin {
 
                 api("androidx.work:work-runtime-ktx:2.8.1")
 
+                // Compose
+                val composeVersion = "1.4.0"
+                api("androidx.compose.runtime:runtime:$composeVersion")
+                api("androidx.compose.ui:ui:$composeVersion")
+                api("androidx.activity:activity-compose:1.7.0")
+                // Tooling support (Previews, etc.)
+                api("androidx.compose.ui:ui-tooling:$composeVersion")
+                // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
+                api("androidx.compose.foundation:foundation:$composeVersion")
+                // Material Design
+                api("androidx.compose.material3:material3:1.0.1")
+
                 // Dagger
                 api("com.google.dagger:dagger-android:$daggerVersion")
                 api("com.google.dagger:dagger-android-support:$daggerVersion")
 
+                // Decompose
+                api("com.arkivanov.decompose:extensions-compose-jetpack:$decomposeVersion")
+
                 // Navigation
-                api("androidx.navigation:navigation-fragment-ktx:2.5.1")
-                api("androidx.navigation:navigation-ui-ktx:2.5.1")
+                api("androidx.navigation:navigation-fragment-ktx:2.5.3")
+                api("androidx.navigation:navigation-ui-ktx:2.5.3")
 
                 // Firebase SDK
                 api(project.dependencies.platform("com.google.firebase:firebase-bom:30.2.0"))
@@ -175,7 +193,6 @@ kotlin {
         val desktopTest by getting {
             dependencies {
 
-
             }
         }
     }
@@ -211,8 +228,8 @@ android {
     }
 }
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
 }
 
 sqldelight {

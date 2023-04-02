@@ -3,6 +3,9 @@ plugins {
     id("kotlin-android")
     id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin") apply false
+    id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
+
 //    id("com.google.gms.google-services")
 }
 
@@ -70,11 +73,12 @@ android {
     namespace = "com.denchic45.kts"
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.2"
+        kotlinCompilerExtensionVersion = "1.4.2"
     }
 
     sourceSets.all {
         kotlin.srcDir("src/$name/kotlin")
+        kotlin.srcDir("build/generated/ksp/debug")
     }
 }
 
@@ -82,16 +86,6 @@ val daggerVersion = "2.44"
 
 dependencies {
     implementation(project((":common")))
-    //Compose
-    implementation("androidx.compose.runtime:runtime:1.4.0")
-    implementation("androidx.compose.ui:ui:1.4.0")
-    implementation("androidx.activity:activity-compose:1.7.0")
-    // Tooling support (Previews, etc.)
-    implementation("androidx.compose.ui:ui-tooling:1.4.0")
-    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation("androidx.compose.foundation:foundation:1.4.0")
-    // Material Design
-    implementation("androidx.compose.material3:material3:1.0.1")
 
 //    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
@@ -131,6 +125,9 @@ dependencies {
     implementation("com.airbnb.android:lottie:4.0.0")
 
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
+
+    // kotlin-inejct
+    ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
 
     // Dagger-android
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
