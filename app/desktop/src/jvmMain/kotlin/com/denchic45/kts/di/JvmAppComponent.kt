@@ -30,7 +30,7 @@ abstract class JvmAppComponent(
     @Component val preferencesComponent: PreferencesComponent,
     @Component val databaseComponent: DatabaseComponent,
     @Component val networkComponent: NetworkComponent
-) : LogicComponent {
+) {
 
     @Provides
     fun provideComponentContext(): ComponentContext {
