@@ -102,8 +102,6 @@ dependencies {
 
     implementation("com.github.alexmamo:FirestoreDocument-Android:0.1.5")
 
-    implementation("androidx.recyclerview:recyclerview:1.3.0")
-
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 
 //    implementation("com.github.CanHub:Android-Image-Cropper:3.3.5")

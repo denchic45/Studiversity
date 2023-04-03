@@ -129,6 +129,8 @@ kotlin {
                 // Material Design
                 api("androidx.compose.material3:material3:1.0.1")
 
+                api("androidx.recyclerview:recyclerview:1.3.0")
+
                 // Dagger
                 api("com.google.dagger:dagger-android:$daggerVersion")
                 api("com.google.dagger:dagger-android-support:$daggerVersion")
@@ -206,9 +208,9 @@ dependencies {
 android {
     compileSdk = 33
     sourceSets["main"].apply {
-        res.srcDirs("src/androidMain/res", "src/commonMain/resources")
+        manifest.srcFile("src/androidMain/AndroidManifest.xml")
+        res.srcDirs("src/commonMain/resources", "src/androidMain/res")
     }
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 24
         targetSdk = 33
@@ -224,8 +226,6 @@ android {
     sourceSets.all {
         kotlin.srcDir("src/$name/kotlin")
     }
-    sourceSets["main"].res.srcDirs("src/androidMain/res", "src/commonMain/resources")
-    namespace = "com.denchic45.common"
     kapt {
         correctErrorTypes = true
     }
