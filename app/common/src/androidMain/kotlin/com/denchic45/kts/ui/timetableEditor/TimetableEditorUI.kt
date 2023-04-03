@@ -72,7 +72,7 @@ fun PeriodItemUI(
                 if (groupShowing)
                     Row {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_group),
+                            painter = painterResource(id = com.denchic45.kts.R),
                             contentDescription = null,
                             modifier = Modifier.padding(8.dp)
                         )

@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.model.Subject
 import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.updateResource
@@ -13,7 +12,6 @@ import com.denchic45.kts.domain.usecase.FindSubjectByIdUseCase
 import com.denchic45.kts.util.SameSubjectIconException
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
-import com.denchic45.kts.ui.courseEditor.CourseEditorViewModel
 import com.denchic45.kts.ui.iconPicker.IconPickerInteractor
 import com.denchic45.kts.uieditor.UIEditor
 import com.denchic45.kts.uivalidator.Rule
@@ -21,8 +19,6 @@ import com.denchic45.kts.uivalidator.UIValidator
 import com.denchic45.kts.uivalidator.Validation
 import com.denchic45.kts.util.Colors
 import com.denchic45.kts.util.NetworkException
-import com.denchic45.kts.util.UUIDS
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -41,10 +37,11 @@ class SubjectEditorViewModel @Inject constructor(
     data class EditableSubjectState(
         val name: String = "",
         val shortname: String = "",
-    val iconName:String = ""
+    val iconUrl:String = ""
     )
 
     val uiState = MutableStateFlow<Resource<EditableSubjectState>>(Resource.Loading)
+    private val _successUiStateValue = (uiState.value as Resource.Success).value
 
     val title = MutableLiveData<String>()
 
@@ -61,8 +58,8 @@ class SubjectEditorViewModel @Inject constructor(
     val showColors = MutableLiveData<Pair<List<Int>, Int>>()
     private val uiValidator: UIValidator = UIValidator.of(
         Validation(Rule { uiEditor.hasBeenChanged() }),
-        Validation(Rule({ !uiState.value.isNullOrEmpty() }, "Нет названия")),
-        Validation(Rule({ !icon.value.isNullOrEmpty() }, "Нет иконки"))
+        Validation(Rule(_successUiStateValue.name::isNotEmpty, "Нет названия")),
+        Validation(Rule(_successUiStateValue.iconUrl::isNotEmpty, "Нет иконки"))
     )
 
     private val uiEditor: UIEditor<Resource<EditableSubjectState>> = UIEditor(_subjectId == null) {
@@ -119,7 +116,7 @@ class SubjectEditorViewModel @Inject constructor(
                         EditableSubjectState(
                             name = subject.name,
                             shortname = subject.shortname,
-                            iconName = subject.iconName
+                            iconUrl = subject.iconName
                         )
                     }
 
@@ -131,7 +128,7 @@ class SubjectEditorViewModel @Inject constructor(
 //                        .filter { value: Int -> Colors.names[value] == subject.colorName }
 //                        .findFirst()
 //                        .orElse(-1)
-                    icon.value = subject.iconName
+//                    icon.value = subject.iconName
 
 //                    Colors.names
 //                        .firstOrNull { name -> name == subject.colorName }
@@ -188,14 +185,14 @@ class SubjectEditorViewModel @Inject constructor(
         viewModelScope.launch {
             openIconPicker.call()
             iconPickerInteractor.observeSelectedIcon().apply {
-                uiState.updateResource { it.copy(iconName = this) }
+                uiState.updateResource { it.copy(iconUrl = this) }
                 enablePositiveBtn.postValue(uiValidator.runValidates())
             }
         }
     }
 
-    init {
-        uiValidator =
-        if (uiEditor.isNew) setupForNewItem() else setupForExistItem()
-    }
+//    init {
+//        uiValidator =
+//        if (uiEditor.isNew) setupForNewItem() else setupForExistItem()
+//    }
 }

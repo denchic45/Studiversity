@@ -8,15 +8,16 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.denchic45.kts.SvgColorListener
 import com.denchic45.kts.R
+import com.denchic45.kts.SvgColorListener
 import com.denchic45.kts.databinding.DialogSubjectEditorBinding
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.glideSvg.GlideApp
 import com.denchic45.kts.rx.EditTextTransformer
-import com.denchic45.kts.ui.base.BaseDialogFragment
 import com.denchic45.kts.ui.adapter.ColorPickerAdapter
+import com.denchic45.kts.ui.base.BaseDialogFragment
 import com.denchic45.kts.ui.iconPicker.IconPickerDialog
-import com.denchic45.kts.util.ViewUtils
+import com.denchic45.kts.util.collectWhenStarted
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jakewharton.rxbinding4.widget.textChanges
 
@@ -42,7 +43,7 @@ class SubjectEditorDialog : BaseDialogFragment<SubjectEditorViewModel, DialogSub
             val btnPositive = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             btnDelete.setTextColor(Color.RED)
             btnDelete.setOnClickListener { viewModel.onDeleteClick() }
-           btnPositive.setOnClickListener { viewModel.onPositiveClick() }
+            btnPositive.setOnClickListener { viewModel.onPositiveClick() }
         }
 
         with(binding) {
@@ -77,27 +78,21 @@ class SubjectEditorDialog : BaseDialogFragment<SubjectEditorViewModel, DialogSub
             viewModel.enablePositiveBtn.observe(viewLifecycleOwner) { enabled: Boolean ->
                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = enabled
             }
-            viewModel.nameField.observe(
-                viewLifecycleOwner
-            ) { name: String ->
-                if (!etSubjectName.text.contentEquals(name))
-                    etSubjectName.setText(name)
-            }
-            viewModel.icon.observe(viewLifecycleOwner) { iconUrl: String? ->
-                GlideApp.with(
-                    requireActivity()
-                )
-                    .`as`(PictureDrawable::class.java)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .listener(
-                        SvgColorListener(
-                            ivSubjectIc,
-                            R.color.dark_blue,
-                            requireContext()
+
+            viewModel.uiState.collectWhenStarted(viewLifecycleOwner) {
+                it.onSuccess { state ->
+                    if (!etSubjectName.text.contentEquals(state.name))
+                        etSubjectName.setText(state.name)
+
+                    GlideApp.with(requireActivity())
+                        .`as`(PictureDrawable::class.java)
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .listener(
+                            SvgColorListener(ivSubjectIc, R.color.dark_blue, requireContext())
                         )
-                    )
-                    .load(iconUrl)
-                    .into(ivSubjectIc)
+                        .load(state.iconUrl)
+                        .into(ivSubjectIc)
+                }
             }
 
 //            viewModel.colorIcon.observe(viewLifecycleOwner) { color: Int ->
