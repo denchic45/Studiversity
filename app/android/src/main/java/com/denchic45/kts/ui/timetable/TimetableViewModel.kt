@@ -9,7 +9,7 @@ import com.denchic45.kts.domain.usecase.FindYourTimetableOfDayUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.util.capitalized
 import com.denchic45.stuiversity.util.Dates
-import com.denchic45.widget.calendar.model.WeekItem
+import com.denchic45.kts.ui.widget.calendar.model.WeekItem
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek

@@ -23,8 +23,8 @@ import com.denchic45.kts.util.Dimensions
 import com.denchic45.kts.util.closeKeyboard
 import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.sample.SearchBar
-import com.denchic45.widget.calendar.WeekCalendarListener
-import com.denchic45.widget.calendar.model.WeekItem
+import com.denchic45.kts.ui.widget.calendar.WeekCalendarListener
+import com.denchic45.kts.ui.widget.calendar.model.WeekItem
 import java.time.LocalDate
 
 class TimetableFinderFragment :

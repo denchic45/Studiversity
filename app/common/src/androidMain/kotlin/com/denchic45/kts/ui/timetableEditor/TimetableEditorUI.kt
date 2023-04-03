@@ -18,6 +18,7 @@ import com.denchic45.kts.domain.model.StudyGroupNameItem
 import com.denchic45.kts.domain.timetable.model.PeriodDetails
 import com.denchic45.kts.domain.timetable.model.PeriodItem
 import java.util.*
+import com.denchic45.kts.R
 
 @Composable
 fun TimetableEditorUI() {
@@ -72,7 +73,7 @@ fun PeriodItemUI(
                 if (groupShowing)
                     Row {
                         Image(
-                            painter = painterResource(id = com.denchic45.kts.R),
+                            painter = painterResource(id = R.drawable.ic_group),
                             contentDescription = null,
                             modifier = Modifier.padding(8.dp)
                         )

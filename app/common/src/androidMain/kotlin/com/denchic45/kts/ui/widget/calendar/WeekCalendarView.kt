@@ -1,4 +1,4 @@
-package com.denchic45.widget.calendar
+package com.denchic45.kts.ui.widget.calendar
 
 import android.content.Context
 import android.os.Parcel
@@ -13,8 +13,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.denchic45.kts.R
-import com.denchic45.widget.calendar.WeekCalendarListener.OnLoadListener
-import com.denchic45.widget.calendar.model.WeekItem
+import com.denchic45.kts.ui.widget.calendar.WeekCalendarListener.OnLoadListener
+import com.denchic45.kts.ui.widget.calendar.model.WeekItem
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId

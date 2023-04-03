@@ -1,4 +1,4 @@
-package com.denchic45.widget.calendar
+package com.denchic45.kts.ui.widget.calendar
 
 import android.content.Context
 import android.view.LayoutInflater

@@ -16,9 +16,9 @@ import com.denchic45.kts.ui.adapter.EventAdapter
 import com.denchic45.kts.ui.adapter.EventAdapter.OnLessonItemClickListener
 import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.widget.ListStateLayout
-import com.denchic45.widget.calendar.WeekCalendarListener
-import com.denchic45.widget.calendar.WeekCalendarListener.OnLoadListener
-import com.denchic45.widget.calendar.model.WeekItem
+import com.denchic45.kts.ui.widget.calendar.WeekCalendarListener
+import com.denchic45.kts.ui.widget.calendar.WeekCalendarListener.OnLoadListener
+import com.denchic45.kts.ui.widget.calendar.model.WeekItem
 import com.example.appbarcontroller.appbarcontroller.AppBarController
 import java.time.LocalDate
 import kotlin.properties.Delegates

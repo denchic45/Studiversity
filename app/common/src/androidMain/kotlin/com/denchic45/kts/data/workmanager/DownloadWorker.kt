@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
+import com.denchic45.kts.R
 import com.denchic45.kts.data.storage.AttachmentStorage
 import com.denchic45.stuiversity.util.toUUID
 import com.github.michaelbull.result.fold
@@ -38,7 +39,7 @@ class DownloadWorker(
         ).setContentTitle(title)
             .setTicker(title)
             .setProgress(0, 0, true)
-            .setSmallIcon(com.denchic45.common.R.drawable.arrow_drop_down)
+            .setSmallIcon(R.drawable.arrow_drop_down)
             .setOngoing(true)
             .build()
         return ForegroundInfo(1, notification)

@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import com.denchic45.kts.ui.timetable.DayTimetableViewState
-import com.denchic45.widget.calendar.WeekCalendarView
+import com.denchic45.kts.ui.widget.calendar.WeekCalendarView
 import java.time.LocalDate
 
 @Composable

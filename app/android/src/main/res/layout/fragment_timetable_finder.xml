@@ -18,7 +18,7 @@
         app:expandable="alwaysCollapse"
         app:searchBar_leftActionMode="search" />
 
-    <com.denchic45.widget.calendar.WeekCalendarView
+    <com.denchic45.kts.ui.widget.calendar.WeekCalendarView
         android:id="@+id/wcv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

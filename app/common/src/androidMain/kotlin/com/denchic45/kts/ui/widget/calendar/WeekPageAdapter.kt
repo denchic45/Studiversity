@@ -1,4 +1,4 @@
-package com.denchic45.widget.calendar
+package com.denchic45.kts.ui.widget.calendar
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,8 +7,8 @@ import android.widget.AdapterView
 import android.widget.GridView
 import androidx.recyclerview.widget.RecyclerView
 import com.denchic45.kts.R
-import com.denchic45.widget.calendar.WeekPageAdapter.WeekHolder
-import com.denchic45.widget.calendar.model.WeekItem
+import com.denchic45.kts.ui.widget.calendar.WeekPageAdapter.WeekHolder
+import com.denchic45.kts.ui.widget.calendar.model.WeekItem
 import java.time.LocalDate
 
 class WeekPageAdapter(

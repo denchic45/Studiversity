@@ -1,6 +1,6 @@
-package com.denchic45.widget.calendar
+package com.denchic45.kts.ui.widget.calendar
 
-import com.denchic45.widget.calendar.model.WeekItem
+import com.denchic45.kts.ui.widget.calendar.model.WeekItem
 import java.time.LocalDate
 
 interface WeekCalendarListener {
