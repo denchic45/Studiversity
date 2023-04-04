@@ -43,24 +43,24 @@ class DayLocalDataSource @Inject constructor(private val db: AppDatabase) {
     ) {
 //        withContext(Dispatchers.IO) {
         println("object db: $db")
-            db.transaction {
-                notRelatedTeacherEntities.forEach { db.userEntityQueries.upsert(it) }
-                notRelatedSubjectEntities.forEach { db.subjectEntityQueries.upsert(it) }
-                dayEntityQueries.apply {
-                    deleteById(dayEntity.day_id)
-                    upsert(dayEntity)
-                }
-                db.eventEntityQueries.apply {
-                    getEventIdsByDayId(dayEntity.day_id).executeAsList().let { eventIds ->
-                        eventIds.forEach { eventId ->
-                            deleteByEventId(eventId)
-                            db.teacherEventEntityQueries.deleteByEventId(eventId)
-                        }
-                    }
-                    eventEntities.forEach { upsert(it) }
-                }
-                teacherEventEntities.forEach { db.teacherEventEntityQueries.upsert(it) }
+        db.transaction {
+            notRelatedTeacherEntities.forEach { db.userEntityQueries.upsert(it) }
+            notRelatedSubjectEntities.forEach { db.subjectEntityQueries.upsert(it) }
+            dayEntityQueries.apply {
+                deleteById(dayEntity.day_id)
+                upsert(dayEntity)
             }
+            db.eventEntityQueries.apply {
+                getEventIdsByDayId(dayEntity.day_id).executeAsList().let { eventIds ->
+                    eventIds.forEach { eventId ->
+                        deleteByEventId(eventId)
+                        db.teacherEventEntityQueries.deleteByEventId(eventId)
+                    }
+                }
+                eventEntities.forEach { upsert(it) }
+            }
+            teacherEventEntities.forEach { db.teacherEventEntityQueries.upsert(it) }
+        }
 //        }
     }
 

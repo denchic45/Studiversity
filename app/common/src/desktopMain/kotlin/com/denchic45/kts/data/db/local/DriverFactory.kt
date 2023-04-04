@@ -1,8 +1,8 @@
 package com.denchic45.kts.data.db.local
 
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.denchic45.kts.util.SystemDirs
-import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
 import java.io.File
 import java.util.*
 

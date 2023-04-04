@@ -58,8 +58,8 @@ class CourseWorkEditorViewModel @Inject constructor(
     val selectedTopic = MutableStateFlow<TopicResponse?>(null)
 
     val availabilityDateRemoveVisibility = MutableLiveData<Boolean>()
-    val openCourseTopics = SingleLiveData<Pair<String, TopicResponse?>>()
-    val filesVisibility = MutableLiveData(false)
+    val openCourseTopics = SingleLiveData<String>()
+    val filesVisibility = MutableStateFlow(false)
     val commentsEnabled = MutableLiveData<Boolean>()
 
     val openFileChooser = SingleLiveData<Unit>()
@@ -372,10 +372,10 @@ class CourseWorkEditorViewModel @Inject constructor(
     }
 
     fun onTopicClick() {
-        openCourseTopics.value = _courseId to selectedTopic.value
+        openCourseTopics.value = _courseId
     }
 
-    fun onTopicSelected(topic: TopicResponse) {
+    fun onTopicSelected(topic: TopicResponse?) {
         selectedTopic.value = topic
     }
 

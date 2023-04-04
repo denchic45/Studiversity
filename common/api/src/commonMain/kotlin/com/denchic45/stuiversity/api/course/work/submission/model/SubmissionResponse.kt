@@ -11,7 +11,7 @@ import java.util.*
 @Serializable(SubmissionSerializer::class)
 sealed class SubmissionResponse {
     abstract val id: UUID
-    abstract val authorId: UUID
+    abstract val author: Author
     abstract val state: SubmissionState
     abstract val courseWorkId: UUID
     abstract val type: CourseElementType
@@ -27,7 +27,7 @@ data class WorkSubmissionResponse(
     @Serializable(UUIDSerializer::class)
     override val id: UUID,
     @Serializable(UUIDSerializer::class)
-    override val authorId: UUID,
+    override val author: Author,
     override val state: SubmissionState,
     @Serializable(UUIDSerializer::class)
     override val courseWorkId: UUID,
@@ -65,4 +65,13 @@ enum class SubmissionState {
             CANCELED_BY_AUTHOR
         )
     }
+}
+
+data class Author(
+    val id:UUID,
+    val firstName:String,
+    val surname:String,
+    val avatarUrl:String
+) {
+    val fullName = "$firstName $surname"
 }

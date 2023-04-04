@@ -85,26 +85,26 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
 
             etGroup.setOnClickListener { viewModel.onSelectGroupClick() }
 
-            viewModel.firstNameField.collectWhenStarted(lifecycleScope) { firstName ->
+            viewModel.firstNameField.collectWhenStarted(viewLifecycleOwner) { firstName ->
                 if (firstName != etFirstName.text.toString()) etFirstName.setText(firstName)
             }
 
-            viewModel.surnameField.collectWhenStarted(lifecycleScope) { surname ->
+            viewModel.surnameField.collectWhenStarted(viewLifecycleOwner) { surname ->
                 if (surname != etSurname.text.toString()) etSurname.setText(surname)
             }
 
-            viewModel.patronymicField.collectWhenStarted(lifecycleScope) { patronymic ->
+            viewModel.patronymicField.collectWhenStarted(viewLifecycleOwner) { patronymic ->
                 if (patronymic != etPatronymic.text
                         .toString()
                 ) etPatronymic.setText(patronymic)
             }
 
-            viewModel.emailField.collectWhenStarted(lifecycleScope) { email ->
+            viewModel.emailField.collectWhenStarted(viewLifecycleOwner) { email ->
                 if (email != etEmail.text.toString()) etEmail.setText(email)
             }
 
             viewModel.genderField.filter(String::isNotEmpty)
-                .collectWhenStarted(lifecycleScope) { gender ->
+                .collectWhenStarted(viewLifecycleOwner) { gender ->
                     etGender.setText(
                         resources.getIdentifier(
                             gender,
@@ -114,21 +114,21 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
                     )
                 }
 
-            viewModel.passwordField.collectWhenStarted(lifecycleScope) {
+            viewModel.passwordField.collectWhenStarted(viewLifecycleOwner) {
                 etPassword.setText(it)
             }
 
-            viewModel.roleField.collectWhenStarted(lifecycleScope) { role ->
+            viewModel.roleField.collectWhenStarted(viewLifecycleOwner) { role ->
                 etRole.setText(resources.getString(role))
             }
 
             viewModel.groupField.collectWhenResumed(lifecycleScope, etGroup::setText)
 
-            viewModel.accountFieldsVisibility.collectWhenStarted(lifecycleScope) { visibility ->
+            viewModel.accountFieldsVisibility.collectWhenStarted(viewLifecycleOwner) { visibility ->
                 llAccount.visibility = if (visibility) View.VISIBLE else View.GONE
             }
 
-            viewModel.avatarUrl.collectWhenStarted(lifecycleScope) { photoUrl ->
+            viewModel.avatarUrl.collectWhenStarted(viewLifecycleOwner) { photoUrl ->
                 Glide.with(requireContext())
                     .load(photoUrl)
                     .placeholder(ivAvatar.drawable)
@@ -144,7 +144,7 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
                 )
                 til.error = idWithMessagePair.second
             }
-            viewModel.roles.collectWhenStarted(lifecycleScope) { resId ->
+            viewModel.roles.collectWhenStarted(viewLifecycleOwner) { resId ->
                 val adapter = ListPopupWindowAdapter(
                     requireContext(),
                     JsonUtil.parseToList(requireContext(), resId)
@@ -171,11 +171,11 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
 //                groupAdapter.updateList(items)
 //            }
 
-            viewModel.roleFieldVisibility.collectWhenStarted(lifecycleScope) {
+            viewModel.roleFieldVisibility.collectWhenStarted(viewLifecycleOwner) {
                 tilRole.visibility = if (it) View.VISIBLE else View.GONE
             }
 
-            viewModel.groupFieldVisibility.collectWhenStarted(lifecycleScope) {
+            viewModel.groupFieldVisibility.collectWhenStarted(viewLifecycleOwner) {
                 tilGroup.visibility = if (it) View.VISIBLE else View.GONE
             }
         }

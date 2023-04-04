@@ -7,6 +7,7 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.ObserveCourseTopicsUseCase
 import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
+import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,8 +31,8 @@ class CourseTopicChooserViewModel @Inject constructor(
         listOf("Без темы") + topics.map { it.name }
     }
 
-    private val _selectedTopicId = Channel<UUID?>()
-    val selectedTopicId = _selectedTopicId.receiveAsFlow()
+    private val _selectedTopic = Channel<TopicResponse?>()
+    val selectedTopic = _selectedTopic.receiveAsFlow()
 
     val selectedTopicPosition = MutableSharedFlow<Int>(replay = 1)
 
@@ -44,9 +45,9 @@ class CourseTopicChooserViewModel @Inject constructor(
             viewModelScope.launch {
                 val selectedPos = selectedTopicPosition.first()
 
-                _selectedTopicId.send(
+                _selectedTopic.send(
                     if (selectedPos == 0) null
-                    else topics[selectedPos - 1].id
+                    else topics[selectedPos - 1]
                 )
             }
         }

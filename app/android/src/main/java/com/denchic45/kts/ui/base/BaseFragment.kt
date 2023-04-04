@@ -62,13 +62,13 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding>(
         super.onViewCreated(view, savedInstanceState)
         lifecycle.addObserver(viewModel)
 
-        viewModel.toast.collectWhenStarted(lifecycleScope, this@BaseFragment::toast)
+        viewModel.toast.collectWhenStarted(viewLifecycleOwner, this@BaseFragment::toast)
 
         collectOnShowToolbarTitle()
 
         collectOnOptionVisibility()
 
-        viewModel.navigate.collectWhenResumed(viewLifecycleOwner.lifecycleScope) { command ->
+        viewModel.navigate.collectWhenResumed(viewLifecycleOwner) { command ->
             when (command) {
                 is NavigationCommand.To -> navController.navigate(command.directions)
                 NavigationCommand.Back -> navController.popBackStack()
@@ -80,22 +80,22 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding>(
         }
 
         viewModel.finish.flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
-            .collectWhenStarted(lifecycleScope) {
+            .collectWhenStarted(viewLifecycleOwner) {
                 Log.d("lol", "finish: ${this.javaClass.name}")
                 findNavController().navigateUp()
             }
 
-        viewModel.toast.collectWhenStarted(viewLifecycleOwner.lifecycleScope, this::toast)
+        viewModel.toast.collectWhenStarted(viewLifecycleOwner, this::toast)
 
-        viewModel.toastRes.collectWhenStarted(viewLifecycleOwner.lifecycleScope, this::toast)
+        viewModel.toastRes.collectWhenStarted(viewLifecycleOwner, this::toast)
 
-        viewModel.snackBar.collectWhenStarted(viewLifecycleOwner.lifecycleScope) { (message, action) ->
+        viewModel.snackBar.collectWhenStarted(viewLifecycleOwner) { (message, action) ->
             val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
             action?.let { snackbar.setAction(action) { viewModel.onSnackbarActionClick(message) } }
             snackbar.show()
         }
 
-        viewModel.snackBarRes.collectWhenStarted(viewLifecycleOwner.lifecycleScope) { (messageRes, action) ->
+        viewModel.snackBarRes.collectWhenStarted(viewLifecycleOwner) { (messageRes, action) ->
             val snackbar = Snackbar.make(binding.root, messageRes, Snackbar.LENGTH_LONG)
             action?.let {
                 snackbar.setAction(action) {
@@ -105,7 +105,7 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding>(
             snackbar.show()
         }
 
-        viewModel.dialog.collectWhenStarted(lifecycleScope) { (title, message) ->
+        viewModel.dialog.collectWhenStarted(viewLifecycleOwner) { (title, message) ->
             MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Rounded)
                 .setTitle(title)
                 .setMessage(message)
@@ -113,7 +113,7 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding>(
                 .show()
         }
 
-        viewModel.dialogRes.collectWhenStarted(lifecycleScope) { (titleRes, messageRes) ->
+        viewModel.dialogRes.collectWhenStarted(viewLifecycleOwner) { (titleRes, messageRes) ->
             MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Rounded)
                 .setTitle(titleRes)
                 .setMessage(messageRes)
@@ -121,7 +121,7 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding>(
                 .show()
         }
 
-        viewModel.openConfirmation.collectWhenStarted(lifecycleScope) { (title, message) ->
+        viewModel.openConfirmation.collectWhenStarted(viewLifecycleOwner) { (title, message) ->
             navController.navigate(
                 R.id.action_global_confirmDialog,
                 bundleOf(
@@ -135,7 +135,7 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding>(
     open fun collectOnOptionVisibility() {
         viewModel.optionsVisibility
             .debounce(500)
-            .collectWhenResumed(lifecycleScope) { optionsVisibility ->
+            .collectWhenResumed(viewLifecycleOwner) { optionsVisibility ->
                 optionsVisibility.forEach { (itemId, visible) ->
                     menu.findItem(itemId).isVisible = visible
                 }
@@ -143,7 +143,7 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding>(
     }
 
     open fun collectOnShowToolbarTitle() {
-        viewModel.showToolbarTitle.collectWhenResumed(lifecycleScope) {
+        viewModel.showToolbarTitle.collectWhenResumed(viewLifecycleOwner) {
             setActivityTitle(it)
         }
     }

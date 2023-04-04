@@ -52,13 +52,13 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        component.toast.collectWhenStarted(lifecycleScope, this@BaseFragment2::toast)
+        component.toast.collectWhenStarted(viewLifecycleOwner, this@BaseFragment2::toast)
 
         collectOnShowToolbarTitle()
 
         collectOnOptionVisibility()
 
-        component.navigate.collectWhenResumed(viewLifecycleOwner.lifecycleScope) { command ->
+        component.navigate.collectWhenResumed(viewLifecycleOwner) { command ->
             when (command) {
                 is NavigationCommand.To -> navController.navigate(command.directions)
                 NavigationCommand.Back -> navController.popBackStack()
@@ -70,22 +70,22 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
         }
 
         component.finish.flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
-            .collectWhenStarted(lifecycleScope) {
+            .collectWhenStarted(viewLifecycleOwner) {
                 Log.d("lol", "finish: ${this.javaClass.name}")
                 findNavController().navigateUp()
             }
 
-        component.toast.collectWhenStarted(viewLifecycleOwner.lifecycleScope, this::toast)
+        component.toast.collectWhenStarted(viewLifecycleOwner, this::toast)
 
-        component.toastRes.collectWhenStarted(viewLifecycleOwner.lifecycleScope, this::toast)
+        component.toastRes.collectWhenStarted(viewLifecycleOwner, this::toast)
 
-        component.snackBar.collectWhenStarted(viewLifecycleOwner.lifecycleScope) { (message, action) ->
+        component.snackBar.collectWhenStarted(viewLifecycleOwner) { (message, action) ->
             val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
             action?.let { snackbar.setAction(action) { component.onSnackbarActionClick(message) } }
             snackbar.show()
         }
 
-        component.snackBarRes.collectWhenStarted(viewLifecycleOwner.lifecycleScope) { (messageRes, action) ->
+        component.snackBarRes.collectWhenStarted(viewLifecycleOwner) { (messageRes, action) ->
             val snackbar = Snackbar.make(binding.root, messageRes, Snackbar.LENGTH_LONG)
             action?.let {
                 snackbar.setAction(action) {
@@ -95,7 +95,7 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
             snackbar.show()
         }
 
-        component.dialog.collectWhenStarted(lifecycleScope) { (title, message) ->
+        component.dialog.collectWhenStarted(viewLifecycleOwner) { (title, message) ->
             MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Rounded)
                 .setTitle(title)
                 .setMessage(message)
@@ -103,7 +103,7 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
                 .show()
         }
 
-        component.dialogRes.collectWhenStarted(lifecycleScope) { (titleRes, messageRes) ->
+        component.dialogRes.collectWhenStarted(viewLifecycleOwner) { (titleRes, messageRes) ->
             MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Rounded)
                 .setTitle(titleRes)
                 .setMessage(messageRes)
@@ -111,7 +111,7 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
                 .show()
         }
 
-        component.openConfirmation.collectWhenStarted(lifecycleScope) { (title, message) ->
+        component.openConfirmation.collectWhenStarted(viewLifecycleOwner) { (title, message) ->
             navController.navigate(
                 R.id.action_global_confirmDialog,
                 bundleOf(
@@ -125,7 +125,7 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
     open fun collectOnOptionVisibility() {
         component.optionsVisibility
             .debounce(500)
-            .collectWhenResumed(lifecycleScope) { optionsVisibility ->
+            .collectWhenResumed(viewLifecycleOwner) { optionsVisibility ->
                 optionsVisibility.forEach { (itemId, visible) ->
                     menu.findItem(itemId).isVisible = visible
                 }
@@ -133,7 +133,7 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
     }
 
     open fun collectOnShowToolbarTitle() {
-        component.showToolbarTitle.collectWhenResumed(lifecycleScope) {
+        component.showToolbarTitle.collectWhenResumed(viewLifecycleOwner) {
             setActivityTitle(it)
         }
     }

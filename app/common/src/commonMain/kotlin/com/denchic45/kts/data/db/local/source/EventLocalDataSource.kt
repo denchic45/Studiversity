@@ -4,9 +4,9 @@ import com.denchic45.kts.*
 import com.denchic45.kts.data.db.local.model.DayWithEventsEntities
 import com.denchic45.stuiversity.util.DatePatterns
 import com.denchic45.stuiversity.util.toString
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
-import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -52,7 +52,7 @@ class EventLocalDataSource @Inject constructor(db: AppDatabase) {
         groupId: String,
     ): Flow<DayEntity?> {
         return queries.getDayByDateAndGroupId(date.toString(DatePatterns.yyy_MM_dd), groupId)
-            .asFlow().mapToOneOrNull()
+            .asFlow().mapToOneOrNull(Dispatchers.IO)
     }
 
     private fun observeEventsByDayId(dayId: String): Flow<List<EventWithSubjectAndGroupAndTeachers>> {

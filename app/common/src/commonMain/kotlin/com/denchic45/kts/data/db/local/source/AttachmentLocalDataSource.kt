@@ -1,10 +1,10 @@
 package com.denchic45.kts.data.db.local.source
 
-import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.AttachmentEntity
 import com.denchic45.kts.AttachmentEntityQueries
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
+import com.denchic45.kts.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -33,7 +33,7 @@ class AttachmentLocalDataSource(db: AppDatabase) {
     }
 
     fun getByReferenceId(referenceId: String): Flow<List<AttachmentEntity>> {
-        return queries.getByReference(referenceId).asFlow().mapToList()
+        return queries.getByReference(referenceId).asFlow().mapToList(Dispatchers.IO)
     }
 
     suspend fun getUnreferenced() = withContext(Dispatchers.IO) {

@@ -72,21 +72,6 @@
                         app:layout_constraintStart_toEndOf="@+id/iv_avatar"
                         app:layout_constraintTop_toBottomOf="@id/tv_name" />
 
-                    <TextView
-                        android:id="@+id/tv_answer_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="16dp"
-                        android:paddingTop="16dp"
-                        android:text="Sample text"
-                        android:textAppearance="@style/TextAppearance.Kts.Body1"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/iv_avatar"
-                        tools:text="Здесь находится ответ в виде текста.
-                        Lorem ipsum dolor sit amet, consectetur
-                        adipiscing elit." />
-
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv_attachments"
                         android:layout_width="match_parent"
@@ -99,7 +84,7 @@
                         app:layout_behavior="@string/appbar_scrolling_view_behavior"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tv_answer_text"
+                        app:layout_constraintTop_toBottomOf="@id/iv_avatar"
                         tools:listitem="@layout/item_attachment" />
 
                     <TextView

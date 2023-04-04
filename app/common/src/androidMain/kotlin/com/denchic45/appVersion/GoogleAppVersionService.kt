@@ -130,7 +130,6 @@ class GoogleAppVersionService @Inject constructor(
             }
 
             if (maxLatestVersion > appPreferences.latestVersion) {
-                appPreferences.coursesLoadedFirstTime = false
                 timestampPreferences.groupCoursesUpdateTimestamp = 1
                 timestampPreferences.teacherCoursesUpdateTimestamp = 1
                 appPreferences.latestVersion = maxLatestVersion

@@ -1,9 +1,9 @@
 package com.denchic45.kts.di
 
+import app.cash.sqldelight.db.SqlDriver
 import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.data.db.local.DbHelper
 import com.denchic45.kts.data.db.local.DriverFactory
-import com.squareup.sqldelight.db.SqlDriver
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 

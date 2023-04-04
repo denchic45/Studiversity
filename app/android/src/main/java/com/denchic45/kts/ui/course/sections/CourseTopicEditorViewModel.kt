@@ -1,6 +1,7 @@
 package com.denchic45.kts.ui.course.sections
 
 import androidx.lifecycle.viewModelScope
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.AddCourseTopicUseCase
 import com.denchic45.kts.domain.usecase.ObserveCourseTopicsUseCase
 import com.denchic45.kts.domain.usecase.RemoveCourseTopicUseCase
@@ -13,7 +14,6 @@ import com.denchic45.stuiversity.api.course.topic.model.UpdateTopicRequest
 import com.denchic45.stuiversity.util.optPropertyOf
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.*
@@ -37,7 +37,9 @@ class CourseTopicEditorViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            topics.emitAll(observeCourseTopicsUseCase(courseId))
+            observeCourseTopicsUseCase(courseId).collect {
+                it.onSuccess { responses -> topics.emit(responses) }
+            }
         }
     }
 

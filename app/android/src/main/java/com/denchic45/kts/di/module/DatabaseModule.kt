@@ -5,7 +5,7 @@ import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.data.db.local.DbHelper
 import com.denchic45.kts.data.db.local.DriverFactory
 import com.denchic45.kts.data.service.NetworkService
-import com.squareup.sqldelight.db.SqlDriver
+import app.cash.sqldelight.db.SqlDriver
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

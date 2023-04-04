@@ -5,6 +5,7 @@ import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindTimetableOfWeekUseCase
+import com.denchic45.kts.domain.usecase.FindYourTimetableOfWeekUseCase
 import com.denchic45.kts.domain.usecase.TimetableOwner
 import com.denchic45.kts.ui.timetable.state.toTimetableViewState
 import com.denchic45.kts.util.componentScope
@@ -25,9 +26,10 @@ class DayTimetableComponent(
     @Assisted
     private val owner: TimetableOwner,
     @Assisted
-    private val ownerId: UUID,
-    private val metaRepository: MetaRepository,
+    private val ownerId: UUID?,
+    metaRepository: MetaRepository,
     private val findTimetableOfWeekUseCase: FindTimetableOfWeekUseCase,
+    private val findYourTimetableOfWeekUseCase: FindYourTimetableOfWeekUseCase,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
@@ -37,13 +39,19 @@ class DayTimetableComponent(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val timetable = selectedWeekOfYear.flatMapLatest { weekOfYear ->
-        flow { emit(findTimetableOfWeekUseCase(weekOfYear, owner, ownerId)) }
-    }.stateInResource(componentScope)
+        flow {
+            emit(
+                if (owner == TimetableOwner.Member && ownerId == null)
+                    findYourTimetableOfWeekUseCase(weekOfYear)
+                else
+                    findTimetableOfWeekUseCase(weekOfYear, owner, ownerId!!)
+            )
+        }
+    }
 
 //    private val selectedDay = MutableStateFlow(0)
 
     private val bellSchedule = metaRepository.observeBellSchedule
-        .shareIn(componentScope, SharingStarted.Lazily)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = bellSchedule.flatMapLatest { schedule ->
@@ -57,7 +65,7 @@ class DayTimetableComponent(
                 }
             }
         }
-    }
+    }.stateInResource(componentScope)
 
 //        @OptIn(FlowPreview::class)
 //        val viewState = combine(selectedDay, bellSchedule) { selected, schedule ->

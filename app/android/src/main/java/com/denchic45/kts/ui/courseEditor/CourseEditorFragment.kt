@@ -64,7 +64,7 @@ class CourseEditorFragment : BaseFragment<CourseEditorViewModel, FragmentCourseE
             })
             viewModel.title.observe(viewLifecycleOwner, this@CourseEditorFragment::setActivityTitle)
 
-            viewModel.uiState.collectWhenStarted(lifecycleScope) {
+            viewModel.uiState.collectWhenStarted(viewLifecycleOwner) {
                 when (it) {
                     is Resource.Error -> TODO()
                     is Resource.Loading -> TODO()
@@ -102,7 +102,7 @@ class CourseEditorFragment : BaseFragment<CourseEditorViewModel, FragmentCourseE
                 }
             }
 
-            viewModel.showFoundSubjects.collectWhenStarted(lifecycleScope) { resource ->
+            viewModel.showFoundSubjects.collectWhenStarted(viewLifecycleOwner) { resource ->
                 when (resource) {
                     is Resource.Error -> TODO()
                     is Resource.Loading -> TODO()

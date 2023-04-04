@@ -5,7 +5,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.*
 import org.reactivestreams.Publisher
 
-class AsyncTransformer<T> : ObservableTransformer<T, T>, SingleTransformer<T, T>, FlowableTransformer<T, T>, MaybeTransformer<T, T> {
+class AsyncTransformer<T : Any> : ObservableTransformer<T, T>, SingleTransformer<T, T>, FlowableTransformer<T, T>, MaybeTransformer<T, T> {
     override fun apply(observable: Observable<T>): ObservableSource<T> {
         return observable
             .subscribeOn(Schedulers.io())

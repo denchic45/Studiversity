@@ -34,7 +34,6 @@ import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
 class StudyGroupRepository @Inject constructor(
-    override val appVersionService: AppVersionService,
     override val groupLocalDataSource: GroupLocalDataSource,
     override val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val appPreferences: AppPreferences,
@@ -50,7 +49,7 @@ class StudyGroupRepository @Inject constructor(
     private val membershipApi: MembershipApi,
     private val membersApi: MembersApi,
     private val roleApi: RoleApi,
-) : Repository(), NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
+) :  NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
     FindByContainsNameRepository<StudyGroupResponse> {
 
     override suspend fun findByContainsName(text: String): Resource<List<StudyGroupResponse>> {

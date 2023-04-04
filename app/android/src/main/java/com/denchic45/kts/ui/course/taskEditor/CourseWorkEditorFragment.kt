@@ -13,8 +13,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
@@ -219,21 +217,18 @@ class CourseWorkEditorFragment :
                 )
             }
 
-            viewModel.selectedTopic.collectWhenStarted(lifecycleScope) {
+            viewModel.selectedTopic.collectWhenStarted(viewLifecycleOwner) {
                 actSection.setText(it?.name ?: "Без темы")
             }
 
-            viewModel.openCourseTopics.observe(viewLifecycleOwner) { (courseId, selectedSection) ->
-                courseTopicChooserViewModel.selectedTopic = selectedSection
+            viewModel.openCourseTopics.observe(viewLifecycleOwner) { courseId ->
                 CourseTopicChooserFragment.newInstance(courseId)
                     .show(childFragmentManager, null)
             }
 
-            lifecycleScope.launchWhenStarted {
-                courseTopicChooserViewModel.selectedTopicId.collect {
+                courseTopicChooserViewModel.selectedTopic.collectWhenStarted(viewLifecycleOwner) {
                     viewModel.onTopicSelected(it)
                 }
-            }
 
             viewModel.openAttachment.observe(viewLifecycleOwner, fileViewer::openFile)
 
@@ -241,8 +236,7 @@ class CourseWorkEditorFragment :
                 ivRemoveAvailabilityDate.visibility = if (it) View.VISIBLE else View.GONE
             }
 
-            Transformations.distinctUntilChanged(viewModel.filesVisibility)
-                .observe(viewLifecycleOwner) {
+            viewModel.filesVisibility.collectWhenStarted(viewLifecycleOwner) {
                     tvHeaderFiles.visibility = if (it) View.VISIBLE else View.GONE
                 }
 
@@ -278,7 +272,7 @@ class CourseWorkEditorFragment :
                 filePicker.selectFiles()
             }
 
-            viewModel.attachmentItems.collectWhenStarted(lifecycleScope) {
+            viewModel.attachmentItems.collectWhenStarted(viewLifecycleOwner) {
                 adapter.submit(it)
             }
 

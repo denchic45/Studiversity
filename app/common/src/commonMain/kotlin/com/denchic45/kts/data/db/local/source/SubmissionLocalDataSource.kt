@@ -3,8 +3,8 @@ package com.denchic45.kts.data.db.local.source
 import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.SubmissionEntity
 import com.denchic45.kts.SubmissionEntityQueries
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

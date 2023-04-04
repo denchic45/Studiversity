@@ -1,5 +1,7 @@
 package com.denchic45.kts.di.component
 
+import android.app.Application
+import android.content.Context
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
@@ -8,6 +10,7 @@ import com.denchic45.kts.di.AppScope
 import com.denchic45.kts.di.DatabaseComponent
 import com.denchic45.kts.di.NetworkComponent
 import com.denchic45.kts.di.PreferencesComponent
+import com.denchic45.kts.ui.ownTimetables.OwnTimetablesComponent
 import com.denchic45.kts.ui.timetableLoader.TimetableLoaderComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -18,10 +21,14 @@ import me.tatarka.inject.annotations.Provides
 @AppScope
 @Component
 abstract class AndroidAppComponent(
+    @get:Provides protected val application: Application,
     @Component protected val preferencesComponent: PreferencesComponent,
     @Component protected val databaseComponent: DatabaseComponent,
     @Component protected val networkComponent: NetworkComponent
 ) {
+
+    @Provides
+    fun context(): Context = application
 
     @Provides
     fun componentContext(): ComponentContext {
@@ -35,5 +42,7 @@ abstract class AndroidAppComponent(
     protected abstract val appPreferences: AppPreferences
 
     abstract val timetableLoaderComponent: TimetableLoaderComponent
+
+    abstract val ownTimetablesComponent: OwnTimetablesComponent
 }
 

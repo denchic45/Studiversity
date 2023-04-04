@@ -129,7 +129,7 @@ class CourseFragment : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
             itemTouchHelper.attachToRecyclerView(rvCourseItems)
 
             component.course.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .collectWhenStarted(lifecycleScope) {
+                .collectWhenStarted(viewLifecycleOwner) {
                     it.onSuccess {
                         collapsingToolbarLayout.title = it.name
                     }
@@ -137,13 +137,13 @@ class CourseFragment : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
 
             rvCourseItems.adapter = adapter
             component.elements.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .collectWhenStarted(lifecycleScope) {
+                .collectWhenStarted(viewLifecycleOwner) {
                     it.onSuccess {
                         TODO("Переиспользовать LazyColumn для desktop и android")
                     }
             }
 
-            component.fabVisibility.collectWhenStarted(lifecycleScope) {
+            component.fabVisibility.collectWhenStarted(viewLifecycleOwner) {
                 requireActivity().findViewById<FloatingActionButton>(R.id.fab_main)
                     .apply {
                         if (it) show()
@@ -186,7 +186,7 @@ class CourseFragment : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
     }
 
     override fun collectOnOptionVisibility() {
-        component.optionsVisibility.collectWhenStarted(lifecycleScope) { optionsVisibility ->
+        component.optionsVisibility.collectWhenStarted(viewLifecycleOwner) { optionsVisibility ->
             optionsVisibility.forEach { (itemId, visible) ->
                 toolbar.menu.findItem(itemId).isVisible = visible
             }

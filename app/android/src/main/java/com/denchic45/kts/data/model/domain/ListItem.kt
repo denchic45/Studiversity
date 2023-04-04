@@ -5,11 +5,12 @@ import com.denchic45.kts.ui.model.UiColor
 import com.denchic45.kts.ui.model.UiImage
 import com.denchic45.kts.ui.model.UiText
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 
 data class ListItem(
     @SerializedName("_id")
-    override var id: String = "",
+    override var id: UUID = UUID.randomUUID(),
     var title: String = "",
     var icon: UiImage? = null,
     var color: UiColor? = null,

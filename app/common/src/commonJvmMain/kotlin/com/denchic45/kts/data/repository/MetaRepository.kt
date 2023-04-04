@@ -20,7 +20,6 @@ class MetaRepository constructor(
     private val appPreferences: AppPreferences,
     private val metaStorage: MetaStorage,
 ) {
-    val lessonTime: Flow<Int> = appPreferences.observeLessonTime
 
     val observeBellSchedule: Flow<BellSchedule> = appPreferences.observeBellSchedule
         .filter(String::isNotEmpty)

@@ -80,7 +80,7 @@ abstract class BaseDialogFragment<VM : BaseViewModel, VB : ViewBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.navigate.collectWhenResumed(viewLifecycleOwner.lifecycleScope) { command ->
+        viewModel.navigate.collectWhenResumed(viewLifecycleOwner) { command ->
             when (command) {
                 is NavigationCommand.To -> navController.navigate(command.directions)
                 NavigationCommand.Back -> navController.popBackStack()
@@ -91,9 +91,9 @@ abstract class BaseDialogFragment<VM : BaseViewModel, VB : ViewBinding>(
             }
         }
 
-        viewModel.finish.collectWhenStarted(lifecycleScope) { dismiss() }
+        viewModel.finish.collectWhenStarted(viewLifecycleOwner) { dismiss() }
 
-        viewModel.openConfirmation.collectWhenStarted(lifecycleScope) { (title, message) ->
+        viewModel.openConfirmation.collectWhenStarted(viewLifecycleOwner) { (title, message) ->
             findNavController().navigate(
                 R.id.action_global_confirmDialog,
                 bundleOf(
@@ -103,17 +103,17 @@ abstract class BaseDialogFragment<VM : BaseViewModel, VB : ViewBinding>(
             )
         }
 
-        viewModel.toast.collectWhenStarted(lifecycleScope, this::toast)
+        viewModel.toast.collectWhenStarted(viewLifecycleOwner, this::toast)
 
-        viewModel.toastRes.collectWhenStarted(lifecycleScope, this::toast)
+        viewModel.toastRes.collectWhenStarted(viewLifecycleOwner, this::toast)
 
-        viewModel.snackBar.collectWhenStarted(lifecycleScope) { (message, action) ->
+        viewModel.snackBar.collectWhenStarted(viewLifecycleOwner) { (message, action) ->
             val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
             action?.let { snackbar.setAction(action) { viewModel.onSnackbarActionClick(message) } }
             snackbar.show()
         }
 
-        viewModel.snackBarRes.collectWhenStarted(lifecycleScope) { (messageRes, action) ->
+        viewModel.snackBarRes.collectWhenStarted(viewLifecycleOwner) { (messageRes, action) ->
             val snackbar = Snackbar.make(binding.root, messageRes, Snackbar.LENGTH_LONG)
             action?.let {
                 snackbar.setAction(action) {

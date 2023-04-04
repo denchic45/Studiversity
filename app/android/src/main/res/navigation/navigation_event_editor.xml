@@ -29,7 +29,7 @@
     </fragment>
     <fragment
         android:id="@+id/choiceOfGroupSubjectFragment"
-        android:name="com.denchic45.kts.ui.adminPanel.timetableEditor.choiceOfGroupSubject.ChoiceOfGroupSubjectFragment"
+        android:name="com.denchic45.kts.ui.adminPanel.timetableEditor.courseChooser.CourseChooserFragment"
         android:label="fragment_choice_of_group_subject"
         tools:layout="@layout/fragment_choice_of_group_subject">
         <action

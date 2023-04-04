@@ -90,7 +90,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
         bnv.setOnItemReselectedListener { refreshCurrentFragment() }
 
         viewModel.updateBannerState.debounce(1000)
-            .collectWhenResumed(lifecycleScope) { bannerState ->
+            .collectWhenResumed(viewLifecycleOwner) { bannerState ->
                 if (bannerState !is MainViewModel.UpdateBannerState.Hidden)
                     snackbar.show()
                 else {
@@ -138,7 +138,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
             viewModel.bottomMenuVisibility.observe(this@MainActivity) {
                 bnv.visibility = if (it) View.VISIBLE else View.GONE
             }
-            viewModel.fabVisibility.collectWhenStarted(lifecycleScope) {
+            viewModel.fabVisibility.collectWhenStarted(viewLifecycleOwner) {
                 if (it) fabMain.show() else fabMain.hide()
             }
 
@@ -172,7 +172,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                 }
             }
 
-            viewModel.userInfo.collectWhenStarted(lifecycleScope) { user: User ->
+            viewModel.userInfo.collectWhenStarted(viewLifecycleOwner) { user: User ->
                 val headerView = binding.navHeader.root
                 headerView.setOnClickListener {
                     binding.drawerLayout.close()
@@ -184,7 +184,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                 binding.navHeader.tvFullName.text = user.fullName
             }
 
-            viewModel.navMenuItems.collectWhenStarted(lifecycleScope) {
+            viewModel.navMenuItems.collectWhenStarted(viewLifecycleOwner) {
                 if (it is MainViewModel.NavMenuState.NavMenu) {
                     navAdapter.submit(it.items)
                 }

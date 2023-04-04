@@ -1,4 +1,5 @@
 import com.denchic45.stuiversity.api.course.element.model.AttachmentType;
+import kotlin.Boolean;
 
 CREATE TABLE attachmentEntity (
 attachment_id TEXT NOT NULL UNIQUE PRIMARY KEY,

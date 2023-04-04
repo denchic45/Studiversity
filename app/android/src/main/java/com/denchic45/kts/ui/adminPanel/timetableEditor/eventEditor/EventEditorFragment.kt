@@ -104,7 +104,7 @@ class EventEditorFragment : BaseFragment<EventEditorViewModel, FragmentEventEdit
     }
 
     override fun collectOnShowToolbarTitle() {
-        viewModel.showToolbarTitle.collectWhenResumed(lifecycleScope) {
+        viewModel.showToolbarTitle.collectWhenResumed(viewLifecycleOwner) {
             toolbar.findViewById<TextView>(R.id.tv_toolbar).text = it
         }
     }

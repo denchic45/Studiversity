@@ -37,7 +37,7 @@ class MainInteractor @Inject constructor(
     }
 
     override fun removeListeners() {
-        studyGroupRepository.removeListeners()
+
     }
 
 //    suspend fun observeHasGroup(): Flow<Boolean> = flow {

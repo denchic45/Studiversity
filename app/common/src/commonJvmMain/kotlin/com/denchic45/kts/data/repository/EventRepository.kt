@@ -30,12 +30,11 @@ class EventRepository @Inject constructor(
     private val dayLocalDataSource: DayLocalDataSource,
     private val userPreferences: UserPreferences,
     private val appPreferences: AppPreferences,
-    override val appVersionService: AppVersionService,
     override val userLocalDataSource: UserLocalDataSource,
     override val groupLocalDataSource: GroupLocalDataSource,
     override val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val timetableApi: TimetableApi,
-) : Repository(), NetworkServiceOwner, SaveGroupOperation {
+) : NetworkServiceOwner, SaveGroupOperation {
 
     fun findEventsOfDay(
         date: LocalDate,
@@ -176,8 +175,8 @@ class EventRepository @Inject constructor(
         weekOfYear: String,
         putTimetableRequests: List<PutTimetableRequest>,
     ) {
-        if (isNetworkNotAvailable) throw NetworkException()
-        putTimetableRequests.map { putTimetable(weekOfYear, it) }
+//        if (isNetworkNotAvailable) throw NetworkException()
+//        putTimetableRequests.map { putTimetable(weekOfYear, it) }
     }
 
     suspend fun putTimetable(weekOfYear: String, putTimetableRequest: PutTimetableRequest) =

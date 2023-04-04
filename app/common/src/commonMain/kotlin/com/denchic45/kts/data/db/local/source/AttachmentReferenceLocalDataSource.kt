@@ -1,6 +1,8 @@
 package com.denchic45.kts.data.db.local.source
 
-import com.denchic45.kts.*
+import com.denchic45.kts.AppDatabase
+import com.denchic45.kts.AttachmentRefEntity
+import com.denchic45.kts.AttachmentRefEntityQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -20,7 +22,8 @@ class AttachmentReferenceLocalDataSource(db: AppDatabase) {
             }
         }
 
-    suspend fun deleteByNotInIds(ids: List<String>, referenceId:String) = withContext(Dispatchers.IO) {
-        queries.deleteByNotContainsId(ids, referenceId)
-    }
+    suspend fun deleteByNotInIds(ids: List<String>, referenceId: String) =
+        withContext(Dispatchers.IO) {
+            queries.deleteByNotContainsId(ids, referenceId)
+        }
 }

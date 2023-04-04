@@ -17,7 +17,6 @@ import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
 import com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog
-import com.denchic45.kts.ui.timetable.TimetableFragment
 import com.denchic45.kts.ui.userEditor.UserEditorFragment
 import dagger.Module
 import dagger.Provides
@@ -50,11 +49,11 @@ object IntentModule {
         return dialog.requireArguments().getString(SubjectEditorDialog.SUBJECT_ID)
     }
 
-    @Named(TimetableFragment.GROUP_ID)
-    @Provides
-    fun provideAffiliation(timetableFragment: TimetableFragment): String? {
-        return timetableFragment.arguments?.getString(TimetableFragment.GROUP_ID)
-    }
+//    @Named(TimetableFragment.GROUP_ID)
+//    @Provides
+//    fun provideAffiliation(timetableFragment: TimetableFragment): String? {
+//        return timetableFragment.arguments?.getString(TimetableFragment.GROUP_ID)
+//    }
 
     @Named(FullImageActivity.IMAGE_URL)
     @Provides
@@ -84,18 +83,6 @@ object IntentModule {
     @Provides
     fun provideUserIdFromUserEditor(userEditorFragment: UserEditorFragment): String? {
         return userEditorFragment.navArgs.userId
-    }
-
-    @Named(UserEditorFragment.USER_ROLE)
-    @Provides
-    fun provideUserRole(userEditorFragment: UserEditorFragment): String {
-        return userEditorFragment.navArgs.role
-    }
-
-    @Named(UserEditorFragment.USER_GROUP_ID)
-    @Provides
-    fun provideUserGroupId(userEditorFragment: UserEditorFragment): String? {
-        return userEditorFragment.navArgs.groupId
     }
 
     @Named(SpecialtyEditorDialog.SPECIALTY_ID)

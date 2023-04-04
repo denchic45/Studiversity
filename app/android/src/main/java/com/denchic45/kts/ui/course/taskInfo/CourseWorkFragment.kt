@@ -264,7 +264,7 @@ class CourseWorkFragment :
                 }
             }
 
-            viewModel.submissionAttachments.collectWhenStarted(lifecycleScope) {
+            viewModel.submissionAttachments.collectWhenStarted(viewLifecycleOwner) {
                 it.onSuccess { attachments ->
                     setSubmissionContent(attachments)
                 }

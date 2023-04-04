@@ -3,7 +3,7 @@ package com.denchic45.kts.di.module
 import com.denchic45.kts.ui.adminPanel.AdminPanelFragment
 import com.denchic45.kts.ui.adminPanel.finder.FinderFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.TimetableEditorFragment
-import com.denchic45.kts.ui.adminPanel.timetableEditor.choiceOfGroupSubject.ChoiceOfGroupSubjectFragment
+import com.denchic45.kts.ui.adminPanel.timetableEditor.courseChooser.CourseChooserFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.finder.TimetableFinderFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.loader.TimetableLoaderFragment
@@ -18,10 +18,6 @@ import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
 import com.denchic45.kts.ui.course.taskInfo.CourseWorkFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
 import com.denchic45.kts.ui.creator.CreatorDialog
-import com.denchic45.kts.ui.studygroup.StudyGroupFragment
-import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
-import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
-import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
 import com.denchic45.kts.ui.iconPicker.IconPickerDialog
 import com.denchic45.kts.ui.login.auth.AuthFragment
 import com.denchic45.kts.ui.login.groupChooser.GroupChooserFragment
@@ -29,12 +25,15 @@ import com.denchic45.kts.ui.login.resetPassword.ResetPasswordFragment
 import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.settings.SettingsFragment
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
+import com.denchic45.kts.ui.studygroup.StudyGroupFragment
+import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
+import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
+import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
 import com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog
 import com.denchic45.kts.ui.tasks.TasksFragment
 import com.denchic45.kts.ui.tasks.completed.CompletedTasksFragment
 import com.denchic45.kts.ui.tasks.overdue.OverdueTasksFragment
 import com.denchic45.kts.ui.tasks.upcoming.UpcomingTasksFragment
-import com.denchic45.kts.ui.timetable.TimetableFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -44,8 +43,8 @@ interface FragmentModule {
     @ContributesAndroidInjector(modules = [IntentModule::class])
     fun contributeSubjectEditorDialog(): SubjectEditorDialog
 
-    @ContributesAndroidInjector(modules = [IntentModule::class])
-    fun contributeTimetableFragment(): TimetableFragment
+//    @ContributesAndroidInjector(modules = [IntentModule::class])
+//    fun contributeTimetableFragment(): TimetableFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
     fun contributeCourseEditorFragment(): CourseEditorFragment
@@ -90,7 +89,7 @@ interface FragmentModule {
     fun contributeSettingsFragment(): SettingsFragment
 
     @ContributesAndroidInjector
-    fun contributeChoiceOfGroupSubjectFragment(): ChoiceOfGroupSubjectFragment
+    fun contributeChoiceOfGroupSubjectFragment(): CourseChooserFragment
 
     @ContributesAndroidInjector
     fun contributeGroupChooserFragment(): GroupChooserFragment

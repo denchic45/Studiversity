@@ -14,6 +14,7 @@ var app: AndroidApp by Delegates.notNull()
 class AndroidApp : Application() {
     val appComponent by lazy {
         AndroidAppComponent::class.create(
+            this,
             PreferencesComponent::class.create(SettingsFactory(applicationContext)),
             DatabaseComponent::class.create(DriverFactory(applicationContext)),
             NetworkComponent::class.create(Android)

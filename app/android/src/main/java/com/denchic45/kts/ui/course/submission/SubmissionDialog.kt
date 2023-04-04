@@ -19,12 +19,15 @@ import com.bumptech.glide.Glide
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentSubmissionBinding
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
-import com.denchic45.kts.domain.model.Task
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.rx.EditTextTransformer
 import com.denchic45.kts.ui.course.taskEditor.AttachmentAdapterDelegate
 import com.denchic45.kts.util.ValueFilter
 import com.denchic45.kts.util.closeKeyboard
+import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.kts.util.windowHeight
+import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import com.denchic45.stuiversity.api.course.work.submission.model.WorkSubmissionContent
 import com.denchic45.widget.extendedAdapter.ItemAdapterDelegate
 import com.denchic45.widget.extendedAdapter.adapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -34,7 +37,6 @@ import com.jakewharton.rxbinding4.widget.textChanges
 import dagger.android.support.AndroidSupportInjection
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
@@ -144,46 +146,30 @@ class SubmissionDialog : BottomSheetDialogFragment() {
                 }
             }
 
-            lifecycleScope.launchWhenStarted {
-                viewModel.showSubmission.collect {
 
+            viewModel.showSubmission.collectWhenStarted(viewLifecycleOwner) {
+                it.onSuccess { response ->
                     Glide.with(requireContext())
-                        .load(it.student.photoUrl)
+                        .load(response.author.avatarUrl)
                         .into(ivAvatar)
 
-                    tvName.text = it.student.fullName
+                    tvName.text = response.author.fullName
 
-                    if (it.content.hasText()) {
-                        tvAnswerText.visibility = View.VISIBLE
-                        tvAnswerText.text = it.content.text
-                    } else {
-                        tvAnswerText.visibility = View.GONE
-                    }
-
-                    if (it.content.hasAttachments()) {
+                    if (response.content?.isEmpty() == true) {
                         rvAttachments.visibility = View.VISIBLE
-                        attachmentAdapter.submit(it.content.attachments)
+                        attachmentAdapter.submit((response.content as WorkSubmissionContent).attachments)
                     } else {
                         rvAttachments.visibility = View.GONE
                     }
 
-                    tvStatus.text = when (val status = it.status) {
-                        Task.SubmissionStatus.NotSubmitted -> {
-                            "Не сдано"
-                        }
-                        is Task.SubmissionStatus.Submitted -> {
-                            "Сдано: ${
-                                DateTimeFormatter.ofPattern("dd MMM HH:mm")
-                                    .format(status.submittedDate)
-                            }"
-                        }
-                        is Task.SubmissionStatus.Graded -> {
-                            etGrade.setText(status.grade.toString())
-                            "Оценено: ${status.grade}/5"
-                        }
-                        is Task.SubmissionStatus.Rejected -> {
-                            "Отклонено по причине: ${status.cause}"
-                        }
+                    tvStatus.text = if (response.grade != null) {
+                        etGrade.setText(response.grade.toString())
+                        "Оценено: ${response.grade}/5"
+                    } else when (response.state) {
+                        SubmissionState.NEW,
+                        SubmissionState.CREATED -> "Не сдано"
+                        SubmissionState.SUBMITTED -> "Сдано" // TODO: добавить дату и время отправки
+                        SubmissionState.CANCELED_BY_AUTHOR -> "Отклонено автором"
                     }
                 }
             }

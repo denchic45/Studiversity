@@ -108,7 +108,7 @@ class TimetableFinderFragment :
 
             rvTimetable.adapter = adapter
 
-            viewModel.showFoundGroups.collectWhenStarted(lifecycleScope) { groups: List<ListItem> ->
+            viewModel.showFoundGroups.collectWhenStarted(viewLifecycleOwner) { groups: List<ListItem> ->
                 if (groups.isEmpty()) {
                     popupWindow!!.dismiss()
                     return@collectWhenStarted
@@ -134,7 +134,7 @@ class TimetableFinderFragment :
                 onActionModeFinish = { viewModel.onDestroyActionMode() }
             }
 
-            viewModel.eventsOfDay.collectWhenStarted(lifecycleScope) { eventsOfDayState ->
+            viewModel.eventsOfDay.collectWhenStarted(viewLifecycleOwner) { eventsOfDayState ->
                 when (eventsOfDayState) {
                     is TimetableFinderViewModel.EventsOfDayState.Current -> {
                         setAllowEdit(adapter, false)

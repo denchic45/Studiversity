@@ -32,7 +32,6 @@ class TimetableEditorFragment : Fragment(R.layout.fragment_timetable_editor) {
             setContent {
                 TimetableLoaderScreen(app.appComponent.timetableLoaderComponent)
             }
-
     }
 
 //    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
