@@ -2,13 +2,13 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose") version "1.3.0"
     id("com.android.library")
-    id("com.squareup.sqldelight")
     id("kotlin-kapt")
-    kotlin("plugin.serialization") version "1.7.20"
+    kotlin("plugin.serialization") version "1.8.0"
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
+    id("app.cash.sqldelight")
 }
-
+val sqlDelightVersion = "2.0.0-alpha05"
 kotlin {
     android()
     jvm("desktop") {
@@ -20,7 +20,6 @@ kotlin {
     sourceSets {
         val ktorVersion = "2.0.3"
         val koinVersion = "3.2.0"
-        val sqlDelightVersion = "1.5.3"
         val decomposeVersion = "1.0.0"
         val daggerVersion = "2.44"
 
@@ -31,8 +30,8 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
 
-                implementation("com.squareup.sqldelight:runtime-jvm:$sqlDelightVersion")
-                implementation("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
+                implementation("app.cash.sqldelight:runtime-jvm:$sqlDelightVersion")
+                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 implementation("com.google.code.gson:gson:2.9.0")
 
@@ -71,8 +70,10 @@ kotlin {
 
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
-                implementation("com.squareup.sqldelight:runtime:$sqlDelightVersion")
-                implementation("com.squareup.sqldelight:coroutines-extensions:$sqlDelightVersion")
+                implementation("app.cash.sqldelight:runtime:$sqlDelightVersion")
+                implementation("app.cash.sqldelight:coroutines-extensions:$sqlDelightVersion")
+                api("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
+
 
                 implementation("io.insert-koin:koin-core:$koinVersion")
 
@@ -111,7 +112,7 @@ kotlin {
 
                 api("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
-                implementation("com.squareup.sqldelight:android-driver:$sqlDelightVersion")
+                implementation("app.cash.sqldelight:android-driver:$sqlDelightVersion")
 
                 api("com.squareup.retrofit2:retrofit:2.9.0")
 
@@ -179,8 +180,8 @@ kotlin {
 
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
 
-                api("com.squareup.sqldelight:sqlite-driver:$sqlDelightVersion")
-                api("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
+                api("app.cash.sqldelight:sqlite-driver:$sqlDelightVersion")
+                api("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 // Dagger
 //                api("com.google.dagger:dagger:$daggerVersion")
@@ -236,9 +237,16 @@ dependencies {
 }
 
 sqldelight {
-    database("AppDatabase") {
-        packageName = "com.denchic45.kts"
-        sourceFolders = listOf("sqldelight")
-        dialect = "sqlite:3.25"
+    databases {
+        create("AppDatabase") {
+            packageName.set("com.denchic45.kts")
+            sourceFolders.set(listOf("sqldelight"))
+            dialect("app.cash.sqldelight:sqlite-3-38-dialect:$sqlDelightVersion")
+        }
     }
+//    database("AppDatabase") {
+//        packageName = "com.denchic45.kts"
+//        sourceFolders = listOf("sqldelight")
+//        dialect = "sqlite:3.25"
+//    }
 }

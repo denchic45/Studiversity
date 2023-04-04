@@ -73,7 +73,7 @@ android {
     namespace = "com.denchic45.kts"
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.2"
+        kotlinCompilerExtensionVersion = "1.4.0"
     }
 
     sourceSets.all {
