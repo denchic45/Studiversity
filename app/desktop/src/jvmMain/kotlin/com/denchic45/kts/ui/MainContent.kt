@@ -92,7 +92,7 @@ fun MainContent(mainComponent: MainComponent) {
                 })
 
                 when (val child = childStack.active.instance) {
-                    is Child.Timetable -> TimetableScreen(appBarMediator, child.timetableComponent)
+                    is Child.Timetable -> TimetableScreen(appBarMediator, child.dayTimetableComponent)
                     is Child.StudyGroups -> StudyGroupsScreen(appBarMediator, child.studyGroupsComponent)
                 }
 

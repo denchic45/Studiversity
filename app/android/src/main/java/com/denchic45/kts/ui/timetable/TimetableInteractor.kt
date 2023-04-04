@@ -23,7 +23,7 @@ class TimetableInteractor @Inject constructor(
         return eventRepository.findEventsOfDayByGroupIdAndDate(groupId, date)
     }
 
-    val lessonTime: Int get() = eventRepository.lessonTime
+    val lessonTime get() = eventRepository.lessonTime
 
     override fun removeListeners() {
         eventRepository.removeListeners()

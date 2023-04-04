@@ -14,7 +14,7 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.denchic45.kts.domain.MainInteractor
 import com.denchic45.kts.ui.navigation.*
 import com.denchic45.kts.ui.studygroups.StudyGroupsComponent
-import com.denchic45.kts.ui.timetable.TimetableComponent
+import com.denchic45.kts.ui.timetable.DayTimetableComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.launch
@@ -22,7 +22,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class MainComponent constructor(
-    lazyTimetableComponent: Lazy<TimetableComponent>,
+    lazyDayTimetableComponent: Lazy<DayTimetableComponent>,
     lazyStudyGroupsComponent: Lazy<StudyGroupsComponent>,
     mainInteractor: MainInteractor,
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,
@@ -30,7 +30,7 @@ class MainComponent constructor(
     userEditorComponent: (onFinish: () -> Unit, config: UserEditorConfig) -> UserEditorComponent,
 ) : ComponentContext by componentContext {
 
-    private val timetableComponent by lazyTimetableComponent
+    private val timetableComponent by lazyDayTimetableComponent
     private val studyGroupsComponent by lazyStudyGroupsComponent
 
     private val coroutineScope = componentScope()
@@ -83,7 +83,7 @@ class MainComponent constructor(
     }
 
     sealed interface Child {
-        class Timetable(val timetableComponent: TimetableComponent) : Child
+        class Timetable(val dayTimetableComponent: DayTimetableComponent) : Child
         class StudyGroups(val studyGroupsComponent: StudyGroupsComponent) : Child
     }
 }

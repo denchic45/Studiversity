@@ -2,6 +2,8 @@ package com.denchic45.kts.ui.timetableEditor
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.IconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,23 +16,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.denchic45.kts.R
 import com.denchic45.kts.domain.model.StudyGroupNameItem
 import com.denchic45.kts.domain.timetable.model.PeriodDetails
 import com.denchic45.kts.domain.timetable.model.PeriodItem
 import java.util.*
-import com.denchic45.kts.R
-
-@Composable
-fun TimetableEditorUI() {
-
-}
 
 @Composable
 fun PeriodItemUI(
     item: PeriodItem?,
     time: String,
     groupShowing: Boolean = false,
-    isEdit: Boolean = false
+    isEdit: Boolean = false,
+    onEditClick: () -> Unit = {}
 ) {
     Column {
         Row(
@@ -86,6 +84,12 @@ fun PeriodItemUI(
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Gray
                 )
+            }
+            if (isEdit) {
+                Spacer(Modifier.weight(1f))
+                IconButton(onClick = { onEditClick() }) {
+                    Icon(painterResource(id = R.drawable.ic_edit), null)
+                }
             }
         }
     }

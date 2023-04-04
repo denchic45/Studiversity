@@ -12,6 +12,7 @@ import com.denchic45.kts.util.NetworkException
 import com.denchic45.stuiversity.api.timetable.TimetableApi
 import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting
 import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
+import com.denchic45.stuiversity.util.UUIDWrapper
 import com.denchic45.stuiversity.util.toDateUTC
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.flow
@@ -56,7 +57,7 @@ class EventRepository @Inject constructor(
         weekOfYear: String,
         studyGroupIds: List<UUID>? = null,
         courseIds: List<UUID>? = null,
-        memberIds: List<UUID>? = null,
+        memberIds: List<UUIDWrapper>? = null,
         roomIds: List<UUID>? = null,
         sorting: List<PeriodsSorting> = emptyList(),
     ) = fetchResource {
@@ -154,12 +155,6 @@ class EventRepository @Inject constructor(
 //            teacherEventEntities = eventEntities.toTeacherEventEntities()
 //        )
 //    }
-
-    var lessonTime: Int
-        get() = appPreferences.lessonTime
-        set(lessonTime) {
-            appPreferences.lessonTime = lessonTime
-        }
 
 //    suspend fun observeEventsOfYourGroup() {
 //        groupPreferences.observeGroupId.filter(String::isNotEmpty).flatMapLatest { groupId ->

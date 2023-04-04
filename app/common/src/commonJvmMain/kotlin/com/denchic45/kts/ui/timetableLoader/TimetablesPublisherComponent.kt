@@ -5,14 +5,20 @@ import com.denchic45.kts.ui.timetableEditor.DayTimetableEditorComponent
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class TimetablesPublisherComponent(
-    private val _dayTimetableEditorComponent: (weekOfYear: String,List<MutableStateFlow<List<PeriodResponse>>>) -> DayTimetableEditorComponent,
+    private val _dayTimetableEditorComponent: (
+        weekOfYear: String,
+        List<MutableStateFlow<List<PeriodResponse>>>,
+        isEdit: Flow<Boolean>
+    ) -> DayTimetableEditorComponent,
     @Assisted
     private val weekOfYear: String,
     @Assisted
@@ -24,7 +30,7 @@ class TimetablesPublisherComponent(
 
     val dayTimetableEditorComponents = MutableStateFlow(
         _studyGroupTimetables.map {
-            _dayTimetableEditorComponent(weekOfYear,it.second.days.map(::MutableStateFlow))
+            _dayTimetableEditorComponent(weekOfYear, it.second.days.map(::MutableStateFlow), flowOf(true))
         }
     )
 
@@ -38,7 +44,7 @@ class TimetablesPublisherComponent(
         }
 
         dayTimetableEditorComponents.update { components ->
-            components + _dayTimetableEditorComponent(weekOfYear,list)
+            components + _dayTimetableEditorComponent(weekOfYear, list, flowOf(true))
         }
     }
 

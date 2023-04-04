@@ -1,7 +1,11 @@
-package com.denchic45.kts.ui.timetable
+package com.denchic45.kts.ui.timetable.state
 
 import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.domain.timetable.model.PeriodItem
+import com.denchic45.kts.ui.timetable.CellOrder
+import com.denchic45.kts.ui.timetable.getMonthTitle
+import com.denchic45.kts.ui.timetable.toItemOrders
+import com.denchic45.kts.ui.timetable.toItems
 import com.denchic45.kts.util.copy
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import java.time.DayOfWeek
@@ -31,14 +35,14 @@ fun TimetableResponse.toTimetableViewState(
                 .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.value.toLong())
                 .toFormatter()
         ),
-        periods = toItems(latestEventOrder),
+        periods = toItemsOfDay(latestEventOrder),
         orders = bellSchedule.toItemOrders(latestEventOrder),
         maxEventsSize = latestEventOrder
     )
 }
 
 
-private fun TimetableResponse.toItems(
+private fun TimetableResponse.toItemsOfDay(
     latestPeriodOrder: Int
 ): List<List<PeriodItem?>> = buildList {
     days.forEach { periods ->

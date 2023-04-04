@@ -33,8 +33,8 @@ import java.time.LocalDate
 
 @Preview
 @Composable
-fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: TimetableComponent) {
-    val timetable by timetableComponent.timetable.collectAsState()
+fun TimetableScreen(appBarMediator: AppBarMediator, dayTimetableComponent: DayTimetableComponent) {
+    val timetable by dayTimetableComponent.timetable.collectAsState()
     timetable.onSuccess { state ->
         appBarMediator.apply {
             title = state.title
@@ -45,14 +45,14 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
 
                 OutlinedButton(
                     modifier = Modifier.height(contentHeight),
-                    onClick = timetableComponent::onTodayClick,
+                    onClick = dayTimetableComponent::onTodayClick,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
                 ) {
                     TextButtonContent("Сегодня")
                 }
                 Spacer(Modifier.width(16.dp))
                 OutlinedButton(
-                    onClick = timetableComponent::onPreviousWeekClick,
+                    onClick = dayTimetableComponent::onPreviousWeekClick,
                     modifier = Modifier.size(contentHeight),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     contentPadding = PaddingValues(0.dp),
@@ -65,7 +65,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: Timetabl
                 }
                 Spacer(Modifier.width(16.dp))
                 OutlinedButton(
-                    onClick = timetableComponent::onNextWeekClick,
+                    onClick = dayTimetableComponent::onNextWeekClick,
                     modifier = Modifier.size(contentHeight),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     contentPadding = PaddingValues(0.dp),

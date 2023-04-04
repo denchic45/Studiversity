@@ -2,8 +2,8 @@ package com.denchic45.kts.ui.timetableEditor
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.data.repository.MetaRepository
+import com.denchic45.kts.ui.timetable.state.toTimetableViewState
 import com.denchic45.kts.ui.timetable.toLocalDateOfWeekOfYear
-import com.denchic45.kts.ui.timetable.toTimetableViewState
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.copy
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
@@ -19,6 +19,8 @@ class DayTimetableEditorComponent constructor(
     weekOfYear: String,
     @Assisted
     private val weekTimetableFlows: List<MutableStateFlow<List<PeriodResponse>>>,
+    @Assisted
+    private val isEdit: Flow<Boolean> = flowOf(false),
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
 
@@ -32,11 +34,12 @@ class DayTimetableEditorComponent constructor(
         .shareIn(componentScope, SharingStarted.Lazily)
 
     @OptIn(FlowPreview::class)
-    val viewState = combine(selectedDay, bellSchedule) { selected, schedule ->
+    val viewState = combine(selectedDay, bellSchedule, isEdit) { selected, schedule, isEdit ->
         weekTimetableFlows[selected].map {
             it.toTimetableViewState(
                 date = mondayDate.plusDays(selected.toLong()),
-                bellSchedule = schedule
+                bellSchedule = schedule,
+                isEdit = isEdit
             )
         }
     }.flattenConcat().stateIn(componentScope, SharingStarted.Lazily, null)
@@ -57,5 +60,9 @@ class DayTimetableEditorComponent constructor(
         weekTimetableFlows[selectedDay.value].update {
             it - it[position]
         }
+    }
+
+    fun onPeriodEdit(position: Int) {
+        TODO("Not yet implemented")
     }
 }

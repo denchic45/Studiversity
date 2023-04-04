@@ -3,13 +3,13 @@ package com.denchic45.kts.data.repository
 import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.fetchObservingResource
 import com.denchic45.kts.data.fetchResource
+import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.pref.TimestampPreferences
 import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.model.GroupCurator
-import com.denchic45.kts.domain.model.GroupMembers
+import com.denchic45.kts.domain.toResource
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.member.MembersApi
 import com.denchic45.stuiversity.api.membership.MembershipApi
@@ -19,11 +19,16 @@ import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.util.uuidOf
 import com.denchic45.stuiversity.util.uuidOfMe
-import com.github.michaelbull.result.map
+import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.util.*
 import javax.inject.Inject
 
@@ -32,6 +37,7 @@ class StudyGroupRepository @Inject constructor(
     override val appVersionService: AppVersionService,
     override val groupLocalDataSource: GroupLocalDataSource,
     override val specialtyLocalDataSource: SpecialtyLocalDataSource,
+    private val appPreferences: AppPreferences,
     private val timestampPreferences: TimestampPreferences,
     private val userPreferences: UserPreferences,
     override val networkService: NetworkService,
@@ -215,7 +221,13 @@ class StudyGroupRepository @Inject constructor(
         membersApi.getByScope(studyGroupId)
     }
 
-    suspend fun findByMe(): ResponseResult<List<StudyGroupResponse>> {
-        return studyGroupApi.getList(memberId = uuidOfMe())
+    fun observeIdsByMe() = appPreferences.observeBellSchedule
+        .map { Json.decodeFromString<List<String>>(it).map(String::toUUID) }
+
+    // TODO: Make observable
+    suspend fun findByMe(): Resource<List<StudyGroupResponse>> {
+        return studyGroupApi.getList(memberId = uuidOfMe()).onSuccess {
+            appPreferences.yourStudyGroups = Json.encodeToString(it.map(StudyGroupResponse::id))
+        }.toResource()
     }
 }

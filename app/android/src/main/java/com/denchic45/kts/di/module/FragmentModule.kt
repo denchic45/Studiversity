@@ -5,8 +5,6 @@ import com.denchic45.kts.ui.adminPanel.finder.FinderFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.TimetableEditorFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.choiceOfGroupSubject.ChoiceOfGroupSubjectFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorFragment
-import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.lessonEditor.LessonEditorFragment
-import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.simpleEventEditor.SimpleEventEditorFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.finder.TimetableFinderFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.loader.TimetableLoaderFragment
 import com.denchic45.kts.ui.confirm.ConfirmDialog
@@ -61,11 +59,11 @@ interface FragmentModule {
     @ContributesAndroidInjector(modules = [IntentModule::class])
     fun contributeGroupCoursesFragment(): GroupCoursesFragment
 
-    @ContributesAndroidInjector
-    fun contributeLessonEditorFragment(): LessonEditorFragment
+//    @ContributesAndroidInjector
+//    fun contributeLessonEditorFragment(): LessonEditorFragment
 
-    @ContributesAndroidInjector
-    fun contributeSimpleEventEditorFragment(): SimpleEventEditorFragment
+//    @ContributesAndroidInjector
+//    fun contributeSimpleEventEditorFragment(): SimpleEventEditorFragment
 
     @ContributesAndroidInjector
     fun contributeGroupTimetableEditorFragment(): TimetableEditorFragment

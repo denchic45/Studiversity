@@ -4,6 +4,7 @@ import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.timetable.model.*
+import com.denchic45.stuiversity.util.UUIDWrapper
 import com.denchic45.stuiversity.util.parametersOf
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -22,7 +23,7 @@ interface TimetableApi {
         weekOfYear: String,
         studyGroupIds: List<UUID>? = null,
         courseIds: List<UUID>? = null,
-        memberIds: List<UUID>? = null,
+        memberIds: List<UUIDWrapper>? = null,
         roomIds: List<UUID>? = null,
         sorting: List<PeriodsSorting> = listOf(),
     ): ResponseResult<TimetableResponse>
@@ -119,13 +120,13 @@ class TimetableApiImpl(private val client: HttpClient) : TimetableApi {
         weekOfYear: String,
         studyGroupIds: List<UUID>?,
         courseIds: List<UUID>?,
-        memberIds: List<UUID>?,
+        memberIds: List<UUIDWrapper>?,
         roomIds: List<UUID>?,
         sorting: List<PeriodsSorting>,
     ): ResponseResult<TimetableResponse> = client.get("/timetables/$weekOfYear") {
         studyGroupIds?.forEach { parameter("studyGroupId", it) }
         courseIds?.forEach { parameter("courseId", it) }
-        memberIds?.forEach { parameter("memberId", it) }
+        memberIds?.forEach { parameter("memberId", it.value) }
         roomIds?.forEach { parameter("roomId", it) }
         parametersOf(values = sorting)
     }.toResult()

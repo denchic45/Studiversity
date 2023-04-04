@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.timetable
+package com.denchic45.kts.ui.timetable.state
 
 import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.domain.timetable.model.PeriodItem
@@ -11,7 +11,7 @@ data class DayTimetableViewState(
     val periods: List<PeriodItem?>,
     val orders: List<CellOrder>,
     val maxEventsSize: Int,
-    val isEdit: Boolean = false
+    val isEdit: Boolean
 ) {
     val title = getMonthTitle(date)
 }
@@ -19,13 +19,15 @@ data class DayTimetableViewState(
 fun List<PeriodResponse>.toTimetableViewState(
     date: LocalDate,
     bellSchedule: BellSchedule,
+    isEdit: Boolean = false
 ): DayTimetableViewState {
     val latestEventOrder = max(maxOf { last().order }, 6)
     return DayTimetableViewState(
         date = date,
         periods = toItems(this, latestEventOrder),
         orders = bellSchedule.toItemOrders(latestEventOrder),
-        maxEventsSize = latestEventOrder
+        maxEventsSize = latestEventOrder,
+        isEdit = isEdit
     )
 }
 

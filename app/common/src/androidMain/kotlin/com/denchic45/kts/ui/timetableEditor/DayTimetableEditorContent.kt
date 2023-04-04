@@ -15,11 +15,11 @@ import java.time.LocalDate
 @Composable
 fun DayTimetableEditorScreen(component: DayTimetableEditorComponent) {
     val viewState by component.viewState.collectAsState()
-    viewState?.let { DayTimetableEditorContent(it) }
+    viewState?.let { DayTimetableEditorContent(it, component::onPeriodEdit) }
 }
 
 @Composable
-fun DayTimetableEditorContent(viewState: DayTimetableViewState) {
+fun DayTimetableEditorContent(viewState: DayTimetableViewState, onEditClick: (Int) -> Unit) {
     Column {
         AndroidView(factory = {
             WeekCalendarView(it).apply {
@@ -28,7 +28,12 @@ fun DayTimetableEditorContent(viewState: DayTimetableViewState) {
         })
         LazyColumn {
             itemsIndexed(viewState.periods) { index, item ->
-                PeriodItemUI(item = item, time = viewState.orders[index].time)
+                PeriodItemUI(
+                    item = item,
+                    time = viewState.orders[index].time,
+                    isEdit = viewState.isEdit,
+                    onEditClick = { onEditClick(index) }
+                )
             }
         }
     }
@@ -42,7 +47,8 @@ fun TimetableEditorContentPreview() {
             LocalDate.now(),
             listOf(),
             listOf(),
-            6
+            6,
+            true
         )
-    )
+    ) {}
 }

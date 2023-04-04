@@ -71,6 +71,9 @@ class MainInteractor @Inject constructor(
                 }
             }
         }
+
+        // TODO: Make observable
+        studyGroupRepository.findByMe()
     }
 
 //    fun findOwnCourses(): Flow<List<CourseHeader>> {
