@@ -54,12 +54,11 @@ abstract class UserEditorUILogicDelegate(
     }
     val errorState = MutableStateFlow(ErrorState())
 
-    val genders: List<MenuItem<GenderAction>> =
-        listOf(
-            MenuItem(GenderAction.Male),
-            MenuItem(GenderAction.Female),
-            MenuItem(GenderAction.Undefined)
-        )
+    val genders: List<MenuItem<GenderAction>> = listOf(
+        MenuItem(GenderAction.Male),
+        MenuItem(GenderAction.Female),
+        MenuItem(GenderAction.Undefined)
+    )
 
     val firstNameField: MutableStateFlow<String> = MutableStateFlow("")
 
