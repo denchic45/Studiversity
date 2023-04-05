@@ -37,14 +37,15 @@ kotlin {
                 implementation("com.google.dagger:dagger:$daggerVersion")
                 configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
 
-                // kotlin-inject
-                configurations["ksp"].dependencies.add(project.dependencies.create("me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1"))
-
                 // Kamel
                 implementation("com.alialbaali.kamel:kamel-image:0.4.0")
             }
         }
     }
+}
+
+dependencies {
+    add("kspJvm", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
 }
 
 compose.desktop {
