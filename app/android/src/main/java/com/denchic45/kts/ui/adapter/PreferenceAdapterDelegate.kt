@@ -10,6 +10,7 @@ import com.denchic45.kts.util.viewBinding
 import com.denchic45.widget.extendedAdapter.DelegationAdapterDsl
 import com.denchic45.widget.extendedAdapter.DelegationAdapterExtended
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
+import java.util.UUID
 
 fun preferenceAdapter(buildDelegationAdapterDsl: DelegationAdapterDsl.DelegationAdapterBuilder.() -> Unit): DelegationAdapterExtended {
     val delegationAdapterBuilder = DelegationAdapterDsl.DelegationAdapterBuilder()
@@ -142,7 +143,7 @@ class PreferenceSwitchAdapterDelegate :
 abstract class PreferenceItem : DomainModel
 
 data class PreferenceContentItem(
-    override var id: String,
+    override var id: UUID,
     val title: String,
     @DrawableRes
     val icon: Int,
@@ -150,7 +151,7 @@ data class PreferenceContentItem(
 ) : PreferenceItem()
 
 data class PreferenceSwitchItem(
-    override var id: String,
+    override var id: UUID,
     val title: String,
     val checked: Boolean = false
 ) : PreferenceItem()

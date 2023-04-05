@@ -17,6 +17,7 @@ import com.denchic45.kts.util.viewBinding
 import com.denchic45.widget.extendedAdapter.DelegationAdapterDsl
 import com.denchic45.widget.extendedAdapter.DelegationAdapterExtended
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
+import java.util.UUID
 
 fun navAdapter(builderDelegation: DelegationAdapterDsl.DelegationAdapterBuilder.() -> Unit): DelegationAdapterExtended {
     val delegationAdapterBuilder = DelegationAdapterDsl.DelegationAdapterBuilder()
@@ -164,7 +165,7 @@ data class NavTextItem(
     val visible: Boolean = true,
     val checkable: Boolean = true,
     val enable: Boolean = true,
-    override var id: String = "",
+    override var id: UUID = UUID.randomUUID(),
     val iconType: IconType = IconType.NONE,
     val color: UiText = UiText.IdText(0),
 ) : NavItem() {
@@ -223,6 +224,6 @@ class DividerItemHolder(itemNavDividerBinding: ItemNavDividerBinding) :
     override fun onBind(item: DividerItem) {}
 }
 
-data class DividerItem(override var id: String = "") : NavItem()
+data class DividerItem(override var id: UUID = UUID.randomUUID()) : NavItem()
 
 abstract class NavItem : UiModel

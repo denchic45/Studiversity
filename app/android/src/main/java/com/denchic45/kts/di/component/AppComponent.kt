@@ -1,6 +1,7 @@
 package com.denchic45.kts.di.component
 
 import com.denchic45.kts.AndroidApp
+import com.denchic45.kts.di.NetworkModule
 import com.denchic45.kts.di.module.*
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -17,6 +18,7 @@ import javax.inject.Singleton
         StorageModule::class,
         PreferencesModule::class,
         RawModule::class,
+        NetworkModule::class,
         DispatcherModule::class,
         FragmentModule::class,
         ActivityModule::class,

@@ -81,9 +81,7 @@ class GroupMembersFragment :
             }
         }
 
-        viewModel._members.collectWhenStarted(viewLifecycleOwner) {it.onSuccess {
-            userAdapter.submit(it)
-        }}
+        viewModel.members.collectWhenStarted(viewLifecycleOwner) {it.onSuccess(userAdapter::submit) }
     }
 
 

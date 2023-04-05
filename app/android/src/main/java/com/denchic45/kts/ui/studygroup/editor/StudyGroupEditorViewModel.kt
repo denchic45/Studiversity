@@ -69,7 +69,7 @@ class StudyGroupEditorViewModel @Inject constructor(
                     foundSpecialties = it
                     showSpecialties.postValue(
                         it.map { specialty ->
-                            ListItem(id = specialty.id.toString(), title = specialty.name)
+                            ListItem(id = specialty.id, title = specialty.name)
                         }
                     )
                 }

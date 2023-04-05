@@ -53,7 +53,7 @@ class CourseEditorViewModel @Inject constructor(
                 foundSubjects = it
                 it.map { (id, name, iconUrl) ->
                     ListItem(
-                        id = id.toString(),
+                        id = id,
                         title = name,
                         icon = UiImage.Url(iconUrl)
                     )

@@ -146,9 +146,7 @@ class GroupMembersViewModel @Inject constructor(
                 OPTION_EDIT_USER -> {
                     navigateTo(
                         MobileNavigationDirections.actionGlobalUserEditorFragment(
-                            userId = memberId.toString(),
-                            role = UserRole.STUDENT.toString(),
-                            groupId = groupId.toString()
+                            userId = memberId.toString()
                         )
                     )
                 }

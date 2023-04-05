@@ -86,7 +86,7 @@ class CourseWorkViewModel @Inject constructor(
         }
     }
 
-    val showSubmissionToolbar = MutableLiveData<Boolean>()
+    val showSubmissionToolbar = MutableStateFlow<Boolean>(false)
     val expandBottomSheet = MutableLiveData(BottomSheetBehavior.STATE_COLLAPSED)
 
     private val _submission = MutableSharedFlow<Resource<WorkSubmissionResponse>>(replay = 1)

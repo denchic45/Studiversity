@@ -10,7 +10,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.contains
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
@@ -156,26 +155,25 @@ class CourseWorkFragment :
             }
         }
 
-        Transformations.distinctUntilChanged(viewModel.showSubmissionToolbar)
-            .observe(viewLifecycleOwner) {
-                if (it) {
-                    appBarController.toolbar.addView(btnActionSubmission)
-                    (btnActionSubmission.layoutParams as Toolbar.LayoutParams).apply {
-                        gravity = Gravity.END
-                        marginEnd = requireContext().dpToPx(16)
-                    }
-                    btnActionSubmission.apply {
-                        alpha = 0F
-                        animate().alpha(1F).setDuration(100).start()
-                    }
-                } else {
-                    btnActionSubmission.animate()
-                        .alpha(0F)
-                        .setDuration(70)
-                        .withEndAction { appBarController.toolbar.removeView(btnActionSubmission) }
-                        .start()
+        viewModel.showSubmissionToolbar.collectWhenStarted(viewLifecycleOwner) {
+            if (it) {
+                appBarController.toolbar.addView(btnActionSubmission)
+                (btnActionSubmission.layoutParams as Toolbar.LayoutParams).apply {
+                    gravity = Gravity.END
+                    marginEnd = requireContext().dpToPx(16)
                 }
+                btnActionSubmission.apply {
+                    alpha = 0F
+                    animate().alpha(1F).setDuration(100).start()
+                }
+            } else {
+                btnActionSubmission.animate()
+                    .alpha(0F)
+                    .setDuration(70)
+                    .withEndAction { appBarController.toolbar.removeView(btnActionSubmission) }
+                    .start()
             }
+        }
 
         lifecycleScope.launchWhenStarted {
             viewModel.workUiState.collect { resource ->

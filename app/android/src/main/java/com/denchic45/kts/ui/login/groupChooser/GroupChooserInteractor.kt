@@ -8,7 +8,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class GroupChooserInteractor constructor(
+class GroupChooserInteractor @javax.inject.Inject constructor(
     private val groupRepository: StudyGroupRepository
 ) {
     private val selectedGroup = Channel<UUID>()

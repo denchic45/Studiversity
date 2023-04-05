@@ -27,15 +27,16 @@ import com.denchic45.kts.domain.timetable.model.PeriodDetails
 import com.denchic45.kts.domain.timetable.model.PeriodItem
 import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.components.TextButtonContent
+import com.denchic45.kts.ui.timetable.state.WeekTimetableViewState
 import com.denchic45.stuiversity.util.DatePatterns
 import com.denchic45.stuiversity.util.toString
 import java.time.LocalDate
 
 @Preview
 @Composable
-fun TimetableScreen(appBarMediator: AppBarMediator, dayTimetableComponent: DayTimetableComponent) {
-    val timetable by dayTimetableComponent.timetable.collectAsState()
-    timetable.onSuccess { state ->
+fun TimetableScreen(appBarMediator: AppBarMediator, timetableComponent: TimetableComponent) {
+    val viewState by timetableComponent.viewState.collectAsState()
+    viewState.onSuccess { state ->
         appBarMediator.apply {
             title = state.title
             content = {
@@ -45,14 +46,14 @@ fun TimetableScreen(appBarMediator: AppBarMediator, dayTimetableComponent: DayTi
 
                 OutlinedButton(
                     modifier = Modifier.height(contentHeight),
-                    onClick = dayTimetableComponent::onTodayClick,
+                    onClick = timetableComponent::onTodayClick,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
                 ) {
                     TextButtonContent("Сегодня")
                 }
                 Spacer(Modifier.width(16.dp))
                 OutlinedButton(
-                    onClick = dayTimetableComponent::onPreviousWeekClick,
+                    onClick = timetableComponent::onPreviousWeekClick,
                     modifier = Modifier.size(contentHeight),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     contentPadding = PaddingValues(0.dp),
@@ -65,7 +66,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, dayTimetableComponent: DayTi
                 }
                 Spacer(Modifier.width(16.dp))
                 OutlinedButton(
-                    onClick = dayTimetableComponent::onNextWeekClick,
+                    onClick = timetableComponent::onNextWeekClick,
                     modifier = Modifier.size(contentHeight),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     contentPadding = PaddingValues(0.dp),

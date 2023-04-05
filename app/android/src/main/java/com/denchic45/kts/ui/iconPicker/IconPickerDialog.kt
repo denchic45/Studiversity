@@ -31,9 +31,7 @@ class IconPickerDialog :
         gvIconPicker = binding.root.findViewById(R.id.gv_icon_picker)
         adapter = IconPickerAdapter(requireActivity())
         gvIconPicker!!.adapter = adapter
-        viewModel.showIcons.collectWhenStarted(
-            lifecycleScope
-        ) { list -> adapter!!.addAll(list) }
+        viewModel.showIcons.collectWhenStarted(viewLifecycleOwner, adapter!!::addAll)
         gvIconPicker!!.onItemClickListener =
             AdapterView.OnItemClickListener { _, _, position: Int, _ ->
                 viewModel.onIconItemClick(position)

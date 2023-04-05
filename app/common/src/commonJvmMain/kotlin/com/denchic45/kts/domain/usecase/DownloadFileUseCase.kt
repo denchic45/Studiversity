@@ -3,9 +3,11 @@ package com.denchic45.kts.domain.usecase
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.data.service.DownloadsService
 import kotlinx.coroutines.flow.Flow
+import me.tatarka.inject.annotations.Inject
 import java.util.*
 
-class DownloadFileUseCase(
+@Inject
+class DownloadFileUseCase @javax.inject.Inject constructor(
     private val downloadsService: DownloadsService
 ) {
 

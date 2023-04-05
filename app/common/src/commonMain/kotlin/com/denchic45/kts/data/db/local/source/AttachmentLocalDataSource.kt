@@ -8,8 +8,10 @@ import com.denchic45.kts.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import me.tatarka.inject.annotations.Inject
 
-class AttachmentLocalDataSource(db: AppDatabase) {
+@Inject
+class AttachmentLocalDataSource @javax.inject.Inject constructor(db: AppDatabase) {
     private val queries: AttachmentEntityQueries = db.attachmentEntityQueries
 
     suspend fun upsert(attachmentEntity: AttachmentEntity) = withContext(Dispatchers.IO) {

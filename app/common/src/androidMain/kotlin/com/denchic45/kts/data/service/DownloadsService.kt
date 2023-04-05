@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
-actual class DownloadsService actual constructor() {
+actual class DownloadsService @javax.inject.Inject actual constructor() {
     lateinit var context: Context
     lateinit var attachmentLocalDataSource: AttachmentLocalDataSource
 

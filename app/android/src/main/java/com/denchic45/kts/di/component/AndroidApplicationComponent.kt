@@ -20,7 +20,7 @@ import me.tatarka.inject.annotations.Provides
 
 @AppScope
 @Component
-abstract class AndroidAppComponent(
+abstract class AndroidApplicationComponent(
     @get:Provides protected val application: Application,
     @Component protected val preferencesComponent: PreferencesComponent,
     @Component protected val databaseComponent: DatabaseComponent,

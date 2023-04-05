@@ -9,7 +9,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class ObserveUserUseCase(private val userRepository: UserRepository) {
+class ObserveUserUseCase @javax.inject.Inject constructor (private val userRepository: UserRepository) {
     operator fun invoke(userId: UUID): Flow<Resource<UserResponse>> {
         return userRepository.observeById(userId).notNullOrFailure()
     }

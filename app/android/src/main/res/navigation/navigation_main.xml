@@ -23,9 +23,7 @@
         tools:layout="@layout/fragment_group">
         <argument
             android:name="groupId"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
+            app:argType="string"/>
     </fragment>
 
     <fragment

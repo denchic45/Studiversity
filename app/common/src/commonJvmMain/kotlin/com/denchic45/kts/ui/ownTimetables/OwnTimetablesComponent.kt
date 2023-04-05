@@ -18,11 +18,7 @@ import java.util.*
 @Inject
 class OwnTimetablesComponent(
     private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
-    private val _dayTimetableComponent: (
-        _selectedDate: LocalDate,
-        owner: TimetableOwner,
-        ownerId: UUID?
-    ) -> DayTimetableComponent,
+    private val _dayTimetableComponent: (LocalDate, TimetableOwner, UUID?) -> DayTimetableComponent,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
 
@@ -38,7 +34,7 @@ class OwnTimetablesComponent(
         selectedTimetable.map { selectedTimetable ->
             Resource.Success(
                 if (selectedTimetable == -1) {
-                    _dayTimetableComponent(LocalDate.now(), TimetableOwner.Member, null)
+                    _dayTimetableComponent(LocalDate.now(), TimetableOwner.Member, UUID.randomUUID())
                 } else {
                     _dayTimetableComponent(
                         LocalDate.now(),

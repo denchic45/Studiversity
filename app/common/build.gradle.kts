@@ -110,7 +110,7 @@ kotlin {
 
                 api("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
 
-                api("io.ktor:ktor-client-android:$ktorVersion")
+                implementation("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("app.cash.sqldelight:android-driver:$sqlDelightVersion")
 

@@ -21,18 +21,19 @@ import java.util.*
 
 @Inject
 class DayTimetableComponent(
+    metaRepository: MetaRepository,
+    private val findTimetableOfWeekUseCase: FindTimetableOfWeekUseCase,
+    private val findYourTimetableOfWeekUseCase: FindYourTimetableOfWeekUseCase,
     @Assisted
     private val _selectedDate: LocalDate,
     @Assisted
     private val owner: TimetableOwner,
     @Assisted
     private val ownerId: UUID?,
-    metaRepository: MetaRepository,
-    private val findTimetableOfWeekUseCase: FindTimetableOfWeekUseCase,
-    private val findYourTimetableOfWeekUseCase: FindYourTimetableOfWeekUseCase,
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
+
 
     private val selectedDate = MutableStateFlow(_selectedDate)
     private val selectedWeekOfYear = selectedDate.map { it.toString(DatePatterns.YYYY_ww) }
@@ -79,6 +80,10 @@ class DayTimetableComponent(
 
     fun onDateSelect(date: LocalDate) {
         selectedDate.value = date
+
+    }
+
+    fun onTodayClick() {
 
     }
 

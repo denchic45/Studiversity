@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation.findNavController
 import com.denchic45.kts.R
 import com.denchic45.kts.ui.login.LoginViewModel
+import com.denchic45.kts.util.collectWhenStarted
 import com.google.android.material.textfield.TextInputLayout
 
 class LoginByEmailFragment : Fragment() {
@@ -43,16 +44,12 @@ class LoginByEmailFragment : Fragment() {
                 etMail.text.toString(), etPassword.text.toString()
             )
         }
-        loginViewModel.showMailError.observe(
-            viewLifecycleOwner
-        ) { errorText: String? -> tilMail.error = errorText }
-        loginViewModel.showPasswordError.observe(
-            viewLifecycleOwner
-        ) { errorText: String? -> tilPassword.error = errorText }
-        loginViewModel.openResetPassword.observe(viewLifecycleOwner) {
-            findNavController(
-                view
-            ).navigate(R.id.action_loginByEmailFragment_to_resetPasswordFragment)
+        loginViewModel.showMailError.observe(viewLifecycleOwner) { errorText ->
+            tilMail.error = errorText }
+        loginViewModel.showPasswordError.observe(viewLifecycleOwner) { errorText ->
+            tilPassword.error = errorText }
+        loginViewModel.openResetPassword.collectWhenStarted(viewLifecycleOwner) {
+            findNavController(view).navigate(R.id.action_loginByEmailFragment_to_resetPasswordFragment)
         }
         tvForgotPassword.setOnClickListener { loginViewModel.onForgotPasswordClick() }
     }

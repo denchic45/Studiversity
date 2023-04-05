@@ -6,7 +6,7 @@ import com.denchic45.kts.AttachmentRefEntityQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class AttachmentReferenceLocalDataSource(db: AppDatabase) {
+class AttachmentReferenceLocalDataSource @javax.inject.Inject constructor(db: AppDatabase) {
     private val queries: AttachmentRefEntityQueries = db.attachmentRefEntityQueries
 
     suspend fun insert(attachmentRefEntity: AttachmentRefEntity) = withContext(Dispatchers.IO) {

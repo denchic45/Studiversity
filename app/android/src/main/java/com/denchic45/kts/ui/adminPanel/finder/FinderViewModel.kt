@@ -176,27 +176,22 @@ class FinderViewModel @Inject constructor(
     init {
         finderEntities.value = listOf(
             ListItem(
-                id = "ITEM_FIND_USER",
                 title = "Пользователи",
                 icon = UiImage.IdImage(R.drawable.ic_user)
             ),
             ListItem(
-                id = "ITEM_FIND_GROUP",
                 title = "Группы",
                 icon = UiImage.IdImage(R.drawable.ic_group)
             ),
             ListItem(
-                id = "ITEM_FIND_SUBJECT",
                 title = "Предметы",
                 icon = UiImage.IdImage(R.drawable.ic_subject)
             ),
             ListItem(
-                id = "ITEM_FIND_SPECIALTY",
                 title = "Специальности",
                 icon = UiImage.IdImage(R.drawable.ic_specialty)
             ),
             ListItem(
-                id = "ITEM_FIND_COURSE",
                 title = "Курсы",
                 icon = UiImage.IdImage(R.drawable.ic_course)
             ),

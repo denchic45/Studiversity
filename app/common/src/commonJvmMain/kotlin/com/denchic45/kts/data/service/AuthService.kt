@@ -20,7 +20,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class AuthService(
+class AuthService @javax.inject.Inject constructor(
     private val authApi: AuthApi,
     private val userApi: UserApi,
     private val userPreferences: UserPreferences,

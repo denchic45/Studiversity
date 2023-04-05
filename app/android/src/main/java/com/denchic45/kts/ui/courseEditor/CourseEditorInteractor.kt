@@ -42,7 +42,6 @@ class CourseEditorInteractor @Inject constructor(
 
     override fun removeListeners() {
         courseRepository.removeListeners()
-        studyGroupRepository.removeListeners()
         subjectRepository.removeListeners()
     }
 }

@@ -7,7 +7,7 @@ import com.denchic45.stuiversity.api.user.model.UserResponse
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class FullAvatarInteractor constructor(
+class FullAvatarInteractor @javax.inject.Inject constructor(
     private val avatarService: AvatarService,
     private val userRepository: UserRepository,
 ) : Interactor {

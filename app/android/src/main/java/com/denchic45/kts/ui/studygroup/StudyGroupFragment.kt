@@ -19,8 +19,6 @@ import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
 import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
 import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
-import com.denchic45.kts.ui.timetable.TimetableFragment
-import com.denchic45.kts.util.collectWhenResumed
 import com.example.appbarcontroller.appbarcontroller.AppBarController
 
 class StudyGroupFragment : BaseFragment<StudyGroupViewModel, FragmentGroupBinding>(
@@ -42,7 +40,6 @@ class StudyGroupFragment : BaseFragment<StudyGroupViewModel, FragmentGroupBindin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.isExist.collectWhenResumed(viewLifecycleOwner)
 
         viewModel.menuItemVisibility.observe(viewLifecycleOwner) { (id, visible) ->
             val menuItem = menu.findItem(id)
@@ -59,7 +56,7 @@ class StudyGroupFragment : BaseFragment<StudyGroupViewModel, FragmentGroupBindin
             viewModel.initTabs.observe(viewLifecycleOwner) { size: Int ->
                 val adapter = GroupFragmentAdapter(
                     childFragmentManager,
-                    viewModel.groupId,
+                    viewModel._studyGroupId,
                     size,
                     requireContext()
                 )
@@ -100,7 +97,7 @@ class StudyGroupFragment : BaseFragment<StudyGroupViewModel, FragmentGroupBindin
             return when (position) {
                 0 -> GroupMembersFragment.newInstance(groupId)
                 1 -> GroupCoursesFragment.newInstance(groupId)
-                2 -> TimetableFragment.newInstance(groupId)
+//                2 -> TimetableFragment.newInstance(groupId)
                 else -> throw IllegalStateException()
             }
         }

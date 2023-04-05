@@ -2,19 +2,17 @@ package com.denchic45.kts.di.module
 
 import android.app.Application
 import android.content.Context
-import com.denchic45.kts.data.service.AppVersionService
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.DefaultComponentContext
+import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.appVersion.GoogleAppVersionService
+import com.denchic45.kts.data.service.AppVersionService
+import com.denchic45.kts.util.SystemDirs
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import io.ktor.client.*
-import io.ktor.client.engine.android.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.serialization.json.Json
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
@@ -39,25 +37,35 @@ class AndroidAppModule(private val application: Application) {
 
     @Provides
     @Singleton
+    fun componentContext(): ComponentContext {
+        return DefaultComponentContext(LifecycleRegistry())
+    }
+
+    @Singleton
+    @Provides
+    fun provideSystemDirs() = SystemDirs()
+
+    @Provides
+    @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl("http://localhost/")
             .build()
     }
 
-    @Provides
-    @Singleton
-    fun provideHttpClient() = HttpClient(Android) {
-        install(Logging) {
-            level = LogLevel.ALL
-        }
-        install(ContentNegotiation) {
-            json(Json {
-                prettyPrint = true
-                isLenient = true
-            })
-        }
-    }
+//    @Provides
+//    @Singleton
+//    fun provideHttpClient() = HttpClient(Android) {
+//        install(Logging) {
+//            level = LogLevel.ALL
+//        }
+//        install(ContentNegotiation) {
+//            json(Json {
+//                prettyPrint = true
+//                isLenient = true
+//            })
+//        }
+//    }
 }
 
 @Module

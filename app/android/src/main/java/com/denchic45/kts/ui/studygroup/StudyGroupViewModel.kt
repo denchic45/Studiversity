@@ -1,30 +1,31 @@
 package com.denchic45.kts.ui.studygroup
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
+import com.denchic45.kts.data.domain.NotFound
+import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
+import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.uipermissions.UiPermissions
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
 class StudyGroupViewModel @Inject constructor(
-    @Named(StudyGroupFragment.GROUP_ID) _studyGroupId: String,
-    private val interactor: StudyGroupInteractor,
+    @Named(StudyGroupFragment.GROUP_ID)
+     val _studyGroupId: String,
+    private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase
 ) : BaseViewModel() {
 
-    private val studyGroupId = _studyGroupId.toUUID()
+     val studyGroupId = _studyGroupId.toUUID()
 
     private val capabilities = flow {
         emit(
@@ -49,14 +50,16 @@ class StudyGroupViewModel @Inject constructor(
 
     val openGroupEditor = SingleLiveData<String>()
 
-    val groupId: String = _studyGroupId ?: interactor.yourGroupId
+    val studyGroup = flow { emit(findStudyGroupByIdUseCase(studyGroupId)) }.onEach {
 
-    val isExist = interactor.isExistGroup(this@StudyGroupViewModel.groupId).onEach { exist ->
-        Log.d("lol", "exist isExistGroup: $exist")
-        if (!exist) {
-            finish()
+
+        it.onSuccess { response ->
+            toolbarTitle = response.name
+        }.onFailure { failure ->
+            if (failure is NotFound)
+                finish()
         }
-    }
+    }.stateInResource(viewModelScope)
 
     fun onPrepareOptions(currentItem: Int) {
         capabilities.value.onSuccess {
@@ -83,13 +86,8 @@ class StudyGroupViewModel @Inject constructor(
 
     override fun onOptionClick(itemId: Int) {
         when (itemId) {
-            R.id.option_edit_group -> openGroupEditor.setValue(groupId)
+            R.id.option_edit_group -> openGroupEditor.setValue(_studyGroupId)
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        interactor.removeListeners()
     }
 
     fun onPageSelect(position: Int) {
@@ -102,13 +100,5 @@ class StudyGroupViewModel @Inject constructor(
         const val ALLOW_EDIT_GROUP = "ALLOW_EDIT_GROUP"
         const val PAGE_GROUP_USERS = 0
         const val PAGE_GROUP_SUBJECTS = 1
-    }
-
-    init {
-        viewModelScope.launch {
-            interactor.getNameByGroupId(this@StudyGroupViewModel.groupId).collect {
-                toolbarTitle = it
-            }
-        }
     }
 }

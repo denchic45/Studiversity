@@ -8,7 +8,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class ObserveCourseTopicsUseCase(private val courseRepository: CourseRepository) {
+class ObserveCourseTopicsUseCase @javax.inject.Inject constructor(private val courseRepository: CourseRepository) {
     operator fun invoke(courseId: UUID): Flow<Resource<List<TopicResponse>>> {
         return courseRepository.observeTopicsByCourseId(courseId)
     }

@@ -33,7 +33,7 @@ class SubmissionsViewModel @Inject constructor(
         viewModelScope.launch {
             submissions.value.onSuccess {
                 val submission = it[position]
-                openSubmission.value = Triple(_courseId, _taskId, submission.authorId.toString())
+                openSubmission.value = Triple(_courseId, _taskId, submission.author.id.toString())
             }
         }
     }

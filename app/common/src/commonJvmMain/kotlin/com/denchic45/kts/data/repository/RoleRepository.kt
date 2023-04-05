@@ -11,7 +11,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class RoleRepository(
+class RoleRepository @javax.inject.Inject constructor(
     private val roleApi: RoleApi,
     private val capabilityApi: CapabilityApi,
     override val networkService: NetworkService,

@@ -5,8 +5,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import androidx.annotation.RestrictTo
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
@@ -17,23 +15,19 @@ import com.denchic45.kts.customPopup.ListPopupWindowAdapter
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.databinding.FragmentUserEditorBinding
 import com.denchic45.kts.rx.AsyncTransformer
-import com.denchic45.kts.ui.base.BaseFragment
+import com.denchic45.kts.ui.base.BaseFragment2
 import com.denchic45.kts.ui.base.HasNavArgs
-import com.denchic45.kts.util.JsonUtil
-import com.denchic45.kts.util.collectWhenResumed
+import com.denchic45.kts.ui.usereditor.GenderAction
 import com.denchic45.kts.util.collectWhenStarted
-import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.rxbinding4.widget.textChanges
-import kotlinx.coroutines.flow.filter
 
-class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorBinding>(
+class UserEditorFragment : BaseFragment2<UserEditorViewModel, FragmentUserEditorBinding>(
     R.layout.fragment_user_editor,
     R.menu.options_user_editor
 ), HasNavArgs<UserEditorFragmentArgs> {
 
     override val navArgs: UserEditorFragmentArgs by navArgs()
     override val binding: FragmentUserEditorBinding by viewBinding(FragmentUserEditorBinding::bind)
-    override val viewModel: UserEditorViewModel by viewModels { viewModelFactory }
     private lateinit var keyboardManager: KeyboardManager
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -47,88 +41,55 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
             etFirstName.textChanges()
                 .skip(1)
                 .compose(AsyncTransformer())
-                .map { obj: CharSequence -> obj.toString() }
-                .subscribe(viewModel::onFirstNameType)
+                .map(CharSequence::toString)
+                .subscribe(component::onFirstNameType)
 
             etSurname.textChanges()
                 .skip(1)
                 .compose(AsyncTransformer())
-                .map { obj: CharSequence -> obj.toString() }
-                .subscribe(viewModel::onSurnameType)
+                .map(CharSequence::toString)
+                .subscribe(component::onSurnameType)
 
             etPatronymic.textChanges()
                 .skip(1)
                 .compose(AsyncTransformer())
-                .map { obj: CharSequence -> obj.toString() }
-                .subscribe(viewModel::onPatronymicType)
+                .map(CharSequence::toString)
+                .subscribe(component::onPatronymicType)
 
             etEmail.textChanges()
                 .skip(1)
                 .compose(AsyncTransformer())
                 .map { obj: CharSequence -> obj.toString() }
-                .subscribe(viewModel::onEmailType)
+                .subscribe(component::onEmailType)
 
-            etPassword.textChanges()
-                .compose(AsyncTransformer())
-                .map { obj: CharSequence -> obj.toString() }
-                .doOnNext { btnGenerate.isEnabled = it.isEmpty() }
-                .filter(String::isNotEmpty)
-                .subscribe(viewModel::onPasswordType)
 
-            tilGroup.setEndIconOnClickListener { viewModel.onSelectGroupClick() }
-
-            etGroup.setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) viewModel.onSelectGroupClick()
-            }
-
-            btnGenerate.setOnClickListener { viewModel.onPasswordGenerateClick() }
-
-            etGroup.setOnClickListener { viewModel.onSelectGroupClick() }
-
-            viewModel.firstNameField.collectWhenStarted(viewLifecycleOwner) { firstName ->
+            component.firstNameField.collectWhenStarted(viewLifecycleOwner) { firstName ->
                 if (firstName != etFirstName.text.toString()) etFirstName.setText(firstName)
             }
 
-            viewModel.surnameField.collectWhenStarted(viewLifecycleOwner) { surname ->
+            component.surnameField.collectWhenStarted(viewLifecycleOwner) { surname ->
                 if (surname != etSurname.text.toString()) etSurname.setText(surname)
             }
 
-            viewModel.patronymicField.collectWhenStarted(viewLifecycleOwner) { patronymic ->
+            component.patronymicField.collectWhenStarted(viewLifecycleOwner) { patronymic ->
                 if (patronymic != etPatronymic.text
                         .toString()
                 ) etPatronymic.setText(patronymic)
             }
 
-            viewModel.emailField.collectWhenStarted(viewLifecycleOwner) { email ->
+            component.emailField.collectWhenStarted(viewLifecycleOwner) { email ->
                 if (email != etEmail.text.toString()) etEmail.setText(email)
             }
 
-            viewModel.genderField.filter(String::isNotEmpty)
-                .collectWhenStarted(viewLifecycleOwner) { gender ->
-                    etGender.setText(
-                        resources.getIdentifier(
-                            gender,
-                            "string",
-                            requireContext().packageName
-                        )
-                    )
-                }
-
-            viewModel.passwordField.collectWhenStarted(viewLifecycleOwner) {
-                etPassword.setText(it)
+            component.genderField.collectWhenStarted(viewLifecycleOwner) { gender: GenderAction ->
+                etGender.setText(gender.title)
             }
 
-            viewModel.roleField.collectWhenStarted(viewLifecycleOwner) { role ->
-                etRole.setText(resources.getString(role))
-            }
-
-            viewModel.groupField.collectWhenResumed(lifecycleScope, etGroup::setText)
-
-            viewModel.accountFieldsVisibility.collectWhenStarted(viewLifecycleOwner) { visibility ->
+            component.accountFieldsVisibility.collectWhenStarted(viewLifecycleOwner) { visibility ->
                 llAccount.visibility = if (visibility) View.VISIBLE else View.GONE
             }
 
-            viewModel.avatarUrl.collectWhenStarted(viewLifecycleOwner) { photoUrl ->
+            component.avatarUrl.collectWhenStarted(viewLifecycleOwner) { photoUrl ->
                 Glide.with(requireContext())
                     .load(photoUrl)
                     .placeholder(ivAvatar.drawable)
@@ -136,47 +97,22 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
                     .into(ivAvatar)
             }
 
-            viewModel.errorMessageField.observe(
-                viewLifecycleOwner
-            ) { idWithMessagePair: Pair<Int, String?> ->
-                val til = binding.root.findViewById<TextInputLayout>(
-                    idWithMessagePair.first
-                )
-                til.error = idWithMessagePair.second
+            component.errorState.collectWhenStarted(viewLifecycleOwner) {
+                tilFirstName.error = it.firstNameMessage
+                tilSurname.error = it.surnameMessage
+                tilEmail.error = it.emailMessage
             }
-            viewModel.roles.collectWhenStarted(viewLifecycleOwner) { resId ->
+
+
+            component.genders.let { genders ->
                 val adapter = ListPopupWindowAdapter(
                     requireContext(),
-                    JsonUtil.parseToList(requireContext(), resId)
-                )
-                etRole.setAdapter(adapter)
-                etRole.onItemClickListener =
-                    AdapterView.OnItemClickListener { _, _, position: Int, _ ->
-                        val item = adapter.getItem(position)
-                        if (item.enable) {
-                            viewModel.onRoleSelect(item)
-                        }
-                    }
-            }
-            viewModel.genders.observe(viewLifecycleOwner) { genders: List<ListItem> ->
-                val adapter = ListPopupWindowAdapter(requireContext(), genders)
+                    genders.map { ListItem(title = it.title) })
                 etGender.setAdapter(adapter)
                 etGender.onItemClickListener =
                     AdapterView.OnItemClickListener { _, _, position, _ ->
-                        viewModel.onGenderSelect(position)
+                        component.onGenderSelect(genders[position].action)
                     }
-            }
-
-//            viewModel.groupList.observe(viewLifecycleOwner) { items: List<ListItem> ->
-//                groupAdapter.updateList(items)
-//            }
-
-            viewModel.roleFieldVisibility.collectWhenStarted(viewLifecycleOwner) {
-                tilRole.visibility = if (it) View.VISIBLE else View.GONE
-            }
-
-            viewModel.groupFieldVisibility.collectWhenStarted(viewLifecycleOwner) {
-                tilGroup.visibility = if (it) View.VISIBLE else View.GONE
             }
         }
     }
@@ -185,9 +121,9 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            viewModel.onBackPress()
+            component.onBackPress()
         } else {
-            viewModel.onOptionClick(item.itemId)
+            component.onOptionClick(item.itemId)
         }
         return true
     }
@@ -198,8 +134,8 @@ class UserEditorFragment : BaseFragment<UserEditorViewModel, FragmentUserEditorB
     }
 
     companion object {
-        const val USER_ROLE = "USER_ROLE"
+//        const val USER_ROLE = "USER_ROLE"
         const val USER_ID = "USER_ID"
-        const val USER_GROUP_ID = "USER_GROUP_ID"
+//        const val USER_GROUP_ID = "USER_GROUP_ID"
     }
 }

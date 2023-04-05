@@ -26,7 +26,6 @@ sealed class SubmissionResponse {
 data class WorkSubmissionResponse(
     @Serializable(UUIDSerializer::class)
     override val id: UUID,
-    @Serializable(UUIDSerializer::class)
     override val author: Author,
     override val state: SubmissionState,
     @Serializable(UUIDSerializer::class)
@@ -67,7 +66,9 @@ enum class SubmissionState {
     }
 }
 
+@Serializable
 data class Author(
+    @Serializable(UUIDSerializer::class)
     val id:UUID,
     val firstName:String,
     val surname:String,

@@ -15,8 +15,9 @@ class IconPickerViewModel @Inject constructor(
     private val iconPickerInteractor: IconPickerInteractor,
 ) : BaseViewModel() {
 
-    val showIcons: StateFlow<List<String>> = flow {
-        emit(subjectRepository.findAllRefsOfSubjectIcons())
+    val showIcons: StateFlow<List<String>> = flow<List<String>> {
+        TODO("Найти способ загружать иконки")
+//        emit(subjectRepository.findAllRefsOfSubjectIcons())
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun onIconItemClick(position: Int) {

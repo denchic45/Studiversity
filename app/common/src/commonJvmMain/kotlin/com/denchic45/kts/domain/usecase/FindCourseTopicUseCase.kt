@@ -10,7 +10,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class FindCourseTopicUseCase(private val courseRepository: CourseRepository) {
+class FindCourseTopicUseCase @javax.inject.Inject constructor(private val courseRepository: CourseRepository) {
 
     suspend operator fun invoke(
         courseId: UUID,

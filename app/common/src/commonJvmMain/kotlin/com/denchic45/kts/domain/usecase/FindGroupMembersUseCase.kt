@@ -7,7 +7,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class FindGroupMembersUseCase constructor(private val studyGroupRepository: StudyGroupRepository) {
+class FindGroupMembersUseCase @javax.inject.Inject constructor(private val studyGroupRepository: StudyGroupRepository) {
     suspend operator fun invoke(groupId: UUID): Resource<List<ScopeMember>> {
         return studyGroupRepository.findGroupMembersByGroupId(groupId)
     }

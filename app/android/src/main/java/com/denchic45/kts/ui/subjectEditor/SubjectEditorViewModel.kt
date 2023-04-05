@@ -9,7 +9,6 @@ import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.updateResource
 import com.denchic45.kts.domain.usecase.FindSubjectByIdUseCase
-import com.denchic45.kts.util.SameSubjectIconException
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.ui.iconPicker.IconPickerInteractor
@@ -19,6 +18,10 @@ import com.denchic45.kts.uivalidator.UIValidator
 import com.denchic45.kts.uivalidator.Validation
 import com.denchic45.kts.util.Colors
 import com.denchic45.kts.util.NetworkException
+import com.denchic45.kts.util.SameSubjectIconException
+import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
+import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
+import com.denchic45.stuiversity.util.optPropertyOf
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -37,7 +40,7 @@ class SubjectEditorViewModel @Inject constructor(
     data class EditableSubjectState(
         val name: String = "",
         val shortname: String = "",
-    val iconUrl:String = ""
+        val iconUrl: String = ""
     )
 
     val uiState = MutableStateFlow<Resource<EditableSubjectState>>(Resource.Loading)
@@ -80,9 +83,21 @@ class SubjectEditorViewModel @Inject constructor(
     private suspend fun saveChanges() {
         try {
             if (uiEditor.isNew) {
-                interactor.add(uiEditor.item)
+                interactor.add(with(_successUiStateValue) {
+                    CreateSubjectRequest(
+                        name = name,
+                        shortname = shortname,
+                        iconName = iconUrl
+                    )
+                })
             } else {
-                interactor.update(uiEditor.item)
+                interactor.update(subjectId!!, with(_successUiStateValue) {
+                    UpdateSubjectRequest(
+                        name = optPropertyOf(name),
+                        shortname = optPropertyOf(shortname),
+                        iconName = optPropertyOf(iconUrl)
+                    )
+                })
             }
             finish()
         } catch (e: Exception) {
@@ -110,7 +125,7 @@ class SubjectEditorViewModel @Inject constructor(
         title.value = "Редактировать предмет"
         viewModelScope.launch {
             findSubjectByIdUseCase(subjectId!!)
-                .onSuccess {subject->
+                .onSuccess { subject ->
 
                     uiState.updateResource {
                         EditableSubjectState(
@@ -170,7 +185,7 @@ class SubjectEditorViewModel @Inject constructor(
         viewModelScope.launch {
             if (confirmInteractor.receiveConfirm()) {
                 try {
-                    interactor.remove(uiEditor.oldItem!!)
+                    interactor.remove(subjectId!!)
                     finish()
                 } catch (e: Exception) {
                     if (e is NetworkException) {

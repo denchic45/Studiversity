@@ -8,7 +8,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +16,7 @@ import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentCourseBinding
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.base.HasNavArgs
-import com.denchic45.kts.ui.adapter.CourseSectionAdapterDelegate
+import com.denchic45.kts.ui.adapter.CourseTopicAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskHolder
 import com.denchic45.kts.ui.base.BaseFragment2
@@ -62,7 +61,7 @@ class CourseFragment : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
 
         with(binding) {
             val adapter = adapter {
-                delegates(TaskAdapterDelegate(), CourseSectionAdapterDelegate())
+                delegates(TaskAdapterDelegate(), CourseTopicAdapterDelegate())
                 extensions {
                     clickBuilder<TaskHolder> {
                         onClick = {

@@ -2,11 +2,7 @@ package com.denchic45.kts.di.module
 
 import com.denchic45.kts.ui.adminPanel.AdminPanelFragment
 import com.denchic45.kts.ui.adminPanel.finder.FinderFragment
-import com.denchic45.kts.ui.adminPanel.timetableEditor.TimetableEditorFragment
 import com.denchic45.kts.ui.adminPanel.timetableEditor.courseChooser.CourseChooserFragment
-import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorFragment
-import com.denchic45.kts.ui.adminPanel.timetableEditor.finder.TimetableFinderFragment
-import com.denchic45.kts.ui.adminPanel.timetableEditor.loader.TimetableLoaderFragment
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.course.CourseFragment
 import com.denchic45.kts.ui.course.content.ContentFragment
@@ -64,17 +60,17 @@ interface FragmentModule {
 //    @ContributesAndroidInjector
 //    fun contributeSimpleEventEditorFragment(): SimpleEventEditorFragment
 
-    @ContributesAndroidInjector
-    fun contributeGroupTimetableEditorFragment(): TimetableEditorFragment
+//    @ContributesAndroidInjector
+//    fun contributeGroupTimetableEditorFragment(): TimetableEditorFragment
 
-    @ContributesAndroidInjector
-    fun contributeGroupTimetableLoaderFragment(): TimetableLoaderFragment
+//    @ContributesAndroidInjector
+//    fun contributeGroupTimetableLoaderFragment(): TimetableLoaderFragment
 
-    @ContributesAndroidInjector
-    fun contributeGroupTimetableFinderFragment(): TimetableFinderFragment
+//    @ContributesAndroidInjector
+//    fun contributeGroupTimetableFinderFragment(): TimetableFinderFragment
 
-    @ContributesAndroidInjector
-    fun contributeEventEditorFragment(): EventEditorFragment
+//    @ContributesAndroidInjector
+//    fun contributeEventEditorFragment(): EventEditorFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class, RawModule::class])
     fun contributeGroupEditorFragment(): StudyGroupEditorFragment

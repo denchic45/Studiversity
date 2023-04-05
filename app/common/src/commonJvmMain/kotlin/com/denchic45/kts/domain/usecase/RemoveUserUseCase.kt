@@ -6,7 +6,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class RemoveUserUseCase(private val userRepository: UserRepository) {
+class RemoveUserUseCase @javax.inject.Inject constructor(private val userRepository: UserRepository) {
     suspend operator fun invoke(userId: UUID): EmptyResource {
         return userRepository.remove(userId)
     }

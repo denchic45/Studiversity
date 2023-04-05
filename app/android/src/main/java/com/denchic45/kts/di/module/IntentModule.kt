@@ -33,8 +33,8 @@ object IntentModule {
 
     @Named(GroupCoursesFragment.GROUP_ID)
     @Provides
-    fun provideGroupIdFromGroupCourses(groupCoursesFragment: GroupCoursesFragment): String? {
-        return groupCoursesFragment.requireArguments().getString(GroupCoursesFragment.GROUP_ID)
+    fun provideGroupIdFromGroupCourses(groupCoursesFragment: GroupCoursesFragment): String {
+        return groupCoursesFragment.requireArguments().getString(GroupCoursesFragment.GROUP_ID)!!
     }
 
     @Named(StudyGroupEditorFragment.GROUP_ID)
@@ -69,13 +69,13 @@ object IntentModule {
 
     @Named(StudyGroupFragment.GROUP_ID)
     @Provides
-    fun provideGroupIdFromGroup(studyGroupFragment: StudyGroupFragment): String? {
+    fun provideGroupIdFromGroup(studyGroupFragment: StudyGroupFragment): String {
         return studyGroupFragment.navArgs.groupId
     }
 
     @Named(GroupMembersFragment.GROUP_ID)
     @Provides
-    fun provideGroupIdFromGroupUsers(groupMembersFragment: GroupMembersFragment): String? {
+    fun provideGroupIdFromGroupUsers(groupMembersFragment: GroupMembersFragment): String {
         return (groupMembersFragment.requireParentFragment() as StudyGroupFragment).navArgs.groupId
     }
 
@@ -149,6 +149,13 @@ object IntentModule {
     fun provideTaskIdToSubmissions(submissionsFragment: SubmissionsFragment): String {
         return submissionsFragment.requireParentFragment().requireArguments()
             .getString(ContentFragment.TASK_ID)!!
+    }
+
+    @Named(SubmissionsFragment.COURSE_ID)
+    @Provides
+    fun provideCoursedToSubmissions(submissionsFragment: SubmissionsFragment): String {
+        return submissionsFragment.requireParentFragment().requireArguments()
+            .getString(ContentFragment.COURSE_ID)!!
     }
 
     @Named(SubmissionDialog.COURSE_ID)

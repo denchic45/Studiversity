@@ -188,7 +188,7 @@ class FinderFragment :
             popupWindow.anchorView = binding.rvFoundItems.layoutManager!!.findViewByPosition(first)
             popupWindow.setOnItemClickListener { _, _, position, _ ->
                 popupWindow.dismiss()
-                viewModel.onOptionClick(second[position].id)
+                viewModel.onOptionClick(second[position].id.toString())
             }
             popupWindow.width = ViewUtils.measureAdapter(popupAdapter, requireContext())
             popupWindow.horizontalOffset = Dimensions.dpToPx(12, requireActivity())

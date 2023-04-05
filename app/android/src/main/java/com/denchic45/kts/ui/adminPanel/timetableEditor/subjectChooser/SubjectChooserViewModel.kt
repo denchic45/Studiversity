@@ -23,7 +23,7 @@ class SubjectChooserViewModel @Inject constructor(
     override fun onItemClick(position: Int) {
         items.value.onSuccess {
             viewModelScope.launch {
-                subjectChooserInteractor.postSelectedSubject(it[position].id)
+                subjectChooserInteractor.postSelectedSubject(it[position])
                 finish()
             }
         }

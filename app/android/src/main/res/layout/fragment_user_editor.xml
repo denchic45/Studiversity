@@ -144,33 +144,6 @@
                         android:scrollHorizontally="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_password"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Пароль"
-                    app:endIconMode="password_toggle"
-                    app:errorEnabled="true"
-                    app:helperTextEnabled="true">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:ellipsize="end"
-                        android:inputType="textPassword"
-                        android:maxLines="1"
-                        android:scrollHorizontally="true" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <Button
-                    android:id="@+id/btn_generate"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Сгенерировать пароль"
-                    android:textAppearance="@style/TextAppearance.Kts.Body2" />
             </LinearLayout>
 
             <View
@@ -193,28 +166,7 @@
                     tools:ignore="LabelFor" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_group"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                android:hint="Группа"
-                app:endIconDrawable="@drawable/ic_open"
-                app:endIconMode="custom"
-                app:errorEnabled="true">
 
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/et_group"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clickable="true"
-                    android:inputType="none"
-                    android:maxLines="1"
-                    android:scrollHorizontally="true" />
-
-            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

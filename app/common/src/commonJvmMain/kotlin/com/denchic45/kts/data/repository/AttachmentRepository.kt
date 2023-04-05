@@ -25,7 +25,7 @@ import okio.Path.Companion.toPath
 import java.util.*
 
 @Inject
-class AttachmentRepository(
+class AttachmentRepository @javax.inject.Inject constructor(
     override val networkService: NetworkService,
     private val attachmentLocalDataSource: AttachmentLocalDataSource,
     private val attachmentReferenceLocalDataSource: AttachmentReferenceLocalDataSource,

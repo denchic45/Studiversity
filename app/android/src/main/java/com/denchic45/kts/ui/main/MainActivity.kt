@@ -16,6 +16,7 @@ import com.denchic45.kts.CustomToolbar
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.ActivityMainBinding
 import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.adapter.NavDropdownItemHolder
 import com.denchic45.kts.ui.adapter.NavItemHolder
 import com.denchic45.kts.ui.adapter.navAdapter
@@ -90,7 +91,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
         bnv.setOnItemReselectedListener { refreshCurrentFragment() }
 
         viewModel.updateBannerState.debounce(1000)
-            .collectWhenResumed(viewLifecycleOwner) { bannerState ->
+            .collectWhenResumed(this) { bannerState ->
                 if (bannerState !is MainViewModel.UpdateBannerState.Hidden)
                     snackbar.show()
                 else {
@@ -138,7 +139,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
             viewModel.bottomMenuVisibility.observe(this@MainActivity) {
                 bnv.visibility = if (it) View.VISIBLE else View.GONE
             }
-            viewModel.fabVisibility.collectWhenStarted(viewLifecycleOwner) {
+            viewModel.fabVisibility.collectWhenStarted(this@MainActivity) {
                 if (it) fabMain.show() else fabMain.hide()
             }
 
@@ -172,19 +173,21 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                 }
             }
 
-            viewModel.userInfo.collectWhenStarted(viewLifecycleOwner) { user: User ->
-                val headerView = binding.navHeader.root
-                headerView.setOnClickListener {
-                    binding.drawerLayout.close()
-                    viewModel.onProfileClick()
+            viewModel.userInfo.collectWhenStarted(this@MainActivity) { user ->
+                user.onSuccess {
+                    val headerView = binding.navHeader.root
+                    headerView.setOnClickListener {
+                        binding.drawerLayout.close()
+                        viewModel.onProfileClick()
+                    }
+                    Glide.with(this@MainActivity)
+                        .load(it.avatarUrl)
+                        .into(binding.navHeader.ivAvatar)
+                    binding.navHeader.tvFullName.text = it.fullName
                 }
-                Glide.with(this@MainActivity)
-                    .load(user.photoUrl)
-                    .into(binding.navHeader.ivAvatar)
-                binding.navHeader.tvFullName.text = user.fullName
             }
 
-            viewModel.navMenuItems.collectWhenStarted(viewLifecycleOwner) {
+            viewModel.navMenuItems.collectWhenStarted(this@MainActivity) {
                 if (it is MainViewModel.NavMenuState.NavMenu) {
                     navAdapter.submit(it.items)
                 }

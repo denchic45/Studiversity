@@ -12,8 +12,6 @@ import com.denchic45.kts.R
 import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.databinding.FragmentTimetableBinding
 import com.denchic45.kts.ui.base.BaseFragment
-import com.denchic45.kts.ui.adapter.EventAdapter
-import com.denchic45.kts.ui.adapter.EventAdapter.OnLessonItemClickListener
 import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.widget.ListStateLayout
 import com.denchic45.kts.ui.widget.calendar.WeekCalendarListener

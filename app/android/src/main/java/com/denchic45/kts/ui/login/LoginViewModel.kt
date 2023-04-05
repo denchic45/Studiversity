@@ -10,6 +10,7 @@ import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.util.Validations
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthException
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -18,9 +19,9 @@ class LoginViewModel @Inject constructor(
     private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
 ) : BaseViewModel() {
 
-    val backToFragment = SingleLiveData<Void>()
+    val backToFragment =MutableSharedFlow<Unit>()
 
-    val finishApp = SingleLiveData<Void>()
+    val finishApp = MutableSharedFlow<Unit>()
 
     val openMain: SingleLiveData<*> = SingleLiveData<Any>()
 
@@ -34,9 +35,9 @@ class LoginViewModel @Inject constructor(
 
     val showPasswordError = SingleLiveData<String?>()
 
-    val openLoginByMail = SingleLiveData<Void>()
+    val openLoginByMail = MutableSharedFlow<Unit>()
 
-    val openResetPassword = SingleLiveData<Void>()
+    val openResetPassword = MutableSharedFlow<Unit>()
 
     private val addedProgress = Stack<Float>()
 
@@ -46,14 +47,16 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onEmailClick() {
-        incrementProgress(0.5f)
-        openLoginByMail.call()
-        fabVisibility.value = true
+        viewModelScope.launch {
+            incrementProgress(0.5f)
+            openLoginByMail.emit(Unit)
+            fabVisibility.value = true
+        }
     }
 
     fun onForgotPasswordClick() {
         incrementProgress(0.5f)
-        openResetPassword.call()
+      viewModelScope.launch {   openResetPassword.emit(Unit) }
     }
 
     fun onSuccessfulLogin() {
@@ -63,15 +66,17 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onFabBackClick(id: Int) {
-        if (addedProgress.isEmpty()) {
-            finishApp.call()
-            return
-        }
-        showProgress.value = addedProgress.pop()
-        if (id == R.id.loginByEmailFragment) {
-            fabVisibility.value = false
-        }
-        backToFragment.call()
+     viewModelScope.launch {
+         if (addedProgress.isEmpty()) {
+             finishApp.emit(Unit)
+             return@launch
+         }
+         showProgress.value = addedProgress.pop()
+         if (id == R.id.loginByEmailFragment) {
+             fabVisibility.value = false
+         }
+         backToFragment.emit(Unit)
+     }
     }
 
     fun onNextMailClick(mail: String, password: String) {

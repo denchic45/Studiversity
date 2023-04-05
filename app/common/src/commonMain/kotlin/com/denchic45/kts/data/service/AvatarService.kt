@@ -6,7 +6,7 @@ import io.ktor.client.statement.*
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class AvatarService(private val client: HttpClient) {
+class AvatarService @javax.inject.Inject constructor(private val client: HttpClient) {
     val colors = listOf(
         "3473E1",
         "FCBF49",

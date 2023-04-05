@@ -9,8 +9,9 @@ import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.MainInteractor
-import com.denchic45.kts.domain.model.CourseHeader
 import com.denchic45.kts.domain.model.User
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.ui.adapter.*
 import com.denchic45.kts.ui.adminPanel.AdminPanelFragmentDirections
 import com.denchic45.kts.ui.base.BaseViewModel
@@ -21,10 +22,11 @@ import com.denchic45.kts.ui.model.onId
 import com.denchic45.kts.ui.model.onString
 import com.denchic45.kts.ui.settings.SettingsFragmentDirections
 import com.denchic45.kts.ui.tasks.TasksFragmentDirections
-import com.denchic45.kts.uipermissions.Permission
-import com.denchic45.kts.uipermissions.UiPermissions
+import com.denchic45.stuiversity.api.course.model.CourseResponse
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -75,9 +77,9 @@ class MainViewModel @Inject constructor(
     enum class ToolbarNavigationState { NONE, MENU, BACK }
 
     val userInfo = interactor.observeThisUser().filterNotNull()
-        .stateIn(viewModelScope, SharingStarted.Lazily, User.createEmpty())
+        .stateInResource(viewModelScope)
 
-    private val uiPermissions: UiPermissions
+//    private val uiPermissions: UiPermissions
 
     var openLogin = SingleLiveData<Void>()
 
@@ -101,7 +103,9 @@ class MainViewModel @Inject constructor(
     }
 
     fun onProfileClick() {
-        navigateTo(MobileNavigationDirections.actionGlobalProfileFragment(userInfo.value.id))
+        userInfo.value.onSuccess {
+            navigateTo(MobileNavigationDirections.actionGlobalProfileFragment(it.id.toString()))
+        }
     }
 
     fun onNavItemClick(position: Int) {
@@ -174,30 +178,31 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) { interactor.startListeners() }
 
         viewModelScope.launch {
-            interactor.observeHasGroup().collect { hasGroup: Boolean ->
-                menuBtnVisibility.value = Pair(R.id.menu_group, hasGroup)
-            }
+            // TODO: Решить, что делать с этим
+//            interactor.observeHasGroup().collect { hasGroup: Boolean ->
+//                menuBtnVisibility.value = Pair(R.id.menu_group, hasGroup)
+//            }
         }
-
-        viewModelScope.launch {
-            combine(
-                interactor.findOwnCourses(),
-                interactor.observeHasGroup()
-            ) { courses, hasGroup ->
-                courseIds = courses.associate { it.name to it.id }
-                NavMenuState.NavMenu(
-                    courses,
-                    interactor.findThisUser(),
-                    hasGroup
-                )
-            }.stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                NavMenuState.NavMenuEmpty
-            ).collect {
-                navMenuItems.value = it
-            }
-        }
+        // TODO: Решить, что делать с этим
+//        viewModelScope.launch {
+//            combine(
+//                interactor.findOwnCourses(),
+//                interactor.observeHasGroup()
+//            ) { courses, hasGroup ->
+//                courseIds = courses.associate { it.name to it.id }
+//                NavMenuState.NavMenu(
+//                    courses,
+//                    interactor.findThisUser(),
+//                    hasGroup
+//                )
+//            }.stateIn(
+//                viewModelScope,
+//                SharingStarted.WhileSubscribed(5000),
+//                NavMenuState.NavMenuEmpty
+//            ).collect {
+//                navMenuItems.value = it
+//            }
+//        }
 
         viewModelScope.launch {
             interactor.listenAuthState
@@ -208,8 +213,8 @@ class MainViewModel @Inject constructor(
                 }
         }
 
-        uiPermissions = UiPermissions(interactor.findThisUser())
-        uiPermissions.putPermissions(Permission(ALLOW_CONTROL, { hasAdminPerms() }))
+//        uiPermissions = UiPermissions(interactor.findThisUser())
+//        uiPermissions.putPermissions(Permission(ALLOW_CONTROL, { hasAdminPerms() }))
     }
 
     fun onDownloadUpdateClick() {
@@ -227,7 +232,7 @@ class MainViewModel @Inject constructor(
 
     sealed class NavMenuState {
         data class NavMenu(
-            private val courses: List<CourseHeader>,
+            private val courses: List<CourseResponse>,
             private val user: User,
             private val hasGroup: Boolean,
             val expandAllCourse: Boolean = false
@@ -235,7 +240,7 @@ class MainViewModel @Inject constructor(
             private val mainTextItems: MutableList<NavTextItem> = mutableListOf()
             private val footerTextItems: MutableList<NavTextItem> = mutableListOf()
 
-            val items: List<NavItem>
+            val items: List<NavItem> = emptyList()   // TODO: Решить, что делать с этим
 
             private fun create(): MutableList<NavItem> {
                 val items: MutableList<NavItem> = mainTextItems.toMutableList()
@@ -277,57 +282,57 @@ class MainViewModel @Inject constructor(
                 items.addAll(footerTextItems)
                 return items
             }
-
-            init {
-                with(mainTextItems) {
-                    if (user.isStudent)
-                        mainTextItems.add(
-                            NavTextItem(
-                                UiText.IdText(R.string.nav_tasks),
-                                UiText.IdText(R.drawable.ic_tasks)
-                            )
-                        )
-                    if (hasGroup) {
-                        mainTextItems.add(
-                            NavTextItem(
-                                UiText.IdText(R.string.nav_duty_roster),
-                                UiText.IdText(R.drawable.ic_clean),
-                                enable = false
-                            )
-                        )
-                    }
-                    add(
-                        NavTextItem(
-                            UiText.IdText(R.string.nav_schedule),
-                            UiText.IdText(R.drawable.ic_time),
-                            enable = false
-                        )
-                    )
-                }
-                with(footerTextItems) {
-                    if (user.admin) {
-                        add(
-                            NavTextItem(
-                                UiText.IdText(R.string.nav_control_panel),
-                                UiText.IdText(R.drawable.ic_control_panel)
-                            )
-                        )
-                    }
-                    addAll(
-                        listOf(
-                            NavTextItem(
-                                UiText.IdText(R.string.nav_settings),
-                                UiText.IdText(R.drawable.ic_settings)
-                            ), NavTextItem(
-                                UiText.IdText(R.string.nav_help),
-                                UiText.IdText(R.drawable.ic_help),
-                                enable = false
-                            )
-                        )
-                    )
-                }
-                items = create()
-            }
+            // TODO: Решить, что делать с этим
+//            init {
+//                with(mainTextItems) {
+//                    if (user.isStudent)
+//                        mainTextItems.add(
+//                            NavTextItem(
+//                                UiText.IdText(R.string.nav_tasks),
+//                                UiText.IdText(R.drawable.ic_tasks)
+//                            )
+//                        )
+//                    if (hasGroup) {
+//                        mainTextItems.add(
+//                            NavTextItem(
+//                                UiText.IdText(R.string.nav_duty_roster),
+//                                UiText.IdText(R.drawable.ic_clean),
+//                                enable = false
+//                            )
+//                        )
+//                    }
+//                    add(
+//                        NavTextItem(
+//                            UiText.IdText(R.string.nav_schedule),
+//                            UiText.IdText(R.drawable.ic_time),
+//                            enable = false
+//                        )
+//                    )
+//                }
+//                with(footerTextItems) {
+//                    if (user.admin) {
+//                        add(
+//                            NavTextItem(
+//                                UiText.IdText(R.string.nav_control_panel),
+//                                UiText.IdText(R.drawable.ic_control_panel)
+//                            )
+//                        )
+//                    }
+//                    addAll(
+//                        listOf(
+//                            NavTextItem(
+//                                UiText.IdText(R.string.nav_settings),
+//                                UiText.IdText(R.drawable.ic_settings)
+//                            ), NavTextItem(
+//                                UiText.IdText(R.string.nav_help),
+//                                UiText.IdText(R.drawable.ic_help),
+//                                enable = false
+//                            )
+//                        )
+//                    )
+//                }
+//                items = create()
+//            }
         }
 
         object NavMenuEmpty : NavMenuState()

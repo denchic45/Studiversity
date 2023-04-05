@@ -11,6 +11,7 @@ import com.denchic45.kts.R
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
 import com.denchic45.kts.ui.main.MainActivity
 import com.denchic45.kts.util.closeKeyboard
+import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.kts.util.findFragmentContainerNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.richpath.RichPath
@@ -37,18 +38,18 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login) {
                 navController.currentDestination!!.id
             )
         }
-        viewModel.openLoginByMail.observe(this) {
+        viewModel.openLoginByMail.collectWhenStarted(this) {
             navController.navigate(R.id.action_authFragment_to_loginByEmailFragment)
         }
 
-        viewModel.backToFragment.observe(this) {
+        viewModel.backToFragment.collectWhenStarted(this) {
             super.onBackPressed()
             currentFocus?.closeKeyboard()
         }
 
-        viewModel.fabVisibility.observe(
-            this
-        ) { aBoolean: Boolean -> if (aBoolean) fabBack.show() else fabBack.hide() }
+        viewModel.fabVisibility.observe(this) { visible ->
+            if (visible) fabBack.show() else fabBack.hide()
+        }
         viewModel.openMain.observe(this) {
             Handler(Looper.getMainLooper()).postDelayed(
                 {
@@ -58,7 +59,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login) {
             )
         }
 
-        viewModel.finishApp.observe(this) { finish() }
+        viewModel.finishApp.collectWhenStarted(this) { finish() }
     }
 
     @Deprecated("Deprecated in Java")

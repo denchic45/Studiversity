@@ -20,7 +20,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class CourseElementRepository(
+class CourseElementRepository @javax.inject.Inject constructor(
     override val networkService: NetworkService,
     private val attachmentLocalDataSource: AttachmentLocalDataSource,
     private val courseTopicApi: CourseTopicApi,

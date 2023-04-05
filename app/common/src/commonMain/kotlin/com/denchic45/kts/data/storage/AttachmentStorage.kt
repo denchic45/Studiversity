@@ -11,7 +11,7 @@ import okio.Path
 import okio.Path.Companion.toPath
 import java.util.*
 
-class AttachmentStorage(private val attachmentApi: AttachmentApi) {
+class AttachmentStorage @javax.inject.Inject constructor(private val attachmentApi: AttachmentApi) {
 
     val path: Path = "/attachments".toPath()
     private val fileSystem = FileSystem.SYSTEM
