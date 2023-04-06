@@ -1,10 +1,10 @@
 package com.studiversity.feature.specialty
 
-import com.studiversity.database.table.Specialties
-import com.studiversity.database.table.SpecialtyDao
 import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
+import com.studiversity.database.table.Specialties
+import com.studiversity.database.table.SpecialtyDao
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.or

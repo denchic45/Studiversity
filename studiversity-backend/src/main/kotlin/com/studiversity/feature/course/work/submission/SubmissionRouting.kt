@@ -58,7 +58,7 @@ fun Route.submissionByIdRoute() {
                 currentUserId
             )
 
-            val isOwnSubmission = submission.authorId == currentUserId
+            val isOwnSubmission = submission.author.id == currentUserId
             if (isOwnSubmission)
                 call.respond(HttpStatusCode.OK, submission)
             else {
@@ -201,7 +201,7 @@ fun Route.submissionByStudentIdRoute() {
             call.parameters.getUuid("studentId"),
             currentUserId
         )
-        val isOwnSubmission = submission.authorId == currentUserId
+        val isOwnSubmission = submission.author.id == currentUserId
         if (isOwnSubmission)
             call.respond(HttpStatusCode.OK, submission)
         else {

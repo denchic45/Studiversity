@@ -1,9 +1,9 @@
 package com.studiversity.feature.course.work.submission
 
-import com.studiversity.database.exists
-import com.studiversity.database.table.*
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.submission.model.*
+import com.studiversity.database.exists
+import com.studiversity.database.table.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -52,9 +52,16 @@ class SubmissionRepository {
         ).singleOrNull()?.toResponse()
     }
 
-    fun findByWorkId(courseId: UUID, courseWorkId: UUID, studentIds: List<UUID>): List<SubmissionResponse> {
+    fun findByWorkId(
+        courseId: UUID,
+        courseWorkId: UUID,
+        studentIds: List<UUID>
+    ): List<SubmissionResponse> {
         return Memberships.innerJoin(UsersMemberships, { Memberships.id }, { membershipId })
-            .join(CourseWorks, JoinType.INNER, additionalConstraint = { CourseWorks.id eq courseWorkId })
+            .join(
+                CourseWorks,
+                JoinType.INNER,
+                additionalConstraint = { CourseWorks.id eq courseWorkId })
             .leftJoin(
                 Submissions,
                 { CourseWorks.id },
@@ -63,15 +70,23 @@ class SubmissionRepository {
             .select(Memberships.scopeId eq courseId and (UsersMemberships.memberId inList studentIds))
             .map {
                 it.getOrNull(Submissions.id)?.let { submissionId ->
-                    AssignmentSubmissionResponse(
+                    WorkSubmissionResponse(
                         id = submissionId.value,
-                        authorId = it[Submissions.authorId],
+                        author = Author(
+                            id = it[Users.id].value,
+                            firstName = it[Users.firstName],
+                            surname = it[Users.surname],
+                            avatarUrl = it[Users.avatarUrl]
+                        ),
                         state = SubmissionState.NEW,
                         courseWorkId = courseWorkId,
                         content = when (CourseWorkDao.findById(courseWorkId)!!.type) {
-                            CourseWorkType.ASSIGNMENT -> it[Submissions.content]
-                                ?.let { content -> Json.decodeFromString(content) }
-                        }
+                            CourseWorkType.ASSIGNMENT -> {
+                                it[Submissions.content]?.let(Json.Default::decodeFromString)
+                            }
+                        } ?: WorkSubmissionContent(emptyList()),
+                        doneAt = it[Submissions.doneAt],
+                        updatedAt = it[Submissions.updatedAt]
                     )
                 } ?: addNewSubmissionByStudentId(courseWorkId, it[UsersMemberships.memberId])
             }
@@ -81,7 +96,10 @@ class SubmissionRepository {
         SubmissionDao.findById(submissionId)!!.state = state
     }
 
-    fun updateSubmissionContent(submissionId: UUID, content: SubmissionContent?): SubmissionResponse? {
+    fun updateSubmissionContent(
+        submissionId: UUID,
+        content: SubmissionContent?
+    ): SubmissionResponse? {
         return SubmissionDao.findById(submissionId)?.apply {
             this.content = Json.encodeToString(content)
         }?.toResponse()

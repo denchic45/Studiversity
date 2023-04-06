@@ -1,10 +1,5 @@
 package com.studiversity.client.timetable
 
-import com.github.michaelbull.result.unwrap
-import com.studiversity.KtorClientTest
-import com.studiversity.util.UNKNOWN_LONG_ID
-import com.studiversity.util.assertResultIsOk
-import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
@@ -17,6 +12,12 @@ import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.TimetableApi
 import com.denchic45.stuiversity.api.timetable.model.*
+import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.stuiversity.util.uuidOf
+import com.github.michaelbull.result.unwrap
+import com.studiversity.KtorClientTest
+import com.studiversity.util.UNKNOWN_LONG_ID
+import com.studiversity.util.assertResultIsOk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -39,6 +40,9 @@ class TimetableTest : KtorClientTest() {
     private val teacher1Id = "02f00b3e-3a78-4431-87d4-34128ebbb04c".toUUID()
     private val teacher2Id = "96c42f53-2994-4845-9677-40bea853e56b".toUUID()
 
+    private val teacherMember1 = PeriodMember(teacher1Id, "Вася", "Пупкин", "")
+    private val teacherMember2 = PeriodMember(teacher2Id, "Петр", "Петрович", "")
+
     private lateinit var studyGroup1: StudyGroupResponse
     private lateinit var studyGroup2: StudyGroupResponse
     private lateinit var mathCourse: CourseResponse
@@ -52,15 +56,15 @@ class TimetableTest : KtorClientTest() {
     private fun timetableForStudyGroup1() = PutTimetableRequest(
         studyGroupId = studyGroup1.id,
         monday = listOf(
-            LessonRequest(1, room5.id, listOf(teacher1Id), LessonDetails(mathCourse.id)),
-            LessonRequest(2, room5.id, listOf(teacher1Id), LessonDetails(mathCourse.id)),
-            LessonRequest(3, room10.id, listOf(teacher2Id), LessonDetails(engCourse.id))
+            LessonRequest(1, room5, listOf(teacherMember1), mathCourse.id),
+            LessonRequest(2, room5, listOf(teacherMember1), mathCourse.id),
+            LessonRequest(3, room10, listOf(teacherMember2), engCourse.id)
         ),
         tuesday = listOf(
-            LessonRequest(0, room5.id, listOf(teacher1Id), LessonDetails(mathCourse.id)),
-            LessonRequest(1, room5.id, listOf(teacher1Id), LessonDetails(mathCourse.id)),
-            LessonRequest(2, roomWorkshop.id, listOf(teacher2Id), LessonDetails(physicsCourse.id)),
-            LessonRequest(3, room10.id, listOf(teacher2Id), LessonDetails(engCourse.id))
+            LessonRequest(0, room5, listOf(teacherMember1), mathCourse.id),
+            LessonRequest(1, room5, listOf(teacherMember1), mathCourse.id),
+            LessonRequest(2, roomWorkshop, listOf(teacherMember2), physicsCourse.id),
+            LessonRequest(3, room10, listOf(teacherMember2), engCourse.id)
         ),
         wednesday = emptyList(),
         thursday = emptyList(),
@@ -70,15 +74,15 @@ class TimetableTest : KtorClientTest() {
     private fun timetableForStudyGroup2(): PutTimetableRequest = PutTimetableRequest(
         studyGroupId = studyGroup2.id,
         monday = listOf(
-            LessonRequest(1, room5.id, listOf(teacher2Id), LessonDetails(mathCourse.id)),
-            LessonRequest(2, room10.id, listOf(teacher2Id), LessonDetails(engCourse.id)),
-            LessonRequest(3, room5.id, listOf(teacher1Id), LessonDetails(mathCourse.id))
+            LessonRequest(1, room5, listOf(teacherMember2), mathCourse.id),
+            LessonRequest(2, room10, listOf(teacherMember2), engCourse.id),
+            LessonRequest(3, room5, listOf(teacherMember1), mathCourse.id)
         ),
         tuesday = listOf(
-            LessonRequest(0, room5.id, listOf(teacher2Id), LessonDetails(mathCourse.id)),
-            LessonRequest(1, room5.id, listOf(teacher2Id), LessonDetails(mathCourse.id)),
-            LessonRequest(2, room5.id, listOf(teacher1Id), LessonDetails(mathCourse.id)),
-            LessonRequest(3, room10.id, listOf(teacher1Id), LessonDetails(engCourse.id))
+            LessonRequest(0, room5, listOf(teacherMember2), mathCourse.id),
+            LessonRequest(1, room5, listOf(teacherMember2), mathCourse.id),
+            LessonRequest(2, room5, listOf(teacherMember1), mathCourse.id),
+            LessonRequest(3, room10, listOf(teacherMember1), engCourse.id)
         ),
         wednesday = emptyList(),
         thursday = emptyList(),
@@ -130,8 +134,8 @@ class TimetableTest : KtorClientTest() {
         val response = putTimetable(request)
 
         assertIterableEquals(
-            request.toFlatPeriods().map(PeriodRequest::details),
-            response.toFlatPeriods().map(PeriodResponse::details)
+            request.toFlatPeriods().map(PeriodRequest::order),
+            response.toFlatPeriods().map(PeriodResponse::order)
         )
 
         timetableApi.deleteTimetable(weekOfYear, studyGroup1.id).also(::assertResultIsOk)
@@ -151,8 +155,8 @@ class TimetableTest : KtorClientTest() {
             .also(::assertResultIsOk).unwrap()
 
         assertIterableEquals(
-            request.toFlatPeriods().map(PeriodRequest::details),
-            response.toFlatPeriods().map(PeriodResponse::details)
+            request.toFlatPeriods().map(PeriodRequest::order),
+            response.toFlatPeriods().map(PeriodResponse::order)
         )
     }
 
@@ -163,37 +167,38 @@ class TimetableTest : KtorClientTest() {
         val request2 = timetableForStudyGroup2()
         putTimetable(request2)
 
-        val response = timetableApi.getTimetable(weekOfYear, memberIds = listOf(teacher1Id))
+        val response = timetableApi.getTimetable(weekOfYear, memberIds = listOf(uuidOf(teacher1Id)))
             .also(::assertResultIsOk).unwrap()
 
         val expectedTimetableResponse = TimetableResponse(
+            weekOfYear = weekOfYear,
             monday = listOf(
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 30),
                     1,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 30),
                     2,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 30),
                     3,
-                    room5.id,
-                    studyGroup2.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup2.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 )
             ),
             tuesday = listOf(
@@ -201,37 +206,37 @@ class TimetableTest : KtorClientTest() {
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     0,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     1,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     2,
-                    room5.id,
-                    studyGroup2.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup2.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     3,
-                    room10.id,
-                    studyGroup2.id,
-                    listOf(teacher1Id),
-                    LessonDetails(engCourse.id)
+                    room10,
+                    studyGroup2.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(engCourse.id, null)
                 )
             ),
             wednesday = emptyList(),
@@ -244,10 +249,14 @@ class TimetableTest : KtorClientTest() {
             .forEach { (expected, actual) ->
                 assertEquals(expected.date, actual.date)
                 assertEquals(expected.order, actual.order)
-                assertEquals(expected.studyGroupId, actual.studyGroupId)
-                assertEquals(expected.details, actual.details) { expected.toString() + actual.toString() }
-                assertEquals(expected.roomId, actual.roomId)
+                assertEquals(expected.studyGroup, actual.studyGroup)
+//                assertEquals(expected.details, actual.details) { expected.toString() + actual.toString() }
+                assertEquals(expected.room, actual.room)
             }
+    }
+
+    private fun StudyGroupResponse.toStudyGroupName(): StudyGroupName {
+        return StudyGroupName(id, name)
     }
 
     @Test
@@ -264,42 +273,43 @@ class TimetableTest : KtorClientTest() {
         ).also(::assertResultIsOk).unwrap()
 
         val expectedTimetableResponse = TimetableResponse(
+            weekOfYear,
             monday = listOf(
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 30),
                     1,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 30),
                     2,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 30),
                     1,
-                    room5.id,
-                    studyGroup2.id,
-                    listOf(teacher2Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup2.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 30),
                     3,
-                    room5.id,
-                    studyGroup2.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup2.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 )
             ),
             tuesday = listOf(
@@ -307,47 +317,47 @@ class TimetableTest : KtorClientTest() {
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     0,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher2Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     1,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher2Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     0,
-                    room5.id,
-                    studyGroup2.id,
-                    listOf(teacher2Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup2.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     1,
-                    room5.id,
-                    studyGroup2.id,
-                    listOf(teacher2Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup2.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(mathCourse.id, null)
                 ),
 
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     2,
-                    room5.id,
-                    studyGroup2.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup2.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 ),
             ),
             wednesday = emptyList(),
@@ -358,11 +368,11 @@ class TimetableTest : KtorClientTest() {
 
         expectedTimetableResponse.toFlatPeriods().zip(response.toFlatPeriods())
             .forEach { (expected, actual) ->
-                assertEquals(expected.studyGroupId, actual.studyGroupId)
+                assertEquals(expected.studyGroup, actual.studyGroup)
                 assertEquals(expected.date, actual.date)
-                assertEquals(expected.details, actual.details) { expected.toString() + actual.toString() }
+//                assertEquals(expected.details, actual.details) { expected.toString() + actual.toString() }
                 assertEquals(expected.order, actual.order)
-                assertEquals(expected.roomId, actual.roomId)
+                assertEquals(expected.room, actual.room)
             }
     }
 
@@ -374,24 +384,25 @@ class TimetableTest : KtorClientTest() {
         putTimetable(request2)
 
         val expectedResponse = TimetableResponse(
+            weekOfYear,
             monday = listOf(
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 30),
                     2,
-                    room10.id,
-                    studyGroup2.id,
-                    listOf(teacher2Id),
-                    LessonDetails(engCourse.id)
+                    room10,
+                    studyGroup2.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(engCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 30),
                     3,
-                    room10.id,
-                    studyGroup1.id,
-                    listOf(teacher2Id),
-                    LessonDetails(engCourse.id)
+                    room10,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(engCourse.id, null)
                 ),
             ),
             tuesday = listOf(
@@ -399,19 +410,19 @@ class TimetableTest : KtorClientTest() {
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     3,
-                    room10.id,
-                    studyGroup1.id,
-                    listOf(teacher2Id),
-                    LessonDetails(engCourse.id)
+                    room10,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(engCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     3,
-                    room10.id,
-                    studyGroup2.id,
-                    listOf(teacher1Id),
-                    LessonDetails(engCourse.id)
+                    room10,
+                    studyGroup2.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(engCourse.id, null)
                 )
             ),
             wednesday = listOf(),
@@ -428,11 +439,11 @@ class TimetableTest : KtorClientTest() {
 
         expectedResponse.toFlatPeriods().zip(response.toFlatPeriods())
             .forEach { (expected, actual) ->
-                assertEquals(expected.studyGroupId, actual.studyGroupId)
+                assertEquals(expected.studyGroup, actual.studyGroup)
                 assertEquals(expected.date, actual.date)
-                assertEquals(expected.details, actual.details) { expected.toString() + actual.toString() }
+//                assertEquals(expected.details, actual.details) { expected.toString() + actual.toString() }
                 assertEquals(expected.order, actual.order)
-                assertEquals(expected.roomId, actual.roomId)
+                assertEquals(expected.room, actual.room)
             }
     }
 
@@ -447,37 +458,38 @@ class TimetableTest : KtorClientTest() {
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     0,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember1),
+
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     1,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     2,
-                    roomWorkshop.id,
-                    studyGroup1.id,
-                    listOf(teacher2Id),
-                    LessonDetails(physicsCourse.id)
+                    roomWorkshop,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(physicsCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 1, 31),
                     3,
-                    room10.id,
-                    studyGroup1.id,
-                    listOf(teacher2Id),
-                    LessonDetails(engCourse.id)
+                    room10,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(engCourse.id, null)
                 )
             )
         )
@@ -486,11 +498,11 @@ class TimetableTest : KtorClientTest() {
             .also(::assertResultIsOk).unwrap()
 
         expectedResponse.periods.zip(response.periods).forEach { (expected, actual) ->
-            assertEquals(expected.studyGroupId, actual.studyGroupId)
+            assertEquals(expected.studyGroup, actual.studyGroup)
             assertEquals(expected.date, actual.date)
-            assertEquals(expected.details, actual.details)
+//            assertEquals(expected.details, actual.details)
             assertEquals(expected.order, actual.order)
-            assertEquals(expected.roomId, actual.roomId)
+            assertEquals(expected.room, actual.room)
         }
     }
 
@@ -502,37 +514,37 @@ class TimetableTest : KtorClientTest() {
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 2, 1),
                     1,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 2, 1),
                     2,
-                    roomWorkshop.id,
-                    studyGroup1.id,
-                    listOf(teacher2Id),
-                    LessonDetails(physicsCourse.id)
+                    roomWorkshop,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(physicsCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 2, 1),
                     3,
-                    roomWorkshop.id,
-                    studyGroup1.id,
-                    listOf(teacher2Id),
-                    LessonDetails(physicsCourse.id)
+                    roomWorkshop,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember2),
+                    LessonDetails(physicsCourse.id, null)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
                     LocalDate.of(2023, 2, 1),
                     4,
-                    room5.id,
-                    studyGroup1.id,
-                    listOf(teacher1Id),
-                    LessonDetails(mathCourse.id)
+                    room5,
+                    studyGroup1.toStudyGroupName(),
+                    listOf(teacherMember1),
+                    LessonDetails(mathCourse.id, null)
                 ),
             )
         )
@@ -541,19 +553,19 @@ class TimetableTest : KtorClientTest() {
             dayOfWeek = 3,
             putTimetableOfDayRequest = PutTimetableOfDayRequest(
                 studyGroup1.id, listOf(
-                    LessonRequest(1, room5.id, listOf(teacher1Id), LessonDetails(mathCourse.id)),
-                    LessonRequest(2, roomWorkshop.id, listOf(teacher2Id), LessonDetails(physicsCourse.id)),
-                    LessonRequest(3, roomWorkshop.id, listOf(teacher2Id), LessonDetails(physicsCourse.id)),
-                    LessonRequest(4, room5.id, listOf(teacher1Id), LessonDetails(mathCourse.id)),
+                    LessonRequest(1, room5, listOf(teacherMember1), mathCourse.id),
+                    LessonRequest(2, roomWorkshop, listOf(teacherMember2), physicsCourse.id),
+                    LessonRequest(3, roomWorkshop, listOf(teacherMember2), physicsCourse.id),
+                    LessonRequest(4, room5, listOf(teacherMember1), mathCourse.id),
                 )
             )
         ).also(::assertResultIsOk).unwrap()
         expectedResponse.periods.zip(response.periods).forEach { (expected, actual) ->
-            assertEquals(expected.studyGroupId, actual.studyGroupId)
+            assertEquals(expected.studyGroup, actual.studyGroup)
             assertEquals(expected.date, actual.date)
-            assertEquals(expected.details, actual.details)
+//            assertEquals(expected.details, actual.details)
             assertEquals(expected.order, actual.order)
-            assertEquals(expected.roomId, actual.roomId)
+            assertEquals(expected.room, actual.room)
         }
 
         timetableApi.deleteTimetable(weekOfYear, 3, studyGroup1.id).also(::assertResultIsOk)

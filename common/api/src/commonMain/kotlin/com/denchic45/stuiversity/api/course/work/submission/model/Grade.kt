@@ -25,7 +25,7 @@ data class Grade(
 
 @Serializable
 data class SubmissionGrade(
-    val value: Short,
+    val value: Int,
     @Serializable(UUIDSerializer::class)
     val courseId: UUID,
     @Serializable(UUIDSerializer::class)

@@ -12,7 +12,7 @@ object Grades : LongIdTable("grade", "grade_id") {
     val courseId = uuid("course_id").references(Courses.id, onDelete = ReferenceOption.CASCADE)
     val studentId = uuid("student_id").references(Users.id, onDelete = ReferenceOption.CASCADE)
     val gradedBy = uuid("graded_by").references(Users.id, onDelete = ReferenceOption.SET_NULL).nullable()
-    val value = short("value")
+    val value = integer("value")
     val submissionId: Column<EntityID<UUID>?> =
         reference("submission_id", Submissions, onDelete = ReferenceOption.SET_NULL).nullable()
 }

@@ -1,18 +1,26 @@
 package com.studiversity.feature.timetable
 
-import com.studiversity.database.table.PeriodDao
 import com.denchic45.stuiversity.api.timetable.model.*
+import com.studiversity.database.table.PeriodDao
+import com.studiversity.database.table.UserDao
+import com.studiversity.feature.course.subject.toResponse
+import com.studiversity.feature.room.toResponse
 
 fun PeriodDao.toResponse() = when (type) {
     PeriodType.LESSON -> LessonResponse(
         id = id.value,
         date = date,
         order = order,
-        roomId = roomId,
-        studyGroupId = studyGroupId,
-        memberIds = members.map { it.member.id.value },
+        room = room.toResponse(),
+        studyGroup = studyGroup.let {
+            StudyGroupName(
+                id = it.id.value,
+                name = it.name
+            )
+        },
+        members = members.map { it.member.toResponse() },
         details = with(lesson) {
-            LessonDetails(courseId = courseId)
+            LessonDetails(courseId = courseId, subject = course.subject?.toResponse())
         }
     )
 
@@ -20,11 +28,23 @@ fun PeriodDao.toResponse() = when (type) {
         id = id.value,
         date = date,
         order = order,
-        roomId = roomId,
-        studyGroupId = studyGroupId,
-        memberIds = members.map { it.member.id.value },
+        room = room.toResponse(),
+        studyGroup = studyGroup.let {
+            StudyGroupName(
+                id = it.id.value,
+                name = it.name
+            )
+        },
+        members = members.map { it.member.toResponse() },
         details = with(event) {
-            EventDetails(name = name, icon = icon, color = color)
+            EventDetails(name = name, iconUrl = icon, color = color)
         }
     )
 }
+
+private fun UserDao.toResponse() = PeriodMember(
+    id = id.value,
+    firstName = firstName,
+    surname = surname,
+    avatarUrl = avatarUrl
+)

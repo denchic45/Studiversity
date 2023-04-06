@@ -14,6 +14,7 @@ sealed interface PeriodResponse : PeriodModel {
     val id: Long
     val date: LocalDate
     val studyGroup: StudyGroupName
+    val details: PeriodDetails
 
     fun copy(): PeriodResponse = when (this) {
         is EventResponse -> copy(id)
@@ -28,7 +29,6 @@ data class LessonResponse(
     override val date: LocalDate,
     override val order: Int,
     override val room: RoomResponse?,
-    @Serializable(UUIDSerializer::class)
     override val studyGroup: StudyGroupName,
     override val members: List<PeriodMember>,
     override val details: LessonDetails

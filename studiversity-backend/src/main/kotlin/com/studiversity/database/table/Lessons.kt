@@ -21,7 +21,9 @@ object Lessons : IdTable<Long>("lesson") {
 class LessonDao(id: EntityID<Long>) : LongEntity(id) {
     companion object : LongEntityClass<LessonDao>(Lessons)
 
+    var periodId by Periods.id
     var courseId by Lessons.courseId
 
     var period by PeriodDao referencedOn Lessons.id
+    var course by CourseDao referencedOn Courses.id
 }

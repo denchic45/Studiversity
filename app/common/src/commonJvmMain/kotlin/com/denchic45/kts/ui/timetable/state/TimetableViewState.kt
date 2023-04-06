@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.timetable
+package com.denchic45.kts.ui.timetable.state
 
 import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.domain.model.StudyGroupNameItem
@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 
 sealed class Cell {
-    data class Event(val iconName: String, val name: String, val room: RoomResponse?) : Cell()
+    data class Event(val iconName: String?, val name: String?, val room: RoomResponse?) : Cell()
     object Empty : Cell()
 }
 
@@ -45,8 +45,8 @@ fun toCells(
 
 private fun PeriodResponse.toCell() = when (val details = details) {
     is LessonDetails -> Cell.Event(
-        details.subject.iconName,
-        details.subject.name,
+        details.subject?.iconName,
+        details.subject?.name,
         room
     )
     is EventDetails -> Cell.Event(
@@ -86,7 +86,7 @@ private fun PeriodResponse.toItem() = PeriodItem(
             PeriodDetails.Event(name, iconUrl, color)
         }
         is LessonDetails -> with(details) {
-            PeriodDetails.Lesson(courseId, subject.iconName, subject.name)
+            PeriodDetails.Lesson(courseId, subject?.iconName, subject?.name)
         }
     }
 )

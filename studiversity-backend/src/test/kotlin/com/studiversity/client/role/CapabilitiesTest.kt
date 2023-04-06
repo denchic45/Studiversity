@@ -1,6 +1,6 @@
 package com.studiversity.client.role
 
-import com.denchic45.stuiversity.api.membership.MembershipsApi
+import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.CapabilityApi
 import com.denchic45.stuiversity.api.role.RoleApi
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -29,7 +29,7 @@ class CapabilitiesTest : KtorClientTest() {
     private val roleApi: RoleApi by inject { parametersOf(client) }
     private val userApi: UserApi by inject { parametersOf(client) }
     private val studyGroupApi: StudyGroupApi by inject { parametersOf(client) }
-    private val membershipsApi: MembershipsApi by inject { parametersOf(client) }
+    private val membershipApi: MembershipApi by inject { parametersOf(client) }
 
     private lateinit var user: UserResponse
     private lateinit var studyGroup: StudyGroupResponse
@@ -42,7 +42,7 @@ class CapabilitiesTest : KtorClientTest() {
         studyGroup = studyGroupApi.create(
             CreateStudyGroupRequest("Test group", AcademicYear(2023, 2027), null, null)
         ).unwrapAsserted()
-        membershipsApi.joinToScopeManually(user.id, studyGroup.id, listOf(Role.Student.id))
+        membershipApi.joinToScopeManually(user.id, studyGroup.id, listOf(Role.Student.id))
     }
 
     @AfterEach
@@ -55,11 +55,11 @@ class CapabilitiesTest : KtorClientTest() {
     // TODO: rewrite with other roles and capabilities
     @Test
     fun test(): Unit = runBlocking {
-        val response1 = capabilityApi.check(user.id, studyGroup.id, Capability.BeStudent).unwrapAsserted()
+        val response1 = capabilityApi.check(user.id, studyGroup.id, listOf(Capability.BeStudent)).unwrapAsserted()
         assertTrue(response1.hasCapability(Capability.BeStudent))
         roleApi.deleteRoleFromUserInScope(user.id, studyGroup.id, Role.Student.id).unwrapAsserted()
         roleApi.assignRoleToUserInScope(user.id, studyGroup.id, Role.Headman.id).unwrapAsserted()
-        val response2 = capabilityApi.check(user.id, studyGroup.id, Capability.BeStudent).unwrapAsserted()
+        val response2 = capabilityApi.check(user.id, studyGroup.id, listOf(Capability.BeStudent)).unwrapAsserted()
         assertTrue(response2.hasCapability(Capability.BeStudent))
     }
 }

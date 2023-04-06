@@ -5,5 +5,6 @@ import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 
 fun CourseTopicDao.toResponse() = TopicResponse(
     id = id.value,
-    name = name
+    name = name,
+    order = order
 )

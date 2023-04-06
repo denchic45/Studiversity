@@ -1,45 +1,46 @@
 package com.studiversity.feature.timetable
 
+import com.denchic45.stuiversity.api.timetable.model.*
 import com.studiversity.database.table.*
 import com.studiversity.util.toSqlSortOrder
-import com.denchic45.stuiversity.api.timetable.model.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.between
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class TimetableRepository {
 
     fun putPeriodsOfDay(studyGroupId: UUID, date: LocalDate, periods: List<PeriodRequest>) {
         removeByStudyGroupIdAndDate(studyGroupId, date)
-        periods.forEach { period ->
+        periods.forEach { period: PeriodRequest ->
             val periodDao = PeriodDao.new {
                 this.date = date
                 order = period.order
-                roomId = period.roomId
+                roomId = period.room?.id
                 this.studyGroupId = studyGroupId
                 type = period.type
             }
             val periodId = periodDao.id.value
 
-            when (val details = period.details) {
-                is LessonDetails -> LessonDao.new(periodId) {
-                    courseId = details.courseId
+            when (period) {
+                is LessonRequest -> LessonDao.new(periodId) {
+                    this.period = PeriodDao.findById(periodId)!!
+                    this.course = CourseDao.findById(period.courseId)!!
                 }
 
-                is EventDetails -> EventDao.new(periodId) {
-                    name = details.name
-                    color = details.color
-                    icon = details.icon
+                is EventRequest -> EventDao.new(periodId) {
+                    name = period.name
+                    color = period.color
+                    icon = period.iconUrl
                 }
             }
-
-            period.memberIds.forEach {
+            period.members.forEach {
                 PeriodMemberDao.new {
                     this.period = periodDao
-                    this.member = UserDao.findById(it)!!
+                    this.member = UserDao.findById(it.id)!!
                 }
             }
         }
@@ -71,6 +72,7 @@ class TimetableRepository {
             .withDefault { emptyList() }
             .let { map ->
                 TimetableResponse(
+                    weekOfYear = startDate.format(DateTimeFormatter.ofPattern("YYYY_ww")),
                     monday = map.getValue(DayOfWeek.MONDAY),
                     tuesday = map.getValue(DayOfWeek.TUESDAY),
                     wednesday = map.getValue(DayOfWeek.WEDNESDAY),
@@ -133,13 +135,23 @@ class TimetableRepository {
             query.orderBy(
                 column = when (it) {
                     is PeriodsSorting.Course -> {
-                        query.adjustColumnSet { innerJoin(Courses, { Lessons.courseId }, { id }) }
+                        query.adjustColumnSet {
+                            innerJoin(
+                                Courses,
+                                { Lessons.courseId },
+                                { id })
+                        }
                             .adjustSlice { slice(fields + Courses.name) }
                         Courses.name
                     }
 
                     is PeriodsSorting.Member -> {
-                        query.adjustColumnSet { innerJoin(Users, { PeriodsMembers.memberId }, { id }) }
+                        query.adjustColumnSet {
+                            innerJoin(
+                                Users,
+                                { PeriodsMembers.memberId },
+                                { id })
+                        }
                             .adjustSlice { slice(fields + Users.surname) }
                         Users.surname
                     }
@@ -152,7 +164,12 @@ class TimetableRepository {
                     }
 
                     is PeriodsSorting.StudyGroup -> {
-                        query.adjustColumnSet { innerJoin(StudyGroups, { Periods.studyGroupId }, { id }) }
+                        query.adjustColumnSet {
+                            innerJoin(
+                                StudyGroups,
+                                { Periods.studyGroupId },
+                                { id })
+                        }
                             .adjustSlice { slice(fields + StudyGroups.name) }
                         StudyGroups.name
                     }
@@ -167,7 +184,16 @@ class TimetableRepository {
         Periods.deleteWhere { Periods.studyGroupId eq studyGroupId and (Periods.date eq date) }
     }
 
-    fun removeByStudyGroupIdAndDateRange(studyGroupId: UUID, startDate: LocalDate, endDate: LocalDate) {
-        Periods.deleteWhere { Periods.studyGroupId eq studyGroupId and (date.between(startDate, endDate)) }
+    fun removeByStudyGroupIdAndDateRange(
+        studyGroupId: UUID,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ) {
+        Periods.deleteWhere {
+            Periods.studyGroupId eq studyGroupId and (date.between(
+                startDate,
+                endDate
+            ))
+        }
     }
 }

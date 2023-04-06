@@ -10,14 +10,14 @@ import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.CourseElementsApiImpl
 import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.SubjectApiImpl
-import com.denchic45.stuiversity.api.course.topic.CourseTopicsApi
-import com.denchic45.stuiversity.api.course.topic.CourseTopicsApiImpl
+import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
+import com.denchic45.stuiversity.api.course.topic.CourseTopicApiImpl
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.CourseWorkApiImpl
 import com.denchic45.stuiversity.api.member.MembersApi
 import com.denchic45.stuiversity.api.member.MembersApiImpl
-import com.denchic45.stuiversity.api.membership.MembershipsApi
-import com.denchic45.stuiversity.api.membership.MembershipsApiImpl
+import com.denchic45.stuiversity.api.membership.MembershipApi
+import com.denchic45.stuiversity.api.membership.MembershipApiImpl
 import com.denchic45.stuiversity.api.role.CapabilityApi
 import com.denchic45.stuiversity.api.role.CapabilityApiImpl
 import com.denchic45.stuiversity.api.role.RoleApi
@@ -52,8 +52,8 @@ internal val apiModule = module {
     factory<CourseElementsApi> { CourseElementsApiImpl(it.get()) }
     factory<CourseWorkApi> { CourseWorkApiImpl(it.get()) }
     factory<SubmissionsApi> { SubmissionsApiImpl(it.get()) }
-    factory<CourseTopicsApi> { CourseTopicsApiImpl(it.get()) }
-    factory<MembershipsApi> { MembershipsApiImpl(it.get()) }
+    factory<CourseTopicApi> { CourseTopicApiImpl(it.get()) }
+    factory<MembershipApi> { MembershipApiImpl(it.get()) }
     factory<MembersApi> { MembersApiImpl(it.get()) }
     factory<TimetableApi> { TimetableApiImpl(it.get()) }
     factory<RoomApi> { RoomApiImpl(it.get()) }

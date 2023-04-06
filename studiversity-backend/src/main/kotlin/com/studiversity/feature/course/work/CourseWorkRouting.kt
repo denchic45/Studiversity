@@ -32,7 +32,7 @@ fun Route.courseWorksRoutes() {
             val courseId = call.parameters.getOrFail("courseId").toUUID()
             requireCapability(
                 userId = call.jwtPrincipal().payload.claimId,
-                capability = Capability.WriteCourseWork,
+                capability = Capability.WriteCourseElement,
                 scopeId = courseId
             )
             addCourseWork(courseId, body).let { courseElement ->
@@ -87,7 +87,7 @@ private fun Route.courseWorkById() {
 
                 requireCapability(
                     userId = currentUserId,
-                    capability = Capability.WriteCourseWork,
+                    capability = Capability.WriteCourseElement,
                     scopeId = courseId
                 )
 
@@ -128,7 +128,7 @@ private fun Route.courseWorkById() {
 
                     requireCapability(
                         userId = currentUserId,
-                        capability = Capability.WriteCourseWork,
+                        capability = Capability.WriteCourseElement,
                         scopeId = courseId
                     )
 

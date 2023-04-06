@@ -13,7 +13,7 @@ class SubmitSubmissionUseCase(
 
     operator fun invoke(submissionId: UUID, studentId: UUID) = transactionWorker {
         val currentSubmission = submissionRepository.find(submissionId) ?: throw NotFoundException()
-        if (currentSubmission.authorId != studentId)
+        if (currentSubmission.author.id != studentId)
             throw BadRequestException("INVALID_AUTHOR")
         if (currentSubmission.state == SubmissionState.SUBMITTED)
             throw BadRequestException("ALREADY_SUBMITTED")

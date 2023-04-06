@@ -12,7 +12,7 @@ sealed interface PeriodDetails
 data class LessonDetails(
     @Serializable(UUIDSerializer::class)
     val courseId: UUID,
-    val subject: SubjectResponse
+    val subject: SubjectResponse?
 ) : PeriodDetails
 
 @Serializable

@@ -16,8 +16,8 @@ data class PeriodItem(
 sealed interface PeriodDetails {
     data class Lesson(
         val courseId: UUID,
-        val subjectIconUrl: String,
-        val subjectName: String
+        val subjectIconUrl: String?,
+        val subjectName: String?
     ) : PeriodDetails
 
     data class Event(

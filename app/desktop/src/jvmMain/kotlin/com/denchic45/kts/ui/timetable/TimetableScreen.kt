@@ -27,6 +27,7 @@ import com.denchic45.kts.domain.timetable.model.PeriodDetails
 import com.denchic45.kts.domain.timetable.model.PeriodItem
 import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.components.TextButtonContent
+import com.denchic45.kts.ui.timetable.state.CellOrder
 import com.denchic45.kts.ui.timetable.state.WeekTimetableViewState
 import com.denchic45.stuiversity.util.DatePatterns
 import com.denchic45.stuiversity.util.toString
@@ -219,7 +220,7 @@ fun LessonCell(item: PeriodItem?) {
                         contentDescription = null
                     )
                     Text(
-                        details.subjectName,
+                        details.subjectName ?: "null",
                         Modifier.padding(top = 8.dp),
                         style = MaterialTheme.typography.titleLarge
                     )

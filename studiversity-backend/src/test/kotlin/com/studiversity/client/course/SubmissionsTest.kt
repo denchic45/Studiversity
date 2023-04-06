@@ -14,7 +14,7 @@ import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
-import com.denchic45.stuiversity.api.membership.MembershipsApi
+import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.submission.SubmissionsApi
 import io.ktor.http.*
@@ -53,7 +53,7 @@ class SubmissionsTest : KtorClientTest() {
     private val coursesApi: CoursesApi by inject { parametersOf(client) }
     private val CourseElementsApi: CourseElementsApi by inject { parametersOf(client) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(client) }
-    private val membershipsApi: MembershipsApi by inject { parametersOf(client) }
+    private val MembershipApi: MembershipApi by inject { parametersOf(client) }
 
 
     override fun setup(): Unit = runBlocking {
@@ -107,11 +107,11 @@ class SubmissionsTest : KtorClientTest() {
     }
 
     private suspend fun enrolUser(userId: UUID, roleId: Long) {
-        membershipsApi.joinToScopeManually(userId, course.id, listOf(roleId)).also(::assertResultIsOk)
+        MembershipApi.joinToScopeManually(userId, course.id, listOf(roleId)).also(::assertResultIsOk)
     }
 
     private suspend fun unrollUser(userId: UUID) {
-        membershipsApi.leaveFromScope(userId, course.id, "manual")
+        MembershipApi.leaveFromScope(userId, course.id, "manual")
             .onSuccess { println("Success unroll user: $userId") }
             .onFailure { println("Failed unroll user: $userId. Status: ${it.code}. Body: ${it.error}") }
     }
@@ -135,7 +135,7 @@ class SubmissionsTest : KtorClientTest() {
                 assertEquals(2, response.size)
                 assertAllStatesIsNew(response)
             }
-        val ownSubmission = submissions.first { it.authorId == student1Id }
+        val ownSubmission = submissions.first { it.author.id == student1Id }
 
         // get submission by another user (maybe teacher)
         submissionsApiOfTeacher.getById(course.id, courseWork.id, ownSubmission.id).apply {
@@ -175,7 +175,7 @@ class SubmissionsTest : KtorClientTest() {
                 assertEquals(2, response.size)
                 assertAllStatesIsNew(response)
             }
-        val ownSubmission = submissions.first { it.authorId == student1Id }
+        val ownSubmission = submissions.first { it.author.id == student1Id }
         // get submission by owner student
         submissionsApiOfStudent.getById(course.id, courseWork.id, ownSubmission.id)
             .apply {

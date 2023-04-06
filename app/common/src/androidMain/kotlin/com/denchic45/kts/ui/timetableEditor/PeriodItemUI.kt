@@ -54,19 +54,25 @@ fun PeriodItemUI(
                         .size(32.dp)
                         .padding(16.dp)
                 )
-                Row(Modifier.weight(1f)) {
-                    when (val details = item.details) {
-                        is PeriodDetails.Lesson -> Text(
-                            text = details.subjectName,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        is PeriodDetails.Event -> Text(
-                            text = details.name,
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                    Row(Modifier.weight(1f)) {
+                        when (val details = item.details) {
+                            is PeriodDetails.Lesson -> {
+                                details.subjectName?.let {
+                                    Text(
+                                        text = details.subjectName,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                }
+                            }
+                            is PeriodDetails.Event -> Text(
+                                text = details.name,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                        Text(text = time)
                     }
-                    Text(text = time)
-                }
+
+
 
                 if (groupShowing)
                     Row {

@@ -4,6 +4,8 @@ import com.denchic45.stuiversity.api.membership.model.Member
 import com.denchic45.stuiversity.api.membership.model.MembershipResponse
 import com.denchic45.stuiversity.api.membership.model.ScopeMember
 import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.stuiversity.api.user.model.Account
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.toUUID
 import com.studiversity.database.exists
 import com.studiversity.database.table.*
@@ -75,10 +77,15 @@ class UserMembershipRepository(
         .groupBy { it[UsersMemberships.memberId] }
         .map { (userId, rows) ->
             ScopeMember(
-                userId = userId,
-                firstName = rows.first()[Users.firstName],
-                surname = rows.first()[Users.surname],
-                patronymic = rows.first()[Users.patronymic],
+                user = UserResponse(
+                    id = rows.first()[Users.id].value,
+                    firstName = rows.first()[Users.firstName],
+                    surname = rows.first()[Users.surname],
+                    patronymic = rows.first()[Users.patronymic],
+                    account = Account(rows.first()[Users.email]),
+                    avatarUrl = rows.first()[Users.avatarUrl],
+                   gender = rows.first()[Users.gender]
+                ),
                 scopeId = scopeId,
                 membershipIds = rows.map { it[UsersMemberships.membershipId].value },
                 roles = UserRoleScopeDao.find(
@@ -97,10 +104,15 @@ class UserMembershipRepository(
         .select(Memberships.scopeId eq scopeId and (Users.id eq userId))
         .let { rows ->
             ScopeMember(
-                userId = userId,
-                firstName = rows.first()[Users.firstName],
-                surname = rows.first()[Users.surname],
-                patronymic = rows.first()[Users.patronymic],
+                user = UserResponse(
+                    id = rows.first()[Users.id].value,
+                    firstName = rows.first()[Users.firstName],
+                    surname = rows.first()[Users.surname],
+                    patronymic = rows.first()[Users.patronymic],
+                    account = Account(rows.first()[Users.email]),
+                    avatarUrl = rows.first()[Users.avatarUrl],
+                    gender = rows.first()[Users.gender]
+                ),
                 scopeId = scopeId,
                 membershipIds = rows.map { it[UsersMemberships.membershipId].value },
                 roles = UserRoleScopeDao.find(UsersRolesScopes.scopeId eq scopeId and (UsersRolesScopes.userId eq userId))

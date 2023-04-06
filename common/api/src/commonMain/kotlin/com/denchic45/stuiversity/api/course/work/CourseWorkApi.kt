@@ -17,7 +17,7 @@ interface CourseWorkApi {
     suspend fun create(
         courseId: UUID,
         createCourseWorkRequest: CreateCourseWorkRequest
-    ): ResponseResult<CourseWorkResponse>
+    ): ResponseResult<CourseElementResponse>
 
     suspend fun update(
         courseId: UUID,
@@ -25,7 +25,7 @@ interface CourseWorkApi {
         updateCourseWorkRequest: UpdateCourseWorkRequest
     ): ResponseResult<CourseElementResponse>
 
-    suspend fun getById(courseId: UUID, workId: UUID): ResponseResult<CourseWorkResponse> // TODO: fix result in backend
+    suspend fun getById(courseId: UUID, workId: UUID): ResponseResult<CourseElementResponse> // TODO: fix result in backend
 
     suspend fun getAttachments(
         courseId: UUID,
@@ -61,7 +61,7 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
     override suspend fun create(
         courseId: UUID,
         createCourseWorkRequest: CreateCourseWorkRequest
-    ): ResponseResult<CourseWorkResponse> {
+    ): ResponseResult<CourseElementResponse> {
         return client.post("/courses/$courseId/works") {
             contentType(ContentType.Application.Json)
             setBody(createCourseWorkRequest)
@@ -79,7 +79,7 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
         }.toResult()
     }
 
-    override suspend fun getById(courseId: UUID, workId: UUID): ResponseResult<CourseWorkResponse> {
+    override suspend fun getById(courseId: UUID, workId: UUID): ResponseResult<CourseElementResponse> {
         return client.get("/courses/$courseId/works/$workId").toResult()
     }
 

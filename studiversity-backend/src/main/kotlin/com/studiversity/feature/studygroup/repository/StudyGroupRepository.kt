@@ -35,7 +35,7 @@ class StudyGroupRepository {
                 academicYear.ifPresent {
                     update[StudyGroups.academicYear.column] = arrayOf(it.start.toShort(), it.end.toShort())
                 }
-                specialtyId.ifPresent { update[StudyGroups.specialtyId] = it?.toUUID() }
+                specialtyId.ifPresent { update[StudyGroups.specialtyId] = it }
             }
         }.run { this != 0 }
     }

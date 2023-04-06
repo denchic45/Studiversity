@@ -1,15 +1,15 @@
 package com.studiversity.client.course
 
-import com.studiversity.KtorClientTest
-import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
-import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.membership.model.ManualJoinMemberRequest
 import com.denchic45.stuiversity.api.membership.model.ScopeMember
 import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
+import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.stuiversity.util.toUUID
+import com.studiversity.KtorClientTest
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -37,14 +37,14 @@ class CourseWithStudyGroupMembershipTest : KtorClientTest() {
     fun initData(): Unit = runBlocking {
         studyGroup1 = client.post("/studygroups") {
             contentType(ContentType.Application.Json)
-            setBody(CreateStudyGroupRequest("Test group 1", AcademicYear(2022, 2023), null,null))
+            setBody(CreateStudyGroupRequest("Test group 1", AcademicYear(2022, 2023), null, null))
         }.body<StudyGroupResponse>().apply {
             assertEquals(name, "Test group 1")
         }
 
         studyGroup2 = client.post("/studygroups") {
             contentType(ContentType.Application.Json)
-            setBody(CreateStudyGroupRequest("Test group 2", AcademicYear(2022, 2025), null,null))
+            setBody(CreateStudyGroupRequest("Test group 2", AcademicYear(2022, 2025), null, null))
         }.body()
 
         course = client.post("/courses") {
@@ -84,14 +84,17 @@ class CourseWithStudyGroupMembershipTest : KtorClientTest() {
 
         client.get("/courses/${course.id}/studygroups")
             .body<List<String>>().apply {
-                assertEquals(listOf(studyGroup1.id, studyGroup2.id).sorted(), map(String::toUUID).sorted())
+                assertEquals(
+                    listOf(studyGroup1.id, studyGroup2.id).sorted(),
+                    map(String::toUUID).sorted()
+                )
             }
         enrolStudentsToGroups()
         syncMembership(course.id)
         delay(10000)
 
         client.get("/scopes/${course.id}/members").body<List<ScopeMember>>().apply {
-            assertEquals(listOf(user1Id, user2Id).sorted(), map(ScopeMember::userId).sorted())
+            assertEquals(listOf(user1Id, user2Id).sorted(), map { it.user.id }.sorted())
         }
 
         // detach first group and check members of course
@@ -101,7 +104,7 @@ class CourseWithStudyGroupMembershipTest : KtorClientTest() {
         delay(12000)
 
         client.get("/scopes/${course.id}/members").body<List<ScopeMember>>().apply {
-            assertEquals(listOf(user1Id), map(ScopeMember::userId))
+            assertEquals(listOf(user1Id), map { it.user.id })
         }
 
         // detach second group and check members of course
@@ -111,7 +114,7 @@ class CourseWithStudyGroupMembershipTest : KtorClientTest() {
         delay(12000)
 
         client.get("/scopes/${course.id}/members").body<List<ScopeMember>>().apply {
-            assertEquals(emptyList(), map(ScopeMember::userId))
+            assertEquals(emptyList(), map { it.user.id })
         }
     }
 
@@ -126,52 +129,70 @@ class CourseWithStudyGroupMembershipTest : KtorClientTest() {
         syncMembership(course.id)
         // assert two attached study groups to course
         client.get("/courses/${course.id}/studygroups").body<List<String>>().apply {
-            assertEquals(listOf(studyGroup1.id, studyGroup2.id).sorted(), map(String::toUUID).sorted())
+            assertEquals(
+                listOf(studyGroup1.id, studyGroup2.id).sorted(),
+                map(String::toUUID).sorted()
+            )
         }
         // assert two users in course membership
         client.get("/scopes/${course.id}/members").body<List<ScopeMember>>().apply {
-            assertEquals(listOf(user1Id, user2Id).sorted(), map(ScopeMember::userId).sorted())
+            assertEquals(listOf(user1Id, user2Id).sorted(), map { it.user.id }.sorted())
             assertTrue(all { it.roles.contains(Role.Student) })
         }
 
         // delete first user from first group
-        client.delete("/scopes/${studyGroup1.id}/members/$user1Id") { parameter("action", "manual") }
+        client.delete("/scopes/${studyGroup1.id}/members/$user1Id") {
+            parameter(
+                "action",
+                "manual"
+            )
+        }
 
         syncMembership(course.id)
         delay(12000)
 
         // assert only second member in first group
         client.get("/scopes/${studyGroup1.id}/members").body<List<ScopeMember>>().apply {
-            assertEquals(listOf(user2Id), map(ScopeMember::userId))
+            assertEquals(listOf(user2Id), map { it.user.id })
         }
         // assert two members of course
         client.get("/scopes/${course.id}/members").body<List<ScopeMember>>().apply {
-            assertEquals(listOf(user1Id, user2Id).sorted(), map(ScopeMember::userId).sorted())
+            assertEquals(listOf(user1Id, user2Id).sorted(), map { it.user.id }.sorted())
         }
 
         // delete second user from first group
-        client.delete("/scopes/${studyGroup1.id}/members/$user2Id") { parameter("action", "manual") }
+        client.delete("/scopes/${studyGroup1.id}/members/$user2Id") {
+            parameter(
+                "action",
+                "manual"
+            )
+        }
 
         syncMembership(course.id)
         delay(10000)
 
         // assert zero members in first group
         client.get("/scopes/${studyGroup1.id}/members").body<List<ScopeMember>>().apply {
-            assertEquals(emptyList(), map(ScopeMember::userId))
+            assertEquals(emptyList(), map { it.user.id })
         }
         // assert only first member of course
         client.get("/scopes/${course.id}/members").body<List<ScopeMember>>().apply {
-            assertEquals(listOf(user1Id), map(ScopeMember::userId))
+            assertEquals(listOf(user1Id), map { it.user.id })
         }
 
         // delete first user from second group
-        client.delete("/scopes/${studyGroup2.id}/members/$user1Id")  { parameter("action", "manual") }
+        client.delete("/scopes/${studyGroup2.id}/members/$user1Id") {
+            parameter(
+                "action",
+                "manual"
+            )
+        }
         syncMembership(course.id)
         delay(10000)
 
         // assert zero members of course
         client.get("/scopes/${course.id}/members").body<List<ScopeMember>>().apply {
-            assertEquals(emptyList(), map(ScopeMember::userId))
+            assertEquals(emptyList(), map { it.user.id })
         }
     }
 

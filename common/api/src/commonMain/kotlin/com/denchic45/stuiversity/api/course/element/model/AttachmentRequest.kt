@@ -1,6 +1,7 @@
 package com.denchic45.stuiversity.api.course.element.model
 
 import kotlinx.serialization.Serializable
+import java.io.File
 
 sealed interface AttachmentRequest
 
@@ -8,7 +9,14 @@ sealed interface AttachmentRequest
 class CreateFileRequest(
     val name: String,
     val bytes: ByteArray,
-) : AttachmentRequest
+) : AttachmentRequest {
+    companion object {
+        operator fun invoke(file: File): CreateFileRequest {
+            return CreateFileRequest(file.name, file.readBytes())
+        }
+
+    }
+}
 
 @Serializable
 data class CreateLinkRequest(val url: String) : AttachmentRequest

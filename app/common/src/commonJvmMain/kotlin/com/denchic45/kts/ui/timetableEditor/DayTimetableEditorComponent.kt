@@ -3,7 +3,7 @@ package com.denchic45.kts.ui.timetableEditor
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.ui.timetable.state.toTimetableViewState
-import com.denchic45.kts.ui.timetable.toLocalDateOfWeekOfYear
+import com.denchic45.kts.ui.timetable.state.toLocalDateOfWeekOfYear
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.copy
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse

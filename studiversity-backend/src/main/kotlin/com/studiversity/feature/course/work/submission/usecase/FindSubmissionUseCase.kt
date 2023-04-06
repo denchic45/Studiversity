@@ -13,7 +13,7 @@ class FindSubmissionUseCase(
 
     operator fun invoke(submissionId: UUID, receivingUserId: UUID) = transactionWorker {
         submissionRepository.find(submissionId)?.let { response ->
-            if (response.state == SubmissionState.NEW && response.authorId == receivingUserId) {
+            if (response.state == SubmissionState.NEW && response.author.id == receivingUserId) {
                 submissionRepository.updateSubmissionState(submissionId, SubmissionState.CREATED)
                 submissionRepository.find(submissionId)!!
             } else response

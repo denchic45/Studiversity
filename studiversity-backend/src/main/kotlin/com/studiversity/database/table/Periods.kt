@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.javatime.date
 
 object Periods : LongIdTable("period", "period_id") {
     val date = date("date")
-    val order = short("period_order")
+    val order = integer("period_order")
     val roomId = uuid("room_id").references(
         Rooms.id,
         onDelete = ReferenceOption.SET_NULL,
@@ -32,6 +32,9 @@ class PeriodDao(id: EntityID<Long>) : LongEntity(id) {
     var roomId by Periods.roomId
     var studyGroupId by Periods.studyGroupId
     var type by Periods.type
+
+    val room by RoomDao referencedOn Rooms.id
+    val studyGroup by StudyGroupDao referencedOn StudyGroups.id
 
     val members by PeriodMemberDao referrersOn PeriodsMembers.periodId
 

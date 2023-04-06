@@ -2,10 +2,6 @@ package com.denchic45.kts.ui.timetable.state
 
 import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.domain.timetable.model.PeriodItem
-import com.denchic45.kts.ui.timetable.CellOrder
-import com.denchic45.kts.ui.timetable.getMonthTitle
-import com.denchic45.kts.ui.timetable.toItemOrders
-import com.denchic45.kts.ui.timetable.toItems
 import com.denchic45.kts.util.copy
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import java.time.DayOfWeek
