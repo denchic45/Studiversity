@@ -2,7 +2,7 @@ package com.studiversity.feature.role
 
 import com.studiversity.feature.role.usecase.*
 import com.studiversity.ktor.currentUserId
-import com.studiversity.ktor.getUuid
+import com.studiversity.ktor.getUuidOrFail
 import com.studiversity.util.hasNotDuplicates
 import com.studiversity.validation.buildValidationResult
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -43,16 +43,16 @@ private fun Route.userAssignedRolesRoute() {
         val removeRoleFromUserInScope: RemoveRoleFromUserInScopeUseCase by inject()
 
         get {
-            val userId = call.parameters.getUuid("id")
-            val scopeId = call.parameters.getUuid("scopeId")
+            val userId = call.parameters.getUuidOrFail("id")
+            val scopeId = call.parameters.getUuidOrFail("scopeId")
             call.respond(HttpStatusCode.OK, findAssignedUserRolesInScope(userId, scopeId))
         }
 
         route("/{roleId}") {
             put {
-                val userId = call.parameters.getUuid("id")
+                val userId = call.parameters.getUuidOrFail("id")
                 val roleId = call.parameters.getOrFail("roleId").toLong()
-                val scopeId = call.parameters.getUuid("scopeId")
+                val scopeId = call.parameters.getUuidOrFail("scopeId")
                 val currentUserId = call.currentUserId()
 
                 requireCapability(currentUserId, Capability.WriteAssignRoles, scopeId)
@@ -64,9 +64,9 @@ private fun Route.userAssignedRolesRoute() {
                 call.respond(HttpStatusCode.OK)
             }
             delete {
-                val userId = call.parameters.getUuid("id")
+                val userId = call.parameters.getUuidOrFail("id")
                 val roleId = call.parameters.getOrFail("roleId").toLong()
-                val scopeId = call.parameters.getUuid("scopeId")
+                val scopeId = call.parameters.getUuidOrFail("scopeId")
                 val currentUserId = call.currentUserId()
 
                 requireCapability(currentUserId, Capability.WriteAssignRoles, scopeId)

@@ -1,18 +1,13 @@
 package com.studiversity.feature.studygroup.repository
 
-import com.studiversity.database.exists
-import com.studiversity.database.table.Specialties
-import com.studiversity.database.table.SpecialtyDao
-import com.studiversity.database.table.StudyGroupDao
-import com.studiversity.database.table.StudyGroups
-import com.studiversity.feature.studygroup.mapper.toResponse
-import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.studiversity.database.exists
+import com.studiversity.database.table.*
+import com.studiversity.feature.studygroup.mapper.toResponse
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import java.util.*
 
 class StudyGroupRepository {
@@ -42,14 +37,42 @@ class StudyGroupRepository {
 
     fun findById(id: UUID): StudyGroupResponse? = StudyGroupDao.findById(id)?.toResponse()
 
-    fun find(query: String) = StudyGroupDao.wrapRows(
-        StudyGroups.leftJoin(Specialties, { specialtyId }, { Specialties.id })
-            .select(
-                StudyGroups.name.lowerCase().trim() like "%$query%"
-                        or (Specialties.name.lowerCase().trim() like "%$query%")
-                        or (Specialties.shortname.lowerCase().trim() like "%$query%")
-            )
-    ).map(StudyGroupDao::toResponse)
+    fun find(
+        q: String?,
+        memberId: UUID?,
+        roleId: Long?,
+        specialtyId: UUID?,
+        academicYear: Int?
+    ): List<StudyGroupResponse> {
+        val query = StudyGroups.leftJoin(Specialties, { this.specialtyId }, { Specialties.id })
+            .innerJoin(
+                MembershipsInnerUserMembershipsInnerUsersRolesScopes,
+                { StudyGroups.id },
+                { Memberships.scopeId })
+            .selectAll()
+        q?.let {
+            query.andWhere {
+                StudyGroups.name.lowerCase().trim() like "%$query%" or
+                        (Specialties.name.lowerCase().trim() like "%$query%") or
+                        (Specialties.shortname.lowerCase().trim() like "%$query%")
+            }
+        }
+        memberId?.let {
+            query.andWhere { UsersMemberships.memberId eq memberId }
+        }
+        roleId?.let {
+            query.andWhere { UsersRolesScopes.roleId eq it }
+        }
+        specialtyId?.let {
+            query.andWhere { Specialties.id eq it }
+        }
+        academicYear?.let {
+            query.andWhere {
+                (StudyGroups.startAcademicYear - StudyGroups.endAcademicYear) eq it
+            }
+        }
+        return StudyGroupDao.wrapRows(query).map(StudyGroupDao::toResponse)
+    }
 
     fun remove(id: UUID) = StudyGroups.deleteWhere { StudyGroups.id eq id }.run { this != 0 }
 

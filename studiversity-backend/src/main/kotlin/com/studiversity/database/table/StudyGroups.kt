@@ -21,8 +21,8 @@ object StudyGroups : UUIDTable("study_group", "study_group_id") {
     val specialtyId = optReference("specialty_id", Specialties.id)
     val createdAt = timestampWithTimeZone("created_at")
     val updatedAt = timestampWithTimeZone("updated_at")
-    val startAcademicYear = date("start_academic_year")
-    val endAcademicYear = date("end_academic_year")
+    val startAcademicYear = integer("start_academic_year")
+    val endAcademicYear = integer("end_academic_year")
 }
 
 class StudyGroupDao(id: EntityID<UUID>) : UUIDEntity(id) {

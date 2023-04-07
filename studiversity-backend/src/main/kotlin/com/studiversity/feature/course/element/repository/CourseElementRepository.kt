@@ -1,16 +1,18 @@
 package com.studiversity.feature.course.element.repository
 
-import com.studiversity.database.exists
-import com.studiversity.database.table.*
-import com.studiversity.feature.course.element.toCourseElementResponse
-import com.studiversity.feature.course.element.toResponse
-import com.studiversity.util.toSqlSortOrder
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
 import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
+import com.studiversity.database.exists
+import com.studiversity.database.table.*
+import com.studiversity.feature.course.element.toCourseElementResponse
+import com.studiversity.feature.course.element.toResponse
+import com.studiversity.feature.course.work.toWorkResponse
+import com.studiversity.util.toSqlSortOrder
+import org.jetbrains.exposed.dao.load
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
 import org.jetbrains.exposed.sql.and
@@ -49,11 +51,10 @@ class CourseElementRepository {
         }
     }
 
-    // FIXME
-    fun findWorkById(workId: UUID):CourseWorkResponse? {
-        return CourseElementDao.findById(workId)?.run {
-            toResponse(getElementDetailsByIdAndType(workId, type))
-        }
+    fun findWorkById(workId: UUID): CourseWorkResponse? {
+        return CourseWorkDao.findById(workId)
+            ?.load(CourseWorkDao::dueDate, CourseWorkDao::dueTime, CourseWorkDao::type, CourseWorkDao::maxGrade)
+            ?.let { CourseElementDao.findById(workId)?.toWorkResponse(it) }
     }
 
     fun findCourseIdByElementId(elementId: UUID): UUID? {

@@ -1,20 +1,21 @@
 package com.studiversity.feature.course.work
 
+import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
+import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
+import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
+import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.util.toUUID
 import com.studiversity.feature.attachment.receiveAttachment
 import com.studiversity.feature.attachment.respondAttachment
 import com.studiversity.feature.course.element.usecase.*
 import com.studiversity.feature.course.work.submission.workSubmissionRoutes
 import com.studiversity.feature.course.work.usecase.AddCourseWorkUseCase
-import com.denchic45.stuiversity.api.role.model.Capability
+import com.studiversity.feature.course.work.usecase.FindCourseWorkUseCase
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.ktor.claimId
-import com.studiversity.ktor.getUuid
+import com.studiversity.ktor.getUuidOrFail
 import com.studiversity.ktor.jwtPrincipal
-import com.denchic45.stuiversity.util.toUUID
-import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
-import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -32,7 +33,7 @@ fun Route.courseWorksRoutes() {
             val courseId = call.parameters.getOrFail("courseId").toUUID()
             requireCapability(
                 userId = call.jwtPrincipal().payload.claimId,
-                capability = Capability.WriteCourseElement,
+                capability = Capability.WriteCourseElements,
                 scopeId = courseId
             )
             addCourseWork(courseId, body).let { courseElement ->
@@ -46,7 +47,7 @@ fun Route.courseWorksRoutes() {
 private fun Route.courseWorkById() {
     route("/{workId}") {
         val requireCapability: RequireCapabilityUseCase by inject()
-        val findCourseElement: FindCourseElementUseCase by inject()
+        val findCourseWork: FindCourseWorkUseCase by inject()
 
         get {
             val courseId = call.parameters.getOrFail("courseId").toUUID()
@@ -57,8 +58,8 @@ private fun Route.courseWorkById() {
                 scopeId = courseId
             )
 
-            val workId = findCourseElement(call.parameters.getOrFail("workId").toUUID())
-            call.respond(HttpStatusCode.OK, workId)
+            val work = findCourseWork(call.parameters.getOrFail("workId").toUUID())
+            call.respond(HttpStatusCode.OK, work)
         }
         route("/attachments") {
 
@@ -68,8 +69,8 @@ private fun Route.courseWorkById() {
             val removeAttachmentOfCourseElement: RemoveAttachmentOfCourseElementUseCase by inject()
 
             get {
-                val workId = call.parameters.getUuid("workId")
-                val courseId = call.parameters.getUuid("courseId")
+                val workId = call.parameters.getUuidOrFail("workId")
+                val courseId = call.parameters.getUuidOrFail("courseId")
 
                 requireCapability(
                     userId = call.jwtPrincipal().payload.claimId,
@@ -81,13 +82,13 @@ private fun Route.courseWorkById() {
                 call.respond(HttpStatusCode.OK, attachments)
             }
             post {
-                val courseId = call.parameters.getUuid("courseId")
-                val workId = call.parameters.getUuid("workId")
+                val courseId = call.parameters.getUuidOrFail("courseId")
+                val workId = call.parameters.getUuidOrFail("workId")
                 val currentUserId = call.jwtPrincipal().payload.claimId
 
                 requireCapability(
                     userId = currentUserId,
-                    capability = Capability.WriteCourseElement,
+                    capability = Capability.WriteCourseElements,
                     scopeId = courseId
                 )
 
@@ -106,9 +107,9 @@ private fun Route.courseWorkById() {
                 val findAttachmentOfCourseElement: FindAttachmentOfCourseElementUseCase by inject()
 
                 get {
-                    val courseId = call.parameters.getUuid("courseId")
-                    val workId = call.parameters.getUuid("workId")
-                    val attachmentId = call.parameters.getUuid("attachmentId")
+                    val courseId = call.parameters.getUuidOrFail("courseId")
+                    val workId = call.parameters.getUuidOrFail("workId")
+                    val attachmentId = call.parameters.getUuidOrFail("attachmentId")
 
                     requireCapability(
                         userId = call.jwtPrincipal().payload.claimId,
@@ -116,19 +117,18 @@ private fun Route.courseWorkById() {
                         courseId
                     )
 
-
                     val attachment = findAttachmentOfCourseElement(courseId, workId, attachmentId)
                     call.respondAttachment(attachment)
                 }
                 delete {
-                    val courseId = call.parameters.getUuid("courseId")
-                    val workId = call.parameters.getUuid("workId")
-                    val attachmentId = call.parameters.getUuid("attachmentId")
+                    val courseId = call.parameters.getUuidOrFail("courseId")
+                    val workId = call.parameters.getUuidOrFail("workId")
+                    val attachmentId = call.parameters.getUuidOrFail("attachmentId")
                     val currentUserId = call.jwtPrincipal().payload.claimId
 
                     requireCapability(
                         userId = currentUserId,
-                        capability = Capability.WriteCourseElement,
+                        capability = Capability.WriteCourseElements,
                         scopeId = courseId
                     )
 

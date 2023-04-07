@@ -5,6 +5,7 @@ import com.denchic45.stuiversity.api.course.work.submission.model.GradeRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
+import com.denchic45.stuiversity.api.common.toAttachmentResult
 import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.util.orMe
 import io.ktor.client.*
@@ -139,7 +140,7 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
         attachmentId: UUID
     ): ResponseResult<AttachmentResponse> {
         return client.get("/courses/$courseId/works/$courseWorkId/submissions/$submissionId/attachments/$attachmentId")
-            .toResult()
+            .toAttachmentResult()
     }
 
     override suspend fun uploadFileToSubmission(

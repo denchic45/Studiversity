@@ -4,7 +4,7 @@ import com.studiversity.feature.course.topic.usecase.*
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.ktor.currentUserId
-import com.studiversity.ktor.getUuid
+import com.studiversity.ktor.getUuidOrFail
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -24,7 +24,7 @@ fun Route.courseTopicsRoutes() {
 
         post {
             val currentUserId = call.currentUserId()
-            val courseId = call.parameters.getUuid("courseId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
 
             requireCapability(
                 userId = currentUserId,
@@ -38,7 +38,7 @@ fun Route.courseTopicsRoutes() {
 
         get {
             val currentUserId = call.currentUserId()
-            val courseId = call.parameters.getUuid("courseId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
 
             requireCapability(
                 userId = currentUserId,
@@ -62,8 +62,8 @@ private fun Route.courseTopicById() {
 
         get {
             val currentUserId = call.currentUserId()
-            val courseId = call.parameters.getUuid("courseId")
-            val topicId = call.parameters.getUuid("topicId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
+            val topicId = call.parameters.getUuidOrFail("topicId")
 
             requireCapability(
                 userId = currentUserId,
@@ -76,8 +76,8 @@ private fun Route.courseTopicById() {
         }
         patch {
             val currentUserId = call.currentUserId()
-            val courseId = call.parameters.getUuid("courseId")
-            val topicId = call.parameters.getUuid("topicId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
+            val topicId = call.parameters.getUuidOrFail("topicId")
 
             requireCapability(
                 userId = currentUserId,
@@ -90,8 +90,8 @@ private fun Route.courseTopicById() {
         }
         delete {
             val currentUserId = call.currentUserId()
-            val courseId = call.parameters.getUuid("courseId")
-            val topicId = call.parameters.getUuid("topicId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
+            val topicId = call.parameters.getUuidOrFail("topicId")
 
             val relatedTopicElements =
                 Json.decodeFromString<RelatedTopicElements>(call.parameters.getOrFail("elements"))

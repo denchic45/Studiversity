@@ -7,7 +7,7 @@ import com.studiversity.feature.room.usecase.FindRoomByIdUseCase
 import com.studiversity.feature.room.usecase.RemoveRoomUseCase
 import com.studiversity.feature.room.usecase.UpdateRoomUseCase
 import com.studiversity.ktor.currentUserId
-import com.studiversity.ktor.getUuid
+import com.studiversity.ktor.getUuidOrFail
 import com.denchic45.stuiversity.api.role.model.Capability
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -34,11 +34,11 @@ fun Application.configureRooms() {
                     val removeRoom: RemoveRoomUseCase by inject()
 
                     get {
-                        call.respond(HttpStatusCode.OK, findRoomById(call.parameters.getUuid("roomId")))
+                        call.respond(HttpStatusCode.OK, findRoomById(call.parameters.getUuidOrFail("roomId")))
                     }
                     patch {
                         requireCapability(call.currentUserId(), Capability.WriteRoom, config.organization.id)
-                        val room = updateRoom(call.parameters.getUuid("roomId"), call.receive())
+                        val room = updateRoom(call.parameters.getUuidOrFail("roomId"), call.receive())
                         call.respond(HttpStatusCode.OK, room)
                     }
                     delete {
@@ -47,7 +47,7 @@ fun Application.configureRooms() {
                             Capability.WriteRoom,
                             config.organization.id
                         )
-                        removeRoom(call.parameters.getUuid("roomId"))
+                        removeRoom(call.parameters.getUuidOrFail("roomId"))
                         call.respond(HttpStatusCode.NoContent)
                     }
                 }

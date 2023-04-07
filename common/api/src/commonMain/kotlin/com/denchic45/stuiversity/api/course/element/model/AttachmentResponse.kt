@@ -4,6 +4,7 @@ import com.denchic45.stuiversity.util.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
+@Serializable(AttachmentSerializer::class)
 sealed interface AttachmentResponse {
     val id:UUID
 }

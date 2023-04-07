@@ -35,7 +35,7 @@ import javax.inject.Named
 class CourseWorkEditorViewModel @Inject constructor(
     @Named(CourseWorkEditorFragment.WORK_ID) _workId: String?,
     @Named(CourseWorkEditorFragment.COURSE_ID) private val _courseId: String,
-//    @Named(CourseWorkEditorFragment.SECTION_ID) _topicId: String?,
+    @Named(CourseWorkEditorFragment.SECTION_ID) _topicId: String?,
     private val confirmInteractor: ConfirmInteractor,
     private val findCourseWorkUseCase: FindCourseWorkUseCase,
     private val findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
@@ -49,10 +49,10 @@ class CourseWorkEditorViewModel @Inject constructor(
 
     private val courseId = _courseId.toUUID()
     private val workId = _workId?.toUUID()
-//    private val topicId = _topicId?.toUUID()
+    private val topicId = _topicId?.toUUID()
 
-    val nameField = MutableLiveData<String>()
-    val descriptionField = MutableLiveData<String>()
+    val nameField = MutableStateFlow("")
+    val descriptionField = MutableStateFlow<String?>(null)
     val showCompletionDate = MutableLiveData<String?>()
     val disabledSendAfterDate = MutableLiveData<Boolean>()
     val selectedTopic = MutableStateFlow<TopicResponse?>(null)
@@ -161,7 +161,9 @@ class CourseWorkEditorViewModel @Inject constructor(
                 disabledSendAfterDate.value = courseWork.submitAfterDueDate
 
                 commentsEnabled.value = false // TODO: stub
-                selectedTopic.value = findCourseTopicUseCase(courseId, courseWork.topicId).first()
+                selectedTopic.value = courseWork.topicId?.let {
+                    findCourseTopicUseCase(courseId, it).first()
+                }
                 findCourseWorkAttachmentsUseCase(courseId, workId).collect {
                     it.onSuccess { attachments ->
                         _oldAttachments.value = attachments
@@ -302,10 +304,14 @@ class CourseWorkEditorViewModel @Inject constructor(
         disabledSendAfterDate.postValue(check)
     }
 
-    fun onNameType(name: String) = nameField.postValue(name)
+    fun onNameType(name: String) {
+        nameField.value = name
+    }
 
 
-    fun onDescriptionType(name: String) = descriptionField.postValue(name)
+    fun onDescriptionType(name: String) {
+        descriptionField.value = name
+    }
 
     fun onCommentsEnableCheck(check: Boolean) {
         commentsEnabled.postValue(check)

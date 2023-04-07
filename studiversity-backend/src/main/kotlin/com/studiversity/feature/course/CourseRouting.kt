@@ -90,7 +90,7 @@ private fun Route.courseByIdRoutes() {
         val removeCourse: RemoveCourseUseCase by inject()
 
         get {
-            val courseId = call.parameters.getUuid("courseId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
 
             val currentUserId = call.jwtPrincipal().payload.claimId
 
@@ -101,7 +101,7 @@ private fun Route.courseByIdRoutes() {
 
         patch {
             val currentUserId = call.jwtPrincipal().payload.claimId
-            val courseId = call.parameters.getUuid("courseId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
 
             requireCapability(currentUserId, Capability.WriteCourse, courseId)
 
@@ -117,7 +117,7 @@ private fun Route.courseByIdRoutes() {
 
             put {
                 val currentUserId = call.jwtPrincipal().payload.claimId
-                val courseId = call.parameters.getUuid("courseId")
+                val courseId = call.parameters.getUuidOrFail("courseId")
 
                 requireCapability(currentUserId, Capability.WriteCourse, courseId)
 
@@ -125,7 +125,7 @@ private fun Route.courseByIdRoutes() {
                 call.respond(HttpStatusCode.OK)
             }
             delete {
-                val courseId = call.parameters.getUuid("courseId")
+                val courseId = call.parameters.getUuidOrFail("courseId")
                 val currentUserId = call.jwtPrincipal().payload.claimId
 
                 requireCapability(currentUserId, Capability.DeleteCourse, courseId)
@@ -136,7 +136,7 @@ private fun Route.courseByIdRoutes() {
         }
         delete {
             val currentUserId = call.jwtPrincipal().payload.claimId
-            val courseId = call.parameters.getUuid("courseId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
 
             requireCapability(currentUserId, Capability.WriteCourse, courseId)
 
@@ -159,7 +159,7 @@ private fun Route.courseStudyGroups() {
 
         get {
             val currentUserId = call.jwtPrincipal().payload.claimId
-            val courseId = call.parameters.getUuid("courseId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
 
             requireCapability(currentUserId, Capability.WriteCourseStudyGroups, courseId)
 
@@ -170,7 +170,7 @@ private fun Route.courseStudyGroups() {
         route("/{studyGroupId}") {
             put {
                 val currentUserId = call.jwtPrincipal().payload.claimId
-                val courseId = call.parameters.getUuid("courseId")
+                val courseId = call.parameters.getUuidOrFail("courseId")
 
                 requireCapability(currentUserId, Capability.WriteCourseStudyGroups, courseId)
 
@@ -180,7 +180,7 @@ private fun Route.courseStudyGroups() {
             }
             delete {
                 val currentUserId = call.jwtPrincipal().payload.claimId
-                val courseId = call.parameters.getUuid("courseId")
+                val courseId = call.parameters.getUuidOrFail("courseId")
 
                 requireCapability(currentUserId, Capability.WriteCourseStudyGroups, courseId)
 

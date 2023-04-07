@@ -7,7 +7,7 @@ import com.studiversity.feature.user.usecase.FindUserByIdUseCase
 import com.studiversity.feature.user.usecase.RemoveUserUseCase
 import com.studiversity.feature.user.usecase.SearchUsersUseCase
 import com.studiversity.ktor.currentUserId
-import com.studiversity.ktor.getUuid
+import com.studiversity.ktor.getUuidOrFail
 import com.studiversity.util.tryToUUID
 import com.denchic45.stuiversity.api.role.model.Capability
 import io.ktor.http.*
@@ -69,7 +69,7 @@ private fun Route.userByIdRoute() {
                 scopeId = config.organization.id
             )
 
-            removeUser(call.parameters.getUuid("userId"))
+            removeUser(call.parameters.getUuidOrFail("userId"))
             call.respond(HttpStatusCode.NoContent)
         }
     }

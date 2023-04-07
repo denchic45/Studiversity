@@ -10,6 +10,7 @@ import com.studiversity.supabase.deleteRecursive
 import io.github.jan.supabase.storage.BucketApi
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import java.time.Instant
 import java.util.*
 
 class CourseRepository(private val bucket: BucketApi) {
@@ -44,12 +45,13 @@ class CourseRepository(private val bucket: BucketApi) {
                 innerJoin(MembershipsInnerUserMemberships,
                     { Courses.id },
                     { Memberships.scopeId })
-            }.andWhere { UsersRolesScopes.userId eq memberId }
+            }.andWhere { UsersMemberships.memberId eq memberId }
         }
         return CourseDao.wrapRows(query).map(CourseDao::toResponse)
     }
 
     fun update(id: UUID, request: UpdateCourseRequest): CourseResponse? = CourseDao.findById(id)?.apply {
+        updatedAt = Instant.now()
         request.name.ifPresent { name = it }
         request.subjectId.ifPresent { subject = it?.let { SubjectDao.findById(it) } }
     }?.toResponse()

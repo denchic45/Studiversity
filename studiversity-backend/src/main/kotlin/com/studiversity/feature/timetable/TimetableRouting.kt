@@ -8,7 +8,7 @@ import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.feature.timetable.usecase.*
 import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getSortingBy
-import com.studiversity.ktor.getUuid
+import com.studiversity.ktor.getUuidOrFail
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -59,7 +59,7 @@ fun Application.timetableRoutes() {
                 delete {
                     requireCapability(call.currentUserId(), Capability.WriteTimetable, config.organization.id)
                     val weekOfYear = call.parameters.getOrFail("weekOfYear")
-                    removeTimetable(call.request.queryParameters.getUuid("studyGroupId"), weekOfYear)
+                    removeTimetable(call.request.queryParameters.getUuidOrFail("studyGroupId"), weekOfYear)
                     call.respond(HttpStatusCode.NoContent)
                 }
                 route("/{dayOfWeek}") {
@@ -100,7 +100,7 @@ fun Application.timetableRoutes() {
                         val weekOfYear = call.parameters.getOrFail("weekOfYear")
                         val dayOfWeek = call.parameters.getOrFail("dayOfWeek").toInt()
                         removeTimetableOfDay(
-                            call.request.queryParameters.getUuid("studyGroupId"),
+                            call.request.queryParameters.getUuidOrFail("studyGroupId"),
                             weekOfYear,
                             dayOfWeek
                         )

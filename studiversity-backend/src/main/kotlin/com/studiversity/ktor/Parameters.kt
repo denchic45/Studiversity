@@ -10,7 +10,13 @@ import io.ktor.server.util.*
 import java.util.*
 import kotlin.reflect.typeOf
 
-fun Parameters.getUuid(name: String): UUID = try {
+fun Parameters.getUuid(name: String): UUID? = try {
+    get(name)?.tryToUUID()
+} catch (e: MissingRequestParameterException) {
+    throw e
+}
+
+fun Parameters.getUuidOrFail(name: String): UUID = try {
     getOrFail(name).tryToUUID()
 } catch (e: MissingRequestParameterException) {
     throw e

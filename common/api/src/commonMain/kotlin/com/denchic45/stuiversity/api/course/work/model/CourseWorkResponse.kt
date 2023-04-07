@@ -20,20 +20,22 @@ data class CourseWorkResponse(
     @Serializable(UUIDSerializer::class)
     val id:UUID,
     val name: String,
-    val description: String,
+    val description: String?,
     @Serializable(LocalDateSerializer::class)
     val dueDate: LocalDate?,
     @Serializable(LocalTimeSerializer::class)
     val dueTime: LocalTime?,
     val workType: CourseWorkType,
-    @EncodeDefault
-    val workDetails: CourseWorkDetails? = null,
+//    @EncodeDefault
+//    val workDetails: CourseWorkDetails? = null,
     val maxGrade: Short,
     @Serializable(UUIDSerializer::class)
-    val topicId: UUID,
-    val submitAfterDueDate: Boolean,
+    val topicId: UUID?,
+    val submitAfterDueDate: Boolean?,
     @Serializable(LocalDateTimeSerializer::class)
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
+    @Serializable(LocalDateTimeSerializer::class)
+    val updatedAt:LocalDateTime?
 ) {
     val late: Boolean
         get() = dueDate?.let {

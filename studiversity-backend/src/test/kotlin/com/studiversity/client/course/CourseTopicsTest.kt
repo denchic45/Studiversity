@@ -1,11 +1,5 @@
 package com.studiversity.client.course
 
-import com.github.michaelbull.result.get
-import com.github.michaelbull.result.unwrap
-import com.github.michaelbull.result.unwrapError
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertResultIsOk
-import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
@@ -22,6 +16,12 @@ import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.util.OptionalProperty
+import com.denchic45.stuiversity.util.toUUID
+import com.github.michaelbull.result.get
+import com.github.michaelbull.result.unwrap
+import com.github.michaelbull.result.unwrapError
+import com.studiversity.KtorClientTest
+import com.studiversity.util.assertResultIsOk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -171,11 +171,11 @@ class CourseTopicsTest : KtorClientTest() {
         removeTopic(topic.id, RelatedTopicElements.CLEAR_TOPIC)
 
         // Check updated order in two elements
-        courseWorkApi.getById(course.id, elemWithTopic1.id).apply {
+        courseElementsApi.getById(course.id, elemWithTopic1.id).apply {
             assertEquals(3, get()?.order)
         }
 
-        courseWorkApi.getById(course.id, elemWithTopic2.id).apply {
+        courseElementsApi.getById(course.id, elemWithTopic2.id).apply {
             assertEquals(4, get()?.order)
         }
     }

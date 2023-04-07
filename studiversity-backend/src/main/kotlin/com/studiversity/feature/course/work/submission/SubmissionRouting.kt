@@ -9,7 +9,7 @@ import com.studiversity.feature.course.work.submission.usecase.*
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.ktor.claimId
-import com.studiversity.ktor.getUuid
+import com.studiversity.ktor.getUuidOrFail
 import com.studiversity.ktor.jwtPrincipal
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -24,14 +24,14 @@ fun Route.workSubmissionRoutes() {
         val findSubmissionsByWork: FindSubmissionsByWorkUseCase by inject()
 
         get {
-            val courseId = call.parameters.getUuid("courseId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
             requireCapability(
                 userId = call.jwtPrincipal().payload.claimId,
                 capability = Capability.ReadSubmissions,
                 scopeId = courseId
             )
 
-            val submissions = findSubmissionsByWork(courseId, call.parameters.getUuid("workId"))
+            val submissions = findSubmissionsByWork(courseId, call.parameters.getUuidOrFail("workId"))
             call.respond(HttpStatusCode.OK, submissions)
         }
         post { }
@@ -54,7 +54,7 @@ fun Route.submissionByIdRoute() {
         get {
             val currentUserId = call.jwtPrincipal().payload.claimId
             val submission = findSubmission(
-                call.parameters.getUuid("submissionId"),
+                call.parameters.getUuidOrFail("submissionId"),
                 currentUserId
             )
 
@@ -65,7 +65,7 @@ fun Route.submissionByIdRoute() {
                 requireCapability(
                     userId = currentUserId,
                     capability = Capability.ReadSubmissions,
-                    scopeId = call.parameters.getUuid("courseId")
+                    scopeId = call.parameters.getUuidOrFail("courseId")
                 )
                 call.respond(HttpStatusCode.OK, submission)
             }
@@ -77,9 +77,9 @@ fun Route.submissionByIdRoute() {
             val removeAttachmentOfSubmission: RemoveAttachmentOfSubmissionUseCase by inject()
 
             post {
-                val courseId = call.parameters.getUuid("courseId")
-                val workId = call.parameters.getUuid("workId")
-                val submissionId = call.parameters.getUuid("submissionId")
+                val courseId = call.parameters.getUuidOrFail("courseId")
+                val workId = call.parameters.getUuidOrFail("workId")
+                val submissionId = call.parameters.getUuidOrFail("submissionId")
                 val currentUserId = call.jwtPrincipal().payload.claimId
 
                 requireSubmissionAuthor(submissionId, currentUserId)
@@ -97,8 +97,8 @@ fun Route.submissionByIdRoute() {
                 call.respond(HttpStatusCode.Created, result)
             }
             get {
-                val courseId = call.parameters.getUuid("courseId")
-                val submissionId = call.parameters.getUuid("submissionId")
+                val courseId = call.parameters.getUuidOrFail("courseId")
+                val submissionId = call.parameters.getUuidOrFail("submissionId")
                 val currentUserId = call.jwtPrincipal().payload.claimId
 
                 if (!isSubmissionAuthor(submissionId, currentUserId))
@@ -115,10 +115,10 @@ fun Route.submissionByIdRoute() {
                 val findAttachmentOfSubmission: FindAttachmentOfSubmissionUseCase by inject()
 
                 get {
-                    val courseId = call.parameters.getUuid("courseId")
-                    val workId = call.parameters.getUuid("workId")
-                    val submissionId = call.parameters.getUuid("submissionId")
-                    val attachmentId = call.parameters.getUuid("attachmentId")
+                    val courseId = call.parameters.getUuidOrFail("courseId")
+                    val workId = call.parameters.getUuidOrFail("workId")
+                    val submissionId = call.parameters.getUuidOrFail("submissionId")
+                    val attachmentId = call.parameters.getUuidOrFail("attachmentId")
 
                     requireCapability(
                         userId = call.jwtPrincipal().payload.claimId,
@@ -130,10 +130,10 @@ fun Route.submissionByIdRoute() {
                     call.respondAttachment(attachment)
                 }
                 delete {
-                    val courseId = call.parameters.getUuid("courseId")
-                    val workId = call.parameters.getUuid("workId")
-                    val submissionId = call.parameters.getUuid("submissionId")
-                    val attachmentId = call.parameters.getUuid("attachmentId")
+                    val courseId = call.parameters.getUuidOrFail("courseId")
+                    val workId = call.parameters.getUuidOrFail("workId")
+                    val submissionId = call.parameters.getUuidOrFail("submissionId")
+                    val attachmentId = call.parameters.getUuidOrFail("attachmentId")
                     val currentUserId = call.jwtPrincipal().payload.claimId
 
                     requireSubmissionAuthor(submissionId, currentUserId)
@@ -152,9 +152,9 @@ fun Route.submissionByIdRoute() {
             val setGradeSubmission: SetGradeSubmissionUseCase by inject()
             put {
                 val currentUserId = call.jwtPrincipal().payload.claimId
-                val courseId = call.parameters.getUuid("courseId")
-                val workId = call.parameters.getUuid("workId")
-                val submissionId = call.parameters.getUuid("submissionId")
+                val courseId = call.parameters.getUuidOrFail("courseId")
+                val workId = call.parameters.getUuidOrFail("workId")
+                val submissionId = call.parameters.getUuidOrFail("submissionId")
 
                 requireCapability(
                     userId = currentUserId,
@@ -174,10 +174,10 @@ fun Route.submissionByIdRoute() {
             requireCapability(
                 userId = currentUserId,
                 capability = Capability.SubmitSubmission,
-                scopeId = call.parameters.getUuid("courseId")
+                scopeId = call.parameters.getUuidOrFail("courseId")
             )
             val submittedSubmission = submitSubmission(
-                submissionId = call.parameters.getUuid("submissionId"),
+                submissionId = call.parameters.getUuidOrFail("submissionId"),
                 studentId = currentUserId,
             )
             call.respond(HttpStatusCode.OK, submittedSubmission)
@@ -197,8 +197,8 @@ fun Route.submissionByStudentIdRoute() {
     get("/{studentId}") {
         val currentUserId = call.jwtPrincipal().payload.claimId
         val submission = findSubmissionByStudent(
-            call.parameters.getUuid("workId"),
-            call.parameters.getUuid("studentId"),
+            call.parameters.getUuidOrFail("workId"),
+            call.parameters.getUuidOrFail("studentId"),
             currentUserId
         )
         val isOwnSubmission = submission.author.id == currentUserId
@@ -208,7 +208,7 @@ fun Route.submissionByStudentIdRoute() {
             requireCapability(
                 userId = currentUserId,
                 capability = Capability.ReadSubmissions,
-                scopeId = call.parameters.getUuid("courseId")
+                scopeId = call.parameters.getUuidOrFail("courseId")
             )
             call.respond(HttpStatusCode.OK, submission)
         }

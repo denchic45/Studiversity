@@ -1,10 +1,12 @@
 package com.studiversity.feature.studygroup
 
-import com.studiversity.feature.studygroup.usecase.*
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
-import com.studiversity.util.onlyDigits
 import com.denchic45.stuiversity.util.toUUID
+import com.studiversity.feature.studygroup.usecase.*
+import com.studiversity.ktor.getUserUuidByQueryParameterOrMe
+import com.studiversity.ktor.getUuid
+import com.studiversity.util.onlyDigits
 import com.studiversity.validation.buildValidationResult
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -13,7 +15,6 @@ import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
 
 
@@ -51,8 +52,12 @@ fun Application.studyGroupRoutes() {
                     }
                 }
                 get {
-                    val q: String = call.request.queryParameters.getOrFail("q")
-                    call.respond(HttpStatusCode.OK, searchStudyGroups(q))
+                    val q = call.request.queryParameters["q"]
+                    val memberId = call.getUserUuidByQueryParameterOrMe("member_id")
+                    val roleId = call.request.queryParameters["role_id"]?.toLong()
+                    val specialtyId = call.request.queryParameters.getUuid("specialty_id")
+                    val academicYear = call.request.queryParameters["academic_year"]?.toInt()
+                    call.respond(HttpStatusCode.OK, searchStudyGroups(q, memberId, roleId, specialtyId, academicYear))
                 }
                 post {
                     val body = call.receive<CreateStudyGroupRequest>()

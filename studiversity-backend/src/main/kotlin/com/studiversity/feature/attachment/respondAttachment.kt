@@ -15,6 +15,7 @@ suspend fun ApplicationCall.respondAttachment(attachmentResponse: AttachmentResp
                 ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, attachmentResponse.name)
                     .toString()
             )
+            response.header("id",attachmentResponse.id.toString())
             respondBytes(
                 bytes = attachmentResponse.bytes,
                 contentType = ContentType.defaultForFileExtension(attachmentResponse.name),

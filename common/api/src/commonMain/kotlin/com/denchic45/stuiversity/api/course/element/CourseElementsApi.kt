@@ -19,6 +19,8 @@ interface CourseElementsApi {
         updateCourseElementRequest: UpdateCourseElementRequest
     ): ResponseResult<CourseElementResponse>
 
+    suspend fun getById(    courseId: UUID,elementId:UUID):ResponseResult<CourseElementResponse>
+
     suspend fun getByCourseId(
         courseId: UUID,
         sorting: List<CourseElementsSorting> = listOf()
@@ -38,6 +40,10 @@ class CourseElementsApiImpl(private val client: HttpClient) : CourseElementsApi 
             contentType(ContentType.Application.Json)
             setBody(updateCourseElementRequest)
         }.toResult()
+    }
+
+    override suspend fun getById(courseId: UUID, elementId: UUID): ResponseResult<CourseElementResponse> {
+        return client.get("/courses/$courseId/elements/$elementId").toResult()
     }
 
     override suspend fun getByCourseId(

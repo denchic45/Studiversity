@@ -2,6 +2,7 @@ package com.studiversity.feature.course.work.usecase
 
 import com.studiversity.feature.course.element.repository.CourseElementRepository
 import com.studiversity.transaction.TransactionWorker
+import io.ktor.server.plugins.*
 import java.util.UUID
 
 class FindCourseWorkUseCase(
@@ -9,6 +10,6 @@ class FindCourseWorkUseCase(
     private val courseElementRepository: CourseElementRepository) {
 
     operator fun invoke(workId:UUID) = transactionWorker {
-        courseElementRepository.findWorkById(workId)
+        courseElementRepository.findWorkById(workId) ?: throw NotFoundException()
     }
 }

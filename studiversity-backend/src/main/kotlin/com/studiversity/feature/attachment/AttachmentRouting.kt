@@ -2,7 +2,7 @@ package com.studiversity.feature.attachment
 
 import com.studiversity.feature.attachment.usecase.FindAttachmentUseCase
 import com.studiversity.ktor.currentUserId
-import com.studiversity.ktor.getUuid
+import com.studiversity.ktor.getUuidOrFail
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -19,7 +19,7 @@ fun Application.configureAttachments() {
                     val findAttachment: FindAttachmentUseCase by inject()
 
                     get {
-                        val attachmentId = call.parameters.getUuid("attachmentId")
+                        val attachmentId = call.parameters.getUuidOrFail("attachmentId")
                         val currentUserId = call.currentUserId()
                         call.respond(HttpStatusCode.OK, findAttachment(attachmentId))
                     }

@@ -10,7 +10,7 @@ enum class AttachmentType { FILE, LINK }
 
 enum class AttachmentOwner { SUBMISSION, COURSE_ELEMENT }
 
-@Serializable(AttachmentSerializer::class)
+@Serializable(AttachmentHeaderSerializer::class)
 sealed class AttachmentHeader {
     abstract val id: UUID
     abstract val type: AttachmentType
@@ -20,7 +20,7 @@ sealed class AttachmentHeader {
 data class FileAttachmentHeader(
     @Serializable(UUIDSerializer::class)
     override val id: UUID,
-    val fileItem: FileItem
+    val item: FileItem
 ) : AttachmentHeader() {
     @OptIn(ExperimentalSerializationApi::class)
     @EncodeDefault
@@ -37,7 +37,7 @@ data class FileItem(
 data class LinkAttachmentHeader(
     @Serializable(UUIDSerializer::class)
     override val id: UUID,
-    val linkAttachmentResponse: LinkAttachmentResponse
+    val item: LinkAttachmentResponse
 ) : AttachmentHeader() {
     @OptIn(ExperimentalSerializationApi::class)
     @EncodeDefault

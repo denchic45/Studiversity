@@ -19,7 +19,7 @@ fun Route.courseElementRoutes() {
         val requireCapability: RequireCapabilityUseCase by inject()
 
         get {
-            val courseId = call.parameters.getUuid("courseId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
             val sorting = call.request.queryParameters.getSortingBy(CourseElementsSorting)
 
             requireCapability(
@@ -43,7 +43,7 @@ fun Route.courseElementById() {
         val removeCourseElement: RemoveCourseElementUseCase by inject()
 
         get {
-            val courseId = call.parameters.getUuid("courseId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
 
             requireCapability(
                 userId = call.currentUserId(),
@@ -51,13 +51,12 @@ fun Route.courseElementById() {
                 scopeId = courseId
             )
 
-            val element = findCourseElement(call.parameters.getUuid("elementId"))
+            val element = findCourseElement(call.parameters.getUuidOrFail("elementId"))
             call.respond(HttpStatusCode.OK, element)
-
         }
         patch {
-            val courseId = call.parameters.getUuid("courseId")
-            val elementId = call.parameters.getUuid("elementId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
+            val elementId = call.parameters.getUuidOrFail("elementId")
 
             requireCapability(
                 userId = call.jwtPrincipal().payload.claimId,
@@ -70,8 +69,8 @@ fun Route.courseElementById() {
         }
         delete {
             val currentUserId = call.jwtPrincipal().payload.claimId
-            val courseId = call.parameters.getUuid("courseId")
-            val workId = call.parameters.getUuid("elementId")
+            val courseId = call.parameters.getUuidOrFail("courseId")
+            val workId = call.parameters.getUuidOrFail("elementId")
 
             requireCapability(
                 userId = currentUserId,

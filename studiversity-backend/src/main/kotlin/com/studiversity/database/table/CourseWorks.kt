@@ -15,6 +15,7 @@ object CourseWorks : UUIDTable("course_work", "course_element_id") {
     val dueTime = time("due_time").nullable()
     val type = enumerationByName("work_type", 10, CourseWorkType::class)
     val maxGrade = short("max_grade")
+    val submitAfterDueDate = bool("submit_after_due_date").nullable()
 
     init {
         foreignKey(
@@ -34,4 +35,5 @@ class CourseWorkDao(id: EntityID<UUID>) : UUIDEntity(id), CourseElementDetailsDa
     var dueTime by CourseWorks.dueTime
     var type by CourseWorks.type
     var maxGrade by CourseWorks.maxGrade
+    var submitAfterDueDate by CourseWorks.submitAfterDueDate
 }

@@ -12,6 +12,7 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.javatime.CurrentTimestamp
+import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.select
 import java.util.*
@@ -22,8 +23,8 @@ object CourseElements : UUIDTable("course_element", "course_element_id") {
     val name = varcharMax("element_name")
     val description = text("description").nullable()
     val order = integer("element_order")
-    val createdAt = timestampWithTimeZone("created_at").defaultExpression(CurrentTimestamp())
-    val updatedAt = timestampWithTimeZone("updated_at").nullable()
+    val createdAt = datetime("created_at").defaultExpression(CurrentTimestamp())
+    val updatedAt = datetime("updated_at").nullable()
     val type = enumerationByName<CourseElementType>("element_type", 10)
 }
 
@@ -53,6 +54,7 @@ class CourseElementDao(id: EntityID<UUID>) : UUIDEntity(id) {
     var type by CourseElements.type
 
     // todo add posts relation
+
 }
 
 sealed interface CourseElementDetailsDao

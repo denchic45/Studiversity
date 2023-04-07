@@ -3,11 +3,13 @@ package com.studiversity.feature.course.element
 import com.studiversity.feature.course.element.repository.CourseElementRepository
 import com.studiversity.feature.course.element.usecase.*
 import com.studiversity.feature.course.work.usecase.AddCourseWorkUseCase
+import com.studiversity.feature.course.work.usecase.FindCourseWorkUseCase
 import org.koin.dsl.module
 
 private val useCaseModule = module {
     single { AddCourseWorkUseCase(get(), get(), get(), get()) }
     single { FindCourseElementUseCase(get(), get()) }
+    single { FindCourseWorkUseCase(get(), get()) }
     single { RemoveCourseElementUseCase(get(), get(), get()) }
     single { AddFileAttachmentOfCourseElementUseCase(get(), get()) }
     single { AddLinkAttachmentOfCourseElementUseCase(get(), get()) }

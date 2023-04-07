@@ -1,13 +1,16 @@
 package com.denchic45.stuiversity.api.course.element.model
 
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonContentPolymorphicSerializer
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
 
-object AttachmentSerializer : JsonContentPolymorphicSerializer<AttachmentHeader>(AttachmentHeader::class) {
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out AttachmentHeader> {
-        return when (Json.decodeFromJsonElement<AttachmentType>(element.jsonObject.getValue("type"))) {
-            AttachmentType.FILE -> FileAttachmentHeader.serializer()
-            AttachmentType.LINK -> LinkAttachmentHeader.serializer()
+object AttachmentSerializer : JsonContentPolymorphicSerializer<AttachmentResponse>(AttachmentResponse::class) {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out AttachmentResponse> {
+        return when {
+            element.jsonObject.containsKey("bytes") -> FileAttachmentResponse.serializer()
+            element.jsonObject.containsKey("url") -> LinkAttachmentResponse.serializer()
+            else -> throw IllegalStateException()
         }
     }
 }

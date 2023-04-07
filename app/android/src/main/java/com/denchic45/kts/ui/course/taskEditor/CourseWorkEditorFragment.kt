@@ -182,11 +182,11 @@ class CourseWorkEditorFragment :
                 }
             }
 
-            viewModel.nameField.observe(viewLifecycleOwner) {
+            viewModel.nameField.collectWhenStarted(viewLifecycleOwner) {
                 if (etName.text.toString() != it) etName.setText(it)
             }
 
-            viewModel.descriptionField.observe(viewLifecycleOwner) {
+            viewModel.descriptionField.collectWhenStarted(viewLifecycleOwner) {
                 if (etDescription.text.toString() != it) etDescription.setText(it)
             }
 

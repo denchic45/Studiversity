@@ -4,7 +4,7 @@ import com.studiversity.config
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.feature.specialty.usecase.*
 import com.studiversity.ktor.currentUserId
-import com.studiversity.ktor.getUuid
+import com.studiversity.ktor.getUuidOrFail
 import com.denchic45.stuiversity.api.role.model.Capability
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -38,16 +38,16 @@ fun Application.configureSpecialties() {
                     val removeSpecialty: RemoveSpecialtyUseCase by inject()
 
                     get {
-                        call.respond(HttpStatusCode.OK, findSpecialtyById(call.parameters.getUuid("specialtyId")))
+                        call.respond(HttpStatusCode.OK, findSpecialtyById(call.parameters.getUuidOrFail("specialtyId")))
                     }
                     patch {
                         requireCapability(call.currentUserId(), Capability.WriteSpecialty, config.organization.id)
-                        val specialty = updateSpecialty(call.parameters.getUuid("specialtyId"), call.receive())
+                        val specialty = updateSpecialty(call.parameters.getUuidOrFail("specialtyId"), call.receive())
                         call.respond(HttpStatusCode.OK, specialty)
                     }
                     delete {
                         requireCapability(call.currentUserId(), Capability.WriteSpecialty, config.organization.id)
-                        removeSpecialty(call.parameters.getUuid("specialtyId"))
+                        removeSpecialty(call.parameters.getUuidOrFail("specialtyId"))
                         call.respond(HttpStatusCode.NoContent)
                     }
                 }
