@@ -9,6 +9,7 @@ import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
 import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
+import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
@@ -48,6 +49,12 @@ class CourseElementRepository {
         }
     }
 
+    // FIXME
+    fun findWorkById(workId: UUID):CourseWorkResponse? {
+        return CourseElementDao.findById(workId)?.run {
+            toResponse(getElementDetailsByIdAndType(workId, type))
+        }
+    }
 
     fun findCourseIdByElementId(elementId: UUID): UUID? {
         return CourseElementDao.findById(elementId)?.courseId

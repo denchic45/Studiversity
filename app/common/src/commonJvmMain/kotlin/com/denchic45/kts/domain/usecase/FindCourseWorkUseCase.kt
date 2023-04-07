@@ -10,7 +10,7 @@ import javax.inject.Inject
 class FindCourseWorkUseCase @Inject constructor(
     private val courseElementRepository: CourseElementRepository,
 ) {
-    suspend operator fun invoke(courseId: UUID, workId: UUID, ): Resource<CourseElementResponse> {
+    suspend operator fun invoke(courseId: UUID, workId: UUID, ): Resource<CourseWorkResponse> {
         return courseElementRepository.findWorkById(courseId, workId)
     }
 }
