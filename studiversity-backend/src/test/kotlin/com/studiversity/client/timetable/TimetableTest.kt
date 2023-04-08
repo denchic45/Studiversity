@@ -56,15 +56,15 @@ class TimetableTest : KtorClientTest() {
     private fun timetableForStudyGroup1() = PutTimetableRequest(
         studyGroupId = studyGroup1.id,
         monday = listOf(
-            LessonRequest(1, room5, listOf(teacherMember1), mathCourse.id),
-            LessonRequest(2, room5, listOf(teacherMember1), mathCourse.id),
-            LessonRequest(3, room10, listOf(teacherMember2), engCourse.id)
+            LessonRequest(1, room5.id, listOf(teacherMember1.id), mathCourse.id),
+            LessonRequest(2, room5.id, listOf(teacherMember1.id), mathCourse.id),
+            LessonRequest(3, room10.id, listOf(teacherMember2.id), engCourse.id)
         ),
         tuesday = listOf(
-            LessonRequest(0, room5, listOf(teacherMember1), mathCourse.id),
-            LessonRequest(1, room5, listOf(teacherMember1), mathCourse.id),
-            LessonRequest(2, roomWorkshop, listOf(teacherMember2), physicsCourse.id),
-            LessonRequest(3, room10, listOf(teacherMember2), engCourse.id)
+            LessonRequest(0, room5.id, listOf(teacherMember1.id), mathCourse.id),
+            LessonRequest(1, room5.id, listOf(teacherMember1.id), mathCourse.id),
+            LessonRequest(2, roomWorkshop.id, listOf(teacherMember2.id), physicsCourse.id),
+            LessonRequest(3, room10.id, listOf(teacherMember2.id), engCourse.id)
         ),
         wednesday = emptyList(),
         thursday = emptyList(),
@@ -74,15 +74,15 @@ class TimetableTest : KtorClientTest() {
     private fun timetableForStudyGroup2(): PutTimetableRequest = PutTimetableRequest(
         studyGroupId = studyGroup2.id,
         monday = listOf(
-            LessonRequest(1, room5, listOf(teacherMember2), mathCourse.id),
-            LessonRequest(2, room10, listOf(teacherMember2), engCourse.id),
-            LessonRequest(3, room5, listOf(teacherMember1), mathCourse.id)
+            LessonRequest(1, room5.id, listOf(teacherMember2.id), mathCourse.id),
+            LessonRequest(2, room10.id, listOf(teacherMember2.id), engCourse.id),
+            LessonRequest(3, room5.id, listOf(teacherMember1.id), mathCourse.id)
         ),
         tuesday = listOf(
-            LessonRequest(0, room5, listOf(teacherMember2), mathCourse.id),
-            LessonRequest(1, room5, listOf(teacherMember2), mathCourse.id),
-            LessonRequest(2, room5, listOf(teacherMember1), mathCourse.id),
-            LessonRequest(3, room10, listOf(teacherMember1), engCourse.id)
+            LessonRequest(0, room5.id, listOf(teacherMember2.id), mathCourse.id),
+            LessonRequest(1, room5.id, listOf(teacherMember2.id), mathCourse.id),
+            LessonRequest(2, room5.id, listOf(teacherMember1.id), mathCourse.id),
+            LessonRequest(3, room10.id, listOf(teacherMember1.id), engCourse.id)
         ),
         wednesday = emptyList(),
         thursday = emptyList(),
@@ -553,10 +553,10 @@ class TimetableTest : KtorClientTest() {
             dayOfWeek = 3,
             putTimetableOfDayRequest = PutTimetableOfDayRequest(
                 studyGroup1.id, listOf(
-                    LessonRequest(1, room5, listOf(teacherMember1), mathCourse.id),
-                    LessonRequest(2, roomWorkshop, listOf(teacherMember2), physicsCourse.id),
-                    LessonRequest(3, roomWorkshop, listOf(teacherMember2), physicsCourse.id),
-                    LessonRequest(4, room5, listOf(teacherMember1), mathCourse.id),
+                    LessonRequest(1, room5.id, listOf(teacherMember1.id), mathCourse.id),
+                    LessonRequest(2, roomWorkshop.id, listOf(teacherMember2.id), physicsCourse.id),
+                    LessonRequest(3, roomWorkshop.id, listOf(teacherMember2.id), physicsCourse.id),
+                    LessonRequest(4, room5.id, listOf(teacherMember1.id), mathCourse.id),
                 )
             )
         ).also(::assertResultIsOk).unwrap()

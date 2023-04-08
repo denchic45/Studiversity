@@ -124,10 +124,10 @@ class TimetableApiImpl(private val client: HttpClient) : TimetableApi {
         roomIds: List<UUID>?,
         sorting: List<PeriodsSorting>,
     ): ResponseResult<TimetableResponse> = client.get("/timetables/$weekOfYear") {
-        studyGroupIds?.forEach { parameter("studyGroupId", it) }
-        courseIds?.forEach { parameter("courseId", it) }
-        memberIds?.forEach { parameter("memberId", it.value) }
-        roomIds?.forEach { parameter("roomId", it) }
+        studyGroupIds?.forEach { parameter("study_group_id", it) }
+        courseIds?.forEach { parameter("course_id", it) }
+        memberIds?.forEach { parameter("member_id", it.value) }
+        roomIds?.forEach { parameter("room_id", it) }
         parametersOf(values = sorting)
     }.toResult()
 

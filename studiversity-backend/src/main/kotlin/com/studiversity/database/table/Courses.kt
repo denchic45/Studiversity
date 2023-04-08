@@ -13,7 +13,7 @@ import java.util.*
 
 object Courses : UUIDTable("course", "course_id") {
     val name = varcharMax("course_name")
-    val subjectId = optReference("subject_id", Subjects.id)
+    val subjectId = optReference("subject_id", Subjects)
     val archived = bool("archived").default(false)
     val createdAt = timestampWithTimeZone("created_at").defaultExpression(CurrentTimestamp())
     val updatedAt = timestampWithTimeZone("updated_at").nullable()

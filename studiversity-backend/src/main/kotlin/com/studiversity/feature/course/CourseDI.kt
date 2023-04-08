@@ -12,7 +12,7 @@ import org.koin.dsl.module
 private val useCaseModule = module {
     single { AddCourseUseCase(config.organization.id, get(), get(), get(), get()) }
     single { FindCourseByIdUseCase(get(), get()) }
-    single { UpdateCourseUseCase(get()) }
+    single { UpdateCourseUseCase(get(),get()) }
     single { RequireExistCourseUseCase(get(), get()) }
     single { FindCourseStudyGroupsUseCase(get(), get()) }
     single { AttachStudyGroupToCourseUseCase(get(), get()) }

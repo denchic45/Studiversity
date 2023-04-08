@@ -9,8 +9,8 @@ data class CreateStudyGroupRequest(
     val name: String,
     val academicYear: AcademicYear,
     @Serializable(UUIDSerializer::class)
-    val specialtyId: UUID?,
-    val curatorId: String?
+    val specialtyId: UUID?= null,
+    val curatorId: String? = null
 )
 
 @Serializable

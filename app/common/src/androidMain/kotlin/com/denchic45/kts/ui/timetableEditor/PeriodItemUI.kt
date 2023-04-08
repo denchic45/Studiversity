@@ -14,7 +14,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.model.StudyGroupNameItem
@@ -30,14 +32,14 @@ fun PeriodItemUI(
     isEdit: Boolean = false,
     onEditClick: () -> Unit = {}
 ) {
-    Column {
+    Column() {
         Row(
             modifier = Modifier
                 .height(56.dp)
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            item?.let {
+            if (item != null) {
                 Text(text = item.order.toString(), style = MaterialTheme.typography.bodyLarge)
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -54,26 +56,23 @@ fun PeriodItemUI(
                         .size(32.dp)
                         .padding(16.dp)
                 )
-                    Row(Modifier.weight(1f)) {
-                        when (val details = item.details) {
-                            is PeriodDetails.Lesson -> {
-                                details.subjectName?.let {
-                                    Text(
-                                        text = details.subjectName,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                }
+                Column(Modifier.weight(1f)) {
+                    when (val details = item.details) {
+                        is PeriodDetails.Lesson -> {
+                            details.subjectName?.let {
+                                Text(
+                                    text = details.subjectName,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
                             }
-                            is PeriodDetails.Event -> Text(
-                                text = details.name,
-                                style = MaterialTheme.typography.titleMedium
-                            )
                         }
-                        Text(text = time)
+                        is PeriodDetails.Event -> Text(
+                            text = details.name,
+                            style = MaterialTheme.typography.titleMedium
+                        )
                     }
-
-
-
+                    Text(text = time)
+                }
                 if (groupShowing)
                     Row {
                         Image(
@@ -84,13 +83,14 @@ fun PeriodItemUI(
                         Text(item.studyGroup.name)
                     }
                 item.room?.let { Text(it) }
-            } ?: run {
+            } else {
                 Text(
                     text = "Пусто",
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Gray
                 )
             }
+
             if (isEdit) {
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = { onEditClick() }) {

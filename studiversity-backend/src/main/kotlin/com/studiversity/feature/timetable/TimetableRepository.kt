@@ -19,8 +19,8 @@ class TimetableRepository {
             val periodDao = PeriodDao.new {
                 this.date = date
                 order = period.order
-                roomId = period.room?.id
-                this.studyGroupId = studyGroupId
+                room = period.roomId?.let { RoomDao.findById(it) }
+                this.studyGroup = StudyGroupDao.findById(studyGroupId)!!
                 type = period.type
             }
             val periodId = periodDao.id.value
@@ -37,10 +37,10 @@ class TimetableRepository {
                     icon = period.iconUrl
                 }
             }
-            period.members.forEach {
+            period.memberIds.forEach {
                 PeriodMemberDao.new {
                     this.period = periodDao
-                    this.member = UserDao.findById(it.id)!!
+                    this.member = UserDao.findById(it)!!
                 }
             }
         }
@@ -115,8 +115,8 @@ class TimetableRepository {
         roomIds: List<UUID>?,
         sorting: List<PeriodsSorting>?
     ): Query {
-        val query = Periods.innerJoin(Lessons, { id }, { id })
-            .innerJoin(PeriodsMembers, { Periods.id }, { periodId })
+        val query = Periods.leftJoin(Lessons, { id }, { id })
+            .leftJoin(Events, { Events.id }, { id })
             .run {
                 endDate?.let {
                     select(Periods.date.between(startDate, endDate))
@@ -127,7 +127,10 @@ class TimetableRepository {
 
         courseIds?.let { query.andWhere { Lessons.courseId inList courseIds } }
 
-        memberIds?.let { query.andWhere { PeriodsMembers.memberId inList memberIds } }
+        memberIds?.let {
+            query.adjustColumnSet { innerJoin(PeriodsMembers, { Periods.id }, { periodId }) }
+                .andWhere { PeriodsMembers.memberId inList memberIds }
+        }
 
         roomIds?.let { query.andWhere { Periods.roomId inList roomIds } }
 

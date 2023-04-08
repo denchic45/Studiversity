@@ -157,6 +157,7 @@ kotlin {
                 }
 
                 api("io.coil-kt:coil-compose:2.2.2")
+                api("io.coil-kt:coil-svg:2.3.0")
 
                 api("com.google.android.play:core:1.10.3")
                 api("com.google.android.play:core-ktx:1.8.1")

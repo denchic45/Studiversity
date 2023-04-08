@@ -21,11 +21,10 @@ fun OwnTimetablesScreen(component: OwnTimetablesComponent) {
                 TimetableItem(group.name) { component.onTimetableSelect(index) }
             }
         }
-    }
-
-    val timetableComponent by component.timetableComponent.collectAsState()
-    timetableComponent.onSuccess {
-        DayTimetableScreen(it)
+        val timetableComponent by component.timetableComponent.collectAsState()
+        timetableComponent.onSuccess {
+            DayTimetableScreen(it)
+        }
     }
 }
 

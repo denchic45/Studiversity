@@ -38,10 +38,10 @@ fun Application.timetableRoutes() {
                 get {
                     val weekOfYear = call.parameters.getOrFail("weekOfYear")
 
-                    val studyGroupIds = call.request.queryParameters.getAll("studyGroupId")?.map(String::toUUID)
-                    val courseIds = call.request.queryParameters.getAll("courseId")?.map(String::toUUID)
-                    val memberIds = call.request.queryParameters.getAll("memberId")?.map(String::toUUID)
-                    val roomIds = call.request.queryParameters.getAll("roomId")?.map(String::toUUID)
+                    val studyGroupIds = call.request.queryParameters.getAll("study_group_id")?.map(String::toUUID)
+                    val courseIds = call.request.queryParameters.getAll("course_id")?.map(String::toUUID)
+                    val memberIds = call.request.queryParameters.getAll("member_id")?.map(String::toUUID)
+                    val roomIds = call.request.queryParameters.getAll("room_id")?.map(String::toUUID)
 
                     if (studyGroupIds == null && courseIds == null && memberIds == null && roomIds == null)
                         throw MissingRequestParameterException("period field")

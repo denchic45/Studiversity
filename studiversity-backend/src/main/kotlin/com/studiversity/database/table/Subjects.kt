@@ -9,7 +9,7 @@ import java.util.*
 object Subjects : UUIDTable("subject", "subject_id") {
     val name = text("subject_name")
     val shortname = text("shortname")
-    val iconName = text("icon_name")
+    val iconUrl = text("icon_name")
 }
 
 class SubjectDao(id: EntityID<UUID>) : UUIDEntity(id) {
@@ -17,5 +17,5 @@ class SubjectDao(id: EntityID<UUID>) : UUIDEntity(id) {
 
     var name by Subjects.name
     var shortname by Subjects.shortname
-    var iconName by Subjects.iconName
+    var iconUrl by Subjects.iconUrl
 }

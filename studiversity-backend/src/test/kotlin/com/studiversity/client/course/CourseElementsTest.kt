@@ -13,6 +13,7 @@ import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.util.toUUID
 import com.github.michaelbull.result.*
 import com.studiversity.KtorClientTest
@@ -63,14 +64,14 @@ class CourseElementsTest : KtorClientTest() {
         }
     }
 
-    private val student1Id by lazy {  }
-
     private val studentClient1 by lazy {
         createAuthenticatedClient(
             "slavik@gmail.com",
             "GHBO043g54gh"
         )
     }
+
+    private val student1Id by lazy { runBlocking { userApi.getBySurname("Васильев") }.unwrap().id }
 
     private val coursesApi: CoursesApi by inject { parametersOf(client) }
     private val courseElementsApi: CourseElementsApi by inject { parametersOf(client) }
@@ -79,6 +80,7 @@ class CourseElementsTest : KtorClientTest() {
     private val courseWorkApiOfTeacher: CourseWorkApi by inject { parametersOf(teacherClient) }
     private val courseWorkApiOfStudent: CourseWorkApi by inject { parametersOf(studentClient1) }
     private val membershipApi: MembershipApi by inject { parametersOf(client) }
+    private val userApi:UserApi by inject { parametersOf(client) }
 
     private lateinit var course: CourseResponse
     private lateinit var courseWork: CourseElementResponse

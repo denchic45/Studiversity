@@ -19,7 +19,7 @@ class SubjectRepository {
         SubjectDao.new {
             name = request.name
             shortname = request.shortname
-            iconName = request.iconName
+            iconUrl = request.iconUrl
         }.toResponse()
     }
 
@@ -40,7 +40,7 @@ class SubjectRepository {
         SubjectDao.findById(id)?.apply {
             request.name.ifPresent { name = it }
             request.shortname.ifPresent { name = it }
-            request.iconName.ifPresent { iconName = it }
+            request.iconUrl.ifPresent { iconUrl = it }
         }.run { this?.toResponse() }
     }
 

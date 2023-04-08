@@ -175,8 +175,8 @@ class CourseWorkFragment :
             }
         }
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.workUiState.collect { resource ->
+
+            viewModel.workUiState.collectWhenStarted(viewLifecycleOwner) { resource ->
                 with(binding) {
                     resource.onSuccess {
                         tvTaskName.text = it.name
@@ -198,7 +198,6 @@ class CourseWorkFragment :
                     }
                 }
             }
-        }
 
         lifecycleScope.launchWhenStarted {
             viewModel.workAttachments.collect {

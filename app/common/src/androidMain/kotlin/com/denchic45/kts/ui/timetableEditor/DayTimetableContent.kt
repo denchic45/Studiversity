@@ -1,5 +1,6 @@
 package com.denchic45.kts.ui.timetableEditor
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -8,6 +9,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
+import com.denchic45.kts.data.domain.ClientError
+import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.timetable.DayTimetableComponent
 import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
@@ -26,6 +29,9 @@ fun DayTimetableEditorScreen(component: DayTimetableEditorComponent) {
 fun DayTimetableScreen(component: DayTimetableComponent) {
     val viewState by component.viewState.collectAsState()
     viewState.onSuccess { DayTimetableContent(it, component::onDateSelect) {} }
+        .onFailure {
+        Log.d("lol", "DayTimetableScreen: ${(it as ClientError).response.error}")
+    }
 }
 
 @Composable

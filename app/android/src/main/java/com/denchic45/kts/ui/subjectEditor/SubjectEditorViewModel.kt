@@ -87,7 +87,7 @@ class SubjectEditorViewModel @Inject constructor(
                     CreateSubjectRequest(
                         name = name,
                         shortname = shortname,
-                        iconName = iconUrl
+                        iconUrl = iconUrl
                     )
                 })
             } else {
@@ -95,7 +95,7 @@ class SubjectEditorViewModel @Inject constructor(
                     UpdateSubjectRequest(
                         name = optPropertyOf(name),
                         shortname = optPropertyOf(shortname),
-                        iconName = optPropertyOf(iconUrl)
+                        iconUrl = optPropertyOf(iconUrl)
                     )
                 })
             }

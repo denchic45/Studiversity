@@ -15,6 +15,8 @@ sealed interface PeriodResponse : PeriodModel {
     val date: LocalDate
     val studyGroup: StudyGroupName
     val details: PeriodDetails
+    val room: RoomResponse?
+    val members: List<PeriodMember>
 
     fun copy(): PeriodResponse = when (this) {
         is EventResponse -> copy(id)

@@ -32,7 +32,7 @@ fun Application.subjectRoutes() {
                                 SubjectErrors.INVALID_SUBJECT_NAME
                             )
                             condition(
-                                request.iconName.isNotEmpty(),
+                                request.iconUrl.isNotEmpty(),
                                 SubjectErrors.INVALID_SUBJECT_ICON_NAME
                             )
                         }
@@ -72,7 +72,7 @@ fun Route.subjectByIdRoute() {
                             SubjectErrors.INVALID_SUBJECT_NAME
                         )
                     }
-                    request.iconName.ifPresent {
+                    request.iconUrl.ifPresent {
                         condition(
                             it.isNotEmpty(),
                             SubjectErrors.INVALID_SUBJECT_ICON_NAME

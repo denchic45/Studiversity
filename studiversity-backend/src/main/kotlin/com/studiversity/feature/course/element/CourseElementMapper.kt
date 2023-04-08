@@ -1,22 +1,21 @@
 package com.studiversity.feature.course.element
 
+import com.denchic45.stuiversity.api.course.element.model.CourseElementDetails
+import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
+import com.denchic45.stuiversity.api.course.element.model.CourseWork
 import com.studiversity.database.table.CourseElementDao
 import com.studiversity.database.table.CourseElementDetailsDao
 import com.studiversity.database.table.CourseElements
 import com.studiversity.database.table.CourseWorkDao
-import com.denchic45.stuiversity.api.course.element.model.CourseElementDetails
-import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
-import com.denchic45.stuiversity.api.course.element.model.CourseWork
 import org.jetbrains.exposed.sql.ResultRow
 
 fun CourseElementDao.toResponse(detailsDao: CourseElementDetailsDao): CourseElementResponse = toResponse(
     detailsDao.toElementDetails()
 )
 
-private fun CourseElementDetailsDao.toElementDetails() =
-    when (this) {
-        is CourseWorkDao -> toDetailsResponse()
-    }
+private fun CourseElementDetailsDao.toElementDetails() = when (this) {
+    is CourseWorkDao -> toDetailsResponse()
+}
 
 
 private fun CourseElementDao.toResponse(details: CourseElementDetails): CourseElementResponse = CourseElementResponse(

@@ -4,6 +4,8 @@ import com.studiversity.database.exists
 import com.studiversity.database.type.timestampWithTimeZone
 import com.studiversity.util.varcharMax
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
+import com.studiversity.database.expression.NowTimestamp
+import com.studiversity.database.table.StudyGroups.defaultExpression
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -23,7 +25,7 @@ object CourseElements : UUIDTable("course_element", "course_element_id") {
     val name = varcharMax("element_name")
     val description = text("description").nullable()
     val order = integer("element_order")
-    val createdAt = datetime("created_at").defaultExpression(CurrentTimestamp())
+    val createdAt = datetime("created_at").defaultExpression(NowTimestamp())
     val updatedAt = datetime("updated_at").nullable()
     val type = enumerationByName<CourseElementType>("element_type", 10)
 }

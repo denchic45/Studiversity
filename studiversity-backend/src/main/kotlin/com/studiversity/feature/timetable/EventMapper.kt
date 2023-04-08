@@ -8,10 +8,10 @@ import com.studiversity.feature.room.toResponse
 
 fun PeriodDao.toResponse() = when (type) {
     PeriodType.LESSON -> LessonResponse(
-        id = id.value,
+        id = id.value.toLong(),
         date = date,
         order = order,
-        room = room.toResponse(),
+        room = room?.toResponse(),
         studyGroup = studyGroup.let {
             StudyGroupName(
                 id = it.id.value,
@@ -20,7 +20,7 @@ fun PeriodDao.toResponse() = when (type) {
         },
         members = members.map { it.member.toResponse() },
         details = with(lesson) {
-            LessonDetails(courseId = courseId, subject = course.subject?.toResponse())
+            LessonDetails(courseId = course.id.value, subject = course.subject?.toResponse())
         }
     )
 
@@ -28,7 +28,7 @@ fun PeriodDao.toResponse() = when (type) {
         id = id.value,
         date = date,
         order = order,
-        room = room.toResponse(),
+        room = room?.toResponse(),
         studyGroup = studyGroup.let {
             StudyGroupName(
                 id = it.id.value,

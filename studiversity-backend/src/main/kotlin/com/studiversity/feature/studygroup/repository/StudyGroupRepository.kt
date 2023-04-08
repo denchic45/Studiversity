@@ -8,6 +8,7 @@ import com.studiversity.database.table.*
 import com.studiversity.feature.studygroup.mapper.toResponse
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import java.time.Instant
 import java.util.*
 
 class StudyGroupRepository {
@@ -34,6 +35,7 @@ class StudyGroupRepository {
                 }
                 specialtyId.ifPresent { update[StudyGroups.specialtyId] = it }
             }
+            update[updatedAt] = Instant.now()
         }.run { this != 0 }
     }
 
