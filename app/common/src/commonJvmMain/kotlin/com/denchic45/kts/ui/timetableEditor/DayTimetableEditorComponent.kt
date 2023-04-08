@@ -11,6 +11,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import java.time.LocalDate
 
 @Inject
 class DayTimetableEditorComponent constructor(
@@ -43,6 +44,10 @@ class DayTimetableEditorComponent constructor(
             )
         }
     }.flattenConcat().stateIn(componentScope, SharingStarted.Lazily, null)
+
+    fun onDateSelect(date: LocalDate) {
+        selectedDay.value = date.dayOfWeek.ordinal
+    }
 
     fun onAddPeriod(period: PeriodResponse) {
         weekTimetableFlows[selectedDay.value].update { it + period }

@@ -51,22 +51,22 @@ class LocalDateColumnAdapter : ColumnAdapter<LocalDate, String> {
 
 class DbHelper(val driver: SqlDriver) {
     val database by lazy {
-        val currentVer = version
+//        val currentVer = version
 
-        if (currentVer == 0) {
-            AppDatabase.Schema.create(driver)
-            version = 1
-            println("init: created tables, setVersion to 1")
-        } else {
-            val schemaVer: Int = AppDatabase.Schema.version
-            if (schemaVer > currentVer) {
-                AppDatabase.Schema.migrate(driver, currentVer, schemaVer)
-                version = schemaVer
-                println("init: migrated from $currentVer to $schemaVer")
-            } else {
-                //println("init")
-            }
-        }
+//        if (currentVer == 0) {
+//            AppDatabase.Schema.create(driver)
+//            version = 1
+//            println("init: created tables, setVersion to 1")
+//        } else {
+//            val schemaVer: Int = AppDatabase.Schema.version
+//            if (schemaVer > currentVer) {
+//                AppDatabase.Schema.migrate(driver, currentVer, schemaVer)
+//                version = schemaVer
+//                println("init: migrated from $currentVer to $schemaVer")
+//            } else {
+//                //println("init")
+//            }
+//        }
         AppDatabase(
             driver,
             courseContentEntityAdapter = CourseContentEntity.Adapter(

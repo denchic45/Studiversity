@@ -126,7 +126,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                 }
             }
 
-        viewModel.menuBtnVisibility.observe(
+        viewModel.menuBtnVisibility.collectWhenStarted(
             this
         ) { itemIdWithVisibilityPair: Pair<Int, Boolean> ->
             bnv.menu.findItem(
@@ -198,12 +198,12 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
             }
         }
 
-        viewModel.openLogin.observe(this) {
+        viewModel.openLogin.collectWhenStarted(this) {
             finish()
             startActivity(Intent(this@MainActivity, LoginActivity::class.java))
         }
 
-        viewModel.goBack.observe(this) {
+        viewModel.goBack.collectWhenStarted(this) {
             navController.navigateUp()
         }
     }

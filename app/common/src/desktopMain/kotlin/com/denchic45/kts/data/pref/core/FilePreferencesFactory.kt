@@ -1,6 +1,6 @@
 package com.denchic45.kts.data.pref.core
 
-import com.russhwolf.settings.JvmPreferencesSettings
+import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 
 
@@ -19,6 +19,6 @@ import com.russhwolf.settings.Settings
 
 class FilePreferencesFactory : Settings.Factory {
     override fun create(name: String?): Settings {
-        return JvmPreferencesSettings(FilePreferences(null, name!!))
+        return PreferencesSettings(FilePreferences(null, name!!))
     }
 }

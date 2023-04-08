@@ -15,7 +15,8 @@ class StudyGroupRepository {
     fun add(request: CreateStudyGroupRequest): StudyGroupResponse {
         val dao = StudyGroupDao.new {
             name = request.name
-            academicYear = listOf(request.academicYear.start, request.academicYear.end)
+            startAcademicYear = request.academicYear.start
+            endAcademicYear = request.academicYear.end
             request.specialtyId?.apply {
                 specialty = SpecialtyDao.findById(this)
             }
@@ -28,7 +29,8 @@ class StudyGroupRepository {
             updateStudyGroupRequest.apply {
                 name.ifPresent { update[StudyGroups.name] = it }
                 academicYear.ifPresent {
-                    update[StudyGroups.academicYear.column] = arrayOf(it.start.toShort(), it.end.toShort())
+                    update[startAcademicYear] = it.start
+                    update[endAcademicYear] = it.end
                 }
                 specialtyId.ifPresent { update[StudyGroups.specialtyId] = it }
             }

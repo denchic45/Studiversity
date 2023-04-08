@@ -19,7 +19,7 @@ class LoginViewModel @Inject constructor(
     private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
 ) : BaseViewModel() {
 
-    val backToFragment =MutableSharedFlow<Unit>()
+    val backToFragment = MutableSharedFlow<Unit>()
 
     val finishApp = MutableSharedFlow<Unit>()
 
@@ -56,7 +56,7 @@ class LoginViewModel @Inject constructor(
 
     fun onForgotPasswordClick() {
         incrementProgress(0.5f)
-      viewModelScope.launch {   openResetPassword.emit(Unit) }
+        viewModelScope.launch { openResetPassword.emit(Unit) }
     }
 
     fun onSuccessfulLogin() {
@@ -66,17 +66,17 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onFabBackClick(id: Int) {
-     viewModelScope.launch {
-         if (addedProgress.isEmpty()) {
-             finishApp.emit(Unit)
-             return@launch
-         }
-         showProgress.value = addedProgress.pop()
-         if (id == R.id.loginByEmailFragment) {
-             fabVisibility.value = false
-         }
-         backToFragment.emit(Unit)
-     }
+        viewModelScope.launch {
+            if (addedProgress.isEmpty()) {
+                finishApp.emit(Unit)
+                return@launch
+            }
+            showProgress.value = addedProgress.pop()
+            if (id == R.id.loginByEmailFragment) {
+                fabVisibility.value = false
+            }
+            backToFragment.emit(Unit)
+        }
     }
 
     fun onNextMailClick(mail: String, password: String) {

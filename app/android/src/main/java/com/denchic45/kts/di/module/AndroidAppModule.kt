@@ -43,7 +43,7 @@ class AndroidAppModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun provideSystemDirs() = SystemDirs()
+    fun provideSystemDirs(context: Context) = SystemDirs(context)
 
     @Provides
     @Singleton

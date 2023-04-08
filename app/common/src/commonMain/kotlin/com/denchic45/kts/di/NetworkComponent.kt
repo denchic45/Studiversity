@@ -34,6 +34,7 @@ import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.UserApiImpl
 import com.denchic45.stuiversity.util.ErrorResponse
 import com.github.michaelbull.result.expect
+import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.unwrapError
 import io.ktor.client.*
 import io.ktor.client.engine.*
@@ -50,7 +51,7 @@ import me.tatarka.inject.annotations.Provides
 @LayerScope
 @Component
 abstract class NetworkComponent(
-    @get:Provides val engine: HttpClientEngineFactory<*>
+    @get:Provides val engine: HttpClientEngineFactory<*>,
 ) {
     @LayerScope
     @Provides
@@ -69,22 +70,27 @@ abstract class NetworkComponent(
     @Provides
     fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(engine) {
         defaultRequest {
-            url("http://127.0.0.1:8080")
+            url("http://192.168.0.101:8080/")
         }
         installContentNegotiation()
         install(WebSockets)
         install(Auth) {
             bearer {
                 loadTokens {
-                    BearerTokens(appPreferences.token ?: "", appPreferences.refreshToken)
+                    BearerTokens(appPreferences.token!!, appPreferences.refreshToken!!)
                 }
                 refreshTokens {
                     val result = AuthApiImpl(client)
                         .refreshToken(RefreshTokenRequest(oldTokens!!.refreshToken))
+                    result.onFailure {
+                        appPreferences.token = null
+                    }
+
                     val unwrapped = result.expect {
                         val unwrapError: ErrorResponse = result.unwrapError()
                         unwrapError.error.toString() + unwrapError.code
                     }
+
                     BearerTokens(unwrapped.token, unwrapped.refreshToken)
                 }
             }

@@ -71,7 +71,7 @@ class ContentViewModel @Inject constructor(
         viewModelScope.launch {
             capabilities.first().onSuccess { response ->
                 submissionVisibility.emit(response.hasCapability(Capability.ReadSubmissions))
-                response.onHasCapability(Capability.WriteCourseElement) {
+                response.onHasCapability(Capability.WriteCourseElements) {
                     setMenuItemVisible(
                         R.id.option_task_edit to true,
                         R.id.options_task_delete to true

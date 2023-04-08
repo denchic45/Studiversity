@@ -53,7 +53,7 @@ class CourseViewModel @Inject constructor(
         emit(
             checkUserCapabilitiesInScopeUseCase(
                 scopeId = courseId,
-                capabilities = listOf(Capability.WriteCourseElement, Capability.WriteCourse)
+                capabilities = listOf(Capability.WriteCourseElements, Capability.WriteCourse)
             )
         )
     }.onEach {
@@ -67,7 +67,7 @@ class CourseViewModel @Inject constructor(
     }.stateInResource(componentScope)
 
     val fabVisibility = capabilities.filterSuccess()
-        .map { it.value.hasCapability(Capability.WriteCourseElement) }
+        .map { it.value.hasCapability(Capability.WriteCourseElements) }
 
     val course = flow { emit(findCourseByIdUseCase(_courseId.toUUID())) }
         .onEach {

@@ -11,27 +11,40 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.timetable.DayTimetableComponent
 import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
+import com.denchic45.kts.ui.widget.calendar.WeekCalendarListener
 import com.denchic45.kts.ui.widget.calendar.WeekCalendarView
+import com.denchic45.kts.ui.widget.calendar.model.WeekItem
 import java.time.LocalDate
 
 @Composable
 fun DayTimetableEditorScreen(component: DayTimetableEditorComponent) {
     val viewState by component.viewState.collectAsState()
-    viewState?.let { DayTimetableContent(it, component::onPeriodEdit) }
+    viewState?.let { DayTimetableContent(it, {}, component::onPeriodEdit) }
 }
 
 @Composable
 fun DayTimetableScreen(component: DayTimetableComponent) {
     val viewState by component.viewState.collectAsState()
-    viewState.onSuccess { DayTimetableContent(it) {} }
+    viewState.onSuccess { DayTimetableContent(it, component::onDateSelect) {} }
 }
 
 @Composable
-fun DayTimetableContent(viewState: DayTimetableViewState, onEditClick: (Int) -> Unit) {
+fun DayTimetableContent(
+    viewState: DayTimetableViewState,
+    onDateSelect: (date: LocalDate) -> Unit,
+    onEditClick: (Int) -> Unit,
+) {
     Column {
         AndroidView(factory = {
             WeekCalendarView(it).apply {
                 selectDate = viewState.date
+                weekCalendarListener = object : WeekCalendarListener {
+                    override fun onDaySelect(date: LocalDate) {
+                        onDateSelect(date)
+                    }
+
+                    override fun onWeekSelect(weekItem: WeekItem) {}
+                }
             }
         })
         LazyColumn {
@@ -57,6 +70,5 @@ fun TimetableEditorContentPreview() {
             listOf(),
             6,
             true
-        )
-    ) {}
+        ), {}) {}
 }

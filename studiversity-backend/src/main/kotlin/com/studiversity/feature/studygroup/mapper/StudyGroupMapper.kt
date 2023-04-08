@@ -1,8 +1,8 @@
 package com.studiversity.feature.studygroup.mapper
 
-import com.studiversity.database.table.StudyGroupDao
 import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.studiversity.database.table.StudyGroupDao
 
 //fun StudyGroupDao.toStudyGroup() = StudyGroup(
 //    id = id.value,
@@ -14,6 +14,6 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 fun StudyGroupDao.toResponse() = StudyGroupResponse(
     id = id.value,
     name = name,
-    academicYear = AcademicYear(academicYear[0], academicYear[1]),
+    academicYear = AcademicYear(startAcademicYear, endAcademicYear),
     specialty = specialty?.toResponse()
 )

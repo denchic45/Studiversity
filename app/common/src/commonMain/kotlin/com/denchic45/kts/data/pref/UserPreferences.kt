@@ -7,23 +7,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
 class UserPreferences(val settings: ObservableSettings) : Settings by settings {
-
-    var token: String by string()
-    var refreshToken:String by string()
-
-    var id: String by string()
-    var firstName: String by string()
-    var surname: String by string()
-    var patronymic: String by string()
-    var gender: String by string()
-    var role: String by string()
-    var groupId: String by string()
-    var avatarUrl: String by string()
-    var timestamp: Long by long()
-    var email: String by string()
+    var id: String by string(defaultValue = "")
+    var firstName: String by string(defaultValue = "")
+    var surname: String by string(defaultValue = "")
+    var patronymic: String by string(defaultValue = "")
+    var gender: String by string(defaultValue = "")
+    var role: String by string(defaultValue = "")
+    var groupId: String by string(defaultValue = "")
+    var avatarUrl: String by string(defaultValue = "")
+    var timestamp: Long by long(defaultValue = 0)
+    var email: String by string(defaultValue = "")
     var isGeneratedAvatar: Boolean by boolean(defaultValue = true)
     var isAdmin: Boolean by boolean(defaultValue = true)
 
-    val observeId = settings.getStringFlow("id")
-    val observeToken = settings.getStringOrNullFlow("token")
+    val observeId = settings.getStringFlow("id",defaultValue = "")
 }

@@ -6,11 +6,9 @@ import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.pref.TimestampPreferences
 import com.denchic45.kts.data.pref.UserPreferences
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.toResource
-import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.member.MembersApi
 import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.RoleApi
@@ -49,7 +47,7 @@ class StudyGroupRepository @Inject constructor(
     private val membershipApi: MembershipApi,
     private val membersApi: MembersApi,
     private val roleApi: RoleApi,
-) :  NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
+) : NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
     FindByContainsNameRepository<StudyGroupResponse> {
 
     override suspend fun findByContainsName(text: String): Resource<List<StudyGroupResponse>> {
@@ -225,8 +223,8 @@ class StudyGroupRepository @Inject constructor(
 
     // TODO: Make observable
     suspend fun findByMe(): Resource<List<StudyGroupResponse>> {
-        return studyGroupApi.getList(memberId = uuidOfMe()).onSuccess {
-            appPreferences.yourStudyGroups = Json.encodeToString(it.map(StudyGroupResponse::id))
+        return studyGroupApi.getList(memberId = uuidOfMe()).onSuccess { responses ->
+            appPreferences.yourStudyGroups = Json.encodeToString(responses.map { it.id.toString() })
         }.toResource()
     }
 }

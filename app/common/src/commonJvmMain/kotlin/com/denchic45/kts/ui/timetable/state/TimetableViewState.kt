@@ -13,6 +13,8 @@ import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.util.toString
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 
@@ -25,7 +27,7 @@ data class CellOrder(val order: Int, val time: String)
 
 fun toCells(
     periods: List<PeriodResponse>,
-    latestPeriodOrder: Int
+    latestPeriodOrder: Int,
 ) = buildList {
     periods.forEachIndexed { index, period ->
         val diffOrders = period.order - index
@@ -58,7 +60,7 @@ private fun PeriodResponse.toCell() = when (val details = details) {
 
 fun toItems(
     periods: List<PeriodResponse>,
-    latestPeriodOrder: Int
+    latestPeriodOrder: Int,
 ) = buildList {
     periods.forEachIndexed { index, period ->
         val diffOrders = period.order - index
@@ -92,12 +94,35 @@ private fun PeriodResponse.toItem() = PeriodItem(
 )
 
 fun BellSchedule.toItemOrders(
-    latestEventOrder: Int
+    latestEventOrder: Int,
 ) = buildList {
-    schedule.take(latestEventOrder)
+    periods.take(latestEventOrder)
         .forEachIndexed { index, period ->
-            add(CellOrder(index + 1, period.first))
+            add(CellOrder(index + 1, period.start))
         }
+    val diff = latestEventOrder - periods.size
+    if (diff > 0) {
+        val preLastPeriod = periods[periods.size - 2]
+        val lastPeriod = periods.last()
+        val startTimeOfLastPeriod =
+            LocalTime.parse(lastPeriod.start, DateTimeFormatter.ofPattern("HH:mm"))
+        val endTimeOfLastPeriod =
+            LocalTime.parse(lastPeriod.start, DateTimeFormatter.ofPattern("HH:mm"))
+        val endTimeOfPreLastPeriod =
+            LocalTime.parse(preLastPeriod.end, DateTimeFormatter.ofPattern("HH:mm"))
+
+        val breakTime = startTimeOfLastPeriod.minusHours(endTimeOfPreLastPeriod.hour.toLong())
+            .minusMinutes(endTimeOfPreLastPeriod.minute.toLong())
+        val periodTime = endTimeOfLastPeriod.minusHours(startTimeOfLastPeriod.hour.toLong())
+            .minusMinutes(startTimeOfLastPeriod.minute.toLong())
+
+        repeat(diff) {
+            val lastCell = last<CellOrder>()
+            val lastTime = LocalTime.parse(lastCell.time, DateTimeFormatter.ofPattern("HH:mm"))
+            val time = lastTime.plusMinutes(breakTime.minute.toLong() + periodTime.minute.toLong())
+            add(CellOrder(lastCell.order + 1, time.format(DateTimeFormatter.ofPattern("HH:mm"))))
+        }
+    }
 }
 
 fun getMonthTitle(date: LocalDate): String {

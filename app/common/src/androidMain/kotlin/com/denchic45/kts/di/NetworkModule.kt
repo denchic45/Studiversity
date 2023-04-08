@@ -1,8 +1,6 @@
 package com.denchic45.kts.di
 
 import com.denchic45.kts.data.pref.AppPreferences
-import com.denchic45.kts.di.GuestHttpClient
-import com.denchic45.kts.di.installContentNegotiation
 import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.attachment.AttachmentApiImpl
 import com.denchic45.stuiversity.api.auth.AuthApi
@@ -51,35 +49,37 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.websocket.*
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 class NetworkModule {
 
-//    @Singleton
-//    @Provides
-//    fun guestClient(appPreferences: AppPreferences): GuestHttpClient = HttpClient(Android) {
-//        defaultRequest {
-//            url(appPreferences.url)
-//        }
-//        installContentNegotiation()
-//    }
+    @Singleton
+    @Named("guest")
+    @Provides
+    fun guestClient(appPreferences: AppPreferences): GuestHttpClient = HttpClient(Android) {
+        defaultRequest {
+            url("http://192.168.0.101:8080/")
+        }
+        installContentNegotiation()
+    }
 
     @Provides
-    fun authApi(client: GuestHttpClient): AuthApi = AuthApiImpl(client)
+    fun authApi(@Named("guest") client: HttpClient): AuthApi = AuthApiImpl(client)
 
     @Singleton
     @Provides
     fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(Android) {
         defaultRequest {
-            url("http://127.0.0.1:8080")
+            url("http://192.168.0.101:8080/")
         }
         installContentNegotiation()
         install(WebSockets)
         install(Auth) {
             bearer {
                 loadTokens {
-                    BearerTokens(appPreferences.token, appPreferences.refreshToken)
+                    BearerTokens(appPreferences.token!!, appPreferences.refreshToken!!)
                 }
                 refreshTokens {
                     val result = AuthApiImpl(client)

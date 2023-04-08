@@ -78,7 +78,7 @@ class AttachmentRepository @javax.inject.Inject constructor(
             attachmentLocalDataSource.upsert(
                 when (attachment) {
                     is FileAttachmentHeader -> {
-                        val fileName = attachment.fileItem.name
+                        val fileName = attachment.item.name
                         AttachmentEntity(
                             attachment_id = attachment.id.toString(),
                             attachment_name = fileName,
@@ -91,7 +91,7 @@ class AttachmentRepository @javax.inject.Inject constructor(
                         )
                     }
                     is LinkAttachmentHeader -> {
-                        val linkAttachmentResponse = attachment.linkAttachmentResponse
+                        val linkAttachmentResponse = attachment.item
                         AttachmentEntity(
                             attachment_id = attachment.id.toString(),
                             attachment_name = linkAttachmentResponse.name,

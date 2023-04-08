@@ -4,5 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BellSchedule(
-    val schedule: List<Pair<String, String>>, val zeroPeriod: Pair<String, String>? = null
+    val periods: List<BellPeriod>,
+    val launch: BellPeriod? = null,
 )
+
+@Serializable
+data class BellPeriod(val start: String, val end: String)

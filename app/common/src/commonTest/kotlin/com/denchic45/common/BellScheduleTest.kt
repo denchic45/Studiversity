@@ -1,5 +1,6 @@
 package com.denchic45.common
 
+import com.denchic45.kts.data.service.model.BellPeriod
 import com.denchic45.kts.data.service.model.BellSchedule
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -14,20 +15,21 @@ class BellScheduleTest {
         println(
             json.encodeToString(
                 BellSchedule(
-                listOf(
-                    "8:30" to "9:10",
-                    "9:20" to "10:00",
-                    "10:05" to "10:45",
-                    "10:50" to "11:30",
-                    "11:35" to "12:15",
-                    "12:20" to "13:00",
-                    "13:05" to "13:45",
-                    "13:50" to "14:30",
-                    "14:35" to "15:15",
-                    "15:20" to "16:00",
-                    "16:05" to "16:45",
+                    listOf(
+                        BellPeriod("8:30", "9:10"),
+                        BellPeriod("9:20", "10:00"),
+                        BellPeriod("10:05", "10:45"),
+                        BellPeriod("10:50", "11:30"),
+                        BellPeriod("11:35", "12:15"),
+                        BellPeriod("12:20", "13:00"),
+                        BellPeriod("13:05", "13:45"),
+                        BellPeriod("13:50", "14:30"),
+                        BellPeriod("14:35", "15:15"),
+                        BellPeriod("15:20", "16:00"),
+                        BellPeriod("16:05", "16:45"),
+                    ),
+                    null
                 )
-            )
             )
         )
     }

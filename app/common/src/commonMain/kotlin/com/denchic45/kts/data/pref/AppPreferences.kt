@@ -9,18 +9,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @OptIn(ExperimentalSettingsApi::class, ExperimentalCoroutinesApi::class)
 class AppPreferences(val settings: ObservableSettings) : Settings by settings {
 //    var coursesLoadedFirstTime by boolean()
-    var latestVersion by long()
+    var latestVersion by long(defaultValue = 0)
 
-    var bellSchedule by string()
+    var bellSchedule by string(defaultValue = "")
 
-    var token by string(defaultValue = "")
-    var refreshToken by string(defaultValue = "")
+    var token by nullableString()
+    var refreshToken by nullableString()
 
-    var url by string()
+    var url by string( defaultValue = "")
 
-    var yourStudyGroups by string()
+    var yourStudyGroups by string(defaultValue = "")
 
     val observeToken = settings.getStringOrNullFlow("token")
-    var observeBellSchedule = settings.getStringFlow("bellSchedule")
+    var observeBellSchedule = settings.getStringFlow("bellSchedule","")
     var observeYourStudyGroups = settings.getStringOrNullFlow("yourStudyGroups")
 }

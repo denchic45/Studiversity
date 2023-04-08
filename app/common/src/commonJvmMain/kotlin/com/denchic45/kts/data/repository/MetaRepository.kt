@@ -21,14 +21,16 @@ class MetaRepository constructor(
     private val metaStorage: MetaStorage,
 ) {
 
+    private val json = Json { ignoreUnknownKeys = true }
+
     val observeBellSchedule: Flow<BellSchedule> = appPreferences.observeBellSchedule
         .filter(String::isNotEmpty)
-        .map(Json::decodeFromString)
+        .map(json::decodeFromString)
 
     init {
         coroutineScope.launch {
             metaStorage.getBellSchedule().onSuccess {
-                appPreferences.bellSchedule = Json.encodeToString(it)
+                appPreferences.bellSchedule = json.encodeToString(it)
             }
         }
     }

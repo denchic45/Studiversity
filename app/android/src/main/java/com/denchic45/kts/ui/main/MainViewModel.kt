@@ -66,11 +66,11 @@ class MainViewModel @Inject constructor(
 
     private var courseIds = emptyMap<String, String>()
 
-    val goBack = SingleLiveData<Unit>()
+    val goBack = MutableSharedFlow<Unit>()
 
-    val closeNavMenu = SingleLiveData<Unit>()
+    val closeNavMenu = MutableSharedFlow<Unit>()
 
-    val menuBtnVisibility = SingleLiveData<Pair<Int, Boolean>>()
+    val menuBtnVisibility = MutableSharedFlow<Pair<Int, Boolean>>()
 
     val toolbarNavigationState = MutableStateFlow(ToolbarNavigationState.MENU)
 
@@ -81,7 +81,7 @@ class MainViewModel @Inject constructor(
 
 //    private val uiPermissions: UiPermissions
 
-    var openLogin = SingleLiveData<Void>()
+    var openLogin = MutableSharedFlow<Unit>()
 
     val bottomMenuVisibility: MutableLiveData<Boolean> = MutableLiveData(true)
 
@@ -89,7 +89,7 @@ class MainViewModel @Inject constructor(
 
     fun onOptionItemSelect(itemId: Int) {
         when (itemId) {
-            android.R.id.home -> goBack.call()
+            android.R.id.home -> viewModelScope.launch {  goBack.emit(Unit) }
         }
     }
 
@@ -208,7 +208,7 @@ class MainViewModel @Inject constructor(
             interactor.listenAuthState
                 .collect { logged: Boolean ->
                     if (!logged) {
-                        openLogin.call()
+                       viewModelScope.launch {  openLogin.emit(Unit) }
                     }
                 }
         }

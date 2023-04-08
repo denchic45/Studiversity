@@ -1,5 +1,6 @@
 package com.denchic45.kts.data.service
 
+import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.domain.EmptyResource
 import com.denchic45.kts.domain.Resource
@@ -23,10 +24,11 @@ import java.util.*
 class AuthService @javax.inject.Inject constructor(
     private val authApi: AuthApi,
     private val userApi: UserApi,
+    private val appPreferences: AppPreferences,
     private val userPreferences: UserPreferences,
 ) {
     val isAuthenticated: Boolean
-        get() = userPreferences.token.isNotEmpty()
+        get() = !appPreferences.token.isNullOrEmpty()
 
     val observeIsAuthenticated: Flow<Boolean>
         get() = userPreferences.observeId.map(String::isNotEmpty)
@@ -49,7 +51,7 @@ class AuthService @javax.inject.Inject constructor(
     }
 
     private fun saveTokens(tokenResponse: TokenResponse) {
-        userPreferences.apply {
+        appPreferences.apply {
             token = tokenResponse.token
             refreshToken = tokenResponse.refreshToken
         }

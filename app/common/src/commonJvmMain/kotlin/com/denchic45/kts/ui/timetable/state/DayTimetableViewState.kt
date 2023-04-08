@@ -11,7 +11,7 @@ data class DayTimetableViewState(
     val periods: List<PeriodItem?>,
     val orders: List<CellOrder>,
     val maxEventsSize: Int,
-    val isEdit: Boolean
+    val isEdit: Boolean,
 ) {
     val title = getMonthTitle(date)
 }
@@ -19,9 +19,9 @@ data class DayTimetableViewState(
 fun List<PeriodResponse>.toTimetableViewState(
     date: LocalDate,
     bellSchedule: BellSchedule,
-    isEdit: Boolean = false
+    isEdit: Boolean = false,
 ): DayTimetableViewState {
-    val latestEventOrder = max(maxOf { last().order }, 6)
+    val latestEventOrder = max(maxOfOrNull { last().order } ?: 0, 6)
     return DayTimetableViewState(
         date = date,
         periods = toItems(this, latestEventOrder),

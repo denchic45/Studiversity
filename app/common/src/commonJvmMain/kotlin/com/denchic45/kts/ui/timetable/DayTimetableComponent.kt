@@ -59,7 +59,7 @@ class DayTimetableComponent(
         timetable.flatMapLatest { timetableResource ->
             selectedDate.map { selected ->
                 timetableResource.map {
-                    it.days[selected.dayOfWeek.value].toTimetableViewState(
+                    it.days[selected.dayOfWeek.ordinal].toTimetableViewState(
                         date = selected,
                         bellSchedule = schedule
                     )
@@ -80,7 +80,6 @@ class DayTimetableComponent(
 
     fun onDateSelect(date: LocalDate) {
         selectedDate.value = date
-
     }
 
     fun onTodayClick() {
