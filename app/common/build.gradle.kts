@@ -78,8 +78,8 @@ kotlin {
                 implementation("io.insert-koin:koin-core:$koinVersion")
 
                 // Settings
-                api("com.russhwolf:multiplatform-settings:0.9")
-                api("com.russhwolf:multiplatform-settings-coroutines:0.9")
+                api("com.russhwolf:multiplatform-settings:1.0.0")
+                api("com.russhwolf:multiplatform-settings-coroutines:1.0.0")
 
                 implementation("com.squareup.okio:okio:3.3.0")
 
