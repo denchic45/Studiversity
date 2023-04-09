@@ -29,7 +29,7 @@ class StudyGroupEditorFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val curatorHeader = view.findViewById<TextView>(R.id.tv_header)
+//        val curatorHeader = view.findViewById<TextView>(R.id.tv_header)
         specialtyAdapter = ListPopupWindowAdapter(requireContext(), ArrayList())
         viewBinding.apply {
             etSpecialty.setAdapter(specialtyAdapter)
@@ -48,7 +48,7 @@ class StudyGroupEditorFragment :
             }
 
 
-            curatorHeader.text = "Куратор"
+//            curatorHeader.text = "Куратор"
             etSpecialty.textChanges()
                 .compose(EditTextTransformer())
                 .subscribe { specialtyName: String -> viewModel.onSpecialtyNameType(specialtyName) }

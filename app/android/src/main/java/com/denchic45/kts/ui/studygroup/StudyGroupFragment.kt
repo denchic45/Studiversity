@@ -39,8 +39,6 @@ class StudyGroupFragment : BaseFragment<StudyGroupViewModel, FragmentGroupBindin
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
         viewModel.menuItemVisibility.observe(viewLifecycleOwner) { (id, visible) ->
             val menuItem = menu.findItem(id)
             if (menuItem != null) menuItem.isVisible = visible
@@ -109,5 +107,11 @@ class StudyGroupFragment : BaseFragment<StudyGroupViewModel, FragmentGroupBindin
 
     companion object {
         const val GROUP_ID = "Group GROUP_ID"
+
+        fun newInstance(groupId: String): StudyGroupFragment {
+            return StudyGroupFragment().apply {
+                arguments = bundleOf("groupId" to groupId)
+            }
+        }
     }
 }

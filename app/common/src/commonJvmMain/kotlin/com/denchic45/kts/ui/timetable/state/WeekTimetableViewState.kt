@@ -42,7 +42,7 @@ private fun TimetableResponse.toItemsOfDay(
     latestPeriodOrder: Int
 ): List<List<PeriodItem?>> = buildList {
     days.forEach { periods ->
-        add(toItems(periods, latestPeriodOrder))
+        add(toItemsForWeek(periods, latestPeriodOrder))
     }
 }
 

@@ -5,6 +5,8 @@ import android.graphics.Canvas
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.material3.Text
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -19,7 +21,7 @@ import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.adapter.CourseTopicAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskHolder
-import com.denchic45.kts.ui.base.BaseFragment2
+import com.denchic45.kts.ui.BaseFragment2
 import com.denchic45.kts.ui.course.content.ContentFragment
 import com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment
 import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
@@ -138,7 +140,10 @@ class CourseFragment : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
             component.elements.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
                 .collectWhenStarted(viewLifecycleOwner) {
                     it.onSuccess {
-                        TODO("Переиспользовать LazyColumn для desktop и android")
+                        binding.root.addView(ComposeView(requireContext()).apply {
+                            setContent { Text(text = "Sample text") }
+                        })
+//                        TODO("Переиспользовать LazyColumn для desktop и android")
                     }
             }
 

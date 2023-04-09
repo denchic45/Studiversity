@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/menu_timetable"
-        android:name="com.denchic45.kts.ui.ownTimetables.OwnTimetablesFragment"
+        android:name="com.denchic45.kts.ui.yourTimetables.YourTimetablesFragment"
         android:label="@string/menu_title_timetable" />
 
     <fragment
@@ -17,7 +17,7 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/menu_group"
+        android:id="@+id/studyGroupFragment"
         android:name="com.denchic45.kts.ui.studygroup.StudyGroupFragment"
         android:label="@string/menu_title_group"
         tools:layout="@layout/fragment_group">
@@ -25,6 +25,11 @@
             android:name="groupId"
             app:argType="string"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/menu_group"
+        android:name="com.denchic45.kts.ui.yourStudyGroups.YourStudyGroupsFragment"
+        android:label="YourStudyGroupsFragment" />
 
     <fragment
         android:id="@+id/menu_admin_panel"
@@ -81,7 +86,7 @@
         android:id="@+id/courseFragment"
         android:name="com.denchic45.kts.ui.course.CourseFragment"
         android:label="fragment_course"
-        tools:layout="@layout/fragment_course">
+        tools:layout="@ layout/fragment_course">
         <action
             android:id="@+id/action_courseFragment_to_taskEditorFragment"
             app:destination="@id/taskEditorFragment" />
@@ -183,8 +188,6 @@
         android:id="@+id/action_global_userEditorFragment"
         app:destination="@id/userEditorFragment" />
     <action
-        android:id="@+id/action_global_menu_group"
-        app:destination="@id/menu_group" />
-
-
+        android:id="@+id/action_global_studyGroupFragment"
+        app:destination="@id/studyGroupFragment" />
 </navigation>

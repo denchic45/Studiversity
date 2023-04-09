@@ -14,10 +14,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.ImageLoader
-import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import coil.size.Size
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.model.StudyGroupNameItem
 import com.denchic45.kts.domain.timetable.model.PeriodDetails
@@ -30,9 +30,9 @@ fun PeriodItemUI(
     time: String,
     groupShowing: Boolean = false,
     isEdit: Boolean = false,
-    onEditClick: () -> Unit = {}
+    onEditClick: () -> Unit = {},
 ) {
-    Column() {
+    Column {
         Row(
             modifier = Modifier
                 .height(56.dp)
@@ -41,20 +41,45 @@ fun PeriodItemUI(
         ) {
             if (item != null) {
                 Text(text = item.order.toString(), style = MaterialTheme.typography.bodyLarge)
-                AsyncImage(
+//                AsyncImage(
+//                    model = imageLoader.enqueue(ImageRequest.Builder(LocalContext.current)
+//                        .data(
+//                            when (val details = item.details) {
+//                                is PeriodDetails.Event -> details.iconUrl
+//                                is PeriodDetails.Lesson -> details.subjectIconUrl
+//                            }
+//                        )
+//                        .crossfade(true)
+//                        .build()),
+//                    contentDescription = null,
+
+//                    onLoading = {
+//                            it
+//                    },
+//                    onSuccess = {
+//                            it.result
+//                    },
+//                    onError = {
+//                        it.result.throwable.printStackTrace()
+//                    }
+//                )
+
+                val painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
+                        .decoderFactory(SvgDecoder.Factory())
                         .data(
                             when (val details = item.details) {
                                 is PeriodDetails.Event -> details.iconUrl
                                 is PeriodDetails.Lesson -> details.subjectIconUrl
                             }
                         )
-                        .crossfade(true)
-                        .build(),
+                        .build()
+                )
+                Image(
+                    painter = painter,
                     contentDescription = null,
                     modifier = Modifier
                         .size(32.dp)
-                        .padding(16.dp)
                 )
                 Column(Modifier.weight(1f)) {
                     when (val details = item.details) {

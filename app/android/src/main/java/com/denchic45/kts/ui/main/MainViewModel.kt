@@ -7,15 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.appVersion.GoogleAppVersionService
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
-import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.MainInteractor
 import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
+import com.denchic45.kts.ui.NavigationCommand
 import com.denchic45.kts.ui.adapter.*
 import com.denchic45.kts.ui.adminPanel.AdminPanelFragmentDirections
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.ui.base.NavigationCommand
 import com.denchic45.kts.ui.course.CourseFragmentDirections
 import com.denchic45.kts.ui.model.UiText
 import com.denchic45.kts.ui.model.onId
@@ -33,7 +32,7 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val interactor: MainInteractor,
-    private val appVersionService: GoogleAppVersionService
+    private val appVersionService: GoogleAppVersionService,
 ) : BaseViewModel() {
 
     private val screenIdsWithFab: Set<Int> = setOf(
@@ -89,7 +88,7 @@ class MainViewModel @Inject constructor(
 
     fun onOptionItemSelect(itemId: Int) {
         when (itemId) {
-            android.R.id.home -> viewModelScope.launch {  goBack.emit(Unit) }
+            android.R.id.home -> viewModelScope.launch { goBack.emit(Unit) }
         }
     }
 
@@ -208,7 +207,7 @@ class MainViewModel @Inject constructor(
             interactor.listenAuthState
                 .collect { logged: Boolean ->
                     if (!logged) {
-                       viewModelScope.launch {  openLogin.emit(Unit) }
+                        viewModelScope.launch { openLogin.emit(Unit) }
                     }
                 }
         }
@@ -235,7 +234,7 @@ class MainViewModel @Inject constructor(
             private val courses: List<CourseResponse>,
             private val user: User,
             private val hasGroup: Boolean,
-            val expandAllCourse: Boolean = false
+            val expandAllCourse: Boolean = false,
         ) : NavMenuState() {
             private val mainTextItems: MutableList<NavTextItem> = mutableListOf()
             private val footerTextItems: MutableList<NavTextItem> = mutableListOf()
@@ -348,7 +347,7 @@ class MainViewModel @Inject constructor(
 
         data class Loading(
             val progress: Long,
-            val info: String
+            val info: String,
         ) : UpdateBannerState()
 
         object Install : UpdateBannerState()

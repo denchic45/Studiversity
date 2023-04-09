@@ -1,10 +1,8 @@
-package com.denchic45.kts.ui.base
+package com.denchic45.kts.ui
 
 import androidx.navigation.NavDirections
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.kts.ui.BaseUiComponent
 import com.denchic45.kts.util.componentScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*

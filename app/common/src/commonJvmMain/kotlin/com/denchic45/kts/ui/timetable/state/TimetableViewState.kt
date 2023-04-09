@@ -58,22 +58,29 @@ private fun PeriodResponse.toCell() = when (val details = details) {
     )
 }
 
-fun toItems(
+fun toItemsForDay(periods: List<PeriodResponse>): List<PeriodItem?> {
+    return periods.toItemsForWeek()
+}
+
+fun toItemsForWeek(
     periods: List<PeriodResponse>,
     latestPeriodOrder: Int,
-) = buildList {
-    periods.forEachIndexed { index, period ->
+): List<PeriodItem?> = buildList {
+    addAll(periods.toItemsForWeek())
+    val diffOrders = latestPeriodOrder - periods.size
+    if (diffOrders > 0) {
+        repeat(diffOrders) { add(null) }
+    }
+}
+
+private fun List<PeriodResponse>.toItemsForWeek() = buildList {
+    this@toItemsForWeek.forEachIndexed { index, period ->
         val diffOrders = period.order - index
         if (diffOrders > 1) {
             repeat(diffOrders) { add(null) }
         } else {
             add(period.toItem())
         }
-    }
-
-    val diffOrders = latestPeriodOrder - periods.size
-    if (diffOrders > 0) {
-        repeat(diffOrders) { add(null) }
     }
 }
 
@@ -117,7 +124,7 @@ fun BellSchedule.toItemOrders(
             .minusMinutes(startTimeOfLastPeriod.minute.toLong())
 
         repeat(diff) {
-            val lastCell = last<CellOrder>()
+            val lastCell: CellOrder = last()
             val lastTime = LocalTime.parse(lastCell.time, DateTimeFormatter.ofPattern("HH:mm"))
             val time = lastTime.plusMinutes(breakTime.minute.toLong() + periodTime.minute.toLong())
             add(CellOrder(lastCell.order + 1, time.format(DateTimeFormatter.ofPattern("HH:mm"))))

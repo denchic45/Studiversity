@@ -7,9 +7,7 @@ import android.provider.MediaStore
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.ViewCompat
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
@@ -20,14 +18,12 @@ import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentProfileBinding
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.avatar.FullImageActivity
-import com.denchic45.kts.ui.base.BaseFragment
-import com.denchic45.kts.ui.base.BaseFragment2
+import com.denchic45.kts.ui.BaseFragment2
 import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
 import com.example.appbarcontroller.appbarcontroller.AppBarController
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 
 class ProfileFragment :
     BaseFragment2<ProfileViewModel, FragmentProfileBinding>(

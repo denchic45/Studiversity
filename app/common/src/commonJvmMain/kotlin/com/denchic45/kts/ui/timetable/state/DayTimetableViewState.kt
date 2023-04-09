@@ -24,7 +24,7 @@ fun List<PeriodResponse>.toTimetableViewState(
     val latestEventOrder = max(maxOfOrNull { last().order } ?: 0, 6)
     return DayTimetableViewState(
         date = date,
-        periods = toItems(this, latestEventOrder),
+        periods = toItemsForDay(this),
         orders = bellSchedule.toItemOrders(latestEventOrder),
         maxEventsSize = latestEventOrder,
         isEdit = isEdit

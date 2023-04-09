@@ -2,7 +2,6 @@ package com.denchic45.kts.ui.base
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -11,14 +10,13 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavArgs
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
+import com.denchic45.kts.ui.NavigationCommand
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.util.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -39,7 +37,7 @@ interface HasNavArgs<T : NavArgs> {
 
 abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding>(
     layoutId: Int,
-    private val menuResId: Int = 0
+    private val menuResId: Int = 0,
 ) : Fragment(layoutId), HasViewModel<VM> {
 
     @Inject
@@ -81,7 +79,6 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding>(
 
         viewModel.finish.flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
             .collectWhenStarted(viewLifecycleOwner) {
-                Log.d("lol", "finish: ${this.javaClass.name}")
                 findNavController().navigateUp()
             }
 
@@ -175,9 +172,3 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding>(
     }
 }
 
-sealed class NavigationCommand {
-    data class To(val directions: NavDirections) : NavigationCommand()
-    object Back : NavigationCommand()
-    data class BackTo(val destinationId: Int) : NavigationCommand()
-    object ToRoot : NavigationCommand()
-}

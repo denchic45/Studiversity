@@ -6,8 +6,8 @@ import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindCoursesByGroupUseCase
+import com.denchic45.kts.ui.NavigationCommand
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.ui.base.NavigationCommand
 import com.denchic45.kts.ui.course.CourseFragmentDirections
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.flow

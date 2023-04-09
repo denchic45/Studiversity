@@ -1,5 +1,6 @@
 package com.denchic45.kts.ui.studygroup.users
 
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
@@ -35,6 +36,10 @@ class GroupMembersViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val showUserOptions = SingleLiveData<Pair<Int, List<OptionItem>>>()
+
+    init {
+        showUserOptions.asFlow()
+    }
 
     private var groupId = _groupId.toUUID()
 

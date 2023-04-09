@@ -14,13 +14,14 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.denchic45.kts.CustomToolbar
 import com.denchic45.kts.R
+import com.denchic45.kts.app
 import com.denchic45.kts.databinding.ActivityMainBinding
-import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.adapter.NavDropdownItemHolder
 import com.denchic45.kts.ui.adapter.NavItemHolder
 import com.denchic45.kts.ui.adapter.navAdapter
 import com.denchic45.kts.ui.base.BaseActivity
+import com.denchic45.kts.ui.initImageLoader
 import com.denchic45.kts.ui.login.LoginActivity
 import com.denchic45.kts.ui.updateView.SnackbarUpdateView
 import com.denchic45.kts.util.collectWhenResumed
@@ -64,6 +65,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initImageLoader(this)
 
         viewModel.setActivityForService(this)
 
@@ -89,6 +91,10 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
         setupWithNavController(bnv, navController)
 
         bnv.setOnItemReselectedListener { refreshCurrentFragment() }
+
+        app.appComponent.toolbarInteractor.title.collectWhenStarted(this) {
+            title = it ?: ""
+        }
 
         viewModel.updateBannerState.debounce(1000)
             .collectWhenResumed(this) { bannerState ->

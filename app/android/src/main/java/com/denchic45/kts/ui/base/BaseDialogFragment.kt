@@ -9,11 +9,11 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
+import com.denchic45.kts.ui.NavigationCommand
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.util.collectWhenResumed
 import com.denchic45.kts.util.collectWhenStarted
@@ -25,7 +25,7 @@ import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
 abstract class BaseDialogFragment<VM : BaseViewModel, VB : ViewBinding>(
-    private val layoutId: Int = 0
+    private val layoutId: Int = 0,
 ) : DialogFragment() {
 
     @Inject
@@ -68,7 +68,7 @@ abstract class BaseDialogFragment<VM : BaseViewModel, VB : ViewBinding>(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return if (layoutId != 0) {
             root

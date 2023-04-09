@@ -15,7 +15,7 @@ import com.denchic45.kts.customPopup.ListPopupWindowAdapter
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.databinding.FragmentUserEditorBinding
 import com.denchic45.kts.rx.AsyncTransformer
-import com.denchic45.kts.ui.base.BaseFragment2
+import com.denchic45.kts.ui.BaseFragment2
 import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.usereditor.GenderAction
 import com.denchic45.kts.util.collectWhenStarted

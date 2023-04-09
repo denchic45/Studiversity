@@ -17,10 +17,10 @@ import com.denchic45.kts.R
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.databinding.ItemEntityBinding
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
+import com.denchic45.kts.ui.NavigationCommand
 import com.denchic45.kts.ui.adapter.BaseViewHolder
 import com.denchic45.kts.ui.adapter.OnItemClickListener
 import com.denchic45.kts.ui.base.HasViewModel
-import com.denchic45.kts.ui.base.NavigationCommand
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
 import com.denchic45.kts.ui.model.onId
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
@@ -40,7 +40,7 @@ class CreatorDialog : BottomSheetDialogFragment(), HasViewModel<CreatorViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val root = inflater.inflate(R.layout.fragment_creator, container, false)
         adapter = ItemAdapter()
@@ -110,7 +110,7 @@ class CreatorDialog : BottomSheetDialogFragment(), HasViewModel<CreatorViewModel
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
-            viewType: Int
+            viewType: Int,
         ): EntityHolder {
             return EntityHolder(parent.viewBinding(ItemEntityBinding::inflate), itemClickListener)
         }
@@ -129,7 +129,7 @@ class CreatorDialog : BottomSheetDialogFragment(), HasViewModel<CreatorViewModel
 
     private class EntityHolder(
         itemEntityBinding: ItemEntityBinding,
-        itemClickListener: OnItemClickListener
+        itemClickListener: OnItemClickListener,
     ) : BaseViewHolder<ListItem, ItemEntityBinding>(itemEntityBinding, itemClickListener) {
         private val tvTitle: TextView = itemView.findViewById(R.id.textView_title)
         private val ivIcon: ImageView = itemView.findViewById(R.id.iv_icon)

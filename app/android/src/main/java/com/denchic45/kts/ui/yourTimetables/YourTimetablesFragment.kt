@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.ownTimetables
+package com.denchic45.kts.ui.yourTimetables
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,16 +9,17 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import com.denchic45.kts.app
 
-class OwnTimetablesFragment : Fragment() {
+class YourTimetablesFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            OwnTimetablesScreen(app.appComponent.ownTimetablesComponent)
+            val component = app.appComponent.yourTimetablesComponent
+            YourTimetablesScreen(component)
         }
     }
 }

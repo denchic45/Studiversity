@@ -8,6 +8,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("app.cash.sqldelight")
 }
+
 val sqlDelightVersion = "2.0.0-alpha05"
 kotlin {
     android()
@@ -109,6 +110,8 @@ kotlin {
                 api("androidx.core:core-ktx:1.9.0")
 
                 api("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+
+//                implementation ("com.github.JoelKanyi:HorizontalCalendarView:1.0.4")
 
                 api("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
@@ -227,6 +230,7 @@ android {
     }
     sourceSets.all {
         kotlin.srcDir("src/$name/kotlin")
+        java.srcDir("src/$name/java")
     }
     kapt {
         correctErrorTypes = true

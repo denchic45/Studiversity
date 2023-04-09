@@ -5,8 +5,8 @@ import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.ObserveUserUseCase
-import com.denchic45.kts.ui.base.AndroidUiComponent
-import com.denchic45.kts.ui.base.AndroidUiComponentDelegate
+import com.denchic45.kts.ui.AndroidUiComponent
+import com.denchic45.kts.ui.AndroidUiComponentDelegate
 import com.denchic45.stuiversity.util.toUUID
 import javax.inject.Inject
 import javax.inject.Named

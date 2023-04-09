@@ -1,4 +1,4 @@
-package com.denchic45.kts.di.component
+package com.denchic45.kts.di
 
 import android.app.Application
 import android.content.Context
@@ -6,12 +6,10 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.kts.data.pref.AppPreferences
-import com.denchic45.kts.di.AppScope
-import com.denchic45.kts.di.DatabaseComponent
-import com.denchic45.kts.di.NetworkComponent
-import com.denchic45.kts.di.PreferencesComponent
-import com.denchic45.kts.ui.ownTimetables.OwnTimetablesComponent
+import com.denchic45.kts.ui.ToolbarInteractor
 import com.denchic45.kts.ui.timetableLoader.TimetableLoaderComponent
+import com.denchic45.kts.ui.yourStudyGroups.YourStudyGroupsComponent
+import com.denchic45.kts.ui.yourTimetables.YourTimetablesComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
@@ -24,7 +22,7 @@ abstract class AndroidApplicationComponent(
     @get:Provides protected val application: Application,
     @Component protected val preferencesComponent: PreferencesComponent,
     @Component protected val databaseComponent: DatabaseComponent,
-    @Component protected val networkComponent: NetworkComponent
+    @Component protected val networkComponent: NetworkComponent,
 ) {
 
     @Provides
@@ -41,8 +39,12 @@ abstract class AndroidApplicationComponent(
 
     protected abstract val appPreferences: AppPreferences
 
+    abstract val toolbarInteractor: ToolbarInteractor
+
     abstract val timetableLoaderComponent: TimetableLoaderComponent
 
-    abstract val ownTimetablesComponent: OwnTimetablesComponent
+    abstract val yourTimetablesComponent: YourTimetablesComponent
+
+    abstract val yourStudyGroupsComponent: YourStudyGroupsComponent
 }
 

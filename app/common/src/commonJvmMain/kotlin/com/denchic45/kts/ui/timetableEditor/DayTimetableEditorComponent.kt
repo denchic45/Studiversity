@@ -2,8 +2,9 @@ package com.denchic45.kts.ui.timetableEditor
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.data.repository.MetaRepository
-import com.denchic45.kts.ui.timetable.state.toTimetableViewState
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.ui.timetable.state.toLocalDateOfWeekOfYear
+import com.denchic45.kts.ui.timetable.state.toTimetableViewState
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.copy
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
@@ -22,14 +23,20 @@ class DayTimetableEditorComponent constructor(
     private val weekTimetableFlows: List<MutableStateFlow<List<PeriodResponse>>>,
     @Assisted
     private val isEdit: Flow<Boolean> = flowOf(false),
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
 
     private val mondayDate = weekOfYear.toLocalDateOfWeekOfYear()
 
-    private val selectedDay = MutableStateFlow(0)
+    val selectedDate = MutableStateFlow(weekOfYear.toLocalDateOfWeekOfYear())
+
+    private val selectedDay = selectedDate.map { it.dayOfWeek.ordinal }.stateIn(
+        componentScope,
+        SharingStarted.Lazily,
+        selectedDate.value.dayOfWeek.ordinal
+    )
 
     private val bellSchedule = metaRepository.observeBellSchedule
         .shareIn(componentScope, SharingStarted.Lazily)
@@ -37,16 +44,18 @@ class DayTimetableEditorComponent constructor(
     @OptIn(FlowPreview::class)
     val viewState = combine(selectedDay, bellSchedule, isEdit) { selected, schedule, isEdit ->
         weekTimetableFlows[selected].map {
-            it.toTimetableViewState(
-                date = mondayDate.plusDays(selected.toLong()),
-                bellSchedule = schedule,
-                isEdit = isEdit
+            Resource.Success(
+                it.toTimetableViewState(
+                    date = mondayDate.plusDays(selected.toLong()),
+                    bellSchedule = schedule,
+                    isEdit = isEdit
+                )
             )
         }
-    }.flattenConcat().stateIn(componentScope, SharingStarted.Lazily, null)
+    }.flattenConcat().stateIn(componentScope, SharingStarted.Lazily, Resource.Loading)
 
     fun onDateSelect(date: LocalDate) {
-        selectedDay.value = date.dayOfWeek.ordinal
+        selectedDate.value = date
     }
 
     fun onAddPeriod(period: PeriodResponse) {

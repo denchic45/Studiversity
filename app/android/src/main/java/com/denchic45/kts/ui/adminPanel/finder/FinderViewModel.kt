@@ -63,7 +63,7 @@ class FinderViewModel @Inject constructor(
     val showOptions = SingleLiveData<Pair<Int, List<ListItem>>>()
     private val onFinderItemClickActions: List<(String) -> Unit> = listOf(
         { navigateTo(MobileNavigationDirections.actionGlobalProfileFragment(it)) },
-        { navigateTo(MobileNavigationDirections.actionGlobalMenuGroup(it)) },
+        { navigateTo(MobileNavigationDirections.actionGlobalStudyGroupFragment(it)) },
         { openSubject.setValue(it) },
         { openSpecialtyEditor.setValue(it) },
         { navigateTo(MobileNavigationDirections.actionGlobalCourseFragment(it)) })
@@ -241,7 +241,7 @@ class FinderViewModel @Inject constructor(
             },
             "OPTION_SHOW_GROUP" to {
                 navigateTo(
-                    MobileNavigationDirections.actionGlobalMenuGroup(
+                    MobileNavigationDirections.actionGlobalStudyGroupFragment(
                         selectedEntityId!!
                     )
                 )

@@ -1,14 +1,12 @@
 package com.denchic45.kts
 
-import coil.ImageLoader
-import coil.decode.SvgDecoder
 import com.denchic45.kts.data.db.local.DriverFactory
 import com.denchic45.kts.di.*
-import com.denchic45.kts.di.component.AndroidApplicationComponent
+import com.denchic45.kts.di.AndroidApplicationComponent
 import com.denchic45.kts.di.component.DaggerAppComponent
-import com.denchic45.kts.di.component.create
 import com.denchic45.kts.di.module.AndroidAppModule
 import com.denchic45.kts.di.module.PreferencesModule
+import com.denchic45.kts.ui.ToolbarInteractor
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 import io.ktor.client.engine.android.*
@@ -16,9 +14,6 @@ import kotlin.properties.Delegates
 
 var app: AndroidApp by Delegates.notNull()
     private set
-
-var imageLoader : ImageLoader by Delegates.notNull()
-private set
 
 class AndroidApp : DaggerApplication() {
     private val androidAppComponent: AndroidInjector<AndroidApp> =
@@ -40,11 +35,7 @@ class AndroidApp : DaggerApplication() {
         super.onCreate()
         app = this
         androidAppComponent.inject(this)
-        imageLoader = ImageLoader.Builder(applicationContext)
-            .components {
-                add(SvgDecoder.Factory())
-            }
-            .build()
+
     }
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {

@@ -25,7 +25,7 @@ class StudyGroupViewModel @Inject constructor(
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase
 ) : BaseViewModel() {
 
-     val studyGroupId = _studyGroupId.toUUID()
+     private val studyGroupId = _studyGroupId.toUUID()
 
     private val capabilities = flow {
         emit(
@@ -91,9 +91,9 @@ class StudyGroupViewModel @Inject constructor(
     }
 
     fun onPageSelect(position: Int) {
-        if (position == 0 || position == 1) {
-            toolbarTitle = toolbarTitle
-        }
+//        if (position == 0 || position == 1) {
+//            toolbarTitle = toolbarTitle
+//        }
     }
 
     companion object {

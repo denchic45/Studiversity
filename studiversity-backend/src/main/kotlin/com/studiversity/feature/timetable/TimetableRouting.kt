@@ -8,6 +8,7 @@ import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.feature.timetable.usecase.*
 import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getSortingBy
+import com.studiversity.ktor.getUserUuidByQueryParameterOrMe
 import com.studiversity.ktor.getUuidOrFail
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -40,7 +41,7 @@ fun Application.timetableRoutes() {
 
                     val studyGroupIds = call.request.queryParameters.getAll("study_group_id")?.map(String::toUUID)
                     val courseIds = call.request.queryParameters.getAll("course_id")?.map(String::toUUID)
-                    val memberIds = call.request.queryParameters.getAll("member_id")?.map(String::toUUID)
+                    val memberIds = call.request.queryParameters.getAll("member_id")?.map { if (it == "me") call.currentUserId() else it.toUUID()}
                     val roomIds = call.request.queryParameters.getAll("room_id")?.map(String::toUUID)
 
                     if (studyGroupIds == null && courseIds == null && memberIds == null && roomIds == null)

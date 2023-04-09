@@ -4,6 +4,7 @@ import com.denchic45.kts.data.repository.EventRepository
 import com.denchic45.kts.domain.Resource
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import com.denchic45.stuiversity.util.uuidOf
+import com.denchic45.stuiversity.util.uuidOrMe
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
@@ -11,22 +12,33 @@ import java.util.*
 class FindTimetableOfWeekUseCase(private val eventRepository: EventRepository) {
     suspend operator fun invoke(
         weekOfYear: String,
-        owner: TimetableOwner,
-        ownerId: UUID
+        owner: TimetableOwner2,
     ): Resource<TimetableResponse> = when (owner) {
-        TimetableOwner.Member -> {
-            eventRepository.findTimetable(weekOfYear, memberIds = listOf(uuidOf(ownerId)))
+      is  TimetableOwner2.Member -> {
+            eventRepository.findTimetable(weekOfYear, memberIds = listOf(uuidOrMe(owner.ownerId)))
         }
-        TimetableOwner.StudyGroup -> {
-            eventRepository.findTimetable(weekOfYear, studyGroupIds = listOf(ownerId))
+      is  TimetableOwner2.StudyGroup -> {
+            eventRepository.findTimetable(weekOfYear, studyGroupIds = listOf(owner.ownerId))
         }
-        TimetableOwner.Course -> {
-            eventRepository.findTimetable(weekOfYear, courseIds = listOf(ownerId))
+      is  TimetableOwner2.Course -> {
+            eventRepository.findTimetable(weekOfYear, courseIds = listOf(owner.ownerId))
         }
-        TimetableOwner.Room -> {
-            eventRepository.findTimetable(weekOfYear, roomIds = listOf(ownerId))
+       is TimetableOwner2.Room -> {
+            eventRepository.findTimetable(weekOfYear, roomIds = listOf(owner.ownerId))
         }
     }
 }
 
 enum class TimetableOwner { Member, StudyGroup, Course, Room }
+
+sealed class TimetableOwner2 {
+    abstract val ownerId: UUID?
+
+    class Member(override val ownerId: UUID?) : TimetableOwner2()
+
+    class StudyGroup(override val ownerId: UUID) : TimetableOwner2()
+
+    class Course(override val ownerId: UUID) : TimetableOwner2()
+
+    class Room(override val ownerId: UUID) : TimetableOwner2()
+}

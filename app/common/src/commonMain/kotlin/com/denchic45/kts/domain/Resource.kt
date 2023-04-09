@@ -50,6 +50,12 @@ inline infix fun <T> Resource<T>.onFailure(action: (Failure) -> Unit): Resource<
     }
 }
 
+inline infix fun <T> Resource<T>.onLoading(action: () -> Unit): Resource<T> = apply {
+    if (this is Resource.Loading) {
+        action()
+    }
+}
+
 inline fun <T, V> Resource<T>.map(transform: (T) -> V): Resource<V> {
     return when (this) {
         is Resource.Error -> this
@@ -80,7 +86,8 @@ inline fun <T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T
     return when (this) {
         is Resource.Error -> Resource.Error(transform(failure))
         is Resource.Loading,
-        is Resource.Success -> this
+        is Resource.Success,
+        -> this
     }
 }
 
@@ -91,6 +98,17 @@ inline fun <T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T
 //        is Resource.Success -> onSuccess(value)
 //    }
 //}
+
+fun <T> Flow<Resource<T>>.filterResource(
+    onSuccess: suspend (T) -> Boolean = { true },
+    onError: suspend (Failure) -> Boolean = { true },
+): Flow<Resource<T>> = filter {
+    when (it) {
+        is Resource.Success -> onSuccess(it.value)
+        is Resource.Error -> onError(it.failure)
+        Resource.Loading -> true
+    }
+}
 
 fun <T> Flow<Resource<T>>.filterSuccess(): Flow<Resource.Success<T>> = filterIsInstance()
 
@@ -132,5 +150,5 @@ fun <T> Flow<Resource<T?>>.notNullOrFailure(error: Failure = NotFound): Flow<Res
 fun <T> Flow<Resource<T>>.stateInResource(
     scope: CoroutineScope,
     started: SharingStarted = SharingStarted.Lazily,
-    initialValue: Resource<T> = Resource.Loading
+    initialValue: Resource<T> = Resource.Loading,
 ): StateFlow<Resource<T>> = stateIn(scope, started, initialValue)

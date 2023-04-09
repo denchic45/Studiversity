@@ -12,21 +12,17 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.denchic45.kts.domain.MainInteractor
-import com.denchic45.kts.domain.usecase.TimetableOwner
 import com.denchic45.kts.ui.navigation.*
 import com.denchic45.kts.ui.studygroups.StudyGroupsComponent
-import com.denchic45.kts.ui.timetable.DayTimetableComponent
 import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
-import java.time.LocalDate
-import java.util.*
 
 @Inject
 class MainComponent constructor(
-    private val _timetableComponent: ()->TimetableComponent,
+    private val _timetableComponent: () -> TimetableComponent,
     lazyStudyGroupsComponent: Lazy<StudyGroupsComponent>,
     mainInteractor: MainInteractor,
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,

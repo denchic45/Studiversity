@@ -1,22 +1,19 @@
-package com.denchic45.kts.ui.base
+package com.denchic45.kts.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import com.denchic45.kts.R
-import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.util.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -71,7 +68,6 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
 
         component.finish.flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
             .collectWhenStarted(viewLifecycleOwner) {
-                Log.d("lol", "finish: ${this.javaClass.name}")
                 findNavController().navigateUp()
             }
 
@@ -111,15 +107,15 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
                 .show()
         }
 
-        component.openConfirmation.collectWhenStarted(viewLifecycleOwner) { (title, message) ->
-            navController.navigate(
-                R.id.action_global_confirmDialog,
-                bundleOf(
-                    ConfirmDialog.TITLE to title,
-                    ConfirmDialog.MESSAGE to message
-                )
-            )
-        }
+//        component.openConfirmation.collectWhenStarted(viewLifecycleOwner) { (title, message) ->
+//            navController.navigate(
+//                R.id.action_global_confirmDialog,
+//                bundleOf(
+//                    ConfirmDialog.TITLE to title,
+//                    ConfirmDialog.MESSAGE to message
+//                )
+//            )
+//        }
     }
 
     open fun collectOnOptionVisibility() {
@@ -163,4 +159,11 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
+}
+
+sealed class NavigationCommand {
+    data class To(val directions: NavDirections) : NavigationCommand()
+    object Back : NavigationCommand()
+    data class BackTo(val destinationId: Int) : NavigationCommand()
+    object ToRoot : NavigationCommand()
 }

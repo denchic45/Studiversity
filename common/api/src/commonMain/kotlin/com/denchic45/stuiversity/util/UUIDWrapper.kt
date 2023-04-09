@@ -19,3 +19,5 @@ sealed interface UUIDWrapper {
 fun uuidOf(uuid: UUID) = UUIDWrapper.UUID(uuid)
 
 fun uuidOfMe() = UUIDWrapper.Me
+
+fun uuidOrMe(uuid: UUID?) = uuid?.let(::uuidOf) ?: uuidOfMe()
