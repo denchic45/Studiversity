@@ -47,7 +47,6 @@
                 app:errorEnabled="true">
 
                 <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-
                     android:id="@+id/et_specialty"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

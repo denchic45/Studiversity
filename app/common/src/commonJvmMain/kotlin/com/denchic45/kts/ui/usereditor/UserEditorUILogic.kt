@@ -112,7 +112,8 @@ abstract class UserEditorUILogicDelegate(
                         it.copy(surnameMessage = if (isValid) null else "Фамилия обязательна")
                     }
                 })
-            )
+            ),
+            emailValidator
         )
     )
 

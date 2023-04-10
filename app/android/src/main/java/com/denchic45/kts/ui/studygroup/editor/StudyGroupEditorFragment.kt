@@ -3,7 +3,6 @@ package com.denchic45.kts.ui.studygroup.editor
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
-import android.widget.TextView
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
@@ -89,7 +88,7 @@ class StudyGroupEditorFragment :
                 }
             }
 
-            viewModel.endYearField.observe(viewLifecycleOwner) {end->
+            viewModel.endYearField.observe(viewLifecycleOwner) { end ->
                 end?.let {
                     etEndYear.setText(it.toString())
                 }
@@ -110,9 +109,10 @@ class StudyGroupEditorFragment :
                 viewLifecycleOwner
             ) { listItems: List<ListItem> -> specialtyAdapter!!.updateList(listItems) }
 
-        }}
-
-        companion object {
-            const val GROUP_ID = "GroupEditorFragment GROUP_ID"
         }
     }
+
+    companion object {
+        const val GROUP_ID = "GroupEditorFragment GROUP_ID"
+    }
+}
