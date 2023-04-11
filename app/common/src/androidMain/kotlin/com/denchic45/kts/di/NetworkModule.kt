@@ -60,7 +60,7 @@ class NetworkModule {
     @Provides
     fun guestClient(appPreferences: AppPreferences): GuestHttpClient = HttpClient(Android) {
         defaultRequest {
-            url("http://192.168.28.36:8080/")
+            url("http://192.168.0.102:8080/")
         }
         installContentNegotiation()
     }
@@ -72,7 +72,7 @@ class NetworkModule {
     @Provides
     fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(Android) {
         defaultRequest {
-            url("http://192.168.28.36:8080/")
+            url("http://192.168.0.102:8080/")
         }
         installContentNegotiation()
         install(WebSockets)
@@ -88,6 +88,8 @@ class NetworkModule {
                         val unwrapError: ErrorResponse = result.unwrapError()
                         unwrapError.error.toString() + unwrapError.code
                     }
+                    appPreferences.token = unwrapped.token
+                    appPreferences.refreshToken =  unwrapped.refreshToken
                     BearerTokens(unwrapped.token, unwrapped.refreshToken)
                 }
             }

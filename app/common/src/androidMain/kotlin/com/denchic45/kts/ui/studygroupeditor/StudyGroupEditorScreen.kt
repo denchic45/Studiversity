@@ -1,10 +1,12 @@
 package com.denchic45.kts.ui.studygroupeditor
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
@@ -16,6 +18,7 @@ fun StudyGroupEditorScreen(
     val viewState by component.viewState.collectAsState()
     val inputState by component.inputState.collectAsState()
     val searchedSpecialties by component.searchedSpecialties.collectAsState(emptyList())
+    val searchedSpecialtiesText by component.searchSpecialtiesText.collectAsState()
 
     StudyGroupEditorContent(
         viewState = viewState,
@@ -25,6 +28,7 @@ fun StudyGroupEditorScreen(
         onSpecialtyNameType = component::onSpecialtyNameType,
         onStartAcademicYear = component::onStartYearType,
         onEndAcademicYear = component::onEndYearType,
+        searchedSpecialtiesText = searchedSpecialtiesText,
         onSpecialtySelect = component::onSpecialtySelect
     )
 }
@@ -39,44 +43,57 @@ private fun StudyGroupEditorContent(
     onSpecialtyNameType: (String) -> Unit,
     onStartAcademicYear: (Int) -> Unit,
     onEndAcademicYear: (Int) -> Unit,
-    onSpecialtySelect: (SpecialtyResponse) -> Unit
+    searchedSpecialtiesText: String,
+    onSpecialtySelect: (SpecialtyResponse) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val showList = expanded && searchedSpecialties.isNotEmpty()
     StudyGroupEditorUI(
         viewState = viewState,
         inputState = inputState,
         searchedSpecialties = searchedSpecialties,
         onNameType = onNameType,
-        onSpecialtyNameType = onSpecialtyNameType,
         onStartAcademicYear = onStartAcademicYear,
-        onEndAcademicYear = onEndAcademicYear
+        onEndAcademicYear = onEndAcademicYear,
     ) {
-       viewState.onSuccess {
-           ExposedDropdownMenuBox(
-               expanded = expanded,
-               onExpandedChange = {expanded = it}) {
+        viewState.onSuccess {
+            ExposedDropdownMenuBox(
+                expanded = showList,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.padding(bottom = 20.dp)
+            ) {
+                OutlinedTextField(
+                    value = searchedSpecialtiesText.takeIf(String::isNotEmpty)
+                        ?: it.specialty?.name ?: "",
+                    onValueChange = { onSpecialtyNameType(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(),
+                    label = { Text("Специальность") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = showList
+                        )
+                    },
+                    singleLine = true,
+                    colors = ExposedDropdownMenuDefaults.textFieldColors()
+                )
 
-               TextField(
-                   readOnly = true,
-                   value = it.searchedSpecialtiesText,
-                   onValueChange = { },
-                   modifier = Modifier.fillMaxWidth(),
-                   placeholder = { Text("Специальность") },
-                   supportingText = { Text("") },
-                   trailingIcon = {
-                       ExposedDropdownMenuDefaults.TrailingIcon(
-                           expanded = expanded
-                       )
-                   },
-                   colors = ExposedDropdownMenuDefaults.textFieldColors()
-               )
-
-               ExposedDropdownMenu(expanded = expanded,
-                   onDismissRequest = { expanded = false }) {
-
-               }
-           }
-       }
+                ExposedDropdownMenu(
+                    expanded = showList,
+                    onDismissRequest = { expanded = false }) {
+                    searchedSpecialties.forEach {
+                        DropdownMenuItem(
+                            text = { Text(it.name) },
+                            onClick = {
+                                onSpecialtySelect(it)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -91,6 +108,7 @@ fun StudyGroupEditorScreen() {
         onSpecialtyNameType = {},
         onStartAcademicYear = {},
         onEndAcademicYear = {},
+        searchedSpecialtiesText = "",
         onSpecialtySelect = {}
     )
 }

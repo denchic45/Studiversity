@@ -160,12 +160,17 @@
         android:id="@+id/action_global_confirmDialog"
         app:destination="@id/confirmDialog" />
     <fragment
-        android:id="@+id/groupEditorFragment"
-        android:name="com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment"
-        android:label="GroupEditorFragment" />
+        android:id="@+id/studyGroupEditorFragment"
+        android:name="com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment"
+        android:label="StudyGroupEditorFragment" >
+        <argument
+            android:name="studyGroupId"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
     <action
         android:id="@+id/action_global_groupEditorFragment"
-        app:destination="@id/groupEditorFragment" />
+        app:destination="@id/studyGroupEditorFragment" />
     <dialog
         android:id="@+id/subjectEditorDialog"
         android:name="com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog"

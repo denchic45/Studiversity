@@ -15,25 +15,25 @@ fun StudyGroupEditorScreen(component: StudyGroupEditorComponent, ) {
 
     StudyGroupEditorUI(
         viewState = viewState,
-        inputState = inputState,
         searchedSpecialties = searchedSpecialties,
         onNameType = component::onNameType,
-        onSpecialtyNameType = component::onSpecialtyNameType,
         onStartAcademicYear = component::onStartYearType,
-        onEndAcademicYear = component::onEndYearType
-    ) {
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            searchedSpecialties.forEach { response ->
-                DropdownMenuItem(
-                    text = { Text(response.name) },
-                    onClick = {
-                        expanded = false
-                        component.onSpecialtySelect(response)
-                    })
+        onEndAcademicYear = component::onEndYearType,
+        {
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                searchedSpecialties.forEach { response ->
+                    DropdownMenuItem(
+                        text = { Text(response.name) },
+                        onClick = {
+                            expanded = false
+                            component.onSpecialtySelect(response)
+                        })
+                }
             }
-        }
-    }
+        },
+        startYear
+    )
 }

@@ -17,7 +17,7 @@ import com.denchic45.kts.databinding.FragmentGroupBinding
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
-import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
+import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment
 import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
 import com.example.appbarcontroller.appbarcontroller.AppBarController
 
@@ -47,7 +47,7 @@ class StudyGroupFragment : BaseFragment<StudyGroupViewModel, FragmentGroupBindin
         viewModel.openGroupEditor.observe(viewLifecycleOwner) { groupId ->
             navController.navigate(
                 R.id.action_global_groupEditorFragment,
-                bundleOf(StudyGroupEditorFragment.GROUP_ID to groupId)
+                bundleOf("studyGroupId" to groupId)
             )
         }
         with(binding) {

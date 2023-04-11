@@ -37,7 +37,7 @@ class MainViewModel @Inject constructor(
 
     private val screenIdsWithFab: Set<Int> = setOf(
         R.id.courseFragment,
-        R.id.groupEditorFragment
+        R.id.studyGroupEditorFragment
     )
 
     val updateBannerState = MutableStateFlow<UpdateBannerState>(UpdateBannerState.Hidden)

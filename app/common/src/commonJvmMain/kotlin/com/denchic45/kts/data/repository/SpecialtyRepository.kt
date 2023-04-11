@@ -2,25 +2,21 @@ package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.db.local.source.SpecialtyLocalDataSource
 import com.denchic45.kts.data.fetchResource
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.stuiversity.api.specialty.SpecialtyApi
 import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
-import kotlinx.coroutines.CoroutineScope
 import java.util.*
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
 class SpecialtyRepository @Inject constructor(
-    override val appVersionService: AppVersionService,
     private val specialtyLocalDataSource: SpecialtyLocalDataSource,
     override val networkService: NetworkService,
     private val specialtyApi: SpecialtyApi,
-) : Repository(), NetworkServiceOwner,
+) : NetworkServiceOwner,
     FindByContainsNameRepository<SpecialtyResponse> {
-
 
     override suspend fun findByContainsName(text: String) = fetchResource {
         specialtyApi.search(text)

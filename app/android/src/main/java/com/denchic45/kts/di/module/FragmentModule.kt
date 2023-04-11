@@ -23,7 +23,7 @@ import com.denchic45.kts.ui.settings.SettingsFragment
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
-import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
+import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment
 import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
 import com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog
 import com.denchic45.kts.ui.tasks.TasksFragment

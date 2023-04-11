@@ -35,7 +35,7 @@
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/nav_host_fragment"
-                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:name="com.denchic45.kts.ui.MyNavHostFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:defaultNavHost="true"

@@ -6,13 +6,11 @@ import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.customPopup.ListPopupWindowAdapter
 import com.denchic45.kts.data.domain.NoConnection
-import com.denchic45.kts.data.domain.model.DomainModel
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.databinding.FragmentFinderBinding
 import com.denchic45.kts.domain.Resource
@@ -20,7 +18,7 @@ import com.denchic45.kts.ui.adapter.*
 import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.course.CourseFragment
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
-import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
+import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment
 import com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog
 import com.denchic45.kts.util.Dimensions
 import com.denchic45.kts.util.ViewUtils

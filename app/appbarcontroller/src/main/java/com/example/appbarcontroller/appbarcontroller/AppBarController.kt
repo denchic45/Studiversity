@@ -210,7 +210,7 @@ class AppBarController private constructor(
 
     fun setToolbar(@LayoutRes resId: Int) {
         val view = LayoutInflater.from(appBarLayout.context).inflate(resId, null)
-        if (hasToolbar() && toolbar.javaClass == view.javaClass) {
+        if (hasToolbar() && toolbar.javaClass === view.javaClass) {
             return
         }
         if (view is Toolbar) {

@@ -1,5 +1,9 @@
 package com.denchic45.kts.ui.studygroupeditor
 
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.UIEditor
 import com.denchic45.kts.domain.*
@@ -11,37 +15,47 @@ import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
 class StudyGroupEditorComponent(
+    @Assisted
     private val studyGroupId: UUID?,
     private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     private val findSpecialtyByContainsNameUseCase: FindSpecialtyByContainsNameUseCase,
-    private val componentContext: ComponentContext
+    private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    private val editingState = MutableStateFlow(EditingStudyGroup())
+    private val editingState = EditingStudyGroup()
     val inputState = MutableStateFlow(InputState())
 
-    private val uiEditor: UIEditor<EditingStudyGroup> = UIEditor(studyGroupId == null) {
-        editingState.value
-    }
+//    private val uiEditor: UIEditor<EditingStudyGroup> = UIEditor(studyGroupId == null) {
+//        editingState
+//    }
+
+    private val fieldEditor = FieldEditor(mapOf(
+        "name" to Field("") { editingState.name },
+        "startAcademicYear" to Field(0) { editingState.startAcademicYear },
+        "endAcademicYear" to Field(0) { editingState.endAcademicYear },
+        "specialtyId" to Field(null) { editingState.specialty?.id }
+    ))
 
     private val validator = CompositeValidator(
         listOf(
             ValueValidator(
-                value = editingState.value::name,
+                value = editingState::name,
                 conditions = listOf(Condition(String::isNotEmpty))
             ),
             ValueValidator(
-                value = editingState.value::startAcademicYear,
+                value = editingState::startAcademicYear,
                 conditions = listOf(Condition { it != 0 })
             ),
             ValueValidator(
-                value = editingState.value::endAcademicYear,
+                value = editingState::endAcademicYear,
                 conditions = listOf(Condition { it != 0 })
             ),
         )
@@ -50,21 +64,24 @@ class StudyGroupEditorComponent(
     val viewState = (studyGroupId?.let {
         flow<Resource<EditingStudyGroup>> {
             findStudyGroupByIdUseCase(it).onSuccess { response ->
-                editingState.emit(
-                    EditingStudyGroup(
-                        name = response.name,
-                        specialty = response.specialty,
-                        startAcademicYear = response.academicYear.start,
-                        endAcademicYear = response.academicYear.end
-                    )
+                editingState.apply {
+                    name = response.name
+                    specialty = response.specialty
+                    startAcademicYear = response.academicYear.start
+                    endAcademicYear = response.academicYear.end
+                }
+                fieldEditor.updateOldValues(
+                    "name" to response.name,
+                    "startAcademicYear" to response.academicYear.start,
+                    "endAcademicYear" to response.academicYear.end,
+                    "specialtyId" to response.specialty?.id
                 )
-                uiEditor.oldItem = editingState.value
-                emitAll(editingState.map { Resource.Success(it) })
+                emit(Resource.Success(editingState))
             }.onFailure {
                 emit(Resource.Error(it))
             }
         }
-    } ?: editingState.map { Resource.Success(it) }).stateInResource(componentScope)
+    } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
 
     val searchSpecialtiesText = MutableStateFlow("")
 
@@ -72,36 +89,69 @@ class StudyGroupEditorComponent(
         findSpecialtyByContainsNameUseCase(it)
     }.filterSuccess().map { it.value }
 
-    fun onNameType(name: String) = editingState.update { it.copy(name = name) }
+    fun onNameType(name: String) {
+        editingState.name = name
+    }
 
-    fun onSpecialtySelect(specialty: SpecialtyResponse?) = editingState.update {
+    fun onSpecialtySelect(specialty: SpecialtyResponse?) {
         searchSpecialtiesText.value = ""
-        it.copy(specialty = specialty)
+        editingState.specialty = specialty
     }
 
     fun onSpecialtyNameType(text: String) {
-        searchSpecialtiesText.value = text
+        searchSpecialtiesText.update { text }
     }
 
-    fun onStartYearType(startYear: Int) = editingState.update {
-        it.copy(startAcademicYear = startYear)
+    fun onStartYearType(startYear: Int) {
+        editingState.startAcademicYear = startYear
     }
 
-    fun onEndYearType(endYear: Int) = editingState.update {
-        it.copy(endAcademicYear = endYear)
+
+    fun onEndYearType(endYear: Int) {
+        editingState.endAcademicYear = endYear
     }
+
+    fun onSaveClick() {}
 
     data class InputState(
         val nameMessage: String = "",
         val startYearMessage: String = "",
-        val endYearMessage: String = ""
+        val endYearMessage: String = "",
     )
 }
 
-data class EditingStudyGroup(
-    val name: String = "",
-    val searchedSpecialtiesText:String = "",
-    val specialty: SpecialtyResponse? = null,
-    val startAcademicYear: Int = 0,
-    val endAcademicYear: Int = 0,
-)
+@Stable
+class EditingStudyGroup {
+    var name: String by mutableStateOf("")
+    var specialty: SpecialtyResponse? by mutableStateOf(null)
+    var startAcademicYear: Int by mutableStateOf(0)
+    var endAcademicYear: Int by mutableStateOf(0)
+}
+
+class Field<T>(
+    var oldValue: T,
+    val currentValue: () -> T,
+) {
+    fun hasChanged() = oldValue != currentValue()
+}
+
+class FieldEditor constructor(private val fields: Map<String, Field<*>>) {
+
+    fun hasChanged() = fields.any { it.value.hasChanged() }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> field(name: String): Field<T> = fields.getValue(name) as Field<T>
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getValue(name: String) = field<T>(name)
+
+    fun <T> updateOldValueBy(name: String, oldValue: T) {
+        field<T>(name).oldValue = oldValue
+    }
+}
+
+fun FieldEditor.updateOldValues(vararg fields: Pair<String, *>) {
+    fields.forEach { (name, value) ->
+        updateOldValueBy(name, value)
+    }
+}

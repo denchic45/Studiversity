@@ -41,6 +41,8 @@ abstract class AndroidApplicationComponent(
 
     abstract val toolbarInteractor: ToolbarInteractor
 
+    abstract val injectFragmentFactory: InjectFragmentFactory
+
     abstract val timetableLoaderComponent: TimetableLoaderComponent
 
     abstract val yourTimetablesComponent: YourTimetablesComponent

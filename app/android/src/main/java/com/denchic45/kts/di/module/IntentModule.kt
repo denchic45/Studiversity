@@ -11,7 +11,7 @@ import com.denchic45.kts.ui.course.taskInfo.CourseWorkFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
-import com.denchic45.kts.ui.studygroup.editor.StudyGroupEditorFragment
+import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment
 import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
 import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
