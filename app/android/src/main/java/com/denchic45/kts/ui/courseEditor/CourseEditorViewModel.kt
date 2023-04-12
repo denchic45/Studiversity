@@ -9,7 +9,7 @@ import com.denchic45.kts.domain.usecase.FindCourseByIdUseCase
 import com.denchic45.kts.domain.usecase.FindSubjectByContainsNameUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
-import com.denchic45.kts.ui.model.UiImage
+import com.denchic45.kts.ui.UiImage
 import com.denchic45.kts.uieditor.UIEditor
 import com.denchic45.kts.uivalidator.Rule
 import com.denchic45.kts.uivalidator.UIValidator

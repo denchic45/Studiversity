@@ -6,10 +6,14 @@ import com.denchic45.stuiversity.api.auth.AuthApiImpl
 import com.denchic45.stuiversity.api.auth.model.RefreshTokenRequest
 import com.denchic45.stuiversity.api.course.CourseApiImpl
 import com.denchic45.stuiversity.api.course.CoursesApi
+import com.denchic45.stuiversity.api.course.element.CourseElementsApi
+import com.denchic45.stuiversity.api.course.element.CourseElementsApiImpl
 import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.SubjectApiImpl
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApiImpl
+import com.denchic45.stuiversity.api.course.work.CourseWorkApi
+import com.denchic45.stuiversity.api.course.work.CourseWorkApiImpl
 import com.denchic45.stuiversity.api.member.MembersApi
 import com.denchic45.stuiversity.api.member.MembersApiImpl
 import com.denchic45.stuiversity.api.membership.MembershipApi
@@ -57,7 +61,7 @@ abstract class NetworkComponent(
     @Provides
     fun guestClient(appPreferences: AppPreferences): GuestHttpClient = HttpClient(engine) {
         defaultRequest {
-            url(appPreferences.url)
+            url("http://192.168.28.140:8080/")
         }
         installContentNegotiation()
     }
@@ -70,7 +74,7 @@ abstract class NetworkComponent(
     @Provides
     fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(engine) {
         defaultRequest {
-            url("http://192.168.0.102:8080/")
+            url("http://192.168.28.140:8080/")
         }
         installContentNegotiation()
         install(WebSockets)
@@ -168,6 +172,14 @@ abstract class NetworkComponent(
     @LayerScope
     @Provides
     fun timetableApi(client: HttpClient): TimetableApi = TimetableApiImpl(client)
+
+    @LayerScope
+    @Provides
+    fun courseElementsApi(client: HttpClient): CourseElementsApi = CourseElementsApiImpl(client)
+
+    @LayerScope
+    @Provides
+    fun courseWorkApi(client: HttpClient): CourseWorkApi = CourseWorkApiImpl(client)
 
 //    @LayerScope
 //    @Provides

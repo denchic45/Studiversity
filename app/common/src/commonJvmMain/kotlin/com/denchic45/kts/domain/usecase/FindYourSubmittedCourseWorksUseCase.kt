@@ -9,6 +9,7 @@ import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionStat
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class FindYourSubmittedCourseWorksUseCase @Inject constructor(
    private val courseElementRepository: CourseElementRepository
 ) {

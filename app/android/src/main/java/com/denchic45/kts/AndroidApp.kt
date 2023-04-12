@@ -2,11 +2,9 @@ package com.denchic45.kts
 
 import com.denchic45.kts.data.db.local.DriverFactory
 import com.denchic45.kts.di.*
-import com.denchic45.kts.di.AndroidApplicationComponent
 import com.denchic45.kts.di.component.DaggerAppComponent
 import com.denchic45.kts.di.module.AndroidAppModule
 import com.denchic45.kts.di.module.PreferencesModule
-import com.denchic45.kts.ui.ToolbarInteractor
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 import io.ktor.client.engine.android.*

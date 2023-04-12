@@ -7,12 +7,18 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.lifecycle.lifecycleScope
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.arkivanov.decompose.defaultComponentContext
 import com.bumptech.glide.Glide
-import com.denchic45.kts.CustomToolbar
 import com.denchic45.kts.R
 import com.denchic45.kts.app
 import com.denchic45.kts.databinding.ActivityMainBinding
@@ -21,6 +27,7 @@ import com.denchic45.kts.ui.adapter.NavDropdownItemHolder
 import com.denchic45.kts.ui.adapter.NavItemHolder
 import com.denchic45.kts.ui.adapter.navAdapter
 import com.denchic45.kts.ui.base.BaseActivity
+import com.denchic45.kts.ui.get
 import com.denchic45.kts.ui.initImageLoader
 import com.denchic45.kts.ui.login.LoginActivity
 import com.denchic45.kts.ui.updateView.SnackbarUpdateView
@@ -28,11 +35,10 @@ import com.denchic45.kts.util.collectWhenResumed
 import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.kts.util.findFragmentContainerNavController
 import com.denchic45.widget.extendedAdapter.extension.clickBuilder
-import com.example.appbarcontroller.appbarcontroller.AppBarController
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 
 
@@ -40,8 +46,9 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 
     override val binding: ActivityMainBinding by viewBinding(ActivityMainBinding::bind)
     override val viewModel: MainViewModel by viewModels { viewModelFactory }
-    private lateinit var appBarLayout: AppBarLayout
-    private lateinit var toolbar: CustomToolbar
+
+    //    private lateinit var appBarLayout: AppBarLayout
+//    private lateinit var toolbar: CustomToolbar
     private lateinit var toggle: ActionBarDrawerToggle
 
     private lateinit var snackbar: Snackbar
@@ -63,13 +70,13 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        app.appComponent.componentContext = defaultComponentContext()
         initImageLoader(this)
-
         viewModel.setActivityForService(this)
-
-        snackbar = Snackbar.make(this, binding.container, "", Snackbar.LENGTH_INDEFINITE)
+        snackbar = Snackbar.make(this, binding.root, "", Snackbar.LENGTH_INDEFINITE)
         val snackbarUpdateView = SnackbarUpdateView(this)
         snackbar.view.setBackgroundColor(Color.TRANSPARENT)
         val snackbarLayout = snackbar.view as Snackbar.SnackbarLayout
@@ -81,19 +88,30 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
         snackbarUpdateView.onInstallClickListener = { viewModel.onInstallClick() }
 
         bnv = findViewById(R.id.bottom_nav_view)
-        toolbar = findViewById(R.id.toolbar_main)
+//        toolbar = findViewById(R.id.toolbar_main)
 
-        appBarLayout = findViewById(R.id.app_bar)
+//        appBarLayout = findViewById(R.id.app_bar)
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
-        AppBarController.create(this, appBarLayout)
-        setSupportActionBar(toolbar)
+//        AppBarController.create(this, appBarLayout)
+//        setSupportActionBar(toolbar)
         setupWithNavController(navigationView, navController)
         setupWithNavController(bnv, navController)
 
         bnv.setOnItemReselectedListener { refreshCurrentFragment() }
 
-        app.appComponent.toolbarInteractor.title.collectWhenStarted(this) {
-            title = it ?: ""
+        val toolbarInteractor = app.appComponent.toolbarInteractor
+
+        toolbarInteractor.titleFlow.collectWhenStarted(this) {
+            title = it.get(this)
+        }
+
+        binding.topAppBarComposable.setContent {
+            MaterialTheme {
+                val collectAsState by toolbarInteractor.titleFlow.collectAsState()
+                TopAppBar(
+                    title = { Text(collectAsState.get(LocalContext.current)) }
+                )
+            }
         }
 
         viewModel.updateBannerState.debounce(1000)
@@ -132,12 +150,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                 }
             }
 
-        viewModel.menuBtnVisibility.collectWhenStarted(
-            this
-        ) { itemIdWithVisibilityPair: Pair<Int, Boolean> ->
-            bnv.menu.findItem(
-                itemIdWithVisibilityPair.first
-            ).isVisible = itemIdWithVisibilityPair.second
+        viewModel.menuBtnVisibility.collectWhenStarted(this) { (itemId, visibility) ->
+            bnv.menu.findItem(itemId).isVisible = visibility
         }
 
         with(binding) {
@@ -150,32 +164,30 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
             }
 
 
-            lifecycleScope.launchWhenResumed {
-                viewModel.toolbarNavigationState.collect {
-                    toggle = ActionBarDrawerToggle(
-                        this@MainActivity,
-                        drawerLayout,
-                        toolbar,
-                        R.string.navigation_drawer_open,
-                        R.string.navigation_drawer_close
-                    )
-                    when (it) {
-                        MainViewModel.ToolbarNavigationState.MENU -> {
-                            drawerLayout.addDrawerListener(toggle)
-                            toggle.isDrawerIndicatorEnabled = true
-                            toggle.syncState()
-                        }
-                        MainViewModel.ToolbarNavigationState.BACK -> {
-                            toggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
-                            toggle.isDrawerIndicatorEnabled = false
-                            toggle.syncState()
-                        }
-                        else -> {}
-                    }
 
-                    toggle.toolbarNavigationClickListener = View.OnClickListener {
-                        onBackPressed()
+            viewModel.toolbarNavigationState.collectWhenResumed(this@MainActivity) {
+                toggle = ActionBarDrawerToggle(
+                    this@MainActivity,
+                    drawerLayout,
+                    R.string.navigation_drawer_open,
+                    R.string.navigation_drawer_close
+                )
+                when (it) {
+                    MainViewModel.ToolbarNavigationState.MENU -> {
+                        drawerLayout.addDrawerListener(toggle)
+                        toggle.isDrawerIndicatorEnabled = true
+                        toggle.syncState()
                     }
+                    MainViewModel.ToolbarNavigationState.BACK -> {
+                        toggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+                        toggle.isDrawerIndicatorEnabled = false
+                        toggle.syncState()
+                    }
+                    else -> {}
+                }
+
+                toggle.toolbarNavigationClickListener = View.OnClickListener {
+                    onBackPressed()
                 }
             }
 

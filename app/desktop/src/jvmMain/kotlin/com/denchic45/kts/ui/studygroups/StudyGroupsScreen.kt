@@ -7,12 +7,15 @@ import com.denchic45.kts.ui.studygroup.StudyGroupScreen
 
 @Composable
 fun StudyGroupsScreen(appBarMediator: AppBarMediator, studyGroupsComponent: StudyGroupsComponent) {
-    Children(
-        stack = studyGroupsComponent.stack
-    ) {
-        when(val instance = it.instance) {
-            StudyGroupsChild.Empty -> TODO()
-            is StudyGroupsChild.Group -> StudyGroupScreen(appBarMediator,instance.groupRootComponent)
+    Children(stack = studyGroupsComponent.stack) {
+        when (val instance = it.instance) {
+            StudyGroupsChild.Empty -> {
+                // TODO:
+            }
+            is StudyGroupsChild.Group -> StudyGroupScreen(
+                appBarMediator,
+                instance.groupRootComponent
+            )
         }
     }
 }

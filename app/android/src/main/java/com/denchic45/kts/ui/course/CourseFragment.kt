@@ -17,11 +17,11 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentCourseBinding
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.base.HasNavArgs
+import com.denchic45.kts.ui.BaseFragment2
 import com.denchic45.kts.ui.adapter.CourseTopicAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskHolder
-import com.denchic45.kts.ui.BaseFragment2
+import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.course.content.ContentFragment
 import com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment
 import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
@@ -32,12 +32,18 @@ import com.denchic45.widget.extendedAdapter.extension.clickBuilder
 import com.example.appbarcontroller.appbarcontroller.AppBarController
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import me.tatarka.inject.annotations.Inject
 
-class CourseFragment : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
+@Inject
+class CourseFragment(
+    component: (String) -> CourseViewModel
+) : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
     R.layout.fragment_course
 ), HasNavArgs<CourseFragmentArgs> {
 
     override val navArgs: CourseFragmentArgs by navArgs()
+
+    override val component: CourseViewModel by lazy { component(navArgs.courseId) }
 
     override val binding: FragmentCourseBinding by viewBinding(FragmentCourseBinding::bind)
     private lateinit var collapsingToolbarLayout: CollapsingToolbarLayout
@@ -116,8 +122,9 @@ class CourseFragment : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
                         actionState == ItemTouchHelper.ACTION_STATE_DRAG && isCurrentlyActive
                 }
 
-                override fun clearView(recyclerView: RecyclerView,
-                                       viewHolder: RecyclerView.ViewHolder
+                override fun clearView(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder
                 ) {
                     super.clearView(recyclerView, viewHolder)
                     component.onContentMoved()
@@ -145,7 +152,7 @@ class CourseFragment : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
                         })
 //                        TODO("Переиспользовать LazyColumn для desktop и android")
                     }
-            }
+                }
 
             component.fabVisibility.collectWhenStarted(viewLifecycleOwner) {
                 requireActivity().findViewById<FloatingActionButton>(R.id.fab_main)

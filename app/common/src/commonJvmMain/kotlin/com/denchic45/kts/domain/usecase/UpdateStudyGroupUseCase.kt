@@ -7,6 +7,7 @@ import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import java.util.*
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class UpdateStudyGroupUseCase @Inject constructor(
     private val studyGroupRepository: StudyGroupRepository,
 ) {

@@ -2,7 +2,7 @@ package com.denchic45.kts.util
 
 import com.denchic45.kts.R
 import com.denchic45.kts.ui.model.OptionItem
-import com.denchic45.kts.ui.model.UiText
+import com.denchic45.kts.ui.UiText
 
 class Options {
     companion object {

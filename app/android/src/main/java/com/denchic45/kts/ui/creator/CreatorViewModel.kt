@@ -5,8 +5,8 @@ import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.model.domain.ListItem
+import com.denchic45.kts.ui.UiImage
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.ui.model.UiImage
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

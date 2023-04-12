@@ -8,14 +8,16 @@ import com.denchic45.kts.domain.usecase.ObserveUserUseCase
 import com.denchic45.kts.ui.AndroidUiComponent
 import com.denchic45.kts.ui.AndroidUiComponentDelegate
 import com.denchic45.stuiversity.util.toUUID
-import javax.inject.Inject
-import javax.inject.Named
+import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
 
-class ProfileViewModel @Inject constructor(
-    @Named(ProfileFragment.USER_ID) userId: String,
+@Inject
+class ProfileViewModel constructor(
+    @Assisted
+    _userId: String,
     observeUserUseCase: ObserveUserUseCase,
     private val componentContext: ComponentContext
-) : ProfileUiLogic(observeUserUseCase, userId.toUUID(), componentContext),
+) : ProfileUiLogic(observeUserUseCase, _userId.toUUID(), componentContext),
     AndroidUiComponent by AndroidUiComponentDelegate(componentContext) {
 
     val openFullImage = SingleLiveData<String>()

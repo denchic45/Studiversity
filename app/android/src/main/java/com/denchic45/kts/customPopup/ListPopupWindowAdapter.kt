@@ -16,9 +16,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.kts.R
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.ui.model.onId
-import com.denchic45.kts.ui.model.onUrl
 import com.denchic45.kts.databinding.ItemPopupContentBinding
+import com.denchic45.kts.ui.onId
+import com.denchic45.kts.ui.onName
 import com.denchic45.kts.util.viewBinding
 
 class ListPopupWindowAdapter(context: Context, items: List<ListItem>) : ArrayAdapter<ListItem>(
@@ -98,7 +98,7 @@ class ListPopupWindowAdapter(context: Context, items: List<ListItem>) : ArrayAda
                         it
                     )
                 )
-            }?.onUrl {
+            }?.onName {
                 val iconResId = context.resources.getIdentifier(it, "drawable", context.packageName)
 
                 if (iconResId != 0) {
@@ -113,7 +113,7 @@ class ListPopupWindowAdapter(context: Context, items: List<ListItem>) : ArrayAda
                 }
             }
 
-            item.color?.onUrl {
+            item.color?.onName {
                 ColorStateList.valueOf(
                     convertView.resources
                         .getIdentifier(it, "color", convertView.context.packageName)

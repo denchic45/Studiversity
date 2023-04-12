@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.model.GroupMembers
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.*
+import com.denchic45.kts.ui.UiText
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.model.*
 import com.denchic45.stuiversity.api.role.model.Capability

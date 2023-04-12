@@ -62,7 +62,7 @@ fun LoginScreen(loginComponent: LoginComponent) {
 
             Button(onClick = {
                 loginComponent.onLoginClick(
-                    "denchic860@gmail.com", "Den141819!kts"
+                    "denchic860@gmail.com", "JFonij5430"
                 )
             }) {
                 Text("Войти")

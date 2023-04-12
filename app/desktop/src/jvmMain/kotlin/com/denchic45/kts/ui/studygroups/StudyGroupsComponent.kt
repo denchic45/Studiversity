@@ -4,12 +4,14 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.essenty.lifecycle.subscribe
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.studygroup.GroupRootComponent
 import kotlinx.coroutines.flow.flow
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
@@ -18,6 +20,7 @@ class StudyGroupsComponent(
     private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
     private val overlayNavigator: OverlayNavigation<OverlayConfig>,
     private val lazyGroupRootComponent: (OverlayNavigation<OverlayConfig>, groupId: UUID) -> GroupRootComponent,
+    @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
@@ -38,7 +41,6 @@ class StudyGroupsComponent(
                 }
             }
         })
-
 }
 
 
@@ -50,7 +52,7 @@ sealed class StudyGroupsConfig : Parcelable {
     data class Group(val studyGroupId: UUID) : StudyGroupsConfig()
 }
 
-sealed class StudyGroupsChild() {
+sealed class StudyGroupsChild {
     object Empty : StudyGroupsChild()
     data class Group(val groupRootComponent: GroupRootComponent) : StudyGroupsChild()
 }

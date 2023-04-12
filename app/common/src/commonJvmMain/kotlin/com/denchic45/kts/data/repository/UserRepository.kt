@@ -24,12 +24,11 @@ import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
 class UserRepository @Inject constructor(
-    override val appVersionService: AppVersionService,
     private val userPreferences: UserPreferences,
     override val networkService: NetworkService,
     private val userLocalDataSource: UserLocalDataSource,
     private val userApi: UserApi,
-) : Repository(), FindByContainsNameRepository<UserResponse>, NetworkServiceOwner {
+) : FindByContainsNameRepository<UserResponse>, NetworkServiceOwner {
 
     override suspend fun findByContainsName(text: String): Resource<List<UserResponse>> {
         return fetchResource {

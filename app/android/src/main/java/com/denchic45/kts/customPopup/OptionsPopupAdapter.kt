@@ -11,11 +11,11 @@ import androidx.core.widget.ImageViewCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.kts.ui.model.OptionItem
-import com.denchic45.kts.ui.model.UiText
-import com.denchic45.kts.ui.model.onId
-import com.denchic45.kts.ui.model.onString
-import com.denchic45.kts.ui.model.onUrl
 import com.denchic45.kts.databinding.ItemPopupIconContentBinding
+import com.denchic45.kts.ui.UiText
+import com.denchic45.kts.ui.onId
+import com.denchic45.kts.ui.onName
+import com.denchic45.kts.ui.onString
 import com.denchic45.kts.util.viewBinding
 
 class OptionsPopupAdapter(context: Context, items: List<OptionItem>) : ArrayAdapter<OptionItem>(
@@ -68,20 +68,15 @@ class OptionsPopupAdapter(context: Context, items: List<OptionItem>) : ArrayAdap
         fun onBind(item: OptionItem) {
             with(itemPopupIconContentBinding) {
                 val context = root.context
-                item.title
-                    .onString {
-                        tvName.text = it
-                    }
-                    .onId {
-                        tvName.setText(it)
-                    }
+                item.title.onString { tvName.text = it }
+                    .onId { tvName.setText(it) }
 
                 item.icon?.onId {
                     ivIcon.visibility = View.VISIBLE
                     ivIcon.setImageDrawable(
                         ContextCompat.getDrawable(context, it)
                     )
-                }?.onUrl {
+                }?.onName {
                     ivIcon.visibility = View.VISIBLE
                     Glide.with(context)
                         .load(it)
@@ -91,7 +86,7 @@ class OptionsPopupAdapter(context: Context, items: List<OptionItem>) : ArrayAdap
                     ivIcon.visibility = View.GONE
                 }
 
-                item.color?.onUrl {
+                item.color?.onName {
                     ColorStateList.valueOf(
                         context.resources
                             .getIdentifier(it, "color", context.packageName)

@@ -7,6 +7,7 @@ import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import java.util.*
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class UpdateCourseWorkUseCase @Inject constructor(
     private val courseElementRepository: CourseElementRepository,
 ) {

@@ -113,6 +113,8 @@ kotlin {
 
 //                implementation ("com.github.JoelKanyi:HorizontalCalendarView:1.0.4")
 
+                api("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.3")
+
                 api("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("app.cash.sqldelight:android-driver:$sqlDelightVersion")

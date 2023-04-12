@@ -16,9 +16,9 @@ import com.denchic45.kts.ui.adapter.*
 import com.denchic45.kts.ui.adminPanel.AdminPanelFragmentDirections
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.course.CourseFragmentDirections
-import com.denchic45.kts.ui.model.UiText
-import com.denchic45.kts.ui.model.onId
-import com.denchic45.kts.ui.model.onString
+import com.denchic45.kts.ui.UiText
+import com.denchic45.kts.ui.onId
+import com.denchic45.kts.ui.onString
 import com.denchic45.kts.ui.settings.SettingsFragmentDirections
 import com.denchic45.kts.ui.tasks.TasksFragmentDirections
 import com.denchic45.stuiversity.api.course.model.CourseResponse

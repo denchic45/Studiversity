@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.debounce
 import javax.inject.Inject
 
 interface HasComponent<C : AndroidUiComponent> {
-    var component: C
+    val component: C
 }
 
 abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
@@ -31,9 +31,6 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
 ) : Fragment(layoutId), HasComponent<C> {
 
     abstract val binding: VB
-
-    @Inject
-    override lateinit var component: C
 
     open val navController: NavController by lazy { findNavController() }
 

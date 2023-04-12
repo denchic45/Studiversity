@@ -32,10 +32,11 @@ class GroupMembersFragment :
 
     override fun onResume() {
         super.onResume()
-        view?.let {
-            AppBarController.findController(requireActivity())
-                .setExpandableIfViewCanScroll(binding.rvUsers, viewLifecycleOwner)
-        }
+        // TODO: реилизовать скролл с TopAppBar
+//        view?.let {
+//            AppBarController.findController(requireActivity())
+//                .setExpandableIfViewCanScroll(binding.rvUsers, viewLifecycleOwner)
+//        }
     }
 
     override val navController: NavController by lazy {

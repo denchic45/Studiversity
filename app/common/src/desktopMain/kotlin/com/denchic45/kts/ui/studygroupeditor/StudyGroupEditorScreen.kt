@@ -6,7 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 
 @Composable
-fun StudyGroupEditorScreen(component: StudyGroupEditorComponent, ) {
+fun StudyGroupEditorScreen(component: StudyGroupEditorComponent) {
     val viewState by component.viewState.collectAsState()
     val inputState by component.inputState.collectAsState()
     val searchedSpecialties by component.searchedSpecialties.collectAsState(emptyList())
@@ -19,21 +19,20 @@ fun StudyGroupEditorScreen(component: StudyGroupEditorComponent, ) {
         onNameType = component::onNameType,
         onStartAcademicYear = component::onStartYearType,
         onEndAcademicYear = component::onEndYearType,
-        {
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-            ) {
-                searchedSpecialties.forEach { response ->
-                    DropdownMenuItem(
-                        text = { Text(response.name) },
-                        onClick = {
-                            expanded = false
-                            component.onSpecialtySelect(response)
-                        })
-                }
+        inputState = inputState
+    ) {
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            searchedSpecialties.forEach { response ->
+                DropdownMenuItem(
+                    text = { Text(response.name) },
+                    onClick = {
+                        expanded = false
+                        component.onSpecialtySelect(response)
+                    })
             }
-        },
-        startYear
-    )
+        }
+    }
 }

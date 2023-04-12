@@ -20,13 +20,17 @@ import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.usereditor.GenderAction
 import com.denchic45.kts.util.collectWhenStarted
 import com.jakewharton.rxbinding4.widget.textChanges
+import me.tatarka.inject.annotations.Inject
 
-class UserEditorFragment : BaseFragment2<UserEditorViewModel, FragmentUserEditorBinding>(
-    R.layout.fragment_user_editor,
-    R.menu.options_user_editor
-), HasNavArgs<UserEditorFragmentArgs> {
+@Inject
+class UserEditorFragment(component: (String?) -> UserEditorViewModel) :
+    BaseFragment2<UserEditorViewModel, FragmentUserEditorBinding>(
+        R.layout.fragment_user_editor,
+        R.menu.options_user_editor
+    ), HasNavArgs<UserEditorFragmentArgs> {
 
     override val navArgs: UserEditorFragmentArgs by navArgs()
+    override val component: UserEditorViewModel by lazy { component(navArgs.userId) }
     override val binding: FragmentUserEditorBinding by viewBinding(FragmentUserEditorBinding::bind)
     private lateinit var keyboardManager: KeyboardManager
 
@@ -134,7 +138,7 @@ class UserEditorFragment : BaseFragment2<UserEditorViewModel, FragmentUserEditor
     }
 
     companion object {
-//        const val USER_ROLE = "USER_ROLE"
+        //        const val USER_ROLE = "USER_ROLE"
         const val USER_ID = "USER_ID"
 //        const val USER_GROUP_ID = "USER_GROUP_ID"
     }

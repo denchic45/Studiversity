@@ -1,11 +1,10 @@
 package com.denchic45.kts.data.model.domain
 
 import com.denchic45.kts.data.domain.model.DomainModel
-import com.denchic45.kts.ui.model.UiColor
-import com.denchic45.kts.ui.model.UiImage
-import com.denchic45.kts.ui.model.UiText
+import com.denchic45.kts.ui.UiColor
+import com.denchic45.kts.ui.UiImage
 import com.google.gson.annotations.SerializedName
-import java.util.UUID
+import java.util.*
 
 
 data class ListItem(
@@ -20,9 +19,8 @@ data class ListItem(
 ) : DomainModel {
 
     companion object {
-        val emptyIcon = UiText.IdText(0)
-
-        val emptyColor = UiText.IdText(0)
+//        val emptyIcon = UiText.IdText(0)
+//        val emptyColor = UiText.IdText(0)
     }
 
     fun hasIcon(): Boolean = icon != null

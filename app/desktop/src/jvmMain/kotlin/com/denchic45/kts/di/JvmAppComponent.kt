@@ -32,9 +32,11 @@ abstract class JvmAppComponent(
     @Component val networkComponent: NetworkComponent
 ) {
 
+    lateinit var componentContext: ComponentContext
+
     @Provides
     fun provideComponentContext(): ComponentContext {
-        return DefaultComponentContext(LifecycleRegistry())
+        return componentContext
     }
 
     @AppScope

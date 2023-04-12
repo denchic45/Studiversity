@@ -17,12 +17,14 @@ import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Named
 
-class CourseViewModel @Inject constructor(
-    @Named(CourseFragment.COURSE_ID) private val _courseId: String,
+@Inject
+class CourseViewModel(
+    @Assisted
+    private val _courseId: String,
     findCourseByIdUseCase: FindCourseByIdUseCase,
     private val removeCourseElementUseCase: RemoveCourseElementUseCase,
     private val findCourseElementsUseCase: FindCourseElementsUseCase,

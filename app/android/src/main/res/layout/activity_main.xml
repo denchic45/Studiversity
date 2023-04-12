@@ -8,36 +8,42 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="vertical">
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+<!--        <androidx.coordinatorlayout.widget.CoordinatorLayout-->
+<!--            android:id="@+id/container"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_weight="1">-->
 
-            <com.google.android.material.appbar.AppBarLayout
-                android:id="@+id/app_bar"
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/topAppBar_composable"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:windowBackground"
-                android:minHeight="?actionBarSize"
-                app:liftOnScroll="true">
+                android:layout_height="wrap_content"/>
 
-                <com.denchic45.kts.CustomToolbar
-                    android:id="@+id/toolbar_main"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:layout_scrollFlags="scroll|enterAlways|snap" />
+<!--            <com.google.android.material.appbar.AppBarLayout-->
+<!--                android:visibility="gone"-->
+<!--                android:id="@+id/app_bar"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="?android:windowBackground"-->
+<!--                android:minHeight="?actionBarSize"-->
+<!--                app:liftOnScroll="true">-->
 
-            </com.google.android.material.appbar.AppBarLayout>
+<!--                <com.denchic45.kts.CustomToolbar-->
+<!--                    android:id="@+id/toolbar_main"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="?attr/actionBarSize"-->
+<!--                    app:layout_scrollFlags="scroll|enterAlways|snap" />-->
+<!--            </com.google.android.material.appbar.AppBarLayout>-->
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/nav_host_fragment"
                 android:name="com.denchic45.kts.ui.MyNavHostFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 app:defaultNavHost="true"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:navGraph="@navigation/navigation_main" />
@@ -54,12 +60,13 @@
                 app:srcCompat="@drawable/ic_add"
                 app:tint="@color/white"
                 tools:ignore="ContentDescription" />
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+<!--        </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_nav_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0"
             android:background="?android:attr/windowBackground"
             app:font="@font/gilroy_semi_bold"
             app:itemIconSize="28dp"

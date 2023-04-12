@@ -5,7 +5,6 @@ import kotlinx.coroutines.channels.Channel
 import java.util.*
 import javax.inject.Inject
 
-
 class UserChooserInteractor @Inject constructor() {
     private val selected = Channel<UUID>()
 

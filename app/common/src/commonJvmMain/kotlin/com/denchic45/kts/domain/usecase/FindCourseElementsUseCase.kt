@@ -7,6 +7,7 @@ import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import java.util.*
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class FindCourseElementsUseCase @Inject constructor(
     private val courseElementRepository: CourseElementRepository,
 ) {

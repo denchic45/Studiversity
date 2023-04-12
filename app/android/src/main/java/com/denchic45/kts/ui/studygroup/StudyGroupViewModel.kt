@@ -1,7 +1,8 @@
 package com.denchic45.kts.ui.studygroup
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.domain.NotFound
@@ -10,23 +11,27 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
-import com.denchic45.kts.ui.base.BaseViewModel
+import com.denchic45.kts.ui.*
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
-import javax.inject.Named
+import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
 
-class StudyGroupViewModel @Inject constructor(
-    @Named(StudyGroupFragment.GROUP_ID)
-     val _studyGroupId: String,
+@Inject
+class StudyGroupViewModel (
+    @Assisted
+    val _studyGroupId: String,
+    private val toolbarInteractor: ToolbarInteractor,
     private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
-    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase
-) : BaseViewModel() {
+    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
+    private val componentContext: ComponentContext
+) : AndroidUiComponent by AndroidUiComponentDelegate(componentContext) {
 
-     private val studyGroupId = _studyGroupId.toUUID()
-
+    private val studyGroupId = _studyGroupId.toUUID()
+    
     private val capabilities = flow {
         emit(
             checkUserCapabilitiesInScopeUseCase(
@@ -42,7 +47,7 @@ class StudyGroupViewModel @Inject constructor(
                 initTabs.setValue(2)
             }
         }
-    }.stateInResource(viewModelScope)
+    }.stateInResource(componentScope)
 
     val initTabs = MutableLiveData(2)
 
@@ -50,16 +55,19 @@ class StudyGroupViewModel @Inject constructor(
 
     val openGroupEditor = SingleLiveData<String>()
 
-    val studyGroup = flow { emit(findStudyGroupByIdUseCase(studyGroupId)) }.onEach {
+    val studyGroup = flow { emit(findStudyGroupByIdUseCase(studyGroupId)) }.stateInResource(componentScope)
 
-
-        it.onSuccess { response ->
-            toolbarTitle = response.name
-        }.onFailure { failure ->
-            if (failure is NotFound)
-                finish()
-        }
-    }.stateInResource(viewModelScope)
+    init {
+     componentScope.launch {
+         studyGroup.collect {
+             it.onSuccess { response -> }
+                 .onFailure { failure ->
+                 if (failure is NotFound)
+                     finish()
+             }
+         }
+     }
+    }
 
     fun onPrepareOptions(currentItem: Int) {
         capabilities.value.onSuccess {

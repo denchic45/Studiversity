@@ -5,7 +5,7 @@ package com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.simpleEventE
 //import com.denchic45.kts.SingleLiveData
 //import com.denchic45.kts.data.domain.model.EventType
 //import com.denchic45.kts.data.model.domain.ListItem
-//import com.denchic45.kts.ui.model.UiColor
+//import com.denchic45.kts.ui.UiColor
 //import com.denchic45.kts.ui.model.UiImage
 //import com.denchic45.kts.domain.model.SimpleEventDetails
 //import com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor.EventEditorInteractor

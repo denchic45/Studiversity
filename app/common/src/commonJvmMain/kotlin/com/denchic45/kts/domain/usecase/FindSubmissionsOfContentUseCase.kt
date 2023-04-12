@@ -6,6 +6,7 @@ import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResp
 import java.util.*
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class FindCourseWorkSubmissionsUseCase @Inject constructor(
     private val submissionRepository: SubmissionRepository,
 ) {

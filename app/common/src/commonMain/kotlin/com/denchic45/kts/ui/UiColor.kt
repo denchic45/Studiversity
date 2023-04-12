@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.model
+package com.denchic45.kts.ui
 
 sealed class UiColor {
 
@@ -7,7 +7,7 @@ sealed class UiColor {
     data class ColorId(val value: Int) : UiColor()
 }
 
-fun UiColor.onUrl(fn: (success: String) -> Unit): UiColor =
+fun UiColor.onName(fn: (success: String) -> Unit): UiColor =
     this.apply { if (this is UiColor.ColorName) fn(value) }
 
 fun UiColor.onId(fn: (failure: Int) -> Unit): UiColor =

@@ -5,10 +5,7 @@ import com.arkivanov.decompose.router.overlay.ChildOverlay
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
-import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.bringToFront
-import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.denchic45.kts.domain.MainInteractor
@@ -22,16 +19,13 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class MainComponent constructor(
-    private val _timetableComponent: () -> TimetableComponent,
-    lazyStudyGroupsComponent: Lazy<StudyGroupsComponent>,
+    private val _timetableComponent: (ComponentContext) -> TimetableComponent,
+    private val _studyGroupsComponent: (ComponentContext) -> StudyGroupsComponent,
     mainInteractor: MainInteractor,
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     componentContext: ComponentContext,
     userEditorComponent: (onFinish: () -> Unit, config: UserEditorConfig) -> UserEditorComponent,
 ) : ComponentContext by componentContext {
-
-    private val timetableComponent = _timetableComponent()
-    private val studyGroupsComponent by lazyStudyGroupsComponent
 
     private val coroutineScope = componentScope()
 
@@ -43,8 +37,8 @@ class MainComponent constructor(
         initialConfiguration = Config.Timetable,
         childFactory = { config, componentContext ->
             when (config) {
-                is Config.Timetable -> Child.Timetable(timetableComponent)
-                is Config.StudyGroups -> Child.StudyGroups(studyGroupsComponent)
+                is Config.Timetable -> Child.Timetable(_timetableComponent(componentContext))
+                is Config.StudyGroups -> Child.StudyGroups(_studyGroupsComponent(componentContext))
             }
         })
 
@@ -82,8 +76,9 @@ class MainComponent constructor(
         object StudyGroups : Config()
     }
 
-    sealed interface Child {
-        class Timetable(val timetableComponent: TimetableComponent) : Child
-        class StudyGroups(val studyGroupsComponent: StudyGroupsComponent) : Child
+    sealed class Child {
+        abstract val component:ComponentContext
+        class Timetable(override val component: TimetableComponent) : Child()
+        class StudyGroups(override val component: StudyGroupsComponent) : Child()
     }
 }

@@ -6,6 +6,7 @@ import com.denchic45.stuiversity.api.timetable.model.TimetableOfDayResponse
 import java.time.LocalDate
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class FindYourTimetableOfDayUseCase @Inject constructor(
     private val eventRepository: EventRepository,
 ) {

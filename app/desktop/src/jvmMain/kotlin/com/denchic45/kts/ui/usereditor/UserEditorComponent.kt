@@ -14,6 +14,7 @@ import com.denchic45.kts.ui.navigation.UserEditorConfig
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import me.tatarka.inject.annotations.Assisted
 
 @Inject
 class UserEditorComponent(
@@ -22,7 +23,9 @@ class UserEditorComponent(
     private val removeUserUseCase: RemoveUserUseCase,
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     componentContext: ComponentContext,
+    @Assisted
     val _onFinish: () -> Unit,
+    @Assisted
     config: UserEditorConfig,
 ) : ComponentContext by componentContext,
     UserEditorUILogicDelegate(

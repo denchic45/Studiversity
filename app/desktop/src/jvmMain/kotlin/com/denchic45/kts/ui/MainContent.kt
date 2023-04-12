@@ -92,8 +92,8 @@ fun MainContent(mainComponent: MainComponent) {
                 })
 
                 when (val child = childStack.active.instance) {
-                    is Child.Timetable -> TimetableScreen(appBarMediator, child.timetableComponent)
-                    is Child.StudyGroups -> StudyGroupsScreen(appBarMediator, child.studyGroupsComponent)
+                    is Child.Timetable -> TimetableScreen(appBarMediator, child.component)
+                    is Child.StudyGroups -> StudyGroupsScreen(appBarMediator, child.component)
                 }
 
                 val overlay by mainComponent.childOverlay.subscribeAsState()

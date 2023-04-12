@@ -25,13 +25,13 @@ abstract class AndroidApplicationComponent(
     @Component protected val networkComponent: NetworkComponent,
 ) {
 
+    lateinit var componentContext: ComponentContext
+
     @Provides
     fun context(): Context = application
 
     @Provides
-    fun componentContext(): ComponentContext {
-        return DefaultComponentContext(LifecycleRegistry())
-    }
+    fun componentContext(): ComponentContext = componentContext
 
     @AppScope
     @Provides
@@ -47,6 +47,6 @@ abstract class AndroidApplicationComponent(
 
     abstract val yourTimetablesComponent: YourTimetablesComponent
 
-    abstract val yourStudyGroupsComponent: YourStudyGroupsComponent
+//    abstract val yourStudyGroupsComponent: YourStudyGroupsComponent
 }
 

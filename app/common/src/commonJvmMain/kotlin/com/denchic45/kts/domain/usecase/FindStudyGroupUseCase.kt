@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import java.util.*
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class FindStudyGroupUseCase @Inject constructor(
     private val studyGroupRepository: StudyGroupRepository,
 ) {

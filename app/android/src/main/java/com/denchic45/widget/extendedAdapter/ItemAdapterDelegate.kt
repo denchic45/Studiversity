@@ -4,10 +4,10 @@ import android.content.res.ColorStateList
 import android.view.ViewGroup
 import androidx.core.widget.ImageViewCompat
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.ui.model.onId
-import com.denchic45.kts.ui.model.onUrl
+import com.denchic45.kts.ui.onId
 import com.denchic45.kts.databinding.ItemIconContentBinding
 import com.denchic45.kts.ui.adapter.BaseViewHolder
+import com.denchic45.kts.ui.onName
 import com.denchic45.kts.util.viewBinding
 
 class ItemAdapterDelegate : ListItemAdapterDelegate<ListItem, ItemAdapterDelegate.ItemHolder>() {
@@ -22,7 +22,7 @@ class ItemAdapterDelegate : ListItemAdapterDelegate<ListItem, ItemAdapterDelegat
 
                 item.icon?.onId {
                     ivIcon.setImageResource(it)
-                }?.onUrl {
+                }?.onName {
                     val iconResId = itemView.context.resources.getIdentifier(
                         it,
                         "drawable",
@@ -39,7 +39,7 @@ class ItemAdapterDelegate : ListItemAdapterDelegate<ListItem, ItemAdapterDelegat
                         ivIcon,
                         ColorStateList.valueOf(it)
                     )
-                }?.onUrl {
+                }?.onName {
                     val identifier = itemView.resources
                         .getIdentifier(it, "color", itemView.context.packageName)
                     ColorStateList.valueOf(

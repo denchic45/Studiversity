@@ -1,8 +1,10 @@
 package com.denchic45.kts.util
 
 import android.content.Context
+import me.tatarka.inject.annotations.Inject
 import java.io.File
 
+@Inject
 actual class SystemDirs actual constructor() {
 
     lateinit var context: Context

@@ -9,7 +9,9 @@ import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindTimetableOfWeekUseCase
 import com.denchic45.kts.domain.usecase.TimetableOwner2
 import com.denchic45.kts.ui.ToolbarInteractor
+import com.denchic45.kts.ui.UiText
 import com.denchic45.kts.ui.timetable.state.toTimetableViewState
+import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.capitalized
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.map
@@ -70,9 +72,8 @@ class DayTimetableComponent(
         schedule: BellSchedule,
     ) = selectedDate.filter { it.toString(DatePatterns.YYYY_ww) == weekOfYear }
         .map { selected ->
-            toolbarInteractor.title.update {
-                Dates.toStringHidingCurrentYear(selected).capitalized()
-            }
+            toolbarInteractor.title = uiTextOf(Dates.toStringHidingCurrentYear(selected).capitalized())
+
             timetableResource.map {
                 val selectedDay = selected.dayOfWeek.ordinal
                 if (selectedDay == 6) null

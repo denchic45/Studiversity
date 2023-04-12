@@ -23,7 +23,7 @@ data class WeekTimetableViewState(
 fun TimetableResponse.toTimetableViewState(
     bellSchedule: BellSchedule,
 ): WeekTimetableViewState {
-    val latestEventOrder = max(days.maxOf { it.last().order }, 6)
+    val latestEventOrder = max(days.maxOf { it.lastOrNull()?.order ?: 0 }, 6)
     return WeekTimetableViewState(
         mondayDate = LocalDate.parse(
             weekOfYear, DateTimeFormatterBuilder()

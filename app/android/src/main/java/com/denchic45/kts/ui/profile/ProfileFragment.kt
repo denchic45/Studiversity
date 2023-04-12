@@ -17,21 +17,25 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentProfileBinding
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.avatar.FullImageActivity
 import com.denchic45.kts.ui.BaseFragment2
+import com.denchic45.kts.ui.avatar.FullImageActivity
 import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
 import com.example.appbarcontroller.appbarcontroller.AppBarController
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Inject
 import java.io.ByteArrayOutputStream
 
-class ProfileFragment :
+@Inject
+class ProfileFragment(component: (String) -> ProfileViewModel) :
     BaseFragment2<ProfileViewModel, FragmentProfileBinding>(
         R.layout.fragment_profile,
         R.menu.options_profile
     ), HasNavArgs<ProfileFragmentArgs> {
 
     override val navArgs: ProfileFragmentArgs by navArgs()
+
+    override val component: ProfileViewModel by lazy { component(navArgs.userId) }
 
     override val binding: FragmentProfileBinding by viewBinding(FragmentProfileBinding::bind)
 
