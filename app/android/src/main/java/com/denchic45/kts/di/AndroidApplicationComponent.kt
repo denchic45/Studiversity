@@ -25,13 +25,12 @@ abstract class AndroidApplicationComponent(
     @Component protected val networkComponent: NetworkComponent,
 ) {
 
-    lateinit var componentContext: ComponentContext
 
     @Provides
     fun context(): Context = application
 
-    @Provides
-    fun componentContext(): ComponentContext = componentContext
+//    @Provides
+//    fun componentContext(): ComponentContext = componentContext
 
     @AppScope
     @Provides
@@ -43,9 +42,9 @@ abstract class AndroidApplicationComponent(
 
     abstract val injectFragmentFactory: InjectFragmentFactory
 
-    abstract val timetableLoaderComponent: TimetableLoaderComponent
+//    abstract val timetableLoaderComponent: TimetableLoaderComponent
 
-    abstract val yourTimetablesComponent: YourTimetablesComponent
+//    abstract val yourTimetablesComponent: YourTimetablesComponent
 
 //    abstract val yourStudyGroupsComponent: YourStudyGroupsComponent
 }

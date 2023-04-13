@@ -1,6 +1,7 @@
 package com.denchic45.kts.ui.timetable
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.lifecycle.subscribe
 import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.domain.Resource
@@ -9,7 +10,6 @@ import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindTimetableOfWeekUseCase
 import com.denchic45.kts.domain.usecase.TimetableOwner2
 import com.denchic45.kts.ui.ToolbarInteractor
-import com.denchic45.kts.ui.UiText
 import com.denchic45.kts.ui.timetable.state.toTimetableViewState
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.capitalized
@@ -36,6 +36,7 @@ class DayTimetableComponent(
     private val _selectedDate: LocalDate,
     @Assisted
     private val owner: Flow<TimetableOwner2>,
+    @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
@@ -66,14 +67,32 @@ class DayTimetableComponent(
         }
     }.stateInResource(componentScope)
 
+    init {
+        lifecycle.subscribe(
+            onCreate = { println("LIFECYCLE TIMETABLE: create") },
+            onStart = {
+                println("LIFECYCLE TIMETABLE: start")
+                selectedDate.onEach { selected ->
+                    toolbarInteractor.title =
+                        uiTextOf(Dates.toStringHidingCurrentYear(selected).capitalized())
+                }.launchIn(componentScope)
+            },
+            onResume = {
+                println("LIFECYCLE TIMETABLE: resume")
+
+            },
+            onPause = { println("LIFECYCLE TIMETABLE: pause") },
+            onStop = { println("LIFECYCLE TIMETABLE: stop") },
+            onDestroy = { println("LIFECYCLE TIMETABLE: destroy") }
+        )
+    }
+
     private fun getTimetableOfSelectedDateFlow(
         weekOfYear: String,
         timetableResource: Resource<TimetableResponse>,
         schedule: BellSchedule,
     ) = selectedDate.filter { it.toString(DatePatterns.YYYY_ww) == weekOfYear }
         .map { selected ->
-            toolbarInteractor.title = uiTextOf(Dates.toStringHidingCurrentYear(selected).capitalized())
-
             timetableResource.map {
                 val selectedDay = selected.dayOfWeek.ordinal
                 if (selectedDay == 6) null

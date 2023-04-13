@@ -39,11 +39,11 @@ class AndroidAppModule(private val application: Application) {
     @Provides
     fun toolbarInteractor(): ToolbarInteractor = ToolbarInteractor()
 
-    @Provides
-    @Singleton
-    fun componentContext(): ComponentContext {
-        return DefaultComponentContext(LifecycleRegistry())
-    }
+//    @Provides
+//    @Singleton
+//    fun componentContext(): ComponentContext {
+//        return DefaultComponentContext(LifecycleRegistry())
+//    }
 
     @Singleton
     @Provides

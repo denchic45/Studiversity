@@ -1,6 +1,7 @@
 package com.denchic45.kts.ui.yourTimetables
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.childContext
 import com.denchic45.kts.di.AppScope
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
@@ -11,14 +12,16 @@ import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.time.LocalDate
 
-@AppScope
+
 @Inject
 class YourTimetablesComponent(
     private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
-    private val _dayTimetableComponent: (LocalDate, Flow<TimetableOwner2>) -> DayTimetableComponent,
+    private val _dayTimetableComponent: (LocalDate, Flow<TimetableOwner2>, ComponentContext) -> DayTimetableComponent,
+    @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
@@ -83,7 +86,11 @@ class YourTimetablesComponent(
 //        }
 //    }.stateInResource(componentScope)
 
-    val timetableComponent = _dayTimetableComponent(LocalDate.now(), selectedOwner)
+    val timetableComponent = _dayTimetableComponent(
+        LocalDate.now(),
+        selectedOwner,
+        componentContext.childContext("DayTimetable")
+    )
 
 //    @Parcelize
 //    data class TimetableConfig(

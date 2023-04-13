@@ -14,6 +14,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.defaultComponentContext
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentCourseBinding
 import com.denchic45.kts.domain.onSuccess
@@ -36,14 +38,14 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class CourseFragment(
-    component: (String) -> CourseViewModel
+    component: (String, ComponentContext) -> CourseViewModel,
 ) : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
     R.layout.fragment_course
 ), HasNavArgs<CourseFragmentArgs> {
 
     override val navArgs: CourseFragmentArgs by navArgs()
 
-    override val component: CourseViewModel by lazy { component(navArgs.courseId) }
+    override val component: CourseViewModel by lazy { component(navArgs.courseId,defaultComponentContext(requireActivity().onBackPressedDispatcher)) }
 
     override val binding: FragmentCourseBinding by viewBinding(FragmentCourseBinding::bind)
     private lateinit var collapsingToolbarLayout: CollapsingToolbarLayout
@@ -89,7 +91,7 @@ class CourseFragment(
                 override fun onMove(
                     recyclerView: RecyclerView,
                     viewHolder: RecyclerView.ViewHolder,
-                    target: RecyclerView.ViewHolder
+                    target: RecyclerView.ViewHolder,
                 ): Boolean {
                     val move = viewHolder is TaskHolder && target is TaskHolder
                     if (move) {
@@ -107,7 +109,7 @@ class CourseFragment(
                     dX: Float,
                     dY: Float,
                     actionState: Int,
-                    isCurrentlyActive: Boolean
+                    isCurrentlyActive: Boolean,
                 ) {
                     super.onChildDraw(
                         c,
@@ -124,7 +126,7 @@ class CourseFragment(
 
                 override fun clearView(
                     recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder
+                    viewHolder: RecyclerView.ViewHolder,
                 ) {
                     super.clearView(recyclerView, viewHolder)
                     component.onContentMoved()

@@ -13,9 +13,10 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class ProfileViewModel constructor(
+    observeUserUseCase: ObserveUserUseCase,
     @Assisted
     _userId: String,
-    observeUserUseCase: ObserveUserUseCase,
+    @Assisted
     private val componentContext: ComponentContext
 ) : ProfileUiLogic(observeUserUseCase, _userId.toUUID(), componentContext),
     AndroidUiComponent by AndroidUiComponentDelegate(componentContext) {

@@ -6,6 +6,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.domain.NotFound
+import com.denchic45.kts.di.AppScope
 import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
@@ -27,6 +28,7 @@ class StudyGroupViewModel (
     private val toolbarInteractor: ToolbarInteractor,
     private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
+    @Assisted
     private val componentContext: ComponentContext
 ) : AndroidUiComponent by AndroidUiComponentDelegate(componentContext) {
 

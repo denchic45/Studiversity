@@ -76,7 +76,7 @@ object IntentModule {
     @Named(GroupMembersFragment.GROUP_ID)
     @Provides
     fun provideGroupIdFromGroupUsers(groupMembersFragment: GroupMembersFragment): String {
-        return (groupMembersFragment.requireParentFragment() as StudyGroupFragment).navArgs.groupId
+        return groupMembersFragment.requireArguments().getString("groupId")!!
     }
 
     @Named("UserEditor ${UserEditorFragment.USER_ID}")

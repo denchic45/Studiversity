@@ -4,7 +4,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.StackNavigator
 import com.arkivanov.decompose.router.stack.childStack
 import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.ui.navigation.GroupChild
@@ -17,23 +16,22 @@ import java.util.*
 
 @Inject
 class GroupRootComponent(
-    lazyGroupComponent: (navigator: StackNavigator<in GroupConfig>, groupId: UUID) -> GroupComponent,
+    groupComponent: (groupId: UUID, ComponentContext) -> GroupComponent,
     @Assisted
     private val overlayNavigator: OverlayNavigation<OverlayConfig>,
     @Assisted
     private val groupId: UUID,
+    @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     private val navigation = StackNavigation<GroupConfig>()
 
-    private val groupComponent = lazyGroupComponent(navigation, groupId)
-
     val stack = childStack(source = navigation,
         initialConfiguration = GroupConfig.Group(groupId),
         childFactory = { configuration: GroupConfig, _ ->
             when (configuration) {
-                is GroupConfig.Group -> GroupChild.Group(groupComponent)
+                is GroupConfig.Group -> GroupChild.Group(groupComponent( groupId,componentContext))
             }
         })
 

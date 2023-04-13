@@ -2,7 +2,6 @@ package com.denchic45.kts.ui.yourStudyGroups
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.subscribe
-import com.denchic45.kts.di.AppScope
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
@@ -15,7 +14,7 @@ import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
-@AppScope
+
 @Inject
 class YourStudyGroupsComponent(
     private val toolbarInteractor: ToolbarInteractor,
@@ -53,6 +52,7 @@ class YourStudyGroupsComponent(
         lifecycle.subscribe(onResume = {
             selectedStudyGroup.onEach {
                 toolbarInteractor.title = uiTextOf(it?.name ?: "Выберите группу")
+                println(toolbarInteractor.title)
             }.launchIn(componentScope)
         })
     }

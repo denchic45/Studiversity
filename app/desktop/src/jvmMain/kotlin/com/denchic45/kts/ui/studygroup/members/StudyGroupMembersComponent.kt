@@ -20,18 +20,21 @@ import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
 class StudyGroupMembersComponent(
     findGroupMembersUseCase: FindGroupMembersUseCase,
-    componentContext: ComponentContext,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
-    profileComponent: (userId: UUID) -> ProfileComponent,
-    userEditorComponent: (onFinish: () -> Unit, config: UserEditorConfig) -> UserEditorComponent,
+    profileComponent: (UUID, ComponentContext) -> ProfileComponent,
+    userEditorComponent: (onFinish: () -> Unit, UserEditorConfig,ComponentContext) -> UserEditorComponent,
+    @Assisted
     private val groupId: UUID,
+    @Assisted
+    componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     private val navigation = StackNavigation<GroupMembersConfig>()
@@ -42,9 +45,9 @@ class StudyGroupMembersComponent(
         childFactory = { config, _ ->
             when (config) {
                 GroupMembersConfig.Unselected -> GroupMembersChild.Unselected
-                is ProfileConfig -> ProfileChild(profileComponent(config.userId))
+                is ProfileConfig -> ProfileChild(profileComponent(config.userId, componentContext))
                 is UserEditorConfig -> UserEditorChild(
-                    userEditorComponent(navigation::pop, config)
+                    userEditorComponent(navigation::pop, config,componentContext)
                 )
             }
         })

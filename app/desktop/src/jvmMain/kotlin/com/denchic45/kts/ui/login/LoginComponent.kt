@@ -5,11 +5,13 @@ import com.denchic45.kts.domain.usecase.SignInWithEmailAndPasswordUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class LoginComponent(
     private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
+    @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 

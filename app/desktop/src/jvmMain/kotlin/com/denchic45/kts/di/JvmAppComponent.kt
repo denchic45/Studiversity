@@ -1,9 +1,7 @@
 package com.denchic45.kts.di
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.kts.data.db.local.DriverFactory
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.service.AppVersionService
@@ -32,12 +30,12 @@ abstract class JvmAppComponent(
     @Component val networkComponent: NetworkComponent
 ) {
 
-    lateinit var componentContext: ComponentContext
+//    lateinit var componentContext: ComponentContext
 
-    @Provides
-    fun provideComponentContext(): ComponentContext {
-        return componentContext
-    }
+//    @Provides
+//    fun provideComponentContext(): ComponentContext {
+//        return componentContext
+//    }
 
     @AppScope
     @Provides
@@ -59,8 +57,8 @@ abstract class JvmAppComponent(
 
     abstract val splashComponent: SplashComponent
 
-    abstract val mainComponent: () -> MainComponent
+    abstract val mainComponent: (ComponentContext) -> MainComponent
 
-    abstract val loginComponent: () -> LoginComponent
+    abstract val loginComponent: (ComponentContext) -> LoginComponent
 }
 

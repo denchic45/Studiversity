@@ -90,7 +90,7 @@ class GroupMembersFragment :
         const val GROUP_ID = "GroupUsers GROUP_ID"
         fun newInstance(groupId: String): GroupMembersFragment {
             return GroupMembersFragment().apply {
-                arguments = bundleOf(GROUP_ID to groupId)
+                arguments = bundleOf("groupId" to groupId)
             }
         }
     }

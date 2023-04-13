@@ -5,7 +5,10 @@ import com.arkivanov.decompose.router.overlay.ChildOverlay
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
-import com.arkivanov.decompose.router.stack.*
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.denchic45.kts.domain.MainInteractor
@@ -15,6 +18,7 @@ import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
 @Inject
@@ -23,8 +27,9 @@ class MainComponent constructor(
     private val _studyGroupsComponent: (ComponentContext) -> StudyGroupsComponent,
     mainInteractor: MainInteractor,
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,
+    userEditorComponent: (onFinish: () -> Unit, UserEditorConfig, ComponentContext) -> UserEditorComponent,
+    @Assisted
     componentContext: ComponentContext,
-    userEditorComponent: (onFinish: () -> Unit, config: UserEditorConfig) -> UserEditorComponent,
 ) : ComponentContext by componentContext {
 
     private val coroutineScope = componentScope()
@@ -33,7 +38,8 @@ class MainComponent constructor(
 
     private val navigation = StackNavigation<Config>()
 
-    val stack: Value<ChildStack<Config, Child>> = childStack(source = navigation,
+    val stack: Value<ChildStack<Config, Child>> = childStack(
+        source = navigation,
         initialConfiguration = Config.Timetable,
         childFactory = { config, componentContext ->
             when (config) {
@@ -48,7 +54,7 @@ class MainComponent constructor(
     ) { config, _ ->
         when (config) {
             is UserEditorConfig -> UserEditorChild(
-                userEditorComponent(overlayNavigation::dismiss, config)
+                userEditorComponent(overlayNavigation::dismiss, config, componentContext)
             )
             is ConfirmConfig -> ConfirmChild(config)
         }
@@ -77,7 +83,8 @@ class MainComponent constructor(
     }
 
     sealed class Child {
-        abstract val component:ComponentContext
+        abstract val component: ComponentContext
+
         class Timetable(override val component: TimetableComponent) : Child()
         class StudyGroups(override val component: StudyGroupsComponent) : Child()
     }

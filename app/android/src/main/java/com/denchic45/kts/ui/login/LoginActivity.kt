@@ -30,9 +30,9 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login) {
         super.onCreate(savedInstanceState)
         AndroidInjection.inject(this)
         navController = findFragmentContainerNavController(R.id.nav_host_fragment)
-        val rpProgressAuth = findViewById<RichPathView>(R.id.richPathView_progressAuth)
+//        val rpProgressAuth = findViewById<RichPathView>(R.id.richPathView_progressAuth)
         fabBack = findViewById(R.id.fab_back)
-        linePath = rpProgressAuth.findRichPathByName("line")
+//        linePath = rpProgressAuth.findRichPathByName("line")
         fabBack.setOnClickListener {
             viewModel.onFabBackClick(
                 navController.currentDestination!!.id

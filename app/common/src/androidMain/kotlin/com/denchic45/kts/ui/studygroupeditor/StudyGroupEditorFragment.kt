@@ -8,12 +8,14 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.defaultComponentContext
 import com.denchic45.stuiversity.util.toUUID
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class StudyGroupEditorFragment(private val component: (studyGroupId: UUID?) -> StudyGroupEditorComponent) :
+class StudyGroupEditorFragment(private val component: (studyGroupId: UUID?,ComponentContext) -> StudyGroupEditorComponent) :
     Fragment() {
 //     val binding: FragmentGroupEditorBinding by viewBinding(FragmentGroupEditorBinding::bind)
 
@@ -24,7 +26,7 @@ class StudyGroupEditorFragment(private val component: (studyGroupId: UUID?) -> S
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            StudyGroupEditorScreen(component(arguments?.getString("studyGroupId")?.toUUID()))
+            StudyGroupEditorScreen(component(arguments?.getString("studyGroupId")?.toUUID(),defaultComponentContext(requireActivity().onBackPressedDispatcher)))
         }
     }
 

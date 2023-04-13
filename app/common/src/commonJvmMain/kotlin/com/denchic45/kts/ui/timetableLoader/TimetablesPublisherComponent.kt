@@ -1,6 +1,7 @@
 package com.denchic45.kts.ui.timetableLoader
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.childContext
 import com.denchic45.kts.ui.timetableEditor.DayTimetableEditorComponent
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
@@ -17,20 +18,27 @@ class TimetablesPublisherComponent(
     private val _dayTimetableEditorComponent: (
         weekOfYear: String,
         List<MutableStateFlow<List<PeriodResponse>>>,
-        isEdit: Flow<Boolean>
+        isEdit: Flow<Boolean>,
+        ComponentContext,
     ) -> DayTimetableEditorComponent,
     @Assisted
     private val weekOfYear: String,
     @Assisted
     _studyGroupTimetables: List<Pair<StudyGroupResponse, TimetableResponse>>,
-    componentContext: ComponentContext
+    @Assisted
+    private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     val studyGroups = MutableStateFlow(_studyGroupTimetables.map { it.first })
 
     val dayTimetableEditorComponents = MutableStateFlow(
         _studyGroupTimetables.map {
-            _dayTimetableEditorComponent(weekOfYear, it.second.days.map(::MutableStateFlow), flowOf(true))
+            _dayTimetableEditorComponent(
+                weekOfYear,
+                it.second.days.map(::MutableStateFlow),
+                flowOf(true),
+                componentContext.childContext("DayTimetable")
+            )
         }
     )
 
@@ -44,7 +52,12 @@ class TimetablesPublisherComponent(
         }
 
         dayTimetableEditorComponents.update { components ->
-            components + _dayTimetableEditorComponent(weekOfYear, list, flowOf(true))
+            components + _dayTimetableEditorComponent(
+                weekOfYear,
+                list,
+                flowOf(true),
+                componentContext.childContext("DayTimetable")
+            )
         }
     }
 

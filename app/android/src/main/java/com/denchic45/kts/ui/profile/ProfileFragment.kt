@@ -12,6 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.defaultComponentContext
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.kts.R
@@ -27,7 +29,7 @@ import me.tatarka.inject.annotations.Inject
 import java.io.ByteArrayOutputStream
 
 @Inject
-class ProfileFragment(component: (String) -> ProfileViewModel) :
+class ProfileFragment(component: (String,ComponentContext) -> ProfileViewModel) :
     BaseFragment2<ProfileViewModel, FragmentProfileBinding>(
         R.layout.fragment_profile,
         R.menu.options_profile
@@ -35,7 +37,7 @@ class ProfileFragment(component: (String) -> ProfileViewModel) :
 
     override val navArgs: ProfileFragmentArgs by navArgs()
 
-    override val component: ProfileViewModel by lazy { component(navArgs.userId) }
+    override val component: ProfileViewModel by lazy { component(navArgs.userId,defaultComponentContext(requireActivity().onBackPressedDispatcher)) }
 
     override val binding: FragmentProfileBinding by viewBinding(FragmentProfileBinding::bind)
 

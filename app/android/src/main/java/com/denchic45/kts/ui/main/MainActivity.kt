@@ -7,12 +7,10 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
@@ -73,7 +71,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
     @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        app.appComponent.componentContext = defaultComponentContext()
+//        app.appComponent.componentContext = defaultComponentContext()
         initImageLoader(this)
         viewModel.setActivityForService(this)
         snackbar = Snackbar.make(this, binding.root, "", Snackbar.LENGTH_INDEFINITE)
@@ -107,9 +105,32 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 
         binding.topAppBarComposable.setContent {
             MaterialTheme {
-                val collectAsState by toolbarInteractor.titleFlow.collectAsState()
+                val title by toolbarInteractor.titleFlow.collectAsState()
+                val dropdown by toolbarInteractor.dropdown.collectAsState()
                 TopAppBar(
-                    title = { Text(collectAsState.get(LocalContext.current)) }
+                    title = { Text(title.get(LocalContext.current)) },
+                    actions = {
+                        if (dropdown.isNotEmpty())
+                            IconButton(onClick = { }) {
+                                Icon(Icons.Filled.MoreVert, "Меню")
+                            }
+
+                        var menuExpanded by remember { mutableStateOf(false) }
+
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false },
+                        ) {
+                            dropdown.forEach { item ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(item.title.get(LocalContext.current))
+                                    },
+                                    onClick = { /* TODO */ },
+                                )
+                            }
+                        }
+                    }
                 )
             }
         }

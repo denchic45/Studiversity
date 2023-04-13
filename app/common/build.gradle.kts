@@ -115,6 +115,8 @@ kotlin {
 
                 api("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.3")
 
+                api("com.arkivanov.decompose:extensions-android:$decomposeVersion")
+
                 api("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("app.cash.sqldelight:android-driver:$sqlDelightVersion")

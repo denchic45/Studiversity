@@ -13,8 +13,8 @@ import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.navigation.UserEditorConfig
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.launch
-import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class UserEditorComponent(
@@ -22,11 +22,12 @@ class UserEditorComponent(
     addUserUseCase: AddUserUseCase,
     private val removeUserUseCase: RemoveUserUseCase,
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,
-    componentContext: ComponentContext,
     @Assisted
     val _onFinish: () -> Unit,
     @Assisted
     config: UserEditorConfig,
+    @Assisted
+    componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
     UserEditorUILogicDelegate(
         observeUserUseCase,
@@ -49,6 +50,6 @@ class UserEditorComponent(
     }
 
     override fun onFinish() {
-      _onFinish()
+        _onFinish()
     }
 }

@@ -11,6 +11,8 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.defaultComponentContext
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentGroupBinding
 import com.denchic45.kts.ui.BaseFragment2
@@ -20,13 +22,13 @@ import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class StudyGroupFragment(component: (String)-> StudyGroupViewModel) : BaseFragment2<StudyGroupViewModel, FragmentGroupBinding>(
+class StudyGroupFragment(component: (String,ComponentContext)-> StudyGroupViewModel) : BaseFragment2<StudyGroupViewModel, FragmentGroupBinding>(
     R.layout.fragment_group,
 ), HasNavArgs<StudyGroupFragmentArgs> {
 
     override val navArgs: StudyGroupFragmentArgs by navArgs()
     override val component: StudyGroupViewModel by lazy {
-        component(requireArguments().getString("groupId")!!)
+        component(requireArguments().getString("groupId")!!,defaultComponentContext(requireActivity().onBackPressedDispatcher))
     }
     override val binding: FragmentGroupBinding by viewBinding(FragmentGroupBinding::bind)
 

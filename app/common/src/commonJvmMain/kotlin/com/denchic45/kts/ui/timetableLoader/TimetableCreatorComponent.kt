@@ -16,7 +16,8 @@ class TimetableCreatorComponent(
     private val parseTimetableUseCase: ParseTimetableUseCase,
     @Assisted
     private val onCreate: (String, List<Pair<StudyGroupResponse, TimetableResponse>>) -> Unit,
-    componentContext: ComponentContext
+    @Assisted
+    componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()

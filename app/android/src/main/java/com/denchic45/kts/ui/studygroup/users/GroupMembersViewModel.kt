@@ -37,10 +37,6 @@ class GroupMembersViewModel @Inject constructor(
 
     val showUserOptions = SingleLiveData<Pair<Int, List<OptionItem>>>()
 
-    init {
-        showUserOptions.asFlow()
-    }
-
     private var groupId = _groupId.toUUID()
 
     private val user = findSelfUserUseCase()

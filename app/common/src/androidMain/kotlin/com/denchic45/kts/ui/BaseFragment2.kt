@@ -34,7 +34,7 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
 
     open val navController: NavController by lazy { findNavController() }
 
-    protected lateinit var menu: Menu
+     lateinit var menu: Menu
         private set
 
     override fun onCreate(savedInstanceState: Bundle?) {

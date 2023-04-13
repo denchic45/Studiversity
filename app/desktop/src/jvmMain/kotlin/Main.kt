@@ -23,7 +23,7 @@ fun main() = mainApp()
 @OptIn(ExperimentalDecomposeApi::class)
 private fun mainApp() {
     val lifecycle = LifecycleRegistry()
-    appComponent.componentContext = DefaultComponentContext(lifecycle)
+    val componentContext = DefaultComponentContext(lifecycle)
     application {
         val isAuth by splashComponent.isAuth.collectAsState(null)
 
@@ -32,8 +32,7 @@ private fun mainApp() {
                 val size = Toolkit.getDefaultToolkit().screenSize.run {
                     DpSize((width - 124).dp, (height - 124).dp)
                 }
-                val state =
-                    rememberWindowState(size = size, position = WindowPosition(Alignment.Center))
+                val state = rememberWindowState(size = size, position = WindowPosition(Alignment.Center))
                 LifecycleController(lifecycle, state)
 
                 Window(
@@ -43,7 +42,7 @@ private fun mainApp() {
                 ) {
                     AppTheme {
                         CompositionLocalProvider {
-                            MainContent(appComponent.mainComponent())
+                            MainContent(appComponent.mainComponent(componentContext))
                         }
                     }
                 }
@@ -53,7 +52,7 @@ private fun mainApp() {
                     onCloseRequest = ::exitApplication,
                     state = rememberWindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))
                 ) {
-                    AppTheme { LoginScreen(appComponent.loginComponent()) }
+                    AppTheme { LoginScreen(appComponent.loginComponent(componentContext)) }
                 }
             }
         }

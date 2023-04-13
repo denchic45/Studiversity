@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.kts.UIEditor
 import com.denchic45.kts.domain.*
 import com.denchic45.kts.domain.usecase.FindSpecialtyByContainsNameUseCase
 import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
@@ -15,7 +14,6 @@ import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*
@@ -26,6 +24,7 @@ class StudyGroupEditorComponent(
     private val studyGroupId: UUID?,
     private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     private val findSpecialtyByContainsNameUseCase: FindSpecialtyByContainsNameUseCase,
+    @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()

@@ -23,6 +23,7 @@ class DayTimetableEditorComponent constructor(
     private val weekTimetableFlows: List<MutableStateFlow<List<PeriodResponse>>>,
     @Assisted
     private val isEdit: Flow<Boolean> = flowOf(false),
+    @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 

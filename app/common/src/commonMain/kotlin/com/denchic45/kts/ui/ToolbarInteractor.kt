@@ -9,8 +9,9 @@ import me.tatarka.inject.annotations.Inject
 @AppScope
 @Inject
 class ToolbarInteractor {
-     val _titleFlow = MutableStateFlow<UiText>(UiText.StringText(""))
+     private val _titleFlow = MutableStateFlow<UiText>(UiText.StringText(""))
      val titleFlow = _titleFlow.asStateFlow()
+
     val dropdown = MutableStateFlow<List<DropdownMenuItem>>(emptyList())
 
     var title: UiText

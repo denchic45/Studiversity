@@ -13,13 +13,13 @@
         android:background="?android:windowBackground"
         app:liftOnScroll="true">
 
-        <com.richpath.RichPathView
-            android:id="@+id/richPathView_progressAuth"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/app_bar"
-            android:scaleType="fitXY"
-            app:vector="@drawable/ic_line" />
+<!--        <com.richpath.RichPathView-->
+<!--            android:id="@+id/richPathView_progressAuth"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_below="@id/app_bar"-->
+<!--            android:scaleType="fitXY"-->
+<!--            app:vector="@drawable/ic_line" />-->
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.fragment.app.FragmentContainerView

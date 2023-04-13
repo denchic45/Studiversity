@@ -3,7 +3,8 @@ package com.denchic45.kts.ui.course
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.data.domain.*
+import com.denchic45.kts.data.domain.NoConnection
+import com.denchic45.kts.data.domain.NotFound
 import com.denchic45.kts.domain.filterSuccess
 import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
@@ -23,14 +24,15 @@ import java.util.*
 
 @Inject
 class CourseViewModel(
-    @Assisted
-    private val _courseId: String,
     findCourseByIdUseCase: FindCourseByIdUseCase,
     private val removeCourseElementUseCase: RemoveCourseElementUseCase,
     private val findCourseElementsUseCase: FindCourseElementsUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     findSelfUserUseCase: FindSelfUserUseCase,
-    componentContext: ComponentContext
+    @Assisted
+    private val _courseId: String,
+    @Assisted
+    componentContext: ComponentContext,
 ) : CourseElementsUiLogic(
     findCourseByIdUseCase,
     removeCourseElementUseCase,
@@ -70,11 +72,13 @@ class CourseViewModel(
 
     val course = flow { emit(findCourseByIdUseCase(_courseId.toUUID())) }
         .onEach {
-            it.onFailure { when(it) {
-                NoConnection -> TODO()
-                NotFound -> finish()
-                else -> finish()
-            } }
+            it.onFailure {
+                when (it) {
+                    NoConnection -> TODO()
+                    NotFound -> finish()
+                    else -> finish()
+                }
+            }
         }.stateInResource(componentScope)
 
     private var oldPosition: Int = -1
