@@ -8,30 +8,37 @@
     tools:context=".ui.studygroup.StudyGroupFragment">
 
 
-
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/tab_layout_bg"
-        app:tabRippleColor="@android:color/transparent"
         app:tabIndicator="@drawable/tab_indicator"
         app:tabIndicatorFullWidth="false"
-        app:tabTextAppearance="@style/AppTheme.Tabs.TextAppearance"
-        app:tabMode="fixed" >
+        app:tabMode="fixed"
+        app:tabRippleColor="@android:color/transparent"
+        app:tabTextAppearance="@style/AppTheme.Tabs.TextAppearance">
+
         <com.google.android.material.tabs.TabItem
-            android:text="@string/group_users"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:text="@string/group_users" />
+
         <com.google.android.material.tabs.TabItem
-            android:text="@string/group_courses"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:text="@string/group_courses" />
     </com.google.android.material.tabs.TabLayout>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/vp"
+    <com.denchic45.kts.ui.NestedScrollableHost
+        android:id="@+id/nsh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.denchic45.kts.ui.NestedScrollableHost>
 </LinearLayout>

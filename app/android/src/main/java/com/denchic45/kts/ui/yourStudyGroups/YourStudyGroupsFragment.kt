@@ -9,8 +9,9 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
@@ -26,22 +27,28 @@ import com.denchic45.kts.databinding.FragmentGroupBinding
 import com.denchic45.kts.databinding.FragmentYourStudyGroupsBinding
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupViewModel
+import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragmentDirections
 import com.denchic45.kts.util.collectWhenStarted
+import com.google.android.material.tabs.TabLayoutMediator
 import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
 @Inject
 class YourStudyGroupsFragment(
-    yourStudyGroupsComponent: (ComponentContext) -> YourStudyGroupsComponent,
+    yourStudyGroupsComponent: ((UUID) -> Unit, ComponentContext) -> YourStudyGroupsComponent,
 //    private val studyGroupFragment: () -> StudyGroupFragment,
-    private val studyGroupViewModel: (String,ComponentContext) -> StudyGroupViewModel,
-) :
-    Fragment(R.layout.fragment_your_study_groups) {
-
+    private val studyGroupViewModel: (String, ComponentContext) -> StudyGroupViewModel,
+) : Fragment(R.layout.fragment_your_study_groups) {
+    val navController: NavController by lazy { findNavController() }
     val binding: FragmentYourStudyGroupsBinding by viewBinding(FragmentYourStudyGroupsBinding::bind)
     val componentContext by lazy {
         defaultComponentContext(requireActivity().onBackPressedDispatcher)
     }
-    val component by lazy { yourStudyGroupsComponent(componentContext) }
+    val component by lazy {
+        yourStudyGroupsComponent({
+            navController.navigate(StudyGroupEditorFragmentDirections.actionGlobalGroupEditorFragment(it.toString()))
+        }, componentContext)
+    }
 
     @OptIn(ExperimentalDecomposeApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,7 +73,7 @@ class YourStudyGroupsFragment(
                         StudyGroupView(
                             component = studyGroupViewModel(
                                 it.id.toString(),
-                                componentContext.childContext("StudyGroup")
+                                componentContext
                             )
                         )
                     }
@@ -82,8 +89,9 @@ class YourStudyGroupsFragment(
             }
         }
     }
+
     @OptIn(ExperimentalDecomposeApi::class)
-   private fun ViewContext.StudyGroupView(
+    private fun ViewContext.StudyGroupView(
         component: StudyGroupViewModel,
     ): View {
         // Inflate the layout without adding it to the parent
@@ -116,21 +124,25 @@ class YourStudyGroupsFragment(
             )
         }
         with(binding) {
-            component.initTabs.observe(viewLifecycleOwner) { size: Int ->
+            component.tabs.collectWhenStarted(viewLifecycleOwner) { list ->
                 val adapter = StudyGroupFragment.GroupFragmentAdapter(
-                    childFragmentManager,
+                    this@YourStudyGroupsFragment,
                     component._studyGroupId,
-                    size,
+                    list.size,
                     requireContext()
                 )
                 vp.adapter = adapter
                 vp.offscreenPageLimit = 3
-                vp.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+                vp.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                     override fun onPageSelected(position: Int) {
+                        super.onPageSelected(position)
                         component.onPageSelect(position)
                     }
                 })
-                tl.setupWithViewPager(vp)
+//                tl.setupWithViewPager(vp)
+                TabLayoutMediator(tl, vp) { tab, position ->
+                    tab.text = list[position]
+                }.attach()
             }
         }
 

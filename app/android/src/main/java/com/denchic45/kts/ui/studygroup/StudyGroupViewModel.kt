@@ -1,12 +1,10 @@
 package com.denchic45.kts.ui.studygroup
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.domain.NotFound
-import com.denchic45.kts.di.AppScope
 import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
@@ -15,6 +13,7 @@ import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.kts.ui.*
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -41,17 +40,9 @@ class StudyGroupViewModel (
                 capabilities = listOf(Capability.WriteStudyGroup)
             )
         )
-    }.onEach { resource ->
-        resource.onSuccess {
-            if (it.hasCapability(Capability.WriteStudyGroup)) {
-                initTabs.setValue(3)
-            } else {
-                initTabs.setValue(2)
-            }
-        }
     }.stateInResource(componentScope)
 
-    val initTabs = MutableLiveData(2)
+    val tabs = MutableStateFlow<List<String>>(emptyList())
 
     val menuItemVisibility = SingleLiveData<Pair<Int, Boolean>>()
 
@@ -69,6 +60,17 @@ class StudyGroupViewModel (
              }
          }
      }
+        componentScope.launch {
+            capabilities.collect { resource ->
+                resource.onSuccess {
+                    if (it.hasCapability(Capability.WriteStudyGroup)) {
+                        tabs.value = listOf("Участники","Курсы","Расписание")
+                    } else {
+                        tabs.value = listOf("Участники","Курсы")
+                    }
+                }
+            }
+        }
     }
 
     fun onPrepareOptions(currentItem: Int) {

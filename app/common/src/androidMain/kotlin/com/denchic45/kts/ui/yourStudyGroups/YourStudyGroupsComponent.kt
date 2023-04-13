@@ -5,7 +5,9 @@ import com.arkivanov.essenty.lifecycle.subscribe
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
+import com.denchic45.kts.ui.DropdownMenuItem
 import com.denchic45.kts.ui.ToolbarInteractor
+import com.denchic45.kts.ui.onString
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
@@ -13,12 +15,15 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
 
 @Inject
 class YourStudyGroupsComponent(
     private val toolbarInteractor: ToolbarInteractor,
     private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
+    @Assisted
+    private val onGroupEditClick: (UUID) -> Unit,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -40,6 +45,16 @@ class YourStudyGroupsComponent(
             }
         }
 
+        toolbarInteractor.onDropDownClick {
+            it.title.onString {
+                when (it) {
+                    "Редактировать" -> {
+                        onGroupEditClick(selectedStudyGroup.value?.id!!)
+                    }
+                }
+            }
+        }
+
         lifecycle.subscribe(
             onCreate = { println("LIFECYCLE: create") },
             onStart = { println("LIFECYCLE: start") },
@@ -50,9 +65,13 @@ class YourStudyGroupsComponent(
         )
 
         lifecycle.subscribe(onResume = {
-            selectedStudyGroup.onEach {
-                toolbarInteractor.title = uiTextOf(it?.name ?: "Выберите группу")
-                println(toolbarInteractor.title)
+            selectedStudyGroup.onEach { selectedStudyGroup ->
+                toolbarInteractor.title = uiTextOf(selectedStudyGroup?.name ?: "Выберите группу")
+                toolbarInteractor.dropdown.update {
+                    selectedStudyGroup?.let {
+                        listOf(DropdownMenuItem(uiTextOf("Редактировать")))
+                    } ?: emptyList()
+                }
             }.launchIn(componentScope)
         })
     }

@@ -9,13 +9,23 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.arkivanov.decompose.defaultComponentContext
 import com.bumptech.glide.Glide
 import com.denchic45.kts.R
 import com.denchic45.kts.app
@@ -110,24 +120,26 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                 TopAppBar(
                     title = { Text(title.get(LocalContext.current)) },
                     actions = {
-                        if (dropdown.isNotEmpty())
-                            IconButton(onClick = { }) {
+                        if (dropdown.isNotEmpty()) {
+                            var menuExpanded by remember { mutableStateOf(false) }
+                            IconButton(onClick = { menuExpanded = !menuExpanded }) {
                                 Icon(Icons.Filled.MoreVert, "Меню")
                             }
-
-                        var menuExpanded by remember { mutableStateOf(false) }
-
-                        DropdownMenu(
-                            expanded = menuExpanded,
-                            onDismissRequest = { menuExpanded = false },
-                        ) {
-                            dropdown.forEach { item ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(item.title.get(LocalContext.current))
-                                    },
-                                    onClick = { /* TODO */ },
-                                )
+                            DropdownMenu(
+                                expanded = menuExpanded,
+                                onDismissRequest = { menuExpanded = false },
+                            ) {
+                                dropdown.forEach { item ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(item.title.get(LocalContext.current))
+                                        },
+                                        onClick = {
+                                            menuExpanded = false
+                                            toolbarInteractor.onDropdownMenuItemSelect(item)
+                                        },
+                                    )
+                                }
                             }
                         }
                     }
@@ -151,10 +163,12 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                             SnackbarUpdateView.UpdateState.REMIND
                         )
                     }
+
                     is MainViewModel.UpdateBannerState.WaitLoading -> {
                         snackbarUpdateView.showState(SnackbarUpdateView.UpdateState.LOADING)
                         snackbarUpdateView.indeterminate(true)
                     }
+
                     is MainViewModel.UpdateBannerState.Loading -> {
                         snackbarUpdateView.indeterminate(false)
                         snackbarUpdateView.showState(SnackbarUpdateView.UpdateState.LOADING)
@@ -163,6 +177,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                             bannerState.info
                         )
                     }
+
                     MainViewModel.UpdateBannerState.Install -> {
                         snackbarUpdateView.showState(
                             SnackbarUpdateView.UpdateState.INSTALL
@@ -199,11 +214,13 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                         toggle.isDrawerIndicatorEnabled = true
                         toggle.syncState()
                     }
+
                     MainViewModel.ToolbarNavigationState.BACK -> {
                         toggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
                         toggle.isDrawerIndicatorEnabled = false
                         toggle.syncState()
                     }
+
                     else -> {}
                 }
 

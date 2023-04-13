@@ -1,4 +1,4 @@
-package com.denchic45.kts
+package com.denchic45.kts.ui
 
 
 import android.content.Context

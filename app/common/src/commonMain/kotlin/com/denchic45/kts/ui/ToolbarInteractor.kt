@@ -20,6 +20,9 @@ class ToolbarInteractor {
 
     private var dropdownObserver: (DropdownMenuItem) -> Unit = {}
 
+    fun onDropdownMenuItemSelect(item:DropdownMenuItem) {
+        dropdownObserver(item)
+    }
     @Suppress("UNCHECKED_CAST")
     fun onDropDownClick(lambda: (DropdownMenuItem) -> Unit) {
         dropdownObserver = lambda

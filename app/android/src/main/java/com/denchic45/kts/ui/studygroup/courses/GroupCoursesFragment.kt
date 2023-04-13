@@ -66,6 +66,7 @@ class GroupCoursesFragment : BaseFragment<GroupCoursesViewModel, FragmentGroupCo
         }
     }
 
+
     override fun onDestroyView() {
         super.onDestroyView()
         finishActionMode()

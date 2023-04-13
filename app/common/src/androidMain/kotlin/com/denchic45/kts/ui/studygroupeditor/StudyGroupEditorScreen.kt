@@ -76,7 +76,7 @@ private fun StudyGroupEditorContent(
                         )
                     },
                     singleLine = true,
-                    colors = ExposedDropdownMenuDefaults.textFieldColors()
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                 )
 
                 ExposedDropdownMenu(

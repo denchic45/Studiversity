@@ -132,7 +132,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_description" />
 
-        <com.denchic45.kts.NestedScrollableHost
+        <com.denchic45.kts.ui.NestedScrollableHost
             android:id="@+id/nsh_attachments"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -148,7 +148,7 @@
                 android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_attachment" />
-        </com.denchic45.kts.NestedScrollableHost>
+        </com.denchic45.kts.ui.NestedScrollableHost>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
