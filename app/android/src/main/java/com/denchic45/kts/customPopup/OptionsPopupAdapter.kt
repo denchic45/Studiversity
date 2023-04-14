@@ -13,7 +13,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.kts.ui.model.OptionItem
 import com.denchic45.kts.databinding.ItemPopupIconContentBinding
 import com.denchic45.kts.ui.UiText
-import com.denchic45.kts.ui.onId
+import com.denchic45.kts.ui.onVector
 import com.denchic45.kts.ui.onName
 import com.denchic45.kts.ui.onString
 import com.denchic45.kts.util.viewBinding
@@ -69,9 +69,9 @@ class OptionsPopupAdapter(context: Context, items: List<OptionItem>) : ArrayAdap
             with(itemPopupIconContentBinding) {
                 val context = root.context
                 item.title.onString { tvName.text = it }
-                    .onId { tvName.setText(it) }
+                    .onVector { tvName.setText(it) }
 
-                item.icon?.onId {
+                item.icon?.onVector {
                     ivIcon.visibility = View.VISIBLE
                     ivIcon.setImageDrawable(
                         ContextCompat.getDrawable(context, it)
@@ -91,7 +91,7 @@ class OptionsPopupAdapter(context: Context, items: List<OptionItem>) : ArrayAdap
                         context.resources
                             .getIdentifier(it, "color", context.packageName)
                     )
-                }?.onId {
+                }?.onVector {
                     ImageViewCompat.setImageTintList(
                         ivIcon,
                         ColorStateList.valueOf(it)

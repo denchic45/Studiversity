@@ -16,7 +16,7 @@ import com.denchic45.kts.R
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.databinding.ItemFinderEntityBinding
 import com.denchic45.kts.ui.adapter.FinderEntityAdapter.FinderEntityHolder
-import com.denchic45.kts.ui.onId
+import com.denchic45.kts.ui.onVector
 import com.denchic45.kts.util.viewBinding
 
 class FinderEntityAdapter :
@@ -87,7 +87,7 @@ class FinderEntityAdapter :
         private val ivIcon: ImageView = itemView.findViewById(R.id.iv_icon)
         private val context: Context = itemView.context
         override fun onBind(item: ListItem) {
-            item.icon?.onId {
+            item.icon?.onVector {
                 ivIcon.setImageDrawable(ContextCompat.getDrawable(context, it))
             }
 

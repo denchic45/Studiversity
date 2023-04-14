@@ -83,10 +83,10 @@ class ProfileFragment(component: (String,ComponentContext) -> ProfileViewModel) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        AppBarController.findController(requireActivity()).setExpanded(
-            expand = true,
-            animate = true
-        )
+//        AppBarController.findController(requireActivity()).setExpanded(
+//            expand = true,
+//            animate = true
+//        )
 
         with(binding) {
             lifecycleScope.launch {

@@ -6,7 +6,7 @@ import androidx.core.view.updateLayoutParams
 import com.denchic45.avatarGenerator.AvatarGenerator
 import com.denchic45.kts.ui.model.UiModel
 import com.denchic45.kts.ui.UiText
-import com.denchic45.kts.ui.onId
+import com.denchic45.kts.ui.onVector
 import com.denchic45.kts.ui.onString
 import com.denchic45.kts.databinding.ItemNavBinding
 import com.denchic45.kts.databinding.ItemNavDividerBinding
@@ -60,7 +60,7 @@ class NavItemHolder(itemNavBinding: ItemNavBinding) :
         with(binding) {
             item.name
                 .onString { tvName.text = it }
-                .onId { tvName.setText(it) }
+                .onVector { tvName.setText(it) }
 
             when (item.iconType) {
                 NavTextItem.IconType.NONE -> {
@@ -79,7 +79,7 @@ class NavItemHolder(itemNavBinding: ItemNavBinding) :
                 }
             }
 
-            item.icon.onId {
+            item.icon.onVector {
                 if (it != 0)
                     ivIcon.setImageResource(it)
                 else
@@ -120,7 +120,7 @@ class NavDropdownItemHolder(itemNavDropdownBinding: ItemNavDropdownBinding) :
     private fun bind(item: NavDropdownItem) {
         with(binding) {
             item.name
-                .onId { tvName.setText(it) }
+                .onVector { tvName.setText(it) }
                 .onString { tvName.text = it }
         }
     }
@@ -196,7 +196,7 @@ class NavSubHeaderItemHolder(itemNavSubHeaderBinding: ItemNavSubHeaderBinding) :
     override fun onBind(item: NavSubHeaderItem) {
         with(binding) {
             item.name
-                .onId { tvHeader.setText(it) }
+                .onVector { tvHeader.setText(it) }
                 .onString { tvHeader.text = it }
         }
     }

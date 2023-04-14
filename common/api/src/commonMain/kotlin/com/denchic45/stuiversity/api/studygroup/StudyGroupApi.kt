@@ -71,7 +71,7 @@ class StudyGroupApiImpl(private val client: HttpClient) : StudyGroupApi {
         studyGroupId: UUID,
         updateStudyGroupRequest: UpdateStudyGroupRequest,
     ): ResponseResult<StudyGroupResponse> {
-        return client.put("/studygroups/$studyGroupId") {
+        return client.patch("/studygroups/$studyGroupId") {
             contentType(ContentType.Application.Json)
             setBody(updateStudyGroupRequest)
         }.toResult()

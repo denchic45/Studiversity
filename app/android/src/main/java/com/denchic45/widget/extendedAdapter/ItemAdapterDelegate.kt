@@ -4,7 +4,7 @@ import android.content.res.ColorStateList
 import android.view.ViewGroup
 import androidx.core.widget.ImageViewCompat
 import com.denchic45.kts.data.model.domain.ListItem
-import com.denchic45.kts.ui.onId
+import com.denchic45.kts.ui.onVector
 import com.denchic45.kts.databinding.ItemIconContentBinding
 import com.denchic45.kts.ui.adapter.BaseViewHolder
 import com.denchic45.kts.ui.onName
@@ -20,7 +20,7 @@ class ItemAdapterDelegate : ListItemAdapterDelegate<ListItem, ItemAdapterDelegat
         override fun onBind(item: ListItem) {
             with(binding) {
 
-                item.icon?.onId {
+                item.icon?.onVector {
                     ivIcon.setImageResource(it)
                 }?.onName {
                     val iconResId = itemView.context.resources.getIdentifier(
@@ -34,7 +34,7 @@ class ItemAdapterDelegate : ListItemAdapterDelegate<ListItem, ItemAdapterDelegat
 
                 tvName.text = item.title
 
-                item.color?.onId {
+                item.color?.onVector {
                     ImageViewCompat.setImageTintList(
                         ivIcon,
                         ColorStateList.valueOf(it)

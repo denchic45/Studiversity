@@ -1,6 +1,5 @@
 package com.denchic45.kts.ui.studygroup
 
-import androidx.lifecycle.MutableLiveData
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
@@ -15,16 +14,14 @@ import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class StudyGroupViewModel (
+class StudyGroupViewModel(
     @Assisted
     val _studyGroupId: String,
-    private val toolbarInteractor: ToolbarInteractor,
     private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     @Assisted
@@ -45,8 +42,6 @@ class StudyGroupViewModel (
     val tabs = MutableStateFlow<List<String>>(emptyList())
 
     val menuItemVisibility = SingleLiveData<Pair<Int, Boolean>>()
-
-    val openGroupEditor = SingleLiveData<String>()
 
     val studyGroup = flow { emit(findStudyGroupByIdUseCase(studyGroupId)) }.stateInResource(componentScope)
 
@@ -98,7 +93,7 @@ class StudyGroupViewModel (
 
     override fun onOptionClick(itemId: Int) {
         when (itemId) {
-            R.id.option_edit_group -> openGroupEditor.setValue(_studyGroupId)
+//            R.id.option_edit_group -> openGroupEditor.setValue(_studyGroupId)
         }
     }
 

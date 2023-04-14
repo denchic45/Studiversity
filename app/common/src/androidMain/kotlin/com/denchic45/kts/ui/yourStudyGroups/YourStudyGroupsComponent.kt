@@ -6,7 +6,7 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.kts.ui.DropdownMenuItem
-import com.denchic45.kts.ui.ToolbarInteractor
+import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.onString
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
@@ -15,12 +15,11 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 
 @Inject
 class YourStudyGroupsComponent(
-    private val toolbarInteractor: ToolbarInteractor,
     private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
     @Assisted
     private val onGroupEditClick: (UUID) -> Unit,
@@ -29,6 +28,22 @@ class YourStudyGroupsComponent(
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
+
+    val openGroupEditor = MutableSharedFlow<String>()
+
+    val appBarState = MutableStateFlow(
+        AppBarState(
+            title = uiTextOf("Ваши группы"),
+            onDropdownMenuItemClick = {
+                it.title.onString {
+                    when (it) {
+                        "Редактировать" -> {
+                            onGroupEditClick(selectedStudyGroup.value?.id!!)
+                        }
+                    }
+                }
+            })
+    )
 
     val studyGroups = flow { emit(findYourStudyGroupsUseCase()) }.stateInResource(componentScope)
 
@@ -45,16 +60,6 @@ class YourStudyGroupsComponent(
             }
         }
 
-        toolbarInteractor.onDropDownClick {
-            it.title.onString {
-                when (it) {
-                    "Редактировать" -> {
-                        onGroupEditClick(selectedStudyGroup.value?.id!!)
-                    }
-                }
-            }
-        }
-
         lifecycle.subscribe(
             onCreate = { println("LIFECYCLE: create") },
             onStart = { println("LIFECYCLE: start") },
@@ -66,11 +71,21 @@ class YourStudyGroupsComponent(
 
         lifecycle.subscribe(onResume = {
             selectedStudyGroup.onEach { selectedStudyGroup ->
-                toolbarInteractor.title = uiTextOf(selectedStudyGroup?.name ?: "Выберите группу")
-                toolbarInteractor.dropdown.update {
-                    selectedStudyGroup?.let {
-                        listOf(DropdownMenuItem(uiTextOf("Редактировать")))
-                    } ?: emptyList()
+                appBarState.update {
+                    it.copy(
+                        title = uiTextOf(selectedStudyGroup?.name ?: "Выберите группу"),
+                        dropdown = selectedStudyGroup?.let {
+                            listOf(DropdownMenuItem("edit", uiTextOf("Редактировать")))
+                        } ?: emptyList(),
+                        onDropdownMenuItemClick = {
+                            when (it.id) {
+                                "edit" -> componentScope.launch {
+                                    openGroupEditor.emit(
+                                        selectedStudyGroup!!.id.toString()
+                                    )
+                                }
+                            }
+                        })
                 }
             }.launchIn(componentScope)
         })

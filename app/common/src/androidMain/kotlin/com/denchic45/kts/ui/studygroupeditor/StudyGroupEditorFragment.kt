@@ -4,18 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material3.Text
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.defaultComponentContext
+import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.stuiversity.util.toUUID
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class StudyGroupEditorFragment(private val component: (studyGroupId: UUID?,ComponentContext) -> StudyGroupEditorComponent) :
+class StudyGroupEditorFragment(
+    private val appBarInteractor: AppBarInteractor,
+    private val component: (studyGroupId: UUID?, ()->Unit,ComponentContext) -> StudyGroupEditorComponent
+) :
     Fragment() {
 //     val binding: FragmentGroupEditorBinding by viewBinding(FragmentGroupEditorBinding::bind)
 
@@ -26,7 +31,15 @@ class StudyGroupEditorFragment(private val component: (studyGroupId: UUID?,Compo
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            StudyGroupEditorScreen(component(arguments?.getString("studyGroupId")?.toUUID(),defaultComponentContext(requireActivity().onBackPressedDispatcher)))
+            val component = component(
+                arguments?.getString("studyGroupId")?.toUUID(),
+                {findNavController().navigateUp()},
+                defaultComponentContext(requireActivity().onBackPressedDispatcher)
+            )
+            component.appBarState.collectWhenStarted(viewLifecycleOwner) {
+                appBarInteractor.updateState(it)
+            }
+            StudyGroupEditorScreen(component)
         }
     }
 
@@ -109,11 +122,6 @@ class StudyGroupEditorFragment(private val component: (studyGroupId: UUID?,Compo
 //            ) { listItems: List<ListItem> -> specialtyAdapter!!.updateList(listItems) }
 //        }
 //    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
 
     companion object {
         const val GROUP_ID = "GroupEditorFragment GROUP_ID"

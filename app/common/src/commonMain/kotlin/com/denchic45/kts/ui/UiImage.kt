@@ -11,5 +11,5 @@ sealed class UiImage {
 fun UiImage.onName(fn: (value: String) -> Unit): UiImage =
     this.apply { if (this is UiImage.Url) fn(value) }
 
-fun UiImage.onId(fn: (value: Int) -> Unit): UiImage =
+fun UiImage.onVector(fn: (value: Int) -> Unit): UiImage =
     this.apply { if (this is UiImage.IdImage) fn(value) }

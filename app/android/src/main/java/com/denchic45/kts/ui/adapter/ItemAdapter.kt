@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.databinding.*
-import com.denchic45.kts.ui.onId
+import com.denchic45.kts.ui.onVector
 import com.denchic45.kts.util.viewBinding
 
 class ItemAdapter : ListAdapter<ListItem, BaseViewHolder<ListItem, *>>(DIFF_CALLBACK) {
@@ -87,11 +87,11 @@ class ItemAdapter : ListAdapter<ListItem, BaseViewHolder<ListItem, *>>(DIFF_CALL
                 tvName.text = item.title
                 val context = itemView.context
 
-                item.icon?.onId {
+                item.icon?.onVector {
                     ivIcon.setImageResource(it)
                 }
 
-                item.color?.onId {
+                item.color?.onVector {
                     DrawableCompat.setTint(
                         DrawableCompat.wrap(ivIcon.drawable),
                         ContextCompat.getColor(context, it)
@@ -113,11 +113,11 @@ class ItemAdapter : ListAdapter<ListItem, BaseViewHolder<ListItem, *>>(DIFF_CALL
 
             with(binding) {
                 val context = itemView.context
-                item.icon?.onId {
+                item.icon?.onVector {
                     ivIcon.setImageResource(it)
                 }
 
-                item.color?.onId {
+                item.color?.onVector {
                     DrawableCompat.setTint(
                         DrawableCompat.wrap(ivIcon.drawable),
                         ContextCompat.getColor(context, it)
@@ -136,11 +136,11 @@ class ItemAdapter : ListAdapter<ListItem, BaseViewHolder<ListItem, *>>(DIFF_CALL
 
             with(binding) {
                 val context = itemView.context
-                item.icon?.onId {
+                item.icon?.onVector {
                     ivIcon.setImageResource(it)
                 }
 
-                item.color?.onId {
+                item.color?.onVector {
                     DrawableCompat.setTint(
                         DrawableCompat.wrap(ivIcon.drawable),
                         ContextCompat.getColor(context, it)

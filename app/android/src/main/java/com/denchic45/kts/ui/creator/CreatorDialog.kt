@@ -22,7 +22,7 @@ import com.denchic45.kts.ui.adapter.BaseViewHolder
 import com.denchic45.kts.ui.adapter.OnItemClickListener
 import com.denchic45.kts.ui.base.HasViewModel
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
-import com.denchic45.kts.ui.onId
+import com.denchic45.kts.ui.onVector
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
 import com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog
 import com.denchic45.kts.util.collectWhenResumed
@@ -123,7 +123,7 @@ class CreatorDialog : BottomSheetDialogFragment(), HasViewModel<CreatorViewModel
 
 
         companion object {
-            const val ITEM_COUNT = 6
+            const val ITEM_COUNT = 5
         }
     }
 
@@ -135,7 +135,7 @@ class CreatorDialog : BottomSheetDialogFragment(), HasViewModel<CreatorViewModel
         private val ivIcon: ImageView = itemView.findViewById(R.id.iv_icon)
         override fun onBind(item: ListItem) {
             tvTitle.text = item.title
-            item.icon?.onId {
+            item.icon?.onVector {
                 val icon = ContextCompat.getDrawable(itemView.context, it)!!
                 DrawableCompat.setTint(
                     icon,

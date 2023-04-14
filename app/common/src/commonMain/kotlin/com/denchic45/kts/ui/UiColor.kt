@@ -10,5 +10,5 @@ sealed class UiColor {
 fun UiColor.onName(fn: (success: String) -> Unit): UiColor =
     this.apply { if (this is UiColor.ColorName) fn(value) }
 
-fun UiColor.onId(fn: (failure: Int) -> Unit): UiColor =
+fun UiColor.onVector(fn: (failure: Int) -> Unit): UiColor =
     this.apply { if (this is UiColor.ColorId) fn(value) }

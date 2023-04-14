@@ -56,7 +56,10 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 api(compose.material3)
                 api(compose.materialIconsExtended)
+
                 api("ca.gosyer:compose-material-dialogs-datetime:0.9.2")
+
+                api("io.github.qdsfdhvh:image-loader:1.3.1")
 
                 // Ktor
                 api("io.ktor:ktor-client-core:$ktorVersion")
@@ -75,7 +78,6 @@ kotlin {
                 implementation("app.cash.sqldelight:coroutines-extensions:$sqlDelightVersion")
                 api("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
 
-
                 implementation("io.insert-koin:koin-core:$koinVersion")
 
                 // Settings
@@ -84,8 +86,6 @@ kotlin {
 
                 implementation("com.squareup.okio:okio:3.3.0")
 
-                // kotlin-inject
-//                configurations["ksp"].dependencies.add(project.dependencies.create("me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1"))
                 api("me.tatarka.inject:kotlin-inject-runtime:0.6.1")
 
                 // kotlin-result
@@ -207,6 +207,10 @@ kotlin {
             }
         }
     }
+    sourceSets["commonJvmMain"].resources.srcDirs(
+        "src/commonJvmMain/resources",
+        "src/commonMain/resources"
+    )
 }
 
 dependencies {

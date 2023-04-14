@@ -78,15 +78,12 @@ private fun Route.studyGroupByIdRoutes() {
 
         get {
             val id = call.parameters["id"]!!.toUUID()
-            findStudyGroupById(id).let { group ->
-                call.respond(HttpStatusCode.OK, group)
-            }
+                call.respond(HttpStatusCode.OK, findStudyGroupById(id))
         }
         patch {
             val id = call.parameters["id"]!!.toUUID()
             val body = call.receive<UpdateStudyGroupRequest>()
-            updateStudyGroup(id, body)
-            call.respond(HttpStatusCode.OK, "Group updated")
+            call.respond(HttpStatusCode.OK, updateStudyGroup(id, body))
         }
         delete {
             val id = call.parameters["id"]!!.toUUID()

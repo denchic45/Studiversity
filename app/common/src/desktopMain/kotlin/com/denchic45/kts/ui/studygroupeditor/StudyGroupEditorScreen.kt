@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 @Composable
 fun StudyGroupEditorScreen(component: StudyGroupEditorComponent) {
     val viewState by component.viewState.collectAsState()
-    val inputState by component.inputState.collectAsState()
+    val inputState = component.inputState
     val searchedSpecialties by component.searchedSpecialties.collectAsState(emptyList())
 
     var expanded by remember { mutableStateOf(false) }

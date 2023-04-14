@@ -25,18 +25,18 @@ class StudyGroupRepository {
         return dao.toResponse()
     }
 
-    fun update(id: UUID, updateStudyGroupRequest: UpdateStudyGroupRequest): Boolean {
-        return StudyGroups.update({ StudyGroups.id eq id }) { update ->
+    fun update(id: UUID, updateStudyGroupRequest: UpdateStudyGroupRequest): StudyGroupResponse? {
+        return StudyGroupDao.findById(id)?.also { dao ->
             updateStudyGroupRequest.apply {
-                name.ifPresent { update[StudyGroups.name] = it }
+                name.ifPresent { dao.name = it }
                 academicYear.ifPresent {
-                    update[startAcademicYear] = it.start
-                    update[endAcademicYear] = it.end
+                    dao.startAcademicYear = it.start
+                    dao.endAcademicYear = it.end
                 }
-                specialtyId.ifPresent { update[StudyGroups.specialtyId] = it }
+                specialtyId.ifPresent { dao.specialty = it?.let { SpecialtyDao.findById(it) } }
             }
-            update[updatedAt] = Instant.now()
-        }.run { this != 0 }
+            dao.updatedAt = Instant.now()
+        }?.toResponse()
     }
 
     fun findById(id: UUID): StudyGroupResponse? = StudyGroupDao.findById(id)?.toResponse()

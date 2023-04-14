@@ -6,6 +6,8 @@ import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.stuiversity.util.UUIDWrapper
+import com.denchic45.stuiversity.util.uuidOfMe
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -17,13 +19,11 @@ interface CoursesApi {
     suspend fun getById(courseId: UUID): ResponseResult<CourseResponse>
 
     suspend fun getList(
-        memberId: UUID? = null,
+        memberId: UUIDWrapper = uuidOfMe(),
         studyGroupId: UUID? = null,
         subjectId: UUID? = null,
         query: String? = null
     ): ResponseResult<List<CourseResponse>>
-
-    suspend fun getCoursesByMe(): ResponseResult<CourseResponse>
 
     suspend fun update(
         courseId: UUID,
@@ -60,21 +60,17 @@ class CourseApiImpl(private val client: HttpClient) : CoursesApi {
     }
 
     override suspend fun getList(
-        memberId: UUID?,
+        memberId: UUIDWrapper,
         studyGroupId: UUID?,
         subjectId: UUID?,
         query: String?,
     ): ResponseResult<List<CourseResponse>> {
         return client.get("/courses") {
-            parameter("member_id", memberId)
+            parameter("member_id", memberId.value)
             parameter("study_group_id", studyGroupId)
             parameter("subject_id", subjectId)
             parameter("q", query)
         }.toResult()
-    }
-
-    override suspend fun getCoursesByMe(): ResponseResult<CourseResponse> {
-        return client.get("/me/courses").toResult()
     }
 
     override suspend fun update(

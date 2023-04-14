@@ -9,20 +9,12 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -38,6 +30,9 @@ import com.denchic45.kts.ui.base.BaseActivity
 import com.denchic45.kts.ui.get
 import com.denchic45.kts.ui.initImageLoader
 import com.denchic45.kts.ui.login.LoginActivity
+import com.denchic45.kts.ui.onResource
+import com.denchic45.kts.ui.onVector
+import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.updateView.SnackbarUpdateView
 import com.denchic45.kts.util.collectWhenResumed
 import com.denchic45.kts.util.collectWhenStarted
@@ -107,43 +102,66 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 
         bnv.setOnItemReselectedListener { refreshCurrentFragment() }
 
-        val toolbarInteractor = app.appComponent.toolbarInteractor
+        val toolbarInteractor = app.appComponent.appBarInteractor
 
-        toolbarInteractor.titleFlow.collectWhenStarted(this) {
-            title = it.get(this)
-        }
+//        toolbarInteractor.appBarState.collectWhenStarted(this) {
+//            title = it.title.get(this)
+//        }
 
         binding.topAppBarComposable.setContent {
-            MaterialTheme {
-                val title by toolbarInteractor.titleFlow.collectAsState()
-                val dropdown by toolbarInteractor.dropdown.collectAsState()
-                TopAppBar(
-                    title = { Text(title.get(LocalContext.current)) },
-                    actions = {
-                        if (dropdown.isNotEmpty()) {
-                            var menuExpanded by remember { mutableStateOf(false) }
-                            IconButton(onClick = { menuExpanded = !menuExpanded }) {
-                                Icon(Icons.Filled.MoreVert, "Меню")
+            AppTheme {
+                val state by toolbarInteractor.appBarState.collectAsState()
+                if (state.visible)
+                    TopAppBar(
+                        title = { Text(state.title.get(LocalContext.current)) },
+                        actions = {
+                            state.actions.forEach { actionMenuItem ->
+                                val contentDescription = actionMenuItem.title
+                                    ?.get(LocalContext.current)
+                                IconButton(
+                                    onClick = { state.onActionMenuItemClick(actionMenuItem) },
+                                    enabled = actionMenuItem.enabled
+                                ) {
+                                    actionMenuItem.icon
+                                        .onResource {
+                                            Icon(
+                                                painter = painterResource(it),
+                                                contentDescription = contentDescription
+                                            )
+                                        }.onVector {
+                                            Icon(
+                                                imageVector = it,
+                                                contentDescription = contentDescription
+                                            )
+                                        }
+                                }
                             }
-                            DropdownMenu(
-                                expanded = menuExpanded,
-                                onDismissRequest = { menuExpanded = false },
-                            ) {
-                                dropdown.forEach { item ->
-                                    DropdownMenuItem(
-                                        text = {
-                                            Text(item.title.get(LocalContext.current))
-                                        },
-                                        onClick = {
-                                            menuExpanded = false
-                                            toolbarInteractor.onDropdownMenuItemSelect(item)
-                                        },
-                                    )
+
+                            if (state.dropdown.isNotEmpty()) {
+                                var menuExpanded by remember { mutableStateOf(false) }
+                                IconButton(onClick = { menuExpanded = !menuExpanded }) {
+                                    Icon(Icons.Filled.MoreVert, "Меню")
+                                }
+                                DropdownMenu(
+                                    expanded = menuExpanded,
+                                    offset = DpOffset(x = (-84).dp, y = 0.dp),
+                                    onDismissRequest = { menuExpanded = false },
+                                ) {
+                                    state.dropdown.forEach { item ->
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(item.title.get(LocalContext.current))
+                                            },
+                                            onClick = {
+                                                menuExpanded = false
+                                                state.onDropdownMenuItemClick(item)
+                                            },
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
-                )
+                    )
             }
         }
 
@@ -243,8 +261,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                 }
             }
 
-            viewModel.navMenuItems.collectWhenStarted(this@MainActivity) {
-                if (it is MainViewModel.NavMenuState.NavMenu) {
+            viewModel.navMenuState.collectWhenStarted(this@MainActivity) {
+                it.onSuccess {
                     navAdapter.submit(it.items)
                 }
             }

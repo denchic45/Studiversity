@@ -17,6 +17,7 @@ class AppPreferences(val settings: ObservableSettings) : Settings by settings {
     var refreshToken by nullableString()
 
     var url by string( defaultValue = "")
+    var organizationId by string(defaultValue = "")
 
     var yourStudyGroups by string(defaultValue = "")
 

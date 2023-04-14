@@ -35,17 +35,9 @@ fun StudyGroupEditorUI(
                 onValueChange = onNameType,
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Название") },
-                isError = inputState.nameMessage.isNotEmpty(),
-                supportingText = { Text(inputState.nameMessage) }
+                isError = inputState.nameMessage != null,
+                supportingText = { Text(inputState.nameMessage ?: "") }
             )
-
-//            TextField(
-//                value = group.specialty?.name ?: "",
-//                onValueChange = onSpecialtyNameType,
-//                modifier = Modifier.fillMaxWidth(),
-//                placeholder = { Text("Специальность") },
-//                supportingText = { Text("") }
-//            )
 
             specialties(searchedSpecialties)
 
@@ -61,8 +53,9 @@ fun StudyGroupEditorUI(
                     singleLine = true,
                     label = { Text("Год начала") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    supportingText = { Text("") },
-                    modifier = Modifier.weight(0.5f)
+                    modifier = Modifier.weight(0.5f),
+                    isError = inputState.startYearMessage != null,
+                    supportingText = { Text(inputState.startYearMessage ?: "") }
                 )
                 Spacer(Modifier.width(MaterialTheme.spacing.normal))
                 OutlinedTextField(
@@ -74,8 +67,9 @@ fun StudyGroupEditorUI(
                     singleLine = true,
                     label = { Text("Год окончания") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    supportingText = { Text("") },
-                    modifier = Modifier.weight(0.5f)
+                    modifier = Modifier.weight(0.5f),
+                    isError = inputState.endYearMessage != null,
+                    supportingText = { Text(inputState.endYearMessage ?: "") }
                 )
             }
         }

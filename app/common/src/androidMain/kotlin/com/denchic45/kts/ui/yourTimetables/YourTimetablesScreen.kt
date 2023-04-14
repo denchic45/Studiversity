@@ -10,10 +10,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.timetableEditor.DayTimetableScreen
 
 @Composable
-fun YourTimetablesScreen(component: YourTimetablesComponent) {
+fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: AppBarInteractor) {
     val groups by component.studyGroups.collectAsState()
 
     Column {
@@ -24,7 +25,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
             }
         }
         val timetableComponent = component.timetableComponent
-        DayTimetableScreen(timetableComponent)
+        DayTimetableScreen(timetableComponent, appBarInteractor)
     }
 }
 

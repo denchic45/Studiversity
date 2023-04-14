@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.material3.Text
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.fragment.navArgs
@@ -19,7 +21,7 @@ import com.arkivanov.decompose.defaultComponentContext
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentCourseBinding
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.BaseFragment2
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.adapter.CourseTopicAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskAdapterDelegate
 import com.denchic45.kts.ui.adapter.TaskHolder
@@ -28,42 +30,54 @@ import com.denchic45.kts.ui.course.content.ContentFragment
 import com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment
 import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
+import com.denchic45.kts.ui.courseelements.CourseElementsUiComponent
 import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.widget.extendedAdapter.adapter
 import com.denchic45.widget.extendedAdapter.extension.clickBuilder
-import com.example.appbarcontroller.appbarcontroller.AppBarController
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import me.tatarka.inject.annotations.Inject
+import java.util.*
 
 @Inject
 class CourseFragment(
-    component: (String, ComponentContext) -> CourseViewModel,
-) : BaseFragment2<CourseViewModel, FragmentCourseBinding>(
+    private val appBarInteractor: AppBarInteractor,
+    component: (String, () -> Unit, (elementId: UUID) -> Unit, ComponentContext) -> CourseElementsUiComponent,
+) : Fragment(
     R.layout.fragment_course
 ), HasNavArgs<CourseFragmentArgs> {
 
-    override val navArgs: CourseFragmentArgs by navArgs()
+     override val navArgs: CourseFragmentArgs by navArgs()
 
-    override val component: CourseViewModel by lazy { component(navArgs.courseId,defaultComponentContext(requireActivity().onBackPressedDispatcher)) }
+     val component: CourseElementsUiComponent by lazy {
+        component(
+            navArgs.courseId,
+            {},
+            {},
+            defaultComponentContext(requireActivity().onBackPressedDispatcher)
+        )
+    }
 
     override val binding: FragmentCourseBinding by viewBinding(FragmentCourseBinding::bind)
     private lateinit var collapsingToolbarLayout: CollapsingToolbarLayout
 
-    private lateinit var mainToolbar: Toolbar
+//    private lateinit var mainToolbar: Toolbar
     private lateinit var toolbar: Toolbar
 
     companion object {
         const val COURSE_ID = "CourseFragment COURSE_UUID"
     }
 
-    private lateinit var appBarController: AppBarController
+//    private lateinit var appBarController: AppBarController
 
     @SuppressLint("RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        appBarController = AppBarController.findController(requireActivity())
+//        appBarController = AppBarController.findController(requireActivity())
+        component.appBarState.collectWhenStarted(viewLifecycleOwner) {
+            appBarInteractor.updateState(it)
+        }
 
         requireActivity().findViewById<FloatingActionButton>(R.id.fab_main).setOnClickListener {
             component.onFabClick()
@@ -208,11 +222,11 @@ class CourseFragment(
 
     override fun onStart() {
         super.onStart()
-        appBarController.apply {
-            mainToolbar = toolbar
-            removeView(toolbar)
-            collapsingToolbarLayout =
-                addView(R.layout.toolbar_course) as CollapsingToolbarLayout
+
+            collapsingToolbarLayout = requireActivity().findViewById<LinearLayout>(R.id.ll_main).let {
+                it.addView(requireActivity().layoutInflater.inflate(R.layout.toolbar_course,it,false),0)
+                requireActivity().findViewById(R.id.toolbar_layout)
+            }
             this@CourseFragment.toolbar = collapsingToolbarLayout.findViewById(R.id.toolbar)
             this@CourseFragment.toolbar.apply {
                 setNavigationIcon(R.drawable.ic_arrow_back)
@@ -226,14 +240,14 @@ class CourseFragment(
                 }
                 component.onCreateOptions()
             }
-            setLiftOnScroll(true)
-        }
+
     }
 
     override fun onStop() {
         super.onStop()
-        appBarController.removeView(collapsingToolbarLayout)
-        appBarController.addView(mainToolbar)
-        appBarController.setExpanded(expand = true, animate = false)
+        requireActivity().findViewById<LinearLayout>(R.id.ll_main).removeViewAt(0)
+//        appBarController.removeView(collapsingToolbarLayout)
+//        appBarController.addView(mainToolbar)
+//        appBarController.setExpanded(expand = true, animate = false)
     }
 }

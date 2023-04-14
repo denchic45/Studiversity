@@ -12,11 +12,9 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 
 @Composable
-fun StudyGroupEditorScreen(
-    component: StudyGroupEditorComponent,
-) {
+fun StudyGroupEditorScreen(component: StudyGroupEditorComponent) {
     val viewState by component.viewState.collectAsState()
-    val inputState by component.inputState.collectAsState()
+    val inputState = component.inputState
     val searchedSpecialties by component.searchedSpecialties.collectAsState(emptyList())
     val searchedSpecialtiesText by component.searchSpecialtiesText.collectAsState()
 

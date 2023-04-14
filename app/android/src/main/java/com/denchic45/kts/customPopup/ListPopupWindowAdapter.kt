@@ -17,7 +17,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.kts.R
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.databinding.ItemPopupContentBinding
-import com.denchic45.kts.ui.onId
+import com.denchic45.kts.ui.onVector
 import com.denchic45.kts.ui.onName
 import com.denchic45.kts.util.viewBinding
 
@@ -91,7 +91,7 @@ class ListPopupWindowAdapter(context: Context, items: List<ListItem>) : ArrayAda
                 tvTitle.text = item.title
             }
 
-            item.icon?.onId {
+            item.icon?.onVector {
                 ivIcon.setImageDrawable(
                     ContextCompat.getDrawable(
                         convertView.context,
@@ -118,7 +118,7 @@ class ListPopupWindowAdapter(context: Context, items: List<ListItem>) : ArrayAda
                     convertView.resources
                         .getIdentifier(it, "color", convertView.context.packageName)
                 )
-            }?.onId {
+            }?.onVector {
                 ImageViewCompat.setImageTintList(
                     ivIcon,
                     ColorStateList.valueOf(it)

@@ -13,7 +13,7 @@ class CheckUserCapabilitiesInScopeUseCase @javax.inject.Inject constructor(
 ) {
     suspend operator fun invoke(
         userId: UUID? = null,
-        scopeId: UUID,
+        scopeId: UUID? = null,
         capabilities: List<Capability>,
     ): Resource<CheckCapabilitiesResponse> {
         return roleRepository.findUserCapabilitiesIdAndScopeId(userId, scopeId, capabilities)

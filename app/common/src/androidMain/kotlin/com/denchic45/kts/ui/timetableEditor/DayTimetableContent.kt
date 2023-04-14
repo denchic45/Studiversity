@@ -17,6 +17,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.timetable.DayTimetableComponent
 import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
 import com.denchic45.kts.ui.widget.calendar.WeekCalendarListener
@@ -37,9 +38,14 @@ fun DayTimetableEditorScreen(component: DayTimetableEditorComponent) {
 }
 
 @Composable
-fun DayTimetableScreen(component: DayTimetableComponent) {
+fun DayTimetableScreen(component: DayTimetableComponent, appBarInteractor: AppBarInteractor) {
     val viewState by component.viewState.collectAsState()
     val selectedDate by component.selectedDate.collectAsState()
+
+    val appBarState by component.appBarState.collectAsState()
+
+    appBarInteractor.updateState(appBarState)
+
     DayTimetableContent(
         selectedDate = selectedDate,
         viewState = viewState,
@@ -62,6 +68,7 @@ fun DayTimetableContent(
                     override fun onDaySelect(date: LocalDate) {
                         onDateSelect(date)
                     }
+
                     override fun onWeekSelect(weekItem: WeekItem) {}
                 }
             }

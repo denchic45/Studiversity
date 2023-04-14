@@ -43,9 +43,9 @@ class AdminPanelFragment :
 
     override fun onStart() {
         super.onStart()
-        val appBarController = AppBarController.findController(requireActivity())
-        appBarController.setExpandableIfViewCanScroll(binding.rv, viewLifecycleOwner)
-        appBarController.setLiftOnScroll(true)
+//        val appBarController = AppBarController.findController(requireActivity())
+//        appBarController.setExpandableIfViewCanScroll(binding.rv, viewLifecycleOwner)
+//        appBarController.setLiftOnScroll(true)
         setActivityTitle("")
     }
 }

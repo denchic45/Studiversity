@@ -104,7 +104,7 @@ class CourseRepository @Inject constructor(
 
     // TODO: Implement in backend
     suspend fun findByMe() = fetchResource {
-        coursesApi.getCoursesByMe()
+        coursesApi.getList()
     }
 
 //    fun findByYourAsTeacher(): Flow<List<CourseHeader>> = flow {

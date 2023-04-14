@@ -2,12 +2,9 @@ package com.denchic45.kts.di.module
 
 import android.app.Application
 import android.content.Context
-import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.DefaultComponentContext
-import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.appVersion.GoogleAppVersionService
 import com.denchic45.kts.data.service.AppVersionService
-import com.denchic45.kts.ui.ToolbarInteractor
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.util.SystemDirs
 import dagger.Binds
 import dagger.Module
@@ -37,7 +34,7 @@ class AndroidAppModule(private val application: Application) {
     fun providesApplicationContext(): Context = application
 
     @Provides
-    fun toolbarInteractor(): ToolbarInteractor = ToolbarInteractor()
+    fun toolbarInteractor(): AppBarInteractor = AppBarInteractor()
 
 //    @Provides
 //    @Singleton

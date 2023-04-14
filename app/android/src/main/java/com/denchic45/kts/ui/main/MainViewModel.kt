@@ -7,25 +7,22 @@ import androidx.lifecycle.viewModelScope
 import com.denchic45.appVersion.GoogleAppVersionService
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
-import com.denchic45.kts.domain.MainInteractor
-import com.denchic45.kts.domain.model.User
-import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.domain.stateInResource
+import com.denchic45.kts.domain.*
+import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
+import com.denchic45.kts.domain.usecase.FindYourCoursesUseCase
 import com.denchic45.kts.ui.NavigationCommand
+import com.denchic45.kts.ui.UiText
 import com.denchic45.kts.ui.adapter.*
 import com.denchic45.kts.ui.adminPanel.AdminPanelFragmentDirections
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.course.CourseFragmentDirections
-import com.denchic45.kts.ui.UiText
-import com.denchic45.kts.ui.onId
 import com.denchic45.kts.ui.onString
+import com.denchic45.kts.ui.onVector
 import com.denchic45.kts.ui.settings.SettingsFragmentDirections
 import com.denchic45.kts.ui.tasks.TasksFragmentDirections
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -33,12 +30,18 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val interactor: MainInteractor,
     private val appVersionService: GoogleAppVersionService,
+    private val findYourCoursesUseCase: FindYourCoursesUseCase,
+    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase
 ) : BaseViewModel() {
 
     private val screenIdsWithFab: Set<Int> = setOf(
         R.id.courseFragment,
         R.id.studyGroupEditorFragment
     )
+
+    private val checkCapabilities = flow {
+        emit(checkUserCapabilitiesInScopeUseCase(capabilities = emptyList()))
+    }.stateInResource(viewModelScope)
 
     val updateBannerState = MutableStateFlow<UpdateBannerState>(UpdateBannerState.Hidden)
 
@@ -84,7 +87,7 @@ class MainViewModel @Inject constructor(
 
     val bottomMenuVisibility: MutableLiveData<Boolean> = MutableLiveData(true)
 
-    val navMenuItems: MutableStateFlow<NavMenuState> = MutableStateFlow(NavMenuState.NavMenuEmpty)
+    val navMenuState: MutableStateFlow<Resource<NavMenu>> = MutableStateFlow(Resource.Loading)
 
     fun onOptionItemSelect(itemId: Int) {
         when (itemId) {
@@ -108,28 +111,32 @@ class MainViewModel @Inject constructor(
     }
 
     fun onNavItemClick(position: Int) {
+        navMenuState.value.onSuccess {
+            val name = (it.items[position] as NavTextItem).name
+            name.onVector {
+                onNavItemClickActions.getValue(it).invoke()
+            }.onString {
+                viewModelScope.launch {
+                    navigate.emit(
+                        NavigationCommand.To(
+                            CourseFragmentDirections.actionGlobalCourseFragment(
 
-        val name =
-            ((navMenuItems.value as NavMenuState.NavMenu).items[position] as NavTextItem).name
-        name.onId {
-            onNavItemClickActions.getValue(it).invoke()
-        }.onString {
-            viewModelScope.launch {
-                navigate.emit(
-                    NavigationCommand.To(
-                        CourseFragmentDirections.actionGlobalCourseFragment(
-                            courseIds[it]!!
+                                courseIds[it]!!
+                            )
                         )
                     )
-                )
 
+                }
             }
         }
     }
 
     fun onExpandCoursesClick() {
-        val item = navMenuItems.value as NavMenuState.NavMenu
-        navMenuItems.value = item.copy(expandAllCourse = !item.expandAllCourse)
+//        val item = navMenuState.value
+        navMenuState.updateResource {
+            it.copy(expandAllCourse = !it.expandAllCourse)
+        }
+//        navMenuState.value = item.copy(expandAllCourse = !item.expandAllCourse)
     }
 
     fun onDestinationChanged(id: Int) {
@@ -174,6 +181,21 @@ class MainViewModel @Inject constructor(
             }
         )
 
+        viewModelScope.launch {
+            navMenuState.emitAll(
+                flow { emit(findYourCoursesUseCase()) }
+                    .mapResource { courses ->
+//                        checkCapabilities.mapResource { capabilities ->
+                            NavMenu(
+                                courses = courses,
+                                hasGroup = true, // TODO: get actual value
+                                isModerator = true // TODO: get actual value
+                            )
+//                        }
+                    }
+            )
+        }
+
         viewModelScope.launch(Dispatchers.IO) { interactor.startListeners() }
 
         viewModelScope.launch {
@@ -183,16 +205,21 @@ class MainViewModel @Inject constructor(
 //            }
         }
         // TODO: Решить, что делать с этим
-//        viewModelScope.launch {
+        viewModelScope.launch {
 //            combine(
-//                interactor.findOwnCourses(),
-//                interactor.observeHasGroup()
-//            ) { courses, hasGroup ->
+//                flow { emit(findYourCoursesUseCase()) },
+//                checkCapabilities
+//            ) { courses, capabilities ->
+//                courses.map {
+//                    capabilities.map {
+//
+//                    }
+//                }
 //                courseIds = courses.associate { it.name to it.id }
 //                NavMenuState.NavMenu(
 //                    courses,
 //                    interactor.findThisUser(),
-//                    hasGroup
+//                    capabilities
 //                )
 //            }.stateIn(
 //                viewModelScope,
@@ -203,50 +230,102 @@ class MainViewModel @Inject constructor(
 //            }
 //        }
 
-        viewModelScope.launch {
-            interactor.listenAuthState
-                .collect { logged: Boolean ->
-                    if (!logged) {
-                        viewModelScope.launch { openLogin.emit(Unit) }
+            viewModelScope.launch {
+                interactor.listenAuthState
+                    .collect { logged: Boolean ->
+                        if (!logged) {
+                            viewModelScope.launch { openLogin.emit(Unit) }
+                        }
                     }
-                }
-        }
+            }
 
 //        uiPermissions = UiPermissions(interactor.findThisUser())
 //        uiPermissions.putPermissions(Permission(ALLOW_CONTROL, { hasAdminPerms() }))
+        }
     }
 
-    fun onDownloadUpdateClick() {
-        appVersionService.startDownloadUpdate()
-        updateBannerState.value = UpdateBannerState.WaitLoading
-    }
+        fun onDownloadUpdateClick() {
+            appVersionService.startDownloadUpdate()
+            updateBannerState.value = UpdateBannerState.WaitLoading
+        }
 
-    fun onLaterUpdateClick() {
-        updateBannerState.value = UpdateBannerState.Hidden
-    }
+        fun onLaterUpdateClick() {
+            updateBannerState.value = UpdateBannerState.Hidden
+        }
 
-    fun onInstallClick() {
-        appVersionService.installUpdate()
-    }
+        fun onInstallClick() {
+            appVersionService.installUpdate()
+        }
 
-    sealed class NavMenuState {
-        data class NavMenu(
-            private val courses: List<CourseResponse>,
-            private val user: User,
-            private val hasGroup: Boolean,
-            val expandAllCourse: Boolean = false,
-        ) : NavMenuState() {
-            private val mainTextItems: MutableList<NavTextItem> = mutableListOf()
-            private val footerTextItems: MutableList<NavTextItem> = mutableListOf()
+    data class NavMenu(
+        private val courses: List<CourseResponse>,
+        private val hasGroup: Boolean,
+        private val isModerator: Boolean,
+        val expandAllCourse: Boolean = false,
+    ) {
+        private val mainTextItems: MutableList<NavTextItem> = mutableListOf()
+        private val footerTextItems: MutableList<NavTextItem> = mutableListOf()
 
-            val items: List<NavItem> = emptyList()   // TODO: Решить, что делать с этим
+        // TODO: Решить, что делать с этим
+        init {
+            with(mainTextItems) {
+//                    if (user.isStudent)
+//                        mainTextItems.add(
+//                            NavTextItem(
+//                                UiText.IdText(R.string.nav_tasks),
+//                                UiText.IdText(R.drawable.ic_tasks)
+//                            )
+//                        )
+                if (hasGroup) {
+                    mainTextItems.add(
+                        NavTextItem(
+                            UiText.IdText(R.string.nav_duty_roster),
+                            UiText.IdText(R.drawable.ic_clean),
+                            enable = false
+                        )
+                    )
+                }
+                add(
+                    NavTextItem(
+                        UiText.IdText(R.string.nav_schedule),
+                        UiText.IdText(R.drawable.ic_time),
+                        enable = false
+                    )
+                )
+            }
+            with(footerTextItems) {
+                if (isModerator) {
+                    add(
+                        NavTextItem(
+                            UiText.IdText(R.string.nav_control_panel),
+                            UiText.IdText(R.drawable.ic_control_panel)
+                        )
+                    )
+                }
+                addAll(
+                    listOf(
+                        NavTextItem(
+                            UiText.IdText(R.string.nav_settings),
+                            UiText.IdText(R.drawable.ic_settings)
+                        ), NavTextItem(
+                            UiText.IdText(R.string.nav_help),
+                            UiText.IdText(R.drawable.ic_help),
+                            enable = false
+                        )
+                    )
+                )
+            }
+        }
 
-            private fun create(): MutableList<NavItem> {
-                val items: MutableList<NavItem> = mainTextItems.toMutableList()
-                items.add(DividerItem())
+        val items: List<NavItem> = create()
+
+        private fun create(): List<NavItem> {
+            return buildList {
+                addAll(mainTextItems)
+                add(DividerItem())
                 if (courses.isNotEmpty()) {
                     val nameOfDropdownCoursesNavItem: Int
-                    items.add(NavSubHeaderItem(UiText.IdText(R.string.nav_courses_my)))
+                    add(NavSubHeaderItem(UiText.IdText(R.string.nav_courses_my)))
                     val visibleCourses = if (expandAllCourse) {
                         nameOfDropdownCoursesNavItem = R.string.nav_courses_hide
                         courses
@@ -254,7 +333,7 @@ class MainViewModel @Inject constructor(
                         nameOfDropdownCoursesNavItem = R.string.nav_courses_show_all
                         courses.take(5)
                     }
-                    items.addAll(visibleCourses.map {
+                    addAll(visibleCourses.map {
                         NavTextItem(
                             UiText.StringText(it.name),
                             id = it.id,
@@ -263,95 +342,39 @@ class MainViewModel @Inject constructor(
                         )
                     })
                     if (courses.size > 5)
-                        items.add(
+                        add(
                             NavDropdownItem(
                                 UiText.IdText(nameOfDropdownCoursesNavItem),
                                 expandAllCourse
                             )
                         )
-                    items.add(
+                    add(
                         NavTextItem(
                             UiText.IdText(R.string.nav_courses_archive),
                             UiText.IdText(R.drawable.ic_archive),
                             enable = false
                         )
                     )
-                    items.add(DividerItem())
+                    add(DividerItem())
                 }
-                items.addAll(footerTextItems)
-                return items
+                addAll(footerTextItems)
+
             }
-            // TODO: Решить, что делать с этим
-//            init {
-//                with(mainTextItems) {
-//                    if (user.isStudent)
-//                        mainTextItems.add(
-//                            NavTextItem(
-//                                UiText.IdText(R.string.nav_tasks),
-//                                UiText.IdText(R.drawable.ic_tasks)
-//                            )
-//                        )
-//                    if (hasGroup) {
-//                        mainTextItems.add(
-//                            NavTextItem(
-//                                UiText.IdText(R.string.nav_duty_roster),
-//                                UiText.IdText(R.drawable.ic_clean),
-//                                enable = false
-//                            )
-//                        )
-//                    }
-//                    add(
-//                        NavTextItem(
-//                            UiText.IdText(R.string.nav_schedule),
-//                            UiText.IdText(R.drawable.ic_time),
-//                            enable = false
-//                        )
-//                    )
-//                }
-//                with(footerTextItems) {
-//                    if (user.admin) {
-//                        add(
-//                            NavTextItem(
-//                                UiText.IdText(R.string.nav_control_panel),
-//                                UiText.IdText(R.drawable.ic_control_panel)
-//                            )
-//                        )
-//                    }
-//                    addAll(
-//                        listOf(
-//                            NavTextItem(
-//                                UiText.IdText(R.string.nav_settings),
-//                                UiText.IdText(R.drawable.ic_settings)
-//                            ), NavTextItem(
-//                                UiText.IdText(R.string.nav_help),
-//                                UiText.IdText(R.drawable.ic_help),
-//                                enable = false
-//                            )
-//                        )
-//                    )
-//                }
-//                items = create()
-//            }
         }
-
-        object NavMenuEmpty : NavMenuState()
     }
 
-    sealed class UpdateBannerState {
+sealed class UpdateBannerState {
 
-        object Hidden : UpdateBannerState()
+    object Hidden : UpdateBannerState()
 
-        object Remind : UpdateBannerState()
+    object Remind : UpdateBannerState()
 
-        object WaitLoading : UpdateBannerState()
+    object WaitLoading : UpdateBannerState()
 
-        data class Loading(
-            val progress: Long,
-            val info: String,
-        ) : UpdateBannerState()
+    data class Loading(
+        val progress: Long,
+        val info: String,
+    ) : UpdateBannerState()
 
-        object Install : UpdateBannerState()
-    }
-
-
-}
+    object Install : UpdateBannerState()
+}}

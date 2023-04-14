@@ -15,7 +15,6 @@ import androidx.viewpager2.widget.ViewPager2
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
-import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.defaultComponentContext
 import com.arkivanov.decompose.extensions.android.DefaultViewContext
 import com.arkivanov.decompose.extensions.android.ViewContext
@@ -25,6 +24,7 @@ import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentGroupBinding
 import com.denchic45.kts.databinding.FragmentYourStudyGroupsBinding
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupViewModel
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragmentDirections
@@ -35,6 +35,7 @@ import java.util.UUID
 
 @Inject
 class YourStudyGroupsFragment(
+    private val appBarInteractor: AppBarInteractor,
     yourStudyGroupsComponent: ((UUID) -> Unit, ComponentContext) -> YourStudyGroupsComponent,
 //    private val studyGroupFragment: () -> StudyGroupFragment,
     private val studyGroupViewModel: (String, ComponentContext) -> StudyGroupViewModel,
@@ -64,7 +65,18 @@ class YourStudyGroupsFragment(
             }
         }
 
+        component.appBarState.collectWhenStarted(viewLifecycleOwner) {
+            appBarInteractor.updateState(it)
+        }
+
         val viewContext = DefaultViewContext(binding.studyGroup, essentyLifecycle())
+
+        component.openGroupEditor.collectWhenStarted(viewLifecycleOwner) { groupId ->
+            findNavController().navigate(
+                R.id.action_global_groupEditorFragment,
+                bundleOf("studyGroupId" to groupId)
+            )
+        }
 
         component.selectedStudyGroup.collectWhenStarted(viewLifecycleOwner) {
             it?.let {
@@ -116,13 +128,6 @@ class YourStudyGroupsFragment(
         }
 
         requireActivity().addMenuProvider(menuProvider)
-
-        component.openGroupEditor.observe(viewLifecycleOwner) { groupId ->
-            findNavController().navigate(
-                R.id.action_global_groupEditorFragment,
-                bundleOf("studyGroupId" to groupId)
-            )
-        }
         with(binding) {
             component.tabs.collectWhenStarted(viewLifecycleOwner) { list ->
                 val adapter = StudyGroupFragment.GroupFragmentAdapter(
