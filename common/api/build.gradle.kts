@@ -35,7 +35,7 @@ kotlin {
                 implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
 
                 // kotlin-result
-                implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.16")
+                implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
             }
         }
         val jvmMain by getting {}

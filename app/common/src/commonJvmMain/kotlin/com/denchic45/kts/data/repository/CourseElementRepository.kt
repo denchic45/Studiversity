@@ -5,44 +5,45 @@ import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
-import com.denchic45.stuiversity.api.course.element.model.*
+import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
+import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
+import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
+import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
-import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Ok
-import com.github.michaelbull.result.onFailure
-import com.github.michaelbull.result.unwrap
+import com.github.michaelbull.result.coroutines.binding.binding
+import com.github.michaelbull.result.map
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class CourseElementRepository @javax.inject.Inject constructor(
+    private val coroutineScope: CoroutineScope,
     override val networkService: NetworkService,
     private val attachmentLocalDataSource: AttachmentLocalDataSource,
     private val courseTopicApi: CourseTopicApi,
     private val courseElementsApi: CourseElementsApi,
     private val courseWorkApi: CourseWorkApi,
 ) : NetworkServiceOwner {
-    suspend fun findElementsByCourse(
-        courseId: UUID,
-    ): Resource<Map<TopicResponse?, List<CourseElementResponse>>> = fetchResource {
-        val topics = courseTopicApi.getByCourseId(courseId)
-            .onFailure { return@fetchResource Err(it) }
-            .unwrap()
-        val elements = courseElementsApi.getByCourseId(courseId)
-            .onFailure { return@fetchResource Err(it) }
-            .unwrap()
-
-        Ok(buildMap {
-            put(null, elements.filter { it.topicId == null })
-            topics.forEach { topicResponse ->
-                put(topicResponse, elements.filter { it.topicId == topicResponse.id })
+    suspend fun findElementsByCourse(courseId: UUID) = fetchResource {
+        binding {
+            val topics = async { courseTopicApi.getByCourseId(courseId).bind() }
+            val elements = async { courseElementsApi.getByCourseId(courseId).bind() }
+            topics.await() to elements.await()
+        }.map { (topics, elements) ->
+            buildList {
+                add(null to elements.filter { it.topicId == null })
+                topics.forEach { topicResponse ->
+                    add(topicResponse to elements.filter { it.topicId == topicResponse.id })
+                }
             }
-        })
+        }
     }
 
     suspend fun findWorkById(courseId: UUID, workId: UUID) = fetchResource {
@@ -67,6 +68,7 @@ class CourseElementRepository @javax.inject.Inject constructor(
                 workId,
                 attachment
             )
+
             is CreateLinkRequest -> courseWorkApi.addLinkToWork(
                 courseId,
                 workId,

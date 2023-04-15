@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.fab.FabInteractor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
@@ -32,6 +33,8 @@ abstract class AndroidApplicationComponent(
     protected abstract val appPreferences: AppPreferences
 
     abstract val appBarInteractor: AppBarInteractor
+
+    abstract val fabInteractor: FabInteractor
 
     abstract val injectFragmentFactory: InjectFragmentFactory
 

@@ -1,29 +1,5 @@
 package com.denchic45.kts.ui.course
 
-import com.arkivanov.decompose.ComponentContext
-import com.denchic45.kts.R
-import com.denchic45.kts.SingleLiveData
-import com.denchic45.kts.data.domain.NoConnection
-import com.denchic45.kts.data.domain.NotFound
-import com.denchic45.kts.domain.filterSuccess
-import com.denchic45.kts.domain.onFailure
-import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.domain.stateInResource
-import com.denchic45.kts.domain.usecase.*
-import com.denchic45.kts.ui.AndroidUiComponent
-import com.denchic45.kts.ui.AndroidUiComponentDelegate
-import com.denchic45.kts.ui.appbar.AppBarState
-import com.denchic45.kts.ui.courseelements.CourseElementsUiComponent
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.denchic45.stuiversity.util.toUUID
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import me.tatarka.inject.annotations.Assisted
-import me.tatarka.inject.annotations.Inject
-import java.util.*
-
 //@Inject
 //class CourseViewModel(
 //    findCourseByIdUseCase: FindCourseByIdUseCase,

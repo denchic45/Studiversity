@@ -9,6 +9,7 @@ import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.toResource
+import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.member.MembersApi
 import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.RoleApi
@@ -44,6 +45,7 @@ class StudyGroupRepository @Inject constructor(
     override val sectionLocalDataSource: SectionLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val studyGroupApi: StudyGroupApi,
+    private val courseTopicApi: CourseTopicApi,
     private val membershipApi: MembershipApi,
     private val membersApi: MembersApi,
     private val roleApi: RoleApi,

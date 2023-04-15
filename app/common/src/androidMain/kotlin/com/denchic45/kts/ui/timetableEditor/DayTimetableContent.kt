@@ -42,10 +42,6 @@ fun DayTimetableScreen(component: DayTimetableComponent, appBarInteractor: AppBa
     val viewState by component.viewState.collectAsState()
     val selectedDate by component.selectedDate.collectAsState()
 
-    val appBarState by component.appBarState.collectAsState()
-
-    appBarInteractor.updateState(appBarState)
-
     DayTimetableContent(
         selectedDate = selectedDate,
         viewState = viewState,

@@ -37,7 +37,7 @@ class StudyGroupEditorFragment(
                 defaultComponentContext(requireActivity().onBackPressedDispatcher)
             )
             component.appBarState.collectWhenStarted(viewLifecycleOwner) {
-                appBarInteractor.updateState(it)
+                appBarInteractor.set(it)
             }
             StudyGroupEditorScreen(component)
         }

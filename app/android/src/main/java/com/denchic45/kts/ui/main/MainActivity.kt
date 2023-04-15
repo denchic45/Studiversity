@@ -103,6 +103,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
         bnv.setOnItemReselectedListener { refreshCurrentFragment() }
 
         val toolbarInteractor = app.appComponent.appBarInteractor
+        val fabInteractor = app.appComponent.fabInteractor
 
 //        toolbarInteractor.appBarState.collectWhenStarted(this) {
 //            title = it.title.get(this)
@@ -110,7 +111,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 
         binding.topAppBarComposable.setContent {
             AppTheme {
-                val state by toolbarInteractor.appBarState.collectAsState()
+                val state by toolbarInteractor.stateFlow.collectAsState()
                 if (state.visible)
                     TopAppBar(
                         title = { Text(state.title.get(LocalContext.current)) },
@@ -213,11 +214,15 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
             viewModel.bottomMenuVisibility.observe(this@MainActivity) {
                 bnv.visibility = if (it) View.VISIBLE else View.GONE
             }
-            viewModel.fabVisibility.collectWhenStarted(this@MainActivity) {
-                if (it) fabMain.show() else fabMain.hide()
+
+            fabInteractor.stateFlow.collectWhenStarted(this@MainActivity) {
+                if (it.visible) fabMain.show() else fabMain.hide()
+
             }
 
-
+//            viewModel.fabVisibility.collectWhenStarted(this@MainActivity) {
+//                if (it) fabMain.show() else fabMain.hide()
+//            }
 
             viewModel.toolbarNavigationState.collectWhenResumed(this@MainActivity) {
                 toggle = ActionBarDrawerToggle(

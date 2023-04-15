@@ -2,11 +2,10 @@ package com.denchic45.kts.ui.yourTimetables
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.denchic45.kts.di.AppScope
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
-import com.denchic45.kts.domain.usecase.TimetableOwner2
+import com.denchic45.kts.domain.usecase.TimetableOwner
 import com.denchic45.kts.ui.timetable.DayTimetableComponent
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +19,7 @@ import java.time.LocalDate
 @Inject
 class YourTimetablesComponent(
     private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
-    private val _dayTimetableComponent: (LocalDate, Flow<TimetableOwner2>, ComponentContext) -> DayTimetableComponent,
+    private val _dayTimetableComponent: (LocalDate, Flow<TimetableOwner>, ComponentContext) -> DayTimetableComponent,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -45,13 +44,13 @@ class YourTimetablesComponent(
 //        selectedTimetable.value = position
 //        navigation.dismiss()
         if (position == -1) {
-            selectedOwner.value = TimetableOwner2.Member(null)
+            selectedOwner.value = TimetableOwner.Member(null)
 //            navigation.activate(
 //                TimetableConfig(LocalDate.now(), TimetableOwner.Member, UUID.randomUUID())
 //            )
         } else {
             studyGroups.value.onSuccess {
-                selectedOwner.value = TimetableOwner2.StudyGroup(it[position].id)
+                selectedOwner.value = TimetableOwner.StudyGroup(it[position].id)
 //                navigation.activate(
 //                    TimetableConfig(LocalDate.now(), TimetableOwner.StudyGroup, it[position].id)
 //                )
@@ -64,7 +63,7 @@ class YourTimetablesComponent(
     val studyGroups = flow { emit(findYourStudyGroupsUseCase()) }.stateInResource(componentScope)
     private val selectedTimetable = MutableStateFlow(-1)
 
-    private val selectedOwner = MutableStateFlow<TimetableOwner2>(TimetableOwner2.Member(null))
+    private val selectedOwner = MutableStateFlow<TimetableOwner>(TimetableOwner.Member(null))
 
 //    val timetableComponent = studyGroups.flatMapResourceFlow { studyGroupResponses ->
 //        selectedTimetable.map { selectedTimetable ->

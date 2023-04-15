@@ -1,7 +1,7 @@
 package com.denchic45.kts.ui.timetable
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.essenty.lifecycle.subscribe
+import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.R
 import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.data.service.model.BellSchedule
@@ -9,8 +9,9 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindTimetableOfWeekUseCase
-import com.denchic45.kts.domain.usecase.TimetableOwner2
+import com.denchic45.kts.domain.usecase.TimetableOwner
 import com.denchic45.kts.ui.ActionMenuItem
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.timetable.state.toTimetableViewState
 import com.denchic45.kts.ui.uiIconOf
@@ -33,28 +34,16 @@ import java.util.*
 @Inject
 class DayTimetableComponent(
     metaRepository: MetaRepository,
+    private val appBarInteractor: AppBarInteractor,
     private val findTimetableOfWeekUseCase: FindTimetableOfWeekUseCase,
     @Assisted
     private val _selectedDate: LocalDate,
     @Assisted
-    private val owner: Flow<TimetableOwner2>,
+    private val owner: Flow<TimetableOwner>,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
-
-    val appBarState = MutableStateFlow(
-        AppBarState(
-            actions = listOf(
-                ActionMenuItem("today", uiIconOf(R.drawable.ic_calendar))
-            ),
-            onActionMenuItemClick = {
-                when (it.id) {
-                    "today" -> selectedDate.value = LocalDate.now()
-                }
-            }
-        )
-    )
 
     val selectedDate = MutableStateFlow(_selectedDate)
     private val selectedWeekOfYear = selectedDate.map(componentScope) {
@@ -83,19 +72,27 @@ class DayTimetableComponent(
     }.stateInResource(componentScope)
 
     init {
-        lifecycle.subscribe(
-            onStart = {
-                selectedDate.onEach { selected ->
-                    appBarState.update {
-                        it.copy(
-                            title = uiTextOf(
-                                Dates.toStringHidingCurrentYear(selected).capitalized()
-                            )
-                        )
+        lifecycle.doOnStart {
+            appBarInteractor.set(AppBarState(
+                actions = listOf(
+                    ActionMenuItem("today", uiIconOf(R.drawable.ic_calendar))
+                ),
+                onActionMenuItemClick = {
+                    when (it.id) {
+                        "today" -> selectedDate.value = LocalDate.now()
                     }
-                }.launchIn(componentScope)
-            }
-        )
+                }
+            ))
+            selectedDate.onEach { selected ->
+                appBarInteractor.update {
+                    it.copy(
+                        title = uiTextOf(
+                            Dates.toStringHidingCurrentYear(selected).capitalized()
+                        )
+                    )
+                }
+            }.launchIn(componentScope)
+        }
     }
 
     private fun getTimetableOfSelectedDateFlow(

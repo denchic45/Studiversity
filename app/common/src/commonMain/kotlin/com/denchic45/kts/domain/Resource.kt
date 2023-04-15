@@ -112,9 +112,11 @@ fun <T> Flow<Resource<T>>.filterResource(
 
 fun <T> Flow<Resource<T>>.filterSuccess(): Flow<Resource.Success<T>> = filterIsInstance()
 
-fun <T> MutableStateFlow<Resource<T>>.updateResource(onSuccess: (T) -> T) {
-    value.onSuccess { value ->
-        update { Resource.Success(onSuccess(value)) }
+fun <T> Flow<Resource<T>>.updateResource(onSuccess: (T) -> T): Flow<Resource<T>> = map {
+    when (it) {
+        is Resource.Error -> it
+        is Resource.Loading -> it
+        is Resource.Success -> Resource.Success(onSuccess(it.value))
     }
 }
 

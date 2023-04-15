@@ -86,7 +86,7 @@ val AndroidTypography = Typography(
     ),
     titleLarge = TextStyle(
         fontFamily = ManropeFamily,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Medium,
         letterSpacing = 0.sp,
         lineHeight = 28.sp,
         fontSize = 20.sp

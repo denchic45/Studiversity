@@ -66,7 +66,7 @@ class YourStudyGroupsFragment(
         }
 
         component.appBarState.collectWhenStarted(viewLifecycleOwner) {
-            appBarInteractor.updateState(it)
+            appBarInteractor.set(it)
         }
 
         val viewContext = DefaultViewContext(binding.studyGroup, essentyLifecycle())

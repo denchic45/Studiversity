@@ -1,6 +1,6 @@
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.3.1"
+    id("org.jetbrains.compose") version "1.4.0"
     id("com.android.library")
     id("kotlin-kapt")
     kotlin("plugin.serialization") version "1.8.0"
@@ -24,30 +24,6 @@ kotlin {
         val decomposeVersion = "1.0.0"
         val daggerVersion = "2.44"
 
-        val commonJvmMain by creating {
-            dependencies {
-                api(project(":common:api"))
-
-                implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
-
-                implementation("app.cash.sqldelight:runtime-jvm:$sqlDelightVersion")
-                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
-
-                implementation("com.google.code.gson:gson:2.9.0")
-
-                implementation("net.harawata:appdirs:1.2.1")
-
-                api("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
-
-                //Dagger
-                api("com.google.dagger:dagger:$daggerVersion")
-                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
-
-                implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-            }
-        }
-
         val commonMain by getting {
             dependencies {
                 // Compose
@@ -56,6 +32,8 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 api(compose.material3)
                 api(compose.materialIconsExtended)
+
+                api(project(":common:api"))
 
                 api("ca.gosyer:compose-material-dialogs-datetime:0.9.2")
 
@@ -89,8 +67,8 @@ kotlin {
                 api("me.tatarka.inject:kotlin-inject-runtime:0.6.1")
 
                 // kotlin-result
-                api("com.michael-bull.kotlin-result:kotlin-result:1.1.16")
-                api("com.michael-bull.kotlin-result:kotlin-result-coroutines:1.1.16")
+                api("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
+                api("com.michael-bull.kotlin-result:kotlin-result-coroutines:1.1.17")
             }
         }
         val commonTest by getting {
@@ -99,6 +77,30 @@ kotlin {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
                 implementation(kotlin("test-junit"))
+            }
+        }
+        val commonJvmMain by creating {
+            dependencies {
+
+                dependsOn(commonMain)
+
+                implementation(kotlin("stdlib-common"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
+
+                implementation("app.cash.sqldelight:runtime-jvm:$sqlDelightVersion")
+                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
+
+                implementation("com.google.code.gson:gson:2.9.0")
+
+                implementation("net.harawata:appdirs:1.2.1")
+
+                api("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
+
+                //Dagger
+                api("com.google.dagger:dagger:$daggerVersion")
+                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
+
+                implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
             }
         }
         val androidMain by getting {
