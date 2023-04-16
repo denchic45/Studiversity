@@ -3,7 +3,6 @@ package com.denchic45.kts.ui
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.ChildOverlay
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.decompose.router.stack.ChildStack
@@ -13,8 +12,6 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.denchic45.kts.domain.MainInteractor
-import com.denchic45.kts.domain.onFailure
-import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.RemoveUserUseCase
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.navigation.ConfirmChild

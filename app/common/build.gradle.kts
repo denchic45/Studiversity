@@ -209,10 +209,6 @@ kotlin {
             }
         }
     }
-    sourceSets["commonJvmMain"].resources.srcDirs(
-        "src/commonJvmMain/resources",
-        "src/commonMain/resources"
-    )
 }
 
 dependencies {
@@ -259,9 +255,4 @@ sqldelight {
             dialect("app.cash.sqldelight:sqlite-3-38-dialect:$sqlDelightVersion")
         }
     }
-//    database("AppDatabase") {
-//        packageName = "com.denchic45.kts"
-//        sourceFolders = listOf("sqldelight")
-//        dialect = "sqlite:3.25"
-//    }
 }

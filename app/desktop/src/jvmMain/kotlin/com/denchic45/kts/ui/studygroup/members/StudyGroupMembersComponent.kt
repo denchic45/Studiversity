@@ -2,8 +2,6 @@ package com.denchic45.kts.ui.studygroup.members
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
@@ -13,7 +11,6 @@ import com.arkivanov.decompose.value.Value
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.model.GroupMembers
-import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.AssignUserRoleInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindGroupMembersUseCase
@@ -22,7 +19,6 @@ import com.denchic45.kts.domain.usecase.RemoveUserUseCase
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.toUserItem
-import com.denchic45.kts.ui.navigation.ConfirmConfig
 import com.denchic45.kts.ui.navigation.GroupMembersChild
 import com.denchic45.kts.ui.navigation.GroupMembersConfig
 import com.denchic45.kts.ui.navigation.OverlayConfig

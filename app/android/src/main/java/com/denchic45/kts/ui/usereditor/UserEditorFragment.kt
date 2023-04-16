@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.userEditor
+package com.denchic45.kts.ui.usereditor
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,7 +18,6 @@ import com.denchic45.kts.databinding.FragmentUserEditorBinding
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.theme.AppTheme
-import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.util.toUUID
 import me.tatarka.inject.annotations.Inject
@@ -33,12 +32,12 @@ class UserEditorFragment(
         userId: UUID?,
         role: Role?,
         ComponentContext
-    ) -> UserEditorComponent
-) :
-    Fragment(R.layout.fragment_user_editor), HasNavArgs<UserEditorFragmentArgs> {
+    ) -> UserEditorComponent,
+) : Fragment(R.layout.fragment_user_editor), HasNavArgs<UserEditorFragmentArgs> {
 
     override val navArgs: UserEditorFragmentArgs by navArgs()
-    val component: UserEditorComponent by lazy {
+
+        private val component: UserEditorComponent by lazy {
         component(
             appBarInteractor,
             findNavController()::navigateUp,
@@ -53,7 +52,7 @@ class UserEditorFragment(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {

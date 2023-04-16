@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.userEditor
+package com.denchic45.kts.ui.usereditor
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.denchic45.kts.R
 import com.denchic45.kts.ui.model.HeaderItem
-import com.denchic45.kts.ui.usereditor.UserEditorComponent
 
 
 @OptIn(ExperimentalMaterial3Api::class)

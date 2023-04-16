@@ -197,7 +197,7 @@
         app:destination="@id/subjectEditorDialog" />
     <fragment
         android:id="@+id/userEditorFragment"
-        android:name="com.denchic45.kts.ui.userEditor.UserEditorFragment"
+        android:name="com.denchic45.kts.ui.usereditor.UserEditorFragment"
         android:label="fragment_user_editor"
         tools:layout="@layout/fragment_user_editor" >
         <argument

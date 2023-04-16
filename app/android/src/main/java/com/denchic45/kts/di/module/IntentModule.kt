@@ -17,7 +17,7 @@ import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
 import com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog
-import com.denchic45.kts.ui.userEditor.UserEditorFragment
+import com.denchic45.kts.ui.usereditor.UserEditorFragment
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named

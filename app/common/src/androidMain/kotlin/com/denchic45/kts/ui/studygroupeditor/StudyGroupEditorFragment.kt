@@ -15,12 +15,12 @@ import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.stuiversity.util.toUUID
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class StudyGroupEditorFragment(
     private val appBarInteractor: AppBarInteractor,
-    private val component: (studyGroupId: UUID?, ()->Unit,ComponentContext) -> StudyGroupEditorComponent
+    private val component: (studyGroupId: UUID?, () -> Unit, ComponentContext) -> StudyGroupEditorComponent,
 ) :
     Fragment() {
 //     val binding: FragmentGroupEditorBinding by viewBinding(FragmentGroupEditorBinding::bind)
@@ -32,17 +32,17 @@ class StudyGroupEditorFragment(
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-           AppTheme {
-               val component = component(
-                   arguments?.getString("studyGroupId")?.toUUID(),
-                   {findNavController().navigateUp()},
-                   defaultComponentContext(requireActivity().onBackPressedDispatcher)
-               )
-               component.appBarState.collectWhenStarted(viewLifecycleOwner) {
-                   appBarInteractor.set(it)
-               }
-               StudyGroupEditorScreen(component)
-           }
+            AppTheme {
+                val component = component(
+                    arguments?.getString("studyGroupId")?.toUUID(),
+                    { findNavController().navigateUp() },
+                    defaultComponentContext(requireActivity().onBackPressedDispatcher)
+                )
+                component.appBarState.collectWhenStarted(viewLifecycleOwner) {
+                    appBarInteractor.set(it)
+                }
+                StudyGroupEditorScreen(component)
+            }
         }
     }
 

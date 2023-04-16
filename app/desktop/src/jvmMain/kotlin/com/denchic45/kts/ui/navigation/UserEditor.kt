@@ -1,6 +1,5 @@
 package com.denchic45.kts.ui.navigation
 
-import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.stuiversity.api.role.model.Role

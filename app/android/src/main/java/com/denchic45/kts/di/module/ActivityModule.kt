@@ -4,7 +4,7 @@ import com.denchic45.kts.ui.login.LoginActivity
 import com.denchic45.kts.ui.main.MainActivity
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
 import com.denchic45.kts.ui.splash.SplashActivity
-import com.denchic45.kts.ui.userEditor.UserEditorFragment
+import com.denchic45.kts.ui.usereditor.UserEditorFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
