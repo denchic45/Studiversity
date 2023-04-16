@@ -18,22 +18,33 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.components.HeaderItem
 import com.denchic45.kts.ui.components.Spinner
 import com.denchic45.kts.ui.components.SupportingText
 import com.denchic45.kts.ui.components.dialog.AlertDialog
+import com.denchic45.kts.ui.onString
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.util.AsyncImage
 import com.denchic45.kts.util.loadImageBitmap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifier) {
+fun UserEditorScreen(
+    component: UserEditorComponent,
+    appBarInteractor: AppBarInteractor,
+    modifier: Modifier = Modifier
+) {
+    val appBarState by appBarInteractor.stateFlow.collectAsState()
     Column(modifier) {
         TopAppBar(
-            title = { Text(component.toolbarTitle) },
+            title = {
+                appBarState.title.onString {
+                    Text(it)
+                }
+            },
             navigationIcon = {
-                IconButton(onClick = component::onFinish) {
+                IconButton(onClick = { component.onFinish() }) {
                     Icon(
                         imageVector = Icons.Outlined.ArrowBack,
                         null,
@@ -64,7 +75,11 @@ fun UserEditorScreen(component: UserEditorComponent, modifier: Modifier = Modifi
 }
 
 @Composable
-fun UserEditorDialog(component: UserEditorComponent, onDismissRequest: () -> Unit) {
+fun UserEditorDialog(
+    component: UserEditorComponent,
+    appBarInteractor: AppBarInteractor,
+    onDismissRequest: () -> Unit
+) {
     AlertDialog(
         modifier = Modifier.heightIn(max = 648.dp),
         title = {
@@ -72,7 +87,10 @@ fun UserEditorDialog(component: UserEditorComponent, onDismissRequest: () -> Uni
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
             ) {
-                Text(component.toolbarTitle)
+                val appBarState by appBarInteractor.stateFlow.collectAsState()
+                appBarState.title.onString {
+                    Text(it)
+                }
                 Spacer(Modifier.weight(1f))
                 IconButton({ onDismissRequest() }) {
                     Icon(Icons.Rounded.Close, "")
@@ -106,7 +124,7 @@ private fun UserEditorContent(component: UserEditorComponent) {
                 .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
-        { Box(Modifier.size(148.dp).background(Color.Gray)) }
+        Box(Modifier.size(148.dp).background(Color.Gray))
 
         val errorState by component.errorState.collectAsState()
 

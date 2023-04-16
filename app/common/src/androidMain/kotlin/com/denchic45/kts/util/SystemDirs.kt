@@ -14,7 +14,7 @@ actual class SystemDirs actual constructor() {
     }
 
     actual val appDirectory: File
-        get() = context.applicationContext.filesDir
+        get() = context.applicationContext.dataDir
 
     actual val prefsDirectory: File
         get() = File("shared_prefs").relativeTo(appDirectory)

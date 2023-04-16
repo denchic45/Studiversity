@@ -10,6 +10,7 @@ import com.denchic45.kts.ui.navigation.GroupChild
 import com.denchic45.kts.ui.navigation.GroupConfig
 import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.navigation.UserEditorConfig
+import com.denchic45.stuiversity.api.role.model.Role
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*
@@ -36,6 +37,6 @@ class GroupRootComponent(
         })
 
     fun onAddStudentClick() {
-        overlayNavigator.activate(UserEditorConfig(null, UserRole.STUDENT, groupId))
+        overlayNavigator.activate(UserEditorConfig(null, Role.Student))
     }
 }

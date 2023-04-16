@@ -12,56 +12,59 @@
         android:layout_height="0dp"
         android:orientation="vertical">
 
-<!--        <androidx.coordinatorlayout.widget.CoordinatorLayout-->
-<!--            android:id="@+id/container"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:layout_weight="1">-->
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-            <androidx.compose.ui.platform.ComposeView
-                android:id="@+id/topAppBar_composable"
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/app_bar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-<!--            <com.google.android.material.appbar.AppBarLayout-->
-<!--                android:visibility="gone"-->
-<!--                android:id="@+id/app_bar"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:background="?android:windowBackground"-->
-<!--                android:minHeight="?actionBarSize"-->
-<!--                app:liftOnScroll="true">-->
-
+                android:layout_height="wrap_content"
+                android:background="?android:windowBackground"
+                android:minHeight="?actionBarSize"
+                app:liftOnScroll="true">
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/topAppBar_composable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 <!--                <com.denchic45.kts.CustomToolbar-->
 <!--                    android:id="@+id/toolbar_main"-->
 <!--                    android:layout_width="match_parent"-->
 <!--                    android:layout_height="?attr/actionBarSize"-->
 <!--                    app:layout_scrollFlags="scroll|enterAlways|snap" />-->
-<!--            </com.google.android.material.appbar.AppBarLayout>-->
+            </com.google.android.material.appbar.AppBarLayout>
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/nav_host_fragment"
                 android:name="com.denchic45.kts.ui.MyNavHostFragment"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="match_parent"
                 app:defaultNavHost="true"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:navGraph="@navigation/navigation_main" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_main"
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/fab_compose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:layout_margin="@dimen/fab_margin"
-                android:visibility="invisible"
-                app:backgroundTint="@color/blue"
-                app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-                app:srcCompat="@drawable/ic_add"
-                app:tint="@color/white"
-                tools:ignore="ContentDescription" />
-<!--        </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
+                android:padding="@dimen/fab_margin"/>
+
+<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                android:id="@+id/fab_main"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="bottom|end"-->
+<!--                android:layout_margin="@dimen/fab_margin"-->
+<!--                android:visibility="invisible"-->
+<!--                app:backgroundTint="@color/blue"-->
+<!--                app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"-->
+<!--                app:srcCompat="@drawable/ic_add"-->
+<!--                app:tint="@color/white"-->
+<!--                tools:ignore="ContentDescription" />-->
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_nav_view"
@@ -81,7 +84,7 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
+        android:layout_width="360dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@android:color/white"
@@ -90,23 +93,28 @@
         app:itemTextAppearance="@style/CustomFont"
         app:itemTextColor="@color/drawer_selector">
 
-        <LinearLayout
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/nav_compose"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="visible">
+            android:layout_height="match_parent"/>
 
-            <include
-                android:id="@+id/nav_header"
-                layout="@layout/nav_header" />
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:orientation="vertical"-->
+<!--            android:visibility="visible">-->
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_nav"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingVertical="8dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-        </LinearLayout>
+<!--            <include-->
+<!--                android:id="@+id/nav_header"-->
+<!--                layout="@layout/nav_header" />-->
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/rv_nav"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:clipToPadding="false"-->
+<!--                android:paddingVertical="8dp"-->
+<!--                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />-->
+<!--        </LinearLayout>-->
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

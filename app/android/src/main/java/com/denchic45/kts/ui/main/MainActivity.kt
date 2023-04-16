@@ -7,40 +7,70 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.bumptech.glide.Glide
 import com.denchic45.kts.R
 import com.denchic45.kts.app
 import com.denchic45.kts.databinding.ActivityMainBinding
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.adapter.NavDropdownItemHolder
-import com.denchic45.kts.ui.adapter.NavItemHolder
-import com.denchic45.kts.ui.adapter.navAdapter
 import com.denchic45.kts.ui.base.BaseActivity
+import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.get
+import com.denchic45.kts.ui.getPainter
 import com.denchic45.kts.ui.initImageLoader
 import com.denchic45.kts.ui.login.LoginActivity
-import com.denchic45.kts.ui.onResource
-import com.denchic45.kts.ui.onVector
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.updateView.SnackbarUpdateView
 import com.denchic45.kts.util.collectWhenResumed
 import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.kts.util.findFragmentContainerNavController
-import com.denchic45.widget.extendedAdapter.extension.clickBuilder
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.seiko.imageloader.rememberAsyncImagePainter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 
@@ -57,21 +87,22 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
     private lateinit var snackbar: Snackbar
 
     private lateinit var bnv: BottomNavigationView
-    private val navAdapter = navAdapter {
-        extensions {
-            clickBuilder<NavItemHolder> {
-                onClick = {
-                    binding.drawerLayout.close()
-                    viewModel.onNavItemClick(it)
-                }
-            }
-            clickBuilder<NavDropdownItemHolder> {
-                onClick = {
-                    viewModel.onExpandCoursesClick()
-                }
-            }
-        }
-    }
+
+//    private val navAdapter = navAdapter {
+//        extensions {
+//            clickBuilder<NavItemHolder> {
+//                onClick = {
+//                    binding.drawerLayout.close()
+//                    viewModel.onNavItemClick(it)
+//                }
+//            }
+//            clickBuilder<NavDropdownItemHolder> {
+//                onClick = {
+//                    viewModel.onExpandCoursesClick()
+//                }
+//            }
+//        }
+//    }
 
     @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,10 +135,12 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 
         val toolbarInteractor = app.appComponent.appBarInteractor
         val fabInteractor = app.appComponent.fabInteractor
+        val confirmInteractor =  app.appComponent.confirmInteractor
 
 //        toolbarInteractor.appBarState.collectWhenStarted(this) {
 //            title = it.title.get(this)
 //        }
+
 
         binding.topAppBarComposable.setContent {
             AppTheme {
@@ -123,18 +156,10 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                                     onClick = { state.onActionMenuItemClick(actionMenuItem) },
                                     enabled = actionMenuItem.enabled
                                 ) {
-                                    actionMenuItem.icon
-                                        .onResource {
-                                            Icon(
-                                                painter = painterResource(it),
-                                                contentDescription = contentDescription
-                                            )
-                                        }.onVector {
-                                            Icon(
-                                                imageVector = it,
-                                                contentDescription = contentDescription
-                                            )
-                                        }
+                                    Icon(
+                                        painter = actionMenuItem.icon.getPainter(),
+                                        contentDescription = contentDescription
+                                    )
                                 }
                             }
 
@@ -163,6 +188,9 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                             }
                         }
                     )
+
+
+                ConfirmDialog(confirmInteractor)
             }
         }
 
@@ -210,15 +238,144 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
         }
 
         with(binding) {
-            rvNav.adapter = navAdapter
+//            rvNav.adapter = navAdapter
             viewModel.bottomMenuVisibility.observe(this@MainActivity) {
                 bnv.visibility = if (it) View.VISIBLE else View.GONE
             }
 
-            fabInteractor.stateFlow.collectWhenStarted(this@MainActivity) {
-                if (it.visible) fabMain.show() else fabMain.hide()
-
+            fabCompose.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    AppTheme {
+                        val state by fabInteractor.stateFlow.collectAsState()
+                        if (state.visible) {
+                            FloatingActionButton(onClick = { state.onClick() }) {
+                                state.icon?.let {
+                                    Icon(
+                                        painter = it.getPainter(),
+                                        contentDescription = "fab"
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
+
+            navCompose.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    AppTheme {
+                        Surface {
+                            Column {
+                                val userInfo by viewModel.userInfo.collectAsState()
+                                Row(
+                                    Modifier
+                                        .clickable {
+                                            binding.drawerLayout.close()
+                                            viewModel.onProfileClick()
+                                        }
+                                        .fillMaxWidth()
+                                        .height(84.dp)
+                                        .padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    userInfo.onSuccess { info ->
+                                        Image(
+                                            painter = rememberAsyncImagePainter(info.avatarUrl),
+                                            contentDescription = "user avatar",
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .size(48.dp)
+                                                .clip(CircleShape),
+                                        )
+                                        Spacer(Modifier.width(16.dp))
+                                        Text(
+                                            text = info.fullName,
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                    }
+                                }
+                                Divider(Modifier.padding(vertical = 4.dp))
+                                val navMenu by viewModel.navMenuState.collectAsState()
+                                Column(Modifier.padding(8.dp)) {
+                                    navMenu.topItems.forEach {
+                                        NavigationDrawerItem(
+                                            label = { Text(it.name.get(LocalContext.current)) },
+                                            icon = {
+                                                Icon(
+                                                    painter = it.icon.getPainter(),
+                                                    contentDescription = null
+                                                )
+                                            },
+                                            selected = false,
+                                            onClick = {
+                                                binding.drawerLayout.close()
+                                                viewModel.onTopNavItemClick(it.name)
+                                            })
+                                    }
+                                }
+                                Divider(Modifier.padding(vertical = 4.dp))
+                                if (navMenu.courses.isNotEmpty()) {
+                                    Box(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(48.dp)
+                                        .padding(horizontal = 28.dp),
+                                    contentAlignment = Alignment.CenterStart) {
+                                        Text(text = "Курсы")
+                                    }
+
+                                    Column(Modifier.padding(8.dp)) {
+                                        navMenu.courses.forEach {
+                                            NavigationDrawerItem(
+                                                label = { Text(it.name) },
+                                                icon = {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .size(36.dp)
+                                                            .clip(CircleShape)
+                                                            .background(colorResource(R.color.blue))
+                                                            .padding(8.dp),
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        Text(
+                                                            text = it.name.first().uppercase(),
+                                                            color = androidx.compose.ui.graphics.Color.White
+                                                        )
+                                                    }
+                                                },
+                                                selected = false,
+                                                onClick = {
+                                                    binding.drawerLayout.close()
+                                                    viewModel.onCourseClick(it.id)
+                                                })
+                                        }
+                                    }
+                                }
+                                Divider(Modifier.padding(vertical = 4.dp))
+                                Column(Modifier.padding(8.dp)) {
+                                    navMenu.footerItems.forEach {
+                                        NavigationDrawerItem(
+                                            label = { Text(it.name.get(LocalContext.current)) },
+                                            icon = {
+                                                Icon(
+                                                    painter = it.icon.getPainter(),
+                                                    contentDescription = null
+                                                )
+                                            },
+                                            selected = false,
+                                            onClick = {
+                                                binding.drawerLayout.close()
+                                                viewModel.onFooterNavItemClick(it.name)
+                                            })
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
 
 //            viewModel.fabVisibility.collectWhenStarted(this@MainActivity) {
 //                if (it) fabMain.show() else fabMain.hide()
@@ -252,25 +409,19 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                 }
             }
 
-            viewModel.userInfo.collectWhenStarted(this@MainActivity) { user ->
-                user.onSuccess {
-                    val headerView = binding.navHeader.root
-                    headerView.setOnClickListener {
-                        binding.drawerLayout.close()
-                        viewModel.onProfileClick()
-                    }
-                    Glide.with(this@MainActivity)
-                        .load(it.avatarUrl)
-                        .into(binding.navHeader.ivAvatar)
-                    binding.navHeader.tvFullName.text = it.fullName
-                }
-            }
-
-            viewModel.navMenuState.collectWhenStarted(this@MainActivity) {
-                it.onSuccess {
-                    navAdapter.submit(it.items)
-                }
-            }
+//            viewModel.userInfo.collectWhenStarted(this@MainActivity) { user ->
+//                user.onSuccess {
+//                    val headerView = binding.navHeader.root
+//                    headerView.setOnClickListener {
+//                        binding.drawerLayout.close()
+//                        viewModel.onProfileClick()
+//                    }
+//                    Glide.with(this@MainActivity)
+//                        .load(it.avatarUrl)
+//                        .into(binding.navHeader.ivAvatar)
+//                    binding.navHeader.tvFullName.text = it.fullName
+//                }
+//            }
 
             navController.addOnDestinationChangedListener { _, destination, _ ->
                 viewModel.onDestinationChanged(destination.id)

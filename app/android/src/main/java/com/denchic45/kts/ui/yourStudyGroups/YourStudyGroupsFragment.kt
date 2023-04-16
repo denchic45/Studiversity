@@ -28,6 +28,7 @@ import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupViewModel
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragmentDirections
+import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.util.collectWhenStarted
 import com.google.android.material.tabs.TabLayoutMediator
 import me.tatarka.inject.annotations.Inject
@@ -47,11 +48,15 @@ class YourStudyGroupsFragment(
     }
     val component by lazy {
         yourStudyGroupsComponent({
-            navController.navigate(StudyGroupEditorFragmentDirections.actionGlobalGroupEditorFragment(it.toString()))
+            navController.navigate(
+                StudyGroupEditorFragmentDirections.actionGlobalGroupEditorFragment(
+                    it.toString()
+                )
+            )
         }, componentContext)
     }
 
-    @OptIn(ExperimentalDecomposeApi::class)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         println("FRAGMENT $this")
@@ -61,7 +66,9 @@ class YourStudyGroupsFragment(
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner)
             )
             setContent {
-                YourStudyGroupsScreen(component)
+                AppTheme {
+                    YourStudyGroupsScreen(component)
+                }
             }
         }
 

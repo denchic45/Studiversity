@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.defaultComponentContext
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.theme.AppTheme
 import me.tatarka.inject.annotations.Inject
 
 @Inject
@@ -31,7 +32,9 @@ class YourTimetablesFragment(
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            YourTimetablesScreen(yourTimetablesComponent, appBarInteractor)
+            AppTheme {
+                YourTimetablesScreen(yourTimetablesComponent, appBarInteractor)
+            }
         }
     }
 }

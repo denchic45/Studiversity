@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.fab.FabInteractor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -35,6 +36,8 @@ abstract class AndroidApplicationComponent(
     abstract val appBarInteractor: AppBarInteractor
 
     abstract val fabInteractor: FabInteractor
+
+    abstract val confirmInteractor: ConfirmDialogInteractor
 
     abstract val injectFragmentFactory: InjectFragmentFactory
 

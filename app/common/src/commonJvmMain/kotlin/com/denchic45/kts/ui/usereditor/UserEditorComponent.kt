@@ -1,17 +1,22 @@
 package com.denchic45.kts.ui.usereditor
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.UIEditor
-import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.AddUserUseCase
 import com.denchic45.kts.domain.usecase.ObserveUserUseCase
-import com.denchic45.kts.ui.BaseUiComponent
+import com.denchic45.kts.domain.usecase.RemoveUserUseCase
+import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
+import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.MenuItem
+import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
+import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.user.model.Account
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.model.Gender
@@ -26,16 +31,29 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.*
+import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
-abstract class UserEditorUILogicDelegate(
-    val observeUserUseCase: ObserveUserUseCase,
-    val addUserUseCase: AddUserUseCase,
+@Inject
+class UserEditorComponent(
+    observeUserUseCase: ObserveUserUseCase,
+    private val addUserUseCase: AddUserUseCase,
+    private val removeUserUseCase: RemoveUserUseCase,
+    private val confirmInteractor: ConfirmDialogInteractor,
+    @Assisted
+    private val appBarInteractor: AppBarInteractor,
+    @Assisted
+    val onFinish: () -> Unit,
+    @Assisted
     val userId: UUID?,
+    @Assisted
+    val role: Role? = null,
+    @Assisted
     componentContext: ComponentContext,
-) {
+) : ComponentContext by componentContext {
 
-    private val componentScope = componentContext.componentScope()
+    private val componentScope = componentScope()
 
     val uiEditor: UIEditor<UserResponse> = UIEditor(userId == null) {
         UserResponse(
@@ -75,9 +93,6 @@ abstract class UserEditorUILogicDelegate(
 
     val accountFieldsVisibility: StateFlow<Boolean> = MutableStateFlow(uiEditor.isNew)
 
-    val toolbarTitle: String =
-        if (uiEditor.isNew) "Новый пользователь" else "Редактировать пользователя"
-
 
     private val emailValidator = ValueValidator(
         value = emailField::value,
@@ -94,16 +109,17 @@ abstract class UserEditorUILogicDelegate(
         operator = Operator.all()
     )
 
-    val validator: CompositeValidator<String> = CompositeValidator(
+    private val validator: CompositeValidator<String> = CompositeValidator(
         listOf(
             ValueValidator(
                 value = firstNameField::value,
-                conditions = listOf(Condition(String::isNotEmpty)
-                    .observable { isValid ->
-                        errorState.update {
-                            it.copy(firstNameMessage = if (isValid) null else "Имя обязательно")
-                        }
-                    })
+                conditions = listOf(
+                    Condition(String::isNotEmpty)
+                        .observable { isValid ->
+                            errorState.update {
+                                it.copy(firstNameMessage = if (isValid) null else "Имя обязательно")
+                            }
+                        })
             ),
             ValueValidator(
                 value = surnameField::value,
@@ -126,7 +142,7 @@ abstract class UserEditorUILogicDelegate(
         when (uiEditor.isNew) {
             false -> {
                 componentScope.launch {
-                    observeUserUseCase(this@UserEditorUILogicDelegate.userId!!).collect { resource ->
+                    observeUserUseCase(this@UserEditorComponent.userId!!).collect { resource ->
                         when (resource) {
                             is Resource.Error -> TODO()
                             is Resource.Loading -> TODO()
@@ -150,6 +166,7 @@ abstract class UserEditorUILogicDelegate(
                     }
                 }
             }
+
             true -> {
 
             }
@@ -177,12 +194,9 @@ abstract class UserEditorUILogicDelegate(
     }
 
     fun onRemoveClick() {
-        onDeleteUser()
+        confirmInteractor.set(ConfirmState(uiTextOf("Удалить пользователя")))
     }
 
-    abstract fun onDeleteUser()
-
-    abstract fun onFinish()
 
     private fun saveChanges() {
         componentScope.launch {
@@ -197,68 +211,33 @@ abstract class UserEditorUILogicDelegate(
                 .onFailure { TODO("Уведомление о подключении к интернету") }
         }
     }
-}
 
-interface UserEditorUiLogic {
-    val observeUserUseCase: ObserveUserUseCase
-    val addUserUseCase: AddUserUseCase
-    val userId: UUID?
-    val uiComponent: BaseUiComponent
-
-    val uiEditor: UIEditor<UserResponse>
-
-    val errorState: MutableStateFlow<ErrorState>
-
-    val genders: List<MenuItem<GenderAction>>
-
-    val firstNameField: MutableStateFlow<String>
-
-    val surnameField: MutableStateFlow<String>
-
-    val patronymicField: MutableStateFlow<String>
-
-    val emailField: MutableStateFlow<String>
-
-    val genderField: MutableStateFlow<GenderAction>
-
-    private fun UserRole.toRoleAction(): RoleAction = when (this) {
-        UserRole.STUDENT -> RoleAction.Student
-        UserRole.TEACHER -> RoleAction.Teacher
-        UserRole.HEAD_TEACHER -> RoleAction.HeadTeacher
+    init {
+        lifecycle.doOnStart {
+            appBarInteractor.update {
+                it.copy(
+                    title = uiTextOf(
+                        if (uiEditor.isNew) "Новый пользователь"
+                        else "Редактировать пользователя"
+                    )
+                )
+            }
+        }
     }
 
-    val avatarUrl: MutableStateFlow<String>
+    data class ErrorState(
+        val firstNameMessage: String? = null,
+        val surnameMessage: String? = null,
+        val groupMessage: String? = null,
+        val emailMessage: String? = null,
+        val passwordMessage: String? = null,
+        val isValid: Boolean = true,
+    )
 
-    val accountFieldsVisibility: StateFlow<Boolean>
-
-    val toolbarTitle: String
-
-    val validator: CompositeValidator<String>
-
-    fun onFinish()
-
-
-}
-
-data class ErrorState(
-    val firstNameMessage: String? = null,
-    val surnameMessage: String? = null,
-    val groupMessage: String? = null,
-    val emailMessage: String? = null,
-    val passwordMessage: String? = null,
-    val isValid: Boolean = true,
-)
-
-enum class GenderAction(override val title: String, override val iconName: String? = null) :
-    MenuAction {
-    Undefined(""),
-    Male("Мужской"),
-    Female("Женский")
-}
-
-enum class RoleAction(override val title: String, override val iconName: String? = null) :
-    MenuAction {
-    Student("Студент"),
-    Teacher("Преподватель"),
-    HeadTeacher("Завуч")
+    enum class GenderAction(override val title: String, override val iconName: String? = null) :
+        MenuAction {
+        Undefined(""),
+        Male("Мужской"),
+        Female("Женский")
+    }
 }

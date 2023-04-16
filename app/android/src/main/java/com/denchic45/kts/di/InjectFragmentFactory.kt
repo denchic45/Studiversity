@@ -6,6 +6,7 @@ import com.denchic45.kts.ui.course.CourseFragment
 import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment
+import com.denchic45.kts.ui.userEditor.UserEditorFragment
 import com.denchic45.kts.ui.yourStudyGroups.YourStudyGroupsFragment
 import com.denchic45.kts.ui.yourTimetables.YourTimetablesFragment
 import me.tatarka.inject.annotations.Inject
@@ -18,7 +19,8 @@ class InjectFragmentFactory(
     private val studyGroupFragment: () -> StudyGroupFragment,
     private val courseFragment: () -> CourseFragment,
     private val profileFragment: () -> ProfileFragment,
-    private val studyGroupEditorFragment: () -> StudyGroupEditorFragment
+    private val studyGroupEditorFragment: () -> StudyGroupEditorFragment,
+private val userEditorFragment:()-> UserEditorFragment
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
@@ -28,6 +30,7 @@ class InjectFragmentFactory(
             name<CourseFragment>() -> courseFragment()
             name<ProfileFragment>() -> profileFragment()
             name<StudyGroupEditorFragment>() -> studyGroupEditorFragment()
+            name<UserEditorFragment>()->userEditorFragment()
             else -> super.instantiate(classLoader, className)
         }
     }

@@ -6,4 +6,4 @@ import me.tatarka.inject.annotations.Inject
 
 @AppScope
 @Inject
-class FabInteractor(state: FabState = FabState()) : UiInteractor<FabState>(state)
+class FabInteractor(state: FabState = FabState(visible = false)) : UiInteractor<FabState>(state)

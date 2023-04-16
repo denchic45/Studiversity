@@ -38,9 +38,8 @@ import com.denchic45.stuiversity.api.timetable.TimetableApi
 import com.denchic45.stuiversity.api.timetable.TimetableApiImpl
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.UserApiImpl
-import com.denchic45.stuiversity.util.ErrorResponse
-import com.github.michaelbull.result.expect
-import com.github.michaelbull.result.unwrapError
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
 import dagger.Module
 import dagger.Provides
 import io.ktor.client.*
@@ -60,7 +59,7 @@ class NetworkModule {
     @Provides
     fun guestClient(appPreferences: AppPreferences): GuestHttpClient = HttpClient(Android) {
         defaultRequest {
-            url("http://192.168.0.103:8080/")
+            url("http://192.168.0.102:8080/")
         }
         installContentNegotiation()
     }
@@ -72,7 +71,7 @@ class NetworkModule {
     @Provides
     fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(Android) {
         defaultRequest {
-            url("http://192.168.0.103:8080/")
+            url("http://192.168.0.102:8080/")
         }
         installContentNegotiation()
         install(WebSockets)
@@ -84,13 +83,14 @@ class NetworkModule {
                 refreshTokens {
                     val result = AuthApiImpl(client)
                         .refreshToken(RefreshTokenRequest(oldTokens!!.refreshToken))
-                    val unwrapped = result.expect {
-                        val unwrapError: ErrorResponse = result.unwrapError()
-                        unwrapError.error.toString() + unwrapError.code
+                    result.onSuccess {
+                        appPreferences.token = it.token
+                        appPreferences.refreshToken = it.refreshToken
+                    }.onFailure {
+                        appPreferences.token = null
+                        appPreferences.refreshToken = null
                     }
-                    appPreferences.token = unwrapped.token
-                    appPreferences.refreshToken =  unwrapped.refreshToken
-                    BearerTokens(unwrapped.token, unwrapped.refreshToken)
+                    BearerTokens(appPreferences.token?:"", appPreferences.refreshToken?:"")
                 }
             }
         }

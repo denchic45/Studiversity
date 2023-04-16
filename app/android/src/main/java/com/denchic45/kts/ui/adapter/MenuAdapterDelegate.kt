@@ -4,14 +4,14 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.denchic45.avatarGenerator.AvatarGenerator
-import com.denchic45.kts.ui.model.UiModel
-import com.denchic45.kts.ui.UiText
-import com.denchic45.kts.ui.onVector
-import com.denchic45.kts.ui.onString
 import com.denchic45.kts.databinding.ItemNavBinding
 import com.denchic45.kts.databinding.ItemNavDividerBinding
 import com.denchic45.kts.databinding.ItemNavDropdownBinding
 import com.denchic45.kts.databinding.ItemNavSubHeaderBinding
+import com.denchic45.kts.ui.UiText
+import com.denchic45.kts.ui.model.UiModel
+import com.denchic45.kts.ui.onResource
+import com.denchic45.kts.ui.onString
 import com.denchic45.kts.util.dp
 import com.denchic45.kts.util.viewBinding
 import com.denchic45.widget.extendedAdapter.DelegationAdapterDsl
@@ -32,6 +32,7 @@ fun navAdapter(builderDelegation: DelegationAdapterDsl.DelegationAdapterBuilder.
             is NavDropdownItem -> {
                 PAYLOAD.NAV_EXPANDED
             }
+
             else -> null
         }
     }
@@ -60,7 +61,7 @@ class NavItemHolder(itemNavBinding: ItemNavBinding) :
         with(binding) {
             item.name
                 .onString { tvName.text = it }
-                .onVector { tvName.setText(it) }
+                .onResource { tvName.setText(it) }
 
             when (item.iconType) {
                 NavTextItem.IconType.NONE -> {
@@ -70,6 +71,7 @@ class NavItemHolder(itemNavBinding: ItemNavBinding) :
                         width = 26.dp
                     }
                 }
+
                 NavTextItem.IconType.CIRCLE -> {
                     ivIcon.roundPercent = 100F
                     ivIcon.updateLayoutParams {
@@ -79,7 +81,7 @@ class NavItemHolder(itemNavBinding: ItemNavBinding) :
                 }
             }
 
-            item.icon.onVector {
+            item.icon.onResource {
                 if (it != 0)
                     ivIcon.setImageResource(it)
                 else
@@ -105,8 +107,8 @@ class NavItemHolder(itemNavBinding: ItemNavBinding) :
 
 
 
-            root.isEnabled = item.enable
-            root.alpha = if (item.enable) 1F else 0.5F
+            root.isEnabled = item.enabled
+            root.alpha = if (item.enabled) 1F else 0.5F
         }
     }
 }
@@ -120,7 +122,7 @@ class NavDropdownItemHolder(itemNavDropdownBinding: ItemNavDropdownBinding) :
     private fun bind(item: NavDropdownItem) {
         with(binding) {
             item.name
-                .onVector { tvName.setText(it) }
+                .onResource { tvName.setText(it) }
                 .onString { tvName.text = it }
         }
     }
@@ -158,13 +160,15 @@ class NavDropdownItemDelegate :
     }
 }
 
+
+
 data class NavTextItem(
     val name: UiText,
     val icon: UiText = UiText.IdText(0),
     var checked: Boolean = false,
     val visible: Boolean = true,
     val checkable: Boolean = true,
-    val enable: Boolean = true,
+    val enabled: Boolean = true,
     override var id: UUID = UUID.randomUUID(),
     val iconType: IconType = IconType.NONE,
     val color: UiText = UiText.IdText(0),
@@ -196,7 +200,7 @@ class NavSubHeaderItemHolder(itemNavSubHeaderBinding: ItemNavSubHeaderBinding) :
     override fun onBind(item: NavSubHeaderItem) {
         with(binding) {
             item.name
-                .onVector { tvHeader.setText(it) }
+                .onResource { tvHeader.setText(it) }
                 .onString { tvHeader.text = it }
         }
     }

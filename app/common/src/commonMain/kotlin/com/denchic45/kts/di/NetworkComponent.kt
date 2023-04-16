@@ -39,6 +39,7 @@ import com.denchic45.stuiversity.api.user.UserApiImpl
 import com.denchic45.stuiversity.util.ErrorResponse
 import com.github.michaelbull.result.expect
 import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
 import com.github.michaelbull.result.unwrapError
 import io.ktor.client.*
 import io.ktor.client.engine.*
@@ -61,7 +62,7 @@ abstract class NetworkComponent(
     @Provides
     fun guestClient(appPreferences: AppPreferences): GuestHttpClient = HttpClient(engine) {
         defaultRequest {
-            url("http://192.168.0.103:8080/")
+            url("http://192.168.0.102:8080/")
         }
         installContentNegotiation()
     }
@@ -74,7 +75,7 @@ abstract class NetworkComponent(
     @Provides
     fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(engine) {
         defaultRequest {
-            url("http://192.168.0.103:8080/")
+            url("http://192.168.0.102:8080/")
         }
         installContentNegotiation()
         install(WebSockets)
@@ -86,16 +87,14 @@ abstract class NetworkComponent(
                 refreshTokens {
                     val result = AuthApiImpl(client)
                         .refreshToken(RefreshTokenRequest(oldTokens!!.refreshToken))
-                    result.onFailure {
+                    result.onSuccess {
+                        appPreferences.token = it.token
+                        appPreferences.refreshToken = it.refreshToken
+                    }.onFailure {
                         appPreferences.token = null
+                        appPreferences.refreshToken = null
                     }
-
-                    val unwrapped = result.expect {
-                        val unwrapError: ErrorResponse = result.unwrapError()
-                        unwrapError.error.toString() + unwrapError.code
-                    }
-
-                    BearerTokens(unwrapped.token, unwrapped.refreshToken)
+                    BearerTokens(appPreferences.token ?: "", appPreferences.refreshToken ?: "")
                 }
             }
         }

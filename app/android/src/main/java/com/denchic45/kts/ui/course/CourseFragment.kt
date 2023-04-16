@@ -20,6 +20,7 @@ import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.courseelements.CourseUiComponent
 import com.denchic45.kts.ui.fab.FabInteractor
+import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.stuiversity.util.toUUID
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import me.tatarka.inject.annotations.Inject
@@ -87,10 +88,12 @@ class CourseFragment(
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            CourseScreen(
-                component = component,
-                fabInteractor = fabInteractor
-            )
+            AppTheme{
+                CourseScreen(
+                    component = component,
+                    fabInteractor = fabInteractor
+                )
+            }
         }
     }
 

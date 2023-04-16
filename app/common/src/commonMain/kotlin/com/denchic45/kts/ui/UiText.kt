@@ -22,10 +22,10 @@ sealed class UiText {
     }
 }
 
-fun UiText.onString(fn: (success: String) -> Unit): UiText =
+inline fun UiText.onString(fn: (success: String) -> Unit): UiText =
     this.apply { if (this is UiText.StringText) fn(value) }
 
-fun UiText.onVector(fn: (failure: Int) -> Unit): UiText =
+inline fun UiText.onResource(fn: (failure: Int) -> Unit): UiText =
     this.apply { if (this is UiText.IdText) fn(value) }
 
 fun uiTextOf(value: String) = UiText.StringText(value)

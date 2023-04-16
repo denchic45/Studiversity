@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class AuthService @javax.inject.Inject constructor(
@@ -31,7 +31,7 @@ class AuthService @javax.inject.Inject constructor(
         get() = !appPreferences.token.isNullOrEmpty()
 
     val observeIsAuthenticated: Flow<Boolean>
-        get() = userPreferences.observeId.map(String::isNotEmpty)
+        get() = appPreferences.observeToken.map { !it.isNullOrEmpty() }
 
     val observeCurrentUser: Flow<Resource<UserResponse>> = userPreferences.observeId
         .filter(String::isNotEmpty)

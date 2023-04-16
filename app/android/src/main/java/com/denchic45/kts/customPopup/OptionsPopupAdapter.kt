@@ -14,6 +14,7 @@ import com.denchic45.kts.ui.model.OptionItem
 import com.denchic45.kts.databinding.ItemPopupIconContentBinding
 import com.denchic45.kts.ui.UiText
 import com.denchic45.kts.ui.onVector
+import com.denchic45.kts.ui.onResource
 import com.denchic45.kts.ui.onName
 import com.denchic45.kts.ui.onString
 import com.denchic45.kts.util.viewBinding
@@ -69,7 +70,7 @@ class OptionsPopupAdapter(context: Context, items: List<OptionItem>) : ArrayAdap
             with(itemPopupIconContentBinding) {
                 val context = root.context
                 item.title.onString { tvName.text = it }
-                    .onVector { tvName.setText(it) }
+                    .onResource { tvName.setText(it) }
 
                 item.icon?.onVector {
                     ivIcon.visibility = View.VISIBLE

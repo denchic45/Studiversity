@@ -63,6 +63,7 @@ fun GroupMembersScreen(studyGroupMembersComponent: StudyGroupMembersComponent) {
             }
             is UserEditorChild -> UserEditorScreen(
                 child.userEditorComponent,
+                child.appBarInteractor,
                 Modifier.width(472.dp)
             )
         }

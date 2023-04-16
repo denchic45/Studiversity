@@ -1,36 +1,65 @@
 package com.denchic45.kts.ui.studygroup.members
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.stack.*
+import com.arkivanov.decompose.router.overlay.OverlayNavigation
+import com.arkivanov.decompose.router.overlay.activate
+import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.value.Value
-import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.model.GroupMembers
+import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.AssignUserRoleInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindGroupMembersUseCase
 import com.denchic45.kts.domain.usecase.RemoveUserRoleFromScopeUseCase
+import com.denchic45.kts.domain.usecase.RemoveUserUseCase
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.toUserItem
-import com.denchic45.kts.ui.navigation.*
+import com.denchic45.kts.ui.navigation.ConfirmConfig
+import com.denchic45.kts.ui.navigation.GroupMembersChild
+import com.denchic45.kts.ui.navigation.GroupMembersConfig
+import com.denchic45.kts.ui.navigation.OverlayConfig
+import com.denchic45.kts.ui.navigation.ProfileChild
+import com.denchic45.kts.ui.navigation.ProfileConfig
+import com.denchic45.kts.ui.navigation.UserEditorChild
+import com.denchic45.kts.ui.navigation.UserEditorConfig
 import com.denchic45.kts.ui.profile.ProfileComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Role
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class StudyGroupMembersComponent(
     findGroupMembersUseCase: FindGroupMembersUseCase,
+    private val removeUserUseCase: RemoveUserUseCase,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
     profileComponent: (UUID, ComponentContext) -> ProfileComponent,
-    userEditorComponent: (onFinish: () -> Unit, UserEditorConfig,ComponentContext) -> UserEditorComponent,
+    userEditorComponent: (
+        AppBarInteractor,
+        onFinish: () -> Unit,
+        userId: UUID?,
+        role: Role?,
+        ComponentContext
+    ) -> UserEditorComponent,
+    private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     @Assisted
     private val groupId: UUID,
     @Assisted
@@ -46,9 +75,19 @@ class StudyGroupMembersComponent(
             when (config) {
                 GroupMembersConfig.Unselected -> GroupMembersChild.Unselected
                 is ProfileConfig -> ProfileChild(profileComponent(config.userId, componentContext))
-                is UserEditorConfig -> UserEditorChild(
-                    userEditorComponent(navigation::pop, config,componentContext)
-                )
+                is UserEditorConfig -> {
+                    val appBarInteractor = AppBarInteractor()
+                    UserEditorChild(
+                        userEditorComponent(
+                            appBarInteractor,
+                            navigation::pop,
+                            config.userId,
+                            config.role,
+                            componentContext
+                        ),
+                        appBarInteractor
+                    )
+                }
             }
         })
 
@@ -116,16 +155,17 @@ class StudyGroupMembersComponent(
                     Role.Headman.id,
                     groupId
                 )
+
                 StudentAction.RemoveHeadman -> removeUserRoleFromScopeUseCase(
                     groupId,
                     Role.Headman.id,
                     groupId
                 )
+
                 StudentAction.Edit -> navigation.bringToFront(
                     UserEditorConfig(
                         userId = memberAction.value!!.second,
-                        role = UserRole.STUDENT,
-                        groupId = groupId
+                        role = Role.Student
                     )
                 )
             }

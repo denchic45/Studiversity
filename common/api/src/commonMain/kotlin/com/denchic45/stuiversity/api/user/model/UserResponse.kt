@@ -16,5 +16,5 @@ data class UserResponse(
     val gender: Gender,
 ) {
     val fullName: String
-        get() = firstName + surname
+        get() = "$firstName  $surname"
 }

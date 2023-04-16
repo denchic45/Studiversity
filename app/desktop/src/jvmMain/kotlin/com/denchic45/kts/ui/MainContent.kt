@@ -101,6 +101,7 @@ fun MainContent(mainComponent: MainComponent) {
                     when (val instance = it.instance) {
                         is UserEditorChild -> UserEditorDialog(
                             instance.userEditorComponent,
+                            instance.appBarInteractor,
                             mainComponent::onOverlayDismiss
                         )
                         is ConfirmChild -> with(instance.config) {
