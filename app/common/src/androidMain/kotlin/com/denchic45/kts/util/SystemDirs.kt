@@ -3,8 +3,6 @@ package com.denchic45.kts.util
 import android.content.Context
 import java.io.File
 
-
-
 actual class SystemDirs actual constructor() {
     lateinit var context: Context
         private set
@@ -16,7 +14,7 @@ actual class SystemDirs actual constructor() {
 
     actual val appDirectory: File
         get() {
-            return context.filesDir!!.parentFile
+            return context.filesDir!!.parentFile!!
         }
 
     actual val prefsDirectory: File

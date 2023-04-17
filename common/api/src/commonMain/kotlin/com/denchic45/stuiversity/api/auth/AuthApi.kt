@@ -3,7 +3,7 @@ package com.denchic45.stuiversity.api.auth
 import com.denchic45.stuiversity.api.auth.model.RefreshTokenRequest
 import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest
 import com.denchic45.stuiversity.api.auth.model.SignupRequest
-import com.denchic45.stuiversity.api.auth.model.TokenResponse
+import com.denchic45.stuiversity.api.auth.model.SignInResponse
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
@@ -14,9 +14,9 @@ import io.ktor.http.*
 interface AuthApi {
     suspend fun signup(signupRequest: SignupRequest): EmptyResponseResult
 
-    suspend fun signInByEmailPassword(signInByEmailPasswordRequest: SignInByEmailPasswordRequest): ResponseResult<TokenResponse>
+    suspend fun signInByEmailPassword(signInByEmailPasswordRequest: SignInByEmailPasswordRequest): ResponseResult<SignInResponse>
 
-    suspend fun refreshToken(refreshTokenRequest: RefreshTokenRequest): ResponseResult<TokenResponse>
+    suspend fun refreshToken(refreshTokenRequest: RefreshTokenRequest): ResponseResult<SignInResponse>
 }
 
 class AuthApiImpl(private val client: HttpClient) : AuthApi {
@@ -27,7 +27,7 @@ class AuthApiImpl(private val client: HttpClient) : AuthApi {
         }.toResult()
     }
 
-    override suspend fun signInByEmailPassword(signInByEmailPasswordRequest: SignInByEmailPasswordRequest): ResponseResult<TokenResponse> {
+    override suspend fun signInByEmailPassword(signInByEmailPasswordRequest: SignInByEmailPasswordRequest): ResponseResult<SignInResponse> {
         return client.post("/auth/token") {
             contentType(ContentType.Application.Json)
             setBody(signInByEmailPasswordRequest)
@@ -35,7 +35,7 @@ class AuthApiImpl(private val client: HttpClient) : AuthApi {
         }.toResult()
     }
 
-    override suspend fun refreshToken(refreshTokenRequest: RefreshTokenRequest): ResponseResult<TokenResponse> {
+    override suspend fun refreshToken(refreshTokenRequest: RefreshTokenRequest): ResponseResult<SignInResponse> {
         return client.post("/auth/token") {
             contentType(ContentType.Application.Json)
             parameter("grant_type", "refresh_token")

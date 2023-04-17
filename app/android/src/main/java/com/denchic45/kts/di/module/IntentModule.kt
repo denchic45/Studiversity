@@ -1,8 +1,10 @@
 package com.denchic45.kts.di.module
 
+import androidx.navigation.fragment.navArgs
 import com.denchic45.kts.ui.avatar.FullImageActivity
 import com.denchic45.kts.ui.course.CourseFragment
 import com.denchic45.kts.ui.course.content.ContentFragment
+import com.denchic45.kts.ui.course.content.ContentFragmentArgs
 import com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment
 import com.denchic45.kts.ui.course.submission.SubmissionDialog
 import com.denchic45.kts.ui.course.submissions.SubmissionsFragment
@@ -117,17 +119,16 @@ object IntentModule {
         return courseWorkEditorFragment.requireArguments().getString(CourseWorkEditorFragment.SECTION_ID)
     }
 
-    @Named(ContentFragment.TASK_ID)
-    @Provides
-    fun provideTaskId(contentFragment: ContentFragment): String {
-        return contentFragment.requireArguments().getString(ContentFragment.TASK_ID)!!
-    }
-
     @Named(ContentFragment.COURSE_ID)
     @Provides
     fun provideCourseId(contentFragment: ContentFragment): String {
-        return contentFragment.requireArguments()
-            .getString(ContentFragment.COURSE_ID)!!
+        return contentFragment.navArgs.courseId
+    }
+
+    @Named(ContentFragment.TASK_ID)
+    @Provides
+    fun provideTaskId(contentFragment: ContentFragment): String {
+        return contentFragment.navArgs.elementId
     }
 
     @Named(CourseWorkFragment.TASK_ID)

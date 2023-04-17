@@ -7,6 +7,7 @@ import com.studiversity.util.hasNotDuplicates
 import com.studiversity.validation.buildValidationResult
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.api.role.model.UpdateUserRolesRequest
+import com.studiversity.ktor.getUserUuidByParameterOrMe
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -43,7 +44,7 @@ private fun Route.userAssignedRolesRoute() {
         val removeRoleFromUserInScope: RemoveRoleFromUserInScopeUseCase by inject()
 
         get {
-            val userId = call.parameters.getUuidOrFail("id")
+            val userId = call.getUserUuidByParameterOrMe("id")
             val scopeId = call.parameters.getUuidOrFail("scopeId")
             call.respond(HttpStatusCode.OK, findAssignedUserRolesInScope(userId, scopeId))
         }

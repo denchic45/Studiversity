@@ -27,7 +27,7 @@ abstract class AndroidApplicationComponent(
 
     @AppScope
     @Provides
-    fun provideSystemDirs() = SystemDirs()
+    fun provideSystemDirs(context: Context) = SystemDirs(context)
 
 //    @Provides
 //    fun componentContext(): ComponentContext = componentContext

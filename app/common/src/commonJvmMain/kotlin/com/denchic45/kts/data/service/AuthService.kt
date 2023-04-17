@@ -8,7 +8,7 @@ import com.denchic45.kts.domain.toEmptyResource
 import com.denchic45.kts.domain.toResource
 import com.denchic45.stuiversity.api.auth.AuthApi
 import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest
-import com.denchic45.stuiversity.api.auth.model.TokenResponse
+import com.denchic45.stuiversity.api.auth.model.SignInResponse
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.github.michaelbull.result.flatMap
@@ -50,10 +50,11 @@ class AuthService @javax.inject.Inject constructor(
             .toEmptyResource()
     }
 
-    private fun saveTokens(tokenResponse: TokenResponse) {
+    private fun saveTokens(response: SignInResponse) {
         appPreferences.apply {
-            token = tokenResponse.token
-            refreshToken = tokenResponse.refreshToken
+            token = response.token
+            refreshToken = response.refreshToken
+            organizationId = response.organizationId.toString()
         }
     }
 

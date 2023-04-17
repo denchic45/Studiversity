@@ -39,8 +39,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.util.UUID
@@ -51,7 +51,7 @@ class MainViewModel @Inject constructor(
     private val appVersionService: GoogleAppVersionService,
     private val findYourCoursesUseCase: FindYourCoursesUseCase,
     private val findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
-    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase
+    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
 ) : BaseViewModel() {
 
 //    private val screenIdsWithFab: Set<Int> = setOf(
@@ -110,11 +110,10 @@ class MainViewModel @Inject constructor(
 
     private val yourCourses = flow { emit(findYourCoursesUseCase()) }
 
-    val navMenuState: StateFlow<NavDrawerState> = combine(
-        yourCourses.filterSuccess(), userRoles.filterSuccess()
-    ) { courses, roles ->
-        NavDrawerState(courses.value, roles.value.roles.contains(Role.Moderator))
-    }.stateIn(viewModelScope, SharingStarted.Lazily, NavDrawerState(emptyList(), false))
+    val navMenuState: StateFlow<NavDrawerState> = yourCourses.filterSuccess()
+        .combine(userRoles.filterSuccess()) { courses, roles ->
+            NavDrawerState(courses.value, roles.value.roles.contains(Role.Moderator))
+        }.stateIn(viewModelScope, SharingStarted.Lazily, NavDrawerState(emptyList(), false))
 
     fun onOptionItemSelect(itemId: Int) {
         when (itemId) {
@@ -296,10 +295,10 @@ class MainViewModel @Inject constructor(
 
             viewModelScope.launch {
                 interactor.listenAuthState.collect { logged: Boolean ->
-                        if (!logged) {
-                            viewModelScope.launch { openLogin.emit(Unit) }
-                        }
+                    if (!logged) {
+                        viewModelScope.launch { openLogin.emit(Unit) }
                     }
+                }
             }
 
 //        uiPermissions = UiPermissions(interactor.findThisUser())
@@ -476,5 +475,5 @@ class MainViewModel @Inject constructor(
 }
 
 data class NavDrawerItem(
-    val name: UiText, val icon: UiIcon, var selected: Boolean = false, val enabled: Boolean = true
+    val name: UiText, val icon: UiIcon, var selected: Boolean = false, val enabled: Boolean = true,
 )

@@ -7,11 +7,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentContentBinding
 import com.denchic45.kts.ui.base.BaseFragment
+import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.course.submissions.SubmissionsFragment
 import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
 import com.denchic45.kts.ui.course.taskInfo.CourseWorkFragment
@@ -24,19 +26,21 @@ class ContentFragment :
     BaseFragment<ContentViewModel, FragmentContentBinding>(
         R.layout.fragment_content,
         R.menu.options_course_content
-    ) {
+    ),HasNavArgs<ContentFragmentArgs> {
     override val viewModel: ContentViewModel by viewModels { viewModelFactory }
     override val binding: FragmentContentBinding by viewBinding(FragmentContentBinding::bind)
 
-    private val appBarController by lazy {
-        AppBarController.findController(requireActivity())
-    }
+//    private val appBarController by lazy {
+//        AppBarController.findController(requireActivity())
+//    }
+
+    override val navArgs: ContentFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        appBarController.setExpanded(expand = true, animate = true)
-        setActivityTitle("")
+//        appBarController.setExpanded(expand = true, animate = true)
+//        setActivityTitle("")
 
         with(binding) {
 

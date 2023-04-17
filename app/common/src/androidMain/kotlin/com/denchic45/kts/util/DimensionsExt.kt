@@ -10,7 +10,7 @@ val Float.dp: Float
         Resources.getSystem().displayMetrics
     )
 
-val Int.dp: Int get() = this.toFloat().dp.toInt()
+val Int.dpToPx: Int get() = this.toFloat().dp.toInt()
 
 val Float.sp: Float
     get() = TypedValue.applyDimension(

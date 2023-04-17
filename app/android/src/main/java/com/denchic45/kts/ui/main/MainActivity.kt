@@ -46,9 +46,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.updateLayoutParams
 import androidx.navigation.NavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -66,6 +67,8 @@ import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.updateView.SnackbarUpdateView
 import com.denchic45.kts.util.collectWhenResumed
 import com.denchic45.kts.util.collectWhenStarted
+import com.denchic45.kts.util.dpToPx
+import com.denchic45.kts.util.dpToPx
 import com.denchic45.kts.util.findFragmentContainerNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -73,6 +76,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.seiko.imageloader.rememberAsyncImagePainter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
+
 
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.activity_main) {
 
@@ -140,10 +144,18 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 //            title = it.title.get(this)
 //        }
 
+        toolbarInteractor.stateFlow.collectWhenStarted(this) {
+            if (it.visible) {
+                binding.appBar.updateLayoutParams<CoordinatorLayout.LayoutParams> { height = 56.dpToPx }
+            } else {
+                binding.appBar.updateLayoutParams<CoordinatorLayout.LayoutParams> { height = 0 }
+            }
+        }
 
         binding.topAppBarComposable.setContent {
             AppTheme {
                 val state by toolbarInteractor.stateFlow.collectAsState()
+
                 if (state.visible)
                     TopAppBar(
                         title = { Text(state.title.get(LocalContext.current)) },
@@ -350,8 +362,9 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                                                 })
                                         }
                                     }
+                                    Divider(Modifier.padding(vertical = 4.dp))
                                 }
-                                Divider(Modifier.padding(vertical = 4.dp))
+
                                 Column(Modifier.padding(8.dp)) {
                                     navMenu.footerItems.forEach {
                                         NavigationDrawerItem(

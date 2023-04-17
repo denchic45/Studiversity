@@ -12,6 +12,7 @@ import com.denchic45.stuiversity.api.role.model.CheckCapabilitiesResponse
 import com.denchic45.stuiversity.api.role.model.UserRolesResponse
 import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.util.uuidOrMe
+import com.github.michaelbull.result.unwrapError
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 

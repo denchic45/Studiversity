@@ -7,7 +7,7 @@ import com.studiversity.feature.auth.usecase.*
 import com.studiversity.ktor.ForbiddenException
 import com.denchic45.stuiversity.api.auth.AuthErrors
 import com.denchic45.stuiversity.api.auth.model.SignupRequest
-import com.denchic45.stuiversity.api.auth.model.TokenResponse
+import com.denchic45.stuiversity.api.auth.model.SignInResponse
 import com.denchic45.stuiversity.util.toDate
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -47,7 +47,7 @@ fun Route.tokenRoute() {
             .withExpiresAt(LocalDateTime.now().plusDays(1).toDate())
             .sign(Algorithm.HMAC256(config.jwt.secret))
 
-        call.respond(HttpStatusCode.OK, TokenResponse(token, userIdWithToken.second))
+        call.respond(HttpStatusCode.OK, SignInResponse(token, userIdWithToken.second, config.organization.id))
     }
 }
 

@@ -12,7 +12,7 @@ import com.denchic45.kts.ui.UiText
 import com.denchic45.kts.ui.model.UiModel
 import com.denchic45.kts.ui.onResource
 import com.denchic45.kts.ui.onString
-import com.denchic45.kts.util.dp
+import com.denchic45.kts.util.dpToPx
 import com.denchic45.kts.util.viewBinding
 import com.denchic45.widget.extendedAdapter.DelegationAdapterDsl
 import com.denchic45.widget.extendedAdapter.DelegationAdapterExtended
@@ -67,16 +67,16 @@ class NavItemHolder(itemNavBinding: ItemNavBinding) :
                 NavTextItem.IconType.NONE -> {
                     ivIcon.roundPercent = 0F
                     ivIcon.updateLayoutParams {
-                        height = 26.dp
-                        width = 26.dp
+                        height = 26.dpToPx
+                        width = 26.dpToPx
                     }
                 }
 
                 NavTextItem.IconType.CIRCLE -> {
                     ivIcon.roundPercent = 100F
                     ivIcon.updateLayoutParams {
-                        height = 32.dp
-                        width = 32.dp
+                        height = 32.dpToPx
+                        width = 32.dpToPx
                     }
                 }
             }

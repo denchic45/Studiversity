@@ -27,6 +27,6 @@ class RoleApiImpl(private val client: HttpClient) : RoleApi {
     }
 
     override suspend fun getUserRolesInScope(userId: UUIDWrapper, scopeId: UUID): ResponseResult<UserRolesResponse> {
-        return client.get("/users/${userId.value}/scopes/$scopeId/roles").toResult()
+        return client.get("/users/${userId.value}/scopes/$scopeId/roles").toResult<UserRolesResponse>()
     }
 }
