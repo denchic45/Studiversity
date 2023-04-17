@@ -15,7 +15,10 @@ group = "com.denchic45.kts"
 version = "1.0"
 
 android {
-    packagingOptions {
+
+    namespace = "com.denchic45.kts"
+
+    packaging {
         resources.excludes.apply {
             add("META-INF/LICENSE")
             add("META-INF/*.properties")
@@ -31,8 +34,8 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     defaultConfig {
@@ -58,7 +61,7 @@ android {
         }
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
         freeCompilerArgs = listOf("-Xjvm-default=compatibility")
 
     }

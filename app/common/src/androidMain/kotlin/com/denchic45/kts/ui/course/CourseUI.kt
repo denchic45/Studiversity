@@ -6,9 +6,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddHome
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,6 +38,7 @@ import com.denchic45.kts.ui.fab.FabInteractor
 import com.denchic45.kts.ui.fab.FabState
 import com.denchic45.kts.ui.get
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
+import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import java.util.UUID
 
@@ -44,9 +47,11 @@ import java.util.UUID
 fun CourseScreen(
     component: CourseUiComponent,
     fabInteractor: FabInteractor,
+    appBarInteractor: AppBarInteractor
 ) {
     component.lifecycle.apply {
         doOnStart {
+            appBarInteractor.set(AppBarState(visible = false))
             fabInteractor.set(
                 FabState(
                     icon = UiIcon.Resource(R.drawable.ic_add),
@@ -60,22 +65,26 @@ fun CourseScreen(
     }
 
     val course by component.course.collectAsState()
+    val allowEdit by component.allowEdit.collectAsState(false)
     val elements by component.elements.collectAsState()
 
-    val appBarState by component.appBarState.collectAsState()
     CourseContent(
-        appBarState = appBarState,
+        course = course,
+        allowEdit = allowEdit,
         elements = elements,
-        onElementClick = component::onItemClick
+        onElementClick = component::onItemClick,
+        onCourseEditClick = component::onCourseEditClick
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseContent(
-    appBarState: AppBarState,
+    course: Resource<CourseResponse>,
+    allowEdit: Boolean,
     elements: Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>>,
-    onElementClick: (courseId: UUID, elementId: UUID) -> Unit,
+    onElementClick: (elementId: UUID) -> Unit,
+    onCourseEditClick: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
@@ -85,8 +94,17 @@ fun CourseContent(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
-                title = { Text(text = appBarState.title.get(LocalContext.current)) },
-                actions = {  },
+                title = {
+                    course.onSuccess {
+                        Text(text = it.name)
+                    }
+                },
+                actions = {
+                    if (allowEdit)
+                        IconButton(onClick = { onCourseEditClick() }) {
+                            Icon(Icons.Outlined.Settings, "Edit Course")
+                        }
+                },
                 scrollBehavior = scrollBehavior
             )
         }
@@ -101,7 +119,7 @@ fun CourseContent(
                     items(elements, key = { it.id }) {
                         CourseElementUI(
                             response = it,
-                            onClick = { onElementClick(it.courseId, it.id) })
+                            onClick = { onElementClick(it.id) })
                     }
                 }
             }

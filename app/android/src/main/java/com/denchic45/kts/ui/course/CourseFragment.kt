@@ -91,6 +91,7 @@ class CourseFragment(
             AppTheme{
                 CourseScreen(
                     component = component,
+                    appBarInteractor = appBarInteractor,
                     fabInteractor = fabInteractor
                 )
             }

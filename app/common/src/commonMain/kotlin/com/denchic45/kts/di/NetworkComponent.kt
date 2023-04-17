@@ -62,7 +62,7 @@ abstract class NetworkComponent(
     @Provides
     fun guestClient(appPreferences: AppPreferences): GuestHttpClient = HttpClient(engine) {
         defaultRequest {
-            url("http://192.168.0.102:8080/")
+            url("http://192.168.84.229:8080/")
         }
         installContentNegotiation()
     }
@@ -75,7 +75,7 @@ abstract class NetworkComponent(
     @Provides
     fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(engine) {
         defaultRequest {
-            url("http://192.168.0.102:8080/")
+            url("http://192.168.84.229:8080/")
         }
         installContentNegotiation()
         install(WebSockets)

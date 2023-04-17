@@ -10,7 +10,8 @@ import com.denchic45.kts.ui.MainComponent
 import com.denchic45.kts.ui.login.LoginComponent
 import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.splash.SplashComponent
-import io.ktor.client.engine.cio.*
+import com.denchic45.kts.util.SystemDirs
+import io.ktor.client.engine.cio.CIO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
@@ -36,6 +37,10 @@ abstract class JvmAppComponent(
 //    fun provideComponentContext(): ComponentContext {
 //        return componentContext
 //    }
+
+    @AppScope
+    @Provides
+    fun provideSystemDirs() = SystemDirs()
 
     @AppScope
     @Provides

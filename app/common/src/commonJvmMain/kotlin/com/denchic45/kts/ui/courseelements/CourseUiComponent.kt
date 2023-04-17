@@ -2,21 +2,18 @@ package com.denchic45.kts.ui.courseelements
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnStart
-import com.denchic45.kts.domain.filterSuccess
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.stateInResource
+import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindCourseByIdUseCase
 import com.denchic45.kts.domain.usecase.FindCourseElementsUseCase
 import com.denchic45.kts.domain.usecase.FindSelfUserUseCase
 import com.denchic45.kts.domain.usecase.RemoveCourseElementUseCase
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
-import com.denchic45.kts.ui.fab.FabInteractor
-import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -27,8 +24,7 @@ class CourseUiComponent(
     private val removeCourseElementUseCase: RemoveCourseElementUseCase,
     private val findCourseElementsUseCase: FindCourseElementsUseCase,
     findSelfUserUseCase: FindSelfUserUseCase,
-    private val appBarInteractor: AppBarInteractor,
-    private val fabInteractor: FabInteractor,
+    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     @Assisted
     private val courseId: UUID,
     @Assisted
@@ -44,29 +40,40 @@ class CourseUiComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    val appBarState = MutableStateFlow(AppBarState())
+//    val appBarState = MutableStateFlow(AppBarState())
 
     val elements = flow { emit(findCourseElementsUseCase(courseId)) }
         .stateInResource(componentScope)
 
     val course = flow { emit(findCourseByIdUseCase(courseId)) }.stateInResource(componentScope)
 
-    init {
-        lifecycle.doOnStart {
-            appBarInteractor.set(AppBarState(visible = false))
-            course.filterSuccess().onEach {
-                appBarState.value = AppBarState(title = uiTextOf(it.value.name))
-            }.launchIn(componentScope)
 
-        }
+    val allowEdit = flow {
+        emit(
+            when (val resource = checkUserCapabilitiesInScopeUseCase(
+                scopeId = courseId,
+                capabilities = listOf(Capability.WriteCourse)
+            )) {
+                Resource.Loading,
+                is Resource.Error -> false
+
+                is Resource.Success -> {
+                    resource.value.hasCapability(Capability.WriteCourse)
+                }
+            }
+        )
     }
 
     fun onFabClick() {
         onCourseElementEditorOpen()
     }
 
-    fun onItemClick(courseId: UUID, elementId: UUID) {
+    fun onItemClick(elementId: UUID) {
         onElementOpen(courseId, elementId)
+    }
+
+    fun onCourseEditClick() {
+        onCourseEditorOpen(courseId)
     }
 
     fun onTaskItemLongClick(position: Int) {}

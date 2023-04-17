@@ -3,6 +3,10 @@ plugins {
 }
 apply(plugin = ("kotlin-android"))
 
+repositories {
+    mavenCentral()
+}
+
 android {
     compileSdk = 33
     buildToolsVersion = "30.0.3"
@@ -22,8 +26,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     namespace = "com.example.appbarcontroller"
 }
@@ -33,7 +37,4 @@ dependencies {
     implementation ("com.google.android.material:material:1.6.1")
     implementation ("org.jetbrains:annotations:15.0")
     implementation ("androidx.core:core-ktx:1.8.0")
-}
-repositories {
-    mavenCentral()
 }

@@ -6,6 +6,7 @@ import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.fab.FabInteractor
+import com.denchic45.kts.util.SystemDirs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
@@ -23,6 +24,10 @@ abstract class AndroidApplicationComponent(
 
     @Provides
     fun context(): Context = application
+
+    @AppScope
+    @Provides
+    fun provideSystemDirs() = SystemDirs()
 
 //    @Provides
 //    fun componentContext(): ComponentContext = componentContext

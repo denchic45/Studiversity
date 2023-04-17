@@ -74,7 +74,6 @@ import com.seiko.imageloader.rememberAsyncImagePainter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 
-
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.activity_main) {
 
     override val binding: ActivityMainBinding by viewBinding(ActivityMainBinding::bind)

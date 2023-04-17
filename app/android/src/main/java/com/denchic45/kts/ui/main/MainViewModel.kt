@@ -12,6 +12,7 @@ import com.denchic45.kts.domain.filterSuccess
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
+import com.denchic45.kts.domain.usecase.FindAssignedUserRolesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindYourCoursesUseCase
 import com.denchic45.kts.ui.NavigationCommand
 import com.denchic45.kts.ui.UiIcon
@@ -29,11 +30,13 @@ import com.denchic45.kts.ui.settings.SettingsFragmentDirections
 import com.denchic45.kts.ui.tasks.TasksFragmentDirections
 import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -47,6 +50,7 @@ class MainViewModel @Inject constructor(
     private val interactor: MainInteractor,
     private val appVersionService: GoogleAppVersionService,
     private val findYourCoursesUseCase: FindYourCoursesUseCase,
+    private val findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase
 ) : BaseViewModel() {
 
@@ -59,6 +63,10 @@ class MainViewModel @Inject constructor(
         emit(checkUserCapabilitiesInScopeUseCase(capabilities = emptyList()))
     }.stateInResource(viewModelScope)
 
+    private val userRoles = flow {
+        emit(findAssignedUserRolesInScopeUseCase())
+    }.stateInResource(viewModelScope)
+
     val updateBannerState = MutableStateFlow<UpdateBannerState>(UpdateBannerState.Hidden)
 
     fun setActivityForService(activity: Activity) {
@@ -66,19 +74,19 @@ class MainViewModel @Inject constructor(
     }
 
     private val mainScreenIds: Set<Int> = setOf(R.id.menu_timetable, R.id.menu_group)
-    private val onNavItemClickActions = mapOf(
-        R.string.nav_tasks to {
-            navigateTo(TasksFragmentDirections.actionGlobalTasksFragment())
-        },
-        R.string.nav_duty_roster to { },
-        R.string.nav_schedule to { },
-
-        R.string.nav_control_panel to {
-            navigateTo(AdminPanelFragmentDirections.actionGlobalMenuAdminPanel())
-        },
-        R.string.nav_settings to { navigateTo(SettingsFragmentDirections.actionGlobalMenuSettings()) },
-        R.string.nav_help to { },
-    )
+//    private val onNavItemClickActions = mapOf(
+//        R.string.nav_tasks to {
+//            navigateTo(TasksFragmentDirections.actionGlobalTasksFragment())
+//        },
+//        R.string.nav_duty_roster to { },
+//        R.string.nav_schedule to { },
+//
+//        R.string.nav_control_panel to {
+//            navigateTo(AdminPanelFragmentDirections.actionGlobalMenuAdminPanel())
+//        },
+//        R.string.nav_settings to { navigateTo(SettingsFragmentDirections.actionGlobalMenuSettings()) },
+//        R.string.nav_help to { },
+//    )
 
 //    val fabVisibility: MutableSharedFlow<Boolean> = MutableSharedFlow(replay = 1)
 
@@ -92,8 +100,7 @@ class MainViewModel @Inject constructor(
 
     enum class ToolbarNavigationState { NONE, MENU, BACK }
 
-    val userInfo = interactor.observeThisUser().filterNotNull()
-        .stateInResource(viewModelScope)
+    val userInfo = interactor.observeThisUser().filterNotNull().stateInResource(viewModelScope)
 
 //    private val uiPermissions: UiPermissions
 
@@ -101,10 +108,13 @@ class MainViewModel @Inject constructor(
 
     val bottomMenuVisibility: MutableLiveData<Boolean> = MutableLiveData(true)
 
-    val navMenuState: StateFlow<NavDrawerState> = flow { emit(findYourCoursesUseCase()) }
-        .filterSuccess()
-        .map { NavDrawerState(it.value, true) }
-        .stateIn(viewModelScope, SharingStarted.Lazily, NavDrawerState(emptyList(), false))
+    private val yourCourses = flow { emit(findYourCoursesUseCase()) }
+
+    val navMenuState: StateFlow<NavDrawerState> = combine(
+        yourCourses.filterSuccess(), userRoles.filterSuccess()
+    ) { courses, roles ->
+        NavDrawerState(courses.value, roles.value.roles.contains(Role.Moderator))
+    }.stateIn(viewModelScope, SharingStarted.Lazily, NavDrawerState(emptyList(), false))
 
     fun onOptionItemSelect(itemId: Int) {
         when (itemId) {
@@ -227,16 +237,13 @@ class MainViewModel @Inject constructor(
                 UpdateBannerState.Loading(progress, "$progress% из $megabyteTotal МБ")
         }
 
-        appVersionService.observeUpdates(
-            onUpdateAvailable = {
-                updateBannerState.value = UpdateBannerState.Remind
-            },
-            onError = {
+        appVersionService.observeUpdates(onUpdateAvailable = {
+            updateBannerState.value = UpdateBannerState.Remind
+        }, onError = {
 //                showToast("Ошибка")
 //                it.printStackTrace()
 //                showSnackBar(it.message ?: "Err...")
-            }
-        )
+        })
 
 //        viewModelScope.launch {
 //            navMenuState.emitAll(
@@ -288,8 +295,7 @@ class MainViewModel @Inject constructor(
 //        }
 
             viewModelScope.launch {
-                interactor.listenAuthState
-                    .collect { logged: Boolean ->
+                interactor.listenAuthState.collect { logged: Boolean ->
                         if (!logged) {
                             viewModelScope.launch { openLogin.emit(Unit) }
                         }
@@ -320,14 +326,9 @@ class MainViewModel @Inject constructor(
     ) {
         val topItems = listOf(
             NavDrawerItem(
-                UiText.IdText(R.string.nav_schedule),
-                uiIconOf(R.drawable.ic_time),
-                enabled = false
-            ),
-            NavDrawerItem(
-                UiText.IdText(R.string.nav_tasks),
-                uiIconOf(R.drawable.ic_tasks),
-                enabled = false
+                UiText.IdText(R.string.nav_schedule), uiIconOf(R.drawable.ic_time), enabled = false
+            ), NavDrawerItem(
+                UiText.IdText(R.string.nav_tasks), uiIconOf(R.drawable.ic_tasks), enabled = false
             )
         )
 
@@ -342,15 +343,12 @@ class MainViewModel @Inject constructor(
             }
             add(
                 NavDrawerItem(
-                    UiText.IdText(R.string.nav_settings),
-                    uiIconOf(R.drawable.ic_settings)
+                    UiText.IdText(R.string.nav_settings), uiIconOf(R.drawable.ic_settings)
                 )
             )
             add(
                 NavDrawerItem(
-                    UiText.IdText(R.string.nav_help),
-                    uiIconOf(R.drawable.ic_help),
-                    enabled = false
+                    UiText.IdText(R.string.nav_help), uiIconOf(R.drawable.ic_help), enabled = false
                 )
             )
         }
@@ -440,13 +438,11 @@ class MainViewModel @Inject constructor(
                             color = UiText.StringText("dark_blue")
                         )
                     })
-                    if (courses.size > 5)
-                        add(
-                            NavDropdownItem(
-                                UiText.IdText(nameOfDropdownCoursesNavItem),
-                                expandAllCourse
-                            )
+                    if (courses.size > 5) add(
+                        NavDropdownItem(
+                            UiText.IdText(nameOfDropdownCoursesNavItem), expandAllCourse
                         )
+                    )
                     add(
                         NavTextItem(
                             UiText.IdText(R.string.nav_courses_archive),
@@ -480,8 +476,5 @@ class MainViewModel @Inject constructor(
 }
 
 data class NavDrawerItem(
-    val name: UiText,
-    val icon: UiIcon,
-    var selected: Boolean = false,
-    val enabled: Boolean = true
+    val name: UiText, val icon: UiIcon, var selected: Boolean = false, val enabled: Boolean = true
 )

@@ -16,8 +16,8 @@ buildscript {
     }
 
     dependencies {
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.4.2")
-        classpath("com.android.tools.build:gradle:7.3.1")
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.5.3")
+        classpath("com.android.tools.build:gradle:8.0.0")
 //        classpath("com.google.gms:google-services:4.3.13")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("app.cash.sqldelight:gradle-plugin:2.0.0-alpha05")
