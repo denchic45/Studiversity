@@ -53,7 +53,7 @@ class CourseElementRepository {
 
     fun findWorkById(workId: UUID): CourseWorkResponse? {
         return CourseWorkDao.findById(workId)
-            ?.load(CourseWorkDao::dueDate, CourseWorkDao::dueTime, CourseWorkDao::type, CourseWorkDao::maxGrade)
+//            ?.load(CourseWorkDao::dueDate, CourseWorkDao::dueTime, CourseWorkDao::type, CourseWorkDao::maxGrade)
             ?.let { CourseElementDao.findById(workId)?.toWorkResponse(it) }
     }
 
