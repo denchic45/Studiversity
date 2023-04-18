@@ -10,7 +10,7 @@ data class CheckCapabilitiesResponse(
         return permissions[capability.resource] ?: false
     }
 
-    inline fun onHasCapability(capability: Capability, action: () -> Unit) {
+    inline fun ifHasCapability(capability: Capability, action: () -> Unit) {
         if (hasCapability(capability)) {
             action()
         }

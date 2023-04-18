@@ -3,6 +3,7 @@ package com.denchic45.kts.di
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import com.denchic45.kts.ui.course.CourseFragment
+import com.denchic45.kts.ui.courseWork.CourseWorkFragment
 import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment
@@ -21,6 +22,7 @@ class InjectFragmentFactory(
     private val profileFragment: () -> ProfileFragment,
     private val studyGroupEditorFragment: () -> StudyGroupEditorFragment,
     private val userEditorFragment: () -> UserEditorFragment,
+    private val courseWorkFragment:()-> CourseWorkFragment
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
@@ -31,6 +33,7 @@ class InjectFragmentFactory(
             name<ProfileFragment>() -> profileFragment()
             name<StudyGroupEditorFragment>() -> studyGroupEditorFragment()
             name<UserEditorFragment>() -> userEditorFragment()
+            name<CourseWorkFragment>()-> courseWorkFragment()
             else -> super.instantiate(classLoader, className)
         }
     }

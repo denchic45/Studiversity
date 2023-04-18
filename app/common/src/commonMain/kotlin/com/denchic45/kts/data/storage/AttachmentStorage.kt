@@ -6,11 +6,13 @@ import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.course.element.model.FileAttachmentResponse
 import com.github.michaelbull.result.map
 import com.github.michaelbull.result.onSuccess
+import me.tatarka.inject.annotations.Inject
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import java.util.*
 
+@Inject
 class AttachmentStorage @javax.inject.Inject constructor(private val attachmentApi: AttachmentApi) {
 
     val path: Path = "/attachments".toPath()

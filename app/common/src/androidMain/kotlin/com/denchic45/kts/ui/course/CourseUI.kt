@@ -25,6 +25,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.doOnStart
+import com.arkivanov.essenty.lifecycle.doOnStop
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
@@ -59,7 +60,8 @@ fun CourseScreen(
                 )
             )
         }
-        doOnDestroy {
+        doOnStop {
+            appBarInteractor.set(AppBarState(visible = true))
             fabInteractor.update { it.copy(visible = false) }
         }
     }

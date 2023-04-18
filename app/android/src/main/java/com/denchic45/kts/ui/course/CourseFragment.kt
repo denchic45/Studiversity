@@ -47,7 +47,7 @@ class CourseFragment(
             {},
             { courseId, elementId ->
                 findNavController().navigate(
-                    CourseFragmentDirections.actionCourseFragmentToContentFragment(
+                    CourseFragmentDirections.actionCourseFragmentToCourseWorkFragment(
                         courseId.toString(),
                         elementId.toString()
                     )

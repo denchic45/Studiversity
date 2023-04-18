@@ -1,23 +1,18 @@
 package com.denchic45.kts.di.module
 
-import androidx.navigation.fragment.navArgs
 import com.denchic45.kts.ui.avatar.FullImageActivity
 import com.denchic45.kts.ui.course.CourseFragment
-import com.denchic45.kts.ui.course.content.ContentFragment
-import com.denchic45.kts.ui.course.content.ContentFragmentArgs
 import com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment
 import com.denchic45.kts.ui.course.submission.SubmissionDialog
-import com.denchic45.kts.ui.course.submissions.SubmissionsFragment
 import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
-import com.denchic45.kts.ui.course.taskInfo.CourseWorkFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
-import com.denchic45.kts.ui.studygroup.StudyGroupFragment
-import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
-import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment
-import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
 import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
 import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
+import com.denchic45.kts.ui.studygroup.StudyGroupFragment
+import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
+import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
+import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment
 import com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog
 import com.denchic45.kts.ui.usereditor.UserEditorFragment
 import dagger.Module
@@ -42,7 +37,8 @@ object IntentModule {
     @Named(StudyGroupEditorFragment.GROUP_ID)
     @Provides
     fun provideGroupIdFromGroupEditor(studyGroupEditorFragment: StudyGroupEditorFragment): String? {
-        return studyGroupEditorFragment.requireArguments().getString(StudyGroupEditorFragment.GROUP_ID)
+        return studyGroupEditorFragment.requireArguments()
+            .getString(StudyGroupEditorFragment.GROUP_ID)
     }
 
     @Named(SubjectEditorDialog.SUBJECT_ID)
@@ -103,7 +99,8 @@ object IntentModule {
     @Named(CourseWorkEditorFragment.WORK_ID)
     @Provides
     fun provideTaskIdToTaskEditor(courseWorkEditorFragment: CourseWorkEditorFragment): String? {
-        return courseWorkEditorFragment.requireArguments().getString(CourseWorkEditorFragment.WORK_ID)
+        return courseWorkEditorFragment.requireArguments()
+            .getString(CourseWorkEditorFragment.WORK_ID)
     }
 
     @Named(CourseWorkEditorFragment.COURSE_ID)
@@ -116,48 +113,49 @@ object IntentModule {
     @Named(CourseWorkEditorFragment.SECTION_ID)
     @Provides
     fun provideSectionId(courseWorkEditorFragment: CourseWorkEditorFragment): String? {
-        return courseWorkEditorFragment.requireArguments().getString(CourseWorkEditorFragment.SECTION_ID)
+        return courseWorkEditorFragment.requireArguments()
+            .getString(CourseWorkEditorFragment.SECTION_ID)
     }
 
-    @Named(ContentFragment.COURSE_ID)
-    @Provides
-    fun provideCourseId(contentFragment: ContentFragment): String {
-        return contentFragment.navArgs.courseId
-    }
+//    @Named(ContentFragment.COURSE_ID)
+//    @Provides
+//    fun provideCourseId(contentFragment: ContentFragment): String {
+//        return contentFragment.navArgs.courseId
+//    }
 
-    @Named(ContentFragment.TASK_ID)
-    @Provides
-    fun provideTaskId(contentFragment: ContentFragment): String {
-        return contentFragment.navArgs.elementId
-    }
+//    @Named(ContentFragment.TASK_ID)
+//    @Provides
+//    fun provideTaskId(contentFragment: ContentFragment): String {
+//        return contentFragment.navArgs.elementId
+//    }
 
-    @Named(CourseWorkFragment.TASK_ID)
-    @Provides
-    fun provideTaskIdToTaskInfo(courseWorkFragment: CourseWorkFragment): String {
-        return courseWorkFragment.requireParentFragment().requireArguments()
-            .getString(ContentFragment.TASK_ID)!!
-    }
+//    @Named(CourseWorkFragment.TASK_ID)
+//    @Provides
+//    fun provideTaskIdToTaskInfo(courseWorkFragment: CourseWorkFragment): String {
+//        return courseWorkFragment.requireParentFragment().requireArguments()
+//            .getString(ContentFragment.TASK_ID)!!
+//    }
 
-    @Named(CourseWorkFragment.COURSE_ID)
-    @Provides
-    fun provideCourseIdToTaskInfo(courseWorkFragment: CourseWorkFragment): String {
-        return courseWorkFragment.requireParentFragment().requireArguments()
-            .getString(ContentFragment.COURSE_ID)!!
-    }
+//    @Named(CourseWorkFragment.COURSE_ID)
+//    @Provides
+//    fun provideCourseIdToTaskInfo(courseWorkFragment: CourseWorkFragment): String {
+//        return courseWorkFragment.requireParentFragment().requireArguments()
+//            .getString(ContentFragment.COURSE_ID)!!
+//    }
 
-    @Named(SubmissionsFragment.TASK_ID)
-    @Provides
-    fun provideTaskIdToSubmissions(submissionsFragment: SubmissionsFragment): String {
-        return submissionsFragment.requireParentFragment().requireArguments()
-            .getString(ContentFragment.TASK_ID)!!
-    }
+//    @Named(SubmissionsFragment.TASK_ID)
+//    @Provides
+//    fun provideTaskIdToSubmissions(submissionsFragment: SubmissionsFragment): String {
+//        return submissionsFragment.requireParentFragment().requireArguments()
+//            .getString(ContentFragment.TASK_ID)!!
+//    }
 
-    @Named(SubmissionsFragment.COURSE_ID)
-    @Provides
-    fun provideCoursedToSubmissions(submissionsFragment: SubmissionsFragment): String {
-        return submissionsFragment.requireParentFragment().requireArguments()
-            .getString(ContentFragment.COURSE_ID)!!
-    }
+//    @Named(SubmissionsFragment.COURSE_ID)
+//    @Provides
+//    fun provideCoursedToSubmissions(submissionsFragment: SubmissionsFragment): String {
+//        return submissionsFragment.requireParentFragment().requireArguments()
+//            .getString(ContentFragment.COURSE_ID)!!
+//    }
 
     @Named(SubmissionDialog.COURSE_ID)
     @Provides

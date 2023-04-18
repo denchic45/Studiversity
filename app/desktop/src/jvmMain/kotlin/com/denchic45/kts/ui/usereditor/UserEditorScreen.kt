@@ -19,7 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.components.HeaderItem
+import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.components.Spinner
 import com.denchic45.kts.ui.components.SupportingText
 import com.denchic45.kts.ui.components.dialog.AlertDialog
@@ -128,7 +128,7 @@ private fun UserEditorContent(component: UserEditorComponent) {
 
         val errorState by component.errorState.collectAsState()
 
-        HeaderItem("Личные данные")
+        HeaderItemUI("Личные данные")
 
         val firstName by component.firstNameField.collectAsState()
         OutlinedTextField(
@@ -173,7 +173,7 @@ private fun UserEditorContent(component: UserEditorComponent) {
 
         val accountFieldsVisibility by component.accountFieldsVisibility.collectAsState()
         if (accountFieldsVisibility) {
-            HeaderItem("Вход в аккаунт")
+            HeaderItemUI("Вход в аккаунт")
             val email by component.emailField.collectAsState()
             OutlinedTextField(
                 value = email,

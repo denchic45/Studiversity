@@ -5,7 +5,9 @@ import com.denchic45.kts.AttachmentRefEntity
 import com.denchic45.kts.AttachmentRefEntityQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class AttachmentReferenceLocalDataSource @javax.inject.Inject constructor(db: AppDatabase) {
     private val queries: AttachmentRefEntityQueries = db.attachmentRefEntityQueries
 

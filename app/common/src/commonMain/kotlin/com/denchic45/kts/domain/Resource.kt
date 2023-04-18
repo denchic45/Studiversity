@@ -120,13 +120,14 @@ fun <T> Flow<Resource<T>>.updateResource(onSuccess: (T) -> T): Flow<Resource<T>>
     }
 }
 
-fun <T, V> Flow<Resource<T>>.mapResource(function: (T) -> V): Flow<Resource<V>> = map {
-    when (it) {
-        is Resource.Error -> it
-        is Resource.Loading -> it
-        is Resource.Success -> Resource.Success(function(it.value))
+inline fun <T, V> Flow<Resource<T>>.mapResource(crossinline function: suspend (T) -> V): Flow<Resource<V>> =
+    map {
+        when (it) {
+            is Resource.Error -> it
+            is Resource.Loading -> it
+            is Resource.Success -> Resource.Success(function(it.value))
+        }
     }
-}
 
 fun <T, V> Flow<Resource<T>>.flatMapResource(function: (T) -> Resource<V>): Flow<Resource<V>> {
     return map { it.flatMap(function) }

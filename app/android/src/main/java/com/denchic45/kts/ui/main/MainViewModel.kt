@@ -73,7 +73,7 @@ class MainViewModel @Inject constructor(
         appVersionService.activityRef = WeakReference(activity)
     }
 
-    private val mainScreenIds: Set<Int> = setOf(R.id.menu_timetable, R.id.menu_group)
+    val mainScreenIds: Set<Int> = setOf(R.id.menu_timetable, R.id.menu_group)
 //    private val onNavItemClickActions = mapOf(
 //        R.string.nav_tasks to {
 //            navigateTo(TasksFragmentDirections.actionGlobalTasksFragment())

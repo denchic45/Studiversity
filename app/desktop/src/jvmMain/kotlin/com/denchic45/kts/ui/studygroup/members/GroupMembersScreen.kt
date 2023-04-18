@@ -16,7 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.components.HeaderItem
+import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.components.UserListItem
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.navigation.GroupMembersChild
@@ -136,7 +136,7 @@ fun MemberList(
     ) {
 
         curator?.let {
-            item { HeaderItem("Куратор") }
+            item { HeaderItemUI("Куратор") }
 
             item {
                 UserListItem(
@@ -148,7 +148,7 @@ fun MemberList(
             }
         }
 
-        item { HeaderItem("Студенты") }
+        item { HeaderItemUI("Студенты") }
 
         items(students) {
             StudentListItem(

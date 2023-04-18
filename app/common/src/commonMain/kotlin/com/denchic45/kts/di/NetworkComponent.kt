@@ -1,6 +1,8 @@
 package com.denchic45.kts.di
 
 import com.denchic45.kts.data.pref.AppPreferences
+import com.denchic45.stuiversity.api.attachment.AttachmentApi
+import com.denchic45.stuiversity.api.attachment.AttachmentApiImpl
 import com.denchic45.stuiversity.api.auth.AuthApi
 import com.denchic45.stuiversity.api.auth.AuthApiImpl
 import com.denchic45.stuiversity.api.auth.model.RefreshTokenRequest
@@ -179,6 +181,10 @@ abstract class NetworkComponent(
     @LayerScope
     @Provides
     fun courseWorkApi(client: HttpClient): CourseWorkApi = CourseWorkApiImpl(client)
+
+    @LayerScope
+    @Provides
+    fun attachmentApi(client: HttpClient): AttachmentApi = AttachmentApiImpl(client)
 
 //    @LayerScope
 //    @Provides

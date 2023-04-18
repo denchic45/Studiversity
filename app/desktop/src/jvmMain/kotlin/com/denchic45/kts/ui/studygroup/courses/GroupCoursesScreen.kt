@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.components.HeaderItem
+import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.model.GroupCourseItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.toDrawablePath
@@ -38,7 +38,7 @@ fun GroupCoursesScreen(groupCoursesComponent: GroupCoursesComponent) {
 @Composable
 fun GroupCourseList(list: List<GroupCourseItem>) {
     Spacer(Modifier.height(8.dp))
-    HeaderItem("${list.size} курсов")
+    HeaderItemUI("${list.size} курсов")
     Spacer(Modifier.height(8.dp))
     LazyVerticalGrid(
         GridCells.Fixed(2),

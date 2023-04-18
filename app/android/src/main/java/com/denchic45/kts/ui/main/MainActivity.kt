@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -57,6 +59,7 @@ import com.denchic45.kts.R
 import com.denchic45.kts.app
 import com.denchic45.kts.databinding.ActivityMainBinding
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.appbar.NavigationIcon
 import com.denchic45.kts.ui.base.BaseActivity
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.get
@@ -68,7 +71,6 @@ import com.denchic45.kts.ui.updateView.SnackbarUpdateView
 import com.denchic45.kts.util.collectWhenResumed
 import com.denchic45.kts.util.collectWhenStarted
 import com.denchic45.kts.util.dpToPx
-import com.denchic45.kts.util.dpToPx
 import com.denchic45.kts.util.findFragmentContainerNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -76,6 +78,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.seiko.imageloader.rememberAsyncImagePainter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.update
 
 
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.activity_main) {
@@ -136,17 +139,19 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 
         bnv.setOnItemReselectedListener { refreshCurrentFragment() }
 
-        val toolbarInteractor = app.appComponent.appBarInteractor
+        val appBarInteractor = app.appComponent.appBarInteractor
         val fabInteractor = app.appComponent.fabInteractor
-        val confirmInteractor =  app.appComponent.confirmInteractor
+        val confirmInteractor = app.appComponent.confirmInteractor
 
 //        toolbarInteractor.appBarState.collectWhenStarted(this) {
 //            title = it.title.get(this)
 //        }
 
-        toolbarInteractor.stateFlow.collectWhenStarted(this) {
+        appBarInteractor.stateFlow.collectWhenStarted(this) {
             if (it.visible) {
-                binding.appBar.updateLayoutParams<CoordinatorLayout.LayoutParams> { height = 56.dpToPx }
+                binding.appBar.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+                    height = 56.dpToPx
+                }
             } else {
                 binding.appBar.updateLayoutParams<CoordinatorLayout.LayoutParams> { height = 0 }
             }
@@ -154,11 +159,32 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 
         binding.topAppBarComposable.setContent {
             AppTheme {
-                val state by toolbarInteractor.stateFlow.collectAsState()
+                val state by appBarInteractor.stateFlow.collectAsState()
 
                 if (state.visible)
                     TopAppBar(
                         title = { Text(state.title.get(LocalContext.current)) },
+                        navigationIcon = {
+                            val icon by appBarInteractor.navigationIcon.collectAsState()
+
+                            when (icon) {
+                                NavigationIcon.TOGGLE -> IconButton(
+                                    onClick = { binding.drawerLayout.open() }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Menu,
+                                        contentDescription = "menu"
+                                    )
+                                }
+
+                                NavigationIcon.BACK -> IconButton(
+                                    onClick = { onBackPressedDispatcher.onBackPressed() }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.ArrowBack,
+                                        contentDescription = "back"
+                                    )
+                                }
+                            }
+                        },
                         actions = {
                             state.actions.forEach { actionMenuItem ->
                                 val contentDescription = actionMenuItem.title
@@ -312,7 +338,12 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                                 Column(Modifier.padding(8.dp)) {
                                     navMenu.topItems.forEach {
                                         NavigationDrawerItem(
-                                            label = { Text(it.name.get(LocalContext.current)) },
+                                            label = {
+                                                Text(
+                                                    it.name.get(LocalContext.current),
+                                                    style = MaterialTheme.typography.labelLarge
+                                                )
+                                            },
                                             icon = {
                                                 Icon(
                                                     painter = it.icon.getPainter(),
@@ -328,18 +359,28 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                                 }
                                 Divider(Modifier.padding(vertical = 4.dp))
                                 if (navMenu.courses.isNotEmpty()) {
-                                    Box(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(48.dp)
-                                        .padding(horizontal = 28.dp),
-                                    contentAlignment = Alignment.CenterStart) {
-                                        Text(text = "Курсы")
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(48.dp)
+                                            .padding(horizontal = 28.dp),
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        Text(
+                                            text = "Курсы",
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
                                     }
 
                                     Column(Modifier.padding(8.dp)) {
                                         navMenu.courses.forEach {
                                             NavigationDrawerItem(
-                                                label = { Text(it.name) },
+                                                label = {
+                                                    Text(
+                                                        it.name,
+                                                        style = MaterialTheme.typography.labelLarge
+                                                    )
+                                                },
                                                 icon = {
                                                     Box(
                                                         modifier = Modifier
@@ -351,6 +392,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                                                     ) {
                                                         Text(
                                                             text = it.name.first().uppercase(),
+                                                            style = MaterialTheme.typography.labelLarge,
                                                             color = androidx.compose.ui.graphics.Color.White
                                                         )
                                                     }
@@ -368,7 +410,12 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                                 Column(Modifier.padding(8.dp)) {
                                     navMenu.footerItems.forEach {
                                         NavigationDrawerItem(
-                                            label = { Text(it.name.get(LocalContext.current)) },
+                                            label = {
+                                                Text(
+                                                    it.name.get(LocalContext.current),
+                                                    style = MaterialTheme.typography.labelLarge
+                                                )
+                                            },
                                             icon = {
                                                 Icon(
                                                     painter = it.icon.getPainter(),
@@ -437,6 +484,13 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 
             navController.addOnDestinationChangedListener { _, destination, _ ->
                 viewModel.onDestinationChanged(destination.id)
+
+
+                appBarInteractor.navigationIcon.update {
+                    if (destination.id in viewModel.mainScreenIds)
+                        NavigationIcon.TOGGLE
+                    else NavigationIcon.BACK
+                }
             }
         }
 

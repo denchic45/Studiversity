@@ -2,26 +2,31 @@ package com.denchic45.kts.data.service
 
 import android.content.Context
 import androidx.lifecycle.asFlow
-import androidx.work.*
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.denchic45.kts.data.db.local.source.AttachmentLocalDataSource
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.data.workmanager.DownloadWorker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
-actual class DownloadsService @javax.inject.Inject actual constructor() {
+actual class DownloadsService actual constructor() {
     lateinit var context: Context
     lateinit var attachmentLocalDataSource: AttachmentLocalDataSource
 
     @Inject
+    @javax.inject.Inject
     constructor(context: Context, attachmentLocalDataSource: AttachmentLocalDataSource) : this() {
         this.context = context
         this.attachmentLocalDataSource = attachmentLocalDataSource
     }
 
-    private val workManager = WorkManager.getInstance(context)
+    private val workManager by lazy { WorkManager.getInstance(context) }
 
     actual fun download(attachmentId: UUID): Flow<FileState> {
         val request = OneTimeWorkRequestBuilder<DownloadWorker>()
@@ -43,10 +48,12 @@ actual class DownloadsService @javax.inject.Inject actual constructor() {
                         WorkInfo.State.ENQUEUED,
                         WorkInfo.State.RUNNING,
                         -> FileState.Downloading
+
                         WorkInfo.State.SUCCEEDED -> {
                             attachmentLocalDataSource.updateSync(attachmentId.toString(), true)
                             FileState.Downloaded
                         }
+
                         WorkInfo.State.FAILED,
                         WorkInfo.State.BLOCKED,
                         WorkInfo.State.CANCELLED,

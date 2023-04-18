@@ -86,13 +86,13 @@
         android:id="@+id/courseFragment"
         android:name="com.denchic45.kts.ui.course.CourseFragment"
         android:label="fragment_course"
-        tools:layout="@ layout/fragment_course">
+        tools:layout="@layout/fragment_course">
         <action
             android:id="@+id/action_courseFragment_to_taskEditorFragment"
             app:destination="@id/taskEditorFragment" />
         <action
-            android:id="@+id/action_courseFragment_to_contentFragment"
-            app:destination="@id/contentFragment" />
+            android:id="@+id/action_courseFragment_to_courseWorkFragment"
+            app:destination="@id/courseWorkFragment" />
         <action
             android:id="@+id/action_courseFragment_to_courseSectionsFragment"
             app:destination="@id/courseSectionsFragment" />
@@ -126,9 +126,9 @@
         android:id="@+id/action_global_taskEditorFragment"
         app:destination="@id/taskEditorFragment" />
     <fragment
-        android:id="@+id/contentFragment"
-        android:name="com.denchic45.kts.ui.course.content.ContentFragment"
-        android:label="ContentFragment" >
+        android:id="@+id/courseWorkFragment"
+        android:name="com.denchic45.kts.ui.courseWork.CourseWorkFragment"
+        android:label="CourseWorkFragment">
         <argument
             android:name="courseId"
             app:argType="string" />

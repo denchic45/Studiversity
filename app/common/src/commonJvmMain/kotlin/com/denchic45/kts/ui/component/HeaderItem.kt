@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.components
+package com.denchic45.kts.ui.component
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HeaderItem(name: String) {
+fun HeaderItemUI(name: String) {
     Row(
         Modifier.height(56.dp).padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically

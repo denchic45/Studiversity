@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.denchic45.kts.domain.*
 import com.denchic45.kts.domain.usecase.AddStudyGroupUseCase
 import com.denchic45.kts.domain.usecase.FindSpecialtyByContainsNameUseCase
@@ -50,6 +51,10 @@ class StudyGroupEditorComponent(
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
+
+    private val backCallback = BackCallback {
+
+    }
 
     val appBarState = MutableStateFlow(AppBarState(
         title = uiTextOf(studyGroupId?.let { "Редактирование группы" } ?: "Создание группы"),
