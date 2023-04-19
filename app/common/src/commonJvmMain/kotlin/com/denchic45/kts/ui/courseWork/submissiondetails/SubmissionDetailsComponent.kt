@@ -13,6 +13,8 @@ class SubmissionDetailsComponent(
     @Assisted
     private val elementId: UUID,
     @Assisted
+    private val authorId: UUID,
+    @Assisted
     private val componentContext: ComponentContext
 ):ComponentContext by componentContext {
 }
