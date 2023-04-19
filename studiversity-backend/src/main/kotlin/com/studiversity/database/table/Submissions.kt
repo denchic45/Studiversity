@@ -16,7 +16,6 @@ object Submissions : UUIDTable("submission", "submission_id") {
     val content = varcharMax("content").nullable()
     val state = enumerationByName<SubmissionState>("state", 20)
 
-    val doneAt = datetime("done_at").nullable()
     val updatedAt = datetime("updated_at").nullable()
 }
 
@@ -27,7 +26,6 @@ class SubmissionDao(id: EntityID<UUID>) : UUIDEntity(id) {
     var authorId by Submissions.authorId
     var content by Submissions.content
     var state by Submissions.state
-    var doneAt by Submissions.doneAt
     var updateAt by Submissions.updatedAt
 
     var courseWork by CourseWorkDao referencedOn Submissions.courseWorkId

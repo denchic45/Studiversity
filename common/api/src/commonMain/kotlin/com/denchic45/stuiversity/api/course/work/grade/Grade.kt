@@ -1,4 +1,4 @@
-package com.denchic45.stuiversity.api.course.work.submission.model
+package com.denchic45.stuiversity.api.course.work.grade
 
 import com.denchic45.stuiversity.util.UUIDSerializer
 import kotlinx.serialization.Serializable
@@ -11,20 +11,20 @@ data class GradeRequest(
 
 
 @Serializable
-data class Grade(
+data class GradeResponse(
     val value: Int,
     @Serializable(UUIDSerializer::class)
     val courseId: UUID,
     @Serializable(UUIDSerializer::class)
     val studentId: UUID,
     @Serializable(UUIDSerializer::class)
-    val gradedBy: UUID,
+    val gradedBy: UUID?,
     @Serializable(UUIDSerializer::class)
     val submissionId: UUID?
 )
 
 @Serializable
-data class SubmissionGrade(
+data class SubmissionGradeRequest(
     val value: Int,
     @Serializable(UUIDSerializer::class)
     val courseId: UUID,

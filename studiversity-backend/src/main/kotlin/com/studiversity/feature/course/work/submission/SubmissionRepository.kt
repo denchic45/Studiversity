@@ -1,5 +1,6 @@
 package com.studiversity.feature.course.work.submission
 
+import com.denchic45.stuiversity.api.course.work.grade.SubmissionGradeRequest
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.submission.model.*
 import com.studiversity.database.exists
@@ -10,6 +11,7 @@ import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import java.time.LocalDateTime
 import java.util.*
 
 class SubmissionRepository {
@@ -85,7 +87,6 @@ class SubmissionRepository {
                                 it[Submissions.content]?.let(Json.Default::decodeFromString)
                             }
                         } ?: WorkSubmissionContent(emptyList()),
-                        doneAt = it[Submissions.doneAt],
                         updatedAt = it[Submissions.updatedAt]
                     )
                 } ?: addNewSubmissionByStudentId(courseWorkId, it[UsersMemberships.memberId])
@@ -107,7 +108,8 @@ class SubmissionRepository {
 
     fun submitSubmission(submissionId: UUID): SubmissionResponse {
         return SubmissionDao.findById(submissionId)!!.apply {
-            this.state = SubmissionState.SUBMITTED
+            state = SubmissionState.SUBMITTED
+            updateAt = LocalDateTime.now()
         }.toResponse()
     }
 
@@ -115,7 +117,7 @@ class SubmissionRepository {
         return Submissions.exists { Submissions.id eq submissionId and (Submissions.authorId eq authorId) }
     }
 
-    fun setGradeSubmission(grade: SubmissionGrade): SubmissionResponse {
+    fun setGradeSubmission(grade: SubmissionGradeRequest): SubmissionResponse {
         GradeDao.new {
             this.courseId = grade.courseId
             this.studentId = SubmissionDao.findById(grade.submissionId)!!.authorId

@@ -1,7 +1,7 @@
 package com.denchic45.stuiversity.api.submission
 
 import com.denchic45.stuiversity.api.course.element.model.*
-import com.denchic45.stuiversity.api.course.work.submission.model.GradeRequest
+import com.denchic45.stuiversity.api.course.work.grade.GradeRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult

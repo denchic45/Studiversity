@@ -260,8 +260,10 @@ class SubmissionsTest : KtorClientTest() {
             val gradedSubmission = get()
             assertNotNull(gradedSubmission) { getError().toString() }
             gradedSubmission?.apply {
-                assertEquals(5, grade)
-                assertEquals(teacher1Id, gradedBy)
+                grade!!.apply {
+                    assertEquals(5, value)
+                    assertEquals(teacher1Id, gradedBy)
+                }
             }
         }
     }

@@ -2,11 +2,12 @@ package com.studiversity.feature.course.work.submission
 
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.submission.model.Author
+import com.denchic45.stuiversity.api.course.work.grade.GradeResponse
 import com.denchic45.stuiversity.api.course.work.submission.model.WorkSubmissionContent
 import com.denchic45.stuiversity.api.course.work.submission.model.WorkSubmissionResponse
 import com.studiversity.database.table.SubmissionDao
 import com.studiversity.database.table.UserDao
-import com.studiversity.feature.user.toUserResponse
+import com.studiversity.feature.course.work.toResponse
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -17,9 +18,7 @@ fun SubmissionDao.toResponse() = when (courseWork.type) {
         state = state,
         courseWorkId = courseWorkId,
         content = content?.let { Json.decodeFromString(it) } ?: WorkSubmissionContent(emptyList()),
-        grade = grade?.value,
-        gradedBy = grade?.gradedBy,
-        doneAt = doneAt,
+        grade = grade?.toResponse(),
         updatedAt = updateAt
     )
 }
