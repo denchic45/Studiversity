@@ -2,13 +2,11 @@ package com.denchic45.kts.ui.courseWork.submissions
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,51 +19,53 @@ import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionStat
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseWorkSubmissionsScreen(component: CourseWorkSubmissionsComponent) {
     val submissionsResource by component.submissions.collectAsState()
     val slot by component.childOverlay.subscribeAsState()
 
     val coroutineScope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val sheetState = rememberModalBottomSheetState()
 
-    ModalBottomSheetLayout(
-        sheetContent = {
-            slot.overlay?.let {
-                coroutineScope.launch { sheetState.show() }
-                SubmissionDetailsScreen(it.instance.component)
+    submissionsResource.onSuccess { submissions ->
+        LazyColumn {
+            items(submissions, key = { it.id }) { submission ->
+                ListItem(
+                    leadingContent = {
+                        AsyncImage(submission, "Submission")
+                    },
+                    headlineContent = {
+                        Text(submission.author.fullName)
+                    },
+                    trailingContent = {
+                        val updatedAt = submission.updatedAt?.toString("dd MMM")
+                        Text(
+                            submission.grade?.let {
+                                "Оценено: $it"
+                            } ?: when (submission.state) {
+                                SubmissionState.NEW,
+                                SubmissionState.CREATED,
+                                -> "Не сдано"
+
+                                SubmissionState.SUBMITTED -> "Отправлено $updatedAt"
+                                SubmissionState.CANCELED_BY_AUTHOR -> "Отменено автором $updatedAt"
+                            }
+                        )
+                    }
+                )
             }
-        },
+        }
+    }
+
+    ModalBottomSheet(
+        onDismissRequest = {},
         sheetState = sheetState
     ) {
-        submissionsResource.onSuccess { submissions ->
-            LazyColumn {
-                items(submissions, key = { it.id }) { submission ->
-                    ListItem(
-                        leadingContent = {
-                            AsyncImage(submission, "Submission")
-                        },
-                        headlineText = {
-                            Text(submission.author.fullName)
-                        },
-                        trailingContent = {
-                            val updatedAt = submission.updatedAt?.toString("dd MMM")
-                            Text(
-                                submission.grade?.let {
-                                    "Оценено: $it"
-                                } ?: when (submission.state) {
-                                    SubmissionState.NEW,
-                                    SubmissionState.CREATED -> "Не сдано"
-
-                                    SubmissionState.SUBMITTED -> "Отправлено $updatedAt"
-                                    SubmissionState.CANCELED_BY_AUTHOR -> "Отменено автором $updatedAt"
-                                }
-                            )
-                        }
-                    )
-                }
-            }
+        slot.overlay?.let {
+            coroutineScope.launch { sheetState.show() }
+            SubmissionDetailsScreen(it.instance.component)
         }
     }
 }

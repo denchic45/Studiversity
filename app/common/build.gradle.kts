@@ -137,7 +137,7 @@ kotlin {
                 // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
                 api("androidx.compose.foundation:foundation:$composeVersion")
                 // Material Design
-                api("androidx.compose.material3:material3:1.0.1")
+                api("androidx.compose.material3:material3:1.1.0-beta02")
 
                 api("androidx.recyclerview:recyclerview:1.3.0")
 
@@ -231,6 +231,14 @@ android {
         buildFeatures {
             viewBinding = true
             compose = true
+        }
+    }
+    packaging {
+        resources.excludes.apply {
+            add("META-INF/LICENSE")
+            add("META-INF/*.properties")
+            add("META-INF/AL2.0")
+            add("META-INF/LGPL2.1")
         }
     }
     compileOptions {
