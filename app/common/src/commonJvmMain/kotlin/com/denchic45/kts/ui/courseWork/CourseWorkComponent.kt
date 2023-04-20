@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import okio.Path
 import java.util.UUID
 
 @Inject
@@ -53,6 +54,8 @@ class CourseWorkComponent(
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
+
+
     private val componentScope = componentScope()
 
     private val capabilities = flow {

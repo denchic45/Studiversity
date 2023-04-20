@@ -324,29 +324,7 @@ class AddAttachmentAdapterDelegate :
 
 }
 
-sealed interface AttachmentItem {
-    val name: String
-    val previewUrl: String?
-    val attachmentId: UUID?
 
-    data class FileAttachmentItem(
-        override val name: String,
-        override val previewUrl: String?,
-        override val attachmentId: UUID?,
-        val state: FileState,
-        val file: File
-    ) : AttachmentItem {
-        val shortName: String = Files.nameWithoutTimestamp(name)
-        val extension: String = file.getExtension()
-    }
-
-    data class LinkAttachmentItem(
-        override val name: String,
-        override val previewUrl: String?,
-        override val attachmentId: UUID?,
-        val url: String
-    ) : AttachmentItem
-}
 
 object AddAttachmentItem : UiModel {
     override fun equals(other: Any?): Boolean = other is AddAttachmentItem

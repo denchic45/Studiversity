@@ -1,5 +1,6 @@
 package com.denchic45.kts.util
 
+import okio.Path
 import java.io.File
 import java.io.FileOutputStream
 import java.net.FileNameMap
@@ -7,9 +8,9 @@ import java.net.URLConnection
 import kotlin.math.min
 
 
-fun File.getType() = getMimeType().split("/")[0]
+fun Path.getType() = getMimeType().split("/")[0]
 
-fun File.getMimeType(): String {
+fun Path.getMimeType(): String {
     val fileNameMap: FileNameMap = URLConnection.getFileNameMap()
     val mime = fileNameMap.getContentTypeFor(this.name) ?: return ""
     return if (mime.split("/")[0] == "application") {
@@ -33,7 +34,7 @@ fun File.clearAndDelete(): Boolean {
 }
 
 
-fun File.getExtension(): String {
+fun Path.getExtension(): String {
     val fileName = name
     val i: Int = fileName.lastIndexOf('.')
     return fileName.substring(i + 1)

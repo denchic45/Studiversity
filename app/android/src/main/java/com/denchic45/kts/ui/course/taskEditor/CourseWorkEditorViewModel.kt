@@ -11,6 +11,7 @@ import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
+import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.uieditor.UIEditor
 import com.denchic45.kts.uivalidator.Rule
 import com.denchic45.kts.uivalidator.UIValidator
@@ -26,6 +27,7 @@ import com.denchic45.stuiversity.util.optPropertyOf
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import okio.Path.Companion.toOkioPath
 import java.io.File
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -87,12 +89,13 @@ class CourseWorkEditorViewModel @Inject constructor(
             when (attachmentItem) {
                 is AttachmentItem.FileAttachmentItem -> CreateFileRequest(
                     attachmentItem.name,
-                    attachmentItem.file.readBytes()
+                    attachmentItem.file.toFile().readBytes()
                 )
                 is AttachmentItem.LinkAttachmentItem -> CreateLinkRequest(attachmentItem.url)
             }
         }
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 1)
+
     private val removedAttachments = mutableListOf<UUID>()
 
     private var createdAt: LocalDateTime? = null
@@ -176,7 +179,7 @@ class CourseWorkEditorViewModel @Inject constructor(
                                         previewUrl = null,
                                         attachmentId = attachment.id,
                                         state = attachment.state,
-                                        file = attachment.path.toFile()
+                                        file = attachment.path
                                     )
                                     is LinkAttachment2 -> AttachmentItem.LinkAttachmentItem(
                                         name = attachment.url,
@@ -267,7 +270,7 @@ class CourseWorkEditorViewModel @Inject constructor(
                     file.name,
                     null, null,
                     FileState.Downloaded,
-                    file
+                    file.toOkioPath()
                 )
             }
         }
@@ -289,10 +292,10 @@ class CourseWorkEditorViewModel @Inject constructor(
     fun onAttachmentClick(position: Int) {
         when (val item = _attachmentItems.value[position]) {
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
-                FileState.Downloaded -> openAttachment.postValue(item.file)
+                FileState.Downloaded -> openAttachment.postValue(item.file.toFile())
                 FileState.Preview -> viewModelScope.launch {
                     downloadFileUseCase(item.attachmentId!!).collect {
-                        openAttachment.postValue(item.file)
+                        openAttachment.postValue(item.file.toFile())
                     }
                 }
                 else -> {}
@@ -344,7 +347,6 @@ class CourseWorkEditorViewModel @Inject constructor(
                             }
                         }
                     }
-
                 } else {
                     updateCourseWorkUseCase(
                         courseId, workId!!, UpdateCourseWorkRequest(

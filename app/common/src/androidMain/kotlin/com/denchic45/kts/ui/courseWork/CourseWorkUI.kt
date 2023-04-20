@@ -1,6 +1,10 @@
 package com.denchic45.kts.ui.courseWork
 
+import android.app.Activity
+import android.content.Intent
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -47,11 +51,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toFile
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.courseWork.details.CourseWorkDetailsScreen
 import com.denchic45.kts.ui.courseWork.submissions.CourseWorkSubmissionsScreen
+import com.denchic45.kts.ui.courseWork.yourSubmission.YourSubmissionComponent
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.work.submission.model.Author
@@ -59,8 +65,10 @@ import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResp
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.api.course.work.submission.model.WorkSubmissionContent
 import com.denchic45.stuiversity.api.course.work.submission.model.WorkSubmissionResponse
+import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import okio.Path.Companion.toOkioPath
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -70,17 +78,41 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     val childOverlay by component.childOverlay.subscribeAsState()
 
     val yourSubmissionComponent = childOverlay.overlay?.instance?.component
-    val submissionResource by (yourSubmissionComponent?.yourSubmission ?: emptyFlow())
+    val submissionResource by (yourSubmissionComponent?.uiState ?: emptyFlow())
         .collectAsState(null)
 
-    CourseWorkContent(childrenResource, submissionResource)
+    val pickFileLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.let { data: Intent ->
+                yourSubmissionComponent!!.onAttachmentSelect(data.data!!.toFile().toOkioPath())
+            }
+        }
+    }
+
+    CourseWorkContent(childrenResource, submissionResource, onAttachmentAdd = {
+        val chooserIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+        }
+
+        pickFileLauncher.launch(
+            Intent.createChooser(
+                chooserIntent, "Выберите файл"
+            )
+        )
+    },component::onSubmit,component::onCancel)
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun CourseWorkContent(
     childrenResource: Resource<List<CourseWorkComponent.Child>>,
-    submissionResource: Resource<SubmissionResponse>?
+    submissionResource: Resource<YourSubmissionComponent.SubmissionUiState>?,
+    onAttachmentAdd: () -> Unit,
+    onSubmit: () -> Unit,
+    onCancel: () -> Unit
 ) {
     var collapsedHeight by remember { mutableStateOf(0) }
     var expandedHeight by remember { mutableStateOf(0) }
@@ -123,7 +155,7 @@ private fun CourseWorkContent(
         sheetSwipeEnabled = offset != 0,
         sheetContent = {
             Box(
-                Modifier.padding(MaterialTheme.spacing.medium)
+                Modifier
             ) {
                 submissionResource?.onSuccess { submission ->
                     Row {
@@ -149,7 +181,11 @@ private fun CourseWorkContent(
                                 .alpha(1 - transition)
                                 .onGloballyPositioned { coordinates ->
                                     collapsedHeight = coordinates.size.height
-                                })
+                                },
+                            onAttachmentAdd,
+                            onSubmit,
+                            onCancel
+                        )
                 }
             }
         },
@@ -212,12 +248,21 @@ private fun CourseWorkBody(
 }
 
 @Composable
-fun SubmissionSheetCollapsed(submission: SubmissionResponse, modifier: Modifier) {
+fun SubmissionSheetCollapsed(
+    submission: YourSubmissionComponent.SubmissionUiState,
+    modifier: Modifier,
+    onAttachmentAdd: () -> Unit,
+    onSubmit: () -> Unit,
+    onCancel: () -> Unit
+) {
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(MaterialTheme.spacing.medium)
     ) {
         Row {
-            Column {
+            Column(Modifier.weight(1f)) {
+                val updatedAt = submission.updatedAt?.toString("dd MMM HH:mm")
                 val title = submission.grade?.let {
                     "Оценено: ${it.value}/5"
                 } ?: when (submission.state) {
@@ -227,8 +272,29 @@ fun SubmissionSheetCollapsed(submission: SubmissionResponse, modifier: Modifier)
                     SubmissionState.SUBMITTED -> "Сдано"
                     SubmissionState.CANCELED_BY_AUTHOR -> "Отменено автором"
                 }
-                Text(text = title)
+                Text(text = title, style = MaterialTheme.typography.titleLarge)
+                updatedAt?.let {
+                    Text(text = it, style = MaterialTheme.typography.bodyMedium)
+                }
             }
+            if (submission.grade == null)
+                when (submission.state) {
+                    SubmissionState.NEW,
+                    SubmissionState.CREATED,
+                    SubmissionState.CANCELED_BY_AUTHOR -> {
+                        Button(onClick = {
+                            if (submission.attachments.isEmpty()) onAttachmentAdd()
+                            else onCancel()
+                        }) {
+                            Text(text = if (submission.attachments.isEmpty()) "Добавить" else "Сдать")
+                        }
+                    }
+
+                    SubmissionState.SUBMITTED -> Button(onClick = { /*TODO*/ }) {
+                        Text(text = "Отменить")
+                    }
+
+                }
         }
     }
 }
@@ -237,7 +303,9 @@ fun SubmissionSheetCollapsed(submission: SubmissionResponse, modifier: Modifier)
 fun SubmissionSheetExpanded(modifier: Modifier) {
     val current = LocalContext.current
     Column(
-        modifier.fillMaxWidth()
+        modifier
+            .fillMaxWidth()
+            .padding(MaterialTheme.spacing.medium)
     ) {
         Spacer(modifier = Modifier.height(40.dp))
         Button(onClick = {
@@ -259,16 +327,14 @@ fun CourseWorkContentPreview() {
             CourseWorkContent(
                 childrenResource = Resource.Loading,
                 submissionResource = Resource.Success(
-                    WorkSubmissionResponse(
-                        id = UUID.randomUUID(),
-                        author = Author(UUID.randomUUID(), "Ivan", "Ivanov", ""),
+                    YourSubmissionComponent.SubmissionUiState(
                         state = SubmissionState.CREATED,
-                        courseWorkId = UUID.randomUUID(),
-                        content = WorkSubmissionContent(emptyList()),
+                        attachments = emptyList(),
                         updatedAt = null,
                         grade = null
                     )
-                )
+                ),
+                {}, {}, {}
             )
         }
     }

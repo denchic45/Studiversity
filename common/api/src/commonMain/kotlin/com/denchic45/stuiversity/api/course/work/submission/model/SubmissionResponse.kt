@@ -16,7 +16,7 @@ sealed class SubmissionResponse {
     abstract val state: SubmissionState
     abstract val courseWorkId: UUID
     abstract val type: CourseElementType
-    abstract val content: SubmissionContent?
+    abstract val content: SubmissionContent
     abstract val updatedAt: LocalDateTime?
     abstract val grade: GradeResponse?
 }
