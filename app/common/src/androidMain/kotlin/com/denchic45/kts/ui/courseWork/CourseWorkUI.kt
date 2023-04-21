@@ -51,11 +51,9 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.core.net.toFile
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.data.domain.model.FileState
@@ -117,7 +115,7 @@ private fun CourseWorkContent(
     submissionResource: Resource<YourSubmissionComponent.SubmissionUiState>?,
     onAttachmentAdd: () -> Unit,
     onSubmit: () -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
 ) {
     var headerHeight by remember { mutableStateOf(0F) }
     var collapsedHeight by remember { mutableStateOf(0F) }
@@ -141,11 +139,9 @@ private fun CourseWorkContent(
     var screenHeight by remember {
         mutableStateOf(0F)
     }
-
+    val expandedOrScreen = screenHeight
     val difference = if (screenHeight != 0F) {
-//        val expandedOrScreen = minOf(screenHeight, expandedHeight)
-        ((screenHeight) - (offset )) / (screenHeight - topHeight) * 1F
-
+        (expandedOrScreen - offset) / expandedOrScreen
     } else 0F
 
     val transition = calcPercentOf(0.2F, 0.8F, maxOf(0.2F, minOf(difference, 0.8F)))
@@ -160,53 +156,30 @@ private fun CourseWorkContent(
 
         Text("difference $difference")
         Text("transition: $transition")
+
+        println("offset: $offset")
+        println("difference: $difference")
+        println("transition: $transition")
     }
 
     BottomSheetScaffold(
-        sheetPeekHeight = topHeight.pxToDp() + MaterialTheme.spacing.normal,
+        sheetPeekHeight = topHeight.pxToDp(),
         scaffoldState = scaffoldState,
         sheetSwipeEnabled = offset != 0F,
         sheetContent = {
             Column(
                 modifier = Modifier
+                    .fillMaxHeight()
                     .verticalScroll(rememberScrollState())
-                    .padding(MaterialTheme.spacing.normal)
             ) {
                 submissionResource?.onSuccess { submission ->
                     SubmissionSheetHeader(submission, Modifier.onGloballyPositioned { coordinates ->
                         headerHeight = coordinates.size.height.toFloat()
-                    }) {
-//                    if (transition < 1F)
-                        Box(
-                            modifier = Modifier
-                                .alpha(1 - transition)
-
-                        ) {
-                            if (submission.grade == null)
-                                when (submission.state) {
-                                    SubmissionState.NEW,
-                                    SubmissionState.CREATED,
-                                    SubmissionState.CANCELED_BY_AUTHOR -> {
-                                        Button(onClick = {
-                                            if (submission.attachments.isEmpty()) onAttachmentAdd()
-                                            else onSubmit()
-                                        }) {
-                                            Text(text = if (submission.attachments.isEmpty()) "Добавить" else "Сдать")
-                                        }
-                                    }
-
-                                    SubmissionState.SUBMITTED -> Button(onClick = { onCancel() }) {
-                                        Text(text = "Отменить")
-                                    }
-                                }
-                        }
-                    }
+                    })
                     Box(Modifier) {
-
                         SubmissionSheetExpanded(
                             submission,
                             Modifier
-                                .height(screenHeight.pxToDp())
                                 .alpha(transition)
                                 .clickable(enabled = false, onClick = {})
 //                                .onGloballyPositioned { coordinates ->
@@ -216,27 +189,17 @@ private fun CourseWorkContent(
 
                         if (transition < 1F)
                             SubmissionCollapsedContent(
+                                submission,
                                 Modifier
                                     .clickable(enabled = false, onClick = {})
                                     .alpha(1 - transition)
                                     .onGloballyPositioned { coordinates ->
                                         collapsedHeight = coordinates.size.height.toFloat()
-                                    }
+                                    },
+                                onAttachmentAdd,
+                                onSubmit,
+                                onCancel
                             )
-
-//                    if (transition < 1F)
-//                        SubmissionSheetCollapsed(
-//                            submission,
-//                            Modifier
-//                                .clickable(enabled = false, onClick = {})
-//                                .alpha(1 - transition)
-//                                .onGloballyPositioned { coordinates ->
-//                                    collapsedHeight = coordinates.size.height
-//                                },
-//                            onAttachmentAdd,
-//                            onSubmit,
-//                            onCancel
-//                        )
                     }
                 }
             }
@@ -300,17 +263,33 @@ private fun CourseWorkBody(
 }
 
 @Composable
-fun SubmissionCollapsedContent(modifier: Modifier) {
-//    Spacer(Modifier.height(MaterialTheme.spacing.normal))
-    Row(modifier = modifier.padding(vertical = MaterialTheme.spacing.normal)) {
-        AssistChip(onClick = { /*TODO*/ },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.Comment,
-                    contentDescription = "comments"
-                )
-            },
-            label = { Text(text = "0") })
+fun SubmissionCollapsedContent(
+    submission: YourSubmissionComponent.SubmissionUiState,
+    modifier: Modifier,
+    onAttachmentAdd: () -> Unit,
+    onSubmit: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    Column(modifier = modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
+        if (submission.grade == null)
+            when (submission.state) {
+                SubmissionState.NEW,
+                SubmissionState.CREATED,
+                SubmissionState.CANCELED_BY_AUTHOR,
+                -> {
+                    Button(onClick = {
+                        if (submission.attachments.isEmpty()) onAttachmentAdd()
+                        else onSubmit()
+                    }, modifier = Modifier.fillMaxWidth()) {
+                        Text(text = if (submission.attachments.isEmpty()) "Добавить" else "Сдать")
+                    }
+                }
+
+                SubmissionState.SUBMITTED -> Button(onClick = { onCancel() }) {
+                    Text(text = "Отменить")
+                }
+            }
+        Spacer(Modifier.height(MaterialTheme.spacing.normal))
     }
 }
 
@@ -320,7 +299,7 @@ fun SubmissionSheetCollapsed(
     modifier: Modifier,
     onAttachmentAdd: () -> Unit,
     onSubmit: () -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -334,7 +313,8 @@ fun SubmissionSheetCollapsed(
                     "Оценено: ${it.value}/5"
                 } ?: when (submission.state) {
                     SubmissionState.NEW,
-                    SubmissionState.CREATED -> "Не сдано"
+                    SubmissionState.CREATED,
+                    -> "Не сдано"
 
                     SubmissionState.SUBMITTED -> "Сдано"
                     SubmissionState.CANCELED_BY_AUTHOR -> "Отменено автором"
@@ -348,7 +328,8 @@ fun SubmissionSheetCollapsed(
                 when (submission.state) {
                     SubmissionState.NEW,
                     SubmissionState.CREATED,
-                    SubmissionState.CANCELED_BY_AUTHOR -> {
+                    SubmissionState.CANCELED_BY_AUTHOR,
+                    -> {
                         Button(onClick = {
                             if (submission.attachments.isEmpty()) onAttachmentAdd()
                             else onSubmit()
@@ -379,12 +360,13 @@ fun SubmissionSheetCollapsed(
 fun SubmissionSheetHeader(
     submission: YourSubmissionComponent.SubmissionUiState,
     modifier: Modifier,
-    buttonContent: @Composable () -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .padding(horizontal = MaterialTheme.spacing.normal)
     ) {
+        Spacer(Modifier.height(MaterialTheme.spacing.normal))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 val updatedAt = submission.updatedAt?.toString("dd MMM HH:mm")
@@ -392,7 +374,8 @@ fun SubmissionSheetHeader(
                     "Оценено: ${it.value}/5"
                 } ?: when (submission.state) {
                     SubmissionState.NEW,
-                    SubmissionState.CREATED -> "Не сдано"
+                    SubmissionState.CREATED,
+                    -> "Не сдано"
 
                     SubmissionState.SUBMITTED -> "Сдано"
                     SubmissionState.CANCELED_BY_AUTHOR -> "Отменено автором"
@@ -402,22 +385,32 @@ fun SubmissionSheetHeader(
                     Text(text = it, style = MaterialTheme.typography.bodyMedium)
                 }
             }
-            buttonContent()
+            Spacer(Modifier.weight(1f))
+            Row {
+                AssistChip(onClick = { /*TODO*/ },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Comment,
+                            contentDescription = "comments"
+                        )
+                    },
+                    label = { Text(text = "0") })
+            }
         }
     }
 }
 
 @Composable
 fun SubmissionSheetExpanded(state: YourSubmissionComponent.SubmissionUiState, modifier: Modifier) {
-    val current = LocalContext.current
     Column(
         modifier.fillMaxWidth()
     ) {
-        HeaderItemUI(name = "Прикрепления")
-        Spacer(modifier = Modifier.height(100.dp))
-        LazyRow {
-            items(state.attachments, key = { it.attachmentId ?: Any() }) {
-                AttachmentItemUI(item = it)
+        if (state.attachments.isNotEmpty()) {
+            HeaderItemUI(name = "Прикрепления ${state.attachments.size}")
+            LazyRow(Modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
+                items(state.attachments, key = { it.attachmentId?.toString() ?: "" }) {
+                    AttachmentItemUI(item = it)
+                }
             }
         }
     }
