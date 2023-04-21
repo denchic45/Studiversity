@@ -1,11 +1,14 @@
 package com.denchic45.kts.ui.courseWork.details
 
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindCourseWorkAttachmentsUseCase
 import com.denchic45.kts.domain.usecase.FindCourseWorkUseCase
+import com.denchic45.kts.ui.model.toAttachmentItems
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -27,5 +30,6 @@ class CourseWorkDetailsComponent(
     val courseWork = flow { emit(findCourseWorkUseCase(courseId, elementId)) }
         .stateInResource(componentScope)
     val attachments = findCourseWorkAttachmentsUseCase(courseId, elementId)
+        .mapResource { it.toAttachmentItems() }
         .stateInResource(componentScope)
 }

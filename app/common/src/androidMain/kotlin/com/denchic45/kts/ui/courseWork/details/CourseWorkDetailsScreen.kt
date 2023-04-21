@@ -21,7 +21,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,13 +28,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.denchic45.kts.data.domain.model.Attachment2
 import com.denchic45.kts.data.domain.model.FileAttachment2
 import com.denchic45.kts.data.domain.model.FileState
-import com.denchic45.kts.data.domain.model.LinkAttachment2
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.component.HeaderItemUI
+import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
@@ -59,7 +57,7 @@ fun CourseWorkDetailsScreen(component: CourseWorkDetailsComponent) {
 @OptIn(ExperimentalMaterial3Api::class)
 private fun CourseWorkDetailsContent(
     workResource: Resource<CourseWorkResponse>,
-    attachmentsResource: Resource<List<Attachment2>>,
+    attachmentsResource: Resource<List<AttachmentItem>>,
 ) {
     workResource.onSuccess { work ->
         Column(
@@ -95,8 +93,8 @@ private fun CourseWorkDetailsContent(
             attachmentsResource.onSuccess { attachments ->
                 HeaderItemUI(name = "Прикрепления")
                 LazyRow {
-                    items(attachments, key = Attachment2::id) {
-                        AttachmentItemUI(attachment2 = it)
+                    items(attachments, key = { it.attachmentId ?: Any() }) {
+                        AttachmentItemUI(item = it)
                     }
                 }
             }
@@ -123,15 +121,14 @@ fun CourseWorkHeader(name: String, commentsCount: Int = 0) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AttachmentItemUI(attachment2: Attachment2) {
+fun AttachmentItemUI(item: AttachmentItem) {
     AssistChip(onClick = { /*TODO*/ },
         label = {
             Text(
-                text = when (attachment2) {
-                    is FileAttachment2 -> attachment2.name
-                    is LinkAttachment2 -> attachment2.url
+                text = when (item) {
+                    is AttachmentItem.FileAttachmentItem -> item.name
+                    is AttachmentItem.LinkAttachmentItem -> item.url
                 }
             )
         },
@@ -180,8 +177,10 @@ fun CourseWorkDetailsPreview() {
                 ),
                 Resource.Success(
                     listOf(
-                        FileAttachment2(
-                            id = UUID.randomUUID(),
+                        AttachmentItem.FileAttachmentItem(
+                            attachmentId = UUID.randomUUID(),
+                            name = "image",
+                            previewUrl = null,
                             path = "image.png".toPath(),
                             state = FileState.Preview
                         )

@@ -56,7 +56,7 @@ interface SubmissionsApi {
         courseId: UUID,
         courseWorkId: UUID,
         submissionId: UUID,
-        file: File
+        request: CreateFileRequest
     ): ResponseResult<FileAttachmentHeader>
 
     suspend fun addLinkToSubmission(
@@ -147,7 +147,7 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
         courseId: UUID,
         courseWorkId: UUID,
         submissionId: UUID,
-        file: File
+        request:CreateFileRequest
     ): ResponseResult<FileAttachmentHeader> =
         client.post("/courses/$courseId/works/$courseWorkId/submissions/${submissionId}/attachments") {
             parameter("upload", "file")
@@ -155,9 +155,9 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
             setBody(
                 MultiPartFormDataContent(
                     formData {
-                        append("file", file.readBytes(), Headers.build {
-                            append(HttpHeaders.ContentType, ContentType.defaultForFile(file))
-                            append(HttpHeaders.ContentDisposition, "filename=${file.name}")
+                        append("file", request.bytes, Headers.build {
+                            append(HttpHeaders.ContentType,ContentType.defaultForFilePath(request.name))
+                            append(HttpHeaders.ContentDisposition, "filename=${request.name}")
                         })
                     }
                 )

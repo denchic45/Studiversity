@@ -2,7 +2,6 @@ package com.denchic45.kts.ui.courseWork
 
 import android.app.Activity
 import android.content.Intent
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -16,18 +15,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Comment
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -39,9 +44,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
@@ -53,24 +58,24 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toFile
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.component.HeaderItemUI
+import com.denchic45.kts.ui.courseWork.details.AttachmentItemUI
 import com.denchic45.kts.ui.courseWork.details.CourseWorkDetailsScreen
 import com.denchic45.kts.ui.courseWork.submissions.CourseWorkSubmissionsScreen
 import com.denchic45.kts.ui.courseWork.yourSubmission.YourSubmissionComponent
+import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
-import com.denchic45.stuiversity.api.course.work.submission.model.Author
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
-import com.denchic45.stuiversity.api.course.work.submission.model.WorkSubmissionContent
-import com.denchic45.stuiversity.api.course.work.submission.model.WorkSubmissionResponse
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import okio.Path.Companion.toOkioPath
+import okio.Path.Companion.toPath
 import java.util.UUID
-import kotlin.math.roundToInt
 
 @Composable
 fun CourseWorkScreen(component: CourseWorkComponent) {
@@ -102,7 +107,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
                 chooserIntent, "Выберите файл"
             )
         )
-    },component::onSubmit,component::onCancel)
+    }, yourSubmissionComponent!!::onSubmit, yourSubmissionComponent::onCancel)
 }
 
 @Composable
@@ -114,15 +119,19 @@ private fun CourseWorkContent(
     onSubmit: () -> Unit,
     onCancel: () -> Unit
 ) {
-    var collapsedHeight by remember { mutableStateOf(0) }
-    var expandedHeight by remember { mutableStateOf(0) }
-    var offset by remember { mutableStateOf(0) }
+    var headerHeight by remember { mutableStateOf(0F) }
+    var collapsedHeight by remember { mutableStateOf(0F) }
+
+    val topHeight = headerHeight + collapsedHeight
+
+//    var expandedHeight by remember { mutableStateOf(0F) }
+    var offset by remember { mutableStateOf(0F) }
     val bottomSheetState = rememberStandardBottomSheetState()
 
     LaunchedEffect(Unit) {
         snapshotFlow(bottomSheetState::requireOffset)
             .collect {
-                offset = it.roundToInt()
+                offset = it
             }
     }
 
@@ -130,13 +139,13 @@ private fun CourseWorkContent(
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
 
     var screenHeight by remember {
-        mutableStateOf(0)
+        mutableStateOf(0F)
     }
 
-    val difference = if (screenHeight != 0) {
-        val expandedOrScreen = minOf(screenHeight, expandedHeight)
-        ((expandedOrScreen.toFloat()) - (offset)) / (expandedOrScreen.toFloat()
-                - collapsedHeight.toFloat()) * 1F
+    val difference = if (screenHeight != 0F) {
+//        val expandedOrScreen = minOf(screenHeight, expandedHeight)
+        ((screenHeight) - (offset )) / (screenHeight - topHeight) * 1F
+
     } else 0F
 
     val transition = calcPercentOf(0.2F, 0.8F, maxOf(0.2F, minOf(difference, 0.8F)))
@@ -144,48 +153,91 @@ private fun CourseWorkContent(
     Column {
         Text("offset ${offset.pxToDp()}")
         Text("screen height ${screenHeight.pxToDp()}")
-
         Text("collapsed height ${collapsedHeight.pxToDp()}")
-        Text("expanded height ${expandedHeight.pxToDp()}")
+        Text("header height ${headerHeight.pxToDp()}")
+        Text("top height ${topHeight.pxToDp()}")
+//        Text("expanded height ${expandedHeight.pxToDp()}")
+
+        Text("difference $difference")
+        Text("transition: $transition")
     }
 
     BottomSheetScaffold(
-        sheetPeekHeight = collapsedHeight.pxToDp(),
+        sheetPeekHeight = topHeight.pxToDp() + MaterialTheme.spacing.normal,
         scaffoldState = scaffoldState,
-        sheetSwipeEnabled = offset != 0,
+        sheetSwipeEnabled = offset != 0F,
         sheetContent = {
-            Box(
-                Modifier
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(MaterialTheme.spacing.normal)
             ) {
                 submissionResource?.onSuccess { submission ->
-                    Row {
-                        Spacer(modifier = Modifier.weight(1f))
-                        Column {
-                            Text("difference $difference")
-                            Text("transition: $transition")
+                    SubmissionSheetHeader(submission, Modifier.onGloballyPositioned { coordinates ->
+                        headerHeight = coordinates.size.height.toFloat()
+                    }) {
+//                    if (transition < 1F)
+                        Box(
+                            modifier = Modifier
+                                .alpha(1 - transition)
+
+                        ) {
+                            if (submission.grade == null)
+                                when (submission.state) {
+                                    SubmissionState.NEW,
+                                    SubmissionState.CREATED,
+                                    SubmissionState.CANCELED_BY_AUTHOR -> {
+                                        Button(onClick = {
+                                            if (submission.attachments.isEmpty()) onAttachmentAdd()
+                                            else onSubmit()
+                                        }) {
+                                            Text(text = if (submission.attachments.isEmpty()) "Добавить" else "Сдать")
+                                        }
+                                    }
+
+                                    SubmissionState.SUBMITTED -> Button(onClick = { onCancel() }) {
+                                        Text(text = "Отменить")
+                                    }
+                                }
                         }
                     }
-                    SubmissionSheetExpanded(
-                        Modifier
-                            .verticalScroll(rememberScrollState())
-                            .alpha(transition)
-                            .clickable(enabled = false, onClick = {})
-                            .onGloballyPositioned { coordinates ->
-                                expandedHeight = coordinates.size.height
-                            })
-                    if (transition < 1F)
-                        SubmissionSheetCollapsed(
+                    Box(Modifier) {
+
+                        SubmissionSheetExpanded(
                             submission,
                             Modifier
+                                .height(screenHeight.pxToDp())
+                                .alpha(transition)
                                 .clickable(enabled = false, onClick = {})
-                                .alpha(1 - transition)
-                                .onGloballyPositioned { coordinates ->
-                                    collapsedHeight = coordinates.size.height
-                                },
-                            onAttachmentAdd,
-                            onSubmit,
-                            onCancel
+//                                .onGloballyPositioned { coordinates ->
+//                                    expandedHeight = coordinates.size.height.toFloat()
+//                                }
                         )
+
+                        if (transition < 1F)
+                            SubmissionCollapsedContent(
+                                Modifier
+                                    .clickable(enabled = false, onClick = {})
+                                    .alpha(1 - transition)
+                                    .onGloballyPositioned { coordinates ->
+                                        collapsedHeight = coordinates.size.height.toFloat()
+                                    }
+                            )
+
+//                    if (transition < 1F)
+//                        SubmissionSheetCollapsed(
+//                            submission,
+//                            Modifier
+//                                .clickable(enabled = false, onClick = {})
+//                                .alpha(1 - transition)
+//                                .onGloballyPositioned { coordinates ->
+//                                    collapsedHeight = coordinates.size.height
+//                                },
+//                            onAttachmentAdd,
+//                            onSubmit,
+//                            onCancel
+//                        )
+                    }
                 }
             }
         },
@@ -196,7 +248,7 @@ private fun CourseWorkContent(
                 .fillMaxHeight()
                 .padding(it)
                 .onGloballyPositioned { coordinates ->
-                    screenHeight = coordinates.size.height
+                    screenHeight = coordinates.size.height.toFloat()
                 }) {
             CourseWorkBody(childrenResource)
         }
@@ -248,6 +300,21 @@ private fun CourseWorkBody(
 }
 
 @Composable
+fun SubmissionCollapsedContent(modifier: Modifier) {
+//    Spacer(Modifier.height(MaterialTheme.spacing.normal))
+    Row(modifier = modifier.padding(vertical = MaterialTheme.spacing.normal)) {
+        AssistChip(onClick = { /*TODO*/ },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.Comment,
+                    contentDescription = "comments"
+                )
+            },
+            label = { Text(text = "0") })
+    }
+}
+
+@Composable
 fun SubmissionSheetCollapsed(
     submission: YourSubmissionComponent.SubmissionUiState,
     modifier: Modifier,
@@ -258,9 +325,9 @@ fun SubmissionSheetCollapsed(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(MaterialTheme.spacing.medium)
+            .padding(MaterialTheme.spacing.normal)
     ) {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 val updatedAt = submission.updatedAt?.toString("dd MMM HH:mm")
                 val title = submission.grade?.let {
@@ -284,37 +351,74 @@ fun SubmissionSheetCollapsed(
                     SubmissionState.CANCELED_BY_AUTHOR -> {
                         Button(onClick = {
                             if (submission.attachments.isEmpty()) onAttachmentAdd()
-                            else onCancel()
+                            else onSubmit()
                         }) {
                             Text(text = if (submission.attachments.isEmpty()) "Добавить" else "Сдать")
                         }
                     }
 
-                    SubmissionState.SUBMITTED -> Button(onClick = { /*TODO*/ }) {
+                    SubmissionState.SUBMITTED -> Button(onClick = { onCancel() }) {
                         Text(text = "Отменить")
                     }
 
                 }
         }
+//        Spacer(Modifier.height(MaterialTheme.spacing.normal))
+        AssistChip(onClick = { /*TODO*/ },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.Comment,
+                    contentDescription = "comments"
+                )
+            },
+            label = { Text(text = "0") })
     }
 }
 
 @Composable
-fun SubmissionSheetExpanded(modifier: Modifier) {
+fun SubmissionSheetHeader(
+    submission: YourSubmissionComponent.SubmissionUiState,
+    modifier: Modifier,
+    buttonContent: @Composable () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                val updatedAt = submission.updatedAt?.toString("dd MMM HH:mm")
+                val title = submission.grade?.let {
+                    "Оценено: ${it.value}/5"
+                } ?: when (submission.state) {
+                    SubmissionState.NEW,
+                    SubmissionState.CREATED -> "Не сдано"
+
+                    SubmissionState.SUBMITTED -> "Сдано"
+                    SubmissionState.CANCELED_BY_AUTHOR -> "Отменено автором"
+                }
+                Text(text = title, style = MaterialTheme.typography.titleLarge)
+                updatedAt?.let {
+                    Text(text = it, style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+            buttonContent()
+        }
+    }
+}
+
+@Composable
+fun SubmissionSheetExpanded(state: YourSubmissionComponent.SubmissionUiState, modifier: Modifier) {
     val current = LocalContext.current
     Column(
-        modifier
-            .fillMaxWidth()
-            .padding(MaterialTheme.spacing.medium)
+        modifier.fillMaxWidth()
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
-        Button(onClick = {
-            Toast.makeText(current, "Expanded click", Toast.LENGTH_SHORT).show()
-        }) {
-            Text(text = "Expanded")
-        }
-        repeat(55) {
-            Text(text = "Expanded $it", color = Color.Red)
+        HeaderItemUI(name = "Прикрепления")
+        Spacer(modifier = Modifier.height(100.dp))
+        LazyRow {
+            items(state.attachments, key = { it.attachmentId ?: Any() }) {
+                AttachmentItemUI(item = it)
+            }
         }
     }
 }
@@ -328,8 +432,17 @@ fun CourseWorkContentPreview() {
                 childrenResource = Resource.Loading,
                 submissionResource = Resource.Success(
                     YourSubmissionComponent.SubmissionUiState(
+                        id = UUID.randomUUID(),
                         state = SubmissionState.CREATED,
-                        attachments = emptyList(),
+                        attachments = listOf(
+                            AttachmentItem.FileAttachmentItem(
+                                "file",
+                                null,
+                                null,
+                                FileState.Preview,
+                                "file.txt".toPath()
+                            )
+                        ),
                         updatedAt = null,
                         grade = null
                     )
@@ -347,6 +460,9 @@ fun Dp.dpToPx() = with(LocalDensity.current) { this@dpToPx.toPx() }
 
 @Composable
 fun Int.pxToDp() = with(LocalDensity.current) { this@pxToDp.toDp() }
+
+@Composable
+fun Float.pxToDp() = with(LocalDensity.current) { this@pxToDp.toDp() }
 
 fun Modifier.gesturesDisabled(disabled: Boolean = true) = if (disabled) {
     pointerInput(Unit) {

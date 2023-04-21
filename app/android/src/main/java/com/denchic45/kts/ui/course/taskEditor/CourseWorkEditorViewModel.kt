@@ -9,7 +9,6 @@ import com.denchic45.kts.data.domain.model.*
 import com.denchic45.kts.domain.*
 import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.uieditor.UIEditor
@@ -89,7 +88,7 @@ class CourseWorkEditorViewModel @Inject constructor(
             when (attachmentItem) {
                 is AttachmentItem.FileAttachmentItem -> CreateFileRequest(
                     attachmentItem.name,
-                    attachmentItem.file.toFile().readBytes()
+                    attachmentItem.path.toFile().readBytes()
                 )
                 is AttachmentItem.LinkAttachmentItem -> CreateLinkRequest(attachmentItem.url)
             }
@@ -179,7 +178,7 @@ class CourseWorkEditorViewModel @Inject constructor(
                                         previewUrl = null,
                                         attachmentId = attachment.id,
                                         state = attachment.state,
-                                        file = attachment.path
+                                        path = attachment.path
                                     )
                                     is LinkAttachment2 -> AttachmentItem.LinkAttachmentItem(
                                         name = attachment.url,
@@ -292,10 +291,10 @@ class CourseWorkEditorViewModel @Inject constructor(
     fun onAttachmentClick(position: Int) {
         when (val item = _attachmentItems.value[position]) {
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
-                FileState.Downloaded -> openAttachment.postValue(item.file.toFile())
+                FileState.Downloaded -> openAttachment.postValue(item.path.toFile())
                 FileState.Preview -> viewModelScope.launch {
                     downloadFileUseCase(item.attachmentId!!).collect {
-                        openAttachment.postValue(item.file.toFile())
+                        openAttachment.postValue(item.path.toFile())
                     }
                 }
                 else -> {}

@@ -64,7 +64,7 @@ inline fun <T, V> Resource<T>.map(transform: (T) -> V): Resource<V> {
     }
 }
 
-fun <T, V> Resource<T>.flatMap(function: (T) -> Resource<V>): Resource<V> {
+fun <T, V> Resource<T>.mapResource(function: (T) -> Resource<V>): Resource<V> {
     return when (this) {
         is Resource.Error -> this
         is Resource.Loading -> this
@@ -130,7 +130,7 @@ inline fun <T, V> Flow<Resource<T>>.mapResource(crossinline function: suspend (T
     }
 
 fun <T, V> Flow<Resource<T>>.flatMapResource(function: (T) -> Resource<V>): Flow<Resource<V>> {
-    return map { it.flatMap(function) }
+    return map { it.mapResource(function) }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)

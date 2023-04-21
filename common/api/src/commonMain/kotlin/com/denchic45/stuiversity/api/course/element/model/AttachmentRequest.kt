@@ -14,7 +14,6 @@ class CreateFileRequest(
         operator fun invoke(file: File): CreateFileRequest {
             return CreateFileRequest(file.name, file.readBytes())
         }
-
     }
 }
 

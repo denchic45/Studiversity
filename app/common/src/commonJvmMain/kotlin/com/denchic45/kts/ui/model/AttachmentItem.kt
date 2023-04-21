@@ -1,10 +1,12 @@
 package com.denchic45.kts.ui.model
 
+import com.denchic45.kts.data.domain.model.Attachment2
+import com.denchic45.kts.data.domain.model.FileAttachment2
 import com.denchic45.kts.data.domain.model.FileState
+import com.denchic45.kts.data.domain.model.LinkAttachment2
 import com.denchic45.kts.util.Files
 import com.denchic45.kts.util.getExtension
 import okio.Path
-import java.io.File
 import java.util.UUID
 
 sealed interface AttachmentItem {
@@ -17,10 +19,10 @@ sealed interface AttachmentItem {
         override val previewUrl: String?,
         override val attachmentId: UUID?,
         val state: FileState,
-        val file: Path
+        val path: Path
     ) : AttachmentItem {
         val shortName: String = Files.nameWithoutTimestamp(name)
-        val extension: String = file.getExtension()
+        val extension: String = path.getExtension()
     }
 
     data class LinkAttachmentItem(
@@ -29,4 +31,25 @@ sealed interface AttachmentItem {
         override val attachmentId: UUID?,
         val url: String
     ) : AttachmentItem
+}
+
+fun List<Attachment2>.toAttachmentItems(): List<AttachmentItem> {
+    return map { attachment ->
+        when (attachment) {
+            is FileAttachment2 -> AttachmentItem.FileAttachmentItem(
+                name = attachment.name,
+                previewUrl = null,
+                attachmentId = attachment.id,
+                state = attachment.state,
+                path = attachment.path
+            )
+
+            is LinkAttachment2 -> AttachmentItem.LinkAttachmentItem(
+                name = attachment.url,
+                previewUrl = null,
+                attachmentId = attachment.id,
+                url = attachment.url
+            )
+        }
+    }
 }
