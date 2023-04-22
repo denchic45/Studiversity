@@ -5,6 +5,8 @@ import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import com.denchic45.stuiversity.api.course.work.grade.GradeResponse
 import com.denchic45.stuiversity.util.LocalDateTimeSerializer
 import com.denchic45.stuiversity.util.UUIDSerializer
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 import java.util.*
@@ -34,6 +36,8 @@ data class WorkSubmissionResponse(
     override val updatedAt: LocalDateTime?,
     override val grade: GradeResponse? = null,
 ) : SubmissionResponse() {
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
     override val type: CourseElementType = CourseElementType.WORK
 }
 

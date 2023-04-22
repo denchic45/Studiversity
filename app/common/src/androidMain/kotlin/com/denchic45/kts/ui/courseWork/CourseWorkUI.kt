@@ -29,6 +29,7 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -55,7 +56,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.core.net.toFile
-import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
@@ -69,7 +69,6 @@ import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.util.toString
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import okio.Path.Companion.toOkioPath
 import okio.Path.Companion.toPath
@@ -78,10 +77,9 @@ import java.util.UUID
 @Composable
 fun CourseWorkScreen(component: CourseWorkComponent) {
     val childrenResource by component.children.collectAsState()
-    val childOverlay by component.childOverlay.subscribeAsState()
 
-    val yourSubmissionComponent = childOverlay.overlay?.instance?.component
-    val submissionResource by (yourSubmissionComponent?.uiState ?: emptyFlow())
+    val yourSubmissionComponent = component.yourSubmissionComponent
+    val submissionResource by yourSubmissionComponent.uiState
         .collectAsState(null)
 
     val pickFileLauncher = rememberLauncherForActivityResult(
@@ -89,7 +87,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.let { data: Intent ->
-                yourSubmissionComponent!!.onAttachmentSelect(data.data!!.toFile().toOkioPath())
+                yourSubmissionComponent.onAttachmentSelect(data.data!!.toFile().toOkioPath())
             }
         }
     }
@@ -105,7 +103,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
                 chooserIntent, "Выберите файл"
             )
         )
-    }, yourSubmissionComponent!!::onSubmit, yourSubmissionComponent::onCancel)
+    }, yourSubmissionComponent::onSubmit, yourSubmissionComponent::onCancel)
 }
 
 @Composable
@@ -117,6 +115,8 @@ private fun CourseWorkContent(
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     var headerHeight by remember { mutableStateOf(0F) }
     var collapsedHeight by remember { mutableStateOf(0F) }
 
@@ -124,15 +124,15 @@ private fun CourseWorkContent(
 
 //    var expandedHeight by remember { mutableStateOf(0F) }
     var offset by remember { mutableStateOf(0F) }
-    val bottomSheetState = rememberStandardBottomSheetState()
-
-    LaunchedEffect(Unit) {
-        snapshotFlow(bottomSheetState::requireOffset)
-            .collect {
-                offset = it
-            }
+    var skipHiddenState by remember {
+        mutableStateOf(true)
     }
-
+    val bottomSheetState = rememberStandardBottomSheetState(
+        skipHiddenState = false,
+        confirmValueChange = {
+            if (it == SheetValue.Hidden) !skipHiddenState
+            else true
+        })
 
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
 
@@ -146,21 +146,15 @@ private fun CourseWorkContent(
 
     val transition = calcPercentOf(0.2F, 0.8F, maxOf(0.2F, minOf(difference, 0.8F)))
 
-    Column {
-        Text("offset ${offset.pxToDp()}")
-        Text("screen height ${screenHeight.pxToDp()}")
-        Text("collapsed height ${collapsedHeight.pxToDp()}")
-        Text("header height ${headerHeight.pxToDp()}")
-        Text("top height ${topHeight.pxToDp()}")
-//        Text("expanded height ${expandedHeight.pxToDp()}")
-
-        Text("difference $difference")
-        Text("transition: $transition")
-
-        println("offset: $offset")
-        println("difference: $difference")
-        println("transition: $transition")
+    if (screenHeight != 0f) {
+        LaunchedEffect(Unit) {
+            snapshotFlow(bottomSheetState::requireOffset)
+                .collect {
+                    offset = it
+                }
+        }
     }
+
 
     BottomSheetScaffold(
         sheetPeekHeight = topHeight.pxToDp(),
@@ -213,7 +207,28 @@ private fun CourseWorkContent(
                 .onGloballyPositioned { coordinates ->
                     screenHeight = coordinates.size.height.toFloat()
                 }) {
-            CourseWorkBody(childrenResource)
+//            Column {
+//                Spacer(modifier = Modifier.height(100.dp))
+//                Text("offset ${offset.pxToDp()}")
+//                Text("screen height ${screenHeight.pxToDp()}")
+//                Text("collapsed height ${collapsedHeight.pxToDp()}")
+//                Text("header height ${headerHeight.pxToDp()}")
+//                Text("top height ${topHeight.pxToDp()}")
+//                Text("difference $difference")
+//                Text("transition: $transition")
+//
+//        println("offset: $offset")
+//        println("difference: $difference")
+//        println("transition: $transition")
+//            }
+            CourseWorkBody(childrenResource) {
+                coroutineScope.launch {
+                    skipHiddenState = it == 0
+                    if (it == 0)
+                        bottomSheetState.partialExpand()
+                    else bottomSheetState.hide()
+                }
+            }
         }
     }
 }
@@ -226,9 +241,18 @@ fun calcPercentOf(min: Float, max: Float, input: Float): Float {
 @OptIn(ExperimentalFoundationApi::class)
 private fun CourseWorkBody(
     childrenResource: Resource<List<CourseWorkComponent.Child>>,
+    onPageSelect: (Int) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
+
+    LaunchedEffect(pagerState) {
+        // Collect from the pager state a snapshotFlow reading the currentPage
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            onPageSelect(page)
+        }
+    }
+
     childrenResource.onSuccess { children ->
         Column {
             TabRow(

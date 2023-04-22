@@ -9,6 +9,7 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.flatMapResourceFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import java.util.*
 
@@ -56,10 +57,14 @@ abstract class FindAttachmentsUseCase constructor(
                 downloadService.getDownloading(attachmentId)
             )
         }
-        return combine(observableDownloads.values) { states ->
-            unloadedFileAttachments.zip(states) { unloadedFileAttachment, state ->
-                unloadedFileAttachment.id to state
-            }.toMap()
+        return if (observableDownloads.values.isEmpty()) {
+            flowOf(emptyMap())
+        } else{
+            combine(observableDownloads.values) { states ->
+                unloadedFileAttachments.zip(states) { unloadedFileAttachment, state ->
+                    unloadedFileAttachment.id to state
+                }.toMap()
+            }
         }
     }
 }

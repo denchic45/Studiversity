@@ -1,15 +1,14 @@
 package com.denchic45.kts.ui.courseWork.yourSubmission
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.kts.data.domain.model.Attachment2
-import com.denchic45.kts.data.domain.model.FileAttachment2
-import com.denchic45.kts.data.domain.model.LinkAttachment2
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.flatMapResourceFlow
 import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CancelSubmissionUseCase
+import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindSubmissionAttachmentsUseCase
 import com.denchic45.kts.domain.usecase.FindYourSubmissionUseCase
 import com.denchic45.kts.domain.usecase.SubmitSubmissionUseCase
@@ -23,11 +22,14 @@ import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import com.denchic45.stuiversity.api.course.work.grade.GradeResponse
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import com.denchic45.stuiversity.api.role.model.Capability
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.shareIn
@@ -40,6 +42,7 @@ import java.util.UUID
 
 @Inject
 class YourSubmissionComponent(
+    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val findYourSubmissionUseCase: FindYourSubmissionUseCase,
     private val findSubmissionAttachmentsUseCase: FindSubmissionAttachmentsUseCase,
     private val uploadAttachmentToSubmissionUseCase: UploadAttachmentToSubmissionUseCase,
@@ -52,20 +55,49 @@ class YourSubmissionComponent(
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
-
-
     private val componentScope = componentScope()
 
-    private val _observeYourSubmission = flow { emit(findYourSubmissionUseCase(courseId, workId)) }
-        .shareIn(componentScope, SharingStarted.Lazily)
+    private val capabilities = flow {
+        emit(
+            checkUserCapabilitiesInScopeUseCase(
+                scopeId = courseId,
+                capabilities = listOf(Capability.ReadSubmissions, Capability.SubmitSubmission)
+            )
+        )
+    }.stateInResource(componentScope)
+
+    private val _observeYourSubmission: Flow<Resource<SubmissionResponse>> =
+        capabilities.flatMapResourceFlow {
+            if (it.hasCapability(Capability.SubmitSubmission)) {
+                flow { emit(findYourSubmissionUseCase(courseId, workId)) }
+            } else {
+                emptyFlow()
+            }
+        }.shareIn(componentScope, SharingStarted.Lazily)
 
     private val _updatedYourSubmission = MutableSharedFlow<Resource<SubmissionResponse>>()
 
     private val _attachments = _observeYourSubmission.flatMapResourceFlow {
         findSubmissionAttachmentsUseCase(courseId, workId, it.id)
-    }
+    }.shareIn(componentScope, SharingStarted.Lazily)
+
 
     val uiState = MutableStateFlow<Resource<SubmissionUiState>>(Resource.Loading)
+
+//    private val overlayNavigation = OverlayNavigation<CourseWorkComponent.YourSubmissionConfig>()
+
+//    val childOverlay = childOverlay(
+//        source = overlayNavigation,
+//        childFactory = { config, componentContext ->
+//            CourseWorkComponent.YourSubmissionChild(
+//                _yourSubmissionComponent(
+//                    courseId,
+//                    elementId,
+//                    componentContext
+//                )
+//            )
+//        }
+//    )
 
     init {
         componentScope.launch {

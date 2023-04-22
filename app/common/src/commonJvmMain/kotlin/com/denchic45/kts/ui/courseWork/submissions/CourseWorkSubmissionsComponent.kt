@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
+import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.stateInResource
@@ -52,6 +53,10 @@ class CourseWorkSubmissionsComponent(
 
     fun onSubmissionClick(authorId: UUID) {
         overlayNavigation.activate(SubmissionConfig(authorId))
+    }
+
+    fun onSubmissionClose() {
+        overlayNavigation.dismiss()
     }
 
     @Parcelize

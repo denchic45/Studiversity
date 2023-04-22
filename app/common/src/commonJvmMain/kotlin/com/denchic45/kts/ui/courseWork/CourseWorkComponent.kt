@@ -2,13 +2,8 @@ package com.denchic45.kts.ui.courseWork
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.kts.domain.filterSuccess
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
@@ -19,13 +14,10 @@ import com.denchic45.kts.ui.courseWork.yourSubmission.YourSubmissionComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import okio.Path
 import java.util.UUID
 
 @Inject
@@ -55,7 +47,6 @@ class CourseWorkComponent(
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
-
     private val componentScope = componentScope()
 
     private val capabilities = flow {
@@ -66,6 +57,12 @@ class CourseWorkComponent(
             )
         )
     }.stateInResource(componentScope)
+
+    val yourSubmissionComponent = _yourSubmissionComponent(
+        courseId,
+        elementId,
+        componentContext.childContext("yourSubmission")
+    )
 
     val children = capabilities.mapResource {
         buildList {
@@ -94,31 +91,17 @@ class CourseWorkComponent(
         }
     }.stateInResource(componentScope)
 
-    private val overlayNavigation = OverlayNavigation<YourSubmissionConfig>()
-
-    val childOverlay = childOverlay(
-        source = overlayNavigation,
-        childFactory = { config, componentContext ->
-            YourSubmissionChild(
-                _yourSubmissionComponent(
-                    courseId,
-                    elementId,
-                    componentContext
-                )
-            )
-        }
-    )
 
     init {
-        componentScope.launch {
-            capabilities.filterSuccess().collect {
-                if (it.value.hasCapability(Capability.SubmitSubmission)) {
-                    overlayNavigation.activate(YourSubmissionConfig)
-                } else {
-                    overlayNavigation.dismiss()
-                }
-            }
-        }
+//        componentScope.launch {
+//            capabilities.filterSuccess().collect {
+//                if (it.value.hasCapability(Capability.SubmitSubmission)) {
+//                    overlayNavigation.activate(YourSubmissionConfig)
+//                } else {
+//                    overlayNavigation.dismiss()
+//                }
+//            }
+//        }
     }
 
     sealed class Child(val title: String) {
