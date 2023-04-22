@@ -131,13 +131,13 @@ kotlin {
                 val composeVersion = "1.4.0"
                 api("androidx.compose.runtime:runtime:$composeVersion")
                 api("androidx.compose.ui:ui:$composeVersion")
-                api("androidx.activity:activity-compose:1.7.0")
+                api("androidx.activity:activity-compose:1.7.1")
                 // Tooling support (Previews, etc.)
                 api("androidx.compose.ui:ui-tooling:$composeVersion")
                 // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
                 api("androidx.compose.foundation:foundation:$composeVersion")
                 // Material Design
-                api("androidx.compose.material3:material3:1.1.0-beta02")
+                api("androidx.compose.material3:material3:1.1.0-rc01")
 
                 api("androidx.recyclerview:recyclerview:1.3.0")
 
