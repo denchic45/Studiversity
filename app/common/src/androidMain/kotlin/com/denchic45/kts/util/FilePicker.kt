@@ -3,6 +3,7 @@ package com.denchic45.kts.util
 import android.app.Activity
 import android.content.ClipData
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -43,38 +44,17 @@ class FilePicker(
                     data.clipData?.let { clipData: ClipData ->
                         callback(
                             List(clipData.itemCount) { position ->
-                                clipData.getItemAt(position).uri.toFile()
+                                clipData.getItemAt(position).uri.getFile(fragment.requireContext())
                             }
                         )
-                    } ?: callback(listOf(data.data!!.toFile()))
+                    } ?: callback(listOf(data.data!!.getFile(fragment.requireContext())))
                 }
             }
         }
 
-    private fun Uri.toFile(): File {
-        val context = this@FilePicker.fragment.requireContext()
-        val parcelFileDescriptor = context.contentResolver.openFileDescriptor(this, "r", null)
-        val inputStream = FileInputStream(parcelFileDescriptor!!.fileDescriptor)
 
-        val file = File(context.cacheDir, context.contentResolver.getFileName(this))
-        val outputStream = FileOutputStream(file)
-        IOUtils.copy(inputStream, outputStream)
-        return file
-    }
 
-    private fun ContentResolver.getFileName(fileUri: Uri): String {
 
-        var name = ""
-        val returnCursor = this.query(fileUri, null, null, null, null)
-        if (returnCursor != null) {
-            val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            returnCursor.moveToFirst()
-            name = returnCursor.getString(nameIndex)
-            returnCursor.close()
-        }
-
-        return name
-    }
 
     fun selectFiles() {
         chooseFile()
@@ -134,4 +114,28 @@ class FilePicker(
         const val PERMISSION_REGISTRY_KEY = "permission_file"
         const val RESULT_REGISTRY_KEY = "pick_file"
     }
+}
+
+ fun Uri.getFile(context: Context): File {
+//    val context = this@FilePicker.fragment.requireContext()
+    val parcelFileDescriptor = context.contentResolver.openFileDescriptor(this, "r", null)
+    val inputStream = FileInputStream(parcelFileDescriptor!!.fileDescriptor)
+
+    val file = File(context.cacheDir, context.contentResolver.getFileName(this))
+    val outputStream = FileOutputStream(file)
+    IOUtils.copy(inputStream, outputStream)
+    return file
+}
+
+private fun ContentResolver.getFileName(fileUri: Uri): String {
+    var name = ""
+    val returnCursor = this.query(fileUri, null, null, null, null)
+    if (returnCursor != null) {
+        val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        returnCursor.moveToFirst()
+        name = returnCursor.getString(nameIndex)
+        returnCursor.close()
+    }
+
+    return name
 }

@@ -81,11 +81,11 @@ class AttachmentRepository @javax.inject.Inject constructor(
     private suspend fun saveAttachments(attachments: List<AttachmentHeader>, referenceId: UUID) {
         deleteNotContainsAttachments(attachments, referenceId)
         attachments.forEach { attachment ->
-            saveAttachment(attachment)
+            saveAttachment(attachment, referenceId)
         }
     }
 
-    private suspend fun saveAttachment(attachment: AttachmentHeader) {
+    private suspend fun saveAttachment(attachment: AttachmentHeader, referenceId: UUID?) {
         attachmentLocalDataSource.upsert(
             when (attachment) {
                 is FileAttachmentHeader -> {
@@ -115,7 +115,8 @@ class AttachmentRepository @javax.inject.Inject constructor(
                         sync = true
                     )
                 }
-            }
+            },
+            referenceId?.toString()
         )
     }
 
@@ -156,7 +157,7 @@ class AttachmentRepository @javax.inject.Inject constructor(
                 attachmentRequest
             )
         }.onSuccess {
-            saveAttachment(it)
+            saveAttachment(it, submissionId)
         }
     }
 }

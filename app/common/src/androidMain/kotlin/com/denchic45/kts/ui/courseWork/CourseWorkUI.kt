@@ -27,7 +27,9 @@ import androidx.compose.material.icons.outlined.Comment
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
@@ -52,10 +54,10 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.core.net.toFile
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
@@ -67,6 +69,7 @@ import com.denchic45.kts.ui.courseWork.yourSubmission.YourSubmissionComponent
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
+import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.launch
@@ -82,12 +85,17 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     val submissionResource by yourSubmissionComponent.uiState
         .collectAsState(null)
 
+    val context = LocalContext.current
+
     val pickFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.let { data: Intent ->
-                yourSubmissionComponent.onAttachmentSelect(data.data!!.toFile().toOkioPath())
+
+                yourSubmissionComponent.onAttachmentSelect(
+                    data.data!!.getFile(context).toOkioPath()
+                )
             }
         }
     }
@@ -294,23 +302,47 @@ fun SubmissionCollapsedContent(
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    Column(modifier = modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
+    Column(
+        modifier = modifier
+            .padding(horizontal = MaterialTheme.spacing.normal)
+    ) {
+        Row {
+            AssistChip(onClick = { /*TODO*/ },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Comment,
+                        contentDescription = "comments"
+                    )
+                },
+                label = { Text(text = "0") })
+        }
         if (submission.grade == null)
             when (submission.state) {
                 SubmissionState.NEW,
                 SubmissionState.CREATED,
                 SubmissionState.CANCELED_BY_AUTHOR,
                 -> {
-                    Button(onClick = {
-                        if (submission.attachments.isEmpty()) onAttachmentAdd()
-                        else onSubmit()
-                    }, modifier = Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = {
+                            if (submission.attachments.isEmpty()) onAttachmentAdd()
+                            else onSubmit()
+                        }, modifier = Modifier.fillMaxWidth()
+                    ) {
                         Text(text = if (submission.attachments.isEmpty()) "Добавить" else "Сдать")
                     }
                 }
 
-                SubmissionState.SUBMITTED -> Button(onClick = { onCancel() }) {
-                    Text(text = "Отменить")
+                SubmissionState.SUBMITTED -> {
+                    FilledTonalButton(
+                        onClick = { onCancel() },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text(text = "Отменить")
+                    }
                 }
             }
         Spacer(Modifier.height(MaterialTheme.spacing.normal))
@@ -402,23 +434,12 @@ fun SubmissionSheetHeader(
                     -> "Не сдано"
 
                     SubmissionState.SUBMITTED -> "Сдано"
-                    SubmissionState.CANCELED_BY_AUTHOR -> "Отменено автором"
+                    SubmissionState.CANCELED_BY_AUTHOR -> "Отменено"
                 }
                 Text(text = title, style = MaterialTheme.typography.titleLarge)
                 updatedAt?.let {
                     Text(text = it, style = MaterialTheme.typography.bodyMedium)
                 }
-            }
-            Spacer(Modifier.weight(1f))
-            Row {
-                AssistChip(onClick = { /*TODO*/ },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Comment,
-                            contentDescription = "comments"
-                        )
-                    },
-                    label = { Text(text = "0") })
             }
         }
     }

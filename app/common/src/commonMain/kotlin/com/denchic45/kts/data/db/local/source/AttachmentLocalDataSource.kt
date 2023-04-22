@@ -5,6 +5,7 @@ import com.denchic45.kts.AttachmentEntityQueries
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.denchic45.kts.AppDatabase
+import com.denchic45.kts.AttachmentRefEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -14,8 +15,11 @@ import me.tatarka.inject.annotations.Inject
 class AttachmentLocalDataSource @javax.inject.Inject constructor(db: AppDatabase) {
     private val queries: AttachmentEntityQueries = db.attachmentEntityQueries
 
-    suspend fun upsert(attachmentEntity: AttachmentEntity) = withContext(Dispatchers.IO) {
+    suspend fun upsert(attachmentEntity: AttachmentEntity, referenceId: String?) = withContext(Dispatchers.IO) {
         queries.upsert(attachmentEntity)
+        referenceId?.let {
+            queries.upsertReference(attachmentEntity.attachment_id,referenceId)
+        }
     }
 
     suspend fun upsert(attachmentEntities: List<AttachmentEntity>) = withContext(Dispatchers.IO) {
