@@ -29,6 +29,10 @@ UPDATE attachmentEntity
 SET sync =: sync
 WHERE attachment_id =: id;
 
+upsertReference:
+INSERT OR IGNORE INTO attachmentRefEntity (attachment_id, entity_id)
+VALUES (?, ?);
+
 getByDirPath:
 SELECT * FROM attachmentEntity
 WHERE path LIKE (:path || '%');
