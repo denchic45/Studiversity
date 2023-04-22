@@ -114,6 +114,13 @@ class SubmissionRepository {
         }.toResponse()
     }
 
+    fun cancelSubmission(submissionId: UUID): SubmissionResponse {
+        return SubmissionDao.findById(submissionId)!!.apply {
+            state = SubmissionState.CANCELED_BY_AUTHOR
+            updateAt = LocalDateTime.now()
+        }.toResponse()
+    }
+
     fun isAuthorBySubmissionId(submissionId: UUID, authorId: UUID): Boolean {
         return Submissions.exists { Submissions.id eq submissionId and (Submissions.authorId eq authorId) }
     }

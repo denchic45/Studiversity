@@ -36,5 +36,9 @@ fun Application.configureStatusPages() {
         exception<ConflictException> { call, exception ->
             call.respondWithError(HttpStatusCode.Conflict, ErrorInfo(exception.message ?: ""))
         }
+
+        status(HttpStatusCode.NotFound) {call, status->
+            call.respondWithError(HttpStatusCode.NotFound, ErrorInfo("NOT_FOUND"))
+        }
     }
 }

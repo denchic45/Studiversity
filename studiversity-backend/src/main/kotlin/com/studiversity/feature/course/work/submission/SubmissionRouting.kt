@@ -10,10 +10,7 @@ import com.studiversity.feature.attachment.receiveAttachment
 import com.studiversity.feature.attachment.respondAttachment
 import com.studiversity.feature.course.work.submission.usecase.*
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
-import com.studiversity.ktor.claimId
-import com.studiversity.ktor.getUserUuidByParameterOrMe
-import com.studiversity.ktor.getUuidOrFail
-import com.studiversity.ktor.jwtPrincipal
+import com.studiversity.ktor.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -50,6 +47,7 @@ fun Route.submissionByIdRoute() {
         val requireCapability: RequireCapabilityUseCase by inject()
         val findSubmission: FindSubmissionUseCase by inject()
         val submitSubmission: SubmitSubmissionUseCase by inject()
+        val cancelSubmission: CancelSubmissionUseCase by inject()
 
         val addFileAttachmentOfSubmission: AddFileAttachmentOfSubmissionUseCase by inject()
         val addLinkAttachmentOfSubmission: AddLinkAttachmentOfSubmissionUseCase by inject()
@@ -185,11 +183,17 @@ fun Route.submissionByIdRoute() {
             )
             call.respond(HttpStatusCode.OK, submittedSubmission)
         }
-        post {
-
-        }
-        delete {
-
+        post("/cancel") {
+            requireCapability(
+                userId = call.currentUserId(),
+                capability = Capability.SubmitSubmission,
+                scopeId = call.parameters.getUuidOrFail("courseId")
+            )
+            val canceledSubmission = cancelSubmission(
+                submissionId = call.parameters.getUuidOrFail("submissionId"),
+                studentId = call.currentUserId(),
+            )
+            call.respond(HttpStatusCode.OK, canceledSubmission)
         }
     }
 }

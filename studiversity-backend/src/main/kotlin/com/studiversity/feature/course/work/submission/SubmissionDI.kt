@@ -9,6 +9,7 @@ private val useCaseModule = module {
     single { FindSubmissionByStudentUseCase(get(), get(), get(), get()) }
     single { UpdateSubmissionContentUseCase(get(), get()) }
     single { SubmitSubmissionUseCase(get(), get()) }
+    single { CancelSubmissionUseCase(get(),get()) }
     single { SetGradeSubmissionUseCase(get(), get(), get()) }
     single { RequireSubmissionAuthorUseCase(get(), get()) }
     single { IsSubmissionAuthorUseCase(get(), get()) }
