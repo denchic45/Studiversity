@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.denchic45.kts.data.domain.model.FileAttachment2
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
@@ -122,7 +121,7 @@ fun CourseWorkHeader(name: String, commentsCount: Int = 0) {
 }
 
 @Composable
-fun AttachmentItemUI(item: AttachmentItem) {
+fun AttachmentItemUI(item: AttachmentItem, onRemove: (() -> Unit)? = null) {
     AssistChip(onClick = { /*TODO*/ },
         label = {
             Text(
@@ -136,8 +135,10 @@ fun AttachmentItemUI(item: AttachmentItem) {
             Icon(imageVector = Icons.Outlined.AttachFile, contentDescription = "attachment")
         },
         trailingIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Outlined.Close, contentDescription = "attachment")
+            onRemove?.let {
+                IconButton(onClick = { it() }) {
+                    Icon(imageVector = Icons.Outlined.Close, contentDescription = "attachment")
+                }
             }
         }
     )

@@ -8,9 +8,9 @@ sealed interface Attachment2 {
     val id: UUID
 }
 
-data class FileAttachment2(override val id: UUID, val path: Path, val state: FileState) :
+data class FileAttachment2(override val id: UUID, val name: String, val path: Path, val state: FileState) :
     Attachment2 {
-    val name: String = path.name
+
 }
 
 sealed class FileState {

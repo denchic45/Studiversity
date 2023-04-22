@@ -11,7 +11,9 @@ import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.observeResource
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.data.storage.AttachmentStorage
+import com.denchic45.kts.domain.EmptyResource
 import com.denchic45.kts.domain.Resource
+import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.course.element.model.AttachmentType
@@ -36,7 +38,8 @@ class AttachmentRepository @javax.inject.Inject constructor(
     private val attachmentReferenceLocalDataSource: AttachmentReferenceLocalDataSource,
     private val attachmentStorage: AttachmentStorage,
     private val submissionsApi: SubmissionsApi,
-    private val courseWorkApi: CourseWorkApi
+    private val courseWorkApi: CourseWorkApi,
+    private val attachmentApi: AttachmentApi
 ) : NetworkServiceOwner {
 
     fun observeBySubmission(
@@ -66,6 +69,7 @@ class AttachmentRepository @javax.inject.Inject constructor(
                     when (entity.type) {
                         AttachmentType.FILE -> FileAttachment2(
                             id = id,
+                            name = entity.attachment_name,
                             path = entity.path!!.toPath(),
                             state = if (entity.sync) FileState.Downloaded else FileState.Preview
                         )
@@ -159,5 +163,9 @@ class AttachmentRepository @javax.inject.Inject constructor(
         }.onSuccess {
             saveAttachment(it, submissionId)
         }
+    }
+
+    suspend fun removeFrom(attachmentId: UUID, submissionId: UUID):EmptyResource = fetchResource {
+        TODO("Remove local and remote")
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -31,6 +32,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -93,14 +95,17 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.let { data: Intent ->
 
-                yourSubmissionComponent.onAttachmentSelect(
+                yourSubmissionComponent.onFileSelect(
                     data.data!!.getFile(context).toOkioPath()
                 )
             }
         }
     }
 
-    CourseWorkContent(childrenResource, submissionResource, onAttachmentAdd = {
+    CourseWorkContent(
+        childrenResource = childrenResource,
+        submissionResource = submissionResource,
+        onAttachmentAdd = {
         val chooserIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "*/*"
@@ -111,7 +116,11 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
                 chooserIntent, "Выберите файл"
             )
         )
-    }, yourSubmissionComponent::onSubmit, yourSubmissionComponent::onCancel)
+    },
+        onAttachmentRemove = yourSubmissionComponent::onAttachmentRemove,
+        onSubmit = yourSubmissionComponent::onSubmit,
+        onCancel = yourSubmissionComponent::onCancel
+    )
 }
 
 @Composable
@@ -120,6 +129,7 @@ private fun CourseWorkContent(
     childrenResource: Resource<List<CourseWorkComponent.Child>>,
     submissionResource: Resource<YourSubmissionComponent.SubmissionUiState>?,
     onAttachmentAdd: () -> Unit,
+    onAttachmentRemove:(attachmentId:UUID)->Unit,
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -171,23 +181,26 @@ private fun CourseWorkContent(
         sheetContent = {
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
                     .verticalScroll(rememberScrollState())
             ) {
                 submissionResource?.onSuccess { submission ->
                     SubmissionSheetHeader(submission, Modifier.onGloballyPositioned { coordinates ->
                         headerHeight = coordinates.size.height.toFloat()
                     })
-                    Box(Modifier) {
-                        SubmissionSheetExpanded(
-                            submission,
-                            Modifier
-                                .alpha(transition)
-                                .clickable(enabled = false, onClick = {})
-//                                .onGloballyPositioned { coordinates ->
-//                                    expandedHeight = coordinates.size.height.toFloat()
-//                                }
-                        )
+                    Box(Modifier.fillMaxHeight()) {
+                        Column(Modifier.fillMaxHeight()) {
+                            SubmissionSheetExpanded(
+                                uiState = submission,
+                                modifier = Modifier
+                                    .height(screenHeight.pxToDp() + collapsedHeight.pxToDp())
+                                    .alpha(transition)
+                                    .clickable(enabled = false, onClick = {}),
+                                onAttachmentAdd = onAttachmentAdd,
+                                onAttachmentRemove = onAttachmentRemove,
+                                onSubmit = onSubmit,
+                                onCancel = onCancel
+                            )
+                        }
 
                         if (transition < 1F)
                             SubmissionCollapsedContent(
@@ -249,7 +262,7 @@ fun calcPercentOf(min: Float, max: Float, input: Float): Float {
 @OptIn(ExperimentalFoundationApi::class)
 private fun CourseWorkBody(
     childrenResource: Resource<List<CourseWorkComponent.Child>>,
-    onPageSelect: (Int) -> Unit
+    onPageSelect: (Int) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
@@ -341,7 +354,7 @@ fun SubmissionCollapsedContent(
                             contentColor = MaterialTheme.colorScheme.error
                         )
                     ) {
-                        Text(text = "Отменить")
+                        Text(text = "Отменить отправку")
                     }
                 }
             }
@@ -362,7 +375,7 @@ fun SubmissionSheetCollapsed(
             .fillMaxWidth()
             .padding(MaterialTheme.spacing.normal)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row {
             Column(Modifier.weight(1f)) {
                 val updatedAt = submission.updatedAt?.toString("dd MMM HH:mm")
                 val title = submission.grade?.let {
@@ -446,15 +459,57 @@ fun SubmissionSheetHeader(
 }
 
 @Composable
-fun SubmissionSheetExpanded(state: YourSubmissionComponent.SubmissionUiState, modifier: Modifier) {
+fun SubmissionSheetExpanded(
+    uiState: YourSubmissionComponent.SubmissionUiState,
+    modifier: Modifier,
+    onAttachmentAdd: () -> Unit,
+    onAttachmentRemove: (attachmentId:UUID) -> Unit,
+    onSubmit: () -> Unit,
+    onCancel: () -> Unit,
+) {
     Column(
         modifier.fillMaxWidth()
     ) {
-        if (state.attachments.isNotEmpty()) {
-            HeaderItemUI(name = "Прикрепления ${state.attachments.size}")
+        if (uiState.attachments.isNotEmpty()) {
+            HeaderItemUI(name = "Прикрепления ${uiState.attachments.size}")
             LazyRow(Modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
-                items(state.attachments, key = { it.attachmentId?.toString() ?: "" }) {
-                    AttachmentItemUI(item = it)
+                items(uiState.attachments, key = { it.attachmentId?.toString() ?: "" }) {
+                    AttachmentItemUI(item = it) {
+                        onAttachmentRemove(it.attachmentId!!)
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Row(Modifier.padding(MaterialTheme.spacing.normal)) {
+            when (uiState.state) {
+                SubmissionState.NEW,
+                SubmissionState.CREATED,
+                SubmissionState.CANCELED_BY_AUTHOR,
+                -> {
+                    OutlinedButton(
+                        onClick = { onAttachmentAdd() },
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Text(text = "Прикрепить файл")
+                    }
+                    if (uiState.attachments.isNotEmpty()) {
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
+                        Button(onClick = { onSubmit() }, modifier = Modifier.weight(1f)) {
+                            Text(text = "Сдать работу")
+                        }
+                    }
+                }
+
+                SubmissionState.SUBMITTED -> FilledTonalButton(
+                    onClick = { onCancel() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(text = "Отменить отправку")
                 }
             }
         }
@@ -485,7 +540,7 @@ fun CourseWorkContentPreview() {
                         grade = null
                     )
                 ),
-                {}, {}, {}
+                {}, {}, {},{}
             )
         }
     }

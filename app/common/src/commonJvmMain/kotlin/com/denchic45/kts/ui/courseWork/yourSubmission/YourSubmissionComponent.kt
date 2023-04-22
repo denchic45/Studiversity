@@ -11,6 +11,7 @@ import com.denchic45.kts.domain.usecase.CancelSubmissionUseCase
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindSubmissionAttachmentsUseCase
 import com.denchic45.kts.domain.usecase.FindYourSubmissionUseCase
+import com.denchic45.kts.domain.usecase.RemoveAttachmentFromSubmissionUseCase
 import com.denchic45.kts.domain.usecase.SubmitSubmissionUseCase
 import com.denchic45.kts.domain.usecase.UploadAttachmentToSubmissionUseCase
 import com.denchic45.kts.ui.model.AttachmentItem
@@ -46,6 +47,7 @@ class YourSubmissionComponent(
     private val findYourSubmissionUseCase: FindYourSubmissionUseCase,
     private val findSubmissionAttachmentsUseCase: FindSubmissionAttachmentsUseCase,
     private val uploadAttachmentToSubmissionUseCase: UploadAttachmentToSubmissionUseCase,
+    private val removeAttachmentFromSubmissionUseCase: RemoveAttachmentFromSubmissionUseCase,
     private val submitSubmissionUseCase: SubmitSubmissionUseCase,
     private val cancelSubmissionUseCase: CancelSubmissionUseCase,
     @Assisted
@@ -122,7 +124,7 @@ class YourSubmissionComponent(
         }
     }
 
-    fun onAttachmentSelect(path: Path) {
+    fun onFileSelect(path: Path) {
         uiState.value.onSuccess {
             componentScope.launch {
                 uploadAttachmentToSubmissionUseCase(
@@ -133,6 +135,14 @@ class YourSubmissionComponent(
                 )
             }
         }
+    }
+
+    fun onAttachmentRemove(attachmentId:UUID) {
+       uiState.value.onSuccess {
+           componentScope.launch{
+               removeAttachmentFromSubmissionUseCase(attachmentId,it.id)
+           }
+       }
     }
 
     fun onSubmit() {

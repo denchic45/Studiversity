@@ -8,7 +8,6 @@ import com.denchic45.kts.domain.usecase.FindCourseWorkUseCase
 import com.denchic45.kts.ui.model.toAttachmentItems
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
