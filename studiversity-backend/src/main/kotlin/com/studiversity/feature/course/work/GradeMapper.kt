@@ -5,8 +5,8 @@ import com.studiversity.database.table.GradeDao
 
 fun GradeDao.toResponse() = GradeResponse(
     value = value,
-    courseId = courseId,
-    studentId = studentId,
-    gradedBy = gradedBy,
-    submissionId = submissionId?.value
+    courseId = course.id.value,
+    studentId = student.id.value,
+    gradedBy = gradedBy?.id?.value,
+    submissionId = submission?.id?.value
 )

@@ -96,7 +96,7 @@ class UserMembershipRepository(
 
     fun findMemberIdsByScopeAndRole(scopeId: UUID, roleId: Long) = MembershipsInnerUserMembershipsInnerUsersRolesScopes
         .select(Memberships.scopeId eq scopeId and (UsersRolesScopes.roleId eq roleId))
-        .map { it[UsersMemberships.memberId] }
+        .map { it[UsersMemberships.memberId].value }
 
     fun findMemberByScope(userId: UUID, scopeId: UUID) = Memberships
         .innerJoin(UsersMemberships, { Memberships.id }, { membershipId })
@@ -171,7 +171,7 @@ class UserMembershipRepository(
                         and (Memberships.scopeId inList groupIds)
                         and (UsersMemberships.memberId notInList courseStudentsFromGroups)
             ).distinctBy { it[UsersMemberships.memberId] }
-            .map { it[UsersMemberships.memberId] }
+            .map { it[UsersMemberships.memberId].value }
     }
 
     fun findAndRemoveRemainingStudentsOfCourseToGroups(groupIds: List<UUID>, courseMembershipId: UUID) = transaction {
@@ -201,7 +201,7 @@ class UserMembershipRepository(
                 UsersMemberships.membershipId eq courseMembershipId
                         and (UsersMemberships.memberId notInList groupStudentIds)
             ).distinctBy { it[UsersMemberships.memberId] }
-            .map { it[UsersMemberships.memberId] }
+            .map { it[UsersMemberships.memberId].value }
     }
 
     private fun findMembershipsByScopeIds(groupIds: List<UUID>): List<UUID> {
@@ -239,7 +239,7 @@ class UserMembershipRepository(
             .select(
                 targetUm[UsersMemberships.membershipId].isNull()
                         and (sourceUm[UsersMemberships.membershipId] inList membershipIdsSources)
-            ).map { it[sourceUm[UsersMemberships.memberId]] }
+            ).map { it[sourceUm[UsersMemberships.memberId]].value }
     }
 
     /**
@@ -292,7 +292,7 @@ class UserMembershipRepository(
             .select(
                 targetUm[UsersMemberships.membershipId].isNull()
                         and (sourceUm[UsersMemberships.membershipId] eq membershipIdSource)
-            ).map { it[sourceUm[UsersMemberships.memberId]] }
+            ).map { it[sourceUm[UsersMemberships.memberId]].value }
     }
 
     /**

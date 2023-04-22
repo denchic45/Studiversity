@@ -11,6 +11,7 @@ import com.studiversity.feature.attachment.respondAttachment
 import com.studiversity.feature.course.work.submission.usecase.*
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.ktor.claimId
+import com.studiversity.ktor.getUserUuidByParameterOrMe
 import com.studiversity.ktor.getUuidOrFail
 import com.studiversity.ktor.jwtPrincipal
 import io.ktor.http.*
@@ -200,7 +201,7 @@ fun Route.submissionByStudentIdRoute() {
         val currentUserId = call.jwtPrincipal().payload.claimId
         val submission = findSubmissionByStudent(
             call.parameters.getUuidOrFail("workId"),
-            call.parameters.getUuidOrFail("studentId"),
+            call.getUserUuidByParameterOrMe("studentId"),
             currentUserId
         )
         val isOwnSubmission = submission.author.id == currentUserId

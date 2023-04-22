@@ -30,8 +30,8 @@ class SubmissionRepository {
         state: SubmissionState
     ): SubmissionResponse {
         return SubmissionDao.new {
-            this.authorId = studentId
-            this.courseWorkId = courseWorkId
+            this.author = UserDao.findById(studentId)!!
+            this.courseWork = CourseWorkDao.findById(courseWorkId)!!
             this.state = state
         }.toResponse()
     }
@@ -69,6 +69,7 @@ class SubmissionRepository {
                 { CourseWorks.id },
                 { Submissions.courseWorkId },
                 { Submissions.authorId eq UsersMemberships.memberId })
+            .innerJoin(Users, { UsersMemberships.memberId }, { Users.id })
             .select(Memberships.scopeId eq courseId and (UsersMemberships.memberId inList studentIds))
             .map {
                 it.getOrNull(Submissions.id)?.let { submissionId ->
@@ -89,7 +90,7 @@ class SubmissionRepository {
                         } ?: WorkSubmissionContent(emptyList()),
                         updatedAt = it[Submissions.updatedAt]
                     )
-                } ?: addNewSubmissionByStudentId(courseWorkId, it[UsersMemberships.memberId])
+                } ?: addNewSubmissionByStudentId(courseWorkId, it[UsersMemberships.memberId].value)
             }
     }
 
@@ -119,9 +120,9 @@ class SubmissionRepository {
 
     fun setGradeSubmission(grade: SubmissionGradeRequest): SubmissionResponse {
         GradeDao.new {
-            this.courseId = grade.courseId
-            this.studentId = SubmissionDao.findById(grade.submissionId)!!.authorId
-            this.gradedBy = grade.gradedBy
+            this.course = CourseDao.findById(grade.courseId)!!
+            this.student = SubmissionDao.findById(grade.submissionId)!!.author
+            this.gradedBy = UserDao.findById(grade.gradedBy)
             this.value = grade.value
             this.submission = SubmissionDao.findById(grade.submissionId)
         }

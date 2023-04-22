@@ -6,8 +6,8 @@ import org.jetbrains.exposed.sql.javatime.JavaInstantColumnType
 import org.jetbrains.exposed.sql.javatime.timestamp
 
 object UsersMemberships : LongIdTable("user_membership", "user_membership_id") {
-    val membershipId = reference("membership_id", Memberships.id)
-    val memberId = uuid("member_id").references(Users.id)
+    val membershipId = reference("membership_id", Memberships)
+    val memberId = reference("member_id",Users)
     val joinAt = timestamp("join_at").defaultExpression(CustomFunction("now", JavaInstantColumnType()))
 
     init {

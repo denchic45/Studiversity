@@ -1,9 +1,5 @@
 package com.studiversity.client.course
 
-import com.github.michaelbull.result.*
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertResultIsOk
-import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.*
@@ -17,6 +13,10 @@ import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionStat
 import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.submission.SubmissionsApi
+import com.denchic45.stuiversity.util.toUUID
+import com.github.michaelbull.result.*
+import com.studiversity.KtorClientTest
+import com.studiversity.util.assertResultIsOk
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -38,9 +38,9 @@ class SubmissionsTest : KtorClientTest() {
     private val linkUrl =
         "https://developers.google.com/classroom/reference/rest/v1/courses.courseWork.studentSubmissions#StudentSubmission"
 
-    private val file: File = File("data.txt").apply {
+    private val fileRequest = CreateFileRequest(File("data.txt").apply {
         writeText("Hello, Reader!")
-    }
+    })
 
     private lateinit var course: CourseResponse
     private lateinit var courseWork: CourseElementResponse
@@ -217,14 +217,14 @@ class SubmissionsTest : KtorClientTest() {
             course.id,
             courseWork.id,
             submission.id,
-            file
+            fileRequest
         ).apply { assertNotNull(getError()) { unwrap().toString() } }
 
         submissionsApiOfStudent.uploadFileToSubmission(
             course.id,
             courseWork.id,
             submission.id,
-            file
+            fileRequest
         )
 
         submissionsApiOfTeacher.submitSubmission(course.id, courseWork.id, submission.id).apply {
@@ -272,7 +272,7 @@ class SubmissionsTest : KtorClientTest() {
     fun testAddRemoveAttachment(): Unit = runBlocking {
         enrolStudent(student1Id)
         val submission = submissionsApiOfStudent.getByStudent(course.id, courseWork.id, student1Id).unwrap()
-        submissionsApiOfStudent.uploadFileToSubmission(course.id, courseWork.id, submission.id, file).apply {
+        submissionsApiOfStudent.uploadFileToSubmission(course.id, courseWork.id, submission.id, fileRequest).apply {
             assertNotNull(get(), getError().toString())
         }
 
@@ -337,7 +337,7 @@ class SubmissionsTest : KtorClientTest() {
         val submissionId = submission.id
 
         val fileAttachment =
-            submissionsApiOfStudent.uploadFileToSubmission(course.id, courseWork.id, submissionId, file).apply {
+            submissionsApiOfStudent.uploadFileToSubmission(course.id, courseWork.id, submissionId, fileRequest).apply {
                 assertNotNull(get(), getError().toString())
                 assertEquals("data.txt", unwrap().item.name)
             }.unwrap()
@@ -351,7 +351,7 @@ class SubmissionsTest : KtorClientTest() {
             assertNotNull(get()) { unwrapError().error.toString() }
             val downloadedFile = unwrap() as FileAttachmentResponse
             assertEquals("data.txt", downloadedFile.name)
-            assertEquals(file.readText(), downloadedFile.bytes.decodeToString())
+            assertEquals(fileRequest.bytes.decodeToString(), downloadedFile.bytes.decodeToString())
         }
 
         val linkAttachment = submissionsApiOfStudent.addLinkToSubmission(
