@@ -165,7 +165,15 @@ class AttachmentRepository @javax.inject.Inject constructor(
         }
     }
 
-    suspend fun removeFrom(attachmentId: UUID, submissionId: UUID):EmptyResource = fetchResource {
-        TODO("Remove local and remote")
+    suspend fun removeFromSubmission(
+        attachmentId: UUID,
+        courseId: UUID,
+        workId: UUID,
+        submissionId: UUID
+    ): EmptyResource = fetchResource {
+        submissionsApi.deleteAttachmentOfSubmission(courseId,workId,submissionId,attachmentId).onSuccess {
+            attachmentReferenceLocalDataSource.delete(attachmentId.toString(), submissionId.toString())
+            attachmentStorage.delete(attachmentId)
+        }
     }
 }

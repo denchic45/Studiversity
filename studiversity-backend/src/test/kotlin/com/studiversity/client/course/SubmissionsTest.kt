@@ -1,5 +1,6 @@
 package com.studiversity.client.course
 
+import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.*
@@ -51,9 +52,10 @@ class SubmissionsTest : KtorClientTest() {
     private val submissionsApiOfStudent: SubmissionsApi by inject { parametersOf(studentClient) }
     private val submissionsApiOfTeacher: SubmissionsApi by inject { parametersOf(teacherClient) }
     private val coursesApi: CoursesApi by inject { parametersOf(client) }
-    private val CourseElementsApi: CourseElementsApi by inject { parametersOf(client) }
+    private val attachmentApi:AttachmentApi by inject { parametersOf(client) }
+    private val courseElementsApi: CourseElementsApi by inject { parametersOf(client) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(client) }
-    private val MembershipApi: MembershipApi by inject { parametersOf(client) }
+    private val membershipApi: MembershipApi by inject { parametersOf(client) }
 
 
     override fun setup(): Unit = runBlocking {
@@ -87,7 +89,7 @@ class SubmissionsTest : KtorClientTest() {
     @AfterEach
     fun tearDown(): Unit = runBlocking {
         // delete course element
-        CourseElementsApi.delete(course.id, courseWork.id).apply { assertNotNull(get()) { unwrapError().toString() } }
+        courseElementsApi.delete(course.id, courseWork.id).apply { assertNotNull(get()) { unwrapError().toString() } }
         // unroll users
         unrollUser(student1Id)
         unrollUser(student2Id)
@@ -107,11 +109,11 @@ class SubmissionsTest : KtorClientTest() {
     }
 
     private suspend fun enrolUser(userId: UUID, roleId: Long) {
-        MembershipApi.joinToScopeManually(userId, course.id, listOf(roleId)).also(::assertResultIsOk)
+        membershipApi.joinToScopeManually(userId, course.id, listOf(roleId)).also(::assertResultIsOk)
     }
 
     private suspend fun unrollUser(userId: UUID) {
-        MembershipApi.leaveFromScope(userId, course.id, "manual")
+        membershipApi.leaveFromScope(userId, course.id, "manual")
             .onSuccess { println("Success unroll user: $userId") }
             .onFailure { println("Failed unroll user: $userId. Status: ${it.code}. Body: ${it.error}") }
     }
@@ -342,10 +344,7 @@ class SubmissionsTest : KtorClientTest() {
                 assertEquals("data.txt", unwrap().item.name)
             }.unwrap()
 
-        submissionsApiOfStudent.getAttachment(
-            courseId = course.id,
-            courseWorkId = courseWork.id,
-            submissionId = submissionId,
+        attachmentApi.getById(
             attachmentId = fileAttachment.id
         ).apply {
             assertNotNull(get()) { unwrapError().error.toString() }
@@ -361,10 +360,7 @@ class SubmissionsTest : KtorClientTest() {
             CreateLinkRequest(linkUrl)
         ).unwrap()
 
-        submissionsApiOfStudent.getAttachment(
-            courseId = course.id,
-            courseWorkId = courseWork.id,
-            submissionId = submissionId,
+        attachmentApi.getById(
             attachmentId = linkAttachment.id
         ).apply {
             assertEquals(linkUrl, (unwrap() as LinkAttachmentResponse).url)

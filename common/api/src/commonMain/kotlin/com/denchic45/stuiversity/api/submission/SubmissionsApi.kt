@@ -45,12 +45,12 @@ interface SubmissionsApi {
         submissionId: UUID
     ): ResponseResult<List<AttachmentHeader>>
 
-    suspend fun getAttachment(
-        courseId: UUID,
-        courseWorkId: UUID,
-        submissionId: UUID,
-        attachmentId: UUID
-    ): ResponseResult<AttachmentResponse>
+//    suspend fun getAttachment(
+//        courseId: UUID,
+//        courseWorkId: UUID,
+//        submissionId: UUID,
+//        attachmentId: UUID
+//    ): ResponseResult<AttachmentResponse>
 
     suspend fun uploadFileToSubmission(
         courseId: UUID,
@@ -133,15 +133,15 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
             .toResult()
     }
 
-    override suspend fun getAttachment(
-        courseId: UUID,
-        courseWorkId: UUID,
-        submissionId: UUID,
-        attachmentId: UUID
-    ): ResponseResult<AttachmentResponse> {
-        return client.get("/courses/$courseId/works/$courseWorkId/submissions/$submissionId/attachments/$attachmentId")
-            .toAttachmentResult()
-    }
+//    override suspend fun getAttachment(
+//        courseId: UUID,
+//        courseWorkId: UUID,
+//        submissionId: UUID,
+//        attachmentId: UUID
+//    ): ResponseResult<AttachmentResponse> {
+//        return client.get("/courses/$courseId/works/$courseWorkId/submissions/$submissionId/attachments/$attachmentId")
+//            .toAttachmentResult()
+//    }
 
     override suspend fun uploadFileToSubmission(
         courseId: UUID,

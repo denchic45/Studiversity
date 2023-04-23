@@ -10,7 +10,15 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.toResource
 import com.denchic45.stuiversity.api.common.ResponseResult
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
@@ -25,11 +33,13 @@ fun <T, R> NetworkServiceOwner.observeResource(
         emit(Resource.Loading)
         runCatching {
             fetch()
-        }.fold(onSuccess = { result ->
-            result.toResource()
-                .onSuccess { saveFetch(it) }
-                .onFailure { emit(Resource.Error(it)) }
-        }, onFailure = { emit(Resource.Error(Cause(it))) })
+        }.fold(
+            onSuccess = { result ->
+                result.toResource()
+                    .onSuccess { saveFetch(it) }
+                    .onFailure { emit(Resource.Error(it)) }
+            },
+            onFailure = { emit(Resource.Error(Cause(it))) })
     }
     emitAll(query.map { Resource.Success(it) })
 }

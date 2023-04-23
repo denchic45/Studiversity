@@ -8,7 +8,7 @@ import javax.inject.Inject
 @me.tatarka.inject.annotations.Inject
 class ContentAttachmentLocalStorage @Inject constructor(systemDirs: SystemDirs) {
 
-    private val internalDir = systemDirs.appDirectory
+    private val internalDir = systemDirs.appDir
     private val contentPDir = File("${internalDir.path}/contents")
 
     fun delete(contentId: String) {

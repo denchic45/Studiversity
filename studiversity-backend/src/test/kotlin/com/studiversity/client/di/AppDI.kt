@@ -2,6 +2,8 @@ package com.studiversity.client.di
 
 import com.denchic45.stuiversity.api.account.AccountApi
 import com.denchic45.stuiversity.api.account.AccountApiImpl
+import com.denchic45.stuiversity.api.attachment.AttachmentApi
+import com.denchic45.stuiversity.api.attachment.AttachmentApiImpl
 import com.denchic45.stuiversity.api.auth.AuthApi
 import com.denchic45.stuiversity.api.auth.AuthApiImpl
 import com.denchic45.stuiversity.api.course.CourseApiImpl
@@ -46,6 +48,7 @@ internal val apiModule = module {
     factory<CapabilityApi> { CapabilityApiImpl(it.get()) }
     factory<StudyGroupApi> { StudyGroupApiImpl(it.get()) }
     factory<ScheduleApi> { ScheduleApiImpl(it.get()) }
+    factory<AttachmentApi> { AttachmentApiImpl(it.get()) }
     factory<SubjectApi> { SubjectApiImpl(it.get()) }
     factory<SpecialtyApi> { SpecialtyApiImpl(it.get()) }
     factory<CoursesApi> { CourseApiImpl(it.get()) }

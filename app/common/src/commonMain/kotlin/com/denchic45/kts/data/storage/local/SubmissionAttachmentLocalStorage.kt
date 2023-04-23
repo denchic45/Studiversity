@@ -9,7 +9,7 @@ import javax.inject.Inject
 @me.tatarka.inject.annotations.Inject
 class SubmissionAttachmentLocalStorage @Inject constructor(systemDirs: SystemDirs) {
 
-    private val internalDir = systemDirs.appDirectory
+    private val internalDir = systemDirs.appDir
     private val submissionDir = File("${internalDir.path}/submissions")
 
     fun getByContentIdAndStudentId(contentId: String, studentId: String): List<File> {

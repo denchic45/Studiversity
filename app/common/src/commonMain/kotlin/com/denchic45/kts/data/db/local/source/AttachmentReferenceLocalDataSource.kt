@@ -24,6 +24,10 @@ class AttachmentReferenceLocalDataSource @javax.inject.Inject constructor(db: Ap
             }
         }
 
+    suspend fun delete(attachmentId: String, referenceId: String) = withContext(Dispatchers.IO) {
+        queries.delete(attachmentId, referenceId)
+    }
+
     suspend fun deleteByNotInIds(ids: List<String>, referenceId: String) =
         withContext(Dispatchers.IO) {
             queries.deleteByNotContainsId(ids, referenceId)

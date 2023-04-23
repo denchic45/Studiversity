@@ -1,6 +1,7 @@
 package com.denchic45.kts.data.storage
 
 import com.denchic45.kts.util.SystemDirs
+import com.denchic45.kts.util.databaseFile
 import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.course.element.model.FileAttachmentResponse
@@ -18,7 +19,7 @@ class AttachmentStorage @javax.inject.Inject constructor(
     private val attachmentApi: AttachmentApi,
 ) {
 
-    val path: Path = systemDirs.appDirectory.toOkioPath() / "attachments"
+    val path: Path = systemDirs.fileDir.toOkioPath() / "attachments"
 
     private val fileSystem = FileSystem.SYSTEM
 
@@ -39,6 +40,7 @@ class AttachmentStorage @javax.inject.Inject constructor(
     }
 
     fun getFilePath(attachmentId: UUID) = path / attachmentId.toString()
+
     fun delete(attachmentId: UUID) {
         fileSystem.delete(getFilePath(attachmentId))
     }

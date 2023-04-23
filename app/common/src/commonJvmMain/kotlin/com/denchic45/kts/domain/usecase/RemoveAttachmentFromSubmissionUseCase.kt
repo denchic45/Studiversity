@@ -9,7 +9,7 @@ class RemoveAttachmentFromSubmissionUseCase(
     private val attachmentRepository: AttachmentRepository,
 ) {
 
-    suspend operator fun invoke(attachmentId: UUID, submissionId: UUID) {
-        attachmentRepository.removeFrom(attachmentId, submissionId)
+    suspend operator fun invoke(attachmentId: UUID, courseId:UUID,workId:UUID,submissionId: UUID) {
+        attachmentRepository.removeFromSubmission(attachmentId, courseId,workId,submissionId)
     }
 }

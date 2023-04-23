@@ -33,11 +33,11 @@ interface CourseWorkApi {
         courseWorkId: UUID
     ): ResponseResult<List<AttachmentHeader>>
 
-    suspend fun getAttachment(
-        courseId: UUID,
-        courseWorkId: UUID,
-        attachmentId: UUID
-    ): ResponseResult<AttachmentResponse>
+//    suspend fun getAttachment(
+//        courseId: UUID,
+//        courseWorkId: UUID,
+//        attachmentId: UUID
+//    ): ResponseResult<AttachmentResponse>
 
     suspend fun uploadFileToWork(
         courseId: UUID,
@@ -92,13 +92,13 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
             .toResult()
     }
 
-    override suspend fun getAttachment(
-        courseId: UUID,
-        courseWorkId: UUID,
-        attachmentId: UUID
-    ): ResponseResult<AttachmentResponse> {
-        return client.get("/courses/$courseId/works/$courseWorkId/attachments/$attachmentId").toAttachmentResult()
-    }
+//    override suspend fun getAttachment(
+//        courseId: UUID,
+//        courseWorkId: UUID,
+//        attachmentId: UUID
+//    ): ResponseResult<AttachmentResponse> {
+//        return client.get("/courses/$courseId/works/$courseWorkId/attachments/$attachmentId").toAttachmentResult()
+//    }
 
     override suspend fun uploadFileToWork(
         courseId: UUID,

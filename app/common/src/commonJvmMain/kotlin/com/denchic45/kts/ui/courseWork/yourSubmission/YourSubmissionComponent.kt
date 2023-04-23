@@ -14,6 +14,8 @@ import com.denchic45.kts.domain.usecase.FindYourSubmissionUseCase
 import com.denchic45.kts.domain.usecase.RemoveAttachmentFromSubmissionUseCase
 import com.denchic45.kts.domain.usecase.SubmitSubmissionUseCase
 import com.denchic45.kts.domain.usecase.UploadAttachmentToSubmissionUseCase
+import com.denchic45.kts.ui.courseWork.SubmissionUiState
+import com.denchic45.kts.ui.courseWork.toUiState
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.model.toAttachmentItems
 import com.denchic45.kts.util.componentScope
@@ -110,13 +112,7 @@ class YourSubmissionComponent(
                 ) { submissionRes, attachmentsRes ->
                     submissionRes.mapResource { submission ->
                         attachmentsRes.map { attachments ->
-                            SubmissionUiState(
-                                id = submission.id,
-                                attachments = attachments.toAttachmentItems(),
-                                grade = submission.grade,
-                                state = submission.state,
-                                updatedAt = submission.updatedAt
-                            )
+                            submission.toUiState(attachments.toAttachmentItems())
                         }
                     }
                 }
@@ -137,12 +133,12 @@ class YourSubmissionComponent(
         }
     }
 
-    fun onAttachmentRemove(attachmentId:UUID) {
-       uiState.value.onSuccess {
-           componentScope.launch{
-               removeAttachmentFromSubmissionUseCase(attachmentId,it.id)
-           }
-       }
+    fun onAttachmentRemove(attachmentId: UUID) {
+        uiState.value.onSuccess {
+            componentScope.launch {
+                removeAttachmentFromSubmissionUseCase(attachmentId, courseId, workId, it.id)
+            }
+        }
     }
 
     fun onSubmit() {
@@ -182,11 +178,5 @@ class YourSubmissionComponent(
         }
     }
 
-    data class SubmissionUiState(
-        val id: UUID,
-        val attachments: List<AttachmentItem>,
-        val grade: GradeResponse?,
-        val state: SubmissionState,
-        val updatedAt: LocalDateTime?
-    )
+
 }

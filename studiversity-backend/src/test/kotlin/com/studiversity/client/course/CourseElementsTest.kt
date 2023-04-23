@@ -1,5 +1,6 @@
 package com.studiversity.client.course
 
+import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.auth.model.SignupRequest
 import com.denchic45.stuiversity.api.common.SortOrder
 import com.denchic45.stuiversity.api.course.CoursesApi
@@ -78,9 +79,10 @@ class CourseElementsTest : KtorClientTest() {
     private val courseTopicApi: CourseTopicApi by inject { parametersOf(teacherClient) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(teacherClient) }
     private val courseWorkApiOfTeacher: CourseWorkApi by inject { parametersOf(teacherClient) }
+    private val attachmentApi: AttachmentApi by inject { parametersOf(client) }
     private val courseWorkApiOfStudent: CourseWorkApi by inject { parametersOf(studentClient1) }
     private val membershipApi: MembershipApi by inject { parametersOf(client) }
-    private val userApi:UserApi by inject { parametersOf(client) }
+    private val userApi: UserApi by inject { parametersOf(client) }
 
     private lateinit var course: CourseResponse
     private lateinit var courseWork: CourseElementResponse
@@ -274,7 +276,7 @@ class CourseElementsTest : KtorClientTest() {
             assertEquals("data.txt", unwrap().item.name)
         }.unwrap()
 
-        courseWorkApiOfTeacher.getAttachment(course.id, courseWork.id, fileAttachment.id).apply {
+        attachmentApi.getById(fileAttachment.id).apply {
             val downloadedFile = unwrap() as FileAttachmentResponse
             assertEquals("data.txt", downloadedFile.name)
             assertEquals(file.readText(), downloadedFile.bytes.decodeToString())
@@ -286,7 +288,7 @@ class CourseElementsTest : KtorClientTest() {
             CreateLinkRequest(linkUrl)
         ).unwrap()
 
-        courseWorkApiOfTeacher.getAttachment(course.id, courseWork.id, linkAttachment.id).apply {
+        attachmentApi.getById(linkAttachment.id).apply {
             assertEquals(linkUrl, (unwrap() as LinkAttachmentResponse).url)
         }
     }

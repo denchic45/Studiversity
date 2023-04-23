@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -63,11 +61,9 @@ import androidx.compose.ui.unit.Dp
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.component.HeaderItemUI
-import com.denchic45.kts.ui.courseWork.details.AttachmentItemUI
 import com.denchic45.kts.ui.courseWork.details.CourseWorkDetailsScreen
+import com.denchic45.kts.ui.courseWork.submissiondetails.SubmissionDetailsContent
 import com.denchic45.kts.ui.courseWork.submissions.CourseWorkSubmissionsScreen
-import com.denchic45.kts.ui.courseWork.yourSubmission.YourSubmissionComponent
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
@@ -106,17 +102,17 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
         childrenResource = childrenResource,
         submissionResource = submissionResource,
         onAttachmentAdd = {
-        val chooserIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "*/*"
-        }
+            val chooserIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "*/*"
+            }
 
-        pickFileLauncher.launch(
-            Intent.createChooser(
-                chooserIntent, "Выберите файл"
+            pickFileLauncher.launch(
+                Intent.createChooser(
+                    chooserIntent, "Выберите файл"
+                )
             )
-        )
-    },
+        },
         onAttachmentRemove = yourSubmissionComponent::onAttachmentRemove,
         onSubmit = yourSubmissionComponent::onSubmit,
         onCancel = yourSubmissionComponent::onCancel
@@ -127,9 +123,9 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
 @OptIn(ExperimentalMaterial3Api::class)
 private fun CourseWorkContent(
     childrenResource: Resource<List<CourseWorkComponent.Child>>,
-    submissionResource: Resource<YourSubmissionComponent.SubmissionUiState>?,
+    submissionResource: Resource<SubmissionUiState>?,
     onAttachmentAdd: () -> Unit,
-    onAttachmentRemove:(attachmentId:UUID)->Unit,
+    onAttachmentRemove: (attachmentId: UUID) -> Unit,
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -142,15 +138,16 @@ private fun CourseWorkContent(
 
 //    var expandedHeight by remember { mutableStateOf(0F) }
     var offset by remember { mutableStateOf(0F) }
-    var skipHiddenState by remember {
-        mutableStateOf(true)
+    var hidden by remember {
+        mutableStateOf(false)
     }
     val bottomSheetState = rememberStandardBottomSheetState(
         skipHiddenState = false,
         confirmValueChange = {
-            if (it == SheetValue.Hidden) !skipHiddenState
+            if (it == SheetValue.Hidden) !hidden
             else true
-        })
+        }
+    )
 
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
 
@@ -169,6 +166,7 @@ private fun CourseWorkContent(
             snapshotFlow(bottomSheetState::requireOffset)
                 .collect {
                     offset = it
+                    if (hidden) bottomSheetState.hide()
                 }
         }
     }
@@ -184,9 +182,14 @@ private fun CourseWorkContent(
                     .verticalScroll(rememberScrollState())
             ) {
                 submissionResource?.onSuccess { submission ->
-                    SubmissionSheetHeader(submission, Modifier.onGloballyPositioned { coordinates ->
-                        headerHeight = coordinates.size.height.toFloat()
-                    })
+                    SubmissionHeaderContent(
+                        submission,
+                        Modifier
+                            .onGloballyPositioned { coordinates ->
+                                headerHeight = coordinates.size.height.toFloat()
+                            }
+                            .padding(top = MaterialTheme.spacing.normal)
+                    )
                     Box(Modifier.fillMaxHeight()) {
                         Column(Modifier.fillMaxHeight()) {
                             SubmissionSheetExpanded(
@@ -244,7 +247,7 @@ private fun CourseWorkContent(
 //            }
             CourseWorkBody(childrenResource) {
                 coroutineScope.launch {
-                    skipHiddenState = it == 0
+                    hidden = it != 0
                     if (it == 0)
                         bottomSheetState.partialExpand()
                     else bottomSheetState.hide()
@@ -309,7 +312,7 @@ private fun CourseWorkBody(
 
 @Composable
 fun SubmissionCollapsedContent(
-    submission: YourSubmissionComponent.SubmissionUiState,
+    submission: SubmissionUiState,
     modifier: Modifier,
     onAttachmentAdd: () -> Unit,
     onSubmit: () -> Unit,
@@ -364,7 +367,7 @@ fun SubmissionCollapsedContent(
 
 @Composable
 fun SubmissionSheetCollapsed(
-    submission: YourSubmissionComponent.SubmissionUiState,
+    submission: SubmissionUiState,
     modifier: Modifier,
     onAttachmentAdd: () -> Unit,
     onSubmit: () -> Unit,
@@ -426,16 +429,15 @@ fun SubmissionSheetCollapsed(
 }
 
 @Composable
-fun SubmissionSheetHeader(
-    submission: YourSubmissionComponent.SubmissionUiState,
-    modifier: Modifier,
+fun SubmissionHeaderContent(
+    submission: SubmissionUiState,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = MaterialTheme.spacing.normal)
     ) {
-        Spacer(Modifier.height(MaterialTheme.spacing.normal))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 val updatedAt = submission.updatedAt?.toString("dd MMM HH:mm")
@@ -460,26 +462,17 @@ fun SubmissionSheetHeader(
 
 @Composable
 fun SubmissionSheetExpanded(
-    uiState: YourSubmissionComponent.SubmissionUiState,
+    uiState: SubmissionUiState,
     modifier: Modifier,
     onAttachmentAdd: () -> Unit,
-    onAttachmentRemove: (attachmentId:UUID) -> Unit,
+    onAttachmentRemove: (attachmentId: UUID) -> Unit,
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
 ) {
     Column(
         modifier.fillMaxWidth()
     ) {
-        if (uiState.attachments.isNotEmpty()) {
-            HeaderItemUI(name = "Прикрепления ${uiState.attachments.size}")
-            LazyRow(Modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
-                items(uiState.attachments, key = { it.attachmentId?.toString() ?: "" }) {
-                    AttachmentItemUI(item = it) {
-                        onAttachmentRemove(it.attachmentId!!)
-                    }
-                }
-            }
-        }
+        SubmissionDetailsContent(uiState, onAttachmentRemove)
         Spacer(modifier = Modifier.weight(1f))
         Row(Modifier.padding(MaterialTheme.spacing.normal)) {
             when (uiState.state) {
@@ -524,7 +517,7 @@ fun CourseWorkContentPreview() {
             CourseWorkContent(
                 childrenResource = Resource.Loading,
                 submissionResource = Resource.Success(
-                    YourSubmissionComponent.SubmissionUiState(
+                    SubmissionUiState(
                         id = UUID.randomUUID(),
                         state = SubmissionState.CREATED,
                         attachments = listOf(
@@ -540,7 +533,7 @@ fun CourseWorkContentPreview() {
                         grade = null
                     )
                 ),
-                {}, {}, {},{}
+                {}, {}, {}, {}
             )
         }
     }

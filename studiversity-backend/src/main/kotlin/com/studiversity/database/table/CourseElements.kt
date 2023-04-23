@@ -1,11 +1,9 @@
 package com.studiversity.database.table
 
-import com.studiversity.database.exists
-import com.studiversity.database.type.timestampWithTimeZone
-import com.studiversity.util.varcharMax
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
+import com.studiversity.database.exists
 import com.studiversity.database.expression.NowTimestamp
-import com.studiversity.database.table.StudyGroups.defaultExpression
+import com.studiversity.util.varcharMax
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -13,15 +11,19 @@ import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.javatime.CurrentTimestamp
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.select
 import java.util.*
 
 object CourseElements : UUIDTable("course_element", "course_element_id") {
-    val courseId = uuid("course_id").references(Courses.id, onDelete = ReferenceOption.CASCADE,onUpdate = ReferenceOption.CASCADE)
-    val topicId = uuid("topic_id").references(CourseTopics.id,onDelete = ReferenceOption.CASCADE,onUpdate = ReferenceOption.CASCADE).nullable()
+    val courseId =
+        uuid("course_id").references(Courses.id, onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE)
+    val topicId = uuid("topic_id").references(
+        CourseTopics.id,
+        onDelete = ReferenceOption.CASCADE,
+        onUpdate = ReferenceOption.CASCADE
+    ).nullable()
     val name = varcharMax("element_name")
     val description = text("description").nullable()
     val order = integer("element_order")

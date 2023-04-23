@@ -1,13 +1,9 @@
 package com.studiversity.feature.course.work.submission
 
-import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import com.denchic45.stuiversity.api.course.work.grade.GradeRequest
 import com.denchic45.stuiversity.api.course.work.grade.SubmissionGradeRequest
 import com.denchic45.stuiversity.api.role.model.Capability
-import com.studiversity.feature.attachment.receiveAttachment
-import com.studiversity.feature.attachment.respondAttachment
+import com.studiversity.feature.attachment.attachmentRoutes
 import com.studiversity.feature.course.work.submission.usecase.*
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.ktor.*
@@ -48,9 +44,11 @@ fun Route.submissionByIdRoute() {
         val findSubmission: FindSubmissionUseCase by inject()
         val submitSubmission: SubmitSubmissionUseCase by inject()
         val cancelSubmission: CancelSubmissionUseCase by inject()
+        val requireSubmissionAuthor: RequireSubmissionAuthorUseCase by inject()
+        val isSubmissionAuthor: IsSubmissionAuthorUseCase by inject()
 
-        val addFileAttachmentOfSubmission: AddFileAttachmentOfSubmissionUseCase by inject()
-        val addLinkAttachmentOfSubmission: AddLinkAttachmentOfSubmissionUseCase by inject()
+//        val addFileAttachmentOfSubmission: AddFileAttachmentOfSubmissionUseCase by inject()
+//        val addLinkAttachmentOfSubmission: AddLinkAttachmentOfSubmissionUseCase by inject()
 
         get {
             val currentUserId = call.jwtPrincipal().payload.claimId
@@ -71,84 +69,102 @@ fun Route.submissionByIdRoute() {
                 call.respond(HttpStatusCode.OK, submission)
             }
         }
-        route("/attachments") {
-            val requireSubmissionAuthor: RequireSubmissionAuthorUseCase by inject()
-            val isSubmissionAuthor: IsSubmissionAuthorUseCase by inject()
-            val findAttachmentsOfSubmission: FindAttachmentsOfSubmissionUseCase by inject()
-            val removeAttachmentOfSubmission: RemoveAttachmentOfSubmissionUseCase by inject()
-
-            post {
-                val courseId = call.parameters.getUuidOrFail("courseId")
-                val workId = call.parameters.getUuidOrFail("workId")
-                val submissionId = call.parameters.getUuidOrFail("submissionId")
-                val currentUserId = call.jwtPrincipal().payload.claimId
-
-                requireSubmissionAuthor(submissionId, currentUserId)
-
-                val result: AttachmentHeader = when (val attachment = receiveAttachment()) {
-                    is CreateFileRequest -> addFileAttachmentOfSubmission(
-                        submissionId = submissionId,
-                        courseId = courseId,
-                        workId = workId,
-                        attachment = attachment
-                    )
-
-                    is CreateLinkRequest -> addLinkAttachmentOfSubmission(submissionId, attachment)
-                }
-                call.respond(HttpStatusCode.Created, result)
-            }
-            get {
-                val courseId = call.parameters.getUuidOrFail("courseId")
-                val submissionId = call.parameters.getUuidOrFail("submissionId")
-                val currentUserId = call.jwtPrincipal().payload.claimId
-
-                if (!isSubmissionAuthor(submissionId, currentUserId))
+        attachmentRoutes(
+            ownerOfParameterName = "submissionId",
+            beforePostAttachment = {
+                requireSubmissionAuthor(parameters.getUuidOrFail("submissionId"), currentUserId())
+            },
+            beforeGetAttachments = {
+                val currentUserId = currentUserId()
+                if (!isSubmissionAuthor(parameters.getUuidOrFail("submissionId"), currentUserId))
                     requireCapability(
                         userId = currentUserId,
                         capability = Capability.ReadSubmissions,
-                        scopeId = courseId
+                        scopeId = parameters.getUuidOrFail("courseId")
                     )
-                val attachments = findAttachmentsOfSubmission(submissionId)
-                call.respond(HttpStatusCode.OK, attachments)
+            },
+            beforeDeleteAttachment = {
+                requireSubmissionAuthor(parameters.getUuidOrFail("submissionId"), currentUserId())
             }
-            route("/{attachmentId}") {
-
-                val findAttachmentOfSubmission: FindAttachmentOfSubmissionUseCase by inject()
-
-                get {
-                    val courseId = call.parameters.getUuidOrFail("courseId")
-                    val workId = call.parameters.getUuidOrFail("workId")
-                    val submissionId = call.parameters.getUuidOrFail("submissionId")
-                    val attachmentId = call.parameters.getUuidOrFail("attachmentId")
-
-                    requireCapability(
-                        userId = call.jwtPrincipal().payload.claimId,
-                        capability = Capability.ReadCourseElements,
-                        courseId
-                    )
-
-                    val attachment = findAttachmentOfSubmission(courseId, workId, submissionId, attachmentId)
-                    call.respondAttachment(attachment)
-                }
-                delete {
-                    val courseId = call.parameters.getUuidOrFail("courseId")
-                    val workId = call.parameters.getUuidOrFail("workId")
-                    val submissionId = call.parameters.getUuidOrFail("submissionId")
-                    val attachmentId = call.parameters.getUuidOrFail("attachmentId")
-                    val currentUserId = call.jwtPrincipal().payload.claimId
-
-                    requireSubmissionAuthor(submissionId, currentUserId)
-
-                    removeAttachmentOfSubmission(
-                        courseId = courseId,
-                        elementId = workId,
-                        submissionId = submissionId,
-                        attachmentId = attachmentId
-                    )
-                    call.respond(HttpStatusCode.NoContent)
-                }
-            }
-        }
+        )
+//        route("/attachments") {
+//            val requireSubmissionAuthor: RequireSubmissionAuthorUseCase by inject()
+//            val isSubmissionAuthor: IsSubmissionAuthorUseCase by inject()
+//            val findAttachmentsOfSubmission: FindAttachmentsOfSubmissionUseCase by inject()
+//            val removeAttachmentOfSubmission: RemoveAttachmentOfSubmissionUseCase by inject()
+//
+//            post {
+//                val courseId = call.parameters.getUuidOrFail("courseId")
+//                val workId = call.parameters.getUuidOrFail("workId")
+//                val submissionId = call.parameters.getUuidOrFail("submissionId")
+//                val currentUserId = call.jwtPrincipal().payload.claimId
+//
+//                requireSubmissionAuthor(submissionId, currentUserId)
+//
+//                val result: AttachmentHeader = when (val attachment = receiveAttachment()) {
+//                    is CreateFileRequest -> addFileAttachmentOfSubmission(
+//                        submissionId = submissionId,
+//                        courseId = courseId,
+//                        workId = workId,
+//                        attachment = attachment
+//                    )
+//
+//                    is CreateLinkRequest -> addLinkAttachmentOfSubmission(submissionId, attachment)
+//                }
+//                call.respond(HttpStatusCode.Created, result)
+//            }
+//            get {
+//                val courseId = call.parameters.getUuidOrFail("courseId")
+//                val submissionId = call.parameters.getUuidOrFail("submissionId")
+//                val currentUserId = call.jwtPrincipal().payload.claimId
+//
+//                if (!isSubmissionAuthor(submissionId, currentUserId))
+//                    requireCapability(
+//                        userId = currentUserId,
+//                        capability = Capability.ReadSubmissions,
+//                        scopeId = courseId
+//                    )
+//                val attachments = findAttachmentsOfSubmission(submissionId)
+//                call.respond(HttpStatusCode.OK, attachments)
+//            }
+//            route("/{attachmentId}") {
+//
+//                val findAttachmentOfSubmission: FindAttachmentOfSubmissionUseCase by inject()
+//
+//                get {
+//                    val courseId = call.parameters.getUuidOrFail("courseId")
+//                    val workId = call.parameters.getUuidOrFail("workId")
+//                    val submissionId = call.parameters.getUuidOrFail("submissionId")
+//                    val attachmentId = call.parameters.getUuidOrFail("attachmentId")
+//
+//                    requireCapability(
+//                        userId = call.jwtPrincipal().payload.claimId,
+//                        capability = Capability.ReadCourseElements,
+//                        courseId
+//                    )
+//
+//                    val attachment = findAttachmentOfSubmission(courseId, workId, submissionId, attachmentId)
+//                    call.respondAttachment(attachment)
+//                }
+//                delete {
+//                    val courseId = call.parameters.getUuidOrFail("courseId")
+//                    val workId = call.parameters.getUuidOrFail("workId")
+//                    val submissionId = call.parameters.getUuidOrFail("submissionId")
+//                    val attachmentId = call.parameters.getUuidOrFail("attachmentId")
+//                    val currentUserId = call.jwtPrincipal().payload.claimId
+//
+//                    requireSubmissionAuthor(submissionId, currentUserId)
+//
+//                    removeAttachmentOfSubmission(
+//                        courseId = courseId,
+//                        elementId = workId,
+//                        submissionId = submissionId,
+//                        attachmentId = attachmentId
+//                    )
+//                    call.respond(HttpStatusCode.NoContent)
+//                }
+//            }
+//        }
         route("/grade") {
             val setGradeSubmission: SetGradeSubmissionUseCase by inject()
             put {

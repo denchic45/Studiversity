@@ -5,7 +5,7 @@ import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.filterSuccess
 import com.denchic45.kts.domain.stateInResource
-import com.denchic45.kts.domain.usecase.FindSubmissionUseCase
+import com.denchic45.kts.domain.usecase.FindSubmissionByStudentUseCase
 import com.denchic45.kts.domain.usecase.GradeSubmissionUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
@@ -23,7 +23,7 @@ class SubmissionViewModel @Inject constructor(
     private val _workId: String,
     @Named(SubmissionDialog.STUDENT_ID)
     private val _studentId: String,
-    findSubmissionUseCase: FindSubmissionUseCase,
+    findSubmissionByStudentUseCase: FindSubmissionByStudentUseCase,
     private val gradeSubmissionUseCase: GradeSubmissionUseCase
 ) : BaseViewModel() {
 
@@ -32,7 +32,7 @@ class SubmissionViewModel @Inject constructor(
     private val studentId = _studentId.toUUID()
 
     val showSubmission: StateFlow<Resource<SubmissionResponse>> = flow {
-        emit(findSubmissionUseCase(courseId,workId, studentId))}
+        emit(findSubmissionByStudentUseCase(courseId,workId, studentId))}
         .stateInResource(viewModelScope)
 
     private var grade by Delegates.notNull<Int>()

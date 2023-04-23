@@ -7,7 +7,6 @@ import com.denchic45.kts.data.repository.EventRepository
 import com.denchic45.kts.data.repository.StudyGroupRepository
 import com.denchic45.kts.data.repository.UserRepository
 import com.denchic45.kts.data.service.AuthService
-import com.denchic45.kts.domain.model.User
 import com.denchic45.kts.util.SystemDirs
 import com.denchic45.kts.util.databaseFile
 import com.denchic45.stuiversity.api.user.model.UserResponse
@@ -33,7 +32,7 @@ class MainInteractor @Inject constructor(
     private fun clearAllData() {
         dbHelper.driver.close()
         systemDirs.databaseFile.delete()
-        systemDirs.prefsDirectory.listFiles()!!.forEach { it.delete() }
+        systemDirs.prefsDir.listFiles()!!.forEach { it.delete() }
     }
 
     override fun removeListeners() {

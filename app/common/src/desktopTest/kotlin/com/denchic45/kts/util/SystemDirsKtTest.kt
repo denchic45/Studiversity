@@ -6,7 +6,7 @@ class SystemDirsKtTest {
 
     @Test
     fun appDirTest() {
-        val dir = SystemDirs().appDirectory
+        val dir = SystemDirs().appDir
         println("Directory is: $dir")
     }
 }

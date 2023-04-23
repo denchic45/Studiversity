@@ -22,7 +22,7 @@ class CourseWorkSubmissionsComponent(
     private val _submissionDetailsComponent: (
         courseId: UUID,
         elementId: UUID,
-        authorId: UUID,
+        submissionId: UUID,
         ComponentContext
     ) -> SubmissionDetailsComponent,
     @Assisted
@@ -45,14 +45,14 @@ class CourseWorkSubmissionsComponent(
             _submissionDetailsComponent(
                 courseId,
                 elementId,
-                config.authorId,
+                config.submissionId,
                 componentContext
             )
         )
     }
 
-    fun onSubmissionClick(authorId: UUID) {
-        overlayNavigation.activate(SubmissionConfig(authorId))
+    fun onSubmissionClick(submissionId: UUID) {
+        overlayNavigation.activate(SubmissionConfig(submissionId))
     }
 
     fun onSubmissionClose() {
@@ -60,7 +60,7 @@ class CourseWorkSubmissionsComponent(
     }
 
     @Parcelize
-    class SubmissionConfig(val authorId: UUID) : Parcelable
+    class SubmissionConfig(val submissionId: UUID) : Parcelable
 
     class SubmissionChild(val component: SubmissionDetailsComponent)
 

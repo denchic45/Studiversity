@@ -12,7 +12,7 @@ import java.util.*
 interface AttachmentApi {
     suspend fun getById(attachmentId: UUID): ResponseResult<AttachmentResponse>
 
-    suspend fun delete(attachmentId: UUID): EmptyResponseResult
+//    suspend fun delete(attachmentId: UUID): EmptyResponseResult
 }
 
 class AttachmentApiImpl(private val client: HttpClient) : AttachmentApi {
@@ -20,7 +20,7 @@ class AttachmentApiImpl(private val client: HttpClient) : AttachmentApi {
         return client.get("/attachments/$attachmentId").toAttachmentResult()
     }
 
-    override suspend fun delete(attachmentId: UUID): EmptyResponseResult {
-        return client.delete("/attachments/$attachmentId").toResult()
-    }
+//    override suspend fun delete(attachmentId: UUID): EmptyResponseResult {
+//        return client.delete("/attachments/$attachmentId").toResult()
+//    }
 }

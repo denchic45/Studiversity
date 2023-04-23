@@ -2,7 +2,9 @@ package com.studiversity.feature.course.usecase
 
 import com.studiversity.feature.attachment.AttachmentRepository
 import com.studiversity.feature.course.CourseErrors
+import com.studiversity.feature.course.element.repository.CourseElementRepository
 import com.studiversity.feature.course.repository.CourseRepository
+import com.studiversity.feature.course.work.submission.SubmissionRepository
 import com.studiversity.feature.role.repository.ScopeRepository
 import com.studiversity.ktor.ConflictException
 import com.studiversity.transaction.SuspendTransactionWorker
@@ -20,7 +22,8 @@ class RemoveCourseUseCase(
             throw NotFoundException()
         if (!courseRepository.isArchivedCourse(courseId))
             throw ConflictException(CourseErrors.COURSE_IS_NOT_ARCHIVED)
-        attachmentRepository.removeAllByCourseId(courseId)
+
+        attachmentRepository.removeByCourseId(courseId)
         courseRepository.removeCourse(courseId)
         scopeRepository.remove(courseId)
     }

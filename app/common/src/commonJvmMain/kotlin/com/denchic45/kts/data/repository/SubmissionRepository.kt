@@ -1,16 +1,10 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.domain.model.Attachment
-import com.denchic45.kts.data.domain.model.AttachmentFile
-import com.denchic45.kts.data.domain.model.AttachmentLink
 import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.service.NetworkService
-import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import com.denchic45.stuiversity.api.submission.SubmissionsApi
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.binding
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class SubmissionRepository @javax.inject.Inject constructor(
@@ -75,5 +69,9 @@ class SubmissionRepository @javax.inject.Inject constructor(
 
     suspend fun findOwnSubmissionByWork(courseId: UUID, workId: UUID) = fetchResource {
         submissionsApi.getByStudent(courseId, workId)
+    }
+
+    suspend fun findById(courseId: UUID, workId: UUID, submissionId: UUID) = fetchResource {
+        submissionsApi.getById(courseId, workId, submissionId)
     }
 }

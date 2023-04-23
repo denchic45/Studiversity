@@ -13,11 +13,11 @@ private val useCaseModule = module {
     single { SetGradeSubmissionUseCase(get(), get(), get()) }
     single { RequireSubmissionAuthorUseCase(get(), get()) }
     single { IsSubmissionAuthorUseCase(get(), get()) }
-    single { AddFileAttachmentOfSubmissionUseCase(get(), get()) }
-    single { AddLinkAttachmentOfSubmissionUseCase(get(), get()) }
-    single { FindAttachmentsOfSubmissionUseCase(get(), get()) }
-    single { RemoveAttachmentOfSubmissionUseCase(get(), get()) }
-    single { FindAttachmentOfSubmissionUseCase(get(), get()) }
+//    single { AddFileAttachmentOfSubmissionUseCase(get(), get()) }
+//    single { AddLinkAttachmentOfSubmissionUseCase(get(), get()) }
+//    single { FindAttachmentsOfSubmissionUseCase(get(), get()) }
+//    single { RemoveAttachmentOfSubmissionUseCase(get(), get()) }
+//    single { FindAttachmentOfSubmissionUseCase(get(), get()) }
 }
 
 private val repositoryModule = module {

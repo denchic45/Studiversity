@@ -13,3 +13,7 @@ VALUES ?;
 deleteByNotContainsId:
 DELETE FROM attachmentRefEntity
 WHERE attachment_id NOT IN ? AND entity_id =: referenceId;
+
+delete:
+DELETE FROM attachmentRefEntity
+WHERE attachment_id = ? AND entity_id = ?;
