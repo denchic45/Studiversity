@@ -52,10 +52,6 @@ class StudyGroupEditorComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    private val backCallback = BackCallback {
-
-    }
-
     val appBarState = MutableStateFlow(AppBarState(
         title = uiTextOf(studyGroupId?.let { "Редактирование группы" } ?: "Создание группы"),
         actions = listOf(
@@ -211,9 +207,8 @@ class StudyGroupEditorComponent(
         appBarState.update { state ->
             state.copy(actions = state.actions.copy {
                 val itemIndex = state.actions.indexOfFirst { it.id == "save" }
-                this[itemIndex] = this[itemIndex].copy(enabled = fieldEditor.hasChanged())
+                this[itemIndex] = this[itemIndex].copy(enabled = fieldEditor.hasChanges())
             })
-
         }
     }
 
@@ -242,7 +237,7 @@ class Field<T>(
 
 class FieldEditor constructor(private val fields: Map<String, Field<*>>) {
 
-    fun hasChanged() = fields.any { it.value.hasChanged() }
+    fun hasChanges() = fields.any { it.value.hasChanged() }
 
     fun fieldChanged(name: String) = fields.getValue(name).hasChanged()
 

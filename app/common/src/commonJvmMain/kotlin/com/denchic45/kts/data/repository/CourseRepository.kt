@@ -8,7 +8,6 @@ import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.pref.CoursePreferences
 import com.denchic45.kts.data.pref.TimestampPreferences
 import com.denchic45.kts.data.pref.UserPreferences
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.data.storage.ContentAttachmentStorage
 import com.denchic45.kts.data.storage.SubmissionAttachmentStorage
@@ -448,7 +447,7 @@ class CourseRepository @Inject constructor(
 //        }
 //    }
 
-    suspend fun updateCourse(
+    suspend fun update(
         courseId: UUID,
         updateCourseRequest: UpdateCourseRequest,
     ) = fetchResource { coursesApi.update(courseId, updateCourseRequest) }

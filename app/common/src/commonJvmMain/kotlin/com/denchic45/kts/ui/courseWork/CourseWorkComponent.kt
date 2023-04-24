@@ -64,17 +64,17 @@ class CourseWorkComponent(
         componentContext.childContext("yourSubmission")
     )
 
+    private val courseWorkDetailsComponent = _courseWorkDetailsComponent(
+        courseId,
+        elementId,
+        childContext("details")
+    )
+
     val children = capabilities.mapResource {
         buildList {
             withContext(Dispatchers.Main) {
                 add(
-                    Child.Details(
-                        _courseWorkDetailsComponent(
-                            courseId,
-                            elementId,
-                            childContext("details")
-                        )
-                    )
+                    Child.Details(courseWorkDetailsComponent)
                 )
                 it.ifHasCapability(Capability.ReadSubmissions) {
                     add(

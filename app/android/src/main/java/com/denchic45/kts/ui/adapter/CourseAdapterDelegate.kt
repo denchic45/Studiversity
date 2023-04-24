@@ -6,8 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.PictureDrawable
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.kts.R
@@ -54,7 +52,7 @@ class CourseAdapterDelegate :
 //                        itemView.context
 //                    )
 //                )
-                .load(subject?.iconName)
+                .load(subject?.iconUrl)
                 .into(ivSubjectIcon)
 
             tvSubjectName.text = item.name

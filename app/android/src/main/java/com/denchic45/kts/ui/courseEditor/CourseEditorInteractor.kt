@@ -33,7 +33,7 @@ class CourseEditorInteractor @Inject constructor(
         courseId: UUID,
         updateCourseRequest: UpdateCourseRequest,
     ): Resource<CourseResponse> {
-        return courseRepository.updateCourse(courseId, updateCourseRequest)
+        return courseRepository.update(courseId, updateCourseRequest)
     }
 
     suspend fun removeCourse(courseId: UUID): EmptyResource {

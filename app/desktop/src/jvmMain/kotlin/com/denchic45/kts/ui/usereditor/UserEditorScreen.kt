@@ -61,14 +61,17 @@ fun UserEditorScreen(
         )
         Column(Modifier.verticalScroll(rememberScrollState())) {
             UserEditorContent(component)
-            OutlinedButton(
-                onClick = component::onRemoveClick,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                    .align(Alignment.End),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-            ) {
-                Text("Удалить пользователя")
+            component.userId?.let {
+                OutlinedButton(
+                    onClick = component::onRemoveClick,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        .align(Alignment.End),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Удалить пользователя")
+                }
             }
+
             Spacer(Modifier.height(24.dp))
         }
     }

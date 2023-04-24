@@ -2,12 +2,9 @@ package com.denchic45.kts.data.mapper
 
 import com.denchic45.kts.CourseEntity
 import com.denchic45.kts.CourseWithSubjectEntity
-import com.denchic45.kts.data.db.remote.model.CourseMap
-import com.denchic45.kts.domain.model.*
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.util.toUUID
-import java.util.*
 import kotlin.collections.List
 
 fun CourseResponse.toCourseEntity() = CourseEntity(
@@ -27,7 +24,7 @@ fun CourseWithSubjectEntity.toCourseResponse() = CourseResponse(
             id = it,
             name = subject_name!!,
             shortname = subject_shortname!!,
-            iconName = icon_name!!
+            iconUrl = icon_name!!
         )
     } ,
     archived = archived

@@ -10,7 +10,6 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.updateResource
 import com.denchic45.kts.domain.usecase.FindSubjectByIdUseCase
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.ui.iconPicker.IconPickerInteractor
 import com.denchic45.kts.uieditor.UIEditor
@@ -132,7 +131,7 @@ class SubjectEditorViewModel @Inject constructor(
                         EditableSubjectState(
                             name = subject.name,
                             shortname = subject.shortname,
-                            iconUrl = subject.iconName
+                            iconUrl = subject.iconUrl
                         )
                     }
 

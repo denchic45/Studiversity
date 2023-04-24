@@ -55,7 +55,7 @@ class UserEditorComponent(
 
     private val componentScope = componentScope()
 
-    val uiEditor: UIEditor<UserResponse> = UIEditor(userId == null) {
+    private val uiEditor: UIEditor<UserResponse> = UIEditor(userId == null) {
         UserResponse(
             this.userId ?: UUID.randomUUID(),
             firstNameField.value,
@@ -70,6 +70,7 @@ class UserEditorComponent(
             },
         )
     }
+
     val errorState = MutableStateFlow(ErrorState())
 
     val genders: List<MenuItem<GenderAction>> = listOf(
@@ -195,6 +196,10 @@ class UserEditorComponent(
 
     fun onRemoveClick() {
         confirmInteractor.set(ConfirmState(uiTextOf("Удалить пользователя")))
+        componentScope.launch {
+            if(confirmInteractor.receiveConfirm())
+                removeUserUseCase(userId!!)
+        }
     }
 
 

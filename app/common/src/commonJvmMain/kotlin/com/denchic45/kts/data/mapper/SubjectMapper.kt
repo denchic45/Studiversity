@@ -7,7 +7,7 @@ import com.denchic45.stuiversity.util.toUUID
 fun SubjectEntity.toResponse() = SubjectResponse(
     id = subject_id.toUUID(),
     name = subject_name,
-    iconName = icon_name,
+    iconUrl = icon_name,
     shortname = subject_shortname
 )
 
@@ -18,7 +18,7 @@ fun SubjectResponse.toSubjectEntity() = SubjectEntity(
     subject_id = id.toString(),
     subject_name = name,
     subject_shortname = shortname,
-    icon_name = iconName
+    icon_name = iconUrl
 )
 
 fun List<SubjectResponse>.toSubjectEntities() = map { it.toSubjectEntity() }

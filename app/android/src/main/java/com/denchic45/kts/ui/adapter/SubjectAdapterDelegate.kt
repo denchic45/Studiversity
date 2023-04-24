@@ -44,7 +44,7 @@ class SubjectAdapterDelegate :
                             itemView.context
                         )
                     )
-                    .load(item.iconName)
+                    .load(item.iconUrl)
                     .into(ivIcon)
             }
         }

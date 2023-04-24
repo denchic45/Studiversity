@@ -12,5 +12,5 @@ data class GroupCourseItem(
 fun CourseResponse.toGroupCourseItem() = GroupCourseItem(
     id = id,
     name = name,
-    iconName = subject?.iconName
+    iconName = subject?.iconUrl
 )

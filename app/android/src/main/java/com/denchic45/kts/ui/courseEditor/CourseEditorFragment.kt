@@ -9,7 +9,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView.OnEditorActionListener
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -23,16 +22,17 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.rx.EditTextTransformer
 import com.denchic45.kts.ui.adapter.BaseViewHolder
 import com.denchic45.kts.ui.base.BaseFragment
+import com.denchic45.kts.ui.courseeditor.CourseEditorComponent
 import com.denchic45.kts.util.*
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
 import com.jakewharton.rxbinding4.widget.textChanges
 import io.reactivex.rxjava3.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate
 
-class CourseEditorFragment : BaseFragment<CourseEditorViewModel, FragmentCourseEditorBinding>(
+class CourseEditorFragment : BaseFragment<CourseEditorComponent, FragmentCourseEditorBinding>(
     layoutId = R.layout.fragment_course_editor,
     menuResId = R.menu.options_course_editor
 ) {
-    override val viewModel: CourseEditorViewModel by viewModels { viewModelFactory }
+    override val viewModel: CourseEditorComponent by viewModels { viewModelFactory }
     private var popupWindow: ListPopupWindow? = null
 
     override val binding: FragmentCourseEditorBinding by viewBinding(FragmentCourseEditorBinding::bind)

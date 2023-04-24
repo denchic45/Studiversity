@@ -10,5 +10,5 @@ data class SubjectResponse(
     val id: UUID,
     val name: String,
     val shortname: String,
-    val iconName: String
+    val iconUrl: String
 )
