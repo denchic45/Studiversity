@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.courseWork.submissions
+package com.denchic45.kts.ui.coursework.submissions
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import coil.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.courseWork.submissiondetails.SubmissionDetailsScreen
+import com.denchic45.kts.ui.coursework.submissiondetails.SubmissionDetailsScreen
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.util.toString
 

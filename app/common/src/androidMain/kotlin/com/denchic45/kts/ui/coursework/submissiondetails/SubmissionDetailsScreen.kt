@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.courseWork.submissiondetails
+package com.denchic45.kts.ui.coursework.submissiondetails
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,9 +17,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.component.HeaderItemUI
-import com.denchic45.kts.ui.courseWork.SubmissionHeaderContent
-import com.denchic45.kts.ui.courseWork.SubmissionUiState
-import com.denchic45.kts.ui.courseWork.details.AttachmentItemUI
+import com.denchic45.kts.ui.coursework.SubmissionHeaderContent
+import com.denchic45.kts.ui.coursework.SubmissionUiState
+import com.denchic45.kts.ui.coursework.details.AttachmentItemUI
 import com.denchic45.kts.ui.theme.spacing
 import java.util.UUID
 

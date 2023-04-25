@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.courseWork.yourSubmission
+package com.denchic45.kts.ui.coursework.yourSubmission
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.domain.Resource
@@ -14,17 +14,15 @@ import com.denchic45.kts.domain.usecase.FindYourSubmissionUseCase
 import com.denchic45.kts.domain.usecase.RemoveAttachmentFromSubmissionUseCase
 import com.denchic45.kts.domain.usecase.SubmitSubmissionUseCase
 import com.denchic45.kts.domain.usecase.UploadAttachmentToSubmissionUseCase
-import com.denchic45.kts.ui.courseWork.SubmissionUiState
-import com.denchic45.kts.ui.courseWork.toUiState
+import com.denchic45.kts.ui.coursework.SubmissionUiState
+import com.denchic45.kts.ui.coursework.toUiState
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.model.toAttachmentItems
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
-import com.denchic45.stuiversity.api.course.work.grade.GradeResponse
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

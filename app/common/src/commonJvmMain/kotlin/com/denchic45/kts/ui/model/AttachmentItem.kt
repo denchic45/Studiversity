@@ -6,6 +6,9 @@ import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.data.domain.model.LinkAttachment2
 import com.denchic45.kts.util.Files
 import com.denchic45.kts.util.getExtension
+import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
+import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import okio.Path
 import java.util.UUID
 
@@ -52,4 +55,12 @@ fun List<Attachment2>.toAttachmentItems(): List<AttachmentItem> {
             )
         }
     }
+}
+
+ fun AttachmentItem.toRequest(): AttachmentRequest = when(this) {
+    is AttachmentItem.FileAttachmentItem -> CreateFileRequest(
+        name = name,
+        bytes = path.toFile().readBytes()
+    )
+    is AttachmentItem.LinkAttachmentItem -> CreateLinkRequest(url)
 }

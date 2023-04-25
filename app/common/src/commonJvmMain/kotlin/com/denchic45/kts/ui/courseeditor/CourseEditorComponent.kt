@@ -8,12 +8,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
+import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.onFailure
-import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.AddCourseUseCase
 import com.denchic45.kts.domain.usecase.FindCourseByIdUseCase
@@ -46,18 +46,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
 import java.util.UUID
-import javax.inject.Inject
 
+@Inject
 class CourseEditorComponent(
-    @Assisted
-    private val courseId: UUID?,
     private val addCourseUseCase: AddCourseUseCase,
     private val updateCourseUseCase: UpdateCourseUseCase,
     private val findSubjectByContainsNameUseCase: FindSubjectByContainsNameUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val findCourseByIdUseCase: FindCourseByIdUseCase,
     private val _subjectChooserComponent: (onFinish: (SubjectResponse?) -> Unit, ComponentContext) -> SubjectChooserComponent,
+    @Assisted
+    private val courseId: UUID?,
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
@@ -66,7 +67,7 @@ class CourseEditorComponent(
 
     private val componentScope = componentScope()
 
-    private val appBarState = MutableStateFlow(AppBarState(
+    val appBarState = MutableStateFlow(AppBarState(
         title = courseId?.let { uiTextOf("Редактирование курса") }
             ?: uiTextOf("Новый курс"),
         actions = listOf(
@@ -81,8 +82,7 @@ class CourseEditorComponent(
                 "save" -> onSaveClick()
             }
         }
-    )
-    )
+    ))
 
     private val overlayNavigation = OverlayNavigation<DialogConfig>()
     val childOverlay = childOverlay(
@@ -96,6 +96,7 @@ class CourseEditorComponent(
                             subjectName = response.name,
                             subjectIconUrl = response.iconUrl
                         )
+                        updateEnableSave()
                     }
                 }, componentContext))
             }
@@ -108,6 +109,8 @@ class CourseEditorComponent(
     class EditingCourse {
         var name: String by mutableStateOf("")
         var subject: SelectedSubject? by mutableStateOf(null)
+
+        var nameMessage: String? by mutableStateOf(null)
     }
 
     data class SelectedSubject(
@@ -118,11 +121,11 @@ class CourseEditorComponent(
 
     val uiState = MutableStateFlow<Resource<EditingCourse>>(Resource.Loading)
 
-    private val typedSubjectName = MutableSharedFlow<String>()
+//    private val typedSubjectName = MutableSharedFlow<String>()
 
-    val showFoundSubjects = typedSubjectName
-        .map { name -> findSubjectByContainsNameUseCase(name) }
-        .stateInResource(componentScope)
+//    val showFoundSubjects = typedSubjectName
+//        .map { name -> findSubjectByContainsNameUseCase(name) }
+//        .stateInResource(componentScope)
 
 //    val subjectNameTypeEnable = MutableLiveData<Boolean>()
 
@@ -168,19 +171,18 @@ class CourseEditorComponent(
 
     val viewState = (courseId?.let {
         flow<Resource<EditingCourse>> {
-            findCourseByIdUseCase(it).onSuccess { response ->
-                editingState.apply {
-                    name = response.name
-                    subject = response.subject?.let { SelectedSubject(it.id, it.name, it.iconUrl) }
-                }
+            emit(findCourseByIdUseCase(it).map { response ->
                 fieldEditor.updateOldValues(
                     "name" to response.name,
                     "subject" to response.subject
                 )
-                emit(Resource.Success(editingState))
-            }.onFailure {
-                emit(Resource.Error(it))
-            }
+                editingState.apply {
+                    name = response.name
+                    subject = response.subject?.let {
+                        SelectedSubject(it.id, it.name, it.iconUrl)
+                    }
+                }
+            })
         }
     } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
 
@@ -211,9 +213,9 @@ class CourseEditorComponent(
 
     }
 
-    fun onSubjectNameType(subjectName: String) {
-        componentScope.launch { typedSubjectName.emit(subjectName) }
-    }
+//    fun onSubjectNameType(subjectName: String) {
+//        componentScope.launch { typedSubjectName.emit(subjectName) }
+//    }
 
 
     fun onCourseNameType(name: String) {
@@ -243,10 +245,10 @@ class CourseEditorComponent(
 //        }
 //    }
 
-    fun onSubjectSelect(selectedSubject: SelectedSubject) {
-        editingState.subject = selectedSubject
-        updateEnableSave()
-    }
+//    fun onSubjectSelect(selectedSubject: SelectedSubject) {
+//        editingState.subject = selectedSubject
+//        updateEnableSave()
+//    }
 
 //    override fun onOptionClick(itemId: Int) {
 //        when (itemId) {
@@ -312,6 +314,10 @@ class CourseEditorComponent(
 //            is Resource.Success -> finish()
 //            is Resource.Error -> {}
 //        }
+    }
+
+    fun onSubjectChoose() {
+        overlayNavigation.activate(DialogConfig.SubjectChooser)
     }
 
 //    override fun onCreateOptions() {

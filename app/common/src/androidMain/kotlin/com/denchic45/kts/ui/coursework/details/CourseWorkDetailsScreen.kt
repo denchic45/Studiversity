@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.courseWork.details
+package com.denchic45.kts.ui.coursework.details
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

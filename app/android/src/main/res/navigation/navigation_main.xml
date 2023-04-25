@@ -127,7 +127,7 @@
         app:destination="@id/taskEditorFragment" />
     <fragment
         android:id="@+id/courseWorkFragment"
-        android:name="com.denchic45.kts.ui.courseWork.CourseWorkFragment"
+        android:name="com.denchic45.kts.ui.coursework.CourseWorkFragment"
         android:label="CourseWorkFragment">
         <argument
             android:name="courseId"

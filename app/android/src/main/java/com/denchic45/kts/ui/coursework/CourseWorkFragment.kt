@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.courseWork
+package com.denchic45.kts.ui.coursework
 
 import android.os.Bundle
 import android.view.LayoutInflater

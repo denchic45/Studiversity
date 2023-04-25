@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.courseWork
+package com.denchic45.kts.ui.coursework
 
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.stuiversity.api.course.work.grade.GradeResponse

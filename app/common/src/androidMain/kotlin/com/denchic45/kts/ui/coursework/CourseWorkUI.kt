@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.courseWork
+package com.denchic45.kts.ui.coursework
 
 import android.app.Activity
 import android.content.Intent
@@ -61,9 +61,9 @@ import androidx.compose.ui.unit.Dp
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.courseWork.details.CourseWorkDetailsScreen
-import com.denchic45.kts.ui.courseWork.submissiondetails.SubmissionDetailsContent
-import com.denchic45.kts.ui.courseWork.submissions.CourseWorkSubmissionsScreen
+import com.denchic45.kts.ui.coursework.details.CourseWorkDetailsScreen
+import com.denchic45.kts.ui.coursework.submissiondetails.SubmissionDetailsContent
+import com.denchic45.kts.ui.coursework.submissions.CourseWorkSubmissionsScreen
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing

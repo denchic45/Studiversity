@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.courseWork.submissions
+package com.denchic45.kts.ui.coursework.submissions
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
@@ -9,7 +9,7 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindCourseWorkSubmissionsUseCase
-import com.denchic45.kts.ui.courseWork.submissiondetails.SubmissionDetailsComponent
+import com.denchic45.kts.ui.coursework.submissiondetails.SubmissionDetailsComponent
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.flow.flow
 import me.tatarka.inject.annotations.Assisted

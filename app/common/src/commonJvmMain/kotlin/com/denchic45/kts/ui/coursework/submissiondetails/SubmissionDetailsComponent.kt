@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.courseWork.submissiondetails
+package com.denchic45.kts.ui.coursework.submissiondetails
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.domain.map
@@ -6,7 +6,7 @@ import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindSubmissionAttachmentsUseCase
 import com.denchic45.kts.domain.usecase.FindSubmissionByIdUseCase
-import com.denchic45.kts.ui.courseWork.toUiState
+import com.denchic45.kts.ui.coursework.toUiState
 import com.denchic45.kts.ui.model.toAttachmentItems
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.flow.SharingStarted

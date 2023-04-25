@@ -39,8 +39,8 @@ interface FragmentModule {
 //    @ContributesAndroidInjector(modules = [IntentModule::class])
 //    fun contributeTimetableFragment(): TimetableFragment
 
-    @ContributesAndroidInjector(modules = [IntentModule::class])
-    fun contributeCourseEditorFragment(): CourseEditorFragment
+//    @ContributesAndroidInjector(modules = [IntentModule::class])
+//    fun contributeCourseEditorFragment(): CourseEditorFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
     fun contributeGroupFragment(): StudyGroupFragment

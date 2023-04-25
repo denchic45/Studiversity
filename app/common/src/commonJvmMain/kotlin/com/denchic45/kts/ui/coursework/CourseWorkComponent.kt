@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.courseWork
+package com.denchic45.kts.ui.coursework
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
@@ -8,9 +8,9 @@ import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.RemoveCourseElementUseCase
-import com.denchic45.kts.ui.courseWork.details.CourseWorkDetailsComponent
-import com.denchic45.kts.ui.courseWork.submissions.CourseWorkSubmissionsComponent
-import com.denchic45.kts.ui.courseWork.yourSubmission.YourSubmissionComponent
+import com.denchic45.kts.ui.coursework.details.CourseWorkDetailsComponent
+import com.denchic45.kts.ui.coursework.submissions.CourseWorkSubmissionsComponent
+import com.denchic45.kts.ui.coursework.yourSubmission.YourSubmissionComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers

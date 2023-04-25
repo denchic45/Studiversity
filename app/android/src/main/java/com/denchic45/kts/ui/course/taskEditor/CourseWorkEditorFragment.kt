@@ -1,59 +1,31 @@
 package com.denchic45.kts.ui.course.taskEditor
 
-import android.annotation.SuppressLint
-import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
-import android.os.Bundle
-import android.text.InputFilter
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import androidx.core.widget.ImageViewCompat
-import androidx.fragment.app.viewModels
-import by.kirich1409.viewbindingdelegate.viewBinding
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.denchic45.kts.R
 import com.denchic45.kts.data.domain.model.Attachment
 import com.denchic45.kts.data.domain.model.AttachmentFile
 import com.denchic45.kts.data.domain.model.AttachmentLink
-import com.denchic45.kts.data.domain.model.FileState
-import com.denchic45.kts.databinding.FragmentTaskEditorBinding
 import com.denchic45.kts.databinding.ItemAddAttachmentBinding
 import com.denchic45.kts.databinding.ItemAttachmentBinding
-import com.denchic45.kts.di.viewmodel.ViewModelFactory
-import com.denchic45.kts.rx.EditTextTransformer
 import com.denchic45.kts.ui.adapter.BaseViewHolder
-import com.denchic45.kts.ui.base.BaseFragment
-import com.denchic45.kts.ui.course.courseTopicChooser.CourseTopicChooserFragment
-import com.denchic45.kts.ui.course.courseTopicChooser.CourseTopicChooserViewModel
 import com.denchic45.kts.ui.model.UiModel
-import com.denchic45.kts.util.*
+import com.denchic45.kts.util.FilePicker
+import com.denchic45.kts.util.FileViewer
+import com.denchic45.kts.util.getType
+import com.denchic45.kts.util.viewBinding
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
-import com.denchic45.widget.extendedAdapter.adapter
-import com.denchic45.widget.extendedAdapter.extension.clickBuilder
 import com.example.appbarcontroller.appbarcontroller.AppBarController
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.DateValidatorPointForward
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.textfield.TextInputLayout
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
-import com.jakewharton.rxbinding4.widget.textChanges
-import java.io.File
-import java.util.*
-import javax.inject.Inject
 import kotlin.properties.Delegates
 
 
 class CourseWorkEditorFragment :
-    BaseFragment<CourseWorkEditorViewModel, FragmentTaskEditorBinding>(
-        R.layout.fragment_task_editor,
-        R.menu.options_task_editor
-    ) {
+    Fragment() {
 
     companion object {
         const val WORK_ID = "TaskEditor TASK_ID"
@@ -75,218 +47,218 @@ class CourseWorkEditorFragment :
         }
     }
 
-    private val adapter = adapter {
-        delegates(AttachmentAdapterDelegate())
-        extensions {
-            clickBuilder<AttachmentHolder> {
-                view = { it.binding.ivFileRemove }
-                onClick = { position ->
-                    viewModel.onRemoveAttachmentClick(position)
-                }
-            }
-            clickBuilder<AttachmentHolder> {
-                onClick = { position: Int -> viewModel.onAttachmentClick(position) }
-            }
-        }
-    }
+//    private val adapter = adapter {
+//        delegates(AttachmentAdapterDelegate())
+//        extensions {
+//            clickBuilder<AttachmentHolder> {
+//                view = { it.binding.ivFileRemove }
+//                onClick = { position ->
+//                    viewModel.onRemoveAttachmentClick(position)
+//                }
+//            }
+//            clickBuilder<AttachmentHolder> {
+//                onClick = { position: Int -> viewModel.onAttachmentClick(position) }
+//            }
+//        }
+//    }
 
     private lateinit var filePicker: FilePicker
 
-    override val viewModel: CourseWorkEditorViewModel by viewModels { viewModelFactory }
+//    override val viewModel: CourseWorkEditorViewModel by viewModels { viewModelFactory }
 
-    @Inject
-    lateinit var courseTopicChooserViewModelFactory: ViewModelFactory<CourseTopicChooserViewModel>
+//    @Inject
+//    lateinit var courseTopicChooserViewModelFactory: ViewModelFactory<CourseTopicChooserViewModel>
 
-    private val courseTopicChooserViewModel: CourseTopicChooserViewModel by viewModels(
-        ownerProducer = { this }, factoryProducer = { courseTopicChooserViewModelFactory }
-    )
+//    private val courseTopicChooserViewModel: CourseTopicChooserViewModel by viewModels(
+//        ownerProducer = { this }, factoryProducer = { courseTopicChooserViewModelFactory }
+//    )
 
-    override val binding: FragmentTaskEditorBinding by viewBinding(FragmentTaskEditorBinding::bind)
+//    override val binding: FragmentTaskEditorBinding by viewBinding(FragmentTaskEditorBinding::bind)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//
+//        filePicker = FilePicker(this, {
+//            it?.let { viewModel.onFilesSelect(it) }
+//        }, true)
+//    }
 
-        filePicker = FilePicker(this, {
-            it?.let { viewModel.onFilesSelect(it) }
-        }, true)
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        appBarController = AppBarController.findController(requireActivity()).apply {
-            oldToolbarScrollFlags = toolbarScrollFlags
-            setExpanded(true, false)
-            toolbarScrollFlags = 0
-        }
-        with(binding) {
-
-            rvFiles.adapter = adapter
-
-            etName.textChanges()
-                .compose(EditTextTransformer())
-                .subscribe(viewModel::onNameType)
-
-            etDescription.textChanges()
-                .compose(EditTextTransformer())
-                .subscribe(viewModel::onDescriptionType)
-
-//            etAttachmentsLimit.textChanges()
+//    @SuppressLint("ClickableViewAccessibility")
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//
+//        appBarController = AppBarController.findController(requireActivity()).apply {
+//            oldToolbarScrollFlags = toolbarScrollFlags
+//            setExpanded(true, false)
+//            toolbarScrollFlags = 0
+//        }
+//        with(binding) {
+//
+//            rvFiles.adapter = adapter
+//
+//            etName.textChanges()
 //                .compose(EditTextTransformer())
-//                .subscribe(viewModel::onAttachmentsLimitType)
-
-//            etAttachmentsSizeLimit.textChanges()
+//                .subscribe(viewModel::onNameType)
+//
+//            etDescription.textChanges()
 //                .compose(EditTextTransformer())
-//                .subscribe(viewModel::onAttachmentsSizeLimitType)
-
-            etAttachmentsLimit.filters = arrayOf(ValueFilter(0, 99), InputFilter.LengthFilter(2))
-
-            etAttachmentsSizeLimit.filters = arrayOf(ValueFilter(0, 999), InputFilter.LengthFilter(3))
-
-            actSection.setOnTouchListener { _, event ->
-                if (MotionEvent.ACTION_DOWN == event.action)
-                    viewModel.onTopicClick()
-                false
-            }
-
-            llAvailabilityDate.setOnClickListener { viewModel.onAvailabilityDateClick() }
-
-            ivRemoveAvailabilityDate.setOnClickListener { viewModel.onRemoveAvailabilityDate() }
-
-            cbAvailabilitySend.setOnCheckedChangeListener { _, check ->
-                viewModel.onAvailabilitySendCheck(check)
-            }
-
-            cbCommentsEnable.setOnCheckedChangeListener { _, check ->
-                viewModel.onCommentsEnableCheck(check)
-            }
-
-            viewModel.showErrorMessage.observe(viewLifecycleOwner) { idWithMessagePair ->
-                val fieldView = view.findViewById<View>(
-                    idWithMessagePair.first
-                )
-
-                if (fieldView is TextInputLayout) {
-                    if (idWithMessagePair.second != null) {
-                        fieldView.error = idWithMessagePair.second
-                    } else {
-                        fieldView.error = null
-                    }
-                } else if (fieldView is EditText) {
-                    if (idWithMessagePair.second != null) {
-                        fieldView.error = idWithMessagePair.second
-                    } else {
-                        fieldView.error = null
-                    }
-                }
-            }
-
-            viewModel.nameField.collectWhenStarted(viewLifecycleOwner) {
-                if (etName.text.toString() != it) etName.setText(it)
-            }
-
-            viewModel.descriptionField.collectWhenStarted(viewLifecycleOwner) {
-                if (etDescription.text.toString() != it) etDescription.setText(it)
-            }
-
-            viewModel.showCompletionDate.observe(viewLifecycleOwner) {
-                val dateNotNull = it != null
-                if (dateNotNull) {
-                    tvAvailabilityDate.text = it
-                } else {
-                    tvAvailabilityDate.text = "Без срока сдачи"
-                }
-                ImageViewCompat.setImageTintList(
-                    ivAvailabilityDate,
-                    if (dateNotNull)
-                        ColorStateList.valueOf(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.blue
-                            )
-                        )
-                    else null
-                )
-                tvAvailabilityDate.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        if (dateNotNull) R.color.blue
-                        else R.color.dark_gray
-                    )
-                )
-            }
-
-            viewModel.selectedTopic.collectWhenStarted(viewLifecycleOwner) {
-                actSection.setText(it?.name ?: "Без темы")
-            }
-
-            viewModel.openCourseTopics.observe(viewLifecycleOwner) { courseId ->
-                CourseTopicChooserFragment.newInstance(courseId)
-                    .show(childFragmentManager, null)
-            }
-
-                courseTopicChooserViewModel.selectedTopic.collectWhenStarted(viewLifecycleOwner) {
-                    viewModel.onTopicSelected(it)
-                }
-
-            viewModel.openAttachment.observe(viewLifecycleOwner, fileViewer::openFile)
-
-            viewModel.availabilityDateRemoveVisibility.observe(viewLifecycleOwner) {
-                ivRemoveAvailabilityDate.visibility = if (it) View.VISIBLE else View.GONE
-            }
-
-            viewModel.filesVisibility.collectWhenStarted(viewLifecycleOwner) {
-                    tvHeaderFiles.visibility = if (it) View.VISIBLE else View.GONE
-                }
-
-            viewModel.openDatePicker.observe(viewLifecycleOwner) {
-                val picker = MaterialDatePicker.Builder.datePicker()
-                    .setCalendarConstraints(
-                        CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now())
-                            .build()
-                    )
-                    .setSelection(it)
-                    .build()
-
-                picker.show(parentFragmentManager, null)
-                picker.addOnPositiveButtonClickListener(viewModel::onAvailabilityDateSelect)
-            }
-
-            viewModel.openTimePicker.observe(viewLifecycleOwner) {
-                val picker = MaterialTimePicker.Builder()
-                    .setTimeFormat(CLOCK_24H)
-                    .setHour(it.first)
-                    .setMinute(it.second)
-                    .build()
-                picker.show(parentFragmentManager, null)
-                picker.addOnPositiveButtonClickListener {
-                    viewModel.onAvailabilityTimeSelect(
-                        picker.hour,
-                        picker.minute
-                    )
-                }
-            }
-
-            viewModel.openFileChooser.observe(viewLifecycleOwner) {
-                filePicker.selectFiles()
-            }
-
-            viewModel.attachmentItems.collectWhenStarted(viewLifecycleOwner) {
-                adapter.submit(it)
-            }
-
-            viewModel.disabledSendAfterDate.observe(viewLifecycleOwner) {
-                if (cbAvailabilitySend.isChecked != it)
-                    cbAvailabilitySend.isChecked = it
-            }
-
-            viewModel.commentsEnabled.observe(viewLifecycleOwner) {
-                if (cbCommentsEnable.isChecked != it)
-                    cbCommentsEnable.isChecked = it
-            }
-        }
-    }
+//                .subscribe(viewModel::onDescriptionType)
+//
+////            etAttachmentsLimit.textChanges()
+////                .compose(EditTextTransformer())
+////                .subscribe(viewModel::onAttachmentsLimitType)
+//
+////            etAttachmentsSizeLimit.textChanges()
+////                .compose(EditTextTransformer())
+////                .subscribe(viewModel::onAttachmentsSizeLimitType)
+//
+//            etAttachmentsLimit.filters = arrayOf(ValueFilter(0, 99), InputFilter.LengthFilter(2))
+//
+//            etAttachmentsSizeLimit.filters = arrayOf(ValueFilter(0, 999), InputFilter.LengthFilter(3))
+//
+//            actSection.setOnTouchListener { _, event ->
+//                if (MotionEvent.ACTION_DOWN == event.action)
+//                    viewModel.onTopicClick()
+//                false
+//            }
+//
+//            llAvailabilityDate.setOnClickListener { viewModel.onAvailabilityDateClick() }
+//
+//            ivRemoveAvailabilityDate.setOnClickListener { viewModel.onRemoveAvailabilityDate() }
+//
+//            cbAvailabilitySend.setOnCheckedChangeListener { _, check ->
+//                viewModel.onAvailabilitySendCheck(check)
+//            }
+//
+//            cbCommentsEnable.setOnCheckedChangeListener { _, check ->
+//                viewModel.onCommentsEnableCheck(check)
+//            }
+//
+//            viewModel.showErrorMessage.observe(viewLifecycleOwner) { idWithMessagePair ->
+//                val fieldView = view.findViewById<View>(
+//                    idWithMessagePair.first
+//                )
+//
+//                if (fieldView is TextInputLayout) {
+//                    if (idWithMessagePair.second != null) {
+//                        fieldView.error = idWithMessagePair.second
+//                    } else {
+//                        fieldView.error = null
+//                    }
+//                } else if (fieldView is EditText) {
+//                    if (idWithMessagePair.second != null) {
+//                        fieldView.error = idWithMessagePair.second
+//                    } else {
+//                        fieldView.error = null
+//                    }
+//                }
+//            }
+//
+//            viewModel.nameField.collectWhenStarted(viewLifecycleOwner) {
+//                if (etName.text.toString() != it) etName.setText(it)
+//            }
+//
+//            viewModel.descriptionField.collectWhenStarted(viewLifecycleOwner) {
+//                if (etDescription.text.toString() != it) etDescription.setText(it)
+//            }
+//
+//            viewModel.showCompletionDate.observe(viewLifecycleOwner) {
+//                val dateNotNull = it != null
+//                if (dateNotNull) {
+//                    tvAvailabilityDate.text = it
+//                } else {
+//                    tvAvailabilityDate.text = "Без срока сдачи"
+//                }
+//                ImageViewCompat.setImageTintList(
+//                    ivAvailabilityDate,
+//                    if (dateNotNull)
+//                        ColorStateList.valueOf(
+//                            ContextCompat.getColor(
+//                                requireContext(),
+//                                R.color.blue
+//                            )
+//                        )
+//                    else null
+//                )
+//                tvAvailabilityDate.setTextColor(
+//                    ContextCompat.getColor(
+//                        requireContext(),
+//                        if (dateNotNull) R.color.blue
+//                        else R.color.dark_gray
+//                    )
+//                )
+//            }
+//
+//            viewModel.selectedTopic.collectWhenStarted(viewLifecycleOwner) {
+//                actSection.setText(it?.name ?: "Без темы")
+//            }
+//
+//            viewModel.openCourseTopics.observe(viewLifecycleOwner) { courseId ->
+//                CourseTopicChooserFragment.newInstance(courseId)
+//                    .show(childFragmentManager, null)
+//            }
+//
+//                courseTopicChooserViewModel.selectedTopic.collectWhenStarted(viewLifecycleOwner) {
+//                    viewModel.onTopicSelected(it)
+//                }
+//
+//            viewModel.openAttachment.observe(viewLifecycleOwner, fileViewer::openFile)
+//
+//            viewModel.availabilityDateRemoveVisibility.observe(viewLifecycleOwner) {
+//                ivRemoveAvailabilityDate.visibility = if (it) View.VISIBLE else View.GONE
+//            }
+//
+//            viewModel.filesVisibility.collectWhenStarted(viewLifecycleOwner) {
+//                    tvHeaderFiles.visibility = if (it) View.VISIBLE else View.GONE
+//                }
+//
+//            viewModel.openDatePicker.observe(viewLifecycleOwner) {
+//                val picker = MaterialDatePicker.Builder.datePicker()
+//                    .setCalendarConstraints(
+//                        CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now())
+//                            .build()
+//                    )
+//                    .setSelection(it)
+//                    .build()
+//
+//                picker.show(parentFragmentManager, null)
+//                picker.addOnPositiveButtonClickListener(viewModel::onAvailabilityDateSelect)
+//            }
+//
+//            viewModel.openTimePicker.observe(viewLifecycleOwner) {
+//                val picker = MaterialTimePicker.Builder()
+//                    .setTimeFormat(CLOCK_24H)
+//                    .setHour(it.first)
+//                    .setMinute(it.second)
+//                    .build()
+//                picker.show(parentFragmentManager, null)
+//                picker.addOnPositiveButtonClickListener {
+//                    viewModel.onAvailabilityTimeSelect(
+//                        picker.hour,
+//                        picker.minute
+//                    )
+//                }
+//            }
+//
+//            viewModel.openFileChooser.observe(viewLifecycleOwner) {
+//                filePicker.selectFiles()
+//            }
+//
+//            viewModel.attachmentItems.collectWhenStarted(viewLifecycleOwner) {
+//                adapter.submit(it)
+//            }
+//
+//            viewModel.disabledSendAfterDate.observe(viewLifecycleOwner) {
+//                if (cbAvailabilitySend.isChecked != it)
+//                    cbAvailabilitySend.isChecked = it
+//            }
+//
+//            viewModel.commentsEnabled.observe(viewLifecycleOwner) {
+//                if (cbCommentsEnable.isChecked != it)
+//                    cbCommentsEnable.isChecked = it
+//            }
+//        }
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -325,7 +297,6 @@ class AddAttachmentAdapterDelegate :
 }
 
 
-
 object AddAttachmentItem : UiModel {
     override fun equals(other: Any?): Boolean = other is AddAttachmentItem
 }
@@ -348,7 +319,7 @@ class AttachmentHolder(
                 ivFileRemove.visibility = View.GONE
             }
             ivOverlay.setImageDrawable(null)
-            when(item) {
+            when (item) {
                 is AttachmentFile -> {
                     tvName.text = item.shortName
                     val glide = Glide.with(ivFile)
@@ -356,28 +327,36 @@ class AttachmentHolder(
                         "image" -> {
                             glide.load(item.file)
                         }
+
                         "video" -> {
                             ivOverlay.setImageResource(R.drawable.play_video_btn)
                             glide.load(item.file)
                         }
+
                         "audio" -> {
                             glide.load(R.drawable.ic_audio_file)
                         }
+
                         "document" -> {
                             glide.load(R.drawable.ic_document_file)
                         }
+
                         "sheet" -> {
                             glide.load(R.drawable.ic_sheet_file)
                         }
+
                         "presentation" -> {
                             glide.load(R.drawable.ic_presentation_file)
                         }
+
                         "text" -> {
                             glide.load(R.drawable.ic_text_file)
                         }
+
                         "pdf" -> {
                             glide.load(R.drawable.ic_pdf_file)
                         }
+
                         else -> {
                             glide.load(R.drawable.ic_unknow_file)
                         }
@@ -386,6 +365,7 @@ class AttachmentHolder(
                         .placeholder(R.drawable.loading_attachment)
                         .into(ivFile)
                 }
+
                 is AttachmentLink -> TODO()
             }
 

@@ -13,7 +13,6 @@ import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
 class SubjectRepository @Inject constructor(
-    override val appVersionService: AppVersionService,
     override val networkService: NetworkService,
     override val userLocalDataSource: UserLocalDataSource,
     override val groupLocalDataSource: GroupLocalDataSource,
@@ -22,7 +21,7 @@ class SubjectRepository @Inject constructor(
     override val groupCourseLocalDataSource: GroupCourseLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val subjectApi: SubjectApi,
-) : Repository(), NetworkServiceOwner, SaveCourseRepository,
+) : NetworkServiceOwner, SaveCourseRepository,
     FindByContainsNameRepository<SubjectResponse> {
 
     override suspend fun findByContainsName(text: String) = fetchResource {

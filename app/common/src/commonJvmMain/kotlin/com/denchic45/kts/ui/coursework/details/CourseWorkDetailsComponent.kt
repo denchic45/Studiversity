@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.courseWork.details
+package com.denchic45.kts.ui.coursework.details
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.domain.mapResource
