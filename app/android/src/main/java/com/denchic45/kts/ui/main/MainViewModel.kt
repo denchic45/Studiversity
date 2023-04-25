@@ -40,7 +40,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.util.UUID
@@ -325,9 +324,9 @@ class MainViewModel @Inject constructor(
     ) {
         val topItems = listOf(
             NavDrawerItem(
-                UiText.IdText(R.string.nav_schedule), uiIconOf(R.drawable.ic_time), enabled = false
+                UiText.ResourceText(R.string.nav_schedule), uiIconOf(R.drawable.ic_time), enabled = false
             ), NavDrawerItem(
-                UiText.IdText(R.string.nav_tasks), uiIconOf(R.drawable.ic_tasks), enabled = false
+                UiText.ResourceText(R.string.nav_tasks), uiIconOf(R.drawable.ic_tasks), enabled = false
             )
         )
 
@@ -335,19 +334,19 @@ class MainViewModel @Inject constructor(
             if (isModerator) {
                 add(
                     NavDrawerItem(
-                        UiText.IdText(R.string.nav_control_panel),
+                        UiText.ResourceText(R.string.nav_control_panel),
                         uiIconOf(R.drawable.ic_control_panel)
                     )
                 )
             }
             add(
                 NavDrawerItem(
-                    UiText.IdText(R.string.nav_settings), uiIconOf(R.drawable.ic_settings)
+                    UiText.ResourceText(R.string.nav_settings), uiIconOf(R.drawable.ic_settings)
                 )
             )
             add(
                 NavDrawerItem(
-                    UiText.IdText(R.string.nav_help), uiIconOf(R.drawable.ic_help), enabled = false
+                    UiText.ResourceText(R.string.nav_help), uiIconOf(R.drawable.ic_help), enabled = false
                 )
             )
         }
@@ -375,16 +374,16 @@ class MainViewModel @Inject constructor(
                 if (hasGroup) {
                     mainTextItems.add(
                         NavTextItem(
-                            UiText.IdText(R.string.nav_duty_roster),
-                            UiText.IdText(R.drawable.ic_clean),
+                            UiText.ResourceText(R.string.nav_duty_roster),
+                            UiText.ResourceText(R.drawable.ic_clean),
                             enabled = false
                         )
                     )
                 }
                 add(
                     NavTextItem(
-                        UiText.IdText(R.string.nav_schedule),
-                        UiText.IdText(R.drawable.ic_time),
+                        UiText.ResourceText(R.string.nav_schedule),
+                        UiText.ResourceText(R.drawable.ic_time),
                         enabled = false
                     )
                 )
@@ -393,19 +392,19 @@ class MainViewModel @Inject constructor(
                 if (isModerator) {
                     add(
                         NavTextItem(
-                            UiText.IdText(R.string.nav_control_panel),
-                            UiText.IdText(R.drawable.ic_control_panel)
+                            UiText.ResourceText(R.string.nav_control_panel),
+                            UiText.ResourceText(R.drawable.ic_control_panel)
                         )
                     )
                 }
                 addAll(
                     listOf(
                         NavTextItem(
-                            UiText.IdText(R.string.nav_settings),
-                            UiText.IdText(R.drawable.ic_settings)
+                            UiText.ResourceText(R.string.nav_settings),
+                            UiText.ResourceText(R.drawable.ic_settings)
                         ), NavTextItem(
-                            UiText.IdText(R.string.nav_help),
-                            UiText.IdText(R.drawable.ic_help),
+                            UiText.ResourceText(R.string.nav_help),
+                            UiText.ResourceText(R.drawable.ic_help),
                             enabled = false
                         )
                     )
@@ -421,7 +420,7 @@ class MainViewModel @Inject constructor(
                 add(DividerItem())
                 if (courses.isNotEmpty()) {
                     val nameOfDropdownCoursesNavItem: Int
-                    add(NavSubHeaderItem(UiText.IdText(R.string.nav_courses_my)))
+                    add(NavSubHeaderItem(UiText.ResourceText(R.string.nav_courses_my)))
                     val visibleCourses = if (expandAllCourse) {
                         nameOfDropdownCoursesNavItem = R.string.nav_courses_hide
                         courses
@@ -439,13 +438,13 @@ class MainViewModel @Inject constructor(
                     })
                     if (courses.size > 5) add(
                         NavDropdownItem(
-                            UiText.IdText(nameOfDropdownCoursesNavItem), expandAllCourse
+                            UiText.ResourceText(nameOfDropdownCoursesNavItem), expandAllCourse
                         )
                     )
                     add(
                         NavTextItem(
-                            UiText.IdText(R.string.nav_courses_archive),
-                            UiText.IdText(R.drawable.ic_archive),
+                            UiText.ResourceText(R.string.nav_courses_archive),
+                            UiText.ResourceText(R.drawable.ic_archive),
                             enabled = false
                         )
                     )

@@ -9,7 +9,7 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.model.*
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.UserResponse
-import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.stuiversity.util.toLocalDate
 import com.github.michaelbull.result.unwrap
@@ -108,14 +108,14 @@ class TimetableParser(
         while (!table.getRow(currentRow).getCell(0).text.contains("ПОНЕДЕЛЬНИК")) currentRow++
 
         val weekOfYear = table.getRow(currentRow).getCell(0).text
-            .toLocalDate(DatePatterns.DD_MM_yy)
+            .toLocalDate(DateTimePatterns.DD_MM_yy)
             .format(DateTimeFormatter.ofPattern("YYYY_ww"))
 
         for (i in 0 until STUDY_DAY_COUNT) {
             val dateInCell = table.getRow(currentRow).getCell(0).text
             currentRow++
             val date = dateInCell.substring(dateInCell.lastIndexOf(" ") + 1)
-            if (Dates.isValidDate(date, DatePatterns.DD_MM_yy)) {
+            if (Dates.isValidDate(date, DateTimePatterns.DD_MM_yy)) {
                 weekLessons.add(getPeriodsOfDay(date))
                 currentDayOfWeek++
             } else {
@@ -134,7 +134,7 @@ class TimetableParser(
     }
 
     private suspend fun getPeriodsOfDay(dateText: String): List<PeriodResponse> {
-        val date = dateText.toLocalDate(DatePatterns.DD_MM_yy)
+        val date = dateText.toLocalDate(DateTimePatterns.DD_MM_yy)
         val periods = mutableListOf<PeriodResponse>()
         if (currentRow == table.rows.size) return emptyList()
         var cells = table.getRow(currentRow).tableCells

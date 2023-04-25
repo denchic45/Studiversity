@@ -164,14 +164,14 @@ class NavDropdownItemDelegate :
 
 data class NavTextItem(
     val name: UiText,
-    val icon: UiText = UiText.IdText(0),
+    val icon: UiText = UiText.ResourceText(0),
     var checked: Boolean = false,
     val visible: Boolean = true,
     val checkable: Boolean = true,
     val enabled: Boolean = true,
     override var id: UUID = UUID.randomUUID(),
     val iconType: IconType = IconType.NONE,
-    val color: UiText = UiText.IdText(0),
+    val color: UiText = UiText.ResourceText(0),
 ) : NavItem() {
     enum class IconType { NONE, CIRCLE }
 }

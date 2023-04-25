@@ -33,7 +33,7 @@ class OptionsPopupAdapter(context: Context, items: List<OptionItem>) : ArrayAdap
         override fun convertResultToString(resultValue: Any): String {
             return when (val title = (resultValue as OptionItem).title) {
                 is UiText.StringText -> title.value
-                is UiText.IdText -> getContext().getString(title.value)
+                is UiText.ResourceText -> getContext().getString(title.value)
                 else -> throw IllegalStateException()
             }
         }

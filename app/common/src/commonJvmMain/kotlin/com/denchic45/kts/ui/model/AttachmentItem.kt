@@ -57,10 +57,11 @@ fun List<Attachment2>.toAttachmentItems(): List<AttachmentItem> {
     }
 }
 
- fun AttachmentItem.toRequest(): AttachmentRequest = when(this) {
+fun AttachmentItem.toRequest(): AttachmentRequest = when (this) {
     is AttachmentItem.FileAttachmentItem -> CreateFileRequest(
         name = name,
         bytes = path.toFile().readBytes()
     )
+
     is AttachmentItem.LinkAttachmentItem -> CreateLinkRequest(url)
 }

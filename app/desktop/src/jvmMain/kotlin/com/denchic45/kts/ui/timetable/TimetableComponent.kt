@@ -8,7 +8,7 @@ import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindYourTimetableByUseCase
 import com.denchic45.kts.ui.timetable.state.toTimetableViewState
 import com.denchic45.kts.util.componentScope
-import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -35,7 +35,7 @@ class TimetableComponent(
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = combine(
         selectedDate.mapLatest { date ->
-            findYourTimetableByUseCase(date.toString(DatePatterns.YYYY_ww))
+            findYourTimetableByUseCase(date.toString(DateTimePatterns.YYYY_ww))
         },
         metaRepository.observeBellSchedule
     ) { timetableResource, bellSchedule ->

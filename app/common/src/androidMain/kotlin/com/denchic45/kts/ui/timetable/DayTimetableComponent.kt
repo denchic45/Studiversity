@@ -20,7 +20,7 @@ import com.denchic45.kts.util.capitalized
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.map
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
-import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,7 +47,7 @@ class DayTimetableComponent(
 
     val selectedDate = MutableStateFlow(_selectedDate)
     private val selectedWeekOfYear = selectedDate.map(componentScope) {
-        it.toString(DatePatterns.YYYY_ww)
+        it.toString(DateTimePatterns.YYYY_ww)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -87,7 +87,7 @@ class DayTimetableComponent(
                 appBarInteractor.update {
                     it.copy(
                         title = uiTextOf(
-                            Dates.toStringHidingCurrentYear(selected).capitalized()
+                            Dates.toStringMonthHidingCurrentYear(selected).capitalized()
                         )
                     )
                 }
@@ -99,7 +99,7 @@ class DayTimetableComponent(
         weekOfYear: String,
         timetableResource: Resource<TimetableResponse>,
         schedule: BellSchedule,
-    ) = selectedDate.filter { it.toString(DatePatterns.YYYY_ww) == weekOfYear }
+    ) = selectedDate.filter { it.toString(DateTimePatterns.YYYY_ww) == weekOfYear }
         .map { selected ->
             timetableResource.map {
                 val selectedDay = selected.dayOfWeek.ordinal

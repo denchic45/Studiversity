@@ -1,5 +1,7 @@
 package com.denchic45.kts.ui.coursework.submissiondetails
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -20,6 +22,7 @@ import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.coursework.SubmissionHeaderContent
 import com.denchic45.kts.ui.coursework.SubmissionUiState
 import com.denchic45.kts.ui.coursework.details.AttachmentItemUI
+import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.spacing
 import java.util.UUID
 
@@ -29,7 +32,14 @@ fun SubmissionDetailsScreen(
     component: SubmissionDetailsComponent,
     onDismissRequest: () -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    val pickFileLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+
+        }
+    }
+
     val sheetState = rememberModalBottomSheetState()
 
     val uiStateResource by component.uiState.collectAsState()
@@ -42,7 +52,7 @@ fun SubmissionDetailsScreen(
 //                coroutineScope.launch { sheetState.show() }
 //            }
             SubmissionHeaderContent(uiState)
-            SubmissionDetailsContent(uiState)
+            SubmissionDetailsContent(uiState, {pickFileLauncher.launch("*/*")})
 
             Spacer(Modifier.height(MaterialTheme.spacing.normal))
         }
@@ -52,6 +62,7 @@ fun SubmissionDetailsScreen(
 @Composable
 fun SubmissionDetailsContent(
     uiState: SubmissionUiState,
+    onAttachmentClick:(AttachmentItem)->Unit,
     onAttachmentRemove: ((attachmentId: UUID) -> Unit)? = null
 ) {
     Column {
@@ -60,7 +71,7 @@ fun SubmissionDetailsContent(
             LazyRow(Modifier) {
                 items(uiState.attachments, key = { it.attachmentId?.toString() ?: "" }) { item ->
                     Spacer(Modifier.width(MaterialTheme.spacing.normal))
-                    AttachmentItemUI(item = item) {
+                    AttachmentItemUI(item = item, onClick = {onAttachmentClick(item)}) {
                         onAttachmentRemove?.let { it(item.attachmentId!!) }
                     }
                 }

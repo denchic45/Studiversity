@@ -83,7 +83,6 @@ class YourSubmissionComponent(
         findSubmissionAttachmentsUseCase(courseId, workId, it.id)
     }.shareIn(componentScope, SharingStarted.Lazily)
 
-
     val uiState = MutableStateFlow<Resource<SubmissionUiState>>(Resource.Loading)
 
 //    private val overlayNavigation = OverlayNavigation<CourseWorkComponent.YourSubmissionConfig>()

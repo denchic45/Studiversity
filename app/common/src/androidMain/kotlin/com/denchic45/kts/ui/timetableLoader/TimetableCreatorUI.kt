@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toFile
 import com.denchic45.kts.ui.theme.spacing
-import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -98,7 +98,7 @@ fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
     MaterialDialog(dialogState = weekPickerState, buttons = {
         positiveButton("Выбрать") {
             component.onWeekSelect(
-                selectedDate.toJavaLocalDate().toString(DatePatterns.YYYY_ww)
+                selectedDate.toJavaLocalDate().toString(DateTimePatterns.YYYY_ww)
             )
         }
         negativeButton("Отмена", onClick = component::onCancelWeekPicker)

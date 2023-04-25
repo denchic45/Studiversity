@@ -1,8 +1,7 @@
 package com.denchic45.kts.data.domain.model
 
-import com.denchic45.kts.util.Files
 import okio.Path
-import java.util.*
+import java.util.UUID
 
 sealed interface Attachment2 {
     val id: UUID

@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.filterSuccess
 import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
@@ -17,10 +18,12 @@ import com.denchic45.kts.domain.usecase.DownloadFileUseCase
 import com.denchic45.kts.domain.usecase.FindCourseTopicUseCase
 import com.denchic45.kts.domain.usecase.FindCourseWorkAttachmentsUseCase
 import com.denchic45.kts.domain.usecase.FindCourseWorkUseCase
+import com.denchic45.kts.domain.usecase.ObserveCourseTopicsUseCase
 import com.denchic45.kts.domain.usecase.RemoveAttachmentFromCourseWorkUseCase
 import com.denchic45.kts.domain.usecase.UpdateCourseWorkUseCase
 import com.denchic45.kts.domain.usecase.UploadAttachmentToCourseWorkUseCase
 import com.denchic45.kts.ui.ActionMenuItem
+import com.denchic45.kts.ui.DropdownMenuItem
 import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
@@ -37,14 +40,18 @@ import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.util.optPropertyOf
+import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
@@ -65,6 +72,7 @@ class CourseWorkEditorComponent(
     private val downloadFileUseCase: DownloadFileUseCase,
     private val removeAttachmentFromCourseWorkUseCase: RemoveAttachmentFromCourseWorkUseCase,
     private val findCourseTopicUseCase: FindCourseTopicUseCase,
+    private val observeCourseTopicsUseCase: ObserveCourseTopicsUseCase,
     private val addCourseWorkUseCase: AddCourseWorkUseCase,
     private val updateCourseWorkUseCase: UpdateCourseWorkUseCase,
     @Assisted
@@ -106,6 +114,8 @@ class CourseWorkEditorComponent(
     private val _addedAttachmentItems = MutableStateFlow<List<AttachmentItem>>(emptyList())
     private val removedAttachmentIds = MutableStateFlow(emptyList<UUID>())
 
+    val openAttachment = MutableSharedFlow<AttachmentItem>()
+
     val attachmentItems = combine(
         _attachmentItems,
         _addedAttachmentItems,
@@ -115,7 +125,6 @@ class CourseWorkEditorComponent(
             (attachments.filter { it.id !in removedIds }.toAttachmentItems() + addedItems)
         }
     }.stateInResource(componentScope)
-
 
     private val fieldEditor = FieldEditor(
         mapOf(
@@ -142,6 +151,23 @@ class CourseWorkEditorComponent(
             })
         }
     } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
+
+
+    private val courseTopics = observeCourseTopicsUseCase(courseId)
+        .shareIn(componentScope, SharingStarted.Lazily, replay = 1)
+
+    init {
+        componentScope.launch {
+            courseTopics.filterSuccess().collect {
+                editingState.foundTopics = it.value.map { response ->
+                    DropdownMenuItem(
+                        id = response.id.toString(),
+                        title = uiTextOf(response.name)
+                    )
+                }
+            }
+        }
+    }
 
     fun onNameType(name: String) {
         editingState.name = name
@@ -174,7 +200,7 @@ class CourseWorkEditorComponent(
         }
     }
 
-    fun onRemoveAttachmentClick(position: Int) {
+    fun onAttachmentRemove(position: Int) {
         attachmentItems.value.onSuccess { attachments ->
             confirmDialogInteractor.set(
                 ConfirmState(
@@ -199,7 +225,7 @@ class CourseWorkEditorComponent(
         attachmentItems.value.onSuccess {
             when (val item = it[position]) {
                 is AttachmentItem.FileAttachmentItem -> when (item.state) {
-                    FileState.Downloaded -> openAttachment.postValue(item.path.toFile())
+                    FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
                     FileState.Preview -> componentScope.launch {
                         downloadFileUseCase(item.attachmentId!!)
                         // TODO: Возможно использовать в будущем: открывать файл сразу после его загрузки
@@ -213,7 +239,11 @@ class CourseWorkEditorComponent(
                     else -> {}
                 }
 
-                is AttachmentItem.LinkAttachmentItem -> TODO()
+                is AttachmentItem.LinkAttachmentItem -> componentScope.launch {
+                    openAttachment.emit(
+                        item
+                    )
+                }
             }
         }
     }
@@ -249,7 +279,7 @@ class CourseWorkEditorComponent(
                         CreateCourseWorkRequest(
                             name = editingState.name,
                             description = editingState.description.takeIf(String::isNotEmpty),
-                            topicId = editingState.topicId,
+                            topicId = editingState.selectedTopic?.id?.toUUID(),
                             dueDate = editingState.dueDate,
                             dueTime = editingState.dueTime,
                             workType = CourseWorkType.ASSIGNMENT,
@@ -265,7 +295,6 @@ class CourseWorkEditorComponent(
                         }
                     }
                 }
-
                 result.onSuccess {
                     onFinish()
                 }
@@ -273,13 +302,27 @@ class CourseWorkEditorComponent(
         }
     }
 
+    fun onTopicNameType(name: String) {
+        editingState.topicQueryText = name
+
+    }
+
+    fun onTopicSelect(item: DropdownMenuItem) {
+        editingState.selectedTopic = item
+    }
+
     @Stable
     class EditingWork {
         var name: String by mutableStateOf("")
         var description: String by mutableStateOf("")
-        var topicId: UUID? by mutableStateOf(null)
         var dueDate: LocalDate? by mutableStateOf(null)
         var dueTime: LocalTime? by mutableStateOf(null)
+
+        var selectedTopic: DropdownMenuItem? by mutableStateOf(null)
+        var foundTopics: List<DropdownMenuItem> by mutableStateOf(emptyList())
+        var topicQueryText: String by mutableStateOf("")
+
+        var nameMessage: String? by mutableStateOf(null)
     }
 }
 

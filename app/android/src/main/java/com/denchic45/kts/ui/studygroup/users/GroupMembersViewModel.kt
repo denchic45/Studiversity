@@ -1,6 +1,5 @@
 package com.denchic45.kts.ui.studygroup.users
 
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
@@ -107,25 +106,25 @@ class GroupMembersViewModel @Inject constructor(
                         if (headmanId == selectedUserId) {
                             OptionItem(
                                 id = "OPTION_REMOVE_HEADMAN",
-                                title = UiText.IdText(R.string.option_remove_headman)
+                                title = UiText.ResourceText(R.string.option_remove_headman)
                             )
                         } else {
                             OptionItem(
                                 id = "OPTION_SET_HEADMAN",
-                                title = UiText.IdText(R.string.option_set_headman)
+                                title = UiText.ResourceText(R.string.option_set_headman)
                             )
                         }
                     )
                     add(
                         OptionItem(
                             id = "OPTION_EDIT_USER",
-                            title = UiText.IdText(R.string.option_edit_user)
+                            title = UiText.ResourceText(R.string.option_edit_user)
                         )
                     )
                     add(
                         OptionItem(
                             id = "OPTION_REMOVE_USER",
-                            title = UiText.IdText(R.string.option_remove_user)
+                            title = UiText.ResourceText(R.string.option_remove_user)
                         )
                     )
                 }

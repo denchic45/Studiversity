@@ -29,7 +29,7 @@ import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.components.TextButtonContent
 import com.denchic45.kts.ui.timetable.state.CellOrder
 import com.denchic45.kts.ui.timetable.state.WeekTimetableViewState
-import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import java.time.LocalDate
 
@@ -168,7 +168,7 @@ fun RowScope.DayOfWeekCell(date: LocalDate) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                date.toString(DatePatterns.E).uppercase(),
+                date.toString(DateTimePatterns.E).uppercase(),
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(

@@ -80,8 +80,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     val childrenResource by component.children.collectAsState()
 
     val yourSubmissionComponent = component.yourSubmissionComponent
-    val submissionResource by yourSubmissionComponent.uiState
-        .collectAsState(null)
+    val submissionResource by yourSubmissionComponent.uiState.collectAsState(null)
 
     val context = LocalContext.current
 
@@ -90,7 +89,6 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.let { data: Intent ->
-
                 yourSubmissionComponent.onFileSelect(
                     data.data!!.getFile(context).toOkioPath()
                 )
@@ -113,6 +111,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
                 )
             )
         },
+        onAttachmentClick = { TODO() },
         onAttachmentRemove = yourSubmissionComponent::onAttachmentRemove,
         onSubmit = yourSubmissionComponent::onSubmit,
         onCancel = yourSubmissionComponent::onCancel
@@ -125,6 +124,7 @@ private fun CourseWorkContent(
     childrenResource: Resource<List<CourseWorkComponent.Child>>,
     submissionResource: Resource<SubmissionUiState>?,
     onAttachmentAdd: () -> Unit,
+    onAttachmentClick: (AttachmentItem) -> Unit,
     onAttachmentRemove: (attachmentId: UUID) -> Unit,
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
@@ -199,6 +199,7 @@ private fun CourseWorkContent(
                                     .alpha(transition)
                                     .clickable(enabled = false, onClick = {}),
                                 onAttachmentAdd = onAttachmentAdd,
+                                onAttachmentClick = onAttachmentClick,
                                 onAttachmentRemove = onAttachmentRemove,
                                 onSubmit = onSubmit,
                                 onCancel = onCancel
@@ -464,6 +465,7 @@ fun SubmissionHeaderContent(
 fun SubmissionSheetExpanded(
     uiState: SubmissionUiState,
     modifier: Modifier,
+    onAttachmentClick: (AttachmentItem) -> Unit,
     onAttachmentAdd: () -> Unit,
     onAttachmentRemove: (attachmentId: UUID) -> Unit,
     onSubmit: () -> Unit,
@@ -472,7 +474,7 @@ fun SubmissionSheetExpanded(
     Column(
         modifier.fillMaxWidth()
     ) {
-        SubmissionDetailsContent(uiState, onAttachmentRemove)
+        SubmissionDetailsContent(uiState, onAttachmentClick, onAttachmentRemove)
         Spacer(modifier = Modifier.weight(1f))
         Row(Modifier.padding(MaterialTheme.spacing.normal)) {
             when (uiState.state) {
@@ -515,8 +517,7 @@ fun CourseWorkContentPreview() {
     AppTheme {
         Surface {
             CourseWorkContent(
-                childrenResource = Resource.Loading,
-                submissionResource = Resource.Success(
+                childrenResource = Resource.Loading, submissionResource = Resource.Success(
                     SubmissionUiState(
                         id = UUID.randomUUID(),
                         state = SubmissionState.CREATED,
@@ -532,8 +533,11 @@ fun CourseWorkContentPreview() {
                         updatedAt = null,
                         grade = null
                     )
-                ),
-                {}, {}, {}, {}
+                ), onAttachmentAdd = {},
+                onAttachmentClick = {},
+                onAttachmentRemove = {},
+                onSubmit = {},
+                onCancel = {}
             )
         }
     }

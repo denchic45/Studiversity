@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.*
-import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -29,7 +29,7 @@ class DayLocalDataSource @Inject constructor(private val db: AppDatabase) {
     suspend fun getIdByDateAndGroupId(
         date: LocalDate, groupId: String,
     ): String? = withContext(Dispatchers.IO) {
-        dayEntityQueries.getIdByDateAndGroupId(date.toString(DatePatterns.yyy_MM_dd), groupId)
+        dayEntityQueries.getIdByDateAndGroupId(date.toString(DateTimePatterns.yyy_MM_dd), groupId)
             .executeAsOneOrNull()
     }
 

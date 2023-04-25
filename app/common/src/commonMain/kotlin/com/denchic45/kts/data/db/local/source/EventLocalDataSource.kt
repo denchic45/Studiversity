@@ -2,7 +2,7 @@ package com.denchic45.kts.data.db.local.source
 
 import com.denchic45.kts.*
 import com.denchic45.kts.data.db.local.model.DayWithEventsEntities
-import com.denchic45.stuiversity.util.DatePatterns
+import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
@@ -51,7 +51,7 @@ class EventLocalDataSource @Inject constructor(db: AppDatabase) {
         date: LocalDate,
         groupId: String,
     ): Flow<DayEntity?> {
-        return queries.getDayByDateAndGroupId(date.toString(DatePatterns.yyy_MM_dd), groupId)
+        return queries.getDayByDateAndGroupId(date.toString(DateTimePatterns.yyy_MM_dd), groupId)
             .asFlow().mapToOneOrNull(Dispatchers.IO)
     }
 
@@ -65,7 +65,7 @@ class EventLocalDataSource @Inject constructor(db: AppDatabase) {
         teacherId: String,
     ): Flow<List<EventWithSubjectAndGroupAndTeachers>> {
         return queries.getEventsWithSubjectAndTeachersByDateAndTeacherId(
-            date.toString(DatePatterns.yyy_MM_dd),
+            date.toString(DateTimePatterns.yyy_MM_dd),
             teacherId
         ).asFlow().mapToList(Dispatchers.IO)
     }
@@ -76,8 +76,8 @@ class EventLocalDataSource @Inject constructor(db: AppDatabase) {
         end: LocalDate,
     ) = withContext(Dispatchers.IO) {
         queries.deleteByGroupAndDateRange(
-            start.toString(DatePatterns.yyy_MM_dd),
-            end.toString(DatePatterns.yyy_MM_dd),
+            start.toString(DateTimePatterns.yyy_MM_dd),
+            end.toString(DateTimePatterns.yyy_MM_dd),
             groupId
         )
     }

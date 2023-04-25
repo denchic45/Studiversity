@@ -1,5 +1,7 @@
 package com.denchic45.kts.ui.coursework.details
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,19 +46,28 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseWorkDetailsScreen(component: CourseWorkDetailsComponent) {
     val workResource by component.courseWork.collectAsState()
     val attachmentsResource by component.attachments.collectAsState()
-    CourseWorkDetailsContent(workResource, attachmentsResource)
+    val pickFileLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+
+        }
+    }
+
+    CourseWorkDetailsContent(workResource = workResource,
+        attachmentsResource = attachmentsResource,
+        onAttachmentClick = { pickFileLauncher.launch("*/*") })
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 private fun CourseWorkDetailsContent(
     workResource: Resource<CourseWorkResponse>,
     attachmentsResource: Resource<List<AttachmentItem>>,
+    onAttachmentClick: (item: AttachmentItem) -> Unit
 ) {
     workResource.onSuccess { work ->
         Column(
@@ -92,8 +103,8 @@ private fun CourseWorkDetailsContent(
             attachmentsResource.onSuccess { attachments ->
                 HeaderItemUI(name = "Прикрепления")
                 LazyRow {
-                    items(attachments, key = { it.attachmentId ?: Any() }) {
-                        AttachmentItemUI(item = it)
+                    items(attachments, key = { it.attachmentId ?: Unit }) {
+                        AttachmentItemUI(item = it, onClick = { onAttachmentClick(it) })
                     }
                 }
             }
@@ -121,8 +132,12 @@ fun CourseWorkHeader(name: String, commentsCount: Int = 0) {
 }
 
 @Composable
-fun AttachmentItemUI(item: AttachmentItem, onRemove: (() -> Unit)? = null) {
-    AssistChip(onClick = { /*TODO*/ },
+fun AttachmentItemUI(
+    item: AttachmentItem,
+    onClick: () -> Unit,
+    onRemove: (() -> Unit)? = null
+) {
+    AssistChip(onClick = { onClick() },
         label = {
             Text(
                 text = when (item) {
@@ -186,7 +201,8 @@ fun CourseWorkDetailsPreview() {
                             state = FileState.Preview
                         )
                     )
-                )
+                ),
+                {}
             )
         }
     }

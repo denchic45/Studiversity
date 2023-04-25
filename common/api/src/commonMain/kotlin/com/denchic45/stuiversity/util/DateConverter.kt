@@ -18,6 +18,9 @@ fun LocalDateTime.toString(pattern: String): String =
 fun LocalDate.toString(pattern: String): String =
     DateTimeFormatter.ofPattern(pattern).format(this)
 
+fun LocalTime.toString(pattern: String): String =
+    DateTimeFormatter.ofPattern(pattern).format(this)
+
 fun String.toLocalDateTime(pattern: String): LocalDateTime =
     LocalDateTime.parse(this, DateTimeFormatter.ofPattern(pattern))
 
@@ -53,13 +56,21 @@ fun Long.toToLocalDateTime() = LocalDateTime.ofInstant(
 
 
 object Dates {
-    fun toStringHidingCurrentYear(date: LocalDate): String {
+    fun toStringMonthHidingCurrentYear(date: LocalDate): String {
         return if (Year.now().value == date.year) {
-            val sdf = SimpleDateFormat(DatePatterns.LLLL, Locale.getDefault())
+            val sdf = SimpleDateFormat(DateTimePatterns.LLLL, Locale.getDefault())
             sdf.format(date.toDate())
         } else {
-            val sdf = SimpleDateFormat(DatePatterns.LLLL_yyyy, Locale.getDefault())
+            val sdf = SimpleDateFormat(DateTimePatterns.LLLL_yyyy, Locale.getDefault())
             return sdf.format(date.toDate())
+        }
+    }
+
+    fun toStringDayMonthHidingCurrentYear(date: LocalDate): String {
+        return if (Year.now().value == date.year) {
+            date.toString("dd MMMM")
+        } else {
+            date.toString("dd MMMM YYYY")
         }
     }
 
@@ -81,7 +92,7 @@ object Dates {
     }
 }
 
-object DatePatterns {
+object DateTimePatterns {
     const val yyy_MM_dd = "yyyy-MM-dd"
     const val LLL = "LLL"
     const val LLLL = "LLLL"
