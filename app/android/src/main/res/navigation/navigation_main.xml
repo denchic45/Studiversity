@@ -88,13 +88,13 @@
         android:label="fragment_course"
         tools:layout="@layout/fragment_course">
         <action
-            android:id="@+id/action_courseFragment_to_taskEditorFragment"
+            android:id="@+id/action_courseFragment_to_courseWorkEditorFragment"
             app:destination="@id/courseWorkEditorFragment" />
         <action
             android:id="@+id/action_courseFragment_to_courseWorkFragment"
             app:destination="@id/courseWorkFragment" />
         <action
-            android:id="@+id/action_courseFragment_to_courseSectionsFragment"
+            android:id="@+id/action_courseFragment_to_courseTopicsFragment"
             app:destination="@id/courseSectionsFragment" />
         <argument
             android:name="courseId"

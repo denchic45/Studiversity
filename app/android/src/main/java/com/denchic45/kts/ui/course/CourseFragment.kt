@@ -60,15 +60,16 @@ class CourseFragment(
             },
             { courseId, elementId ->
                 findNavController().navigate(
-                    CourseFragmentDirections.actionCourseFragmentToCourseWorkFragment(
+                    CourseFragmentDirections.actionCourseFragmentToCourseWorkEditorFragment(
                         courseId.toString(),
-                        elementId.toString()
+                        elementId?.toString(),
+                        null
                     )
                 )
             },
             {
                 findNavController().navigate(
-                    CourseFragmentDirections.actionCourseFragmentToCourseSectionsFragment(it.toString())
+                    CourseFragmentDirections.actionCourseFragmentToCourseTopicsFragment(it.toString())
                 )
             },
             { userId ->
