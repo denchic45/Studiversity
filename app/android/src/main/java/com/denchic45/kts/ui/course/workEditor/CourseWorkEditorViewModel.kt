@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.course.taskEditor
+package com.denchic45.kts.ui.course.workEditor
 
 //import androidx.lifecycle.MutableLiveData
 //import androidx.lifecycle.viewModelScope

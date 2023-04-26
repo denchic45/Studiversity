@@ -9,14 +9,14 @@
     android:orientation="vertical"
 
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ui.course.taskEditor.CourseWorkEditorFragment">
+    tools:context=".ui.course.workEditor.CourseWorkEditorFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingBottom="16sp"
-        tools:context=".ui.course.taskEditor.CourseWorkEditorFragment">
+        tools:context=".ui.course.workEditor.CourseWorkEditorFragment">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_name"

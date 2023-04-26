@@ -6,10 +6,9 @@ import com.denchic45.kts.ui.adminPanel.timetableEditor.courseChooser.CourseChoos
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.course.CourseFragment
 import com.denchic45.kts.ui.course.courseTopicChooser.CourseTopicChooserFragment
-import com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment
+import com.denchic45.kts.ui.course.sections.CourseTopicsFragment
 import com.denchic45.kts.ui.course.submission.SubmissionDialog
-import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
-import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
+import com.denchic45.kts.ui.course.workEditor.CourseWorkEditorFragment
 import com.denchic45.kts.ui.creator.CreatorDialog
 import com.denchic45.kts.ui.iconPicker.IconPickerDialog
 import com.denchic45.kts.ui.login.auth.AuthFragment
@@ -136,7 +135,7 @@ interface FragmentModule {
     fun contributeCompletedTasksFragment(): CompletedTasksFragment
 
     @ContributesAndroidInjector(modules = [IntentModule::class])
-    fun contributeCourseSectionsFragment(): CourseTopicEditorFragment
+    fun contributeCourseSectionsFragment(): CourseTopicsFragment
 
     @ContributesAndroidInjector
     fun contributeIconPickerDialog(): IconPickerDialog

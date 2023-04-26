@@ -1,13 +1,9 @@
 package com.denchic45.kts.ui.course
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddHome
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,34 +15,26 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
-import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.arkivanov.essenty.lifecycle.doOnStop
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.UiIcon
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
-import com.denchic45.kts.ui.courseelements.CourseElementUI
-import com.denchic45.kts.ui.courseelements.CourseUiComponent
+import com.denchic45.kts.ui.courseelements.CourseElementsScreen
+import com.denchic45.kts.ui.coursemembers.CourseMembersScreen
 import com.denchic45.kts.ui.fab.FabInteractor
 import com.denchic45.kts.ui.fab.FabState
-import com.denchic45.kts.ui.get
-import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
-import java.util.UUID
 
 
 @Composable
 fun CourseScreen(
-    component: CourseUiComponent,
+    component: CourseComponent,
     fabInteractor: FabInteractor,
     appBarInteractor: AppBarInteractor
 ) {
@@ -68,24 +56,22 @@ fun CourseScreen(
 
     val course by component.course.collectAsState()
     val allowEdit by component.allowEdit.collectAsState(false)
-    val elements by component.elements.collectAsState()
+    val children by component.children.collectAsState()
 
     CourseContent(
         course = course,
         allowEdit = allowEdit,
-        elements = elements,
-        onElementClick = component::onItemClick,
+        childrenResource = children,
         onCourseEditClick = component::onCourseEditClick
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CourseContent(
     course: Resource<CourseResponse>,
     allowEdit: Boolean,
-    elements: Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>>,
-    onElementClick: (elementId: UUID) -> Unit,
+    childrenResource: Resource<List<CourseComponent.Child>>,
     onCourseEditClick: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -111,26 +97,19 @@ fun CourseContent(
             )
         }
     ) { paddingValues ->
-        elements.onSuccess {
-            LazyColumn(contentPadding = paddingValues) {
-                it.forEach { (topic, elements) ->
-                    topic?.let {
-                        item(key = { it.id }) { }
-                    }
+        childrenResource.onSuccess {children->
+            HorizontalPager(pageCount = children.size) {
+                when (val child = children[it]) {
+                    is CourseComponent.Child.Elements -> CourseElementsScreen(
+                        component = child.component,
+                        contentPadding = paddingValues
+                    )
 
-                    items(elements, key = { it.id }) {
-                        CourseElementUI(
-                            response = it,
-                            onClick = { onElementClick(it.id) })
-                    }
+                    is CourseComponent.Child.Members -> CourseMembersScreen(
+                        component = child.component,
+                        contentPadding = paddingValues
+                    )
                 }
-            }
-        }.onLoading {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
             }
         }
     }

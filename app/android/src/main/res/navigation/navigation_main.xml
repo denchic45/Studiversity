@@ -89,7 +89,7 @@
         tools:layout="@layout/fragment_course">
         <action
             android:id="@+id/action_courseFragment_to_taskEditorFragment"
-            app:destination="@id/taskEditorFragment" />
+            app:destination="@id/courseWorkEditorFragment" />
         <action
             android:id="@+id/action_courseFragment_to_courseWorkFragment"
             app:destination="@id/courseWorkFragment" />
@@ -107,24 +107,34 @@
     <fragment
         android:id="@+id/courseEditorFragment"
         android:name="com.denchic45.kts.ui.courseEditor.CourseEditorFragment"
-        android:label="CourseEditorFragment"
-        tools:layout="@layout/fragment_course_editor" >
+        android:label="CourseEditorFragment" >
         <argument
             android:name="courseId"
             app:argType="string"
             app:nullable="true" />
     </fragment>
     <fragment
-        android:id="@+id/taskEditorFragment"
-        android:name="com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment"
-        android:label="fragment_task_editor"
-        tools:layout="@layout/fragment_task_editor" />
+        android:id="@+id/courseWorkEditorFragment"
+        android:name="com.denchic45.kts.ui.course.workEditor.CourseWorkEditorFragment"
+        android:label="fragment_course_work_editor" >
+        <argument
+            android:name="courseId"
+            app:argType="string" />
+        <argument
+            android:name="workId"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="topicId"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
     <action
         android:id="@+id/action_global_courseEditorFragment"
         app:destination="@id/courseEditorFragment" />
     <action
-        android:id="@+id/action_global_taskEditorFragment"
-        app:destination="@id/taskEditorFragment" />
+        android:id="@+id/action_global_courseWorkEditorFragment"
+        app:destination="@id/courseWorkEditorFragment" />
     <fragment
         android:id="@+id/courseWorkFragment"
         android:name="com.denchic45.kts.ui.coursework.CourseWorkFragment"
@@ -146,9 +156,9 @@
         app:destination="@id/submissionFragment" />
     <fragment
         android:id="@+id/courseSectionsFragment"
-        android:name="com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment"
+        android:name="com.denchic45.kts.ui.course.sections.CourseTopicsFragment"
         android:label="fragment_course_sections"
-        tools:layout="@layout/fragment_course_section_editor" >
+        tools:layout="@layout/fragment_course_topics" >
         <argument
             android:name="courseId"
             app:argType="string" />

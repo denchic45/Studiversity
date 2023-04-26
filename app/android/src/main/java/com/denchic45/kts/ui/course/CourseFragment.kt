@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
@@ -18,11 +17,9 @@ import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.databinding.FragmentCourseBinding
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.base.HasNavArgs
-import com.denchic45.kts.ui.courseelements.CourseUiComponent
 import com.denchic45.kts.ui.fab.FabInteractor
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.stuiversity.util.toUUID
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
@@ -31,20 +28,36 @@ class CourseFragment(
     private val appBarInteractor: AppBarInteractor,
     private val fabInteractor: FabInteractor,
     component: (
-        UUID,
-        onOpenElement: () -> Unit, (courseId: UUID, elementId: UUID) -> Unit,
-        onOpenCourseEditor: (courseId: UUID) -> Unit,
-        onOpenCourseTopics: (courseId: UUID) -> Unit,
+        courseId: UUID,
+        onCourseEditorOpen: (courseId: UUID) -> Unit,
+        onElementOpen: (courseId: UUID, elementId: UUID) -> Unit,
+        onCourseElementEditorOpen: (courseId: UUID, elementId: UUID?) -> Unit,
+        onCourseTopicsOpen: (courseId: UUID) -> Unit,
+        onMemberOpen: (memberId: UUID) -> Unit,
         ComponentContext,
-    ) -> CourseUiComponent,
+    ) -> CourseComponent,
 ) : Fragment(), HasNavArgs<CourseFragmentArgs> {
 
     override val navArgs: CourseFragmentArgs by navArgs()
 
-    val component: CourseUiComponent by lazy {
+    val component: CourseComponent by lazy {
         component(
             navArgs.courseId.toUUID(),
-            {},
+            { courseId ->
+                findNavController().navigate(
+                    MobileNavigationDirections.actionGlobalCourseEditorFragment(
+                        courseId.toString()
+                    )
+                )
+            },
+            { courseId, elementId ->
+                findNavController().navigate(
+                    CourseFragmentDirections.actionCourseFragmentToCourseWorkFragment(
+                        courseId.toString(),
+                        elementId.toString()
+                    )
+                )
+            },
             { courseId, elementId ->
                 findNavController().navigate(
                     CourseFragmentDirections.actionCourseFragmentToCourseWorkFragment(
@@ -55,14 +68,12 @@ class CourseFragment(
             },
             {
                 findNavController().navigate(
-                    MobileNavigationDirections.actionGlobalCourseEditorFragment(
-                        it.toString()
-                    )
+                    CourseFragmentDirections.actionCourseFragmentToCourseSectionsFragment(it.toString())
                 )
             },
-            {
+            { userId ->
                 findNavController().navigate(
-                    CourseFragmentDirections.actionCourseFragmentToCourseSectionsFragment(it.toString())
+                    MobileNavigationDirections.actionGlobalUserEditorFragment(userId.toString())
                 )
             },
             defaultComponentContext(requireActivity().onBackPressedDispatcher)
@@ -70,10 +81,10 @@ class CourseFragment(
     }
 
     val binding: FragmentCourseBinding by viewBinding(FragmentCourseBinding::bind)
-    private lateinit var collapsingToolbarLayout: CollapsingToolbarLayout
+//    private lateinit var collapsingToolbarLayout: CollapsingToolbarLayout
 
     //    private lateinit var mainToolbar: Toolbar
-    private lateinit var toolbar: Toolbar
+//    private lateinit var toolbar: Toolbar
 
     companion object {
         const val COURSE_ID = "CourseFragment COURSE_UUID"
@@ -88,7 +99,7 @@ class CourseFragment(
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            AppTheme{
+            AppTheme {
                 CourseScreen(
                     component = component,
                     appBarInteractor = appBarInteractor,
@@ -248,36 +259,4 @@ class CourseFragment(
 //        }
 //    }
 
-    override fun onStart() {
-        super.onStart()
-
-//    collapsingToolbarLayout = requireActivity().findViewById<LinearLayout>(R.id.ll_main).let {
-//        it.addView(
-//            requireActivity().layoutInflater.inflate(R.layout.toolbar_course, it, false),
-//            0
-//        )
-//        requireActivity().findViewById(R.id.toolbar_layout)
-//    }
-//    this@CourseFragment.toolbar = collapsingToolbarLayout.findViewById(R.id.toolbar)
-//    this@CourseFragment.toolbar.apply {
-//        setNavigationIcon(R.drawable.ic_arrow_back)
-//        inflateMenu(R.menu.options_course)
-//        setNavigationOnClickListener {
-//            requireActivity().onBackPressed()
-//        }
-//        setOnMenuItemClickListener {
-//            component.onOptionClick(it.itemId)
-//            false
-//        }
-//        component.onCreateOptions()
-//    }
-    }
-
-    override fun onStop() {
-        super.onStop()
-//    requireActivity().findViewById<LinearLayout>(R.id.ll_main).removeViewAt(0)
-//        appBarController.removeView(collapsingToolbarLayout)
-//        appBarController.addView(mainToolbar)
-//        appBarController.setExpanded(expand = true, animate = false)
-    }
 }

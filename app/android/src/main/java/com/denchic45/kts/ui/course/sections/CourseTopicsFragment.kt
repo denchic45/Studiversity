@@ -4,36 +4,56 @@ import android.graphics.Canvas
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.defaultComponentContext
 import com.denchic45.kts.R
-import com.denchic45.kts.ui.model.UiModel
-import com.denchic45.kts.databinding.FragmentCourseSectionEditorBinding
+import com.denchic45.kts.databinding.FragmentCourseTopicsBinding
 import com.denchic45.kts.databinding.ItemAddSectionBinding
 import com.denchic45.kts.databinding.ItemEditSectionBinding
-import com.denchic45.kts.ui.base.BaseFragment
 import com.denchic45.kts.ui.adapter.BaseViewHolder
+import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.base.HasNavArgs
+import com.denchic45.kts.ui.coursetopics.CourseTopicsComponent
+import com.denchic45.kts.ui.model.UiModel
+import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.closeKeyboard
-import com.denchic45.kts.util.setActivityTitle
+import com.denchic45.kts.util.collectWhenStarted
+import com.denchic45.kts.util.repeatOnViewLifecycle
 import com.denchic45.kts.util.showKeyboard
 import com.denchic45.kts.util.viewBinding
 import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
+import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
 import com.denchic45.widget.extendedAdapter.adapter
+import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
-class CourseTopicEditorFragment :
-    BaseFragment<CourseTopicEditorViewModel, FragmentCourseSectionEditorBinding>(R.layout.fragment_course_section_editor) {
+@Inject
+class CourseTopicsFragment(
+    private val appBarInteractor: AppBarInteractor,
+    private val courseTopicsComponent: (UUID, ComponentContext) -> CourseTopicsComponent,
+) : Fragment(R.layout.fragment_course_topics), HasNavArgs<CourseTopicsFragmentArgs> {
 
 
-    override val binding: FragmentCourseSectionEditorBinding by viewBinding(
-        FragmentCourseSectionEditorBinding::bind
+    val binding: FragmentCourseTopicsBinding by viewBinding(
+        FragmentCourseTopicsBinding::bind
     )
 
-    override val viewModel: CourseTopicEditorViewModel by viewModels { viewModelFactory }
+    override val navArgs: CourseTopicsFragmentArgs by navArgs()
+
+    val component: CourseTopicsComponent by lazy {
+        courseTopicsComponent(
+            navArgs.courseId.toUUID(),
+            defaultComponentContext(requireActivity().onBackPressedDispatcher)
+        )
+    }
 
     companion object {
         const val COURSE_ID = "CourseSectionEditor COURSE_ID"
@@ -42,16 +62,18 @@ class CourseTopicEditorFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setActivityTitle("Редактировать секции")
+        repeatOnViewLifecycle(Lifecycle.State.STARTED) {
+            appBarInteractor.update { it.copy(title = uiTextOf("Темы")) }
+        }
 
         val adapter = adapter {
             delegates(
                 EditSectionAdapterDelegate(
                     renameCallback = { name, position ->
-                        viewModel.onSectionRename(name, position)
+                        component.onTopicRename(name, position)
                     },
-                    removeCallback = { viewModel.onSectionRemove(it) },
-                ), AddSectionAdapterDelegate(viewModel::onSectionAdd)
+                    removeCallback = { component.onSectionRemove(it) },
+                ), AddSectionAdapterDelegate(component::onTopicAdd)
             )
             extensions {
 
@@ -72,7 +94,7 @@ class CourseTopicEditorFragment :
                     if (move) {
                         val oldPosition = viewHolder.absoluteAdapterPosition
                         val position = target.absoluteAdapterPosition
-                        viewModel.onSectionMove(oldPosition - 1, position - 1)
+                        component.onTopicMove(oldPosition - 1, position - 1)
                     }
                     return move
                 }
@@ -104,7 +126,7 @@ class CourseTopicEditorFragment :
                     viewHolder: RecyclerView.ViewHolder
                 ) {
                     super.clearView(recyclerView, viewHolder)
-//                    viewModel.onSectionMoved()
+                    component.onSectionMoved()
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
@@ -115,11 +137,11 @@ class CourseTopicEditorFragment :
 
             rvSections.adapter = adapter
             (rvSections.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-            lifecycleScope.launchWhenStarted {
-                viewModel.topics.collect {
-                    adapter.submit(listOf(EditSectionAdapterDelegate.AddSectionItem) + it)
-                }
+
+            component.topics.collectWhenStarted(viewLifecycleOwner) {
+                adapter.submit(listOf(EditSectionAdapterDelegate.AddSectionItem) + it)
             }
+
         }
     }
 }
@@ -136,7 +158,8 @@ class EditSectionAdapterDelegate(
 
     override fun isForViewType(item: Any): Boolean = item is TopicResponse
 
-    override fun onBindViewHolder(item: TopicResponse, holder: EditSectionHolder) = holder.onBind(item)
+    override fun onBindViewHolder(item: TopicResponse, holder: EditSectionHolder) =
+        holder.onBind(item)
 
     override fun onCreateViewHolder(parent: ViewGroup): EditSectionHolder {
         return EditSectionHolder(

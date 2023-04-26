@@ -15,8 +15,7 @@ class FileViewer(private val activity: Activity, private val onNotFoundActivity:
             action = Intent.ACTION_VIEW
             val apkURI = FileProvider.getUriForFile(
                 activity,
-                activity.applicationContext
-                    .packageName.toString() + ".provider", file
+                activity.applicationContext.packageName.toString() + ".provider", file
             )
             val extensionFromMimeType = MimeTypeMap
                 .getSingleton()

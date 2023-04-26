@@ -21,7 +21,7 @@ import com.denchic45.kts.databinding.FragmentSubmissionBinding
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.rx.EditTextTransformer
-import com.denchic45.kts.ui.course.taskEditor.AttachmentAdapterDelegate
+import com.denchic45.kts.ui.course.workEditor.AttachmentAdapterDelegate
 import com.denchic45.kts.util.ValueFilter
 import com.denchic45.kts.util.closeKeyboard
 import com.denchic45.kts.util.collectWhenStarted

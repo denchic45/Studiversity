@@ -2,9 +2,9 @@ package com.denchic45.kts.di.module
 
 import com.denchic45.kts.ui.avatar.FullImageActivity
 import com.denchic45.kts.ui.course.CourseFragment
-import com.denchic45.kts.ui.course.sections.CourseTopicEditorFragment
+import com.denchic45.kts.ui.course.sections.CourseTopicsFragment
 import com.denchic45.kts.ui.course.submission.SubmissionDialog
-import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
+import com.denchic45.kts.ui.course.workEditor.CourseWorkEditorFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
 import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
@@ -96,12 +96,12 @@ object IntentModule {
         return courseFragment.navArgs.courseId
     }
 
-    @Named(CourseWorkEditorFragment.WORK_ID)
-    @Provides
-    fun provideTaskIdToTaskEditor(courseWorkEditorFragment: CourseWorkEditorFragment): String? {
-        return courseWorkEditorFragment.requireArguments()
-            .getString(CourseWorkEditorFragment.WORK_ID)
-    }
+//    @Named(CourseWorkEditorFragment.WORK_ID)
+//    @Provides
+//    fun provideTaskIdToTaskEditor(courseWorkEditorFragment: CourseWorkEditorFragment): String? {
+//        return courseWorkEditorFragment.requireArguments()
+//            .getString(CourseWorkEditorFragment.WORK_ID)
+//    }
 
     @Named(CourseWorkEditorFragment.COURSE_ID)
     @Provides
@@ -110,12 +110,12 @@ object IntentModule {
             .getString(CourseWorkEditorFragment.COURSE_ID)!!
     }
 
-    @Named(CourseWorkEditorFragment.SECTION_ID)
-    @Provides
-    fun provideSectionId(courseWorkEditorFragment: CourseWorkEditorFragment): String? {
-        return courseWorkEditorFragment.requireArguments()
-            .getString(CourseWorkEditorFragment.SECTION_ID)
-    }
+//    @Named(CourseWorkEditorFragment.SECTION_ID)
+//    @Provides
+//    fun provideSectionId(courseWorkEditorFragment: CourseWorkEditorFragment): String? {
+//        return courseWorkEditorFragment.requireArguments()
+//            .getString(CourseWorkEditorFragment.SECTION_ID)
+//    }
 
 //    @Named(ContentFragment.COURSE_ID)
 //    @Provides
@@ -179,10 +179,10 @@ object IntentModule {
         return submissionDialog.requireArguments().getString(SubmissionDialog.STUDENT_ID)!!
     }
 
-    @Named(CourseTopicEditorFragment.COURSE_ID)
+    @Named(CourseTopicsFragment.COURSE_ID)
     @Provides
-    fun provideCourseIdToCourseSectionEditor(courseTopicEditorFragment: CourseTopicEditorFragment): String {
-        return courseTopicEditorFragment.requireArguments()
-            .getString(CourseTopicEditorFragment.COURSE_ID)!!
+    fun provideCourseIdToCourseSectionEditor(courseTopicsFragment: CourseTopicsFragment): String {
+        return courseTopicsFragment.requireArguments()
+            .getString(CourseTopicsFragment.COURSE_ID)!!
     }
 }

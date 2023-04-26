@@ -1,10 +1,17 @@
-package com.denchic45.kts.ui.course.taskEditor
+package com.denchic45.kts.ui.course.workEditor
 
 import android.graphics.drawable.Drawable
+import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.defaultComponentContext
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.denchic45.kts.R
@@ -14,18 +21,30 @@ import com.denchic45.kts.data.domain.model.AttachmentLink
 import com.denchic45.kts.databinding.ItemAddAttachmentBinding
 import com.denchic45.kts.databinding.ItemAttachmentBinding
 import com.denchic45.kts.ui.adapter.BaseViewHolder
+import com.denchic45.kts.ui.base.HasNavArgs
+import com.denchic45.kts.ui.courseworkeditor.CourseWorkEditorComponent
+import com.denchic45.kts.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.kts.ui.model.UiModel
-import com.denchic45.kts.util.FilePicker
+import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.util.FileViewer
 import com.denchic45.kts.util.getType
 import com.denchic45.kts.util.viewBinding
+import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.widget.extendedAdapter.ListItemAdapterDelegate
-import com.example.appbarcontroller.appbarcontroller.AppBarController
-import kotlin.properties.Delegates
+import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
 
-class CourseWorkEditorFragment :
-    Fragment() {
+@Inject
+class CourseWorkEditorFragment(
+    private val _courseWorkEditorComponent: (
+        courseId: UUID,
+        workId: UUID?,
+        topicId: UUID?,
+        onFinish: () -> Unit,
+        ComponentContext
+    ) -> CourseWorkEditorComponent
+) : Fragment(), HasNavArgs<CourseWorkEditorFragmentArgs> {
 
     companion object {
         const val WORK_ID = "TaskEditor TASK_ID"
@@ -33,9 +52,21 @@ class CourseWorkEditorFragment :
         const val SECTION_ID = "SECTION_ID"
     }
 
-    private var oldToolbarScrollFlags by Delegates.notNull<Int>()
+//    private var oldToolbarScrollFlags by Delegates.notNull<Int>()
 
-    private lateinit var appBarController: AppBarController
+//    private lateinit var appBarController: AppBarController
+
+    override val navArgs: CourseWorkEditorFragmentArgs by navArgs()
+
+    private val component by lazy {
+        _courseWorkEditorComponent(
+            navArgs.courseId.toUUID(),
+            navArgs.workId?.toUUID(),
+            navArgs.topicId?.toUUID(),
+            { requireActivity().onBackPressedDispatcher.onBackPressed() },
+            defaultComponentContext(requireActivity().onBackPressedDispatcher)
+        )
+    }
 
     private val fileViewer by lazy {
         FileViewer(requireActivity()) {
@@ -44,6 +75,19 @@ class CourseWorkEditorFragment :
                 "Невозможно открыть файл на данном устройстве",
                 Toast.LENGTH_SHORT
             ).show()
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = ComposeView(requireContext()).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            AppTheme {
+                CourseWorkEditorScreen(component)
+            }
         }
     }
 
@@ -62,7 +106,7 @@ class CourseWorkEditorFragment :
 //        }
 //    }
 
-    private lateinit var filePicker: FilePicker
+//    private lateinit var filePicker: FilePicker
 
 //    override val viewModel: CourseWorkEditorViewModel by viewModels { viewModelFactory }
 
@@ -260,10 +304,10 @@ class CourseWorkEditorFragment :
 //        }
 //    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        appBarController.toolbarScrollFlags = oldToolbarScrollFlags
-    }
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        appBarController.toolbarScrollFlags = oldToolbarScrollFlags
+//    }
 }
 
 class AttachmentAdapterDelegate(private val crossBtnVisibility: Boolean = true) :

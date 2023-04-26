@@ -59,6 +59,19 @@ import java.time.ZoneId
 
 @Composable
 fun CourseWorkEditorScreen(component: CourseWorkEditorComponent) {
+
+    // TODO: Доделать! Использовать fileViewer для открытия файлов
+
+//     val fileViewer by lazy {
+//        FileViewer(LocalContext.current.requireActivity()) {
+//            Toast.makeText(
+//                requireContext(),
+//                "Невозможно открыть файл на данном устройстве",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }
+//    }
+
     val pickFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri ->
@@ -135,7 +148,8 @@ fun CourseWorkEditorContent(
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = it },
-            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
+                modifier = Modifier.padding(horizontal = MaterialTheme.spacing.normal)
+            ) {
                 OutlinedTextField(
                     value = state.topicQueryText.takeIf(String::isNotEmpty)
                         ?: state.selectedTopic?.title?.asString() ?: "",

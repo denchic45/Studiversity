@@ -6,7 +6,7 @@ import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.ObserveCourseTopicsUseCase
-import com.denchic45.kts.ui.course.taskEditor.CourseWorkEditorFragment
+import com.denchic45.kts.ui.course.workEditor.CourseWorkEditorFragment
 import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.channels.Channel

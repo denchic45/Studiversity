@@ -76,9 +76,9 @@ class CourseWorkEditorComponent(
     private val addCourseWorkUseCase: AddCourseWorkUseCase,
     private val updateCourseWorkUseCase: UpdateCourseWorkUseCase,
     @Assisted
-    private val workId: UUID?,
-    @Assisted
     private val courseId: UUID,
+    @Assisted
+    private val workId: UUID?,
     @Assisted
     topicId: UUID?,
     @Assisted
