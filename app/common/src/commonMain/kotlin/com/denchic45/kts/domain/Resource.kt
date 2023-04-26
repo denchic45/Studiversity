@@ -16,17 +16,18 @@ sealed interface Resource<out T> {
 }
 
 
-fun <T> Resource<T>.getData() = (this as Resource.Success).value
-
 typealias EmptyResource = Resource<Unit>
 
 fun emptyResource(): EmptyResource = Resource.Success(Unit)
 
-fun <T> Resource<T>.success() = this as Resource.Success
+fun <T> resourceOf(value: T) = Resource.Success(value)
 
-fun <T> Resource.Success<T>.updateResource(function: (T) -> T): Resource.Success<T> {
-    return Resource.Success(function(value))
-}
+fun resourceOf(failure: Failure) = Resource.Error(failure)
+
+fun resourceOf() = Resource.Loading
+
+
+fun <T> Resource<T>.success() = this as Resource.Success
 
 fun <T> ResponseResult<T>.toResource(): Resource<T> = mapBoth(
     success = { Resource.Success(it) },
@@ -90,14 +91,6 @@ inline fun <T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T
         -> this
     }
 }
-
-//inline fun <T, V> Resource<T>.mapBoth(onSuccess: (T) -> V, onFailure: (Failure) -> V): V {
-//    return when (this) {
-//        is Resource.Error -> onFailure(failure)
-//        is Resource.Loading -> this
-//        is Resource.Success -> onSuccess(value)
-//    }
-//}
 
 fun <T> Flow<Resource<T>>.filterResource(
     onSuccess: suspend (T) -> Boolean = { true },
