@@ -1,7 +1,12 @@
 package com.denchic45.kts.ui.course
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -9,12 +14,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.arkivanov.essenty.lifecycle.doOnStart
@@ -30,6 +38,7 @@ import com.denchic45.kts.ui.coursemembers.CourseMembersScreen
 import com.denchic45.kts.ui.fab.FabInteractor
 import com.denchic45.kts.ui.fab.FabState
 import com.denchic45.stuiversity.api.course.model.CourseResponse
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -97,18 +106,39 @@ fun CourseContent(
             )
         }
     ) { paddingValues ->
-        childrenResource.onSuccess {children->
-            HorizontalPager(pageCount = children.size) {
-                when (val child = children[it]) {
-                    is CourseComponent.Child.Elements -> CourseElementsScreen(
-                        component = child.component,
-                        contentPadding = paddingValues
-                    )
+        Text(text = "sample text")
+        childrenResource.onSuccess { children ->
+            Column(Modifier.padding(paddingValues)) {
+                val coroutineScope = rememberCoroutineScope()
+                val pagerState = rememberPagerState()
+                TabRow(selectedTabIndex = pagerState.currentPage) {
+                    children.forEachIndexed { index, child ->
+                        Tab(
+                            text = { Text(child.title) },
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            },
+                        )
+                    }
+                }
+                HorizontalPager(
+                    state = pagerState,
+                    pageCount = children.size,
+                ) {
+                    Box(modifier = Modifier.fillMaxHeight()) {
+                        when (val child = children[it]) {
+                            is CourseComponent.Child.Elements -> CourseElementsScreen(
+                                component = child.component
+                            )
 
-                    is CourseComponent.Child.Members -> CourseMembersScreen(
-                        component = child.component,
-                        contentPadding = paddingValues
-                    )
+                            is CourseComponent.Child.Members -> CourseMembersScreen(
+                                component = child.component
+                            )
+                        }
+                    }
                 }
             }
         }

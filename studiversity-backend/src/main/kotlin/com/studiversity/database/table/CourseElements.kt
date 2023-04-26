@@ -17,10 +17,13 @@ import org.jetbrains.exposed.sql.select
 import java.util.*
 
 object CourseElements : UUIDTable("course_element", "course_element_id") {
-    val courseId =
-        uuid("course_id").references(Courses.id, onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE)
-    val topicId = uuid("topic_id").references(
-        CourseTopics.id,
+    val courseId = reference(name = "course_id",
+        foreign = Courses,
+        onDelete = ReferenceOption.CASCADE,
+        onUpdate = ReferenceOption.CASCADE)
+    val topicId = reference(
+        name = "topic_id",
+        foreign = CourseTopics,
         onDelete = ReferenceOption.CASCADE,
         onUpdate = ReferenceOption.CASCADE
     ).nullable()
@@ -48,8 +51,8 @@ class CourseElementDao(id: EntityID<UUID>) : UUIDEntity(id) {
         }
     }
 
-    var courseId by CourseElements.courseId
-    var topicId by CourseElements.topicId
+    //    var courseId by CourseElements.courseId
+//    var topicId by CourseElements.topicId
     var name by CourseElements.name
     var description by CourseElements.description
     var order by CourseElements.order
@@ -58,6 +61,8 @@ class CourseElementDao(id: EntityID<UUID>) : UUIDEntity(id) {
     var type by CourseElements.type
 
     // todo add posts relation
+    var course by CourseDao referencedOn CourseElements.courseId
+    var topic by CourseTopicDao optionalReferencedOn CourseElements.topicId
 
 }
 

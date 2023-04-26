@@ -23,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Comment
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -58,15 +59,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.ActionMenuItem
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.coursework.details.CourseWorkDetailsScreen
 import com.denchic45.kts.ui.coursework.submissiondetails.SubmissionDetailsContent
 import com.denchic45.kts.ui.coursework.submissions.CourseWorkSubmissionsScreen
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
+import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.util.toString
@@ -76,7 +81,7 @@ import okio.Path.Companion.toPath
 import java.util.UUID
 
 @Composable
-fun CourseWorkScreen(component: CourseWorkComponent) {
+fun CourseWorkScreen(component: CourseWorkComponent, appBarInteractor: AppBarInteractor) {
     val childrenResource by component.children.collectAsState()
 
     val yourSubmissionComponent = component.yourSubmissionComponent
@@ -93,6 +98,22 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
                     data.data!!.getFile(context).toOkioPath()
                 )
             }
+        }
+    }
+
+    val allowEdit by component.allowEditWork.collectAsState(initial = false)
+    component.lifecycle.doOnStart {
+        appBarInteractor.update {
+            it.copy(
+                actions = if (allowEdit)
+                    listOf(
+                        ActionMenuItem(
+                            id = "edit",
+                            icon = uiIconOf(Icons.Outlined.Edit),
+                            onClick = { component.onEditClick() }
+                        )
+                    ) else emptyList()
+            )
         }
     }
 
@@ -177,10 +198,7 @@ private fun CourseWorkContent(
         scaffoldState = scaffoldState,
         sheetSwipeEnabled = offset != 0F,
         sheetContent = {
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-            ) {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 submissionResource?.onSuccess { submission ->
                     SubmissionHeaderContent(
                         submission,

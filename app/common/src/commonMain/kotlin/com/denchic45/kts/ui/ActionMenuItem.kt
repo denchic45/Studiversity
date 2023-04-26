@@ -5,4 +5,5 @@ data class ActionMenuItem(
     val icon: UiIcon,
     val title: UiText? = null,
     val enabled: Boolean = true,
+    val onClick: () -> Unit,
 )

@@ -38,11 +38,9 @@ import com.denchic45.stuiversity.util.optPropertyOf
 import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
@@ -74,14 +72,15 @@ class CourseEditorComponent(
             ActionMenuItem(
                 id = "save",
                 icon = uiIconOf(Icons.Default.Done),
-                enabled = false
+                enabled = false,
+                onClick = ::onSaveClick
             )
         ),
-        onActionMenuItemClick = {
-            when (it.id) {
-                "save" -> onSaveClick()
-            }
-        }
+//        onActionMenuItemClick = {
+//            when (it.id) {
+//                "save" -> onSaveClick()
+//            }
+//        }
     ))
 
     private val overlayNavigation = OverlayNavigation<DialogConfig>()

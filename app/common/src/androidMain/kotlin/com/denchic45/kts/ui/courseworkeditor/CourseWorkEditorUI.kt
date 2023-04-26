@@ -2,21 +2,28 @@ package com.denchic45.kts.ui.courseworkeditor
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.IconButton
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.Attachment
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -27,7 +34,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
@@ -37,19 +46,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.ActionMenuItem
 import com.denchic45.kts.ui.DropdownMenuItem
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.asString
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.coursework.details.AttachmentItemUI
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
+import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.stuiversity.util.toString
 import java.time.Instant
@@ -58,7 +75,10 @@ import java.time.LocalTime
 import java.time.ZoneId
 
 @Composable
-fun CourseWorkEditorScreen(component: CourseWorkEditorComponent) {
+fun CourseWorkEditorScreen(
+    component: CourseWorkEditorComponent,
+    appBarInteractor: AppBarInteractor
+) {
 
     // TODO: Доделать! Использовать fileViewer для открытия файлов
 
@@ -82,6 +102,23 @@ fun CourseWorkEditorScreen(component: CourseWorkEditorComponent) {
 
     val state by component.viewState.collectAsState()
     val attachments by component.attachmentItems.collectAsState()
+    val allowSave by component.allowSave.collectAsState()
+
+    component.lifecycle.doOnStart {
+        appBarInteractor.update {
+            it.copy(
+                title = component.title,
+                actions = listOf(
+                    ActionMenuItem(
+                        id = "save",
+                        icon = uiIconOf(Icons.Default.Done),
+                        enabled = allowSave,
+                        onClick = component::onSaveClick
+                    )
+                )
+            )
+        }
+    }
 
     CourseWorkEditorContent(
         stateResource = state,
@@ -113,176 +150,245 @@ fun CourseWorkEditorContent(
     onDueDateTimeSelect: (LocalDate, LocalTime) -> Unit,
     onDueDateTimeClear: () -> Unit
 ) {
-    stateResource.onSuccess { state ->
-
-        var showDatePicker by remember { mutableStateOf(false) }
-        var showTimePicker by remember { mutableStateOf(false) }
-
-        Column(
-            Modifier.fillMaxWidth()
-        ) {
-            Column(Modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
-                OutlinedTextField(
-                    value = state.name,
-                    onValueChange = { onNameType(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    isError = state.nameMessage != null,
-                    placeholder = { Text("Название") },
-                    supportingText = { Text(state.nameMessage ?: "") }
-                )
-                OutlinedTextField(
-                    value = state.description,
-                    onValueChange = { onDescriptionType(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = state.nameMessage != null,
-                    placeholder = { Text("Описание (необязательно)") },
-                )
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            var expanded by remember { mutableStateOf(false) }
-            val showList = expanded && state.foundTopics.isNotEmpty()
-
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = it },
-                modifier = Modifier.padding(horizontal = MaterialTheme.spacing.normal)
+    Surface {
+        stateResource.onSuccess { state ->
+            Column(
+                Modifier.fillMaxSize()
             ) {
-                OutlinedTextField(
-                    value = state.topicQueryText.takeIf(String::isNotEmpty)
-                        ?: state.selectedTopic?.title?.asString() ?: "",
-                    onValueChange = { onTopicNameType(it) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(),
-                    label = { Text("Раздел") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = showList
-                        )
-                    },
-                    singleLine = true,
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-                )
+                var showDatePicker by remember { mutableStateOf(false) }
+                var showTimePicker by remember { mutableStateOf(false) }
 
-                ExposedDropdownMenu(
+                Column(Modifier.padding(MaterialTheme.spacing.normal)) {
+                    OutlinedTextField(
+                        value = state.name,
+                        onValueChange = { onNameType(it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        isError = state.nameMessage != null,
+                        placeholder = { Text("Название") },
+                        supportingText = { Text(state.nameMessage ?: "") }
+                    )
+                    OutlinedTextField(
+                        value = state.description,
+                        onValueChange = { onDescriptionType(it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = state.nameMessage != null,
+                        placeholder = { Text("Описание (необязательно)") },
+                    )
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                var expanded by remember { mutableStateOf(false) }
+                val showList = expanded && state.foundTopics.isNotEmpty()
+
+                ExposedDropdownMenuBox(
                     expanded = showList,
-                    onDismissRequest = { expanded = false }) {
-                    state.foundTopics.forEach {
-                        DropdownMenuItem(
-                            text = { Text(it.title.asString()) },
-                            onClick = {
-                                onTopicSelect(it)
-                                expanded = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            ListItem(
-                headlineContent = { Text("Добавить вложение") },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Outlined.Attachment,
-                        contentDescription = "add attachment"
-                    )
-                }
-            )
-
-            attachmentsResource.onSuccess { attachmentItems ->
-                if (attachmentItems.isNotEmpty()) {
-                    HeaderItemUI(name = "Вложения")
-                    LazyRow {
-                        itemsIndexed(
-                            items = attachmentItems,
-                            key = { _, item -> item.attachmentId ?: Unit }) { index, item ->
-                            AttachmentItemUI(
-                                item = item,
-                                onClick = {
-                                    onAttachmentClick(item)
-                                },
-                                onRemove = { onAttachmentRemove(index) })
-                        }
-                    }
-                }
-            }
-
-            ListItem(
-                modifier = Modifier.clickable {
-                    showDatePicker = true
-                },
-                headlineContent = {
-                    Text(
-                        text = buildString {
-                            state.dueDate?.let { date ->
-                                append(Dates.toStringDayMonthHidingCurrentYear(date))
-                                state.dueTime?.let { time ->
-                                    append(", ${time.toString("HH:mm")}")
-                                }
-                            } ?: append("Добавить срок сдачи")
+                    onExpandedChange = { expanded = it },
+                    modifier = Modifier.padding(horizontal = MaterialTheme.spacing.normal)
+                ) {
+                    OutlinedTextField(
+                        value = state.topicQueryText.takeIf(String::isNotEmpty)
+                            ?: state.selectedTopic?.title?.asString() ?: "",
+                        onValueChange = { onTopicNameType(it) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(),
+                        label = { Text("Раздел") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(
+                                expanded = showList
+                            )
                         },
-                        modifier = Modifier.alpha(state.dueDate?.let { 1f }
-                            ?: ContentAlpha.disabled))
-                },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Outlined.CalendarToday,
-                        contentDescription = "due date and time"
+                        singleLine = true,
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                     )
-                },
-                trailingContent = state.dueDate?.let {
-                    {
-                        IconButton(onClick = { onDueDateTimeClear() }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Close,
-                                contentDescription = "remove due date time"
+
+                    ExposedDropdownMenu(
+                        expanded = showList,
+                        onDismissRequest = { expanded = false }) {
+                        state.foundTopics.forEach {
+                            DropdownMenuItem(
+                                text = { Text(it.title.asString()) },
+                                onClick = {
+                                    onTopicSelect(it)
+                                    expanded = false
+                                }
                             )
                         }
                     }
                 }
-            )
-        }
 
-        var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+                ListItem(
+                    headlineContent = { Text("Добавить вложение") },
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Outlined.Attachment,
+                            contentDescription = "add attachment"
+                        )
+                    }
+                )
 
-        var selectedTime by remember { mutableStateOf<LocalTime?>(null) }
-
-        if (showDatePicker)
-            DatePickerDialog(
-                onDismissRequest = { showDatePicker = false },
-                confirmButton = {
-                    showDatePicker = false
-                    showTimePicker = true
-                }) {
-                val datePickerState = rememberDatePickerState()
-                DatePicker(state = datePickerState)
-                datePickerState.selectedDateMillis?.let {
-                    selectedDate =
-                        Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
+                attachmentsResource.onSuccess { attachmentItems ->
+                    if (attachmentItems.isNotEmpty()) {
+                        HeaderItemUI(name = "Вложения")
+                        LazyRow {
+                            itemsIndexed(
+                                items = attachmentItems,
+                                key = { _, item -> item.attachmentId ?: Unit }) { index, item ->
+                                AttachmentItemUI(
+                                    item = item,
+                                    onClick = {
+                                        onAttachmentClick(item)
+                                    },
+                                    onRemove = { onAttachmentRemove(index) })
+                            }
+                        }
+                    }
                 }
-            }
 
-        if (showTimePicker)
-            DatePickerDialog(onDismissRequest = { showTimePicker = false },
-                confirmButton = {
-                    showTimePicker = false
-                    selectedDate?.let { date ->
-                        selectedTime?.let { time ->
-                            onDueDateTimeSelect(date, time)
+                ListItem(
+                    modifier = Modifier.clickable {
+                        showDatePicker = true
+                    },
+                    headlineContent = {
+                        Text(
+                            text = buildString {
+                                state.dueDate?.let { date ->
+                                    this.append(Dates.toStringDayMonthHidingCurrentYear(date))
+                                    state.dueTime?.let { time ->
+                                        append(", ${time.toString("HH:mm")}")
+                                    }
+                                } ?: append("Без срока сдачи")
+                            },
+                            modifier = Modifier.alpha(state.dueDate?.let { 1f }
+                                ?: ContentAlpha.disabled))
+                    },
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Outlined.CalendarToday,
+                            contentDescription = "due date and time"
+                        )
+                    },
+                    trailingContent = state.dueDate?.let {
+                        {
+                            IconButton(onClick = { onDueDateTimeClear() }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Close,
+                                    contentDescription = "remove due date time"
+                                )
+                            }
+                        }
+                    }
+                )
+
+                var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+
+                var selectedTime by remember { mutableStateOf<LocalTime?>(null) }
+
+                if (showDatePicker)
+                    DatePickerDialog(
+                        onDismissRequest = { showDatePicker = false },
+                        dismissButton = {
+                            TextButton(onClick = { showDatePicker = false }) {
+                                Text(text = "Отмена")
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                showDatePicker = false
+                                showTimePicker = true
+                            }) {
+                                Text(text = "ОК")
+                            }
+
+                        }) {
+                        val datePickerState = rememberDatePickerState()
+                        DatePicker(state = datePickerState)
+                        datePickerState.selectedDateMillis?.let {
+                            selectedDate =
+                                Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
                         }
                     }
 
-                }) {
-                val timePickerState = rememberTimePickerState(is24Hour = true)
-                TimePicker(state = timePickerState)
+                if (showTimePicker)
+                    TimePickerDialog(
+                        onCancel = { showTimePicker = false },
+                        onConfirm = {
+                            showTimePicker = false
+                            selectedDate?.let { date ->
+                                selectedTime?.let { time ->
+                                    onDueDateTimeSelect(date, time)
+                                }
+                            }
+                        }) {
+                        val timePickerState = rememberTimePickerState(is24Hour = true)
+                        TimePicker(state = timePickerState)
+                        timePickerState.apply {
+                            selectedTime = LocalTime.of(hour, minute, 0)
+                        }
+                    }
+            }
+        }.onLoading {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+    }
+}
 
-                timePickerState.apply {
-                    selectedTime = LocalTime.of(hour, minute, 0)
+@Composable
+fun TimePickerDialog(
+    title: String = "Выберите время",
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+    toggle: @Composable () -> Unit = {},
+    content: @Composable () -> Unit,
+) {
+    Dialog(
+        onDismissRequest = onCancel,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        ),
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.extraLarge,
+            tonalElevation = 6.dp,
+            modifier = Modifier
+                .width(IntrinsicSize.Min)
+                .height(IntrinsicSize.Min)
+                .background(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = MaterialTheme.colorScheme.surface
+                ),
+        ) {
+            toggle()
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp),
+                    text = title,
+                    style = MaterialTheme.typography.labelMedium
+                )
+                content()
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(
+                        onClick = onCancel
+                    ) { Text("Отменить") }
+                    TextButton(
+                        onClick = onConfirm
+                    ) { Text("ОК") }
                 }
             }
+        }
     }
 }
 
@@ -290,23 +396,21 @@ fun CourseWorkEditorContent(
 @Composable
 fun CourseWorkEditorPreview() {
     AppTheme {
-        Surface {
-            CourseWorkEditorContent(
-                stateResource = Resource.Success(CourseWorkEditorComponent.EditingWork().apply {
-                    name = "Контрольная работа"
-                    dueDate = LocalDate.now()
-                    dueTime = LocalTime.now()
-                }),
-                attachmentsResource = Resource.Success(emptyList()),
-                onNameType = {},
-                onDescriptionType = {},
-                onTopicNameType = {},
-                onTopicSelect = {},
-                onAttachmentClick = {},
-                onAttachmentRemove = {},
-                onDueDateTimeSelect = { _, _ -> },
-                onDueDateTimeClear = {}
-            )
-        }
+        CourseWorkEditorContent(
+            stateResource = Resource.Success(CourseWorkEditorComponent.EditingWork().apply {
+                name = "Контрольная работа"
+                dueDate = LocalDate.now()
+                dueTime = LocalTime.now()
+            }),
+            attachmentsResource = Resource.Success(emptyList()),
+            onNameType = {},
+            onDescriptionType = {},
+            onTopicNameType = {},
+            onTopicSelect = {},
+            onAttachmentClick = {},
+            onAttachmentRemove = {},
+            onDueDateTimeSelect = { _, _ -> },
+            onDueDateTimeClear = {}
+        )
     }
 }

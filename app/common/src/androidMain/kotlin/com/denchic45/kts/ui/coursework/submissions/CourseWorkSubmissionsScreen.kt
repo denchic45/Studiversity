@@ -18,13 +18,10 @@ import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionStat
 import com.denchic45.stuiversity.util.toString
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseWorkSubmissionsScreen(component: CourseWorkSubmissionsComponent) {
     val submissionsResource by component.submissions.collectAsState()
     val slot by component.childOverlay.subscribeAsState()
-
-
 
     submissionsResource.onSuccess { submissions ->
         LazyColumn {

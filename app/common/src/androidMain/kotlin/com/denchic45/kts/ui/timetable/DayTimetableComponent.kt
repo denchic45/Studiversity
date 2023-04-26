@@ -75,13 +75,11 @@ class DayTimetableComponent(
         lifecycle.doOnStart {
             appBarInteractor.set(AppBarState(
                 actions = listOf(
-                    ActionMenuItem("today", uiIconOf(R.drawable.ic_calendar))
-                ),
-                onActionMenuItemClick = {
-                    when (it.id) {
-                        "today" -> selectedDate.value = LocalDate.now()
-                    }
-                }
+                    ActionMenuItem(
+                        "today",
+                        uiIconOf(R.drawable.ic_calendar)
+                    ) { selectedDate.value = LocalDate.now() }
+                )
             ))
             selectedDate.onEach { selected ->
                 appBarInteractor.update {

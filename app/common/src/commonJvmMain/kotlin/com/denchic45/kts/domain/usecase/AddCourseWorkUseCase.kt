@@ -8,6 +8,7 @@ import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import java.util.*
 import javax.inject.Inject
 
+@me.tatarka.inject.annotations.Inject
 class AddCourseWorkUseCase @Inject constructor(
     private val courseElementRepository: CourseElementRepository,
 ) {

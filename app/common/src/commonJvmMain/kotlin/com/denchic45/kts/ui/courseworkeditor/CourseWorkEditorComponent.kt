@@ -1,7 +1,5 @@
 package com.denchic45.kts.ui.courseworkeditor
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,9 +20,7 @@ import com.denchic45.kts.domain.usecase.ObserveCourseTopicsUseCase
 import com.denchic45.kts.domain.usecase.RemoveAttachmentFromCourseWorkUseCase
 import com.denchic45.kts.domain.usecase.UpdateCourseWorkUseCase
 import com.denchic45.kts.domain.usecase.UploadAttachmentToCourseWorkUseCase
-import com.denchic45.kts.ui.ActionMenuItem
 import com.denchic45.kts.ui.DropdownMenuItem
-import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.model.AttachmentItem
@@ -33,7 +29,7 @@ import com.denchic45.kts.ui.model.toRequest
 import com.denchic45.kts.ui.studygroupeditor.Field
 import com.denchic45.kts.ui.studygroupeditor.FieldEditor
 import com.denchic45.kts.ui.studygroupeditor.getOptProperty
-import com.denchic45.kts.ui.uiIconOf
+import com.denchic45.kts.ui.studygroupeditor.updateOldValues
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
@@ -44,16 +40,19 @@ import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import okio.Path.Companion.toOkioPath
@@ -89,22 +88,8 @@ class CourseWorkEditorComponent(
 
     private val componentScope = componentScope()
 
-    val appBarState = MutableStateFlow(AppBarState(
-        title = workId?.let { uiTextOf("Редактирование задания") }
-            ?: uiTextOf("Новый курс"),
-        actions = listOf(
-            ActionMenuItem(
-                id = "save",
-                icon = uiIconOf(Icons.Default.Done),
-                enabled = false
-            )
-        ),
-        onActionMenuItemClick = {
-            when (it.id) {
-                "save" -> onSaveClick()
-            }
-        }
-    ))
+    val title = workId?.let { uiTextOf("Редактирование задания") }
+        ?: uiTextOf("Новое задание")
 
     private val editingState = EditingWork()
 
@@ -113,6 +98,8 @@ class CourseWorkEditorComponent(
     } ?: emptyFlow()
     private val _addedAttachmentItems = MutableStateFlow<List<AttachmentItem>>(emptyList())
     private val removedAttachmentIds = MutableStateFlow(emptyList<UUID>())
+
+    val allowSave = MutableStateFlow(false)
 
     val openAttachment = MutableSharedFlow<AttachmentItem>()
 
@@ -129,7 +116,10 @@ class CourseWorkEditorComponent(
     private val fieldEditor = FieldEditor(
         mapOf(
             "name" to Field("", editingState::name),
-            "description" to Field("", editingState::description)
+            "description" to Field("", editingState::description),
+            "dueDate" to Field(null, editingState::dueDate),
+            "dueTime" to Field(null, editingState::dueTime),
+            "topicId" to Field(null) { editingState.selectedTopic?.id }
         )
     )
 
@@ -147,6 +137,26 @@ class CourseWorkEditorComponent(
             emit(findCourseWorkUseCase(courseId, workId).map { response ->
                 editingState.apply {
                     name = response.name
+                    description = response.description ?: ""
+                    dueDate = response.dueDate
+                    dueTime = response.dueTime
+
+                    response.topicId?.let { topicId ->
+                        courseTopics.first().onSuccess { topics ->
+                            topics.find { it.id == topicId }?.let {
+                                DropdownMenuItem(it.id.toString(), uiTextOf(it.name))
+                            }
+                        }
+                    }
+
+
+                    fieldEditor.updateOldValues(
+                        "name" to name,
+                        "description" to description,
+                        "dueDate" to dueDate,
+                        "dueTime" to dueTime,
+                        "topicId" to topicId
+                    )
                 }
             })
         }
@@ -169,22 +179,30 @@ class CourseWorkEditorComponent(
         }
     }
 
+    private fun updateAllowSave() {
+        allowSave.update { fieldEditor.hasChanges() }
+    }
+
     fun onNameType(name: String) {
         editingState.name = name
+        updateAllowSave()
     }
 
     fun onDescriptionType(name: String) {
         editingState.description = name
+        updateAllowSave()
     }
 
     fun onDueDateTimeSelect(dueDate: LocalDate, dueTime: LocalTime) {
         editingState.dueDate = dueDate
         editingState.dueTime = dueTime
+        updateAllowSave()
     }
 
     fun onDueDateTimeClear() {
         editingState.dueDate = null
         editingState.dueTime = null
+        updateAllowSave()
     }
 
     fun onFilesSelect(selectedFiles: List<File>) {
@@ -198,6 +216,7 @@ class CourseWorkEditorComponent(
                 )
             }
         }
+        updateAllowSave()
     }
 
     fun onAttachmentRemove(position: Int) {
@@ -216,6 +235,7 @@ class CourseWorkEditorComponent(
                         removedAttachmentIds.update { it + removedAttachmentId }
                     }
                     _addedAttachmentItems.update { it - item }
+                    updateAllowSave()
                 }
             }
         }
@@ -248,7 +268,7 @@ class CourseWorkEditorComponent(
         }
     }
 
-    private fun onSaveClick() {
+    fun onSaveClick() {
         if (uiValidator.validate() && fieldEditor.hasChanges()) {
             componentScope.launch {
                 val result = workId?.let { workId ->
@@ -296,7 +316,9 @@ class CourseWorkEditorComponent(
                     }
                 }
                 result.onSuccess {
-                    onFinish()
+                    withContext(Dispatchers.Main) {
+                        onFinish()
+                    }
                 }
             }
         }
@@ -317,8 +339,8 @@ class CourseWorkEditorComponent(
         var description: String by mutableStateOf("")
         var dueDate: LocalDate? by mutableStateOf(null)
         var dueTime: LocalTime? by mutableStateOf(null)
-
         var selectedTopic: DropdownMenuItem? by mutableStateOf(null)
+
         var foundTopics: List<DropdownMenuItem> by mutableStateOf(emptyList())
         var topicQueryText: String by mutableStateOf("")
 

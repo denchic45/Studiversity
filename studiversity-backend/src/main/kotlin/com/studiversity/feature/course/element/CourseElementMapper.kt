@@ -13,17 +13,17 @@ fun CourseElementDao.toResponse(detailsDao: CourseElementDetailsDao): CourseElem
     detailsDao.toElementDetails()
 )
 
-private fun CourseElementDetailsDao.toElementDetails() = when (this) {
+private fun CourseElementDetailsDao.toElementDetails() = when(this) {
     is CourseWorkDao -> toDetailsResponse()
 }
 
 
 private fun CourseElementDao.toResponse(details: CourseElementDetails): CourseElementResponse = CourseElementResponse(
     id = id.value,
-    courseId = courseId,
+    courseId = course.id.value,
     name = name,
     description = description,
-    topicId = topicId,
+    topicId = topic?.id?.value,
     order = order,
     details = details
 )
@@ -39,10 +39,10 @@ private fun CourseWorkDao.toDetailsResponse(): CourseElementDetails = CourseWork
 fun ResultRow.toCourseElementResponse(detailsDao: CourseElementDetailsDao): CourseElementResponse =
     CourseElementResponse(
         id = this[CourseElements.id].value,
-        courseId = this[CourseElements.courseId],
+        courseId = this[CourseElements.courseId].value,
         name = this[CourseElements.name],
         description = this[CourseElements.description],
-        topicId = this[CourseElements.topicId],
+        topicId = this[CourseElements.topicId]?.value,
         order = this[CourseElements.order],
         details = detailsDao.toElementDetails()
     )

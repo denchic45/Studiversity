@@ -96,17 +96,19 @@ private fun CourseWorkDetailsContent(
                     })
                 }
             }
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
             work.description?.let {
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
                 Text(text = it)
             }
             attachmentsResource.onSuccess { attachments ->
-                HeaderItemUI(name = "Прикрепления")
-                LazyRow {
-                    items(attachments, key = { it.attachmentId ?: Unit }) {
-                        AttachmentItemUI(item = it, onClick = { onAttachmentClick(it) })
-                    }
-                }
+               if (attachments.isNotEmpty()) {
+                   HeaderItemUI(name = "Прикрепления")
+                   LazyRow {
+                       items(attachments, key = { it.attachmentId ?: Unit }) {
+                           AttachmentItemUI(item = it, onClick = { onAttachmentClick(it) })
+                       }
+                   }
+               }
             }
         }
     }

@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,6 +37,7 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.theme.AppTheme
+import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.element.model.CourseMaterial
 import com.denchic45.stuiversity.api.course.element.model.CourseWork
@@ -49,13 +50,12 @@ import java.util.UUID
 
 
 @Composable
-fun CourseElementsScreen(component: CourseElementsComponent, contentPadding: PaddingValues) {
+fun CourseElementsScreen(component: CourseElementsComponent) {
     val elementsResource by component.elements.collectAsState()
 
     CourseElementsContent(
         elementsResource = elementsResource,
         onElementClick = component::onItemClick,
-        contentPadding = contentPadding
     )
 }
 
@@ -63,27 +63,26 @@ fun CourseElementsScreen(component: CourseElementsComponent, contentPadding: Pad
 fun CourseElementsContent(
     elementsResource: Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>>,
     onElementClick: (elementId: UUID) -> Unit,
-    contentPadding: PaddingValues
 ) {
-    elementsResource.onSuccess {
-        LazyColumn(contentPadding = contentPadding) {
-            it.forEach { (topic, elements) ->
-                topic?.let {
-                    item(key = { it.id }) { }
-                }
+        elementsResource.onSuccess {
+            LazyColumn(contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)) {
+                it.forEach { (topic, elements) ->
+                    topic?.let {
+                        item(key = { it.id }) { }
+                    }
 
-                items(elements, key = { it.id }) {
-                    CourseElementUI(
-                        response = it,
-                        onClick = { onElementClick(it.id) })
+                    items(elements, key = { it.id }) {
+                        CourseElementUI(
+                            response = it,
+                            onClick = { onElementClick(it.id) })
+                    }
                 }
             }
-        }
-    }.onLoading {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
+        }.onLoading {
+            Box(
+                modifier = Modifier.fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
             CircularProgressIndicator()
         }
     }

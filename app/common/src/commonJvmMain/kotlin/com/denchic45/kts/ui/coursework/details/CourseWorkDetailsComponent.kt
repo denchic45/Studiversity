@@ -7,6 +7,7 @@ import com.denchic45.kts.domain.usecase.FindCourseWorkAttachmentsUseCase
 import com.denchic45.kts.domain.usecase.FindCourseWorkUseCase
 import com.denchic45.kts.ui.model.toAttachmentItems
 import com.denchic45.kts.util.componentScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -27,8 +28,8 @@ class CourseWorkDetailsComponent(
     private val componentScope = componentScope()
 
     val courseWork = flow { emit(findCourseWorkUseCase(courseId, elementId)) }
-        .stateInResource(componentScope)
+        .stateInResource(componentScope, SharingStarted.Eagerly)
     val attachments = findCourseWorkAttachmentsUseCase(courseId, elementId)
         .mapResource { it.toAttachmentItems() }
-        .stateInResource(componentScope)
+        .stateInResource(componentScope, SharingStarted.Eagerly)
 }

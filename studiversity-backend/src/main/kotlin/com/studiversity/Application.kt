@@ -14,13 +14,13 @@ import com.studiversity.feature.studygroup.configureStudyGroups
 import com.studiversity.feature.teacher.configureTeachers
 import com.studiversity.feature.timetable.configureTimetable
 import com.studiversity.feature.user.configureUsers
-import com.studiversity.plugin.*
+import com.studiversity.plugin.configureRouting
+import com.studiversity.plugin.configureSerialization
+import com.studiversity.plugin.configureStatusPages
 import com.studiversity.supabase.configureSupabase
-import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.coroutines.runBlocking
 import org.koin.ktor.ext.inject
 
@@ -31,7 +31,7 @@ fun main() {
 private lateinit var engine: ApplicationEngine
 
 private fun startServer() {
-    engine = embeddedServer(factory = Netty, port = 8080, host = "192.168.0.101", module = Application::module)
+    engine = embeddedServer(factory = Netty, port = 8080, host = "192.168.0.100", module = Application::module)
         .start(wait = true)
 }
 

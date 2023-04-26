@@ -2,7 +2,6 @@ package com.denchic45.stuiversity.api.course.work
 
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
-import com.denchic45.stuiversity.api.common.toAttachmentResult
 import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
@@ -24,7 +23,7 @@ interface CourseWorkApi {
         courseId: UUID,
         workId:UUID,
         updateCourseWorkRequest: UpdateCourseWorkRequest
-    ): ResponseResult<CourseElementResponse>
+    ): ResponseResult<CourseWorkResponse>
 
     suspend fun getById(courseId: UUID, workId: UUID): ResponseResult<CourseWorkResponse> // TODO: fix result in backend
 
@@ -73,8 +72,8 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
         courseId: UUID,
         workId: UUID,
         updateCourseWorkRequest: UpdateCourseWorkRequest,
-    ): ResponseResult<CourseElementResponse> {
-        return client.post("/courses/$courseId/works/$workId") {
+    ): ResponseResult<CourseWorkResponse> {
+        return client.patch("/courses/$courseId/works/$workId") {
             contentType(ContentType.Application.Json)
             setBody(updateCourseWorkRequest)
         }.toResult()

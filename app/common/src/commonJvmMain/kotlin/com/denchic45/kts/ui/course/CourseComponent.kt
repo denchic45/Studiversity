@@ -78,7 +78,7 @@ class CourseComponent(
     private val courseMembersComponent = _courseMembersComponent(
         courseId,
         onMemberOpen,
-        componentContext.childContext("elements")
+        componentContext.childContext("members")
     )
 
     val capabilities = flow {
@@ -114,7 +114,15 @@ class CourseComponent(
     }
 
     sealed class Child {
-        class Elements(val component: CourseElementsComponent) : Child()
-        class Members(val component: CourseMembersComponent) : Child()
+
+        abstract val title: String
+
+        class Elements(val component: CourseElementsComponent) : Child() {
+            override val title: String = "Элементы"
+        }
+
+        class Members(val component: CourseMembersComponent) : Child() {
+            override val title: String = "Участники"
+        }
     }
 }

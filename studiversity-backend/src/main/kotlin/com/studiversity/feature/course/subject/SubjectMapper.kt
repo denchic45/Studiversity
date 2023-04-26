@@ -8,7 +8,7 @@ fun SubjectDao.toResponse() = SubjectResponse(
     id = id.value,
     name = name,
     shortname = shortname,
-    iconName = iconUrl
+    iconUrl = iconUrl
 )
 
 fun SizedIterable<SubjectDao>.toResponses() = map(SubjectDao::toResponse)

@@ -7,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.essenty.backhandler.BackCallback
 import com.denchic45.kts.domain.*
 import com.denchic45.kts.domain.usecase.AddStudyGroupUseCase
 import com.denchic45.kts.domain.usecase.FindSpecialtyByContainsNameUseCase
@@ -59,13 +58,9 @@ class StudyGroupEditorComponent(
                 id = "save",
                 icon = uiIconOf(Icons.Default.Done),
                 enabled = false
+            , onClick = {onSaveClick()}
             )
         ),
-        onActionMenuItemClick = {
-            when (it.id) {
-                "save" -> onSaveClick()
-            }
-        }
     ))
 
     private val editingState = EditingStudyGroup()
@@ -244,7 +239,6 @@ class FieldEditor constructor(private val fields: Map<String, Field<*>>) {
     @Suppress("UNCHECKED_CAST")
     fun <T> field(name: String): Field<T> = fields.getValue(name) as Field<T>
 
-    @Suppress("UNCHECKED_CAST")
     fun <T> getValue(name: String) = field<T>(name)
 
     fun <T> ifChanged(name: String, value: () -> T): OptionalProperty<T> {

@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
@@ -15,6 +16,7 @@ import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -24,7 +26,7 @@ import java.util.UUID
 class CourseWorkComponent(
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val removeCourseElementUseCase: RemoveCourseElementUseCase,
-    private val _courseWorkDetailsComponent: (
+    _courseWorkDetailsComponent: (
         courseId: UUID,
         elementId: UUID,
         ComponentContext,
@@ -40,6 +42,8 @@ class CourseWorkComponent(
         ComponentContext,
     ) -> YourSubmissionComponent,
     @Assisted
+    private val onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
+    @Assisted
     private val courseId: UUID,
     @Assisted
     private val elementId: UUID,
@@ -53,7 +57,11 @@ class CourseWorkComponent(
         emit(
             checkUserCapabilitiesInScopeUseCase(
                 scopeId = courseId,
-                capabilities = listOf(Capability.ReadSubmissions, Capability.SubmitSubmission)
+                capabilities = listOf(
+                    Capability.ReadSubmissions,
+                    Capability.WriteCourseElements,
+                    Capability.SubmitSubmission
+                )
             )
         )
     }.stateInResource(componentScope)
@@ -69,6 +77,14 @@ class CourseWorkComponent(
         elementId,
         childContext("details")
     )
+
+    val allowEditWork = capabilities.map {
+        when (it) {
+            is Resource.Success -> it.value.hasCapability(Capability.WriteCourseElements)
+            is Resource.Error,
+            Resource.Loading -> false
+        }
+    }
 
     val children = capabilities.mapResource {
         buildList {
@@ -90,6 +106,10 @@ class CourseWorkComponent(
             }
         }
     }.stateInResource(componentScope)
+
+    fun onEditClick() {
+        onEdit(courseId, elementId)
+    }
 
 
     init {

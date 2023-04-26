@@ -15,5 +15,5 @@ data class ScopeMember(
     val roles: List<Role>
 ) {
     val fullName: String
-        get() = user.firstName + user.surname
+        get() = "${user.firstName}  ${user.surname}"
 }

@@ -190,7 +190,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                                 val contentDescription = actionMenuItem.title
                                     ?.get(LocalContext.current)
                                 IconButton(
-                                    onClick = { state.onActionMenuItemClick(actionMenuItem) },
+                                    onClick = { actionMenuItem.onClick() },
                                     enabled = actionMenuItem.enabled
                                 ) {
                                     Icon(
@@ -217,6 +217,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                                             },
                                             onClick = {
                                                 menuExpanded = false
+                                                item.onClick()
                                                 state.onDropdownMenuItemClick(item)
                                             },
                                         )

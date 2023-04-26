@@ -21,6 +21,7 @@ import com.denchic45.kts.data.domain.model.AttachmentLink
 import com.denchic45.kts.databinding.ItemAddAttachmentBinding
 import com.denchic45.kts.databinding.ItemAttachmentBinding
 import com.denchic45.kts.ui.adapter.BaseViewHolder
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.kts.ui.courseworkeditor.CourseWorkEditorScreen
@@ -37,6 +38,7 @@ import java.util.UUID
 
 @Inject
 class CourseWorkEditorFragment(
+    private val appBarInteractor: AppBarInteractor,
     private val _courseWorkEditorComponent: (
         courseId: UUID,
         workId: UUID?,
@@ -86,7 +88,7 @@ class CourseWorkEditorFragment(
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             AppTheme {
-                CourseWorkEditorScreen(component)
+                CourseWorkEditorScreen(component,appBarInteractor)
             }
         }
     }

@@ -6,13 +6,14 @@ import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
 import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
+import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.studiversity.database.exists
 import com.studiversity.database.table.*
 import com.studiversity.feature.course.element.toCourseElementResponse
 import com.studiversity.feature.course.element.toResponse
 import com.studiversity.feature.course.work.toWorkResponse
 import com.studiversity.util.toSqlSortOrder
-import org.jetbrains.exposed.dao.load
+import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
 import org.jetbrains.exposed.sql.and
@@ -26,8 +27,8 @@ class CourseElementRepository {
     fun addWork(courseId: UUID, request: CreateCourseWorkRequest): CourseElementResponse {
         val elementId = UUID.randomUUID()
         return CourseElementDao.new(elementId) {
-            this.courseId = courseId
-            this.topicId = request.topicId
+            this.course = CourseDao.findById( courseId) ?: throw NotFoundException()
+            this.topic = request.topicId?.let { CourseTopicDao.findById(it) }
             this.name = request.name
             this.type = CourseElementType.WORK
             this.order = generateOrderByCourseAndTopicId(courseId, request.topicId)
@@ -58,13 +59,13 @@ class CourseElementRepository {
     }
 
     fun findCourseIdByElementId(elementId: UUID): UUID? {
-        return CourseElementDao.findById(elementId)?.courseId
+        return CourseElementDao.findById(elementId)?.course?.id?.value
     }
 
     fun remove(courseId: UUID, elementId: UUID): Boolean = CourseElementDao
         .find(CourseElements.courseId eq courseId and (CourseElements.id eq elementId))
         .singleOrNull()?.apply {
-            decreaseElementOrdersByTopicIdAndGreaterElementOrder(topicId, order)
+            decreaseElementOrdersByTopicIdAndGreaterElementOrder(topic?.id?.value, order)
         }?.delete() != null
 
     fun findMaxGradeByWorkId(workId: UUID): Short {
@@ -87,14 +88,34 @@ class CourseElementRepository {
     ): CourseElementResponse {
         val dao = CourseElementDao.findById(elementId)!!
 
-        decreaseElementOrdersByTopicIdAndGreaterElementOrder(dao.topicId, dao.order)
-
         updateCourseElementRequest.topicId.ifPresent { topicId ->
+            decreaseElementOrdersByTopicIdAndGreaterElementOrder(dao.topic?.id?.value, dao.order)
             dao.order = generateOrderByCourseAndTopicId(courseId, topicId)
-            dao.topicId = topicId
+            dao.topic = topicId?.let { CourseTopicDao.findById(it) }
         }
 
         return dao.toResponse(getElementDetailsByIdAndType(elementId, dao.type))
+    }
+
+    fun update(
+        courseId: UUID,
+        workId: UUID,
+        request: UpdateCourseWorkRequest
+    ): CourseWorkResponse? {
+        val resultRow = CourseWorks.innerJoin(CourseElements, { CourseWorks.id }, { CourseElements.id })
+            .select { CourseElements.courseId eq courseId and (CourseElements.id eq workId) }.singleOrNull()
+        return resultRow?.let { row ->
+            val elementDao = CourseElementDao.wrapRow(row)
+            val workDao = CourseWorkDao.wrapRow(row)
+            request.name.ifPresent { elementDao.name = it }
+            request.topicId.ifPresent { elementDao.topic = it?.let { id -> CourseTopicDao.findById(id) } }
+
+            request.dueDate.ifPresent { workDao.dueDate = it }
+            request.dueTime.ifPresent { workDao.dueTime = it }
+            request.maxGrade.ifPresent { workDao.maxGrade = it }
+
+            elementDao.toWorkResponse(workDao)
+        }
     }
 
     private fun decreaseElementOrdersByTopicIdAndGreaterElementOrder(topicId: UUID?, order: Int) {
