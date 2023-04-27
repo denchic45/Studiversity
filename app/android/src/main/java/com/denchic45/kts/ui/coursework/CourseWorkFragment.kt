@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
@@ -26,6 +25,7 @@ class CourseWorkFragment(
         onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
         courseId: UUID,
         elementId: UUID,
+        onFinish: () -> Unit,
         ComponentContext,
     ) -> CourseWorkComponent,
 ) : Fragment(), HasNavArgs<CourseWorkFragmentArgs> {
@@ -45,6 +45,7 @@ class CourseWorkFragment(
             },
             navArgs.courseId.toUUID(),
             navArgs.elementId.toUUID(),
+            { requireActivity().onBackPressedDispatcher.onBackPressed() },
             defaultComponentContext(requireActivity().onBackPressedDispatcher)
         )
     }

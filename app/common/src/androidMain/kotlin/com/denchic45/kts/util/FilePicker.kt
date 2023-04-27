@@ -52,10 +52,6 @@ class FilePicker(
             }
         }
 
-
-
-
-
     fun selectFiles() {
         chooseFile()
 
@@ -136,6 +132,5 @@ private fun ContentResolver.getFileName(fileUri: Uri): String {
         name = returnCursor.getString(nameIndex)
         returnCursor.close()
     }
-
     return name
 }

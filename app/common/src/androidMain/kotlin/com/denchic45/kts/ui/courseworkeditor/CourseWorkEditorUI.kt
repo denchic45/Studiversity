@@ -1,5 +1,6 @@
 package com.denchic45.kts.ui.courseworkeditor
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -49,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -67,6 +69,10 @@ import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiIconOf
+import com.denchic45.kts.util.FileViewer
+import com.denchic45.kts.util.collectWithLifecycle
+import com.denchic45.kts.util.findActivity
+import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.stuiversity.util.toString
 import java.time.Instant
@@ -80,23 +86,32 @@ fun CourseWorkEditorScreen(
     appBarInteractor: AppBarInteractor
 ) {
 
-    // TODO: Доделать! Использовать fileViewer для открытия файлов
 
-//     val fileViewer by lazy {
-//        FileViewer(LocalContext.current.requireActivity()) {
-//            Toast.makeText(
-//                requireContext(),
-//                "Невозможно открыть файл на данном устройстве",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }
-//    }
+    val context = LocalContext.current
+    val fileViewer by lazy {
+        FileViewer(context.findActivity()) {
+            Toast.makeText(
+                context,
+                "Невозможно открыть файл на данном устройстве",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
 
     val pickFileLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let {
+        ActivityResultContracts.OpenMultipleDocuments()
+    ) { uri -> component.onFilesSelect(uri.map { it.getFile(context) }) }
 
+    component.openAttachment.collectWithLifecycle {
+        when (it) {
+            is AttachmentItem.FileAttachmentItem -> fileViewer.openFile(it.path.toFile())
+            is AttachmentItem.LinkAttachmentItem -> {
+                Toast.makeText(
+                    context,
+                    "Открытие ссылок пока не поддерживается",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -127,9 +142,8 @@ fun CourseWorkEditorScreen(
         onDescriptionType = component::onDescriptionType,
         onTopicNameType = component::onTopicNameType,
         onTopicSelect = component::onTopicSelect,
-        onAttachmentClick = {
-            pickFileLauncher.launch("*/*")
-        },
+        onAttachmentAdd = { pickFileLauncher.launch(emptyArray()) },
+        onAttachmentClick = component::onAttachmentClick,
         onAttachmentRemove = component::onAttachmentRemove,
         onDueDateTimeSelect = component::onDueDateTimeSelect,
         onDueDateTimeClear = component::onDueDateTimeClear
@@ -145,6 +159,7 @@ fun CourseWorkEditorContent(
     onDescriptionType: (String) -> Unit,
     onTopicNameType: (String) -> Unit,
     onTopicSelect: (DropdownMenuItem) -> Unit,
+    onAttachmentAdd: () -> Unit,
     onAttachmentClick: (item: AttachmentItem) -> Unit,
     onAttachmentRemove: (position: Int) -> Unit,
     onDueDateTimeSelect: (LocalDate, LocalTime) -> Unit,
@@ -221,6 +236,7 @@ fun CourseWorkEditorContent(
 
                 ListItem(
                     headlineContent = { Text("Добавить вложение") },
+                    modifier = Modifier.clickable(onClick = onAttachmentAdd),
                     leadingContent = {
                         Icon(
                             imageVector = Icons.Outlined.Attachment,
@@ -255,7 +271,7 @@ fun CourseWorkEditorContent(
                         Text(
                             text = buildString {
                                 state.dueDate?.let { date ->
-                                    this.append(Dates.toStringDayMonthHidingCurrentYear(date))
+                                    append(Dates.toStringDayMonthHidingCurrentYear(date))
                                     state.dueTime?.let { time ->
                                         append(", ${time.toString("HH:mm")}")
                                     }
@@ -407,6 +423,7 @@ fun CourseWorkEditorPreview() {
             onDescriptionType = {},
             onTopicNameType = {},
             onTopicSelect = {},
+            onAttachmentAdd = {},
             onAttachmentClick = {},
             onAttachmentRemove = {},
             onDueDateTimeSelect = { _, _ -> },

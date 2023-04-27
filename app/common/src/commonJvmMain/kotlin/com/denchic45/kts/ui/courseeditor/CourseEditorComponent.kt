@@ -26,7 +26,7 @@ import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.studygroupeditor.Field
 import com.denchic45.kts.ui.studygroupeditor.FieldEditor
 import com.denchic45.kts.ui.studygroupeditor.updateOldValues
-import com.denchic45.kts.ui.subjectchooser.SubjectChooserComponent
+import com.denchic45.kts.ui.chooser.SubjectChooserComponent
 import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope

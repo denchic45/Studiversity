@@ -14,7 +14,6 @@ import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -90,7 +89,8 @@ class CourseComponent(
         )
     }.shareIn(componentScope, SharingStarted.Lazily)
 
-    private val defaultChildren = listOf(Child.Elements(courseElementsComponent), Child.Members(courseMembersComponent))
+    private val defaultChildren =
+        listOf(Child.Elements(courseElementsComponent), Child.Members(courseMembersComponent))
 
     val children = capabilities.mapResource {
         defaultChildren
@@ -99,18 +99,16 @@ class CourseComponent(
         initialValue = Resource.Success(defaultChildren)
     )
 
-    init {
-        componentScope.launch {
-
-        }
+    fun onFabClick() {
+        onCourseElementEditorOpen(courseId, null)
     }
 
     fun onCourseEditClick() {
         onCourseEditorOpen(courseId)
     }
 
-    fun onFabClick() {
-        onCourseElementEditorOpen(courseId, null)
+    fun onTopicEditClick() {
+        onCourseTopicsOpen(courseId)
     }
 
     sealed class Child {

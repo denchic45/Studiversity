@@ -27,7 +27,7 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.subjectchooser.SubjectChooserScreen
+import com.denchic45.kts.ui.chooser.SubjectChooserScreen
 import com.denchic45.kts.ui.theme.spacing
 
 

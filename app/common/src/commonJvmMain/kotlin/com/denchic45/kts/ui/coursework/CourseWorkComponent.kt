@@ -6,17 +6,22 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.RemoveCourseElementUseCase
+import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
+import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.coursework.details.CourseWorkDetailsComponent
 import com.denchic45.kts.ui.coursework.submissions.CourseWorkSubmissionsComponent
 import com.denchic45.kts.ui.coursework.yourSubmission.YourSubmissionComponent
+import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -24,6 +29,7 @@ import java.util.UUID
 
 @Inject
 class CourseWorkComponent(
+    private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val removeCourseElementUseCase: RemoveCourseElementUseCase,
     _courseWorkDetailsComponent: (
@@ -47,6 +53,8 @@ class CourseWorkComponent(
     private val courseId: UUID,
     @Assisted
     private val elementId: UUID,
+    @Assisted
+    private val onFinish:()->Unit,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -109,6 +117,23 @@ class CourseWorkComponent(
 
     fun onEditClick() {
         onEdit(courseId, elementId)
+    }
+
+    fun onRemoveClick() {
+        confirmDialogInteractor.set(
+            ConfirmState(
+                title = uiTextOf("Удалить задание?"),
+                text = uiTextOf("Оценки и ответы учащихся также будут удалены")
+            )
+        )
+
+        componentScope.launch {
+            if(confirmDialogInteractor.receiveConfirm()) {
+                removeCourseElementUseCase(courseId, elementId).onSuccess {
+                    onFinish()
+                }
+            }
+        }
     }
 
 

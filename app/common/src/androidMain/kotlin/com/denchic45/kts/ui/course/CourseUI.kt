@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,15 +19,22 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.arkivanov.essenty.lifecycle.doOnStop
 import com.denchic45.kts.R
@@ -71,7 +81,8 @@ fun CourseScreen(
         course = course,
         allowEdit = allowEdit,
         childrenResource = children,
-        onCourseEditClick = component::onCourseEditClick
+        onCourseEditClick = component::onCourseEditClick,
+        onTopicsEditClick = component::onTopicEditClick
     )
 }
 
@@ -81,7 +92,8 @@ fun CourseContent(
     course: Resource<CourseResponse>,
     allowEdit: Boolean,
     childrenResource: Resource<List<CourseComponent.Child>>,
-    onCourseEditClick: () -> Unit
+    onCourseEditClick: () -> Unit,
+    onTopicsEditClick: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
@@ -101,6 +113,41 @@ fun CourseContent(
                         IconButton(onClick = { onCourseEditClick() }) {
                             Icon(Icons.Outlined.Settings, "Edit Course")
                         }
+                    IconButton(onClick = { onCourseEditClick() }) {
+                        Icon(Icons.Outlined.Settings, "Edit topic")
+                    }
+
+
+                    if (allowEdit) {
+                        var menuExpanded by remember { mutableStateOf(false) }
+                        IconButton(onClick = { menuExpanded = !menuExpanded }) {
+                            Icon(Icons.Filled.MoreVert, "Меню")
+                        }
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            offset = DpOffset(x = (-84).dp, y = 0.dp),
+                            onDismissRequest = { menuExpanded = false },
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text("Изменить курс")
+                                },
+                                onClick = {
+                                    menuExpanded = false
+                                    onCourseEditClick()
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Text("Изменить темы")
+                                },
+                                onClick = {
+                                    menuExpanded = false
+                                    onTopicsEditClick()
+                                },
+                            )
+                        }
+                    }
                 },
                 scrollBehavior = scrollBehavior
             )
@@ -111,7 +158,12 @@ fun CourseContent(
             Column(Modifier.padding(paddingValues)) {
                 val coroutineScope = rememberCoroutineScope()
                 val pagerState = rememberPagerState()
-                TabRow(selectedTabIndex = pagerState.currentPage) {
+                TabRow(selectedTabIndex = pagerState.currentPage,
+                    indicator = { positions ->
+                        TabRowDefaults.Indicator(
+                            Modifier.tabIndicatorOffset(positions[pagerState.currentPage])
+                        )
+                    }) {
                     children.forEachIndexed { index, child ->
                         Tab(
                             text = { Text(child.title) },

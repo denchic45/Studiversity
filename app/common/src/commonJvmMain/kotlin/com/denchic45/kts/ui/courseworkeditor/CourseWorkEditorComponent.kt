@@ -241,29 +241,25 @@ class CourseWorkEditorComponent(
         }
     }
 
-    fun onAttachmentClick(position: Int) {
-        attachmentItems.value.onSuccess {
-            when (val item = it[position]) {
-                is AttachmentItem.FileAttachmentItem -> when (item.state) {
-                    FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
-                    FileState.Preview -> componentScope.launch {
-                        downloadFileUseCase(item.attachmentId!!)
-                        // TODO: Возможно использовать в будущем: открывать файл сразу после его загрузки
+    fun onAttachmentClick(item: AttachmentItem) {
+        when (item) {
+            is AttachmentItem.FileAttachmentItem -> when (item.state) {
+                FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
+                FileState.Preview -> componentScope.launch {
+                    downloadFileUseCase(item.attachmentId!!)
+                    // TODO: Возможно использовать в будущем: открывать файл сразу после его загрузки
 
 //                            .collect {
 //                            if (it == FileState.Downloaded)
 //                                openAttachment.postValue(item.path.toFile())
 //                        }
-                    }
-
-                    else -> {}
                 }
 
-                is AttachmentItem.LinkAttachmentItem -> componentScope.launch {
-                    openAttachment.emit(
-                        item
-                    )
-                }
+                else -> {}
+            }
+
+            is AttachmentItem.LinkAttachmentItem -> componentScope.launch {
+                openAttachment.emit(item)
             }
         }
     }

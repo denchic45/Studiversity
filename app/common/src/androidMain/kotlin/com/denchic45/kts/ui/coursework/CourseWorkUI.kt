@@ -64,6 +64,7 @@ import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.ActionMenuItem
+import com.denchic45.kts.ui.DropdownMenuItem
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.coursework.details.CourseWorkDetailsScreen
 import com.denchic45.kts.ui.coursework.submissiondetails.SubmissionDetailsContent
@@ -72,6 +73,7 @@ import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiIconOf
+import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.util.toString
@@ -105,12 +107,17 @@ fun CourseWorkScreen(component: CourseWorkComponent, appBarInteractor: AppBarInt
     component.lifecycle.doOnStart {
         appBarInteractor.update {
             it.copy(
-                actions = if (allowEdit)
+                dropdown = if (allowEdit)
                     listOf(
-                        ActionMenuItem(
+                        DropdownMenuItem(
                             id = "edit",
-                            icon = uiIconOf(Icons.Outlined.Edit),
+                            title = uiTextOf("Изменить"),
                             onClick = { component.onEditClick() }
+                        ),
+                        DropdownMenuItem(
+                            id = "edit",
+                            title = uiTextOf("Удалить"),
+                            onClick = { component.onRemoveClick() }
                         )
                     ) else emptyList()
             )
