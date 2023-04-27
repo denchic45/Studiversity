@@ -10,6 +10,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
+import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.Resource
@@ -97,6 +98,7 @@ class CourseEditorComponent(
                         )
                         updateEnableSave()
                     }
+                    overlayNavigation.dismiss()
                 }, componentContext))
             }
         }
@@ -118,7 +120,7 @@ class CourseEditorComponent(
         val subjectIconUrl: String
     )
 
-    val uiState = MutableStateFlow<Resource<EditingCourse>>(Resource.Loading)
+//    val uiState = MutableStateFlow<Resource<EditingCourse>>(Resource.Loading)
 
 //    private val typedSubjectName = MutableSharedFlow<String>()
 
@@ -317,6 +319,10 @@ class CourseEditorComponent(
 
     fun onSubjectChoose() {
         overlayNavigation.activate(DialogConfig.SubjectChooser)
+    }
+
+    fun onSubjectClose() {
+        editingState.subject = null
     }
 
 //    override fun onCreateOptions() {

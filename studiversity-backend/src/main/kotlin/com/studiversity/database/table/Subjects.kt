@@ -9,7 +9,7 @@ import java.util.*
 object Subjects : UUIDTable("subject", "subject_id") {
     val name = text("subject_name")
     val shortname = text("shortname")
-    val iconUrl = text("icon_name")
+    val iconUrl = text("icon_url")
 }
 
 class SubjectDao(id: EntityID<UUID>) : UUIDEntity(id) {

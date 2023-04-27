@@ -26,7 +26,7 @@ abstract class ChooserComponent<T>(componentContext: ComponentContext) :
     @OptIn(ExperimentalCoroutinesApi::class)
     val items: StateFlow<Resource<List<T>>> = query.filter(String::isNotEmpty)
         .flatMapLatest(::search)
-        .stateIn(componentScope, SharingStarted.Lazily, Resource.Loading)
+        .stateIn(componentScope, SharingStarted.Lazily, Resource.Success(emptyList()))
 
 
     protected abstract fun search(query: String): Flow<Resource<List<T>>>
@@ -38,10 +38,7 @@ abstract class ChooserComponent<T>(componentContext: ComponentContext) :
     }
 
     fun onItemClick(item: T) {
-        componentScope.launch {
-            onFinish(item)
-        }
-
+        onFinish(item)
     }
 
     fun onQueryChange(typedName: String) {

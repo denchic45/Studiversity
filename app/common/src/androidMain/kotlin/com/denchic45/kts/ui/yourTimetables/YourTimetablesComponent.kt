@@ -41,6 +41,7 @@ class YourTimetablesComponent(
 //    )
 
     fun onTimetableSelect(position: Int) {
+        selectedTimetable.value = position
         if (position == -1) {
             selectedOwner.value = TimetableOwner.Member(null)
         } else {

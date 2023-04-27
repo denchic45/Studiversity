@@ -100,7 +100,10 @@ fun CourseWorkEditorScreen(
 
     val pickFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
-    ) { uri -> component.onFilesSelect(uri.map { it.getFile(context) }) }
+    ) { uri ->
+        Toast.makeText(context, "uris: ${uri.size}", Toast.LENGTH_SHORT).show()
+        component.onFilesSelect(uri.map { it.getFile(context) })
+    }
 
     component.openAttachment.collectWithLifecycle {
         when (it) {
@@ -142,7 +145,7 @@ fun CourseWorkEditorScreen(
         onDescriptionType = component::onDescriptionType,
         onTopicNameType = component::onTopicNameType,
         onTopicSelect = component::onTopicSelect,
-        onAttachmentAdd = { pickFileLauncher.launch(emptyArray()) },
+        onAttachmentAdd = { pickFileLauncher.launch(arrayOf( "image/*", "text/*")) },
         onAttachmentClick = component::onAttachmentClick,
         onAttachmentRemove = component::onAttachmentRemove,
         onDueDateTimeSelect = component::onDueDateTimeSelect,

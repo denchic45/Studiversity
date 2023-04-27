@@ -109,15 +109,6 @@ fun CourseContent(
                     }
                 },
                 actions = {
-                    if (allowEdit)
-                        IconButton(onClick = { onCourseEditClick() }) {
-                            Icon(Icons.Outlined.Settings, "Edit Course")
-                        }
-                    IconButton(onClick = { onCourseEditClick() }) {
-                        Icon(Icons.Outlined.Settings, "Edit topic")
-                    }
-
-
                     if (allowEdit) {
                         var menuExpanded by remember { mutableStateOf(false) }
                         IconButton(onClick = { menuExpanded = !menuExpanded }) {

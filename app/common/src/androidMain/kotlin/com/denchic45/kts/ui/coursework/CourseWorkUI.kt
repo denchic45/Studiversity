@@ -23,7 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Comment
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -63,7 +62,6 @@ import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.ActionMenuItem
 import com.denchic45.kts.ui.DropdownMenuItem
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.coursework.details.CourseWorkDetailsScreen
@@ -72,7 +70,6 @@ import com.denchic45.kts.ui.coursework.submissions.CourseWorkSubmissionsScreen
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
-import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
@@ -131,6 +128,7 @@ fun CourseWorkScreen(component: CourseWorkComponent, appBarInteractor: AppBarInt
             val chooserIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "*/*"
+                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
 
             pickFileLauncher.launch(

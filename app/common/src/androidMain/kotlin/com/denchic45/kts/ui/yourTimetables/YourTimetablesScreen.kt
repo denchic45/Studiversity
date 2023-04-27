@@ -2,10 +2,13 @@ package com.denchic45.kts.ui.yourTimetables
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetableEditor.DayTimetableScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,11 +35,22 @@ fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: A
             var expanded by remember { mutableStateOf(false) }
             val showList = expanded && groups.isNotEmpty()
 
-            ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+            ExposedDropdownMenuBox(expanded = showList, onExpandedChange = { expanded = it }) {
                 OutlinedTextField(
                     value = if (selectedTimetable == -1) "Мое расписание" else groups[selectedTimetable].name,
                     readOnly = true,
-                    onValueChange = {}
+                    onValueChange = {},
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = showList
+                        )
+                    },
+                    singleLine = true,
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(MaterialTheme.spacing.small)
+                        .menuAnchor(),
                 )
                 ExposedDropdownMenu(
                     expanded = showList,

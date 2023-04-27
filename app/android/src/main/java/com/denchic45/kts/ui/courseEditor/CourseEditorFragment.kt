@@ -13,6 +13,7 @@ import com.arkivanov.decompose.defaultComponentContext
 import com.denchic45.kts.data.model.domain.ListItem
 import com.denchic45.kts.databinding.ItemGroupInCourseBinding
 import com.denchic45.kts.ui.adapter.BaseViewHolder
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.courseeditor.CourseEditorComponent
 import com.denchic45.kts.ui.courseeditor.CourseEditorScreen
@@ -25,6 +26,7 @@ import java.util.UUID
 
 @Inject
 class CourseEditorFragment(
+    private val appBarInteractor: AppBarInteractor,
     private val _courseEditorComponent: (
         courseId: UUID?,
         onFinish: () -> Unit,
@@ -51,7 +53,8 @@ class CourseEditorFragment(
                         navArgs.courseId?.toUUID(),
                         { requireActivity().onBackPressedDispatcher.onBackPressed() },
                         defaultComponentContext(requireActivity().onBackPressedDispatcher)
-                    )
+                    ),
+                    appBarInteractor = appBarInteractor
                 )
             }
         }
