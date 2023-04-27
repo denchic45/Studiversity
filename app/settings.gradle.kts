@@ -6,8 +6,8 @@ pluginManagement {
         maven("https://androidx.dev/storage/compose-compiler/repository/")
     }
     plugins {
-        id("org.jetbrains.kotlin.android") version "1.8.0"
-        id("org.jetbrains.kotlin.jvm") version "1.8.0"
+        id("org.jetbrains.kotlin.android") version "1.8.20"
+        id("org.jetbrains.kotlin.jvm") version "1.8.20"
         id("com.android.library") version "7.4.1"
     }
 }
