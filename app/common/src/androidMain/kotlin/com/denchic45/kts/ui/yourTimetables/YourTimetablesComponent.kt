@@ -41,19 +41,11 @@ class YourTimetablesComponent(
 //    )
 
     fun onTimetableSelect(position: Int) {
-//        selectedTimetable.value = position
-//        navigation.dismiss()
         if (position == -1) {
             selectedOwner.value = TimetableOwner.Member(null)
-//            navigation.activate(
-//                TimetableConfig(LocalDate.now(), TimetableOwner.Member, UUID.randomUUID())
-//            )
         } else {
             studyGroups.value.onSuccess {
                 selectedOwner.value = TimetableOwner.StudyGroup(it[position].id)
-//                navigation.activate(
-//                    TimetableConfig(LocalDate.now(), TimetableOwner.StudyGroup, it[position].id)
-//                )
             }
         }
     }
@@ -61,7 +53,7 @@ class YourTimetablesComponent(
     private val componentScope = componentScope()
 
     val studyGroups = flow { emit(findYourStudyGroupsUseCase()) }.stateInResource(componentScope)
-    private val selectedTimetable = MutableStateFlow(-1)
+    val selectedTimetable = MutableStateFlow(-1)
 
     private val selectedOwner = MutableStateFlow<TimetableOwner>(TimetableOwner.Member(null))
 
