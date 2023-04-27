@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.compose") version "1.4.0"
     id("com.android.library")
     id("kotlin-kapt")
-    kotlin("plugin.serialization") version "1.8.0"
+    kotlin("plugin.serialization") version "1.8.20"
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
     id("app.cash.sqldelight")

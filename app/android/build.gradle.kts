@@ -1,10 +1,10 @@
 plugins {
     id("com.android.application")
-    id("kotlin-android")
     id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin") apply false
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.android")
 
 //    id("com.google.gms.google-services")
 }
@@ -76,7 +76,7 @@ android {
     namespace = "com.denchic45.kts"
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.0"
+        kotlinCompilerExtensionVersion = "1.4.6"
     }
 
     sourceSets.all {
@@ -99,6 +99,8 @@ dependencies {
     implementation("com.github.denchic45:SearchBar:1.1")
 
     implementation("androidx.test:core-ktx:1.5.0")
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0")
 
     // support new language API
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
