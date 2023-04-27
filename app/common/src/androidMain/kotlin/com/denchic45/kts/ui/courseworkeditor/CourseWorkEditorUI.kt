@@ -1,5 +1,6 @@
 package com.denchic45.kts.ui.courseworkeditor
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -72,9 +73,11 @@ import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.util.FileViewer
 import com.denchic45.kts.util.collectWithLifecycle
 import com.denchic45.kts.util.findActivity
-import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.stuiversity.util.toString
+import com.eygraber.uri.toUri
+import com.eygraber.uri.toUrl
+import java.io.File
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -83,10 +86,8 @@ import java.time.ZoneId
 @Composable
 fun CourseWorkEditorScreen(
     component: CourseWorkEditorComponent,
-    appBarInteractor: AppBarInteractor
+    appBarInteractor: AppBarInteractor,
 ) {
-
-
     val context = LocalContext.current
     val fileViewer by lazy {
         FileViewer(context.findActivity()) {
@@ -98,11 +99,19 @@ fun CourseWorkEditorScreen(
         }
     }
 
+    val contentResolver = LocalContext.current.contentResolver
     val pickFileLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenMultipleDocuments()
-    ) { uri ->
-        Toast.makeText(context, "uris: ${uri.size}", Toast.LENGTH_SHORT).show()
-        component.onFilesSelect(uri.map { it.getFile(context) })
+        ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+            it.toUri()
+            contentResolver.openInputStream(uri)?.use {
+                Toast.makeText(context, "bytes size: ${it.readBytes().size}", Toast.LENGTH_SHORT)
+                    .show()
+//                component.onFilesSelect(listOf())
+            }
+
+        }
     }
 
     component.openAttachment.collectWithLifecycle {
@@ -145,7 +154,7 @@ fun CourseWorkEditorScreen(
         onDescriptionType = component::onDescriptionType,
         onTopicNameType = component::onTopicNameType,
         onTopicSelect = component::onTopicSelect,
-        onAttachmentAdd = { pickFileLauncher.launch(arrayOf( "image/*", "text/*")) },
+        onAttachmentAdd = { pickFileLauncher.launch(arrayOf("image/*", "text/*")) },
         onAttachmentClick = component::onAttachmentClick,
         onAttachmentRemove = component::onAttachmentRemove,
         onDueDateTimeSelect = component::onDueDateTimeSelect,
@@ -166,7 +175,7 @@ fun CourseWorkEditorContent(
     onAttachmentClick: (item: AttachmentItem) -> Unit,
     onAttachmentRemove: (position: Int) -> Unit,
     onDueDateTimeSelect: (LocalDate, LocalTime) -> Unit,
-    onDueDateTimeClear: () -> Unit
+    onDueDateTimeClear: () -> Unit,
 ) {
     Surface {
         stateResource.onSuccess { state ->

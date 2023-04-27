@@ -62,7 +62,7 @@ kotlin {
                 api("com.russhwolf:multiplatform-settings:1.0.0")
                 api("com.russhwolf:multiplatform-settings-coroutines:1.0.0")
 
-                implementation("com.squareup.okio:okio:3.3.0")
+                api("com.squareup.okio:okio:3.3.0")
 
                 api("me.tatarka.inject:kotlin-inject-runtime:0.6.1")
 
