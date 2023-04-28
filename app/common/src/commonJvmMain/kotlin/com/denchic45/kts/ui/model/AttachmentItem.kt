@@ -9,6 +9,7 @@ import com.denchic45.kts.util.getExtension
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
+import com.eygraber.uri.Uri
 import okio.Path
 import java.util.UUID
 
@@ -16,23 +17,25 @@ sealed interface AttachmentItem {
     val name: String
     val previewUrl: String?
     val attachmentId: UUID?
+    val uri: Uri
 
     data class FileAttachmentItem(
         override val name: String,
         override val previewUrl: String?,
         override val attachmentId: UUID?,
         val state: FileState,
-        val path: Path
+        override val uri: Uri
     ) : AttachmentItem {
         val shortName: String = Files.nameWithoutTimestamp(name)
-        val extension: String = path.getExtension()
+//        val extension: String = path.getExtension()
     }
 
     data class LinkAttachmentItem(
         override val name: String,
         override val previewUrl: String?,
         override val attachmentId: UUID?,
-        val url: String
+        val url: String,
+        override val uri: Uri
     ) : AttachmentItem
 }
 
@@ -44,24 +47,29 @@ fun List<Attachment2>.toAttachmentItems(): List<AttachmentItem> {
                 previewUrl = null,
                 attachmentId = attachment.id,
                 state = attachment.state,
-                path = attachment.path
+//                path = attachment.path,
+                uri = attachment.path.toUri()
             )
 
             is LinkAttachment2 -> AttachmentItem.LinkAttachmentItem(
                 name = attachment.url,
                 previewUrl = null,
                 attachmentId = attachment.id,
-                url = attachment.url
+                url = attachment.url,
+                uri = Uri.parse(attachment.url)
             )
         }
     }
 }
 
-fun AttachmentItem.toRequest(): AttachmentRequest = when (this) {
-    is AttachmentItem.FileAttachmentItem -> CreateFileRequest(
-        name = name,
-        bytes = path.toFile().readBytes()
-    )
+//fun AttachmentItem.toRequest(): AttachmentRequest = when (this) {
+//    is AttachmentItem.FileAttachmentItem -> CreateFileRequest(
+//        name = name,
+//        bytes = path.toFile().readBytes()
+//    )
+//
+//    is AttachmentItem.LinkAttachmentItem -> CreateLinkRequest(url)
+//}
 
-    is AttachmentItem.LinkAttachmentItem -> CreateLinkRequest(url)
-}
+
+private fun Path.toUri(): Uri = Uri.parse(toString())

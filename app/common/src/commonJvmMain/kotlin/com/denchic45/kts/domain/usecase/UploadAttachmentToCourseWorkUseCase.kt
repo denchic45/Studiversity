@@ -3,7 +3,7 @@ package com.denchic45.kts.domain.usecase
 import com.denchic45.kts.data.repository.CourseElementRepository
 import com.denchic45.kts.domain.Resource
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
-import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
+import com.eygraber.uri.Uri
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
@@ -14,8 +14,16 @@ class UploadAttachmentToCourseWorkUseCase @javax.inject.Inject constructor(
     suspend operator fun invoke(
         courseId: UUID,
         workId: UUID,
-        attachmentRequest: AttachmentRequest
+        uri: Uri
     ): Resource<AttachmentHeader> {
-        return courseElementRepository.addAttachmentToWork(courseId, workId, attachmentRequest)
+        return courseElementRepository.addFileToWork(courseId, workId, uri)
+    }
+
+    suspend operator fun invoke(
+        courseId: UUID,
+        workId: UUID,
+        url: String
+    ): Resource<AttachmentHeader> {
+        return courseElementRepository.addLinkToWork(courseId, workId, url)
     }
 }

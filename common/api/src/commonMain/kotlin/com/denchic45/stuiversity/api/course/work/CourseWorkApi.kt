@@ -17,7 +17,7 @@ interface CourseWorkApi {
     suspend fun create(
         courseId: UUID,
         createCourseWorkRequest: CreateCourseWorkRequest
-    ): ResponseResult<CourseElementResponse>
+    ): ResponseResult<CourseWorkResponse>
 
     suspend fun update(
         courseId: UUID,
@@ -61,7 +61,7 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
     override suspend fun create(
         courseId: UUID,
         createCourseWorkRequest: CreateCourseWorkRequest
-    ): ResponseResult<CourseElementResponse> {
+    ): ResponseResult<CourseWorkResponse> {
         return client.post("/courses/$courseId/works") {
             contentType(ContentType.Application.Json)
             setBody(createCourseWorkRequest)

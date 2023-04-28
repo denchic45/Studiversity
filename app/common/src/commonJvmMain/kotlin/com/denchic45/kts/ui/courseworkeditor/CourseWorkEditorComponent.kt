@@ -25,13 +25,13 @@ import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.model.toAttachmentItems
-import com.denchic45.kts.ui.model.toRequest
 import com.denchic45.kts.ui.studygroupeditor.Field
 import com.denchic45.kts.ui.studygroupeditor.FieldEditor
 import com.denchic45.kts.ui.studygroupeditor.getOptProperty
 import com.denchic45.kts.ui.studygroupeditor.updateOldValues
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
+import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
@@ -40,6 +40,7 @@ import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
+import com.eygraber.uri.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,8 +56,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import okio.Path.Companion.toOkioPath
-import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
@@ -205,14 +204,14 @@ class CourseWorkEditorComponent(
         updateAllowSave()
     }
 
-    fun onFilesSelect(selectedFiles: List<File>) {
+    fun onFilesSelect(selectedFiles: List<Pair<Uri, String>>) {
         _addedAttachmentItems.update {
-            it + selectedFiles.map { file ->
+            it + selectedFiles.map { (uri, name) ->
                 AttachmentItem.FileAttachmentItem(
-                    file.name,
+                    name,
                     null, null,
                     FileState.Downloaded,
-                    file.toOkioPath()
+                    uri
                 )
             }
         }
@@ -281,13 +280,7 @@ class CourseWorkEditorComponent(
                         removedAttachmentIds.value.map {
                             removeAttachmentFromCourseWorkUseCase(courseId, courseWork.id, it)
                         }
-                        _addedAttachmentItems.value.map { item ->
-                            uploadAttachmentToCourseWorkUseCase(
-                                courseId = courseId,
-                                workId = courseWork.id,
-                                attachmentRequest = item.toRequest()
-                            )
-                        }
+                        loadAddedAttachments(courseWork)
                     }
                 } ?: run {
                     addCourseWorkUseCase(
@@ -302,13 +295,7 @@ class CourseWorkEditorComponent(
                             maxGrade = 5
                         )
                     ).onSuccess { courseWork ->
-                        _addedAttachmentItems.value.map { item ->
-                            uploadAttachmentToCourseWorkUseCase(
-                                courseId = courseId,
-                                workId = courseWork.id,
-                                attachmentRequest = item.toRequest()
-                            )
-                        }
+                        loadAddedAttachments(courseWork)
                     }
                 }
                 result.onSuccess {
@@ -316,6 +303,26 @@ class CourseWorkEditorComponent(
                         onFinish()
                     }
                 }
+            }
+        }
+    }
+
+    private suspend fun CourseWorkEditorComponent.loadAddedAttachments(
+        courseWork: CourseWorkResponse
+    ) {
+        _addedAttachmentItems.value.map { item ->
+            when (item) {
+                is AttachmentItem.FileAttachmentItem -> uploadAttachmentToCourseWorkUseCase(
+                    courseId = courseId,
+                    workId = courseWork.id,
+                    uri = item.uri
+                )
+
+                is AttachmentItem.LinkAttachmentItem -> uploadAttachmentToCourseWorkUseCase(
+                    courseId = courseId,
+                    workId = courseWork.id,
+                    url = item.url
+                )
             }
         }
     }

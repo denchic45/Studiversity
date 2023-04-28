@@ -3,6 +3,7 @@ package com.denchic45.kts.data.repository
 import com.denchic45.kts.data.db.local.source.AttachmentLocalDataSource
 import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.service.NetworkService
+import com.denchic45.kts.data.storage.FileProvider
 import com.denchic45.kts.domain.Resource
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
@@ -15,6 +16,7 @@ import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import com.eygraber.uri.Uri
 import com.github.michaelbull.result.coroutines.binding.binding
 import com.github.michaelbull.result.map
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +32,7 @@ class CourseElementRepository @javax.inject.Inject constructor(
     private val courseTopicApi: CourseTopicApi,
     private val courseElementsApi: CourseElementsApi,
     private val courseWorkApi: CourseWorkApi,
+    private val fileProvider: FileProvider
 ) : NetworkServiceOwner {
     suspend fun findElementsByCourse(courseId: UUID) = fetchResource {
         binding {
@@ -55,6 +58,33 @@ class CourseElementRepository @javax.inject.Inject constructor(
         createCourseWorkRequest: CreateCourseWorkRequest,
     ) = fetchResource {
         courseWorkApi.create(courseId, createCourseWorkRequest)
+    }
+
+    suspend fun addLinkToWork(
+        courseId: UUID,
+        workId: UUID,
+        linkUrl: String
+    ) = fetchResource {
+        courseWorkApi.addLinkToWork(
+            courseId = courseId,
+            courseWorkId = workId,
+            createLinkRequest = CreateLinkRequest(linkUrl)
+        )
+    }
+
+    suspend fun addFileToWork(
+        courseId: UUID,
+        workId: UUID,
+        uri: Uri
+    ) = fetchResource {
+        courseWorkApi.uploadFileToWork(
+            courseId = courseId,
+            courseWorkId = workId,
+            createFileRequest = CreateFileRequest(
+                fileProvider.getName(uri),
+                fileProvider.getBytes(uri)
+            )
+        )
     }
 
     suspend fun addAttachmentToWork(

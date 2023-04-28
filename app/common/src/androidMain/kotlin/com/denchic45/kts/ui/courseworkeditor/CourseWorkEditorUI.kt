@@ -75,6 +75,7 @@ import com.denchic45.kts.util.collectWithLifecycle
 import com.denchic45.kts.util.findActivity
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.stuiversity.util.toString
+import com.eygraber.uri.toAndroidUri
 import com.eygraber.uri.toUri
 import com.eygraber.uri.toUrl
 import java.io.File
@@ -104,10 +105,11 @@ fun CourseWorkEditorScreen(
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         uri?.let {
-            it.toUri()
-            contentResolver.openInputStream(uri)?.use {
+            File(it.path!!).inputStream().use {
                 Toast.makeText(context, "bytes size: ${it.readBytes().size}", Toast.LENGTH_SHORT)
                     .show()
+            }
+            contentResolver.openInputStream(uri)?.use {
 //                component.onFilesSelect(listOf())
             }
 
@@ -116,7 +118,7 @@ fun CourseWorkEditorScreen(
 
     component.openAttachment.collectWithLifecycle {
         when (it) {
-            is AttachmentItem.FileAttachmentItem -> fileViewer.openFile(it.path.toFile())
+            is AttachmentItem.FileAttachmentItem -> fileViewer.openFile(it.uri.toAndroidUri())
             is AttachmentItem.LinkAttachmentItem -> {
                 Toast.makeText(
                     context,

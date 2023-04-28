@@ -158,22 +158,20 @@ class YourSubmissionComponent(
         }
     }
 
-    fun List<AttachmentItem>.toAttachmentRequests(): List<AttachmentRequest> {
-        return map { attachment ->
-            when (attachment) {
-                is AttachmentItem.FileAttachmentItem -> {
-                    CreateFileRequest(
-                        name = attachment.name,
-                        bytes = attachment.path.toFile().readBytes()
-                    )
-                }
-
-                is AttachmentItem.LinkAttachmentItem -> CreateLinkRequest(
-                    url = attachment.url
-                )
-            }
-        }
-    }
-
-
+//    fun List<AttachmentItem>.toAttachmentRequests(): List<AttachmentRequest> {
+//        return map { attachment ->
+//            when (attachment) {
+//                is AttachmentItem.FileAttachmentItem -> {
+//                    CreateFileRequest(
+//                        name = attachment.name,
+//                        bytes = attachment.path.toFile().readBytes()
+//                    )
+//                }
+//
+//                is AttachmentItem.LinkAttachmentItem -> CreateLinkRequest(
+//                    url = attachment.url
+//                )
+//            }
+//        }
+//    }
 }

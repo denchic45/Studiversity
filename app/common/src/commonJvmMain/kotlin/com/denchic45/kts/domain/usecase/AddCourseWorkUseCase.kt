@@ -12,7 +12,7 @@ import javax.inject.Inject
 class AddCourseWorkUseCase @Inject constructor(
     private val courseElementRepository: CourseElementRepository,
 ) {
-    suspend operator fun invoke(courseId: UUID, createCourseWorkRequest: CreateCourseWorkRequest): Resource<CourseElementResponse> {
+    suspend operator fun invoke(courseId: UUID, createCourseWorkRequest: CreateCourseWorkRequest): Resource<CourseWorkResponse> {
        return courseElementRepository.addCourseWork(courseId, createCourseWorkRequest)
     }
 
