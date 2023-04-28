@@ -11,6 +11,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import okio.Path
+import okio.Path.Companion.toOkioPath
 import org.apache.poi.util.IOUtils
 import java.io.File
 import java.io.FileInputStream
@@ -18,7 +20,7 @@ import java.io.FileOutputStream
 
 class FilePicker(
     private val fragment: Fragment,
-    private val callback: (files: List<File>?) -> Unit,
+    private val callback: (files: List<Path>?) -> Unit,
     private val multipleSelect: Boolean = false
 ) {
 
@@ -112,15 +114,19 @@ class FilePicker(
     }
 }
 
- fun Uri.getFile(context: Context): File {
+ fun Uri.getFile(context: Context): Path {
 //    val context = this@FilePicker.fragment.requireContext()
     val parcelFileDescriptor = context.contentResolver.openFileDescriptor(this, "r", null)
     val inputStream = FileInputStream(parcelFileDescriptor!!.fileDescriptor)
 
     val file = File(context.cacheDir, context.contentResolver.getFileName(this))
-    val outputStream = FileOutputStream(file)
-    IOUtils.copy(inputStream, outputStream)
-    return file
+
+     inputStream.use { input ->
+         file.outputStream().use { output ->
+             input.copyTo(output)
+         }
+     }
+    return file.toOkioPath()
 }
 
 private fun ContentResolver.getFileName(fileUri: Uri): String {

@@ -25,6 +25,7 @@ import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.model.toAttachmentItems
+import com.denchic45.kts.ui.model.toRequest
 import com.denchic45.kts.ui.studygroupeditor.Field
 import com.denchic45.kts.ui.studygroupeditor.FieldEditor
 import com.denchic45.kts.ui.studygroupeditor.getOptProperty
@@ -56,6 +57,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import okio.Path
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
@@ -204,14 +207,14 @@ class CourseWorkEditorComponent(
         updateAllowSave()
     }
 
-    fun onFilesSelect(selectedFiles: List<Pair<Uri, String>>) {
+    fun onFilesSelect(selectedFiles: List<Path>) {
         _addedAttachmentItems.update {
-            it + selectedFiles.map { (uri, name) ->
+            it + selectedFiles.map { path ->
                 AttachmentItem.FileAttachmentItem(
-                    name,
+                    path.name,
                     null, null,
                     FileState.Downloaded,
-                    uri
+                    path
                 )
             }
         }
@@ -308,22 +311,14 @@ class CourseWorkEditorComponent(
     }
 
     private suspend fun CourseWorkEditorComponent.loadAddedAttachments(
-        courseWork: CourseWorkResponse
+        courseWork: CourseWorkResponse,
     ) {
         _addedAttachmentItems.value.map { item ->
-            when (item) {
-                is AttachmentItem.FileAttachmentItem -> uploadAttachmentToCourseWorkUseCase(
-                    courseId = courseId,
-                    workId = courseWork.id,
-                    uri = item.uri
-                )
-
-                is AttachmentItem.LinkAttachmentItem -> uploadAttachmentToCourseWorkUseCase(
-                    courseId = courseId,
-                    workId = courseWork.id,
-                    url = item.url
-                )
-            }
+            uploadAttachmentToCourseWorkUseCase(
+                courseId = courseId,
+                workId = courseWork.id,
+                request = item.toRequest()
+            )
         }
     }
 

@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.denchic45.appVersion.GoogleAppVersionService
 import com.denchic45.kts.data.service.AppVersionService
+import com.denchic45.kts.data.storage.FileProvider
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.util.SystemDirs
 import dagger.Binds
@@ -15,9 +16,7 @@ import retrofit2.Retrofit
 import javax.inject.Singleton
 
 
-@Module(
-    includes = [AndroidAppBindModule::class]
-)
+@Module(includes = [AndroidAppBindModule::class])
 class AndroidAppModule(private val application: Application) {
 
 
@@ -32,6 +31,10 @@ class AndroidAppModule(private val application: Application) {
     @Provides
     @Singleton
     fun providesApplicationContext(): Context = application
+
+    @Singleton
+    @Provides
+    fun fileProvider(context: Context) = FileProvider(context.contentResolver)
 
     @Provides
     fun toolbarInteractor(): AppBarInteractor = AppBarInteractor()

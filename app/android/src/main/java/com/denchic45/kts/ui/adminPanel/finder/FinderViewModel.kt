@@ -15,7 +15,6 @@ import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.*
 import com.denchic45.kts.ui.UiImage
 import com.denchic45.kts.ui.base.BaseViewModel
-import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmInteractor
 import com.denchic45.kts.util.NetworkException
 import com.denchic45.stuiversity.api.course.model.CourseResponse

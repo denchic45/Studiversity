@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import android.provider.OpenableColumns
 import com.eygraber.uri.Uri
 import com.eygraber.uri.toAndroidUri
+import me.tatarka.inject.annotations.Inject
 
 actual class FileProvider(private val contentResolver: ContentResolver) {
     @SuppressLint("Recycle")

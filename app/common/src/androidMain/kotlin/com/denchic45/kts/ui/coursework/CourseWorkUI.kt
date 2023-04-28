@@ -76,6 +76,7 @@ import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionStat
 import com.denchic45.stuiversity.util.toString
 import com.eygraber.uri.Uri
 import kotlinx.coroutines.launch
+import okio.Path
 import okio.Path.Companion.toOkioPath
 import okio.Path.Companion.toPath
 import java.util.UUID
@@ -95,7 +96,7 @@ fun CourseWorkScreen(component: CourseWorkComponent, appBarInteractor: AppBarInt
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.let { data: Intent ->
                 yourSubmissionComponent.onFileSelect(
-                    data.data!!.getFile(context).toOkioPath()
+                    data.data!!.getFile(context)
                 )
             }
         }
@@ -551,7 +552,7 @@ fun CourseWorkContentPreview() {
                                 null,
                                 null,
                                 FileState.Preview,
-                                Uri.parse("")
+                                "".toPath()
                             )
                         ),
                         updatedAt = null,

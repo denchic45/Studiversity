@@ -31,7 +31,7 @@ fun main() {
 private lateinit var engine: ApplicationEngine
 
 private fun startServer() {
-    engine = embeddedServer(factory = Netty, port = 8080, host = "192.168.118.154", module = Application::module)
+    engine = embeddedServer(factory = Netty, port = 8080, host = "192.168.0.104", module = Application::module)
         .start(wait = true)
 }
 

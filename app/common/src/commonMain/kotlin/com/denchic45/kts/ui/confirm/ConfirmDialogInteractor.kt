@@ -14,6 +14,7 @@ class ConfirmDialogInteractor(
 
     suspend fun onConfirm(confirm: Boolean) {
         confirmation.send(confirm)
+        set(null)
     }
 
     suspend fun receiveConfirm(): Boolean {

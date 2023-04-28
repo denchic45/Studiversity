@@ -3,6 +3,7 @@ package com.denchic45.kts.di
 import android.app.Application
 import android.content.Context
 import com.denchic45.kts.data.pref.AppPreferences
+import com.denchic45.kts.data.storage.FileProvider
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.fab.FabInteractor
@@ -35,6 +36,10 @@ abstract class AndroidApplicationComponent(
     @AppScope
     @Provides
     fun applicationScope() = CoroutineScope(SupervisorJob())
+
+    @AppScope
+    @Provides
+    fun fileProvider(context: Context) = FileProvider(context.contentResolver)
 
     protected abstract val appPreferences: AppPreferences
 

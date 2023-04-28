@@ -200,7 +200,7 @@ fun CourseWorkDetailsPreview() {
                             attachmentId = UUID.randomUUID(),
                             name = "image",
                             previewUrl = null,
-                            uri = Uri.parse("image.png"),
+                            path = "image.png".toPath(),
                             state = FileState.Preview
                         )
                     )

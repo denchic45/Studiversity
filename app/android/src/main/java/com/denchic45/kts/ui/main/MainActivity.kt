@@ -226,8 +226,6 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                             }
                         }
                     )
-
-
                 ConfirmDialog(confirmInteractor)
             }
         }

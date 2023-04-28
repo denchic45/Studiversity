@@ -1,6 +1,6 @@
 package com.denchic45.kts.ui.courseworkeditor
 
-import android.net.Uri
+import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -47,6 +47,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.net.toFile
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
@@ -73,12 +75,11 @@ import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.util.FileViewer
 import com.denchic45.kts.util.collectWithLifecycle
 import com.denchic45.kts.util.findActivity
+import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.stuiversity.util.toString
 import com.eygraber.uri.toAndroidUri
 import com.eygraber.uri.toUri
-import com.eygraber.uri.toUrl
-import java.io.File
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -99,26 +100,18 @@ fun CourseWorkEditorScreen(
             ).show()
         }
     }
+    val coroutineScope = rememberCoroutineScope()
 
     val contentResolver = LocalContext.current.contentResolver
     val pickFileLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri: Uri? ->
-        uri?.let {
-            File(it.path!!).inputStream().use {
-                Toast.makeText(context, "bytes size: ${it.readBytes().size}", Toast.LENGTH_SHORT)
-                    .show()
-            }
-            contentResolver.openInputStream(uri)?.use {
-//                component.onFilesSelect(listOf())
-            }
-
-        }
+        ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris ->
+        component.onFilesSelect(uris.map {it.getFile(context)})
     }
 
     component.openAttachment.collectWithLifecycle {
         when (it) {
-            is AttachmentItem.FileAttachmentItem -> fileViewer.openFile(it.uri.toAndroidUri())
+            is AttachmentItem.FileAttachmentItem -> fileViewer.openFile(it.path.toFile())
             is AttachmentItem.LinkAttachmentItem -> {
                 Toast.makeText(
                     context,
@@ -156,7 +149,7 @@ fun CourseWorkEditorScreen(
         onDescriptionType = component::onDescriptionType,
         onTopicNameType = component::onTopicNameType,
         onTopicSelect = component::onTopicSelect,
-        onAttachmentAdd = { pickFileLauncher.launch(arrayOf("image/*", "text/*")) },
+        onAttachmentAdd = { pickFileLauncher.launch(arrayOf("image/*", "text/*", "video/*")) },
         onAttachmentClick = component::onAttachmentClick,
         onAttachmentRemove = component::onAttachmentRemove,
         onDueDateTimeSelect = component::onDueDateTimeSelect,
@@ -265,7 +258,7 @@ fun CourseWorkEditorContent(
                         LazyRow {
                             itemsIndexed(
                                 items = attachmentItems,
-                                key = { _, item -> item.attachmentId ?: Unit }) { index, item ->
+                                key = { _, item -> item.attachmentId ?: "" }) { index, item ->
                                 AttachmentItemUI(
                                     item = item,
                                     onClick = {
