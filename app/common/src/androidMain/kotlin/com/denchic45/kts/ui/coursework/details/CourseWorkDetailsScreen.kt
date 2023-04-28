@@ -39,6 +39,7 @@ import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
+import com.eygraber.uri.Uri
 import okio.Path.Companion.toPath
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -199,7 +200,7 @@ fun CourseWorkDetailsPreview() {
                             attachmentId = UUID.randomUUID(),
                             name = "image",
                             previewUrl = null,
-                            path = "image.png".toPath(),
+                            uri = Uri.parse("image.png"),
                             state = FileState.Preview
                         )
                     )

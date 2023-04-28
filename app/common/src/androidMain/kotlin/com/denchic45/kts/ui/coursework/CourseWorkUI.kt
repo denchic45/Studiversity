@@ -74,6 +74,7 @@ import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.util.toString
+import com.eygraber.uri.Uri
 import kotlinx.coroutines.launch
 import okio.Path.Companion.toOkioPath
 import okio.Path.Companion.toPath
@@ -550,7 +551,7 @@ fun CourseWorkContentPreview() {
                                 null,
                                 null,
                                 FileState.Preview,
-                                "file.txt".toPath()
+                                Uri.parse("")
                             )
                         ),
                         updatedAt = null,
