@@ -7,11 +7,14 @@ import com.denchic45.kts.data.domain.model.LinkAttachment2
 import com.denchic45.kts.data.service.DownloadsService
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.flatMapResourceFlow
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.resourceOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import java.util.*
+import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 
 abstract class FindAttachmentsUseCase constructor(
     private val downloadService: DownloadsService,
@@ -19,38 +22,54 @@ abstract class FindAttachmentsUseCase constructor(
     private val observableDownloads: MutableMap<UUID, Flow<FileState>> = mutableMapOf()
 
     protected fun observeAttachments(
-        flow: Flow<Resource<List<Attachment2>>>
+        flow: Flow<Resource<List<Attachment2>>>,
+        ownerId:UUID
     ): Flow<Resource<List<Attachment2>>> {
-        return flow.flatMapResourceFlow { attachments ->
-            observeDownloadsFlow(attachments).map { states ->
-                Resource.Success(
-                    attachments.map { attachment ->
-                        when (attachment) {
-                            is FileAttachment2 -> if (attachment.state == FileState.Preview)
-                                attachment.copy(state = states.getValue(attachment.id))
-                            else attachment
-                            is LinkAttachment2 -> attachment
-                        }
-                    }
-                )
+        println("OBSERVE_ATTACHMENTS: $flow")
+        return flow.onEach {
+            it.onSuccess {
+                println("ONEACH:")
+                it.forEach { println("\t $it") }
+            }
+        }.flatMapResourceFlow { attachments ->
+            observeDownloadsFlow(attachments,ownerId).map { states ->
+                getAttachmentResource(attachments, states)
             }
         }
     }
 
-    private fun observeDownloadsFlow(attachments: List<Attachment2>): Flow<Map<UUID, FileState>> {
-        val unloadedFileAttachments = attachments.filterIsInstance<FileAttachment2>()
+    private fun getAttachmentResource(
+        attachments: List<Attachment2>,
+        states: Map<UUID, FileState>
+    ) = resourceOf(
+        attachments.map { attachment ->
+            when (attachment) {
+                is FileAttachment2 -> if (attachment.state == FileState.Preview)
+                    attachment.copy(state = states.getValue(attachment.id))
+                else attachment
+
+                is LinkAttachment2 -> attachment
+            }
+        }
+    )
+
+    private fun observeDownloadsFlow(attachments: List<Attachment2>, ownerId: UUID): Flow<Map<UUID, FileState>> {
+        println("DOWNLOAD_FILE observeDownloadsFlow: $ownerId $attachments")
+        val allFileAttachments = attachments.filterIsInstance<FileAttachment2>()
+        val previewFileAttachments = allFileAttachments
             .filter { it.state == FileState.Preview }
 
         // Remove missing downloads
-        observableDownloads.keys.toList().forEach { key ->
-            if (unloadedFileAttachments.any { it.id == key }) {
-                downloadService.cancel(key)
-                observableDownloads.remove(key)
+        observableDownloads.keys.forEach { downloadingAttachmentId ->
+            if (allFileAttachments.none { it.id == downloadingAttachmentId }) {
+                downloadService.cancel(downloadingAttachmentId)
+                observableDownloads.remove(downloadingAttachmentId)
+                println("DOWNLOAD_FILE cancel file: $downloadingAttachmentId")
             }
         }
 
         // Add observable downloads
-        unloadedFileAttachments.forEach { fileAttachment ->
+        previewFileAttachments.forEach { fileAttachment ->
             val attachmentId = fileAttachment.id
             observableDownloads.putIfAbsent(
                 attachmentId,
@@ -59,9 +78,9 @@ abstract class FindAttachmentsUseCase constructor(
         }
         return if (observableDownloads.values.isEmpty()) {
             flowOf(emptyMap())
-        } else{
+        } else {
             combine(observableDownloads.values) { states ->
-                unloadedFileAttachments.zip(states) { unloadedFileAttachment, state ->
+                previewFileAttachments.zip(states) { unloadedFileAttachment, state ->
                     unloadedFileAttachment.id to state
                 }.toMap()
             }

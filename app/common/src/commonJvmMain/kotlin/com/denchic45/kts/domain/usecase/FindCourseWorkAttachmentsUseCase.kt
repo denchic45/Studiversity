@@ -17,6 +17,6 @@ class FindCourseWorkAttachmentsUseCase @Inject constructor(
         courseId: UUID,
         workId: UUID,
     ): Flow<Resource<List<Attachment2>>> {
-        return observeAttachments(attachmentRepository.observeByCourseWork(courseId, workId))
+        return observeAttachments(attachmentRepository.observeByCourseWork(courseId, workId), workId)
     }
 }

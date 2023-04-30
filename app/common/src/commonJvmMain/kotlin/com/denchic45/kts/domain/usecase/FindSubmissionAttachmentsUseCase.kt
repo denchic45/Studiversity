@@ -6,7 +6,7 @@ import com.denchic45.kts.data.service.DownloadsService
 import com.denchic45.kts.domain.Resource
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class FindSubmissionAttachmentsUseCase @javax.inject.Inject constructor(
@@ -20,7 +20,8 @@ class FindSubmissionAttachmentsUseCase @javax.inject.Inject constructor(
         submissionId: UUID
     ): Flow<Resource<List<Attachment2>>> {
         return observeAttachments(
-            attachmentRepository.observeBySubmission(courseId, courseWorkId, submissionId)
+            attachmentRepository.observeBySubmission(courseId, courseWorkId, submissionId),
+            submissionId
         )
     }
 }

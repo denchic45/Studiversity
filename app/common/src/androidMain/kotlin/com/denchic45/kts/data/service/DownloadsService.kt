@@ -30,13 +30,13 @@ actual class DownloadsService actual constructor() {
 
     actual fun download(attachmentId: UUID): Flow<FileState> {
         val request = OneTimeWorkRequestBuilder<DownloadWorker>()
-            .setInputData(workDataOf("id" to attachmentId))
+            .setInputData(workDataOf("id" to attachmentId.toString()))
             .build()
         workManager.enqueueUniqueWork(
             attachmentId.toString(),
             ExistingWorkPolicy.KEEP,
             request
-        ).result
+        )
         return getDownloading(attachmentId)
     }
 

@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -25,7 +26,9 @@ class DownloadWorker(
     }
 
     override suspend fun doWork(): Result {
+        Log.d("DOWNLOAD", "doWork: createForegroundInfo")
         setForeground(createForegroundInfo())
+        Log.d("DOWNLOAD", "doWork: downloadAndSave")
         return storage.downloadAndSave(inputData.getString("id")!!.toUUID())
             .fold(success = { Result.success() }, failure = { Result.failure() })
     }
