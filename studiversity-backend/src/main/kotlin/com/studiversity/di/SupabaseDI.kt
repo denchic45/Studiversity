@@ -10,6 +10,7 @@ import io.github.jan.supabase.realtime.realtime
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import org.koin.dsl.module
+import kotlin.time.Duration.Companion.seconds
 
 val supabaseClientModule = module {
     single {
@@ -17,6 +18,7 @@ val supabaseClientModule = module {
             supabaseUrl = config.supabase.url,
             supabaseKey = config.supabase.key,
         ) {
+            requestTimeout = 30.seconds
             install(GoTrue) {
                 autoLoadFromStorage = false
                 alwaysAutoRefresh = false
