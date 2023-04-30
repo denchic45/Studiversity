@@ -1,5 +1,7 @@
 package com.studiversity.feature.attachment
 
+import com.denchic45.stuiversity.api.course.element.model.FileAttachmentResponse
+import com.denchic45.stuiversity.api.course.element.model.LinkAttachmentResponse
 import com.denchic45.stuiversity.util.toUUID
 import com.studiversity.feature.attachment.usecase.AddAttachmentUseCase
 import com.studiversity.feature.attachment.usecase.FindAttachmentUseCase
@@ -9,6 +11,7 @@ import com.studiversity.feature.course.work.submission.usecase.FindAttachmentsBy
 import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getUuidOrFail
 import io.ktor.http.*
+import io.ktor.http.HttpStatusCode.Companion.PartialContent
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
@@ -28,7 +31,21 @@ fun Application.configureAttachments() {
                     get {
                         val attachmentId = call.parameters.getUuidOrFail("attachmentId")
                         val currentUserId = call.currentUserId()
-                        call.respond(HttpStatusCode.OK, findAttachment(attachmentId))
+                        val response = findAttachment(attachmentId)
+
+                        when(response) {
+                            is FileAttachmentResponse -> {
+                                call.response.header(
+                                    HttpHeaders.ContentDisposition,
+                                    ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, response.name)
+                                        .toString()
+                                )
+                                call.response.header("id", response.id.toString())
+                                call.respondBytes(response.bytes)
+                            }
+                            is LinkAttachmentResponse ->  call.respond(HttpStatusCode.OK, response)
+                        }
+
                     }
 //                    delete {
 //                        val attachmentId = call.parameters.getUuidOrFail("attachmentId")

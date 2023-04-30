@@ -44,7 +44,7 @@ fun Route.tokenRoute() {
         val token = JWT.create()
             .withAudience(config.jwt.audience)
             .withSubject(userIdWithToken.first.toString())
-            .withExpiresAt(LocalDateTime.now().plusDays(1).toDate())
+            .withExpiresAt(LocalDateTime.now().plusMinutes(10).toDate())
             .sign(Algorithm.HMAC256(config.jwt.secret))
 
         call.respond(HttpStatusCode.OK, SignInResponse(token, userIdWithToken.second, config.organization.id))

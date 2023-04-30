@@ -44,7 +44,6 @@ fun Application.configureAuth() {
             install(RequestValidation) {
                 validate<SignupRequest> { login ->
                     val password = login.password
-
                     buildValidationResult {
                         addPasswordConditions(password)
                         condition(login.email.isEmail(), AuthErrors.INVALID_EMAIL)

@@ -72,7 +72,7 @@ private fun Route.courseWorkById() {
         }
 
         attachmentRoutes(
-            ownerOfParameterName = "submissionId",
+            ownerOfParameterName = "workId",
             beforePostAttachment = {
                 requireCapability(
                     userId = currentUserId(),
