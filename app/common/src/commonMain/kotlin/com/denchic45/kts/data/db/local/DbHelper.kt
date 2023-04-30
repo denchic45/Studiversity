@@ -2,10 +2,23 @@ package com.denchic45.kts.data.db.local
 
 import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.EnumColumnAdapter
+import app.cash.sqldelight.Transacter
 import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
-import com.denchic45.kts.*
+import com.denchic45.kts.AppDatabase
+import com.denchic45.kts.AttachmentEntity
+import com.denchic45.kts.CourseContentEntity
+import com.denchic45.kts.EventEntity
+import com.denchic45.kts.SectionEntity
+import com.denchic45.kts.StudyGroupEntity
+import com.denchic45.kts.SubmissionEntity
+import com.denchic45.kts.UserEntity
 import com.denchic45.kts.data.mapper.ListMapper
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -18,26 +31,6 @@ class ListColumnAdapter : ColumnAdapter<List<String>, String> {
         return ListMapper.fromList(value)
     }
 }
-
-//object BooleanColumnAdapter : ColumnAdapter<Boolean, Long> {
-//    override fun decode(databaseValue: Long): Boolean {
-//        return databaseValue == 1L
-//    }
-//
-//    override fun encode(value: Boolean): Long {
-//        return if (value) 1L else 0L
-//    }
-//}
-
-//class IntColumnAdapter : ColumnAdapter<Int, Long> {
-//    override fun decode(databaseValue: Long): Int {
-//        return databaseValue.toInt()
-//    }
-//
-//    override fun encode(value: Int): Long {
-//        return value.toLong()
-//    }
-//}
 
 class LocalDateColumnAdapter : ColumnAdapter<LocalDate, String> {
     override fun decode(databaseValue: String): LocalDate {
@@ -110,3 +103,23 @@ class DbHelper(val driver: SqlDriver) {
             driver.execute(null, String.format("PRAGMA user_version = %d;", version), 0, null)
         }
 }
+
+suspend fun Transacter.suspendedTransaction(
+    block: suspend () -> Unit
+) = withContext(Dispatchers.IO) {
+    transaction {
+        launch {
+            block()
+        }
+    }
+}
+
+suspend fun <T> Transacter.suspendedTransactionWithResult(block: suspend () -> T): T =
+    withContext(Dispatchers.IO) {
+        val result: Deferred<T> = transactionWithResult {
+            async {
+                block()
+            }
+        }
+        result.await()
+    }
