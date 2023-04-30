@@ -57,9 +57,9 @@ class NetworkModule {
     @Singleton
     @Named("guest")
     @Provides
-    fun guestClient(appPreferences: AppPreferences): GuestHttpClient = HttpClient(Android) {
+    fun guestClient(appPreferences: AppPreferences) = HttpClient(Android) {
         defaultRequest {
-            url("http://192.168.0.104:8080/")
+            url("http://192.168.0.102:8080/")
         }
         installContentNegotiation()
     }
@@ -71,7 +71,7 @@ class NetworkModule {
     @Provides
     fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(Android) {
         defaultRequest {
-            url("http://192.168.0.104:8080/")
+            url("http://192.168.0.102:8080/")
         }
         installContentNegotiation()
         install(WebSockets)

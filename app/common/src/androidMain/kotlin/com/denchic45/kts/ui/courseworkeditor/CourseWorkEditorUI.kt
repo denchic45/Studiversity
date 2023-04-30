@@ -1,9 +1,7 @@
 package com.denchic45.kts.ui.courseworkeditor
 
-import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -47,7 +45,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +54,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.net.toFile
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
@@ -66,20 +62,19 @@ import com.denchic45.kts.ui.ActionMenuItem
 import com.denchic45.kts.ui.DropdownMenuItem
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.asString
+import com.denchic45.kts.ui.attachment.AttachmentItemUI
 import com.denchic45.kts.ui.component.HeaderItemUI
-import com.denchic45.kts.ui.coursework.details.AttachmentItemUI
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.util.FileViewer
+import com.denchic45.kts.util.OpenMultipleAnyDocuments
 import com.denchic45.kts.util.collectWithLifecycle
 import com.denchic45.kts.util.findActivity
 import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.stuiversity.util.toString
-import com.eygraber.uri.toAndroidUri
-import com.eygraber.uri.toUri
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -100,13 +95,8 @@ fun CourseWorkEditorScreen(
             ).show()
         }
     }
-    val coroutineScope = rememberCoroutineScope()
-
-    val contentResolver = LocalContext.current.contentResolver
-    val pickFileLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenMultipleDocuments()
-    ) { uris ->
-        component.onFilesSelect(uris.map {it.getFile(context)})
+    val pickFileLauncher = rememberLauncherForActivityResult(OpenMultipleAnyDocuments()) { uris ->
+        component.onFilesSelect(uris.map { it.getFile(context) })
     }
 
     component.openAttachment.collectWithLifecycle {
@@ -149,7 +139,7 @@ fun CourseWorkEditorScreen(
         onDescriptionType = component::onDescriptionType,
         onTopicNameType = component::onTopicNameType,
         onTopicSelect = component::onTopicSelect,
-        onAttachmentAdd = { pickFileLauncher.launch(arrayOf("image/*", "text/*", "video/*")) },
+        onAttachmentAdd = { pickFileLauncher.launch(Unit) },
         onAttachmentClick = component::onAttachmentClick,
         onAttachmentRemove = component::onAttachmentRemove,
         onDueDateTimeSelect = component::onDueDateTimeSelect,
@@ -261,9 +251,7 @@ fun CourseWorkEditorContent(
                                 key = { _, item -> item.attachmentId ?: "" }) { index, item ->
                                 AttachmentItemUI(
                                     item = item,
-                                    onClick = {
-                                        onAttachmentClick(item)
-                                    },
+                                    onClick = { onAttachmentClick(item) },
                                     onRemove = { onAttachmentRemove(index) })
                             }
                         }

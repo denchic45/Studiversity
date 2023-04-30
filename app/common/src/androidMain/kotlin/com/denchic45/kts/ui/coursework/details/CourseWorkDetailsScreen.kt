@@ -1,7 +1,6 @@
 package com.denchic45.kts.ui.coursework.details
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,18 +27,22 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.attachment.AttachmentItemUI
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
+import com.denchic45.kts.util.FileViewer
+import com.denchic45.kts.util.collectWithLifecycle
+import com.denchic45.kts.util.findActivity
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
-import com.eygraber.uri.Uri
 import okio.Path.Companion.toPath
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -51,17 +54,31 @@ import java.util.UUID
 fun CourseWorkDetailsScreen(component: CourseWorkDetailsComponent) {
     val workResource by component.courseWork.collectAsState()
     val attachmentsResource by component.attachments.collectAsState()
-    val pickFileLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let {
+    val context = LocalContext.current
 
+    val fileViewer by lazy {
+        FileViewer(context.findActivity()) {
+            Toast.makeText(
+                context,
+                "Невозможно открыть файл на данном устройстве",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
-    CourseWorkDetailsContent(workResource = workResource,
+    component.openAttachment.collectWithLifecycle {
+        when (it) {
+            is AttachmentItem.FileAttachmentItem -> fileViewer.openFile(it.path.toFile())
+            is AttachmentItem.LinkAttachmentItem -> {}
+        }
+    }
+
+    CourseWorkDetailsContent(
+        workResource = workResource,
         attachmentsResource = attachmentsResource,
-        onAttachmentClick = { pickFileLauncher.launch("*/*") })
+        onAttachmentClick = {
+            component.onAttachmentClick(it)
+        })
 }
 
 @Composable
@@ -102,14 +119,14 @@ private fun CourseWorkDetailsContent(
                 Text(text = it)
             }
             attachmentsResource.onSuccess { attachments ->
-               if (attachments.isNotEmpty()) {
-                   HeaderItemUI(name = "Прикрепления")
-                   LazyRow {
-                       items(attachments, key = { it.attachmentId ?: Unit }) {
-                           AttachmentItemUI(item = it, onClick = { onAttachmentClick(it) })
-                       }
-                   }
-               }
+                if (attachments.isNotEmpty()) {
+                    HeaderItemUI(name = "Прикрепления")
+                    LazyRow {
+                        items(attachments, key = { it.attachmentId ?: Unit }) {
+                            AttachmentItemUI(item = it, onClick = { onAttachmentClick(it) })
+                        }
+                    }
+                }
             }
         }
     }
@@ -132,34 +149,6 @@ fun CourseWorkHeader(name: String, commentsCount: Int = 0) {
             Text(text = "$commentsCount комментариев")
         }
     }
-}
-
-@Composable
-fun AttachmentItemUI(
-    item: AttachmentItem,
-    onClick: () -> Unit,
-    onRemove: (() -> Unit)? = null
-) {
-    AssistChip(onClick = { onClick() },
-        label = {
-            Text(
-                text = when (item) {
-                    is AttachmentItem.FileAttachmentItem -> item.name
-                    is AttachmentItem.LinkAttachmentItem -> item.url
-                }
-            )
-        },
-        leadingIcon = {
-            Icon(imageVector = Icons.Outlined.AttachFile, contentDescription = "attachment")
-        },
-        trailingIcon = {
-            onRemove?.let {
-                IconButton(onClick = { it() }) {
-                    Icon(imageVector = Icons.Outlined.Close, contentDescription = "attachment")
-                }
-            }
-        }
-    )
 }
 
 @Preview

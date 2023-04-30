@@ -1,8 +1,10 @@
 package com.denchic45.kts.data.repository
 
+import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.AttachmentEntity
 import com.denchic45.kts.data.db.local.source.AttachmentLocalDataSource
 import com.denchic45.kts.data.db.local.source.AttachmentReferenceLocalDataSource
+import com.denchic45.kts.data.db.local.suspendedTransaction
 import com.denchic45.kts.data.domain.model.Attachment2
 import com.denchic45.kts.data.domain.model.FileAttachment2
 import com.denchic45.kts.data.domain.model.FileState
@@ -26,7 +28,9 @@ import com.denchic45.stuiversity.api.submission.SubmissionsApi
 import com.denchic45.stuiversity.util.toUUID
 import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import me.tatarka.inject.annotations.Inject
 import okio.Path.Companion.toPath
 import java.util.UUID
@@ -39,7 +43,8 @@ class AttachmentRepository @javax.inject.Inject constructor(
     private val attachmentStorage: AttachmentStorage,
     private val submissionsApi: SubmissionsApi,
     private val courseWorkApi: CourseWorkApi,
-    private val attachmentApi: AttachmentApi
+    private val attachmentApi: AttachmentApi,
+    private val database: AppDatabase
 ) : NetworkServiceOwner {
 
     fun observeBySubmission(
@@ -47,7 +52,7 @@ class AttachmentRepository @javax.inject.Inject constructor(
         workId: UUID,
         submissionId: UUID,
     ): Flow<Resource<List<Attachment2>>> = observeResource(
-        query = getAttachmentsByReferenceId(submissionId),
+        query = getAttachmentsByReferenceId(submissionId).distinctUntilChanged(),
         fetch = { submissionsApi.getAttachments(courseId, workId, submissionId) },
         saveFetch = { attachments -> saveAttachments(attachments, submissionId) }
     )
@@ -56,7 +61,12 @@ class AttachmentRepository @javax.inject.Inject constructor(
         courseId: UUID,
         workId: UUID,
     ): Flow<Resource<List<Attachment2>>> = observeResource(
-        query = getAttachmentsByReferenceId(workId),
+        query = getAttachmentsByReferenceId(workId).distinctUntilChanged().onEach {
+            println("GET_ATTACHMENTS_BY: $workId")
+            it.forEach {
+                println("\t${it}")
+            }
+        },
         fetch = { courseWorkApi.getAttachments(courseId, workId) },
         saveFetch = { attachments -> saveAttachments(attachments, workId) }
     )
@@ -83,9 +93,11 @@ class AttachmentRepository @javax.inject.Inject constructor(
     }
 
     private suspend fun saveAttachments(attachments: List<AttachmentHeader>, referenceId: UUID) {
-        deleteNotContainsAttachments(attachments, referenceId)
-        attachments.forEach { attachment ->
-            saveAttachment(attachment, referenceId)
+        database.suspendedTransaction {
+            deleteNotContainsAttachments(attachments, referenceId)
+            attachments.forEach { attachment ->
+                saveAttachment(attachment, referenceId)
+            }
         }
     }
 
@@ -171,9 +183,13 @@ class AttachmentRepository @javax.inject.Inject constructor(
         workId: UUID,
         submissionId: UUID
     ): EmptyResource = fetchResource {
-        submissionsApi.deleteAttachmentOfSubmission(courseId,workId,submissionId,attachmentId).onSuccess {
-            attachmentReferenceLocalDataSource.delete(attachmentId.toString(), submissionId.toString())
-            attachmentStorage.delete(attachmentId)
-        }
+        submissionsApi.deleteAttachmentOfSubmission(courseId, workId, submissionId, attachmentId)
+            .onSuccess {
+                attachmentReferenceLocalDataSource.delete(
+                    attachmentId.toString(),
+                    submissionId.toString()
+                )
+                attachmentStorage.delete(attachmentId)
+            }
     }
 }

@@ -64,7 +64,7 @@ abstract class NetworkComponent(
     @Provides
     fun guestClient(appPreferences: AppPreferences): GuestHttpClient = HttpClient(engine) {
         defaultRequest {
-            url("http://192.168.0.104:8080/")
+            url("http://192.168.0.102:8080/")
         }
         installContentNegotiation()
     }
@@ -76,14 +76,17 @@ abstract class NetworkComponent(
     @LayerScope
     @Provides
     fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(engine) {
+        println("TOKENS: authedClient")
         defaultRequest {
-            url("http://192.168.0.104:8080/")
+            url("http://192.168.0.102:8080/")
         }
         installContentNegotiation()
         install(WebSockets)
         install(Auth) {
             bearer {
                 loadTokens {
+                    println("TOKENS: appPreferences.token ${appPreferences.token}")
+                    println("TOKENS: appPreferences.refreshToken ${appPreferences.refreshToken}")
                     BearerTokens(appPreferences.token!!, appPreferences.refreshToken!!)
                 }
                 refreshTokens {
@@ -93,6 +96,7 @@ abstract class NetworkComponent(
                         appPreferences.token = it.token
                         appPreferences.refreshToken = it.refreshToken
                     }.onFailure {
+                        println("FAILURE refresh tokens: ${it.error}")
                         appPreferences.token = null
                         appPreferences.refreshToken = null
                     }

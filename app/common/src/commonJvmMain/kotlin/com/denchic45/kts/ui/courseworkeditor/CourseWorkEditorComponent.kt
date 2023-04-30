@@ -41,7 +41,6 @@ import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
-import com.eygraber.uri.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,7 +57,6 @@ import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import okio.Path
-import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
@@ -116,12 +114,14 @@ class CourseWorkEditorComponent(
     }.stateInResource(componentScope)
 
     private val fieldEditor = FieldEditor(
-        mapOf(
+        mapOf<String, Field<*>>(
             "name" to Field("", editingState::name),
             "description" to Field("", editingState::description),
             "dueDate" to Field(null, editingState::dueDate),
             "dueTime" to Field(null, editingState::dueTime),
-            "topicId" to Field(null) { editingState.selectedTopic?.id }
+            "topicId" to Field(null) { editingState.selectedTopic?.id },
+            "addedAttachments" to Field(emptyList()) { _addedAttachmentItems.value },
+            "removedAttachments" to Field(emptyList()) { removedAttachmentIds.value }
         )
     )
 
@@ -247,10 +247,9 @@ class CourseWorkEditorComponent(
         when (item) {
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
                 FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
-                FileState.Preview -> componentScope.launch {
+                FileState.Preview, FileState.FailDownload -> componentScope.launch {
                     downloadFileUseCase(item.attachmentId!!)
                     // TODO: Возможно использовать в будущем: открывать файл сразу после его загрузки
-
 //                            .collect {
 //                            if (it == FileState.Downloaded)
 //                                openAttachment.postValue(item.path.toFile())
@@ -310,7 +309,7 @@ class CourseWorkEditorComponent(
         }
     }
 
-    private suspend fun CourseWorkEditorComponent.loadAddedAttachments(
+    private suspend fun loadAddedAttachments(
         courseWork: CourseWorkResponse,
     ) {
         _addedAttachmentItems.value.map { item ->

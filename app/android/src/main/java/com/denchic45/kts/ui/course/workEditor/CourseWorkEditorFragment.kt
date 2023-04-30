@@ -70,16 +70,6 @@ class CourseWorkEditorFragment(
         )
     }
 
-    private val fileViewer by lazy {
-        FileViewer(requireActivity()) {
-            Toast.makeText(
-                requireContext(),
-                "Невозможно открыть файл на данном устройстве",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

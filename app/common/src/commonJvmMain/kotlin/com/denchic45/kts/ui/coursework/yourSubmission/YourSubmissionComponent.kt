@@ -1,6 +1,7 @@
 package com.denchic45.kts.ui.coursework.yourSubmission
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.flatMapResourceFlow
 import com.denchic45.kts.domain.map
@@ -16,12 +17,9 @@ import com.denchic45.kts.domain.usecase.SubmitSubmissionUseCase
 import com.denchic45.kts.domain.usecase.UploadAttachmentToSubmissionUseCase
 import com.denchic45.kts.ui.coursework.SubmissionUiState
 import com.denchic45.kts.ui.coursework.toUiState
-import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.model.toAttachmentItems
 import com.denchic45.kts.util.componentScope
-import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.flow.Flow
@@ -34,11 +32,11 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import okio.Path
-import java.time.LocalDateTime
 import java.util.UUID
 
 @Inject
@@ -85,22 +83,18 @@ class YourSubmissionComponent(
 
     val uiState = MutableStateFlow<Resource<SubmissionUiState>>(Resource.Loading)
 
-//    private val overlayNavigation = OverlayNavigation<CourseWorkComponent.YourSubmissionConfig>()
+    val sheetExpanded = MutableStateFlow(false)
 
-//    val childOverlay = childOverlay(
-//        source = overlayNavigation,
-//        childFactory = { config, componentContext ->
-//            CourseWorkComponent.YourSubmissionChild(
-//                _yourSubmissionComponent(
-//                    courseId,
-//                    elementId,
-//                    componentContext
-//                )
-//            )
-//        }
-//    )
+    private val backCallback = BackCallback { sheetExpanded.update { false }}
 
     init {
+        backHandler.register(backCallback)
+        componentScope.launch {
+            sheetExpanded.collect {
+                backCallback.isEnabled = it
+            }
+        }
+
         componentScope.launch {
             uiState.emitAll(
                 combine(
@@ -117,15 +111,17 @@ class YourSubmissionComponent(
         }
     }
 
-    fun onFileSelect(path: Path) {
-        uiState.value.onSuccess {
+    fun onFilesSelect(paths: List<Path>) {
+        uiState.value.onSuccess { state ->
             componentScope.launch {
-                uploadAttachmentToSubmissionUseCase(
-                    courseId = courseId,
-                    workId = workId,
-                    submissionId = it.id,
-                    attachmentRequest = CreateFileRequest(path.toFile())
-                )
+                paths.map { path ->
+                    uploadAttachmentToSubmissionUseCase(
+                        courseId = courseId,
+                        workId = workId,
+                        submissionId = state.id,
+                        attachmentRequest = CreateFileRequest(path.toFile())
+                    )
+                }
             }
         }
     }
@@ -156,6 +152,10 @@ class YourSubmissionComponent(
                 )
             }
         }
+    }
+
+    fun onExpandChanged(expanded: Boolean) {
+        sheetExpanded.update { expanded }
     }
 
 //    fun List<AttachmentItem>.toAttachmentRequests(): List<AttachmentRequest> {

@@ -1,7 +1,6 @@
 package com.denchic45.kts.data.storage
 
 import com.denchic45.kts.util.SystemDirs
-import com.denchic45.kts.util.databaseFile
 import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.course.element.model.FileAttachmentResponse
@@ -15,13 +14,17 @@ import java.util.UUID
 
 @Inject
 class AttachmentStorage @javax.inject.Inject constructor(
-    private val systemDirs: SystemDirs,
+    systemDirs: SystemDirs,
     private val attachmentApi: AttachmentApi,
 ) {
 
     val path: Path = systemDirs.fileDir.toOkioPath() / "attachments"
 
     private val fileSystem = FileSystem.SYSTEM
+
+    init {
+        FileSystem.SYSTEM.createDirectory(path)
+    }
 
     private suspend fun download(attachmentId: UUID): ResponseResult<FileAttachmentResponse?> {
         return attachmentApi.getById(attachmentId).map {

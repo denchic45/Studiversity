@@ -29,10 +29,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.text.isDigitsOnly
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.attachment.AttachmentItemUI
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.coursework.SubmissionHeaderContent
 import com.denchic45.kts.ui.coursework.SubmissionUiState
-import com.denchic45.kts.ui.coursework.details.AttachmentItemUI
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.util.FileViewer
@@ -118,6 +118,5 @@ fun SubmissionDetailsContent(
                 }
             }
         }
-
     }
 }

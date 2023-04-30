@@ -1,9 +1,7 @@
 package com.denchic45.kts.ui.coursework
 
-import android.app.Activity
-import android.content.Intent
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -71,13 +69,14 @@ import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiTextOf
+import com.denchic45.kts.util.FileViewer
+import com.denchic45.kts.util.OpenMultipleAnyDocuments
+import com.denchic45.kts.util.collectWithLifecycle
+import com.denchic45.kts.util.findActivity
 import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.util.toString
-import com.eygraber.uri.Uri
 import kotlinx.coroutines.launch
-import okio.Path
-import okio.Path.Companion.toOkioPath
 import okio.Path.Companion.toPath
 import java.util.UUID
 
@@ -87,18 +86,23 @@ fun CourseWorkScreen(component: CourseWorkComponent, appBarInteractor: AppBarInt
 
     val yourSubmissionComponent = component.yourSubmissionComponent
     val submissionResource by yourSubmissionComponent.uiState.collectAsState(null)
+    val submissionExpanded by yourSubmissionComponent.sheetExpanded.collectAsState()
 
     val context = LocalContext.current
 
     val pickFileLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            result.data?.let { data: Intent ->
-                yourSubmissionComponent.onFileSelect(
-                    data.data!!.getFile(context)
-                )
-            }
+        OpenMultipleAnyDocuments()
+    ) { uris ->
+        yourSubmissionComponent.onFilesSelect(uris.map { it.getFile(context) })
+    }
+
+    val fileViewer by lazy {
+        FileViewer(context.findActivity()) {
+            Toast.makeText(
+                context,
+                "Невозможно открыть файл на данном устройстве",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -123,26 +127,23 @@ fun CourseWorkScreen(component: CourseWorkComponent, appBarInteractor: AppBarInt
         }
     }
 
+    component.openAttachment.collectWithLifecycle {
+        when (it) {
+            is AttachmentItem.FileAttachmentItem -> fileViewer.openFile(it.path.toFile())
+            is AttachmentItem.LinkAttachmentItem -> {}
+        }
+    }
+
     CourseWorkContent(
         childrenResource = childrenResource,
         submissionResource = submissionResource,
-        onAttachmentAdd = {
-            val chooserIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "*/*"
-                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-            }
-
-            pickFileLauncher.launch(
-                Intent.createChooser(
-                    chooserIntent, "Выберите файл"
-                )
-            )
-        },
-        onAttachmentClick = { TODO() },
+        onAttachmentAdd = { pickFileLauncher.launch(Unit) },
+        onAttachmentClick = { component.onAttachmentClick(it) },
         onAttachmentRemove = yourSubmissionComponent::onAttachmentRemove,
         onSubmit = yourSubmissionComponent::onSubmit,
-        onCancel = yourSubmissionComponent::onCancel
+        onCancel = yourSubmissionComponent::onCancel,
+        submissionExpanded = submissionExpanded,
+        onSubmissionExpandChange = yourSubmissionComponent::onExpandChanged
     )
 }
 
@@ -156,6 +157,8 @@ private fun CourseWorkContent(
     onAttachmentRemove: (attachmentId: UUID) -> Unit,
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
+    submissionExpanded: Boolean,
+    onSubmissionExpandChange: (Boolean) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -177,6 +180,7 @@ private fun CourseWorkContent(
         }
     )
 
+
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
 
     var screenHeight by remember {
@@ -189,6 +193,13 @@ private fun CourseWorkContent(
 
     val transition = calcPercentOf(0.2F, 0.8F, maxOf(0.2F, minOf(difference, 0.8F)))
 
+    LaunchedEffect(submissionExpanded != bottomSheetState.hasExpandedState) {
+        when (submissionExpanded) {
+            true -> coroutineScope.launch { bottomSheetState.expand() }
+            false -> coroutineScope.launch { bottomSheetState.partialExpand() }
+        }
+    }
+
     if (screenHeight != 0f) {
         LaunchedEffect(Unit) {
             snapshotFlow(bottomSheetState::requireOffset)
@@ -199,6 +210,11 @@ private fun CourseWorkContent(
         }
     }
 
+    LaunchedEffect(Unit) {
+        snapshotFlow { bottomSheetState.currentValue }.collect { value ->
+            onSubmissionExpandChange(value == SheetValue.Expanded)
+        }
+    }
 
     BottomSheetScaffold(
         sheetPeekHeight = topHeight.pxToDp(),
@@ -562,7 +578,9 @@ fun CourseWorkContentPreview() {
                 onAttachmentClick = {},
                 onAttachmentRemove = {},
                 onSubmit = {},
-                onCancel = {}
+                onCancel = {},
+                submissionExpanded = false,
+                onSubmissionExpandChange = {}
             )
         }
     }
