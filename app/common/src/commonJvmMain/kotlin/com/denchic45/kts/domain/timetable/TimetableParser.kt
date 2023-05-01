@@ -6,7 +6,14 @@ import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.timetable.model.*
+import com.denchic45.stuiversity.api.timetable.model.EventDetails
+import com.denchic45.stuiversity.api.timetable.model.EventResponse
+import com.denchic45.stuiversity.api.timetable.model.LessonDetails
+import com.denchic45.stuiversity.api.timetable.model.LessonResponse
+import com.denchic45.stuiversity.api.timetable.model.PeriodMember
+import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
+import com.denchic45.stuiversity.api.timetable.model.StudyGroupName
+import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.DateTimePatterns
@@ -17,17 +24,18 @@ import me.tatarka.inject.annotations.Inject
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.poi.xwpf.usermodel.XWPFTable
 import org.apache.poi.xwpf.usermodel.XWPFTableCell
-import java.io.File
+import java.io.InputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Locale
+import java.util.UUID
 
 @Inject
 class TimetableParser(
     private val studyGroupApi: StudyGroupApi,
     private val userApi: UserApi,
     private val courseApi: CoursesApi,
-    private val subjectApi: SubjectApi
+    private val subjectApi: SubjectApi,
 ) {
     private val days = listOf(
         "ПОНЕДЕЛЬНИК ",
@@ -48,35 +56,39 @@ class TimetableParser(
     private val cachedSubjects = mutableListOf<SubjectResponse>()
     private val cachedUsers = mutableMapOf<String, UserResponse>()
 
-    private suspend fun findUserBySurname(surname: String): UserResponse {
-        return cachedUsers[surname] ?: userApi.getBySurname(surname).unwrap()
-            .apply { cachedUsers[surname] = this }
+    private suspend fun findUserBySurname(surname: String): UserResponse? {
+        return cachedUsers[surname] ?: userApi.getBySurname(surname).unwrap().firstOrNull()
+            ?.apply { cachedUsers[surname] = this }
     }
 
-    suspend fun parseDoc(docFile: File): List<Pair<StudyGroupResponse, TimetableResponse>> {
+    suspend fun parseDoc(inputStream: InputStream): List<Pair<StudyGroupResponse, TimetableResponse>> {
         val timetables: MutableList<Pair<StudyGroupResponse, TimetableResponse>> = mutableListOf()
         try {
-            val wordDoc = XWPFDocument(docFile.inputStream())
+            val wordDoc = XWPFDocument(inputStream)
             table = wordDoc.tables[0]
 
             val cellsInGroups: MutableList<XWPFTableCell> = ArrayList()
-            cellsInGroups.addAll(table.getRow(1).tableCells)
+//            cellsInGroups.addAll(table.getRow(1).tableCells)
             cellsInGroups.addAll(table.getRow(2).tableCells)
 
-            val studyGroupsByAcademicYear = studyGroupApi.getByAcademicYear(findCourseNumber())
-                .unwrap()
+//            val studyGroupsByAcademicYear = studyGroupApi.getByAcademicYear(findCourseNumber())
+//                .unwrap()
 
-            val cellsCount = table.getRow(1).tableCells.size
+            val cellsCount = cellsInGroups.size
 
-            for (studyGroup in studyGroupsByAcademicYear) {
-                currentStudyGroup = studyGroup
-                cellOfGroupPos = cellsInGroups.indexOf(
-                    getCellByGroupName(cellsInGroups, studyGroup.name)
-                )
-                if (cellOfGroupPos == -1) continue
-                cellOfGroupPos = if (cellOfGroupPos > cellsCount) cellOfGroupPos - cellsCount
-                else cellOfGroupPos
-                timetables.add(studyGroup to createTimetable())
+            for (i in 0 until cellsCount) {
+                studyGroupApi.getList(query = cellsInGroups[i].text)
+                    .unwrap().firstOrNull()?.let {
+                        currentStudyGroup = it
+                        cellOfGroupPos = cellsInGroups.indexOf(
+                            getCellByGroupName(cellsInGroups, currentStudyGroup.name)
+                        )
+                        if (cellOfGroupPos == -1) return@let
+                        cellOfGroupPos =
+                            if (cellOfGroupPos > cellsCount) cellOfGroupPos - cellsCount
+                            else cellOfGroupPos
+                        timetables.add(currentStudyGroup to createTimetable())
+                    }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -84,6 +96,11 @@ class TimetableParser(
         }
         return timetables
     }
+
+//    private val groupsCount:Int
+//        get() {
+//            return table.getRow(2).tableCells.size - 1
+//        }
 
     private fun findCourseNumber(): Int {
         val text = table.getRow(0).getCell(0).text
@@ -94,11 +111,10 @@ class TimetableParser(
         tableCells: List<XWPFTableCell>,
         groupName: String,
     ): XWPFTableCell? {
-        return tableCells
-            .find { cell: XWPFTableCell ->
-                val text = cell.text
-                text.resetFormatting().contains(groupName.resetFormatting())
-            }
+        return tableCells.find { cell: XWPFTableCell ->
+            val text = cell.text
+            text.resetFormatting().contains(groupName.resetFormatting())
+        }
     }
 
     private suspend fun createTimetable(): TimetableResponse {
@@ -106,8 +122,8 @@ class TimetableParser(
         currentRow = 3
         currentDayOfWeek = 0
         while (!table.getRow(currentRow).getCell(0).text.contains("ПОНЕДЕЛЬНИК")) currentRow++
-
         val weekOfYear = table.getRow(currentRow).getCell(0).text
+            .split(" ")[1]
             .toLocalDate(DateTimePatterns.DD_MM_yy)
             .format(DateTimeFormatter.ofPattern("YYYY_ww"))
 
@@ -137,23 +153,29 @@ class TimetableParser(
         val date = dateText.toLocalDate(DateTimePatterns.DD_MM_yy)
         val periods = mutableListOf<PeriodResponse>()
         if (currentRow == table.rows.size) return emptyList()
-        var cells = table.getRow(currentRow).tableCells
+
 
         while (hasRowsOfCurrentDate()) {
+            val cells = table.getRow(currentRow).tableCells
             val orderText = cells[0].text
-            val cellContent: String = cells[cellOfGroupPos].text
-                .replace("\\(.*\\)".toRegex(), "")
-                .trim { it <= ' ' }
-            currentRow++
-            if (currentRow < table.rows.size) {
-                cells = table.getRow(currentRow).tableCells
+            if (cells.size == 1) {
+                currentRow++
+                continue // Skip dinner
             }
-            if (orderText.isNotEmpty()) {
+            val cellContent: List<String> = cells[cellOfGroupPos].paragraphs.map { it.paragraphText }
+//                .replace("\\(.*\\)".toRegex(), "")
+//                .trim { it <= ' ' }
+            currentRow++
+//            if (currentRow < table.rows.size) {
+//                cells = table.getRow(currentRow).tableCells
+//            }
+            val hasOrder = orderText.isNotEmpty()
+            if (hasOrder) {
                 if (orderText == "0" && cellContent.isEmpty()) {
                     continue
                 }
                 createPeriod(orderText.toInt(), date, cellContent)?.let { periods.add(it) }
-            } else if (cellContent.isNotEmpty()) {
+            } else if (!cellContent.firstOrNull().isNullOrEmpty()) {
                 throw TimetableOrderLessonException(
                     """
     У урока нет порядкового номера! 
@@ -170,21 +192,19 @@ class TimetableParser(
     private fun hasRowsOfCurrentDate(): Boolean {
         if (currentRow == table.rows.size - 1) return false
         return if (currentDayOfWeek == 5) true
-        else !table.getRow(currentRow)
-            .getCell(0).text.contains(days[currentDayOfWeek + 1])
+        else !table.getRow(currentRow).getCell(0).text.contains(days[currentDayOfWeek + 1])
     }
 
     private suspend fun createPeriod(
         order: Int,
         date: LocalDate,
-        content: String
+        content: List<String>,
     ): PeriodResponse? {
         if (content.isEmpty()) {
             return null
         }
-        val separatedContent = content.lines()
-        val subjectName = separatedContent[0].substringBefore('\\')
-        val roomName = separatedContent[0].substringAfter('\\')
+        val subjectName = content[0].substringBefore('\\')
+        val roomName = content[0].substringAfter('\\')
 
         val subject = findSubjectByName(subjectName)
         val course = subject?.let { findCourseBySubjectAndStudyGroupId(it, currentStudyGroup.id) }
@@ -195,7 +215,7 @@ class TimetableParser(
                 order = order,
                 room = null,
                 studyGroup = StudyGroupName(currentStudyGroup.id, currentStudyGroup.name),
-                members = findTeacherByContent(separatedContent),
+                members = findTeacherByContent(content),
                 details = LessonDetails(course.id, subject)
             )
         } else {
@@ -205,7 +225,7 @@ class TimetableParser(
                 order = order,
                 room = null,
                 studyGroup = StudyGroupName(currentStudyGroup.id, currentStudyGroup.name),
-                members = findTeacherByContent(separatedContent),
+                members = findTeacherByContent(content),
                 details = EventDetails(subjectName, "blue", "")
             )
         }
@@ -215,7 +235,7 @@ class TimetableParser(
         return if (separatedContent.size == 1) {
             emptyList()
         } else separatedContent.subList(1, separatedContent.size).map { line ->
-            findUserBySurname(line.split(" ")[0]).let {
+            findUserBySurname(line.split(" ")[0])?.let {
                 PeriodMember(
                     it.id,
                     it.firstName,
@@ -223,12 +243,12 @@ class TimetableParser(
                     it.avatarUrl
                 )
             }
-        }
+        }.filterNotNull()
     }
 
     private suspend fun findCourseBySubjectAndStudyGroupId(
         subject: SubjectResponse,
-        studyGroupId: UUID
+        studyGroupId: UUID,
     ): CourseResponse? {
         val subjectName = subject.name
 
@@ -251,7 +271,7 @@ class TimetableParser(
             courseApi.getList(studyGroupId = studyGroupId, subjectId = subjectResponse.id)
                 .unwrap().firstOrNull()
                 ?: courseApi.getList(subjectId = subjectResponse.id)
-                    .unwrap().first()
+                    .unwrap().firstOrNull()
         }
 
         return courseResponse?.also {

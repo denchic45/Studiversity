@@ -17,7 +17,7 @@ interface UserApi {
 
     suspend fun getById(userId: UUID): ResponseResult<UserResponse>
 
-    suspend fun getBySurname(surname: String): ResponseResult<UserResponse>
+    suspend fun getBySurname(surname: String): ResponseResult<List<UserResponse>>
 
     suspend fun search(query: String): ResponseResult<List<UserResponse>>
 
@@ -40,7 +40,7 @@ class UserApiImpl(private val client: HttpClient) : UserApi {
         return client.get("/users/$userId").toResult()
     }
 
-    override suspend fun getBySurname(surname: String): ResponseResult<UserResponse> {
+    override suspend fun getBySurname(surname: String): ResponseResult<List<UserResponse>> {
         return client.get("/users") {
             parameter("surname",surname)
         }.toResult()

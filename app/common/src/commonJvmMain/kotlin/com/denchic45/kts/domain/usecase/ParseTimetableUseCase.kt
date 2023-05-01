@@ -12,6 +12,6 @@ class ParseTimetableUseCase(
 ) {
 
     suspend operator fun invoke(document:Path): List<Pair<StudyGroupResponse, TimetableResponse>> {
-       return timetableParser().parseDoc(document.toFile())
+       return timetableParser().parseDoc(document.toFile().inputStream())
     }
 }

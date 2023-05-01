@@ -81,7 +81,6 @@ kotlin {
         }
         val commonJvmMain by creating {
             dependencies {
-
                 dependsOn(commonMain)
 
                 implementation(kotlin("stdlib-common"))
@@ -101,6 +100,16 @@ kotlin {
                 configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
 
                 implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+            }
+        }
+        val commonJvmTest by creating {
+//            kotlin.srcDir("src/commonJvmTest/kotlin")
+            dependencies {
+                dependsOn(commonTest)
+                implementation("com.github.skebir:prettytable:v1.0")
+//                implementation(kotlin("stdlib-common"))
+//                implementation("junit:junit:4.13.2")
+//                implementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
             }
         }
         val androidMain by getting {
@@ -178,6 +187,7 @@ kotlin {
         }
         val androidTest by getting {
             dependencies {
+                dependsOn(commonJvmTest)
                 implementation("junit:junit:4.13.2")
             }
         }
@@ -205,7 +215,7 @@ kotlin {
         }
         val desktopTest by getting {
             dependencies {
-
+                dependsOn(commonJvmTest)
             }
         }
     }
@@ -254,8 +264,8 @@ android {
     }
 }
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
+//    testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
+//    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
 }
 
 sqldelight {
