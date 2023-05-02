@@ -9,8 +9,10 @@ class EventDetailsEditorComponent(
     @Assisted
     _state: EditingPeriod,
     @Assisted
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
 ) : PeriodDetailsEditorComponent<EditingPeriodDetails.Event>(_state, componentContext) {
 
-
+    fun onNameType(name: String) {
+        details.name = name
+    }
 }

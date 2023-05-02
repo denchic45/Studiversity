@@ -4,7 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 
 
 abstract class PeriodDetailsEditorComponent<T : EditingPeriodDetails>(
-    protected val period: EditingPeriod,
+    period: EditingPeriod,
     private val componentContext: ComponentContext
 ) : ComponentContext by componentContext {
     @Suppress("UNCHECKED_CAST")

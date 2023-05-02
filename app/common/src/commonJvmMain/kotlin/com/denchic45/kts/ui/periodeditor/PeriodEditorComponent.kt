@@ -1,16 +1,21 @@
 package com.denchic45.kts.ui.periodeditor
 
+import androidx.compose.runtime.Stable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
+import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.resourceOf
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindRoomByContainsNameUseCase
+import com.denchic45.kts.ui.chooser.CourseChooserComponent
+import com.denchic45.kts.ui.chooser.UserChooserComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.room.model.RoomResponse
@@ -33,14 +38,16 @@ import java.time.LocalDate
 @Inject
 class PeriodEditorComponent(
     private val findRoomByContainsNameUseCase: FindRoomByContainsNameUseCase,
+    private val courseChooserComponent: (onFinish: (CourseResponse?) -> Unit, ComponentContext) -> CourseChooserComponent,
+    private val userChooserComponent: (onFinish: (UserResponse?) -> Unit, ComponentContext) -> UserChooserComponent,
     private val eventDetailsEditorComponent: (EditingPeriod, ComponentContext) -> EventDetailsEditorComponent,
-    private val lessonDetailsEditorComponent: (EditingPeriod, ComponentContext) -> LessonDetailsEditorComponent,
+    private val lessonDetailsEditorComponent: (EditingPeriod, onCourseChoose: (OverlayConfig.CourseChooser) -> Unit, ComponentContext) -> LessonDetailsEditorComponent,
     @Assisted
     private val _period: PeriodResponse,
     @Assisted
-    private val _onTeacherChoose:()->Unit,
+    private val _onTeacherChoose: () -> Unit,
     @Assisted
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
@@ -54,18 +61,18 @@ class PeriodEditorComponent(
         room = _period.room,
         members = _period.members,
         details = when (val details = _period.details) {
-            is EventDetails -> EditingPeriodDetails.Event(
-                name = details.name,
-                color = details.color,
+            is EventDetails -> EditingPeriodDetails.Event().apply {
+                name = details.name
+                color = details.color
                 iconUrl = details.iconUrl
-            )
+            }
 
-            is LessonDetails -> EditingPeriodDetails.Lesson(
+            is LessonDetails -> EditingPeriodDetails.Lesson().apply {
                 course = details.course
-            )
+            }
         }
     )
-    val state = MutableStateFlow(resourceOf(editingPeriod))
+    val state = MutableStateFlow<Resource<EditingPeriod>>(resourceOf(editingPeriod))
 
     private val roomQuery = MutableStateFlow("")
 
@@ -78,20 +85,21 @@ class PeriodEditorComponent(
     private val childStack = childStack(
         source = stackNavigation,
         initialConfiguration = when (editingPeriod.details) {
-            is EditingPeriodDetails.Event -> DetailsConfig.Event(editingPeriod)
+            is EditingPeriodDetails.Event -> DetailsConfig.Event
 
-            is EditingPeriodDetails.Lesson -> DetailsConfig.Lesson(editingPeriod)
+            is EditingPeriodDetails.Lesson -> DetailsConfig.Lesson
         },
         childFactory = { config, componentContext ->
             when (config) {
                 is DetailsConfig.Event -> {
-                    DetailsChild.Event(eventDetailsEditorComponent(config.state, componentContext))
+                    DetailsChild.Event(eventDetailsEditorComponent(editingPeriod, componentContext))
                 }
 
                 is DetailsConfig.Lesson -> {
                     DetailsChild.Lesson(
                         lessonDetailsEditorComponent(
-                            config.state,
+                            editingPeriod,
+                            overlayNavigation::activate,
                             componentContext
                         )
                     )
@@ -100,8 +108,21 @@ class PeriodEditorComponent(
         }
     )
 
-    private val overlayNavigation = OverlayNavigation<>()
-    private val childOverlay = childOverlay()
+    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
+    private val childOverlay = childOverlay(
+        source = overlayNavigation,
+        childFactory = { config, componentContext ->
+            when (config) {
+                is OverlayConfig.CourseChooser -> OverlayChild.CourseChooser(
+                    courseChooserComponent({ config.onFinish(it) }, componentContext)
+                )
+
+                is OverlayConfig.UserChooser -> OverlayChild.UserChooser(
+                    userChooserComponent({ config.onFinish(it) }, componentContext)
+                )
+            }
+        }
+    )
 
     fun onRoomType(room: String) {
         roomQuery.update { room }
@@ -112,8 +133,8 @@ class PeriodEditorComponent(
 
         stackNavigation.bringToFront(
             when (type) {
-                DetailsType.EVENT -> DetailsConfig.Event(editingPeriod)
-                DetailsType.LESSON -> DetailsConfig.Lesson(editingPeriod)
+                DetailsType.EVENT -> DetailsConfig.Event
+                DetailsType.LESSON -> DetailsConfig.Lesson
             }
         )
 
@@ -140,11 +161,23 @@ class PeriodEditorComponent(
     enum class DetailsType { EVENT, LESSON }
 
     @Parcelize
-    sealed class DetailsConfig : Parcelable {
-        abstract val state: EditingPeriod
+    sealed class OverlayConfig : Parcelable {
+        data class CourseChooser(val onFinish: (CourseResponse?) -> Unit) : OverlayConfig()
 
-        data class Event(override val state: EditingPeriod) : DetailsConfig()
-        data class Lesson(override val state: EditingPeriod) : DetailsConfig()
+        data class UserChooser(val onFinish: (UserResponse?) -> Unit) : OverlayConfig()
+    }
+
+    sealed class OverlayChild {
+        class CourseChooser(val component: CourseChooserComponent) : OverlayChild()
+
+        class UserChooser(val component: UserChooserComponent) : OverlayChild()
+    }
+
+    @Parcelize
+    sealed class DetailsConfig : Parcelable {
+
+        object Event : DetailsConfig()
+        object Lesson : DetailsConfig()
     }
 
     sealed class DetailsChild {
@@ -159,23 +192,23 @@ data class EditingPeriod(
     var group: StudyGroupName,
     var room: RoomResponse?,
     var members: List<PeriodMember>,
-    var details: EditingPeriodDetails
+    var details: EditingPeriodDetails,
 )
 
 sealed class EditingPeriodDetails {
     abstract val type: PeriodEditorComponent.DetailsType
 
-    data class Event(
-        var name: String = "",
-        var color: String = "",
+    @Stable
+    class Event : EditingPeriodDetails() {
+        var name: String = ""
+        var color: String = ""
         var iconUrl: String = ""
-    ) : EditingPeriodDetails() {
         override val type = PeriodEditorComponent.DetailsType.EVENT
     }
 
-    data class Lesson(
+    @Stable
+    class Lesson : EditingPeriodDetails() {
         var course: CourseResponse? = null
-    ) : EditingPeriodDetails() {
         override val type = PeriodEditorComponent.DetailsType.LESSON
     }
 }
