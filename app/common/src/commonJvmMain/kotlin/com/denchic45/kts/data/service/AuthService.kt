@@ -55,6 +55,7 @@ class AuthService @javax.inject.Inject constructor(
             token = response.token
             refreshToken = response.refreshToken
             organizationId = response.organizationId.toString()
+            println("TOKENS: $token $refreshToken")
         }
     }
 

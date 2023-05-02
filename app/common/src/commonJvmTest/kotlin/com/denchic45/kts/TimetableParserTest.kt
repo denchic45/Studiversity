@@ -59,12 +59,7 @@ class TimetableParserTest {
             courseApi = courseApi,
             subjectApi = subjectApi
         ).parseDoc(inputStream)
-        val table = PrettyTable(*parseDoc.map { it.first.name }.toTypedArray())
-        parseDoc.forEach {
-            it.second.days.forEach {
-
-            }
-        }
+     println(parseDoc)
     }
 
     private val studyGroupApi = object : StudyGroupApi {

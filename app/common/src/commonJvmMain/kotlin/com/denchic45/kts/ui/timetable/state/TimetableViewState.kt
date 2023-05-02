@@ -47,8 +47,8 @@ fun toCells(
 
 private fun PeriodResponse.toCell() = when (val details = details) {
     is LessonDetails -> Cell.Event(
-        details.subject?.iconUrl,
-        details.subject?.name,
+        details.course.subject?.iconUrl,
+        details.course.subject?.name,
         room
     )
     is EventDetails -> Cell.Event(
@@ -95,7 +95,7 @@ private fun PeriodResponse.toItem() = PeriodItem(
             PeriodDetails.Event(name, iconUrl, color)
         }
         is LessonDetails -> with(details) {
-            PeriodDetails.Lesson(course, subject?.iconUrl, subject?.name)
+            PeriodDetails.Lesson(course.id, course.subject?.iconUrl, course.subject?.name)
         }
     }
 )

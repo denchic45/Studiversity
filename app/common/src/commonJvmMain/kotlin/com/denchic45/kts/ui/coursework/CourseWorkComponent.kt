@@ -2,8 +2,6 @@ package com.denchic45.kts.ui.coursework
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.onSuccess
@@ -54,7 +52,7 @@ class CourseWorkComponent(
     @Assisted
     private val elementId: UUID,
     @Assisted
-    private val onFinish:()->Unit,
+    private val onFinish: () -> Unit,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -90,7 +88,8 @@ class CourseWorkComponent(
         when (it) {
             is Resource.Success -> it.value.hasCapability(Capability.WriteCourseElements)
             is Resource.Error,
-            Resource.Loading -> false
+            Resource.Loading,
+            -> false
         }
     }
 
@@ -128,34 +127,18 @@ class CourseWorkComponent(
         )
 
         componentScope.launch {
-            if(confirmDialogInteractor.receiveConfirm()) {
+            if (confirmDialogInteractor.receiveConfirm()) {
                 removeCourseElementUseCase(courseId, elementId).onSuccess {
-                    onFinish()
+                    withContext(Dispatchers.Main) {
+                        onFinish()
+                    }
                 }
             }
         }
-    }
-
-
-    init {
-//        componentScope.launch {
-//            capabilities.filterSuccess().collect {
-//                if (it.value.hasCapability(Capability.SubmitSubmission)) {
-//                    overlayNavigation.activate(YourSubmissionConfig)
-//                } else {
-//                    overlayNavigation.dismiss()
-//                }
-//            }
-//        }
     }
 
     sealed class Child(val title: String) {
         class Details(val component: CourseWorkDetailsComponent) : Child("Задание")
         class Submissions(val component: CourseWorkSubmissionsComponent) : Child("Ответы")
     }
-
-    @Parcelize
-    object YourSubmissionConfig : Parcelable
-
-    class YourSubmissionChild(val component: YourSubmissionComponent)
 }

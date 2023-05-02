@@ -4,6 +4,7 @@ import com.denchic45.stuiversity.api.timetable.model.*
 import com.studiversity.database.table.PeriodDao
 import com.studiversity.database.table.UserDao
 import com.studiversity.feature.course.subject.toResponse
+import com.studiversity.feature.course.toResponse
 import com.studiversity.feature.room.toResponse
 
 fun PeriodDao.toResponse() = when (type) {
@@ -20,7 +21,7 @@ fun PeriodDao.toResponse() = when (type) {
         },
         members = members.map { it.member.toResponse() },
         details = with(lesson) {
-            LessonDetails(courseId = course.id.value, subject = course.subject?.toResponse())
+            LessonDetails(course = course.toResponse())
         }
     )
 
