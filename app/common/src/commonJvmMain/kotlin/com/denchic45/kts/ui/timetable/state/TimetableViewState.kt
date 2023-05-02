@@ -95,7 +95,7 @@ private fun PeriodResponse.toItem() = PeriodItem(
             PeriodDetails.Event(name, iconUrl, color)
         }
         is LessonDetails -> with(details) {
-            PeriodDetails.Lesson(courseId, subject?.iconUrl, subject?.name)
+            PeriodDetails.Lesson(course, subject?.iconUrl, subject?.name)
         }
     }
 )

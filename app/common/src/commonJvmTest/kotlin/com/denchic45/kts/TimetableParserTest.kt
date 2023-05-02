@@ -143,7 +143,7 @@ class TimetableParserTest {
 
         }
 
-        override suspend fun search(query: String): ResponseResult<List<UserResponse>> {
+        override suspend fun getList(query: String): ResponseResult<List<UserResponse>> {
             TODO("Not yet implemented")
         }
 

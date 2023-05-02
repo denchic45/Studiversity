@@ -1,18 +1,14 @@
 package com.denchic45.stuiversity.api.timetable.model
 
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.stuiversity.util.UUIDSerializer
+import com.denchic45.stuiversity.api.course.model.CourseResponse
 import kotlinx.serialization.Serializable
-import java.util.*
 
 @Serializable
 sealed interface PeriodDetails
 
 @Serializable
 data class LessonDetails(
-    @Serializable(UUIDSerializer::class)
-    val courseId: UUID,
-    val subject: SubjectResponse?
+    val course: CourseResponse
 ) : PeriodDetails
 
 @Serializable

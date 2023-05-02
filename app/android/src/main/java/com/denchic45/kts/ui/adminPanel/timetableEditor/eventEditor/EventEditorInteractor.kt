@@ -1,5 +1,5 @@
-//package com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor
-//
+package com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor
+
 //import com.denchic45.kts.domain.model.Event
 //import com.denchic45.kts.domain.model.EventDetails
 //import com.denchic45.kts.domain.model.EventsOfDay

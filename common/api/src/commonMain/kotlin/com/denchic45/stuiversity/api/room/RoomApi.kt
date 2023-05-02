@@ -6,6 +6,7 @@ import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
 import com.denchic45.stuiversity.api.room.model.RoomResponse
 import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -15,6 +16,8 @@ interface RoomApi {
     suspend fun create(createRoomRequest: CreateRoomRequest): ResponseResult<RoomResponse>
 
     suspend fun getById(roomId: UUID): ResponseResult<RoomResponse>
+
+    suspend fun getList(query: String): ResponseResult<List<RoomResponse>>
 
     suspend fun update(roomId: UUID, updateRoomRequest: UpdateRoomRequest): ResponseResult<RoomResponse>
 
@@ -31,6 +34,12 @@ class RoomApiImpl(private val client: HttpClient) : RoomApi {
 
     override suspend fun getById(roomId: UUID): ResponseResult<RoomResponse> {
         return client.get("/rooms/$roomId").toResult()
+    }
+
+    override suspend fun getList(query: String): ResponseResult<List<RoomResponse>> {
+        return client.get("/rooms") {
+            parameter("q", query)
+        }.toResult()
     }
 
     override suspend fun update(roomId: UUID, updateRoomRequest: UpdateRoomRequest): ResponseResult<RoomResponse> {

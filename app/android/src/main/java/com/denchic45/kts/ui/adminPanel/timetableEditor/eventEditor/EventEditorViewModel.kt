@@ -1,5 +1,5 @@
-//package com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor
-//
+package com.denchic45.kts.ui.adminPanel.timetableEditor.eventEditor
+
 //import android.text.TextUtils
 //import androidx.lifecycle.MutableLiveData
 //import androidx.lifecycle.viewModelScope

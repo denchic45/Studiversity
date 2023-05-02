@@ -6,7 +6,6 @@ import com.denchic45.kts.data.mapper.toEntity
 import com.denchic45.kts.data.mapper.toUserResponse
 import com.denchic45.kts.data.observeResource
 import com.denchic45.kts.data.pref.UserPreferences
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.EmptyResource
 import com.denchic45.kts.domain.Resource
@@ -32,7 +31,7 @@ class UserRepository @Inject constructor(
 
     override suspend fun findByContainsName(text: String): Resource<List<UserResponse>> {
         return fetchResource {
-            userApi.search(text)
+            userApi.getList(text)
         }
     }
 

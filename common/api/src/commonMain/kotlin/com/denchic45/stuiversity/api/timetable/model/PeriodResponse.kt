@@ -1,6 +1,7 @@
 package com.denchic45.stuiversity.api.timetable.model
 
 import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.LocalDateSerializer
 import com.denchic45.stuiversity.util.UUIDSerializer
 import kotlinx.serialization.EncodeDefault
@@ -74,3 +75,10 @@ data class PeriodMember(
     val fullName: String
         get() = "$firstName $surname"
 }
+
+fun UserResponse.toPeriodMember() =  PeriodMember(
+    id,
+    firstName,
+    surname,
+    avatarUrl
+)

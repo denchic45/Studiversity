@@ -14,6 +14,7 @@ import com.denchic45.stuiversity.api.timetable.model.PeriodMember
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.StudyGroupName
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import com.denchic45.stuiversity.api.timetable.model.toPeriodMember
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.DateTimePatterns
@@ -57,7 +58,7 @@ class TimetableParser(
     private val cachedUsers = mutableMapOf<String, UserResponse>()
 
     private suspend fun findUserBySurname(surname: String): UserResponse? {
-        return cachedUsers[surname] ?: userApi.getBySurname(surname).unwrap().firstOrNull()
+        return cachedUsers[surname] ?: userApi.getList(surname).unwrap().firstOrNull()
             ?.apply { cachedUsers[surname] = this }
     }
 
@@ -162,7 +163,8 @@ class TimetableParser(
                 currentRow++
                 continue // Skip dinner
             }
-            val cellContent: List<String> = cells[cellOfGroupPos].paragraphs.map { it.paragraphText }
+            val cellContent: List<String> =
+                cells[cellOfGroupPos].paragraphs.map { it.paragraphText }
 //                .replace("\\(.*\\)".toRegex(), "")
 //                .trim { it <= ' ' }
             currentRow++
@@ -216,7 +218,7 @@ class TimetableParser(
                 room = null,
                 studyGroup = StudyGroupName(currentStudyGroup.id, currentStudyGroup.name),
                 members = findTeacherByContent(content),
-                details = LessonDetails(course.id, subject)
+                details = LessonDetails(course)
             )
         } else {
             EventResponse(
@@ -234,16 +236,9 @@ class TimetableParser(
     private suspend fun findTeacherByContent(separatedContent: List<String>): List<PeriodMember> {
         return if (separatedContent.size == 1) {
             emptyList()
-        } else separatedContent.subList(1, separatedContent.size).map { line ->
-            findUserBySurname(line.split(" ")[0])?.let {
-                PeriodMember(
-                    it.id,
-                    it.firstName,
-                    it.surname,
-                    it.avatarUrl
-                )
-            }
-        }.filterNotNull()
+        } else separatedContent.subList(1, separatedContent.size).mapNotNull { line ->
+            findUserBySurname(line.split(" ")[0])?.toPeriodMember()
+        }
     }
 
     private suspend fun findCourseBySubjectAndStudyGroupId(
@@ -270,8 +265,7 @@ class TimetableParser(
         val courseResponse = subjectResponse?.let {
             courseApi.getList(studyGroupId = studyGroupId, subjectId = subjectResponse.id)
                 .unwrap().firstOrNull()
-                ?: courseApi.getList(subjectId = subjectResponse.id)
-                    .unwrap().firstOrNull()
+                ?: courseApi.getList(subjectId = subjectResponse.id).unwrap().firstOrNull()
         }
 
         return courseResponse?.also {
