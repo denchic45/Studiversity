@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.timetableEditor
+package com.denchic45.kts.ui.timetable
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,8 +18,8 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.timetable.DayTimetableComponent
 import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
+import com.denchic45.kts.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.kts.ui.widget.calendar.WeekCalendarListener
 import com.denchic45.kts.ui.widget.calendar.WeekCalendarView
 import com.denchic45.kts.ui.widget.calendar.model.WeekItem

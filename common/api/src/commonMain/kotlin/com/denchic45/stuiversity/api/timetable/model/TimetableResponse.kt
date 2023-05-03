@@ -14,4 +14,7 @@ data class TimetableResponse(
 ) {
     val days: List<List<PeriodResponse>>
     get() = listOf(monday , tuesday , wednesday , thursday , friday , saturday)
+    companion object {
+        operator fun invoke(periods)
+    }
 }

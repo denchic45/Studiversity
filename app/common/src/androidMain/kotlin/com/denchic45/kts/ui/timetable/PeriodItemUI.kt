@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.timetableEditor
+package com.denchic45.kts.ui.timetable
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import coil.size.Size
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.model.StudyGroupNameItem
 import com.denchic45.kts.domain.timetable.model.PeriodDetails

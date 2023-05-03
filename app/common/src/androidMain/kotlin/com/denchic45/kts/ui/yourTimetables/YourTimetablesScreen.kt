@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.theme.spacing
-import com.denchic45.kts.ui.timetableEditor.DayTimetableScreen
+import com.denchic45.kts.ui.timetable.DayTimetableScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import com.denchic45.kts.ui.timetableEditor.DayTimetableEditorScreen
+import com.denchic45.kts.ui.timetable.DayTimetableEditorScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)

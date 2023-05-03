@@ -2,7 +2,7 @@ package com.denchic45.kts.ui.timetableLoader
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.denchic45.kts.ui.timetableEditor.DayTimetableEditorComponent
+import com.denchic45.kts.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
