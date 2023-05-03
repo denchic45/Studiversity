@@ -51,7 +51,7 @@ class DayTimetableComponent(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val timetable = owner.flatMapLatest { owner ->
+   private val _weekTimetable = owner.flatMapLatest { owner ->
         selectedWeekOfYear.flatMapLatest { weekOfYear ->
             flow {
                 emit(Resource.Loading)
@@ -60,12 +60,14 @@ class DayTimetableComponent(
         }
     }
 
+    val weekTimetable = _weekTimetable.stateInResource(componentScope)
+
     private val bellSchedule = metaRepository.observeBellSchedule
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = bellSchedule.flatMapLatest { schedule ->
         selectedWeekOfYear.flatMapLatest { weekOfYear ->
-            timetable.flatMapLatest { timetableResource ->
+            _weekTimetable.flatMapLatest { timetableResource ->
                 getTimetableOfSelectedDateFlow(weekOfYear, timetableResource, schedule)
             }
         }
