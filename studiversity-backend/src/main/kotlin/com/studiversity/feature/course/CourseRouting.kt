@@ -46,7 +46,8 @@ fun Application.courseRoutes() {
                 get {
                     val q = call.request.queryParameters["q"]
                     val memberId = call.getUserUuidByQueryParameterOrMe("member_id")
-                    call.respond(HttpStatusCode.OK, searchCourses(q, memberId))
+                    val subjectId = call.request.queryParameters.getUuid("subject_id")
+                    call.respond(HttpStatusCode.OK, searchCourses(q, memberId, subjectId))
                 }
 
                 post {

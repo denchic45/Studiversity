@@ -1,6 +1,6 @@
 package com.studiversity.feature.course.work.submission.usecase
 
-import com.studiversity.feature.course.element.repository.CourseElementRepository
+import com.studiversity.feature.course.element.CourseElementRepository
 import com.studiversity.feature.course.work.submission.SubmissionRepository
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.studiversity.feature.membership.repository.UserMembershipRepository

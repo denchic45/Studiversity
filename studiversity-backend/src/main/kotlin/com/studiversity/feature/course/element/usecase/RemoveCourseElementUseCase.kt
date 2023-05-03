@@ -1,7 +1,7 @@
 package com.studiversity.feature.course.element.usecase
 
 import com.studiversity.feature.attachment.AttachmentRepository
-import com.studiversity.feature.course.element.repository.CourseElementRepository
+import com.studiversity.feature.course.element.CourseElementRepository
 import com.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import io.ktor.server.plugins.*

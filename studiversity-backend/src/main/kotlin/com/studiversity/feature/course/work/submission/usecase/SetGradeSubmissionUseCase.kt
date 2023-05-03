@@ -1,7 +1,7 @@
 package com.studiversity.feature.course.work.submission.usecase
 
 import com.denchic45.stuiversity.api.course.work.grade.SubmissionGradeRequest
-import com.studiversity.feature.course.element.repository.CourseElementRepository
+import com.studiversity.feature.course.element.CourseElementRepository
 import com.studiversity.feature.course.work.submission.SubmissionRepository
 import com.studiversity.transaction.TransactionWorker
 import io.ktor.server.plugins.*

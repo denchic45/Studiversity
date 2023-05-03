@@ -22,28 +22,3 @@ fun CourseElementDao.toWorkResponse(courseWorkDao: CourseWorkDao): CourseWorkRes
         updatedAt = updatedAt
     )
 }
-
-//private fun CourseElementDetailsDao.toElementDetails() =
-//    when (this) {
-//        is CourseWorkDao -> toDetailsResponse()
-//    }
-
-
-private fun CourseElementDao.toWorkResponse(details: CourseElementDetails): CourseElementResponse =
-    CourseElementResponse(
-        id = id.value,
-        courseId = course.id.value,
-        name = name,
-        description = description,
-        topicId = topic?.id?.value,
-        order = order,
-        details = details
-    )
-
-private fun CourseWorkDao.toDetailsResponse(): CourseElementDetails = CourseWork(
-    dueDate = dueDate,
-    dueTime = dueTime,
-    workType = type,
-    maxGrade = maxGrade,
-    workDetails = null
-)

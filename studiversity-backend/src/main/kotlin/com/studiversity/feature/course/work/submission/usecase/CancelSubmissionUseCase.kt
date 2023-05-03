@@ -17,6 +17,8 @@ class CancelSubmissionUseCase(
             throw BadRequestException("INVALID_AUTHOR")
         if (currentSubmission.state in SubmissionState.notSubmitted())
             throw BadRequestException("NOT_SUBMITTED")
+        if (currentSubmission.grade != null)
+            throw BadRequestException("SUBMISSION_GRADED")
         submissionRepository.cancelSubmission(submissionId)
     }
 }

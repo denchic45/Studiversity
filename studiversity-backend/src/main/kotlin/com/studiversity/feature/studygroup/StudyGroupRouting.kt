@@ -57,6 +57,7 @@ fun Application.studyGroupRoutes() {
                     val roleId = call.request.queryParameters["role_id"]?.toLong()
                     val specialtyId = call.request.queryParameters.getUuid("specialty_id")
                     val academicYear = call.request.queryParameters["academic_year"]?.toInt()
+
                     call.respond(HttpStatusCode.OK, searchStudyGroups(q, memberId, roleId, specialtyId, academicYear))
                 }
                 post {

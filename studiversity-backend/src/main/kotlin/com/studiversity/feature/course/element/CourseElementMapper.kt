@@ -15,6 +15,7 @@ fun CourseElementDao.toResponse(detailsDao: CourseElementDetailsDao): CourseElem
 
 private fun CourseElementDetailsDao.toElementDetails() = when(this) {
     is CourseWorkDao -> toDetailsResponse()
+    else -> TODO()
 }
 
 

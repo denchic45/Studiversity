@@ -49,10 +49,11 @@ class StudyGroupRepository {
         academicYear: Int?
     ): List<StudyGroupResponse> {
         val query = StudyGroups.leftJoin(Specialties, { this.specialtyId }, { Specialties.id })
-            .innerJoin(
+            .leftJoin(
                 MembershipsInnerUserMembershipsInnerUsersRolesScopes,
                 { StudyGroups.id },
                 { Memberships.scopeId })
+
             .selectAll()
         q?.let {
             query.andWhere {

@@ -1,19 +1,15 @@
-package com.studiversity.feature.course.element.repository
+package com.studiversity.feature.course.element
 
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
 import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.studiversity.database.exists
 import com.studiversity.database.table.*
-import com.studiversity.feature.course.element.toCourseElementResponse
-import com.studiversity.feature.course.element.toResponse
 import com.studiversity.feature.course.work.toWorkResponse
 import com.studiversity.util.toSqlSortOrder
-import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
 import org.jetbrains.exposed.sql.and
@@ -23,28 +19,6 @@ import org.jetbrains.exposed.sql.update
 import java.util.*
 
 class CourseElementRepository {
-
-    fun addWork(courseId: UUID, request: CreateCourseWorkRequest): CourseElementResponse {
-        val elementId = UUID.randomUUID()
-        return CourseElementDao.new(elementId) {
-            this.course = CourseDao.findById( courseId) ?: throw NotFoundException()
-            this.topic = request.topicId?.let { CourseTopicDao.findById(it) }
-            this.name = request.name
-            this.type = CourseElementType.WORK
-            this.order = generateOrderByCourseAndTopicId(courseId, request.topicId)
-        }.toResponse(
-            CourseWorkDao.new(elementId) {
-                this.dueDate = request.dueDate
-                this.dueTime = request.dueTime
-                this.type = request.workType
-                this.maxGrade = request.maxGrade
-            }
-        )
-    }
-
-    private fun generateOrderByCourseAndTopicId(courseId: UUID, topicId: UUID?) =
-        CourseElementDao.getMaxOrderByCourseIdAndTopicId(courseId, topicId) + 1
-
 
     fun findById(elementId: UUID): CourseElementResponse? {
         return CourseElementDao.findById(elementId)?.run {
@@ -149,3 +123,6 @@ class CourseElementRepository {
         }
     }
 }
+
+fun generateOrderByCourseAndTopicId(courseId: UUID, topicId: UUID?) =
+    CourseElementDao.getMaxOrderByCourseIdAndTopicId(courseId, topicId) + 1

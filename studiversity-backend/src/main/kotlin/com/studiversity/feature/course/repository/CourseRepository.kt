@@ -29,7 +29,7 @@ class CourseRepository(private val bucket: BucketApi) {
         return CourseDao.findById(id)?.toResponse()
     }
 
-    fun find(q: String?, memberId: UUID?): List<CourseResponse> {
+    fun find(q: String?, memberId: UUID?,subjectId:UUID?): List<CourseResponse> {
         val query = Courses.selectAll()
         q?.let {
             query.adjustColumnSet { leftJoin(Subjects, { Courses.subjectId }, { Subjects.id }) }
@@ -46,6 +46,9 @@ class CourseRepository(private val bucket: BucketApi) {
                     { Courses.id },
                     { Memberships.scopeId })
             }.andWhere { UsersMemberships.memberId eq memberId }
+        }
+        subjectId?.let {
+            query.andWhere { Courses.subjectId eq subjectId }
         }
         return CourseDao.wrapRows(query).map(CourseDao::toResponse)
     }

@@ -186,7 +186,8 @@ class AttachmentRepository(private val bucket: BucketApi) {
             AttachmentReferences.consumerId eq consumerId
         }.map { it[Attachments.id].value }
 
-        bucket.delete(attachmentIds.map { "attachments/$it" })
+        if (attachmentIds.isNotEmpty())
+            bucket.delete(attachmentIds.map { "attachments/$it" })
 
         Attachments.deleteWhere { Attachments.id inList attachmentIds }
     }
@@ -313,14 +314,16 @@ class AttachmentRepository(private val bucket: BucketApi) {
 //        } else null
 //    }
 
-     fun findAttachmentsByReferenceId(consumerId: UUID): List<AttachmentHeader> {
-        return  AttachmentDao.wrapRows(Attachments.innerJoin(
-            AttachmentReferences,
-            { Attachments.id },
-            { attachmentId })
-            .innerJoin(Submissions, { AttachmentReferences.consumerId }, { Submissions.id })
-            .select(AttachmentReferences.consumerId eq consumerId))
-            .map {(it).toHeader() }
+    fun findAttachmentsByReferenceId(consumerId: UUID): List<AttachmentHeader> {
+        return AttachmentDao.wrapRows(
+            Attachments.innerJoin(
+                AttachmentReferences,
+                { Attachments.id },
+                { attachmentId })
+                .innerJoin(Submissions, { AttachmentReferences.consumerId }, { Submissions.id })
+                .select(AttachmentReferences.consumerId eq consumerId)
+        )
+            .map { (it).toHeader() }
     }
 
     private suspend fun AttachmentDao.toAttachment(): AttachmentResponse {
