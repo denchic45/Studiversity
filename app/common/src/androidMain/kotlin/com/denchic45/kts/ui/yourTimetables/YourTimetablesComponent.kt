@@ -2,15 +2,28 @@ package com.denchic45.kts.ui.yourTimetables
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.denchic45.kts.data.repository.MetaRepository
+import com.denchic45.kts.data.service.model.BellSchedule
+import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.kts.domain.usecase.TimetableOwner
 import com.denchic45.kts.ui.timetable.DayTimetableComponent
+import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
+import com.denchic45.kts.ui.timetable.state.toTimetableViewState
 import com.denchic45.kts.util.componentScope
+import com.denchic45.kts.util.map
+import com.denchic45.stuiversity.util.DateTimePatterns
+import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.shareIn
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.time.LocalDate
@@ -18,8 +31,13 @@ import java.time.LocalDate
 
 @Inject
 class YourTimetablesComponent(
+    private val metaRepository: MetaRepository,
     private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
-    private val _dayTimetableComponent: (LocalDate, Flow<TimetableOwner>, ComponentContext) -> DayTimetableComponent,
+    private val _dayTimetableComponent: (
+        Flow<LocalDate>,
+        Flow<TimetableOwner>,
+        ComponentContext,
+    ) -> DayTimetableComponent,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -57,6 +75,32 @@ class YourTimetablesComponent(
     val selectedTimetable = MutableStateFlow(-1)
 
     private val selectedOwner = MutableStateFlow<TimetableOwner>(TimetableOwner.Member(null))
+     val selectedDate = MutableStateFlow(LocalDate.now())
+    private val bellSchedule = metaRepository.observeBellSchedule
+        .shareIn(componentScope, SharingStarted.Lazily)
+
+    private val selectedWeekOfYear = selectedDate.map(componentScope) {
+        it.toString(DateTimePatterns.YYYY_ww)
+    }
+
+    val dayViewState = bellSchedule.flatMapLatest { schedule ->
+        selectedWeekOfYear.flatMapLatest { selectedWeek ->
+            selectedDate.filter { it.toString(DateTimePatterns.YYYY_ww) == selectedWeek }
+                .flatMapLatest { selectedDate ->
+                    dayViewStateFlow(selectedDate, schedule)
+                }
+        }
+    }.stateInResource(componentScope)
+
+    private fun dayViewStateFlow(
+        selectedDate: LocalDate,
+        schedule: BellSchedule,
+    ): Flow<Resource<DayTimetableViewState>> {
+        val dayOfWeek = selectedDate.dayOfWeek.ordinal
+        return timetableComponent.weekTimetable.mapResource {
+            it.days[dayOfWeek].toTimetableViewState(selectedDate, schedule, false)
+        }
+    }
 
 //    val timetableComponent = studyGroups.flatMapResourceFlow { studyGroupResponses ->
 //        selectedTimetable.map { selectedTimetable ->
@@ -79,10 +123,14 @@ class YourTimetablesComponent(
 //    }.stateInResource(componentScope)
 
     val timetableComponent = _dayTimetableComponent(
-        LocalDate.now(),
+        selectedDate,
         selectedOwner,
         componentContext.childContext("DayTimetable")
     )
+
+    fun onDateSelect(date: LocalDate) {
+        selectedDate.value = date
+    }
 
 //    @Parcelize
 //    data class TimetableConfig(

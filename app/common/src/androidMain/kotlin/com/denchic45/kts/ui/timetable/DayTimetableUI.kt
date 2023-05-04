@@ -25,29 +25,29 @@ import com.denchic45.kts.ui.widget.calendar.WeekCalendarView
 import com.denchic45.kts.ui.widget.calendar.model.WeekItem
 import java.time.LocalDate
 
-@Composable
-fun DayTimetableEditorScreen(component: DayTimetableEditorComponent) {
-    val viewState by component.viewState.collectAsState()
-    val selectedDate by component.selectedDate.collectAsState()
-    DayTimetableContent(
-        selectedDate = selectedDate,
-        viewState = viewState,
-        component::onDateSelect,
-        component::onPeriodEdit
-    )
-}
+//@Composable
+//fun DayTimetableEditorScreen(component: DayTimetableEditorComponent) {
+//    val viewState by component.viewState.collectAsState()
+//    val selectedDate by component.selectedDate.collectAsState()
+//    DayTimetableContent(
+//        selectedDate = selectedDate,
+//        viewState = viewState,
+//        component::onDateSelect,
+//        component::onPeriodEdit
+//    )
+//}
 
-@Composable
-fun DayTimetableScreen(component: DayTimetableComponent, appBarInteractor: AppBarInteractor) {
-    val viewState by component.viewState.collectAsState()
-    val selectedDate by component.selectedDate.collectAsState()
-
-    DayTimetableContent(
-        selectedDate = selectedDate,
-        viewState = viewState,
-        onDateSelect = component::onDateSelect,
-        onEditClick = {})
-}
+//@Composable
+//fun DayTimetableScreen(component: DayTimetableComponent, appBarInteractor: AppBarInteractor) {
+//    val viewState by component.viewState.collectAsState()
+//    val selectedDate by component.selectedDate.collectAsState()
+//
+//    DayTimetableContent(
+//        selectedDate = selectedDate,
+//        viewState = viewState,
+//        onDateSelect = component::onDateSelect,
+//        onEditClick = {})
+//}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -55,7 +55,7 @@ fun DayTimetableContent(
     selectedDate: LocalDate,
     viewState: Resource<DayTimetableViewState?>,
     onDateSelect: (date: LocalDate) -> Unit,
-    onEditClick: (Int) -> Unit,
+    onEditClick: ((Int) -> Unit)? = null,
 ) {
     Column {
         AndroidView(factory = {
@@ -86,7 +86,7 @@ fun DayTimetableContent(
                             item = item,
                             time = viewState.orders[index].time,
                             isEdit = viewState.isEdit,
-                            onEditClick = { onEditClick(index) }
+                            onEditClick = { onEditClick?.invoke(index) }
                         )
                     }
                 }

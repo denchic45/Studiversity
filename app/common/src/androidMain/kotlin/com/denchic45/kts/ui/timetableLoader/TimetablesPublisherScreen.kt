@@ -10,14 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import com.denchic45.kts.ui.timetable.DayTimetableEditorScreen
+import com.denchic45.kts.ui.timetable.DayTimetableContent
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TimetablesPublisherScreen(component: TimetablesPublisherComponent) {
-    val components by component.dayTimetableEditorComponents.collectAsState()
+    val viewStates by component.viewStates.collectAsState()
     val studyGroups by component.studyGroups.collectAsState()
+    val selectedDate by component.selectedDate.collectAsState()
     val selectedGroup by component.selectedGroup.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
@@ -42,9 +43,10 @@ fun TimetablesPublisherScreen(component: TimetablesPublisherComponent) {
     }
 
     HorizontalPager(
-        pageCount = components.size,
+        pageCount = viewStates.size,
         state = pagerState
     ) { position ->
-        DayTimetableEditorScreen(components[position])
+        val viewState by viewStates[position].collectAsState()
+        DayTimetableContent(selectedDate, viewState)
     }
 }

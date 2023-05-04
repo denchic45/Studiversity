@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.theme.spacing
-import com.denchic45.kts.ui.timetable.DayTimetableScreen
+import com.denchic45.kts.ui.timetable.DayTimetableContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,8 +74,14 @@ fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: A
                 }
             }
         }
-        val timetableComponent = component.timetableComponent
-        DayTimetableScreen(timetableComponent, appBarInteractor)
+//        val timetableComponent = component.timetableComponent
+        val selectedDate by component.selectedDate.collectAsState()
+        val viewState by component.dayViewState.collectAsState()
+        DayTimetableContent(
+            selectedDate = selectedDate,
+            viewState = viewState,
+            onDateSelect = component::onDateSelect
+        )
     }
 }
 
