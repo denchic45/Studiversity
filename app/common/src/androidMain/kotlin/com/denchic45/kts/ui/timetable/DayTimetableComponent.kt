@@ -46,13 +46,17 @@ class DayTimetableComponent(
     private val componentScope = componentScope()
 
     val selectedDate = MutableStateFlow(_selectedDate)
-    private val selectedWeekOfYear = selectedDate.map(componentScope) {
+
+    private val _selectedWeekOfYear = selectedDate.map(componentScope) {
         it.toString(DateTimePatterns.YYYY_ww)
     }
 
+     val selectedWeekOfYear = _selectedWeekOfYear
+        .shareIn(componentScope, SharingStarted.Lazily, 1)
+
     @OptIn(ExperimentalCoroutinesApi::class)
-   private val _weekTimetable = owner.flatMapLatest { owner ->
-        selectedWeekOfYear.flatMapLatest { weekOfYear ->
+    private val _weekTimetable = owner.flatMapLatest { owner ->
+        _selectedWeekOfYear.flatMapLatest { weekOfYear ->
             flow {
                 emit(Resource.Loading)
                 emit(findTimetableOfWeekUseCase(weekOfYear, owner))
@@ -66,7 +70,7 @@ class DayTimetableComponent(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = bellSchedule.flatMapLatest { schedule ->
-        selectedWeekOfYear.flatMapLatest { weekOfYear ->
+        _selectedWeekOfYear.flatMapLatest { weekOfYear ->
             _weekTimetable.flatMapLatest { timetableResource ->
                 getTimetableOfSelectedDateFlow(weekOfYear, timetableResource, schedule)
             }

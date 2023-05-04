@@ -2,6 +2,11 @@ package com.denchic45.kts.ui.timetableeditor
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.data.repository.MetaRepository
+import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.flatMapResourceFlow
+import com.denchic45.kts.domain.mapResource
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.resourceOf
 import com.denchic45.kts.ui.timetable.state.toLocalDateOfWeekOfYear
 import com.denchic45.kts.ui.timetable.state.toTimetableViewState
 import com.denchic45.kts.util.componentScope
@@ -11,70 +16,114 @@ import com.denchic45.stuiversity.api.timetable.model.EventResponse
 import com.denchic45.stuiversity.api.timetable.model.LessonRequest
 import com.denchic45.stuiversity.api.timetable.model.LessonResponse
 import com.denchic45.stuiversity.api.timetable.model.PeriodMember
-import com.denchic45.stuiversity.api.timetable.model.PeriodRequest
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
+import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @Inject
-class DayTimetableEditorComponent constructor(
+class DayTimetableEditorComponent(
     metaRepository: MetaRepository,
     @Assisted
-    private val _selectedDate: LocalDate,
+    private val _sourceFlow: Flow<Resource<TimetableResponse>>,
     @Assisted
-    private val _weekTimetable: List<List<PeriodResponse>>,
+    private val studyGroupId: UUID,
+//    @Assisted
+//    private val _selectedDate: LocalDate,
+//    @Assisted
+//    private val owner: Flow<TimetableOwner>,
+//    @Assisted
+//    private val _weekTimetable: List<List<PeriodResponse>>,
     @Assisted
-    private val onFinish: (List<List<PeriodRequest>>?) -> Unit,
+    private val onFinish: (PutTimetableRequest?) -> Unit,
     @Assisted
-    componentContext: ComponentContext,
+    private val componentContext: ComponentContext
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    val selectedDate = MutableStateFlow(_selectedDate)
+    //    val selectedDate = MutableStateFlow(_selectedDate)
+    private val isEdit = MutableStateFlow(false)
 
-    private val mondayDate = _selectedDate.format(DateTimeFormatter.ofPattern("YYYY_ww"))
-        .toLocalDateOfWeekOfYear()
+    private val sourceFlow = _sourceFlow.shareIn(componentScope, SharingStarted.Lazily)
 
-    private val selectedDay = selectedDate.map { it.dayOfWeek.ordinal }.stateIn(
-        componentScope,
-        SharingStarted.Lazily,
-        selectedDate.value.dayOfWeek.ordinal
-    )
+    private val mondayDate = sourceFlow.mapResource { it.weekOfYear.toLocalDateOfWeekOfYear() }
+
+    private val selectedDay = MutableStateFlow(0)
 
     private val editingWeekTimetable: List<MutableStateFlow<List<PeriodResponse>>> = listOf(
-        MutableStateFlow(_weekTimetable[0]),
-        MutableStateFlow(_weekTimetable[1]),
-        MutableStateFlow(_weekTimetable[2]),
-        MutableStateFlow(_weekTimetable[3]),
-        MutableStateFlow(_weekTimetable[4]),
-        MutableStateFlow(_weekTimetable[5]),
+        MutableStateFlow(emptyList()),
+        MutableStateFlow(emptyList()),
+        MutableStateFlow(emptyList()),
+        MutableStateFlow(emptyList()),
+        MutableStateFlow(emptyList()),
+        MutableStateFlow(emptyList()),
     )
+
+    init {
+        componentScope.launch {
+            sourceFlow.filter { isEdit.value }.collect {
+                it.onSuccess { response ->
+                    editingWeekTimetable[0].value = response.monday
+                    editingWeekTimetable[1].value = response.tuesday
+                    editingWeekTimetable[2].value = response.wednesday
+                    editingWeekTimetable[3].value = response.thursday
+                    editingWeekTimetable[4].value = response.friday
+                    editingWeekTimetable[5].value = response.saturday
+                }
+            }
+        }
+    }
 
 
     private val bellSchedule = metaRepository.observeBellSchedule
         .shareIn(componentScope, SharingStarted.Lazily)
 
-    @OptIn(FlowPreview::class)
-    val viewState = combine(selectedDay, bellSchedule) { selected, schedule ->
-        editingWeekTimetable[selected].map {
-            it.toTimetableViewState(
-                date = mondayDate.plusDays(selected.toLong()),
-                bellSchedule = schedule,
-                isEdit = true
-            )
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val viewState = bellSchedule.flatMapLatest { schedule ->
+        mondayDate.flatMapResourceFlow { monday ->
+            isEdit.flatMapLatest { edit ->
+                selectedDay.flatMapLatest { selected ->
+                    if (edit) {
+                        editingWeekTimetable[selected].map {
+                            resourceOf(
+                                it.toTimetableViewState(
+                                    date = monday.plusDays(selected.toLong()),
+                                    bellSchedule = schedule,
+                                    isEdit = true
+                                )
+                            )
+                        }
+                    } else {
+                        sourceFlow.mapResource {
+                            it.days[selected].toTimetableViewState(
+                                date = monday.plusDays(selected.toLong()),
+                                bellSchedule = schedule,
+                                isEdit = false
+                            )
+                        }
+                    }
+                }
+            }
         }
-    }.flattenConcat().shareIn(componentScope, SharingStarted.Lazily, 1)
-
+    }.shareIn(componentScope, SharingStarted.Lazily, 1)
 
     fun onAddPeriod(period: PeriodResponse) {
         editingWeekTimetable[selectedDay.value].update { it + period }
     }
 
-    fun onUpdatePeriod(position: Int, period: PeriodResponse) {
+    fun onPeriodUpdate(position: Int, period: PeriodResponse) {
         editingWeekTimetable[selectedDay.value].update {
             it.copy {
                 this[position] = period
@@ -82,7 +131,7 @@ class DayTimetableEditorComponent constructor(
         }
     }
 
-    fun onRemovePeriod(position: Int) {
+    fun onPeriodRemove(position: Int) {
         editingWeekTimetable[selectedDay.value].update {
             it - it[position]
         }
@@ -94,6 +143,7 @@ class DayTimetableEditorComponent constructor(
 
     fun onSaveClick() {
         onFinish(editingWeekTimetable.map {
+
             it.value.map { response ->
                 when (response) {
                     is EventResponse -> EventRequest(
@@ -113,6 +163,16 @@ class DayTimetableEditorComponent constructor(
                     )
                 }
             }
+        }.let {
+            PutTimetableRequest(
+                studyGroupId = studyGroupId,
+                monday = it[0],
+                tuesday = it[1],
+                wednesday = it[2],
+                thursday = it[3],
+                friday = it[4],
+                saturday = it[5]
+            )
         })
     }
 
