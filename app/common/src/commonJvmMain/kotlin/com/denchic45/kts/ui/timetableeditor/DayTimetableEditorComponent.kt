@@ -34,8 +34,8 @@ class DayTimetableEditorComponent(
 //    private val owner: Flow<TimetableOwner>,
 //    @Assisted
 //    private val _weekTimetable: List<List<PeriodResponse>>,
-    @Assisted
-    private val onFinish: (PutTimetableRequest?) -> Unit,
+//    @Assisted
+//    private val onFinish: (PutTimetableRequest?) -> Unit,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {

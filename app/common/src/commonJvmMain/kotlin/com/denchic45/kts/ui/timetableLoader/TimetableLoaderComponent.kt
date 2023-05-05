@@ -13,8 +13,15 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class TimetableLoaderComponent(
-    private val timetablesCreatorComponent: ((String, List<Pair<StudyGroupResponse, TimetableResponse>>) -> Unit, ComponentContext) -> TimetableCreatorComponent,
-    private val timetablesPublisherComponent: (String, List<Pair<StudyGroupResponse, TimetableResponse>>, ComponentContext) -> TimetablesPublisherComponent,
+    private val timetablesCreatorComponent: (
+            (String, List<Pair<StudyGroupResponse, TimetableResponse>>) -> Unit,
+            ComponentContext
+    ) -> TimetableCreatorComponent,
+    private val timetablesPublisherComponent: (
+        String,
+        List<Pair<StudyGroupResponse, TimetableResponse>>,
+        ComponentContext
+    ) -> TimetablesPublisherComponent,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -35,6 +42,7 @@ class TimetableLoaderComponent(
                         )
                     }, componentContext)
                 )
+
                 is TimetableLoaderConfig.Editor -> TimetableLoaderChild.Publisher(
                     timetablesPublisherComponent(
                         config.weekOfYear,

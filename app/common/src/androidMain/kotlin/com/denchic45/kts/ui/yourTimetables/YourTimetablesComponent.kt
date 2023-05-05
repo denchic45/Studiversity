@@ -20,6 +20,7 @@ import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -31,10 +32,10 @@ import java.time.LocalDate
 
 @Inject
 class YourTimetablesComponent(
-    private val metaRepository: MetaRepository,
+    metaRepository: MetaRepository,
     private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
-    private val _dayTimetableComponent: (
-        Flow<LocalDate>,
+    _dayTimetableComponent: (
+        StateFlow<LocalDate>,
         Flow<TimetableOwner>,
         ComponentContext,
     ) -> DayTimetableComponent,

@@ -14,6 +14,7 @@ import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.resourceOf
+import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.success
 import com.denchic45.kts.domain.usecase.PutTimetableUseCase
 import com.denchic45.kts.domain.usecase.TimetableOwner
@@ -24,7 +25,6 @@ import com.denchic45.kts.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.kts.util.asFlow
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.map
-import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
@@ -32,6 +32,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -39,26 +40,27 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.time.LocalDate
 import java.util.UUID
 
 @Inject
 class DayTimetableFinderComponent(
-    private val metaRepository: MetaRepository,
+    metaRepository: MetaRepository,
     private val putTimetableUseCase: PutTimetableUseCase,
-    private val _dayTimetableComponent: (
-        Flow<LocalDate>,
+    _dayTimetableComponent: (
+        StateFlow<LocalDate>,
         Flow<TimetableOwner>,
         ComponentContext,
     ) -> DayTimetableComponent,
     private val _dayTimetableEditorComponent: (
         timetable: TimetableResponse,
         studyGroupId: UUID,
-        _selectedDate: Flow<LocalDate>,
-//        onFinish: (PutTimetableRequest?) -> Unit,
+        _selectedDate: StateFlow<LocalDate>,
         ComponentContext,
     ) -> DayTimetableEditorComponent,
+    @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
@@ -101,7 +103,7 @@ class DayTimetableFinderComponent(
 
 //    private val isEdit = MutableStateFlow(false)
 
-    private val selectedDate = MutableStateFlow(LocalDate.now())
+     val selectedDate = MutableStateFlow(LocalDate.now())
     val selectedWeekOfYear = selectedDate.map(componentScope) {
         it.toString(DateTimePatterns.YYYY_ww)
     }
@@ -126,7 +128,7 @@ class DayTimetableFinderComponent(
                     }
             }
         }
-    }
+    }.stateInResource(componentScope)
 
     private fun dayViewStateFlow(
         selectedDate: LocalDate,
@@ -180,6 +182,10 @@ class DayTimetableFinderComponent(
 
     private fun onCloseEditorClick() {
         overlayNavigation.dismiss()
+    }
+
+    fun onDateSelect(date: LocalDate) {
+        selectedDate.value = date
     }
 
     @Parcelize
