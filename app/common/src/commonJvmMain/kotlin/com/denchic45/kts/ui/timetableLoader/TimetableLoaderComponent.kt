@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.kts.domain.timetable.model.TimetableParserResult
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import me.tatarka.inject.annotations.Assisted
@@ -14,8 +15,8 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class TimetableLoaderComponent(
     private val timetablesCreatorComponent: (
-            (String, List<Pair<StudyGroupResponse, TimetableResponse>>) -> Unit,
-            ComponentContext
+        onCreate: (TimetableParserResult) -> Unit,
+        ComponentContext
     ) -> TimetableCreatorComponent,
     private val timetablesPublisherComponent: (
         String,
@@ -33,11 +34,11 @@ class TimetableLoaderComponent(
         childFactory = { config, componentContext ->
             when (config) {
                 is TimetableLoaderConfig.Creator -> TimetableLoaderChild.Creator(
-                    timetablesCreatorComponent({ weekOfYear, timetables ->
+                    timetablesCreatorComponent({ result ->
                         navigation.replaceCurrent(
                             TimetableLoaderConfig.Editor(
-                                weekOfYear,
-                                timetables
+                                result.weekOfYear,
+                                result.timetables
                             )
                         )
                     }, componentContext)
@@ -65,7 +66,7 @@ class TimetableLoaderComponent(
         @Parcelize
         class Editor(
             val weekOfYear: String,
-            val studyGroupTimetables: List<Pair<StudyGroupResponse, TimetableResponse>>,
+            val studyGroupTimetables:  List<Pair<StudyGroupResponse, TimetableResponse>>,
         ) : TimetableLoaderConfig() {
             @Suppress("unused")
             private fun readResolve(): Any = Editor(weekOfYear, studyGroupTimetables)

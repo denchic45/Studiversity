@@ -1,5 +1,6 @@
 package com.denchic45.kts.domain.timetable
 
+import com.denchic45.kts.domain.timetable.model.TimetableParserResult
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.subject.SubjectApi
@@ -20,6 +21,7 @@ import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.Dates
 import com.denchic45.stuiversity.util.toLocalDate
+import com.denchic45.stuiversity.util.toString
 import com.github.michaelbull.result.unwrap
 import me.tatarka.inject.annotations.Inject
 import org.apache.poi.xwpf.usermodel.XWPFDocument
@@ -62,21 +64,21 @@ class TimetableParser(
             ?.apply { cachedUsers[surname] = this }
     }
 
-    suspend fun parseDoc(inputStream: InputStream): List<Pair<StudyGroupResponse, TimetableResponse>> {
-        val timetables: MutableList<Pair<StudyGroupResponse, TimetableResponse>> = mutableListOf()
-        try {
+    suspend fun parseDoc(inputStream: InputStream): TimetableParserResult {
+        return try {
             val wordDoc = XWPFDocument(inputStream)
             table = wordDoc.tables[0]
 
+            val monday = table.getRow(3).getCell(0)
+                .text.split(" ")[1]
+                .toLocalDate(DateTimePatterns.DD_MM_yy)
+
             val cellsInGroups: MutableList<XWPFTableCell> = ArrayList()
-//            cellsInGroups.addAll(table.getRow(1).tableCells)
             cellsInGroups.addAll(table.getRow(2).tableCells)
 
-//            val studyGroupsByAcademicYear = studyGroupApi.getByAcademicYear(findCourseNumber())
-//                .unwrap()
-
             val cellsCount = cellsInGroups.size
-
+            val timetables: MutableList<Pair<StudyGroupResponse, TimetableResponse>> =
+                mutableListOf()
             for (i in 0 until cellsCount) {
                 studyGroupApi.getList(query = cellsInGroups[i].text)
                     .unwrap().firstOrNull()?.let {
@@ -85,17 +87,17 @@ class TimetableParser(
                             getCellByGroupName(cellsInGroups, currentStudyGroup.name)
                         )
                         if (cellOfGroupPos == -1) return@let
-                        cellOfGroupPos =
-                            if (cellOfGroupPos > cellsCount) cellOfGroupPos - cellsCount
-                            else cellOfGroupPos
+                        cellOfGroupPos = if (cellOfGroupPos > cellsCount)
+                            cellOfGroupPos - cellsCount
+                        else cellOfGroupPos
                         timetables.add(currentStudyGroup to createTimetable())
                     }
             }
+            TimetableParserResult(monday.toString(DateTimePatterns.YYYY_ww), timetables)
         } catch (e: Exception) {
             e.printStackTrace()
             throw e
         }
-        return timetables
     }
 
 //    private val groupsCount:Int
@@ -122,7 +124,7 @@ class TimetableParser(
         val weekLessons = mutableListOf<List<PeriodResponse>>()
         currentRow = 3
         currentDayOfWeek = 0
-        while (!table.getRow(currentRow).getCell(0).text.contains("ПОНЕДЕЛЬНИК")) currentRow++
+//        while (!table.getRow(currentRow).getCell(0).text.contains("ПОНЕДЕЛЬНИК")) currentRow++ todo возможно не нужно
         val weekOfYear = table.getRow(currentRow).getCell(0).text
             .split(" ")[1]
             .toLocalDate(DateTimePatterns.DD_MM_yy)

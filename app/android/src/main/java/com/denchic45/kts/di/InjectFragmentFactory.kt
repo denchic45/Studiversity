@@ -9,6 +9,7 @@ import com.denchic45.kts.ui.coursework.CourseWorkFragment
 import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment
+import com.denchic45.kts.ui.timetableLoader.TimetableLoaderFragment
 import com.denchic45.kts.ui.timetablefinder.TimetableFinderFragment
 import com.denchic45.kts.ui.usereditor.UserEditorFragment
 import com.denchic45.kts.ui.yourStudyGroups.YourStudyGroupsFragment
@@ -28,7 +29,8 @@ class InjectFragmentFactory(
     private val courseWorkFragment: () -> CourseWorkFragment,
     private val courseEditorFragment: () -> CourseEditorFragment,
     private val courseWorkEditorFragment: () -> CourseWorkEditorFragment,
-    private val timetableFinderFragment: () -> TimetableFinderFragment
+    private val timetableFinderFragment: () -> TimetableFinderFragment,
+    private val timetableLoaderFragment:()-> TimetableLoaderFragment
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
@@ -43,6 +45,7 @@ class InjectFragmentFactory(
             name<CourseEditorFragment>() -> courseEditorFragment()
             name<CourseWorkEditorFragment>() -> courseWorkEditorFragment()
             name<TimetableFinderFragment>() -> timetableFinderFragment()
+            name<TimetableLoaderFragment>() -> timetableLoaderFragment()
             else -> super.instantiate(classLoader, className)
         }
     }

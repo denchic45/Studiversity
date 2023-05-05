@@ -33,7 +33,7 @@ class TimetablesPublisherComponent(
     private val _dayTimetableEditorComponent: (
         timetable: TimetableResponse,
         studyGroupId: UUID,
-        _selectedDate: Flow<LocalDate>,
+        _selectedDate: StateFlow<LocalDate>,
         ComponentContext,
     ) -> DayTimetableEditorComponent,
     @Assisted
@@ -64,8 +64,6 @@ class TimetablesPublisherComponent(
     )
 
     val isEdit = MutableStateFlow(false)
-
-
 
     val viewStates: MutableStateFlow<List<StateFlow<DayTimetableViewState>>> =
         MutableStateFlow(emptyList())

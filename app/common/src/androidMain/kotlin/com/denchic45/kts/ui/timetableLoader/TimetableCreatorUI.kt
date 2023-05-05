@@ -10,16 +10,23 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.net.toFile
 import com.denchic45.kts.ui.theme.spacing
+import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -29,7 +36,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
-import okio.Path.Companion.toOkioPath
 import org.apache.poi.util.IOUtils
 import java.io.File
 import java.io.FileInputStream
@@ -59,24 +65,38 @@ private fun ContentResolver.getFileName(fileUri: Uri): String {
         name = returnCursor.getString(nameIndex)
         returnCursor.close()
     }
-
     return name
 }
 
 @Composable
 fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
+    val context = LocalContext.current
     val pickFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.let { data: Intent ->
-                component.onFileSelect(data.data!!.toFile().toOkioPath())
+                component.onFileSelect(data.data!!.getFile(context))
             }
         }
     }
 
+    val error by component.errorMessage.collectAsState()
+
+    error?.let { message ->
+        AlertDialog(onDismissRequest = component::onErrorClose,
+            title = { Text(text = "Произошла ошибка") },
+            text = { Text(message)},
+            confirmButton = {
+                Button(onClick = component::onErrorClose) { Text("ОК") }
+            }
+        )
+    }
+
     Column(
-        verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(onClick = component::onCreateEmpty) {
             Text("Создать с нуля")

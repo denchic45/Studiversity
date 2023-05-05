@@ -22,9 +22,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import com.denchic45.kts.domain.resourceOf
 import com.denchic45.kts.ui.timetable.DayTimetableContent
-import com.denchic45.kts.util.collectWhenStarted
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

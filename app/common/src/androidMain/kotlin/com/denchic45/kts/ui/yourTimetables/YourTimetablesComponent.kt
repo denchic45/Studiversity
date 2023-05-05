@@ -17,6 +17,7 @@ import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.map
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -84,6 +85,7 @@ class YourTimetablesComponent(
         it.toString(DateTimePatterns.YYYY_ww)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val dayViewState = bellSchedule.flatMapLatest { schedule ->
         selectedWeekOfYear.flatMapLatest { selectedWeek ->
             selectedDate.filter { it.toString(DateTimePatterns.YYYY_ww) == selectedWeek }

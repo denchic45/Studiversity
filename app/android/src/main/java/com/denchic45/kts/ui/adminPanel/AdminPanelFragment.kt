@@ -11,7 +11,6 @@ import com.denchic45.kts.ui.adapter.ItemAdapter
 import com.denchic45.kts.ui.adapter.OnItemClickListener
 import com.denchic45.kts.ui.creator.CreatorDialog
 import com.denchic45.kts.util.setActivityTitle
-import com.example.appbarcontroller.appbarcontroller.AppBarController
 
 class AdminPanelFragment :
     BaseFragment<AdminPanelViewModel, FragmentAdminPanelBinding>(R.layout.fragment_admin_panel) {
@@ -28,12 +27,12 @@ class AdminPanelFragment :
             adapter.itemClickListener =
                 OnItemClickListener { position: Int -> viewModel.onItemClick(position) }
             rv.adapter = adapter
-            viewModel.openTimetableEditor.observe(
-                viewLifecycleOwner
-            ) { navController.navigate(R.id.action_menu_admin_panel_to_timetableEditorFragment) }
-            viewModel.openUserFinder.observe(
-                viewLifecycleOwner
-            ) { navController.navigate(R.id.action_menu_admin_panel_to_finderFragment2) }
+//            viewModel.openTimetableEditor.observe(
+//                viewLifecycleOwner
+//            ) { navController.navigate(R.id.action_menu_admin_panel_to_timetableEditorFragment) }
+//            viewModel.openUserFinder.observe(
+//                viewLifecycleOwner
+//            ) { navController.navigate(R.id.action_menu_admin_panel_to_finderFragment) }
             viewModel.openCreator.observe(viewLifecycleOwner) {
                 val creatorDialog = CreatorDialog()
                 creatorDialog.show(childFragmentManager, null)

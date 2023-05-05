@@ -1,6 +1,7 @@
 package com.denchic45.kts.domain.usecase
 
 import com.denchic45.kts.domain.timetable.TimetableParser
+import com.denchic45.kts.domain.timetable.model.TimetableParserResult
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import me.tatarka.inject.annotations.Inject
@@ -11,7 +12,7 @@ class ParseTimetableUseCase(
     private val timetableParser:()-> TimetableParser
 ) {
 
-    suspend operator fun invoke(document:Path): List<Pair<StudyGroupResponse, TimetableResponse>> {
+    suspend operator fun invoke(document:Path): TimetableParserResult {
        return timetableParser().parseDoc(document.toFile().inputStream())
     }
 }

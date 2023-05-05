@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,8 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.DayTimetableContent
+import com.denchic45.kts.ui.uiTextOf
+import kotlinx.coroutines.flow.collect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +81,13 @@ fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: A
 //        val timetableComponent = component.timetableComponent
         val selectedDate by component.selectedDate.collectAsState()
         val viewState by component.dayViewState.collectAsState()
+
+        LaunchedEffect(viewState) {
+            viewState.onSuccess {
+                appBarInteractor.set(AppBarState(uiTextOf(it.title)))
+            }
+        }
+
         DayTimetableContent(
             selectedDate = selectedDate,
             viewState = viewState,

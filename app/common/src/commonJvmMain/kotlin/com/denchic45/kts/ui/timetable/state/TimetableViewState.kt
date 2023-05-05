@@ -136,17 +136,16 @@ fun getMonthTitle(date: LocalDate): String {
     val saturday: LocalDate = date.plusDays(5)
     return if (date.monthValue != saturday.monthValue) {
         if (date.year != saturday.year) {
-
-            "${date.toString("LLL yy").capitalized().replace(".", "")} - ${
-                saturday.toString("LLL yy").replace(".", "")
+            "${date.toString("MMMM yyyy").capitalized().replace(".", "")} - ${
+                saturday.toString("MMMM yyyy").replace(".", "")
             }"
         } else {
             "${
-                (date.toString("LLL").replace(".", "")).capitalized()
-            } - ${saturday.toString("LLL").replace(".", "")}"
+                (date.toString("MMMM").replace(".", "")).capitalized()
+            } - ${saturday.toString("MMMM").replace(".", "")}"
         }
     } else {
-        date.toString("LLLL").capitalized()
+        date.toString("MMMM").capitalized()
     }
 }
 
