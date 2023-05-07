@@ -1,7 +1,5 @@
 package com.denchic45.kts
 
-import com.denchic45.kts.data.domain.model.DomainModel
-
 
 class UIEditor<T>(
     val isNew: Boolean = true,
