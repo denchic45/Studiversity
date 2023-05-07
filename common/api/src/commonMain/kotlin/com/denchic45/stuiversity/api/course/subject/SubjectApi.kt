@@ -42,7 +42,7 @@ class SubjectApiImpl(private val client: HttpClient) : SubjectApi {
 
     override suspend fun getList(name: String?): ResponseResult<List<SubjectResponse>> {
         return client.get("/subjects") {
-            parameter("name", name)
+            parameter("q", name)
         }.toResult()
     }
 
