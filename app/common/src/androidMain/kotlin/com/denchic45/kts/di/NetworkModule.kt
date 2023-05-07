@@ -78,19 +78,21 @@ class NetworkModule {
         install(Auth) {
             bearer {
                 loadTokens {
-                    BearerTokens(appPreferences.token!!, appPreferences.refreshToken!!)
+                    BearerTokens(appPreferences.token, appPreferences.refreshToken)
                 }
                 refreshTokens {
+                    println("Try refresh AUTH: ${appPreferences.token} ${appPreferences.refreshToken}")
                     val result = AuthApiImpl(client)
-                        .refreshToken(RefreshTokenRequest(oldTokens!!.refreshToken))
+                        .refreshToken(RefreshTokenRequest(appPreferences.refreshToken))
                     result.onSuccess {
                         appPreferences.token = it.token
                         appPreferences.refreshToken = it.refreshToken
                     }.onFailure {
-                        appPreferences.token = null
-                        appPreferences.refreshToken = null
+                        println("ERROR AUTH: ${it.error}")
+                        appPreferences.token = ""
+                        appPreferences.refreshToken = ""
                     }
-                    BearerTokens(appPreferences.token?:"", appPreferences.refreshToken?:"")
+                    BearerTokens(appPreferences.token ?: "", appPreferences.refreshToken ?: "")
                 }
             }
         }

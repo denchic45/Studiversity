@@ -13,15 +13,15 @@ class AppPreferences(val settings: ObservableSettings) : Settings by settings {
 
     var bellSchedule by string(defaultValue = "")
 
-    var token by nullableString()
-    var refreshToken by nullableString()
+    var token by string(defaultValue = "")
+    var refreshToken by string(defaultValue = "")
 
     var url by string( defaultValue = "")
     var organizationId by string(defaultValue = "")
 
     var yourStudyGroups by string(defaultValue = "")
 
-    val observeToken = settings.getStringOrNullFlow("token")
+    val observeToken = settings.getStringFlow("token","")
     var observeBellSchedule = settings.getStringFlow("bellSchedule","")
     var observeYourStudyGroups = settings.getStringOrNullFlow("yourStudyGroups")
 }

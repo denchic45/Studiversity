@@ -87,20 +87,21 @@ abstract class NetworkComponent(
                 loadTokens {
                     println("TOKENS: appPreferences.token ${appPreferences.token}")
                     println("TOKENS: appPreferences.refreshToken ${appPreferences.refreshToken}")
-                    BearerTokens(appPreferences.token!!, appPreferences.refreshToken!!)
+                    BearerTokens(appPreferences.token, appPreferences.refreshToken)
                 }
                 refreshTokens {
+
                     val result = AuthApiImpl(client)
-                        .refreshToken(RefreshTokenRequest(oldTokens!!.refreshToken))
+                        .refreshToken(RefreshTokenRequest(appPreferences.refreshToken))
                     result.onSuccess {
                         appPreferences.token = it.token
                         appPreferences.refreshToken = it.refreshToken
                     }.onFailure {
                         println("FAILURE refresh tokens: ${it.error}")
-                        appPreferences.token = null
-                        appPreferences.refreshToken = null
+                        appPreferences.token = ""
+                        appPreferences.refreshToken = ""
                     }
-                    BearerTokens(appPreferences.token ?: "", appPreferences.refreshToken ?: "")
+                    BearerTokens(appPreferences.token, appPreferences.refreshToken)
                 }
             }
         }
