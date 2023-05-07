@@ -26,6 +26,7 @@ import java.util.*
 @Composable
 fun PeriodItemUI(
     item: PeriodItem?,
+    order:Int,
     time: String,
     groupShowing: Boolean = false,
     isEdit: Boolean = false,
@@ -38,8 +39,8 @@ fun PeriodItemUI(
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(text = order.toString(), style = MaterialTheme.typography.bodyLarge)
             if (item != null) {
-                Text(text = item.order.toString(), style = MaterialTheme.typography.bodyLarge)
 //                AsyncImage(
 //                    model = imageLoader.enqueue(ImageRequest.Builder(LocalContext.current)
 //                        .data(
@@ -129,12 +130,12 @@ fun PeriodItemUI(
 @Composable
 fun PeriodItemPreview() {
     PeriodItemUI(
+        order = 1,
         item = PeriodItem(
             id = -1,
             studyGroup = StudyGroupNameItem(UUID.randomUUID(), "ПКС-4"),
             room = "1 м.",
             members = emptyList(),
-            order = 1,
             details = PeriodDetails.Lesson(
                 courseId = UUID.randomUUID(),
                 subjectIconUrl = "https://coil-kt.github.io/coil/images/coil_logo_black.svg",

@@ -2,21 +2,25 @@ package com.denchic45.kts.ui.coursework
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
+import com.denchic45.kts.domain.usecase.DownloadFileUseCase
 import com.denchic45.kts.domain.usecase.RemoveCourseElementUseCase
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.coursework.details.CourseWorkDetailsComponent
 import com.denchic45.kts.ui.coursework.submissions.CourseWorkSubmissionsComponent
 import com.denchic45.kts.ui.coursework.yourSubmission.YourSubmissionComponent
+import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -27,6 +31,7 @@ import java.util.UUID
 
 @Inject
 class CourseWorkComponent(
+    private val downloadFileUseCase: DownloadFileUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val removeCourseElementUseCase: RemoveCourseElementUseCase,
@@ -58,6 +63,8 @@ class CourseWorkComponent(
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
+
+    val openAttachment = MutableSharedFlow<AttachmentItem>()
 
     private val capabilities = flow {
         emit(
@@ -133,6 +140,23 @@ class CourseWorkComponent(
                         onFinish()
                     }
                 }
+            }
+        }
+    }
+
+    fun onAttachmentClick(item: AttachmentItem) {
+        when (item) {
+            is AttachmentItem.FileAttachmentItem -> when (item.state) {
+                FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
+                FileState.Preview -> componentScope.launch {
+                    downloadFileUseCase(item.attachmentId!!)
+                }
+
+                else -> {}
+            }
+
+            is AttachmentItem.LinkAttachmentItem -> componentScope.launch {
+                openAttachment.emit(item)
             }
         }
     }

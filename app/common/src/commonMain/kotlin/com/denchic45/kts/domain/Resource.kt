@@ -1,7 +1,12 @@
 package com.denchic45.kts.domain
 
+import com.denchic45.kts.data.domain.Cause
+import com.denchic45.kts.data.domain.ClientError
 import com.denchic45.kts.data.domain.Failure
+import com.denchic45.kts.data.domain.Forbidden
+import com.denchic45.kts.data.domain.NoConnection
 import com.denchic45.kts.data.domain.NotFound
+import com.denchic45.kts.data.domain.ServerError
 import com.denchic45.kts.data.domain.toFailure
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.github.michaelbull.result.mapBoth
@@ -31,7 +36,16 @@ fun <T> Resource<T>.success() = this as Resource.Success
 
 fun <T> ResponseResult<T>.toResource(): Resource<T> = mapBoth(
     success = { Resource.Success(it) },
-    failure = { Resource.Error(it.toFailure()) }
+    failure = { Resource.Error(it.toFailure()).apply {
+        when(val failure = failure) {
+            is Cause -> failure.throwable.printStackTrace()
+            is ClientError -> println(failure.response.error)
+            Forbidden -> println("Forbidden")
+            NoConnection -> println("NoConnection")
+            NotFound -> println("NotFound")
+            ServerError -> println("ServerError")
+        }
+    } }
 )
 
 fun <T> ResponseResult<T>.toEmptyResource(): EmptyResource = mapBoth(

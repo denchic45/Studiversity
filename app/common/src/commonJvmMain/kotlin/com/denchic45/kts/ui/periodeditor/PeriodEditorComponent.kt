@@ -43,7 +43,7 @@ class PeriodEditorComponent(
     private val eventDetailsEditorComponent: (EditingPeriod, ComponentContext) -> EventDetailsEditorComponent,
     private val lessonDetailsEditorComponent: (EditingPeriod, onCourseChoose: (OverlayConfig.CourseChooser) -> Unit, ComponentContext) -> LessonDetailsEditorComponent,
     @Assisted
-    private val _period: PeriodResponse,
+    private val _period: PeriodResponse?,
     @Assisted
     private val _onTeacherChoose: () -> Unit,
     @Assisted

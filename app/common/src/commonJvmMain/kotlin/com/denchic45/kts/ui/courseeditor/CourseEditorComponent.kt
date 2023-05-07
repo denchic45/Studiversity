@@ -13,6 +13,8 @@ import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.kts.Field
+import com.denchic45.kts.FieldEditor
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.stateInResource
@@ -24,12 +26,10 @@ import com.denchic45.kts.ui.ActionMenuItem
 import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
-import com.denchic45.kts.ui.studygroupeditor.Field
-import com.denchic45.kts.ui.studygroupeditor.FieldEditor
-import com.denchic45.kts.ui.studygroupeditor.updateOldValues
 import com.denchic45.kts.ui.chooser.SubjectChooserComponent
 import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.ui.uiTextOf
+import com.denchic45.kts.updateOldValues
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.copy
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest

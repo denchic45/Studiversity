@@ -28,10 +28,10 @@ class AuthService @javax.inject.Inject constructor(
     private val userPreferences: UserPreferences,
 ) {
     val isAuthenticated: Boolean
-        get() = !appPreferences.token.isNullOrEmpty()
+        get() = appPreferences.token.isNotEmpty()
 
     val observeIsAuthenticated: Flow<Boolean>
-        get() = appPreferences.observeToken.map { !it.isNullOrEmpty() }
+        get() = appPreferences.observeToken.map(String::isNotEmpty)
 
     val observeCurrentUser: Flow<Resource<UserResponse>> = userPreferences.observeId
         .filter(String::isNotEmpty)
@@ -60,6 +60,7 @@ class AuthService @javax.inject.Inject constructor(
     }
 
     private fun saveUserPreference(userResponse: UserResponse) {
+        println("A save user data")
         userPreferences.apply {
             id = userResponse.id.toString()
             firstName = userResponse.firstName

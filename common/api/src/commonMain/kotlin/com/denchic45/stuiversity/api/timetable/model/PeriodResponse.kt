@@ -1,6 +1,7 @@
 package com.denchic45.stuiversity.api.timetable.model
 
 import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.LocalDateSerializer
 import com.denchic45.stuiversity.util.UUIDSerializer
@@ -62,6 +63,11 @@ data class StudyGroupName(
     @Serializable(UUIDSerializer::class)
     val id: UUID,
     val name: String
+)
+
+fun StudyGroupResponse.toStudyGroupName() = StudyGroupName(
+    id = id,
+    name = name
 )
 
 @Serializable

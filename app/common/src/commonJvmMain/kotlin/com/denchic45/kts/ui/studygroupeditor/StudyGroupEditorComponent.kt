@@ -7,15 +7,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.kts.Field
+import com.denchic45.kts.FieldEditor
 import com.denchic45.kts.domain.*
 import com.denchic45.kts.domain.usecase.AddStudyGroupUseCase
 import com.denchic45.kts.domain.usecase.FindSpecialtyByContainsNameUseCase
 import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.kts.domain.usecase.UpdateStudyGroupUseCase
+import com.denchic45.kts.getOptProperty
 import com.denchic45.kts.ui.ActionMenuItem
 import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.ui.uiTextOf
+import com.denchic45.kts.updateOldValues
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.copy
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
@@ -57,18 +61,14 @@ class StudyGroupEditorComponent(
             ActionMenuItem(
                 id = "save",
                 icon = uiIconOf(Icons.Default.Done),
-                enabled = false
-            , onClick = {onSaveClick()}
+                enabled = false,
+                onClick = ::onSaveClick
             )
         ),
     ))
 
     private val editingState = EditingStudyGroup()
     val inputState = InputState()
-
-//    private val uiEditor: UIEditor<EditingStudyGroup> = UIEditor(studyGroupId == null) {
-//        editingState
-//    }
 
     private val fieldEditor = FieldEditor(mapOf(
         "name" to Field("") { editingState.name },
@@ -161,7 +161,7 @@ class StudyGroupEditorComponent(
                 val resource = studyGroupId?.let {
                     updateStudyGroupUseCase(
                         it, UpdateStudyGroupRequest(
-                            name = fieldEditor.getOptProperty("name") ,
+                            name = fieldEditor.getOptProperty("name"),
                             academicYear = if (fieldEditor.fieldChanged("startAcademicYear") || fieldEditor.fieldChanged(
                                     "endAcademicYear"
                                 )
@@ -223,53 +223,3 @@ class EditingStudyGroup {
     var endAcademicYear: Int by mutableStateOf(0)
 }
 
-class Field<T>(
-    var oldValue: T,
-    val currentValue: () -> T,
-) {
-    fun hasChanged() = oldValue != currentValue()
-}
-
-class FieldEditor constructor(private val fields: Map<String, Field<*>>) {
-
-    fun hasChanges() = fields.any { it.value.hasChanged() }
-
-    fun fieldChanged(name: String) = fields.getValue(name).hasChanged()
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T> field(name: String): Field<T> = fields.getValue(name) as Field<T>
-
-    fun <T> getValue(name: String) = field<T>(name)
-
-    fun <T> ifChanged(name: String, value: () -> T): OptionalProperty<T> {
-        return if (fields.getValue(name).hasChanged())
-            optPropertyOf(value())
-        else OptionalProperty.NotPresent
-    }
-
-
-
-    fun <T> updateOldValueBy(name: String, oldValue: T) {
-        field<T>(name).oldValue = oldValue
-    }
-}
-
-fun FieldEditor.updateOldValues(vararg fields: Pair<String, *>) {
-    fields.forEach { (name, value) ->
-        updateOldValueBy(name, value)
-    }
-}
-
-fun <T> FieldEditor.getOptProperty(name: String): OptionalProperty<T> {
-    val field = field<T>(name)
-    return if (field.hasChanged())
-        optPropertyOf(field.currentValue())
-    else OptionalProperty.NotPresent
-}
-
-fun <T, V> FieldEditor.getOptProperty(name: String, map: (T) -> V): OptionalProperty<V> {
-    val field = field<T>(name)
-    return if (field.hasChanged())
-        optPropertyOf(map(field.currentValue()))
-    else OptionalProperty.NotPresent
-}

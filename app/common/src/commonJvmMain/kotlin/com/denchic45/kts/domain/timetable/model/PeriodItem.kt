@@ -9,7 +9,6 @@ data class PeriodItem(
     val studyGroup: StudyGroupNameItem,
     val room: String?,
     val members: List<UserItem>,
-    val order: Int,
     val details: PeriodDetails
 )
 

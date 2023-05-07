@@ -53,13 +53,12 @@ class StudyGroupRepository {
                 MembershipsInnerUserMembershipsInnerUsersRolesScopes,
                 { StudyGroups.id },
                 { Memberships.scopeId })
-
             .selectAll()
         q?.let {
             query.andWhere {
-                StudyGroups.name.lowerCase().trim() like "%$query%" or
-                        (Specialties.name.lowerCase().trim() like "%$query%") or
-                        (Specialties.shortname.lowerCase().trim() like "%$query%")
+                StudyGroups.name.lowerCase().trim() like "%$q%" or
+                        (Specialties.name.lowerCase().trim() like "%$q%") or
+                        (Specialties.shortname.lowerCase().trim() like "%$q%")
             }
         }
         memberId?.let {
