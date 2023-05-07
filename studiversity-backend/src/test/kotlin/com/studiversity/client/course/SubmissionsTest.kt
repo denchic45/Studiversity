@@ -7,6 +7,7 @@ import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
+import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
@@ -44,7 +45,7 @@ class SubmissionsTest : KtorClientTest() {
     })
 
     private lateinit var course: CourseResponse
-    private lateinit var courseWork: CourseElementResponse
+    private lateinit var courseWork: CourseWorkResponse
 
     private val studentClient by lazy { createAuthenticatedClient("slavik@gmail.com", "GHBO043g54gh") }
     private val teacherClient by lazy { createAuthenticatedClient("stefan@gmail.com", "FSg54g45dg") }

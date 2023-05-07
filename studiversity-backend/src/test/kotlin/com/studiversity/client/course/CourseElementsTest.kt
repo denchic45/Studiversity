@@ -10,6 +10,7 @@ import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
+import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.membership.MembershipApi
@@ -72,7 +73,7 @@ class CourseElementsTest : KtorClientTest() {
         )
     }
 
-    private val student1Id by lazy { runBlocking { userApi.getBySurname("Васильев") }.unwrap().id }
+    private val student1Id by lazy { runBlocking { userApi.getBySurname("Васильев") }.unwrap().first().id }
 
     private val coursesApi: CoursesApi by inject { parametersOf(client) }
     private val courseElementsApi: CourseElementsApi by inject { parametersOf(client) }
@@ -85,7 +86,7 @@ class CourseElementsTest : KtorClientTest() {
     private val userApi: UserApi by inject { parametersOf(client) }
 
     private lateinit var course: CourseResponse
-    private lateinit var courseWork: CourseElementResponse
+    private lateinit var courseWork: CourseWorkResponse
 
     override fun setup(): Unit = runBlocking {
         course = coursesApi.create(CreateCourseRequest("Test course"))

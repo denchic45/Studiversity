@@ -38,22 +38,22 @@ class SearchUsersTest : KtorClientTest() {
 
     @Test
     fun test(): Unit = runBlocking {
-        userApi.search("Yaro").also(::assertResultIsOk).unwrap().single().apply {
+        userApi.getList("Yaro").also(::assertResultIsOk).unwrap().single().apply {
             assertEquals(expectedFirstName, firstName)
             assertEquals(expectedSurname, surname)
         }
 
-        userApi.search("sokol").also(::assertResultIsOk).unwrap().single().apply {
+        userApi.getList("sokol").also(::assertResultIsOk).unwrap().single().apply {
             assertEquals(expectedFirstName, firstName)
             assertEquals(expectedSurname, surname)
         }
 
-        userApi.search("dmit").also(::assertResultIsOk).unwrap().single().apply {
+        userApi.getList("dmit").also(::assertResultIsOk).unwrap().single().apply {
             assertEquals(expectedFirstName, firstName)
             assertEquals(expectedSurname, surname)
         }
 
-        userApi.search("okolov").also(::assertResultIsOk).unwrap().apply {
+        userApi.getList("okolov").also(::assertResultIsOk).unwrap().apply {
             assertEquals(emptyList(), this)
         }
     }

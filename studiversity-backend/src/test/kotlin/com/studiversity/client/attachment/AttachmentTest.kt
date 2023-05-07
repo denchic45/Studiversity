@@ -7,6 +7,7 @@ import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
+import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.membership.MembershipApi
@@ -51,7 +52,7 @@ class AttachmentTest : KtorClientTest() {
 
 
     private lateinit var course: CourseResponse
-    private lateinit var courseWork: CourseElementResponse
+    private lateinit var courseWork: CourseWorkResponse
 
     private suspend fun enrolTeacher(userId: UUID) {
         enrolUser(userId, Role.Teacher.id)
