@@ -1,14 +1,19 @@
 package com.denchic45.kts.ui.timetable
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -17,9 +22,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
-import com.denchic45.kts.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.kts.ui.widget.calendar.WeekCalendarListener
 import com.denchic45.kts.ui.widget.calendar.WeekCalendarView
 import com.denchic45.kts.ui.widget.calendar.model.WeekItem
@@ -53,8 +56,9 @@ import java.time.LocalDate
 @Composable
 fun DayTimetableContent(
     selectedDate: LocalDate,
-    viewState: Resource<DayTimetableViewState?>,
+    viewStateResource: Resource<DayTimetableViewState?>,
     onDateSelect: (date: LocalDate) -> Unit,
+    onPeriodAdd:(()->Unit)?= null,
     onEditClick: ((Int) -> Unit)? = null,
 ) {
     Column {
@@ -78,16 +82,26 @@ fun DayTimetableContent(
             onRelease = {
                 it.removeListeners()
             })
-        viewState.onSuccess { viewState ->
+        viewStateResource.onSuccess { viewState ->
             viewState?.let {
                 LazyColumn {
                     itemsIndexed(viewState.periods) { index, item ->
                         PeriodItemUI(
+                            order = index + 1,
                             item = item,
                             time = viewState.orders[index].time,
                             isEdit = viewState.isEdit,
                             onEditClick = { onEditClick?.invoke(index) }
                         )
+                    }
+                    if (viewState.isEdit) {
+                       item {
+                           ListItem(
+                               modifier = Modifier.clickable { onPeriodAdd?.invoke() },
+                               headlineContent = { Text("Добавить") },
+                               leadingContent = { Icon(imageVector = Icons.Default.Add, contentDescription = "add period")}
+                           )
+                       }
                     }
                 }
             }
@@ -107,7 +121,7 @@ fun DayTimetableContent(
 fun TimetableEditorContentPreview() {
     DayTimetableContent(
         selectedDate = LocalDate.now(),
-        viewState = Resource.Success(
+        viewStateResource = Resource.Success(
             DayTimetableViewState(
                 LocalDate.now(),
                 listOf(),

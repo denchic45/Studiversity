@@ -58,29 +58,30 @@ private fun PeriodResponse.toCell() = when (val details = details) {
     )
 }
 
-fun toItemsForDay(periods: List<PeriodResponse>): List<PeriodItem?> {
-    return periods.toItemsForWeek()
-}
+//fun toItemsForDay(periods: List<PeriodResponse>): List<PeriodItem?> {
+//    return periods.toPeriodItems()
+//}
 
-fun toItemsForWeek(
-    periods: List<PeriodResponse>,
-    latestPeriodOrder: Int,
-): List<PeriodItem?> = buildList {
-    addAll(periods.toItemsForWeek())
-    val diffOrders = latestPeriodOrder - periods.size
-    if (diffOrders > 0) {
-        repeat(diffOrders) { add(null) }
-    }
-}
+//fun toPeriodItems(
+//    periods: List<PeriodResponse>,
+//    latestPeriodOrder: Int,
+//): List<PeriodItem?> = buildList {
+//    addAll(periods.toPeriodItems())
+//    val diffOrders = latestPeriodOrder - periods.size
+//    if (diffOrders > 0) {
+//        repeat(diffOrders) { add(null) }
+//    }
+//}
 
-private fun List<PeriodResponse>.toItemsForWeek() = buildList {
-    this@toItemsForWeek.forEachIndexed { index, period ->
-        val diffOrders = period.order - index
-        if (diffOrders > 1) {
+fun List<PeriodResponse>.toPeriodItems() = buildList {
+    var offset = 0
+    this@toPeriodItems.forEachIndexed { index, period ->
+        val diffOrders = period.order - index - offset - 1
+        offset += diffOrders
+        if (diffOrders > 0) {
             repeat(diffOrders) { add(null) }
-        } else {
-            add(period.toItem())
         }
+            add(period.toItem())
     }
 }
 
@@ -89,7 +90,6 @@ private fun PeriodResponse.toItem() = PeriodItem(
     studyGroup = StudyGroupNameItem(studyGroup.id, studyGroup.name),
     room = room?.name,
     members = members.map { it.toUserItem() },
-    order = order,
     details = when (val details = details) {
         is EventDetails -> with(details) {
             PeriodDetails.Event(name, iconUrl, color)

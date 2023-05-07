@@ -205,7 +205,6 @@ fun LessonCells(
     }
 }
 
-@OptIn(ExperimentalUnitApi::class)
 @Composable
 @Preview
 fun LessonCell(item: PeriodItem?) {

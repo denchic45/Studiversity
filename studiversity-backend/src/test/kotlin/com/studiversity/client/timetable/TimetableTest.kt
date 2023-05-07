@@ -180,7 +180,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -189,7 +189,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -198,7 +198,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup2.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 )
             ),
             tuesday = listOf(
@@ -209,7 +209,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -218,7 +218,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -227,7 +227,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup2.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -236,7 +236,7 @@ class TimetableTest : KtorClientTest() {
                     room10,
                     studyGroup2.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(engCourse.id, null)
+                    LessonDetails(engCourse)
                 )
             ),
             wednesday = emptyList(),
@@ -282,7 +282,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -291,7 +291,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -300,7 +300,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup2.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -309,7 +309,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup2.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 )
             ),
             tuesday = listOf(
@@ -320,7 +320,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -329,7 +329,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -338,7 +338,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup2.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -347,7 +347,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup2.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
 
                 LessonResponse(
@@ -357,7 +357,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup2.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
             ),
             wednesday = emptyList(),
@@ -393,7 +393,7 @@ class TimetableTest : KtorClientTest() {
                     room10,
                     studyGroup2.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(engCourse.id, null)
+                    LessonDetails(engCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -402,7 +402,7 @@ class TimetableTest : KtorClientTest() {
                     room10,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(engCourse.id, null)
+                    LessonDetails(engCourse)
                 ),
             ),
             tuesday = listOf(
@@ -413,7 +413,7 @@ class TimetableTest : KtorClientTest() {
                     room10,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(engCourse.id, null)
+                    LessonDetails(engCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -422,7 +422,7 @@ class TimetableTest : KtorClientTest() {
                     room10,
                     studyGroup2.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(engCourse.id, null)
+                    LessonDetails(engCourse)
                 )
             ),
             wednesday = listOf(),
@@ -462,7 +462,7 @@ class TimetableTest : KtorClientTest() {
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember1),
 
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -471,7 +471,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -480,7 +480,7 @@ class TimetableTest : KtorClientTest() {
                     roomWorkshop,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(physicsCourse.id, null)
+                    LessonDetails(physicsCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -489,7 +489,7 @@ class TimetableTest : KtorClientTest() {
                     room10,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(engCourse.id, null)
+                    LessonDetails(engCourse)
                 )
             )
         )
@@ -517,7 +517,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -526,7 +526,7 @@ class TimetableTest : KtorClientTest() {
                     roomWorkshop,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(physicsCourse.id, null)
+                    LessonDetails(physicsCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -535,7 +535,7 @@ class TimetableTest : KtorClientTest() {
                     roomWorkshop,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember2),
-                    LessonDetails(physicsCourse.id, null)
+                    LessonDetails(physicsCourse)
                 ),
                 LessonResponse(
                     UNKNOWN_LONG_ID,
@@ -544,7 +544,7 @@ class TimetableTest : KtorClientTest() {
                     room5,
                     studyGroup1.toStudyGroupName(),
                     listOf(teacherMember1),
-                    LessonDetails(mathCourse.id, null)
+                    LessonDetails(mathCourse)
                 ),
             )
         )

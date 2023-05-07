@@ -26,7 +26,6 @@ import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.DayTimetableContent
 import com.denchic45.kts.ui.uiTextOf
-import kotlinx.coroutines.flow.collect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,7 +89,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: A
 
         DayTimetableContent(
             selectedDate = selectedDate,
-            viewState = viewState,
+            viewStateResource = viewState,
             onDateSelect = component::onDateSelect
         )
     }

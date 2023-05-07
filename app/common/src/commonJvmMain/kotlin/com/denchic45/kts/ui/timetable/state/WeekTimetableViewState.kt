@@ -20,7 +20,7 @@ data class WeekTimetableViewState(
     val title = getMonthTitle(mondayDate)
 }
 
-fun TimetableResponse.toTimetableViewState(
+fun TimetableResponse.toDayTimetableViewState(
     bellSchedule: BellSchedule,
 ): WeekTimetableViewState {
     val latestEventOrder = max(days.maxOf { it.lastOrNull()?.order ?: 0 }, 6)
@@ -31,19 +31,22 @@ fun TimetableResponse.toTimetableViewState(
                 .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.value.toLong())
                 .toFormatter()
         ),
-        periods = toItemsOfDay(latestEventOrder),
+        periods = toItemsForWeek(latestEventOrder),
         orders = bellSchedule.toItemOrders(latestEventOrder),
         maxEventsSize = latestEventOrder
     )
 }
 
 
-private fun TimetableResponse.toItemsOfDay(
+private fun TimetableResponse.toItemsForWeek(
     latestPeriodOrder: Int
 ): List<List<PeriodItem?>> = buildList {
     days.forEach { periods ->
-        add(toItemsForWeek(periods, latestPeriodOrder))
+        add(periods.toPeriodItems().let {
+            it + List(latestPeriodOrder - size) { null }
+        })
     }
+
 }
 
 fun WeekTimetableViewState.update(bellSchedule: BellSchedule): WeekTimetableViewState {

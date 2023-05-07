@@ -1,11 +1,8 @@
 package com.denchic45.kts.ui.timetable.state
 
 import com.denchic45.kts.data.service.model.BellSchedule
-import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.timetable.model.PeriodItem
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import java.time.LocalDate
 import kotlin.math.max
 
@@ -26,17 +23,15 @@ data class DayTimetableViewState(
         ): DayTimetableViewState? {
                 val selectedDay = selected.dayOfWeek.ordinal
                return if (selectedDay == 6) null
-                else periods.toTimetableViewState(
+                else periods.toDayTimetableViewState(
                     date = selected,
                     bellSchedule = schedule
                 )
-
         }
-
     }
 }
 
-fun List<PeriodResponse>.toTimetableViewState(
+fun List<PeriodResponse>.toDayTimetableViewState(
     date: LocalDate,
     bellSchedule: BellSchedule,
     isEdit: Boolean = false,
@@ -44,7 +39,7 @@ fun List<PeriodResponse>.toTimetableViewState(
     val latestEventOrder = max(maxOfOrNull { last().order } ?: 0, 6)
     return DayTimetableViewState(
         date = date,
-        periods = toItemsForDay(this),
+        periods = toPeriodItems(),
         orders = bellSchedule.toItemOrders(latestEventOrder),
         maxEventsSize = latestEventOrder,
         isEdit = isEdit

@@ -3,16 +3,12 @@ package com.denchic45.kts.ui.yourTimetables
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.denchic45.kts.data.repository.MetaRepository
-import com.denchic45.kts.data.service.model.BellSchedule
-import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.kts.domain.usecase.TimetableOwner
 import com.denchic45.kts.ui.timetable.DayTimetableComponent
-import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
-import com.denchic45.kts.ui.timetable.state.toTimetableViewState
+import com.denchic45.kts.ui.timetable.TimetableOwnerComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.map
 import com.denchic45.stuiversity.util.DateTimePatterns
@@ -42,7 +38,7 @@ class YourTimetablesComponent(
     ) -> DayTimetableComponent,
     @Assisted
     componentContext: ComponentContext,
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, TimetableOwnerComponent {
 
     init {
         println("COMPONENT $this")
@@ -77,7 +73,7 @@ class YourTimetablesComponent(
     val selectedTimetable = MutableStateFlow(-1)
 
     private val selectedOwner = MutableStateFlow<TimetableOwner>(TimetableOwner.Member(null))
-     val selectedDate = MutableStateFlow(LocalDate.now())
+    val selectedDate = MutableStateFlow(LocalDate.now())
     private val bellSchedule = metaRepository.observeBellSchedule
         .shareIn(componentScope, SharingStarted.Lazily)
 
@@ -90,20 +86,11 @@ class YourTimetablesComponent(
         selectedWeekOfYear.flatMapLatest { selectedWeek ->
             selectedDate.filter { it.toString(DateTimePatterns.YYYY_ww) == selectedWeek }
                 .flatMapLatest { selectedDate ->
-                    dayViewStateFlow(selectedDate, schedule)
+                    dayViewStateFlow(selectedDate, schedule, timetableComponent.weekTimetable)
                 }
         }
     }.stateInResource(componentScope)
 
-    private fun dayViewStateFlow(
-        selectedDate: LocalDate,
-        schedule: BellSchedule,
-    ): Flow<Resource<DayTimetableViewState>> {
-        val dayOfWeek = selectedDate.dayOfWeek.ordinal
-        return timetableComponent.weekTimetable.mapResource {
-            it.days[dayOfWeek].toTimetableViewState(selectedDate, schedule, false)
-        }
-    }
 
 //    val timetableComponent = studyGroups.flatMapResourceFlow { studyGroupResponses ->
 //        selectedTimetable.map { selectedTimetable ->

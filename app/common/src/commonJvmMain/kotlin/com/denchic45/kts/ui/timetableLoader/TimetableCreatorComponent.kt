@@ -24,9 +24,9 @@ class TimetableCreatorComponent(
 
     private val componentScope = componentScope()
 
+    val uiState = MutableStateFlow<UiState>(UiState.None)
     val showWeekPicker = MutableStateFlow(false)
     val showFilePicker = MutableStateFlow(false)
-    val errorMessage = MutableStateFlow<String?>(null)
 
     fun onCreateEmpty() {
         showWeekPicker.value = true
@@ -45,22 +45,35 @@ class TimetableCreatorComponent(
         showWeekPicker.value = false
     }
 
-    fun onFileSelect(file: Path) {
+    fun onFileSelect(file: Path?) {
         showFilePicker.update { false }
-        componentScope.launch {
-            try {
-                val result = parseTimetableUseCase(file)
-                withContext(Dispatchers.Main) {
-                    onCreate(result)
+        file?.let {
+            componentScope.launch {
+                try {
+                    uiState.value = UiState.Loading("Извлечение расписания")
+                    val result = parseTimetableUseCase(file)
+                    uiState.value = UiState.None
+                    withContext(Dispatchers.Main) {
+                        onCreate(result)
+                    }
+                } catch (throwable: Exception) {
+                    throwable.printStackTrace()
+                    uiState.value = UiState.Error(throwable.message ?: "")
                 }
-            } catch (throwable: Exception) {
-                throwable.printStackTrace()
-                errorMessage.emit(throwable.message ?: "")
             }
         }
     }
 
+    sealed interface UiState {
+        object None : UiState
+
+        data class Loading(val message: String) : UiState
+
+        data class Error(val message: String) : UiState
+
+    }
+
     fun onErrorClose() {
-        errorMessage.value = null
+        uiState.value = UiState.None
     }
 }

@@ -38,7 +38,7 @@ class TimetableFinderFragment(
                 val viewState by component.dayViewState.collectAsState()
                 DayTimetableContent(
                     selectedDate = selectedDate,
-                    viewState = viewState,
+                    viewStateResource = viewState,
                     onDateSelect = component::onDateSelect
                 )
             }

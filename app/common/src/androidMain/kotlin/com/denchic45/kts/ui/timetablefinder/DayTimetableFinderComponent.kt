@@ -20,11 +20,12 @@ import com.denchic45.kts.domain.usecase.PutTimetableUseCase
 import com.denchic45.kts.domain.usecase.TimetableOwner
 import com.denchic45.kts.ui.timetable.DayTimetableComponent
 import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
-import com.denchic45.kts.ui.timetable.state.toTimetableViewState
+import com.denchic45.kts.ui.timetable.state.toDayTimetableViewState
 import com.denchic45.kts.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.kts.util.asFlow
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.map
+import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
@@ -37,6 +38,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
@@ -74,6 +76,16 @@ class DayTimetableFinderComponent(
         }
     )
 
+//    private val weekTimetable: StateFlow<Resource<TimetableResponse>> = MutableStateFlow(resourceOf())
+
+//    init {
+//        componentScope.launch {
+//            childOverlay.asFlow().map { it.overlay }.filterNotNull().collect {
+//                it.instance.component.editingWeekTimetable
+//            }
+//        }
+//    }
+
     private fun childFactory(
         config: Config,
         componentContext: ComponentContext,
@@ -103,7 +115,7 @@ class DayTimetableFinderComponent(
 
 //    private val isEdit = MutableStateFlow(false)
 
-     val selectedDate = MutableStateFlow(LocalDate.now())
+    val selectedDate = MutableStateFlow(LocalDate.now())
     val selectedWeekOfYear = selectedDate.map(componentScope) {
         it.toString(DateTimePatterns.YYYY_ww)
     }
@@ -115,7 +127,7 @@ class DayTimetableFinderComponent(
         componentContext.childContext("DayTimetable")
     )
 
-    val actualTimetable = dayTimetableComponent.weekTimetable
+    private val actualTimetable = dayTimetableComponent.weekTimetable
         .shareIn(componentScope, SharingStarted.Lazily)
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -136,18 +148,30 @@ class DayTimetableFinderComponent(
         schedule: BellSchedule,
     ): Flow<Resource<DayTimetableViewState>> {
         val dayOfWeek = selectedDate.dayOfWeek.ordinal
-        return child.overlay?.let {
-            it.instance.component.editingWeekTimetable[dayOfWeek].map { periods ->
+        return if (dayOfWeek == 6) {
+            flowOf(
                 resourceOf(
-                    periods.toTimetableViewState(
+                    emptyList<PeriodResponse>().toDayTimetableViewState(
                         selectedDate,
                         schedule,
-                        true
+                        child.overlay != null
                     )
                 )
+            )
+        } else {
+            child.overlay?.let {
+                it.instance.component.editingWeekTimetable[dayOfWeek].map { periods ->
+                    resourceOf(
+                        periods.toDayTimetableViewState(
+                            selectedDate,
+                            schedule,
+                            true
+                        )
+                    )
+                }
+            } ?: actualTimetable.mapResource {
+                it.days[dayOfWeek].toDayTimetableViewState(selectedDate, schedule)
             }
-        } ?: actualTimetable.mapResource {
-            it.days[dayOfWeek].toTimetableViewState(selectedDate, schedule)
         }
     }
 

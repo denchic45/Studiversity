@@ -1,15 +1,13 @@
 package com.denchic45.kts.ui.timetable
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindTimetableOfWeekUseCase
 import com.denchic45.kts.domain.usecase.TimetableOwner
-import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.timetable.state.toTimetableViewState
+import com.denchic45.kts.ui.timetable.state.toDayTimetableViewState
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.map
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
@@ -76,7 +74,7 @@ class DayTimetableComponent(
             timetableResource.map {
                 val selectedDay = selected.dayOfWeek.ordinal
                 if (selectedDay == 6) null
-                else it.days[selectedDay].toTimetableViewState(
+                else it.days[selectedDay].toDayTimetableViewState(
                     date = selected,
                     bellSchedule = schedule
                 )

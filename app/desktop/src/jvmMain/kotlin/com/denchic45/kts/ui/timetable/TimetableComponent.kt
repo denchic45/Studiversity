@@ -6,7 +6,7 @@ import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindYourTimetableByUseCase
-import com.denchic45.kts.ui.timetable.state.toTimetableViewState
+import com.denchic45.kts.ui.timetable.state.toDayTimetableViewState
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
@@ -40,7 +40,7 @@ class TimetableComponent(
         metaRepository.observeBellSchedule
     ) { timetableResource, bellSchedule ->
         timetableResource.map { timetable ->
-            timetable.toTimetableViewState(bellSchedule)
+            timetable.toDayTimetableViewState(bellSchedule)
         }
     }.stateInResource(coroutineScope)
 
