@@ -48,7 +48,7 @@ class TimetableParser(
         "ПЯТНИЦА",
         "СУББОТА"
     )
-    private var cellOfGroupPos = 0
+    private var groupRow = 0
     private lateinit var table: XWPFTable
     private var currentRow = 0
     private var currentDayOfWeek = 0
@@ -57,6 +57,7 @@ class TimetableParser(
     private val cachedCourses = mutableMapOf<String, CourseResponse>()
     private val cachedCoursesByStudyGroup = mutableMapOf<Pair<String, UUID>, CourseResponse>()
     private val cachedSubjects = mutableListOf<SubjectResponse>()
+    private val cachedEventsOfMissedSubjects = mutableSetOf<String>()
     private val cachedUsers = mutableMapOf<String, UserResponse>()
 
     private suspend fun findUserBySurname(surname: String): UserResponse? {
@@ -73,23 +74,25 @@ class TimetableParser(
                 .text.split(" ")[1]
                 .toLocalDate(DateTimePatterns.DD_MM_yy)
 
-            val cellsInGroups: MutableList<XWPFTableCell> = ArrayList()
-            cellsInGroups.addAll(table.getRow(2).tableCells)
+            val groupsCells: MutableList<XWPFTableCell> = ArrayList()
+            groupsCells.addAll(table.getRow(1).tableCells.filter { it.text.isNotEmpty() })
+            groupsCells.addAll(table.getRow(2).tableCells.filter { it.text.isNotEmpty() })
 
-            val cellsCount = cellsInGroups.size
+            val groupsCount = groupsCells.size
             val timetables: MutableList<Pair<StudyGroupResponse, TimetableResponse>> =
                 mutableListOf()
-            for (i in 0 until cellsCount) {
-                studyGroupApi.getList(query = cellsInGroups[i].text)
-                    .unwrap().firstOrNull()?.let {
+            for (i in 0 until groupsCount) {
+                val studyGroupName = groupsCells[i].text
+                studyGroupApi.getList(query = studyGroupName)
+                    .unwrap().firstOrNull { it.name == studyGroupName }?.let {
                         currentStudyGroup = it
-                        cellOfGroupPos = cellsInGroups.indexOf(
-                            getCellByGroupName(cellsInGroups, currentStudyGroup.name)
-                        )
-                        if (cellOfGroupPos == -1) return@let
-                        cellOfGroupPos = if (cellOfGroupPos > cellsCount)
-                            cellOfGroupPos - cellsCount
-                        else cellOfGroupPos
+                        groupRow = getCellByGroupName(groupsCells, currentStudyGroup.name)?.tableRow
+                            ?.let { table.rows.indexOf(it) + 1 } ?: -1
+
+                        if (groupRow == -1) return@let
+                        groupRow = if (groupRow > groupsCount)
+                            groupRow - groupsCount
+                        else groupRow
                         timetables.add(currentStudyGroup to createTimetable())
                     }
             }
@@ -166,7 +169,7 @@ class TimetableParser(
                 continue // Skip dinner
             }
             val cellContent: List<String> =
-                cells[cellOfGroupPos].paragraphs.map { it.paragraphText }
+                cells[groupRow].paragraphs.map { it.paragraphText }
 //                .replace("\\(.*\\)".toRegex(), "")
 //                .trim { it <= ' ' }
             currentRow++
@@ -204,13 +207,14 @@ class TimetableParser(
         date: LocalDate,
         content: List<String>,
     ): PeriodResponse? {
-        if (content.isEmpty()) {
+        if (content.firstOrNull().isNullOrEmpty()) {
             return null
         }
         val subjectName = content[0].substringBefore('\\')
         val roomName = content[0].substringAfter('\\')
 
-        val subject = findSubjectByName(subjectName)
+        val existEvent = findEventOfMissingSubjectByName(subjectName)
+        val subject = if (existEvent) null else findSubjectByName(subjectName)
         val course = subject?.let { findCourseBySubjectAndStudyGroupId(it, currentStudyGroup.id) }
         return if (course != null) {
             LessonResponse(
@@ -231,7 +235,7 @@ class TimetableParser(
                 studyGroup = StudyGroupName(currentStudyGroup.id, currentStudyGroup.name),
                 members = findTeacherByContent(content),
                 details = EventDetails(subjectName, "blue", "")
-            )
+            ).apply { cachedEventsOfMissedSubjects.add(details.name) }
         }
     }
 
@@ -274,6 +278,10 @@ class TimetableParser(
             cachedCourses[subjectName] = it
             cachedCoursesByStudyGroup[subjectName to studyGroupId] = it
         }
+    }
+
+    private fun findEventOfMissingSubjectByName(eventName: String): Boolean {
+        return cachedEventsOfMissedSubjects.any { it.resetFormatting() == eventName.resetFormatting() }
     }
 
     private suspend fun findSubjectByName(subjectName: String): SubjectResponse? {
