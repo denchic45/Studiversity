@@ -37,7 +37,7 @@ fun <T> ChooserScreen(
     itemContent: @Composable (T) -> Unit
 ) {
     val itemsResource by component.items.collectAsState()
-    Surface {
+    Surface(modifier = Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxWidth()) {
             val query by component.query.collectAsState()
             var active by remember { mutableStateOf(false) }
