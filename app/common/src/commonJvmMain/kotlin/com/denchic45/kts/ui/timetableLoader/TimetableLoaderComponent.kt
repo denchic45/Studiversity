@@ -30,13 +30,14 @@ class TimetableLoaderComponent(
     private val navigation = StackNavigation<TimetableLoaderConfig>()
     val childStack = childStack(
         source = navigation,
+        handleBackButton = true,
         initialConfiguration = TimetableLoaderConfig.Creator,
         childFactory = { config, componentContext ->
             when (config) {
                 is TimetableLoaderConfig.Creator -> TimetableLoaderChild.Creator(
                     timetablesCreatorComponent({ result ->
                         navigation.replaceCurrent(
-                            TimetableLoaderConfig.Editor(
+                            TimetableLoaderConfig.Publisher(
                                 result.weekOfYear,
                                 result.timetables
                             )
@@ -44,7 +45,7 @@ class TimetableLoaderComponent(
                     }, componentContext)
                 )
 
-                is TimetableLoaderConfig.Editor -> TimetableLoaderChild.Publisher(
+                is TimetableLoaderConfig.Publisher -> TimetableLoaderChild.Publisher(
                     timetablesPublisherComponent(
                         config.weekOfYear,
                         config.studyGroupTimetables,
@@ -64,12 +65,12 @@ class TimetableLoaderComponent(
         }
 
         @Parcelize
-        class Editor(
+        class Publisher(
             val weekOfYear: String,
             val studyGroupTimetables:  List<Pair<StudyGroupResponse, TimetableResponse>>,
         ) : TimetableLoaderConfig() {
             @Suppress("unused")
-            private fun readResolve(): Any = Editor(weekOfYear, studyGroupTimetables)
+            private fun readResolve(): Any = Publisher(weekOfYear, studyGroupTimetables)
         }
     }
 

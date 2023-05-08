@@ -86,6 +86,7 @@ class CourseEditorComponent(
 
     private val overlayNavigation = OverlayNavigation<DialogConfig>()
     val childOverlay = childOverlay(
+        handleBackButton = true,
         source = overlayNavigation,
         childFactory = { config, componentContext ->
             when (config) {

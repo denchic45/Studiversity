@@ -71,6 +71,7 @@ class DayTimetableFinderComponent(
     private val overlayNavigation = OverlayNavigation<Config>()
     private val childOverlay = childOverlay(
         source = overlayNavigation,
+        handleBackButton = true,
         childFactory = { config, componentContext ->
             childFactory(config, componentContext)
         }

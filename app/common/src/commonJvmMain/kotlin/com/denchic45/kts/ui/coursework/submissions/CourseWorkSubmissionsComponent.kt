@@ -40,7 +40,10 @@ class CourseWorkSubmissionsComponent(
 
     private val overlayNavigation = OverlayNavigation<SubmissionConfig>()
 
-    val childOverlay = childOverlay(source = overlayNavigation) { config, componentContext ->
+    val childOverlay = childOverlay(
+        handleBackButton = true,
+        source = overlayNavigation
+    ) { config, componentContext ->
         SubmissionChild(
             _submissionDetailsComponent(
                 courseId,
