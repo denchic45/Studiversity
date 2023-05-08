@@ -20,7 +20,7 @@ class AdminPanelViewModel @Inject constructor() : BaseViewModel() {
             ListItem(
                 title = "Найти что угодно",
                 color = UiColor.ColorId(R.color.blue),
-                icon = UiImage.IdImage(R.drawable.ic_search_)
+                icon = UiImage.IdImage(R.drawable.ic_search)
             ),
             ListItem(
                 title = "Добавить",
