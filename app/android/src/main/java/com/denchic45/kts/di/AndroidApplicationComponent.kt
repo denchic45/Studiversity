@@ -13,6 +13,7 @@ import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.fab.FabInteractor
 import com.denchic45.kts.util.SystemDirs
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
@@ -57,6 +58,8 @@ abstract class AndroidApplicationComponent(
             DownloadWorker(context, params, storage)
         }
     }
+
+    abstract val authedClient: HttpClient
 
     abstract val workFactory: AppWorkerFactory
 

@@ -1,11 +1,12 @@
-package com.denchic45.kts.di
+package com.denchic45.kts.di.module
 
+import com.denchic45.kts.AndroidApp
 import com.denchic45.kts.data.pref.AppPreferences
+import com.denchic45.kts.di.installContentNegotiation
 import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.attachment.AttachmentApiImpl
 import com.denchic45.stuiversity.api.auth.AuthApi
 import com.denchic45.stuiversity.api.auth.AuthApiImpl
-import com.denchic45.stuiversity.api.auth.model.RefreshTokenRequest
 import com.denchic45.stuiversity.api.course.CourseApiImpl
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
@@ -38,8 +39,6 @@ import com.denchic45.stuiversity.api.timetable.TimetableApi
 import com.denchic45.stuiversity.api.timetable.TimetableApiImpl
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.UserApiImpl
-import com.github.michaelbull.result.onFailure
-import com.github.michaelbull.result.onSuccess
 import dagger.Module
 import dagger.Provides
 import io.ktor.client.*
@@ -69,34 +68,7 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(Android) {
-        defaultRequest {
-            url("http://192.168.0.102:8080/")
-        }
-        installContentNegotiation()
-        install(WebSockets)
-        install(Auth) {
-            bearer {
-                loadTokens {
-                    BearerTokens(appPreferences.token, appPreferences.refreshToken)
-                }
-                refreshTokens {
-                    println("Try refresh AUTH: ${appPreferences.token} ${appPreferences.refreshToken}")
-                    val result = AuthApiImpl(client)
-                        .refreshToken(RefreshTokenRequest(appPreferences.refreshToken))
-                    result.onSuccess {
-                        appPreferences.token = it.token
-                        appPreferences.refreshToken = it.refreshToken
-                    }.onFailure {
-                        println("ERROR AUTH: ${it.error}")
-                        appPreferences.token = ""
-                        appPreferences.refreshToken = ""
-                    }
-                    BearerTokens(appPreferences.token ?: "", appPreferences.refreshToken ?: "")
-                }
-            }
-        }
-    }
+    fun authedClient(application: AndroidApp): HttpClient = application.appComponent.authedClient
 
 //  
 //    @Provides

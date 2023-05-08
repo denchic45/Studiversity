@@ -6,7 +6,7 @@ import com.russhwolf.settings.coroutines.getStringFlow
 import com.russhwolf.settings.coroutines.getStringOrNullFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@OptIn(ExperimentalSettingsApi::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalSettingsApi::class)
 class AppPreferences(val settings: ObservableSettings) : Settings by settings {
 //    var coursesLoadedFirstTime by boolean()
     var latestVersion by long(defaultValue = 0)
