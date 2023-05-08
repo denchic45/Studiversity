@@ -47,7 +47,7 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val interactor: MainInteractor,
-    private val appVersionService: GoogleAppVersionService,
+//    private val appVersionService: GoogleAppVersionService,
     private val findYourCoursesUseCase: FindYourCoursesUseCase,
     private val findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
@@ -69,7 +69,7 @@ class MainViewModel @Inject constructor(
     val updateBannerState = MutableStateFlow<UpdateBannerState>(UpdateBannerState.Hidden)
 
     fun setActivityForService(activity: Activity) {
-        appVersionService.activityRef = WeakReference(activity)
+//        appVersionService.activityRef = WeakReference(activity)
     }
 
     val mainScreenIds: Set<Int> = setOf(R.id.menu_timetable, R.id.menu_group)
@@ -126,7 +126,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun onResume() {
-        appVersionService.observeDownloadedUpdate()
+//        appVersionService.observeDownloadedUpdate()
     }
 
     fun onProfileClick() {
@@ -224,24 +224,24 @@ class MainViewModel @Inject constructor(
     }
 
     init {
-        addCloseable(appVersionService)
-        appVersionService.onUpdateDownloaded = {
-            Log.d("lol", "startUpdate: toast DOWNLOADED")
-            updateBannerState.value = UpdateBannerState.Install
-        }
+//        addCloseable(appVersionService)
+//        appVersionService.onUpdateDownloaded = {
+//            Log.d("lol", "startUpdate: toast DOWNLOADED")
+//            updateBannerState.value = UpdateBannerState.Install
+//        }
 
-        appVersionService.onUpdateLoading = { progress, megabyteTotal ->
-            updateBannerState.value =
-                UpdateBannerState.Loading(progress, "$progress% из $megabyteTotal МБ")
-        }
+//        appVersionService.onUpdateLoading = { progress, megabyteTotal ->
+//            updateBannerState.value =
+//                UpdateBannerState.Loading(progress, "$progress% из $megabyteTotal МБ")
+//        }
 
-        appVersionService.observeUpdates(onUpdateAvailable = {
-            updateBannerState.value = UpdateBannerState.Remind
-        }, onError = {
+//        appVersionService.observeUpdates(onUpdateAvailable = {
+//            updateBannerState.value = UpdateBannerState.Remind
+//        }, onError = {
 //                showToast("Ошибка")
 //                it.printStackTrace()
 //                showSnackBar(it.message ?: "Err...")
-        })
+//        })
 
 //        viewModelScope.launch {
 //            navMenuState.emitAll(
@@ -306,7 +306,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun onDownloadUpdateClick() {
-        appVersionService.startDownloadUpdate()
+//        appVersionService.startDownloadUpdate()
         updateBannerState.value = UpdateBannerState.WaitLoading
     }
 
@@ -315,7 +315,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun onInstallClick() {
-        appVersionService.installUpdate()
+//        appVersionService.installUpdate()
     }
 
     data class NavDrawerState(

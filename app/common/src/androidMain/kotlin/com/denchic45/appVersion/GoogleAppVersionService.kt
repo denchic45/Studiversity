@@ -23,7 +23,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.math.max
 
-class GoogleAppVersionService @Inject constructor(
+class GoogleAppVersionService constructor(
     context: Context,
     private val coroutineScope: CoroutineScope,
     private val appPreferences: AppPreferences,

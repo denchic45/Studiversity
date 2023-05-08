@@ -105,7 +105,7 @@ class DayTimetableEditorComponent(
         editingWeekTimetable[selectedDay.value].update { it + period }
     }
 
-    fun onPeriodUpdate(position: Int, period: PeriodResponse) {
+    fun onUpdatePeriod(position: Int, period: PeriodResponse) {
         editingWeekTimetable[selectedDay.value].update {
             it.copy {
                 this[position] = period
@@ -117,10 +117,6 @@ class DayTimetableEditorComponent(
         editingWeekTimetable[selectedDay.value].update {
             it - it[position]
         }
-    }
-
-    fun onPeriodEdit(position: Int) {
-        TODO("Not yet implemented")
     }
 
     val request: PutTimetableRequest

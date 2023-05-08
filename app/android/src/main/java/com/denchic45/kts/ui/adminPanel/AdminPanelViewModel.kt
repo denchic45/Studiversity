@@ -1,6 +1,5 @@
 package com.denchic45.kts.ui.adminPanel
 
-import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.SingleLiveData
 import com.denchic45.kts.data.model.domain.ListItem
@@ -21,7 +20,7 @@ class AdminPanelViewModel @Inject constructor() : BaseViewModel() {
             ListItem(
                 title = "Найти что угодно",
                 color = UiColor.ColorId(R.color.blue),
-                icon= UiImage.IdImage(R.drawable.ic_search_)
+                icon = UiImage.IdImage(R.drawable.ic_search_)
             ),
             ListItem(
                 title = "Добавить",
@@ -31,12 +30,12 @@ class AdminPanelViewModel @Inject constructor() : BaseViewModel() {
             ListItem(
                 title = "Расписания",
                 color = UiColor.ColorId(R.color.blue),
-                icon= UiImage.IdImage(R.drawable.ic_book)
+                icon = UiImage.IdImage(R.drawable.ic_book)
             ),
             ListItem(
                 title = "Создать расписание",
                 color = UiColor.ColorId(R.color.blue),
-                icon= UiImage.IdImage(R.drawable.ic_add)
+                icon = UiImage.IdImage(R.drawable.ic_add)
             )
         )
 
@@ -45,7 +44,7 @@ class AdminPanelViewModel @Inject constructor() : BaseViewModel() {
             0 -> navigateTo(AdminPanelFragmentDirections.actionMenuAdminPanelToFinderFragment())
             1 -> openCreator.call()
             2 -> navigateTo(AdminPanelFragmentDirections.actionMenuAdminPanelToTimetableFinderFragment())
-            3 ->navigateTo(AdminPanelFragmentDirections.actionMenuAdminPanelToTimetableLoaderFragment())
+            3 -> navigateTo(AdminPanelFragmentDirections.actionMenuAdminPanelToTimetableLoaderFragment())
         }
     }
 }
