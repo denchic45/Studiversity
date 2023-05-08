@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,11 +37,11 @@ import com.denchic45.stuiversity.util.toString
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.toKotlinLocalDate
 import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,13 +75,13 @@ fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
         if (showWeekPicker) weekPickerState.show()
 
         var selectedDate by remember {
-            mutableStateOf(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date)
+            mutableStateOf(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
         }
 
         MaterialDialog(dialogState = weekPickerState, buttons = {
             positiveButton("Выбрать") {
                 component.onWeekSelect(
-                    selectedDate.toJavaLocalDate().toString(DateTimePatterns.YYYY_ww)
+                    selectedDate.toString(DateTimePatterns.YYYY_ww)
                 )
             }
             negativeButton("Отмена", onClick = component::onCancelWeekPicker)
@@ -90,8 +89,8 @@ fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
             datepicker(
                 title = "Выберите неделю расписания",
                 allowedDateValidator = { it.dayOfWeek == DayOfWeek.MONDAY },
-                initialDate = selectedDate
-            ) { date -> selectedDate = date }
+                initialDate = selectedDate.toKotlinLocalDate()
+            ) { date -> selectedDate = date.toJavaLocalDate() }
         }
 
         val showFilePicker by component.showFilePicker.collectAsState()
@@ -117,16 +116,21 @@ fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
 
             is TimetableCreatorComponent.UiState.Loading -> {
                 AlertDialog(onDismissRequest = {}) {
-                   Surface( modifier = Modifier
-                       .wrapContentWidth()
-                       .wrapContentHeight(),
-                       shape = MaterialTheme.shapes.large) {
-                       Row(modifier = Modifier.padding(24.dp), verticalAlignment = Alignment.CenterVertically) {
-                           CircularProgressIndicator()
-                           Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
-                           Text(state.message)
-                       }
-                   }
+                    Surface(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .wrapContentHeight(),
+                        shape = MaterialTheme.shapes.large
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(24.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
+                            Text(state.message)
+                        }
+                    }
                 }
             }
 

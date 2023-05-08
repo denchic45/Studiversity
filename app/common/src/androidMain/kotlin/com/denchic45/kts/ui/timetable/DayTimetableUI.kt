@@ -10,7 +10,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.runtime.Composable
@@ -58,10 +57,10 @@ fun DayTimetableContent(
     selectedDate: LocalDate,
     viewStateResource: Resource<DayTimetableViewState?>,
     onDateSelect: (date: LocalDate) -> Unit,
-    onPeriodAdd:(()->Unit)?= null,
+    onPeriodAdd: (() -> Unit)? = null,
     onEditClick: ((Int) -> Unit)? = null,
 ) {
-    Column {
+    Column(Modifier.fillMaxSize()) {
         AndroidView(factory = {
             WeekCalendarView(it).apply {
                 weekCalendarListener = object : WeekCalendarListener {
@@ -76,9 +75,7 @@ fun DayTimetableContent(
             if (it.selectDate != selectedDate)
                 it.selectDate = selectedDate
         },
-            onReset = {
-                it.removeListeners()
-            },
+            onReset = {},
             onRelease = {
                 it.removeListeners()
             })
@@ -95,13 +92,18 @@ fun DayTimetableContent(
                         )
                     }
                     if (viewState.isEdit) {
-                       item {
-                           ListItem(
-                               modifier = Modifier.clickable { onPeriodAdd?.invoke() },
-                               headlineContent = { Text("Добавить") },
-                               leadingContent = { Icon(imageVector = Icons.Default.Add, contentDescription = "add period")}
-                           )
-                       }
+                        item {
+                            ListItem(
+                                modifier = Modifier.clickable { onPeriodAdd?.invoke() },
+                                headlineContent = { Text("Добавить") },
+                                leadingContent = {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "add period"
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }

@@ -2,40 +2,47 @@ package com.denchic45.kts.ui.timetableLoader
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.domain.resourceOf
 import com.denchic45.kts.ui.chooser.StudyGroupChooserScreen
+import com.denchic45.kts.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.DayTimetableContent
 import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
@@ -51,17 +58,13 @@ fun TimetablesPublisherScreen(component: TimetablesPublisherComponent) {
     val studyGroups by component.studyGroups.collectAsState()
     val isEdit by component.isEdit.collectAsState()
     val selectedDate by component.selectedDate.collectAsState()
-    val selectedGroup by component.selectedGroup.collectAsState()
     val overlay by component.childOverlay.subscribeAsState()
 
-    val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
 
     LaunchedEffect(Unit) {
         component.selectedGroup.collect { index ->
-//            coroutineScope.launch {
-            pagerState.animateScrollToPage(index)
-//            }
+            pagerState.scrollToPage(index)
         }
     }
 
@@ -77,6 +80,10 @@ fun TimetablesPublisherScreen(component: TimetablesPublisherComponent) {
             is TimetablesPublisherComponent.OverlayChild.GroupChooser -> {
                 StudyGroupChooserScreen(component = child.component)
             }
+
+            is TimetablesPublisherComponent.OverlayChild.PeriodEditor -> PeriodEditorScreen(
+                component = child.component
+            )
         }
     } ?: run {
         TimetablePublisherContent(
@@ -91,8 +98,9 @@ fun TimetablesPublisherScreen(component: TimetablesPublisherComponent) {
             onPublishClick = component::onPublishClick,
             onStudyGroupChoose = component::onStudyGroupChoose,
             onStudyGroupClick = component::onStudyGroupClick,
-            onPeriodAdd= component::onPeriodAdd,
-            onPeriodEdit = component::onPeriodEdit
+            onRemoveStudyGroupClick = component::onRemoveStudyGroupClick,
+            onPeriodAdd = component::onAddPeriodClick,
+            onPeriodEdit = component::onEditPeriodClick
         )
     }
 }
@@ -111,12 +119,12 @@ private fun TimetablePublisherContent(
     onPublishClick: () -> Unit,
     onStudyGroupChoose: () -> Unit,
     onStudyGroupClick: (Int) -> Unit,
-    onPeriodAdd:()->Unit,
+    onRemoveStudyGroupClick: (Int) -> Unit,
+    onPeriodAdd: (Int) -> Unit,
     onPeriodEdit: (Int, Int) -> Unit
 ) {
     Column {
         if (studyGroups.isNotEmpty()) {
-
             ListItem(
                 headlineContent = {
                     Text(
@@ -174,24 +182,57 @@ private fun TimetablePublisherContent(
         }
 
         if (studyGroups.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(MaterialTheme.spacing.medium),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = "Нет расписаний", style = MaterialTheme.typography.titleLarge)
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+                Text(
+                    text = "Не выбрано ни одной группы для загрузки расписания",
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
                 Button(onClick = { onStudyGroupChoose() }) {
                     Text(text = "Добавить группу")
                 }
             }
         } else {
-            TabRow(selectedTabIndex = pagerState.currentPage) {
+            ScrollableTabRow(
+                selectedTabIndex = pagerState.currentPage,
+                modifier = Modifier,
+                divider = {}
+            ) {
                 // Add tabs for all of our pages
                 studyGroups.forEachIndexed { index, group ->
                     Tab(
-                        text = { Text(group.name) },
                         selected = pagerState.currentPage == index,
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(group.name)
+                                IconButton(onClick = { onRemoveStudyGroupClick(index) }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "remove group"
+                                    )
+                                }
+                            }
+                        },
                         onClick = {
                             onStudyGroupClick(index)
                         },
                     )
                 }
+                Tab(
+                    selected = false,
+                    text = { Text("Добавить") },
+                    onClick = onStudyGroupChoose
+                )
             }
+            Divider()
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
             HorizontalPager(
                 pageCount = viewStates.size,
@@ -201,7 +242,7 @@ private fun TimetablePublisherContent(
                 DayTimetableContent(selectedDate,
                     resourceOf(viewState),
                     onDateSelect = { onDateSelect(it) },
-                    onPeriodAdd = {onPeriodAdd()},
+                    onPeriodAdd = { onPeriodAdd(pagerState.currentPage) },
                     onEditClick = { onPeriodEdit(position, it) }
                 )
             }

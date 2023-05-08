@@ -14,14 +14,19 @@ import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.usecase.PutTimetableUseCase
 import com.denchic45.kts.ui.chooser.StudyGroupChooserComponent
+import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
+import com.denchic45.kts.ui.confirm.ConfirmState
+import com.denchic45.kts.ui.periodeditor.EditingPeriod
+import com.denchic45.kts.ui.periodeditor.EditingPeriodDetails
 import com.denchic45.kts.ui.periodeditor.PeriodEditorComponent
 import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
 import com.denchic45.kts.ui.timetable.state.toDayTimetableViewState
 import com.denchic45.kts.ui.timetableeditor.DayTimetableEditorComponent
+import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.stuiversity.api.timetable.model.EventDetails
 import com.denchic45.stuiversity.api.timetable.model.LessonDetails
-import com.denchic45.stuiversity.api.timetable.model.LessonResponse
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import com.denchic45.stuiversity.api.timetable.model.toStudyGroupName
@@ -32,7 +37,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -45,8 +49,16 @@ import java.util.UUID
 @Inject
 class TimetablesPublisherComponent(
     metaRepository: MetaRepository,
-    private val studyGroupChooserComponent: (onFinish: (StudyGroupResponse?) -> Unit, ComponentContext) -> StudyGroupChooserComponent,
-    private val periodEditorComponent: (ComponentContext)->PeriodEditorComponent,
+    private val confirmDialogInteractor: ConfirmDialogInteractor,
+    private val studyGroupChooserComponent: (
+        onFinish: (StudyGroupResponse?) -> Unit,
+        ComponentContext
+    ) -> StudyGroupChooserComponent,
+    private val periodEditorComponent: (
+        EditingPeriod,
+        (PeriodResponse?) -> Unit,
+        ComponentContext
+    ) -> PeriodEditorComponent,
     private val putTimetableUseCase: PutTimetableUseCase,
     private val _dayTimetableEditorComponent: (
         timetable: TimetableResponse,
@@ -67,6 +79,7 @@ class TimetablesPublisherComponent(
     private val overlayNavigation = OverlayNavigation<OverlayConfig>()
 
     val childOverlay: Value<ChildOverlay<OverlayConfig, OverlayChild>> = childOverlay(
+        handleBackButton = true,
         source = overlayNavigation,
         childFactory = { config, componentContext ->
             when (config) {
@@ -80,7 +93,13 @@ class TimetablesPublisherComponent(
                     )
                 )
 
-                is OverlayConfig.PeriodEditor -> OverlayChild.PeriodEditor(periodEditorComponent(componentContext))
+                is OverlayConfig.PeriodEditor -> OverlayChild.PeriodEditor(
+                    periodEditorComponent(
+                        config.periodConfig,
+                        config.onFinish,
+                        componentContext
+                    )
+                )
             }
         }
     )
@@ -89,13 +108,16 @@ class TimetablesPublisherComponent(
     sealed class OverlayConfig : Parcelable {
         object GroupChooser : OverlayConfig()
 
-        data class PeriodEditor(val period: PeriodResponse?) : OverlayConfig()
+        data class PeriodEditor(
+            val periodConfig: EditingPeriod,
+            val onFinish: (PeriodResponse?) -> Unit
+        ) : OverlayConfig()
     }
 
     sealed class OverlayChild {
         class GroupChooser(val component: StudyGroupChooserComponent) : OverlayChild()
 
-        class PeriodEditor(val componentContext: PeriodEditorComponent):OverlayChild()
+        class PeriodEditor(val component: PeriodEditorComponent) : OverlayChild()
     }
 
 
@@ -147,7 +169,7 @@ class TimetablesPublisherComponent(
 
     val selectedGroup = MutableStateFlow(0)
 
-    fun onAddStudyGroup(studyGroupResponse: StudyGroupResponse) {
+    private fun onAddStudyGroup(studyGroupResponse: StudyGroupResponse) {
         studyGroups.update { it + studyGroupResponse }
 
 //        val list = List(6) {
@@ -177,13 +199,23 @@ class TimetablesPublisherComponent(
 
     }
 
-    fun onRemoveStudyGroup(position: Int) {
-        studyGroups.update { it - it[position] }
-        if (selectedGroup.value == editorComponents.value.size - 1 && selectedGroup.value != 0) {
-            selectedGroup.update { it - 1 }
+    fun onRemoveStudyGroupClick(position: Int) {
+        confirmDialogInteractor.set(
+            ConfirmState(
+                uiTextOf("Удалить группу"),
+                uiTextOf("Расписание данной группы будет удалено")
+            )
+        )
+        componentScope.launch {
+            if (confirmDialogInteractor.receiveConfirm()) {
+                if (selectedGroup.value == editorComponents.value.size - 1 && selectedGroup.value != 0) {
+                    selectedGroup.update { it - 1 }
+                }
+                studyGroups.update { it - it[position] }
+                editorComponents.update { it - it[position] }
+                timetablesViewStates.update { it - it[position] }
+            }
         }
-        editorComponents.update { it - it[position] }
-        timetablesViewStates.update { it - it[position] }
     }
 
     fun onStudyGroupClick(position: Int) {
@@ -198,13 +230,49 @@ class TimetablesPublisherComponent(
         isEdit.value = edit
     }
 
-    fun onPeriodAdd(timetablePos: Int) {
-        overlayNavigation.activate(OverlayConfig.PeriodEditor(null))
+    fun onAddPeriodClick(timetablePos: Int) {
+        overlayNavigation.activate(OverlayConfig.PeriodEditor(EditingPeriod().apply {
+            group = studyGroups.value[timetablePos].toStudyGroupName()
+            date = selectedDate.value
+            order = getCurrentSelectedDayTimetable(timetablePos)
+                .lastOrNull()?.order?.let { it + 1 } ?: 1
+        }
+        ) { it?.let(editorComponent(timetablePos)::onAddPeriod) })
     }
 
-    fun onPeriodEdit(timetablePos: Int, periodPos: Int) {
-        editorComponents.value[timetablePos].onPeriodEdit(periodPos)
+    fun onEditPeriodClick(timetablePos: Int, periodPos: Int) {
+        overlayNavigation.activate(OverlayConfig.PeriodEditor(
+            EditingPeriod().apply {
+                getCurrentSelectedDayTimetable(timetablePos)[periodPos].let { period ->
+                    date = period.date
+                    order = period.order
+                    group = period.studyGroup
+                    room = period.room
+                    members = period.members
+                    details = when (val details = period.details) {
+                        is EventDetails -> EditingPeriodDetails.Event().apply {
+                            name = details.name
+                            color = details.color
+                            iconUrl = details.iconUrl
+                        }
+
+                        is LessonDetails -> EditingPeriodDetails.Lesson().apply {
+                            course = details.course
+                        }
+                    }
+                }
+            }
+        ) {
+            it?.let { editorComponent(timetablePos).onUpdatePeriod(periodPos, it) }
+        })
     }
+
+    private fun getCurrentSelectedDayTimetable(timetablePos: Int): List<PeriodResponse> {
+        return editorComponent(timetablePos).editingWeekTimetable[selectedDate.value.dayOfWeek.ordinal].value
+    }
+
+    private fun editorComponent(timetablePos: Int) =
+        editorComponents.value[timetablePos]
 
     fun onPublishClick() {
         publishState.update { PublishState.SENDING }

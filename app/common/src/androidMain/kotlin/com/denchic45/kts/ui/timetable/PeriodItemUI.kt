@@ -111,6 +111,7 @@ fun PeriodItemUI(
             } else {
                 Text(
                     text = "Пусто",
+                    modifier = Modifier.padding(start = 32.dp),
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Gray
                 )
