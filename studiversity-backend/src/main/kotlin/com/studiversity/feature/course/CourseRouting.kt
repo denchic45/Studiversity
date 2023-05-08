@@ -14,6 +14,7 @@ import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.ktor.*
 import com.studiversity.util.onlyDigits
 import com.studiversity.validation.buildValidationResult
+import com.studiversity.validation.require
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -44,7 +45,10 @@ fun Application.courseRoutes() {
                 val searchCourses: SearchCoursesUseCase by inject()
 
                 get {
-                    val q = call.request.queryParameters["q"]
+                    val q = call.request.queryParameters["q"]?.require(
+                        String::isNotBlank,
+                        CommonErrors::PARAMETER_MUST_NOT_BE_EMPTY
+                    )
                     val memberId = call.getUserUuidByQueryParameterOrMe("member_id")
                     val subjectId = call.request.queryParameters.getUuid("subject_id")
                     call.respond(HttpStatusCode.OK, searchCourses(q, memberId, subjectId))

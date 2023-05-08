@@ -11,6 +11,8 @@ import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
+import com.studiversity.ktor.CommonErrors
+import com.studiversity.validation.require
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -52,7 +54,10 @@ fun Application.subjectRoutes() {
                     call.respond(HttpStatusCode.Created, subject)
                 }
                 get {
-                    val q: String? = call.request.queryParameters["q"]
+                    val q = call.request.queryParameters["q"]?.require(
+                        String::isNotBlank,
+                        CommonErrors::PARAMETER_MUST_NOT_BE_EMPTY
+                    )
                     call.respond(HttpStatusCode.OK, searchSubjects(q))
                 }
                 subjectByIdRoute()

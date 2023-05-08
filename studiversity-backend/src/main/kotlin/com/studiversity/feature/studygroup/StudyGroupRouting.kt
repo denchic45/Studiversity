@@ -4,10 +4,12 @@ import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.denchic45.stuiversity.util.toUUID
 import com.studiversity.feature.studygroup.usecase.*
+import com.studiversity.ktor.CommonErrors
 import com.studiversity.ktor.getUserUuidByQueryParameterOrMe
 import com.studiversity.ktor.getUuid
 import com.studiversity.util.onlyDigits
 import com.studiversity.validation.buildValidationResult
+import com.studiversity.validation.require
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -52,7 +54,10 @@ fun Application.studyGroupRoutes() {
                     }
                 }
                 get {
-                    val q = call.request.queryParameters["q"]
+                    val q = call.request.queryParameters["q"]?.require(
+                        String::isNotBlank,
+                        CommonErrors::PARAMETER_MUST_NOT_BE_EMPTY
+                    )
                     val memberId = call.getUserUuidByQueryParameterOrMe("member_id")
                     val roleId = call.request.queryParameters["role_id"]?.toLong()
                     val specialtyId = call.request.queryParameters.getUuid("specialty_id")
@@ -79,7 +84,7 @@ private fun Route.studyGroupByIdRoutes() {
 
         get {
             val id = call.parameters["id"]!!.toUUID()
-                call.respond(HttpStatusCode.OK, findStudyGroupById(id))
+            call.respond(HttpStatusCode.OK, findStudyGroupById(id))
         }
         patch {
             val id = call.parameters["id"]!!.toUUID()

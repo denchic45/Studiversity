@@ -10,6 +10,8 @@ import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getUuidOrFail
 import com.studiversity.util.tryToUUID
 import com.denchic45.stuiversity.api.role.model.Capability
+import com.studiversity.ktor.CommonErrors
+import com.studiversity.validation.require
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -28,7 +30,10 @@ fun Application.userRoutes() {
                 val searchUsers: SearchUsersUseCase by inject()
 
                 get {
-                    val q: String = call.request.queryParameters.getOrFail("q")
+                    val q = call.request.queryParameters.getOrFail("q").require(
+                        String::isNotBlank,
+                        CommonErrors::PARAMETER_MUST_NOT_BE_EMPTY
+                    )
                     call.respond(HttpStatusCode.OK, searchUsers(q))
                 }
 
