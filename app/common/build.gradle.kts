@@ -118,7 +118,9 @@ kotlin {
                 kotlin.srcDir("build/generated/ksp/android/androidDebug")
 
                 api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.9.0")
+                api("androidx.core:core-ktx:1.10.0")
+
+                api ("com.kizitonwose.calendar:compose:2.3.0")
 
                 api("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
 
