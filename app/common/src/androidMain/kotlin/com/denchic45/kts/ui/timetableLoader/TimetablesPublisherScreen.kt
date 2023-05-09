@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.domain.resourceOf
+import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.chooser.StudyGroupChooserScreen
 import com.denchic45.kts.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.kts.ui.theme.spacing
@@ -52,7 +53,10 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TimetablesPublisherScreen(component: TimetablesPublisherComponent) {
+fun TimetablesPublisherScreen(
+    component: TimetablesPublisherComponent,
+    appBarInteractor: AppBarInteractor
+) {
     val publishState by component.publishState.collectAsState()
     val viewStates by component.timetablesViewStates.collectAsState()
     val studyGroups by component.studyGroups.collectAsState()
@@ -82,7 +86,8 @@ fun TimetablesPublisherScreen(component: TimetablesPublisherComponent) {
             }
 
             is TimetablesPublisherComponent.OverlayChild.PeriodEditor -> PeriodEditorScreen(
-                component = child.component
+                component = child.component,
+                appBarInteractor = appBarInteractor
             )
         }
     } ?: run {
@@ -166,19 +171,23 @@ private fun TimetablePublisherContent(
                         }
                     }
                 },
-                modifier = Modifier.clickable(onClick = onPublishClick)
+                modifier = Modifier.clickable(
+                    enabled = publishState == TimetablesPublisherComponent.PublishState.PREPARATION,
+                    onClick = onPublishClick
+                )
             )
 
-            ListItem(
-                headlineContent = { Text("Режим редактирования") },
-                trailingContent = {
-                    Switch(
-                        checked = isEdit,
-                        onCheckedChange = onEditEnableClick
-                    )
-                },
-                modifier = Modifier.clickable { onEditEnableClick(!isEdit) }
-            )
+            if (publishState == TimetablesPublisherComponent.PublishState.PREPARATION)
+                ListItem(
+                    headlineContent = { Text("Режим редактирования") },
+                    trailingContent = {
+                        Switch(
+                            checked = isEdit,
+                            onCheckedChange = onEditEnableClick
+                        )
+                    },
+                    modifier = Modifier.clickable { onEditEnableClick(!isEdit) }
+                )
         }
 
         if (studyGroups.isEmpty()) {
@@ -239,7 +248,8 @@ private fun TimetablePublisherContent(
                 state = pagerState
             ) { position ->
                 val viewState by viewStates[position].collectAsState()
-                DayTimetableContent(selectedDate,
+                DayTimetableContent(
+                    selectedDate,
                     resourceOf(viewState),
                     onDateSelect = { onDateSelect(it) },
                     onPeriodAdd = { onPeriodAdd(pagerState.currentPage) },

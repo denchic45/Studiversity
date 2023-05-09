@@ -21,6 +21,7 @@ import com.denchic45.kts.ui.periodeditor.EditingPeriodDetails
 import com.denchic45.kts.ui.periodeditor.PeriodEditorComponent
 import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
 import com.denchic45.kts.ui.timetable.state.toDayTimetableViewState
+import com.denchic45.kts.ui.timetable.state.toLocalDateOfWeekOfYear
 import com.denchic45.kts.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
@@ -96,7 +97,10 @@ class TimetablesPublisherComponent(
                 is OverlayConfig.PeriodEditor -> OverlayChild.PeriodEditor(
                     periodEditorComponent(
                         config.periodConfig,
-                        config.onFinish,
+                        {
+                            overlayNavigation.dismiss()
+                            config.onFinish(it)
+                        },
                         componentContext
                     )
                 )
@@ -125,18 +129,25 @@ class TimetablesPublisherComponent(
 
     val studyGroups = MutableStateFlow(_studyGroupTimetables.map { it.first })
 
-    val selectedDate = MutableStateFlow(LocalDate.now())
+    val selectedDate = MutableStateFlow(weekOfYear.toLocalDateOfWeekOfYear())
 
     private val editorComponents = MutableStateFlow(
         _studyGroupTimetables.map {
-            _dayTimetableEditorComponent(
-                it.second,
-                it.first.id,
-                selectedDate,
-                componentContext.childContext("DayTimetable ${it.first.id}")
-            )
+            createDayTimetableEditorComponent(it.second, it.first.id)
         }
     )
+
+    private fun createDayTimetableEditorComponent(
+        timetable: TimetableResponse,
+        groupId: UUID
+    ): DayTimetableEditorComponent {
+        return _dayTimetableEditorComponent(
+            timetable,
+            groupId,
+            selectedDate,
+            componentContext.childContext("DayTimetable $groupId")
+        )
+    }
 
     val isEdit = MutableStateFlow(false)
 
@@ -172,11 +183,7 @@ class TimetablesPublisherComponent(
     private fun onAddStudyGroup(studyGroupResponse: StudyGroupResponse) {
         studyGroups.update { it + studyGroupResponse }
 
-//        val list = List(6) {
-//            MutableStateFlow(listOf<PeriodResponse>())
-//        }
-
-        val dayTimetableEditorComponent = _dayTimetableEditorComponent(
+        val dayTimetableEditorComponent = createDayTimetableEditorComponent(
             TimetableResponse(
                 weekOfYear,
                 listOf(),
@@ -187,8 +194,6 @@ class TimetablesPublisherComponent(
                 listOf()
             ),
             studyGroupResponse.id,
-            selectedDate,
-            componentContext.childContext("DayTimetable")
         )
         editorComponents.update { components ->
             components + dayTimetableEditorComponent
@@ -196,7 +201,6 @@ class TimetablesPublisherComponent(
         componentScope.launch {
             timetablesViewStates.update { it + getViewState(dayTimetableEditorComponent) }
         }
-
     }
 
     fun onRemoveStudyGroupClick(position: Int) {
@@ -231,22 +235,26 @@ class TimetablesPublisherComponent(
     }
 
     fun onAddPeriodClick(timetablePos: Int) {
-        overlayNavigation.activate(OverlayConfig.PeriodEditor(EditingPeriod().apply {
-            group = studyGroups.value[timetablePos].toStudyGroupName()
-            date = selectedDate.value
-            order = getCurrentSelectedDayTimetable(timetablePos)
-                .lastOrNull()?.order?.let { it + 1 } ?: 1
-        }
-        ) { it?.let(editorComponent(timetablePos)::onAddPeriod) })
+        val group = studyGroups.value[timetablePos].toStudyGroupName()
+        overlayNavigation.activate(
+            OverlayConfig.PeriodEditor(
+                EditingPeriod(
+                    selectedDate.value,
+                    group.id,
+                    group.name
+                ).apply {
+                    order = getCurrentSelectedDayTimetable(timetablePos)
+                        .lastOrNull()?.order?.let { it + 1 } ?: 1
+                }
+            ) { it?.let(editorComponent(timetablePos)::onAddPeriod) })
     }
 
     fun onEditPeriodClick(timetablePos: Int, periodPos: Int) {
         overlayNavigation.activate(OverlayConfig.PeriodEditor(
-            EditingPeriod().apply {
-                getCurrentSelectedDayTimetable(timetablePos)[periodPos].let { period ->
-                    date = period.date
+            getCurrentSelectedDayTimetable(timetablePos)[periodPos].let { period ->
+                val group = period.studyGroup
+                EditingPeriod(period.date, group.id, group.name).apply {
                     order = period.order
-                    group = period.studyGroup
                     room = period.room
                     members = period.members
                     details = when (val details = period.details) {
