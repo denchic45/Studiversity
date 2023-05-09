@@ -1,10 +1,14 @@
 package com.denchic45.kts.ui.periodeditor
 
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
+import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
@@ -15,14 +19,21 @@ import com.denchic45.kts.domain.usecase.FindRoomByContainsNameUseCase
 import com.denchic45.kts.ui.chooser.CourseChooserComponent
 import com.denchic45.kts.ui.chooser.UserChooserComponent
 import com.denchic45.kts.util.componentScope
-import com.denchic45.kts.util.copy
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.stuiversity.api.timetable.model.EventDetails
+import com.denchic45.stuiversity.api.timetable.model.EventResponse
+import com.denchic45.stuiversity.api.timetable.model.LessonDetails
+import com.denchic45.stuiversity.api.timetable.model.LessonResponse
 import com.denchic45.stuiversity.api.timetable.model.PeriodMember
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.StudyGroupName
 import com.denchic45.stuiversity.api.timetable.model.toPeriodMember
 import com.denchic45.stuiversity.api.user.model.UserResponse
+import com.denchic45.uivalidator.experimental2.condition.Condition
+import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
+import com.denchic45.uivalidator.experimental2.validator.ValueValidator
+import com.denchic45.uivalidator.experimental2.validator.observable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
@@ -31,7 +42,7 @@ import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.time.LocalDate
-import kotlin.properties.Delegates
+import java.util.UUID
 
 @Inject
 class PeriodEditorComponent(
@@ -39,7 +50,7 @@ class PeriodEditorComponent(
     private val courseChooserComponent: (onFinish: (CourseResponse?) -> Unit, ComponentContext) -> CourseChooserComponent,
     private val userChooserComponent: (onFinish: (UserResponse?) -> Unit, ComponentContext) -> UserChooserComponent,
     private val eventDetailsEditorComponent: (EditingPeriod, ComponentContext) -> EventDetailsEditorComponent,
-    private val lessonDetailsEditorComponent: (EditingPeriod, onCourseChoose: (OverlayConfig.CourseChooser) -> Unit, ComponentContext) -> LessonDetailsEditorComponent,
+    private val lessonDetailsEditorComponent: (EditingPeriod, OverlayNavigation<OverlayConfig>, ComponentContext) -> LessonDetailsEditorComponent,
     @Assisted
     private val config: EditingPeriod,
     @Assisted
@@ -48,10 +59,6 @@ class PeriodEditorComponent(
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
-
-//    private var draftEventDetails = EditingPeriodDetails.Event()
-//    private var draftLessonDetails = EditingPeriodDetails.Lesson()
-
 
     val state: EditingPeriod = config
 
@@ -62,8 +69,50 @@ class PeriodEditorComponent(
         .mapLatest { findRoomByContainsNameUseCase(it) }
         .stateInResource(componentScope)
 
+    private val validator = CompositeValidator(
+        validators = listOf(
+            ValueValidator(
+                value = state::details,
+                conditions = listOf(
+                    Condition {
+                        when (val details = it) {
+                            is EditingPeriodDetails.Lesson -> lessonValidator(details)
+                            is EditingPeriodDetails.Event -> eventValidator(details)
+                        }.validate()
+                    }
+                )
+            )
+        )
+    )
+
+    private fun lessonValidator(details: EditingPeriodDetails.Lesson) = CompositeValidator(
+        validators = listOf(
+            ValueValidator(
+                value = details::course,
+                conditions = listOf(Condition { it != null })
+            ).observable { details.courseError = !it }
+        )
+    )
+
+    private fun eventValidator(details: EditingPeriodDetails.Event) = CompositeValidator(
+        validators = listOf(
+            ValueValidator(
+                value = details::name,
+                conditions = listOf(Condition(String::isNotEmpty))
+            ),
+            ValueValidator(
+                value = details::color,
+                conditions = listOf(Condition(String::isNotEmpty)),
+            ),
+            ValueValidator(
+                value = details::iconUrl,
+                conditions = listOf(Condition(String::isNotEmpty)),
+            )
+        )
+    )
+
     private val stackNavigation = StackNavigation<DetailsConfig>()
-    private val childStack = childStack(
+    val childStack = childStack(
         source = stackNavigation,
         initialConfiguration = when (state.details) {
             is EditingPeriodDetails.Event -> DetailsConfig.Event
@@ -80,7 +129,7 @@ class PeriodEditorComponent(
                     DetailsChild.Lesson(
                         lessonDetailsEditorComponent(
                             state,
-                            overlayNavigation::activate,
+                            overlayNavigation,
                             componentContext
                         )
                     )
@@ -90,17 +139,23 @@ class PeriodEditorComponent(
     )
 
     private val overlayNavigation = OverlayNavigation<OverlayConfig>()
-    private val childOverlay = childOverlay(
+    val childOverlay = childOverlay(
         handleBackButton = true,
         source = overlayNavigation,
         childFactory = { config, componentContext ->
             when (config) {
                 is OverlayConfig.CourseChooser -> OverlayChild.CourseChooser(
-                    courseChooserComponent({ config.onFinish(it) }, componentContext)
+                    courseChooserComponent({
+                        overlayNavigation.dismiss()
+                        config.onFinish(it)
+                    }, componentContext)
                 )
 
                 is OverlayConfig.UserChooser -> OverlayChild.UserChooser(
-                    userChooserComponent({ config.onFinish(it) }, componentContext)
+                    userChooserComponent({
+                        overlayNavigation.dismiss()
+                        config.onFinish(it)
+                    }, componentContext)
                 )
             }
         }
@@ -132,28 +187,64 @@ class PeriodEditorComponent(
 //        }
     }
 
-    fun onTeacherChoose() {
-        overlayNavigation.activate(OverlayConfig.UserChooser { it?.let(::onTeacherSelect) })
-    }
-
     private fun onTeacherSelect(userResponse: UserResponse) {
         state.members = state.members + userResponse.toPeriodMember()
     }
 
-    fun onCourseChoose() {
-        TODO("Not yet implemented")
-    }
+//    fun onCourseChoose() {
+//        overlayNavigation.activate(OverlayConfig.CourseChooser {
+//            it?.let {
+//                (state.details as EditingPeriodDetails.Lesson).course = it
+//            }
+//        })
+//    }
 
     fun onAddMemberClick() {
-        overlayNavigation.activate(OverlayConfig.UserChooser { member ->
-            member?.let {
-                state.members = state.members.copy { this + member }
-            }
+        overlayNavigation.activate(OverlayConfig.UserChooser {
+            overlayNavigation.dismiss()
+            it?.let(::onTeacherSelect)
         })
     }
 
     fun onRemoveMemberClick(member: PeriodMember) {
         state.members = state.members - member
+    }
+
+    fun onSaveClick() {
+        if (!validator.validate()) return
+        onFinish(
+            when (val details = state.details) {
+                is EditingPeriodDetails.Event -> EventResponse(
+                    id = -1,
+                    date = state.date,
+                    order = state.order,
+                    room = state.room,
+                    studyGroup = state.group,
+                    members = state.members,
+                    details = EventDetails(
+                        name = details.name,
+                        color = details.color,
+                        iconUrl = details.iconUrl
+                    )
+                )
+
+                is EditingPeriodDetails.Lesson -> LessonResponse(
+                    id = -1,
+                    date = state.date,
+                    order = state.order,
+                    room = state.room,
+                    studyGroup = state.group,
+                    members = state.members,
+                    details = LessonDetails(
+                        course = details.course!!,
+                    )
+                )
+            }
+        )
+    }
+
+    fun onCloseClick() {
+        onFinish(null)
     }
 
     enum class DetailsType { EVENT, LESSON }
@@ -187,29 +278,35 @@ class PeriodEditorComponent(
 
 @Parcelize
 @Stable
-class EditingPeriod : Parcelable {
-    var date: LocalDate by Delegates.notNull()
-    var order: Int = 1
-    var group: StudyGroupName by Delegates.notNull()
-    var room: RoomResponse? = null
-    var members: List<PeriodMember> = emptyList()
-    var details: EditingPeriodDetails = EditingPeriodDetails.Lesson()
+class EditingPeriod(
+    private val _date: LocalDate,
+    private val groupId: UUID,
+    private val groupName: String
+) : Parcelable {
+    var date: LocalDate by mutableStateOf(_date)
+    var order: Int by mutableStateOf(1)
+    var group: StudyGroupName by mutableStateOf(StudyGroupName(groupId, groupName))
+    var room: RoomResponse? by mutableStateOf(null)
+    var members: List<PeriodMember> by mutableStateOf(emptyList())
+    var details: EditingPeriodDetails by mutableStateOf(EditingPeriodDetails.Lesson())
 }
 
+@Stable
 sealed class EditingPeriodDetails {
     abstract val type: PeriodEditorComponent.DetailsType
 
     @Stable
     class Event : EditingPeriodDetails() {
-        var name: String = ""
-        var color: String = ""
-        var iconUrl: String = ""
+        var name: String by mutableStateOf("")
+        var color: String by mutableStateOf("")
+        var iconUrl: String by mutableStateOf("")
         override val type = PeriodEditorComponent.DetailsType.EVENT
     }
 
     @Stable
     class Lesson : EditingPeriodDetails() {
-        var course: CourseResponse? = null
+        var course: CourseResponse? by mutableStateOf(null)
+        var courseError: Boolean by mutableStateOf(false)
         override val type = PeriodEditorComponent.DetailsType.LESSON
     }
 }
