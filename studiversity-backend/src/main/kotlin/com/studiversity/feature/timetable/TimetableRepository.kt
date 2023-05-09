@@ -115,8 +115,8 @@ class TimetableRepository {
         roomIds: List<UUID>?,
         sorting: List<PeriodsSorting>?
     ): Query {
-        val query = Periods.leftJoin(Lessons, { id }, { id })
-            .leftJoin(Events, { Events.id }, { id })
+        val query = Periods.leftJoin(Lessons, { Periods.id }, { id })
+            .leftJoin(Events, { Periods.id }, { id })
             .run {
                 endDate?.let {
                     select(Periods.date.between(startDate, endDate))

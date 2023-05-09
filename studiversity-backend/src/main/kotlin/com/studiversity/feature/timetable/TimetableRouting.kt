@@ -8,7 +8,6 @@ import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.feature.timetable.usecase.*
 import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getSortingBy
-import com.studiversity.ktor.getUserUuidByQueryParameterOrMe
 import com.studiversity.ktor.getUuidOrFail
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -26,7 +25,7 @@ fun Application.timetableRoutes() {
             // TODO validate requests
             route("/timetables/{weekOfYear}") {
                 val putTimetable: PutTimetableUseCase by inject()
-                val findTimetableByStudyGroup: FindTimetableUseCase by inject()
+                val findTimetable: FindTimetableUseCase by inject()
                 val removeTimetable: RemoveTimetableUseCase by inject()
                 val requireCapability: RequireCapabilityUseCase by inject()
                 put {
@@ -47,7 +46,7 @@ fun Application.timetableRoutes() {
                     if (studyGroupIds == null && courseIds == null && memberIds == null && roomIds == null)
                         throw MissingRequestParameterException("period field")
 
-                    val timetable = findTimetableByStudyGroup(
+                    val timetable = findTimetable(
                         studyGroupIds = studyGroupIds,
                         courseIds = courseIds,
                         memberIds = memberIds,
