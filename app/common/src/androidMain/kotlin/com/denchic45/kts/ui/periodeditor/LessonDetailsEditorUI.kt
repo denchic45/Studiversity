@@ -3,7 +3,7 @@ package com.denchic45.kts.ui.periodeditor
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -61,7 +61,7 @@ fun LessonDetailsEditorContent(
     onRemoveMemberClick: (PeriodMember) -> Unit,
     onCourseChoose: () -> Unit,
 ) {
-    Box(modifier = Modifier.clickable { onCourseChoose() }) {
+    Column(modifier = Modifier.clickable(onClick = onCourseChoose)) {
         details.course?.let {
             ListItem(
                 headlineContent = { Text(text = it.subject?.name ?: it.name) },
@@ -98,43 +98,43 @@ fun LessonDetailsEditorContent(
                 )
             }
         )
-    }
-    HeaderItemUI("Преподаватели")
-    Row(
-        Modifier
-            .padding(horizontal = MaterialTheme.spacing.normal)
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-    ) {
-        members.forEach {
-            AssistChip(
-                onClick = { /*TODO*/ },
-                label = { Text(text = it.fullName) },
+        HeaderItemUI("Преподаватели")
+        Row(
+            Modifier
+                .padding(horizontal = MaterialTheme.spacing.normal)
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+        ) {
+            members.forEach {
+                AssistChip(
+                    onClick = { /*TODO*/ },
+                    label = { Text(text = it.fullName) },
+                    leadingIcon = {
+                        AsyncImage(
+                            model = it.avatarUrl,
+                            contentDescription = "user avatar",
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clip(CircleShape)
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "remove member",
+                            modifier = Modifier.clickable { onRemoveMemberClick(it) }
+                        )
+                    })
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
+            }
+            AssistChip(onClick = onAddMemberClick,
                 leadingIcon = {
-                    AsyncImage(
-                        model = it.avatarUrl,
-                        contentDescription = "user avatar",
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clip(CircleShape)
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "add member"
                     )
                 },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "remove member",
-                        modifier = Modifier.clickable { onRemoveMemberClick(it) }
-                    )
-                })
-            Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
+                label = { Text(text = "Добавить") })
         }
-        AssistChip(onClick = onAddMemberClick,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "add member"
-                )
-            },
-            label = { Text(text = "Добавить") })
     }
 }

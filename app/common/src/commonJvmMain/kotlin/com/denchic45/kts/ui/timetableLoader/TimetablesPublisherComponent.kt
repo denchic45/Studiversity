@@ -53,12 +53,12 @@ class TimetablesPublisherComponent(
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val studyGroupChooserComponent: (
         onFinish: (StudyGroupResponse?) -> Unit,
-        ComponentContext
+        ComponentContext,
     ) -> StudyGroupChooserComponent,
     private val periodEditorComponent: (
         EditingPeriod,
         (PeriodResponse?) -> Unit,
-        ComponentContext
+        ComponentContext,
     ) -> PeriodEditorComponent,
     private val putTimetableUseCase: PutTimetableUseCase,
     private val _dayTimetableEditorComponent: (
@@ -114,7 +114,7 @@ class TimetablesPublisherComponent(
 
         data class PeriodEditor(
             val periodConfig: EditingPeriod,
-            val onFinish: (PeriodResponse?) -> Unit
+            val onFinish: (PeriodResponse?) -> Unit,
         ) : OverlayConfig()
     }
 
@@ -139,7 +139,7 @@ class TimetablesPublisherComponent(
 
     private fun createDayTimetableEditorComponent(
         timetable: TimetableResponse,
-        groupId: UUID
+        groupId: UUID,
     ): DayTimetableEditorComponent {
         return _dayTimetableEditorComponent(
             timetable,
@@ -222,7 +222,7 @@ class TimetablesPublisherComponent(
         }
     }
 
-    fun onStudyGroupClick(position: Int) {
+    fun onStudyGroupSelect(position: Int) {
         selectedGroup.value = position
     }
 
@@ -234,8 +234,8 @@ class TimetablesPublisherComponent(
         isEdit.value = edit
     }
 
-    fun onAddPeriodClick(timetablePos: Int) {
-        val group = studyGroups.value[timetablePos].toStudyGroupName()
+    fun onAddPeriodClick() {
+        val group = studyGroups.value[selectedGroup.value].toStudyGroupName()
         overlayNavigation.activate(
             OverlayConfig.PeriodEditor(
                 EditingPeriod(
@@ -243,15 +243,15 @@ class TimetablesPublisherComponent(
                     group.id,
                     group.name
                 ).apply {
-                    order = getCurrentSelectedDayTimetable(timetablePos)
+                    order = currentSelectedDayTimetable
                         .lastOrNull()?.order?.let { it + 1 } ?: 1
                 }
-            ) { it?.let(editorComponent(timetablePos)::onAddPeriod) })
+            ) { it?.let(currentEditor::onAddPeriod) })
     }
 
-    fun onEditPeriodClick(timetablePos: Int, periodPos: Int) {
+    fun onEditPeriodClick(periodPos: Int) {
         overlayNavigation.activate(OverlayConfig.PeriodEditor(
-            getCurrentSelectedDayTimetable(timetablePos)[periodPos].let { period ->
+            currentSelectedDayTimetable[periodPos].let { period ->
                 val group = period.studyGroup
                 EditingPeriod(period.date, group.id, group.name).apply {
                     order = period.order
@@ -271,16 +271,20 @@ class TimetablesPublisherComponent(
                 }
             }
         ) {
-            it?.let { editorComponent(timetablePos).onUpdatePeriod(periodPos, it) }
+            it?.let { currentEditor.onUpdatePeriod(periodPos, it) }
         })
     }
 
-    private fun getCurrentSelectedDayTimetable(timetablePos: Int): List<PeriodResponse> {
-        return editorComponent(timetablePos).editingWeekTimetable[selectedDate.value.dayOfWeek.ordinal].value
+    fun onRemovePeriodSwipe(position: Int) {
+        currentEditor.onPeriodRemove(position)
     }
 
-    private fun editorComponent(timetablePos: Int) =
-        editorComponents.value[timetablePos]
+    private val currentSelectedDayTimetable: List<PeriodResponse>
+        get() = currentEditor.editingWeekTimetable[selectedDate.value.dayOfWeek.ordinal].value
+
+
+    private val currentEditor
+        get() = editorComponents.value[selectedGroup.value]
 
     fun onPublishClick() {
         publishState.update { PublishState.SENDING }

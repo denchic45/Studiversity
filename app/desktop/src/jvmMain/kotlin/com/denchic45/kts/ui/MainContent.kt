@@ -2,7 +2,7 @@ package com.denchic45.kts.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.IconButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Notifications
@@ -66,7 +66,7 @@ fun MainContent(mainComponent: MainComponent) {
                         )
                         appBarMediator.content?.let {
                             it(this)
-                            androidx.compose.material.Divider(
+                            Divider(
                                 Modifier
                                     .padding(horizontal = 24.dp)
                                     .align(Alignment.CenterVertically).size(1.dp, 24.dp)

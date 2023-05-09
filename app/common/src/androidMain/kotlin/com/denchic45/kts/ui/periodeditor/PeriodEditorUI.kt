@@ -36,6 +36,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
@@ -53,6 +55,7 @@ import com.denchic45.stuiversity.util.toString
 import java.time.LocalDate
 import java.util.UUID
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBarInteractor) {
     component.lifecycle.doOnStart {
@@ -60,49 +63,10 @@ fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBa
     }
     val childOverlay by component.childOverlay.subscribeAsState()
 
-    Children(component.childStack) {
-        when (val child = it.instance) {
-            is PeriodEditorComponent.DetailsChild.Event -> TODO()
-            is PeriodEditorComponent.DetailsChild.Lesson -> LessonDetailsEditorScreen(
-                component = child.component,
-                members = component.state.members,
-                onAddMemberClick = component::onAddMemberClick,
-                onRemoveMemberClick = component::onRemoveMemberClick
-            )
-        }
-    }
-
-    when (val child = childOverlay.overlay?.instance) {
-        is PeriodEditorComponent.OverlayChild.CourseChooser -> {
-            CourseChooserScreen(component = child.component)
-        }
-
-        is PeriodEditorComponent.OverlayChild.UserChooser -> {
-            UserChooserScreen(component = child.component)
-        }
-
-        null -> PeriodEditorContent(
-            state = component.state,
-            onDetailsTypeSelect = component::onDetailsTypeSelect,
-            onSaveClick = component::onSaveClick,
-            onCloseClick = component::onCloseClick
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PeriodEditorContent(
-    state: EditingPeriod,
-    onDetailsTypeSelect: (PeriodEditorComponent.DetailsType) -> Unit,
-    onSaveClick: () -> Unit,
-    onCloseClick: () -> Unit
-) {
-    Surface {
-        Column(Modifier.fillMaxSize()) {
-            var expanded by remember { mutableStateOf(false) }
-            TopAppBar(
-                title = {
+    Column {
+        var expanded by remember { mutableStateOf(false) }
+        TopAppBar(
+            title = {
                     Row(
                         modifier = Modifier
                             .fillMaxHeight()
@@ -110,7 +74,7 @@ fun PeriodEditorContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = when (state.details) {
+                            text = when (component.state.details) {
                                 is EditingPeriodDetails.Event -> "Событие"
                                 is EditingPeriodDetails.Lesson -> "Урок"
                             }
@@ -122,34 +86,81 @@ fun PeriodEditorContent(
                         )
                         Spacer(modifier = Modifier.weight(1f))
                     }
-                },
-                actions = {
-                    IconButton(onClick = { onSaveClick() }) {
-                        Icon(imageVector = Icons.Default.Done, contentDescription = "save")
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onCloseClick() }) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "close")
-                    }
+            },
+            actions = {
+                IconButton(onClick = { component.onSaveClick() }) {
+                    Icon(imageVector = Icons.Default.Done, contentDescription = "save")
                 }
-            )
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            },
+            navigationIcon = {
+                IconButton(onClick = { component.onCloseClick() }) {
+                    Icon(imageVector = Icons.Default.Close, contentDescription = "close")
+                }
+            }
+        )
+        Box {
+            DropdownMenu(expanded = expanded,
+                offset = DpOffset(48.dp,0.dp),
+                onDismissRequest = { expanded = false }) {
                 DropdownMenuItem(
                     text = { Text(text = "Урок") },
                     onClick = {
                         expanded = false
-                        onDetailsTypeSelect(PeriodEditorComponent.DetailsType.LESSON)
+                        component.onDetailsTypeSelect(PeriodEditorComponent.DetailsType.LESSON)
                     }
                 )
                 DropdownMenuItem(
                     text = { Text(text = "Событие") },
                     onClick = {
                         expanded = false
-                        onDetailsTypeSelect(PeriodEditorComponent.DetailsType.EVENT)
+                        component.onDetailsTypeSelect(PeriodEditorComponent.DetailsType.EVENT)
                     }
                 )
             }
+        }
+        Children(component.childStack) {
+            when (val child = it.instance) {
+                is PeriodEditorComponent.DetailsChild.Event -> {}
+                is PeriodEditorComponent.DetailsChild.Lesson -> LessonDetailsEditorScreen(
+                    component = child.component,
+                    members = component.state.members,
+                    onAddMemberClick = component::onAddMemberClick,
+                    onRemoveMemberClick = component::onRemoveMemberClick
+                )
+            }
+        }
+
+        when (val child = childOverlay.overlay?.instance) {
+            is PeriodEditorComponent.OverlayChild.CourseChooser -> {
+                CourseChooserScreen(component = child.component)
+            }
+
+            is PeriodEditorComponent.OverlayChild.UserChooser -> {
+                UserChooserScreen(component = child.component)
+            }
+
+            null -> PeriodEditorContent(
+                state = component.state,
+                onDetailsTypeSelect = component::onDetailsTypeSelect,
+                onSaveClick = component::onSaveClick,
+                onCloseClick = component::onCloseClick
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PeriodEditorContent(
+    state: EditingPeriod,
+    onDetailsTypeSelect: (PeriodEditorComponent.DetailsType) -> Unit,
+    onSaveClick: () -> Unit,
+    onCloseClick: () -> Unit,
+) {
+    Surface {
+        Column(Modifier.fillMaxSize()) {
+
+
             Divider(Modifier.padding(vertical = MaterialTheme.spacing.small))
             ListItem(
                 headlineContent = { Text(text = state.date.toString(DateTimePatterns.d_MMMM)) },
@@ -195,7 +206,7 @@ private fun TransparentTextField(
     value: String,
     onValueChange: (String) -> Unit,
     singleLine: Boolean = true,
-    placeholder: String? = null
+    placeholder: String? = null,
 ) {
     BasicTextField(
         value = value,

@@ -55,7 +55,7 @@ import java.time.LocalDate
 @Composable
 fun TimetablesPublisherScreen(
     component: TimetablesPublisherComponent,
-    appBarInteractor: AppBarInteractor
+    appBarInteractor: AppBarInteractor,
 ) {
     val publishState by component.publishState.collectAsState()
     val viewStates by component.timetablesViewStates.collectAsState()
@@ -73,9 +73,8 @@ fun TimetablesPublisherScreen(
     }
 
     LaunchedEffect(pagerState) {
-        // Collect from the pager state a snapshotFlow reading the currentPage
         snapshotFlow(pagerState::currentPage).collect { page ->
-            component.onStudyGroupClick(page)
+            component.onStudyGroupSelect(page)
         }
     }
 
@@ -102,10 +101,11 @@ fun TimetablesPublisherScreen(
             onEditEnableClick = component::onEditEnableClick,
             onPublishClick = component::onPublishClick,
             onStudyGroupChoose = component::onStudyGroupChoose,
-            onStudyGroupClick = component::onStudyGroupClick,
+            onStudyGroupSelect = component::onStudyGroupSelect,
             onRemoveStudyGroupClick = component::onRemoveStudyGroupClick,
-            onPeriodAdd = component::onAddPeriodClick,
-            onPeriodEdit = component::onEditPeriodClick
+            onAddPeriodClick = component::onAddPeriodClick,
+            onEditPeriodClick = component::onEditPeriodClick,
+            onRemovePeriodSwipe = component::onRemovePeriodSwipe
         )
     }
 }
@@ -123,10 +123,11 @@ private fun TimetablePublisherContent(
     onEditEnableClick: (Boolean) -> Unit,
     onPublishClick: () -> Unit,
     onStudyGroupChoose: () -> Unit,
-    onStudyGroupClick: (Int) -> Unit,
+    onStudyGroupSelect: (Int) -> Unit,
     onRemoveStudyGroupClick: (Int) -> Unit,
-    onPeriodAdd: (Int) -> Unit,
-    onPeriodEdit: (Int, Int) -> Unit
+    onAddPeriodClick: () -> Unit,
+    onEditPeriodClick: (Int) -> Unit,
+    onRemovePeriodSwipe: (Int) -> Unit,
 ) {
     Column {
         if (studyGroups.isNotEmpty()) {
@@ -231,7 +232,7 @@ private fun TimetablePublisherContent(
                             }
                         },
                         onClick = {
-                            onStudyGroupClick(index)
+                            onStudyGroupSelect(index)
                         },
                     )
                 }
@@ -249,11 +250,13 @@ private fun TimetablePublisherContent(
             ) { position ->
                 val viewState by viewStates[position].collectAsState()
                 DayTimetableContent(
-                    selectedDate,
-                    resourceOf(viewState),
-                    onDateSelect = { onDateSelect(it) },
-                    onPeriodAdd = { onPeriodAdd(pagerState.currentPage) },
-                    onEditClick = { onPeriodEdit(position, it) }
+                    selectedDate = selectedDate,
+                    viewStateResource = resourceOf(viewState),
+                    scrollableWeeks = false,
+                    onDateSelect = onDateSelect,
+                    onAddPeriodClick = { onAddPeriodClick() },
+                    onEditPeriodClick = { onEditPeriodClick(position) },
+                    onRemovePeriodSwipe = onRemovePeriodSwipe
                 )
             }
         }

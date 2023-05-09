@@ -111,6 +111,29 @@ class PeriodEditorComponent(
         )
     )
 
+    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
+    val childOverlay = childOverlay(
+        handleBackButton = true,
+        source = overlayNavigation,
+        childFactory = { config, componentContext ->
+            when (config) {
+                is OverlayConfig.CourseChooser -> OverlayChild.CourseChooser(
+                    courseChooserComponent({
+                        overlayNavigation.dismiss()
+                        config.onFinish(it)
+                    }, componentContext)
+                )
+
+                is OverlayConfig.UserChooser -> OverlayChild.UserChooser(
+                    userChooserComponent({
+                        overlayNavigation.dismiss()
+                        config.onFinish(it)
+                    }, componentContext)
+                )
+            }
+        }
+    )
+
     private val stackNavigation = StackNavigation<DetailsConfig>()
     val childStack = childStack(
         source = stackNavigation,
@@ -134,29 +157,6 @@ class PeriodEditorComponent(
                         )
                     )
                 }
-            }
-        }
-    )
-
-    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
-    val childOverlay = childOverlay(
-        handleBackButton = true,
-        source = overlayNavigation,
-        childFactory = { config, componentContext ->
-            when (config) {
-                is OverlayConfig.CourseChooser -> OverlayChild.CourseChooser(
-                    courseChooserComponent({
-                        overlayNavigation.dismiss()
-                        config.onFinish(it)
-                    }, componentContext)
-                )
-
-                is OverlayConfig.UserChooser -> OverlayChild.UserChooser(
-                    userChooserComponent({
-                        overlayNavigation.dismiss()
-                        config.onFinish(it)
-                    }, componentContext)
-                )
             }
         }
     )

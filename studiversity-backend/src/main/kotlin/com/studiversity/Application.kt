@@ -18,7 +18,6 @@ import com.studiversity.plugin.configureRouting
 import com.studiversity.plugin.configureSerialization
 import com.studiversity.plugin.configureStatusPages
 import com.studiversity.supabase.configureSupabase
-import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -34,7 +33,7 @@ fun main() {
 private lateinit var engine: ApplicationEngine
 
 private fun startServer() {
-    engine = embeddedServer(factory = Netty, port = 8080, host = "192.168.0.102", module = Application::module)
+    engine = embeddedServer(factory = Netty, port = 8080, host = "192.168.0.104", module = Application::module)
         .start(wait = true)
 }
 
