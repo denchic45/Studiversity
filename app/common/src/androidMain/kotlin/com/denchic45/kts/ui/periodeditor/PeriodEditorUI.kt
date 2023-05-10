@@ -36,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
@@ -67,25 +66,25 @@ fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBa
         var expanded by remember { mutableStateOf(false) }
         TopAppBar(
             title = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .clickable { expanded = true },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = when (component.state.details) {
-                                is EditingPeriodDetails.Event -> "Событие"
-                                is EditingPeriodDetails.Lesson -> "Урок"
-                            }
-                        )
-                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "dropdown period type"
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
+                Row(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .clickable { expanded = true },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = when (component.state.details) {
+                            is EditingPeriodDetails.Event -> "Событие"
+                            is EditingPeriodDetails.Lesson -> "Урок"
+                        }
+                    )
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "dropdown period type"
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                }
             },
             actions = {
                 IconButton(onClick = { component.onSaveClick() }) {
@@ -100,7 +99,7 @@ fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBa
         )
         Box {
             DropdownMenu(expanded = expanded,
-                offset = DpOffset(48.dp,0.dp),
+                offset = DpOffset(48.dp, 0.dp),
                 onDismissRequest = { expanded = false }) {
                 DropdownMenuItem(
                     text = { Text(text = "Урок") },
@@ -118,7 +117,8 @@ fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBa
                 )
             }
         }
-        Children(component.childStack) {
+        val detailsStack by component.childDetailsStack.subscribeAsState()
+        Children(detailsStack) {
             when (val child = it.instance) {
                 is PeriodEditorComponent.DetailsChild.Event -> {}
                 is PeriodEditorComponent.DetailsChild.Lesson -> LessonDetailsEditorScreen(
@@ -132,31 +132,23 @@ fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBa
 
         when (val child = childOverlay.overlay?.instance) {
             is PeriodEditorComponent.OverlayChild.CourseChooser -> {
-                CourseChooserScreen(component = child.component)
+                CourseChooserScreen(
+                    component = child.component,
+                    appBarInteractor = appBarInteractor
+                )
             }
 
             is PeriodEditorComponent.OverlayChild.UserChooser -> {
-                UserChooserScreen(component = child.component)
+                UserChooserScreen(component = child.component, appBarInteractor = appBarInteractor)
             }
 
-            null -> PeriodEditorContent(
-                state = component.state,
-                onDetailsTypeSelect = component::onDetailsTypeSelect,
-                onSaveClick = component::onSaveClick,
-                onCloseClick = component::onCloseClick
-            )
+            null -> PeriodEditorContent(state = component.state)
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PeriodEditorContent(
-    state: EditingPeriod,
-    onDetailsTypeSelect: (PeriodEditorComponent.DetailsType) -> Unit,
-    onSaveClick: () -> Unit,
-    onCloseClick: () -> Unit,
-) {
+fun PeriodEditorContent(state: EditingPeriod) {
     Surface {
         Column(Modifier.fillMaxSize()) {
 
@@ -244,10 +236,7 @@ fun PeriodEditorPreview() {
                     ),
                     archived = false
                 )
-            },
-            onDetailsTypeSelect = {},
-            onSaveClick = {},
-            onCloseClick = {}
+            }
         )
     }
 }

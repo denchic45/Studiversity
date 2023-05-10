@@ -144,7 +144,6 @@ fun CourseContent(
             )
         }
     ) { paddingValues ->
-        Text(text = "sample text")
         childrenResource.onSuccess { children ->
             Column(Modifier.padding(paddingValues)) {
                 val coroutineScope = rememberCoroutineScope()
