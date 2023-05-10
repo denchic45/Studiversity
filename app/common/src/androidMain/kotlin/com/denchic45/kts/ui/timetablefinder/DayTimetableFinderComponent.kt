@@ -117,7 +117,7 @@ class DayTimetableFinderComponent(
 //    private val isEdit = MutableStateFlow(false)
 
     val selectedDate = MutableStateFlow(LocalDate.now())
-    val selectedWeekOfYear = selectedDate.map(componentScope) {
+    private val selectedWeekOfYear = selectedDate.map(componentScope) {
         it.toString(DateTimePatterns.YYYY_ww)
     }
     private val owner = MutableStateFlow<TimetableOwner.StudyGroup?>(null)

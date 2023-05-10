@@ -49,7 +49,7 @@ fun LocalDate.toDateUTC(): Date = Date.from(
         .toInstant()
 )
 
-fun Long.toToLocalDateTime() = LocalDateTime.ofInstant(
+fun Long.toToLocalDateTime(): LocalDateTime = LocalDateTime.ofInstant(
     Instant.ofEpochMilli(this),
     TimeZone.getDefault().toZoneId()
 )

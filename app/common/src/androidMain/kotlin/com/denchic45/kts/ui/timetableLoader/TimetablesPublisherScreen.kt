@@ -81,7 +81,10 @@ fun TimetablesPublisherScreen(
     overlay.overlay?.let {
         when (val child = it.instance) {
             is TimetablesPublisherComponent.OverlayChild.GroupChooser -> {
-                StudyGroupChooserScreen(component = child.component)
+                StudyGroupChooserScreen(
+                    component = child.component,
+                    appBarInteractor = appBarInteractor
+                )
             }
 
             is TimetablesPublisherComponent.OverlayChild.PeriodEditor -> PeriodEditorScreen(
@@ -254,7 +257,7 @@ private fun TimetablePublisherContent(
                     viewStateResource = resourceOf(viewState),
                     scrollableWeeks = false,
                     onDateSelect = onDateSelect,
-                    onAddPeriodClick = { onAddPeriodClick() },
+                    onAddPeriodClick = onAddPeriodClick,
                     onEditPeriodClick = { onEditPeriodClick(position) },
                     onRemovePeriodSwipe = onRemovePeriodSwipe
                 )
