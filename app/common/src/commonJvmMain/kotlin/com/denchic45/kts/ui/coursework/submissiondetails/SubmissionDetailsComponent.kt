@@ -2,23 +2,29 @@ package com.denchic45.kts.ui.coursework.submissiondetails
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.data.domain.model.FileState
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.mapResource
-import com.denchic45.kts.domain.stateInResource
+import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.resourceOf
 import com.denchic45.kts.domain.usecase.CancelGradeSubmissionUseCase
 import com.denchic45.kts.domain.usecase.DownloadFileUseCase
 import com.denchic45.kts.domain.usecase.FindSubmissionAttachmentsUseCase
 import com.denchic45.kts.domain.usecase.FindSubmissionByIdUseCase
 import com.denchic45.kts.domain.usecase.GradeSubmissionUseCase
+import com.denchic45.kts.ui.coursework.SubmissionUiState
 import com.denchic45.kts.ui.coursework.toUiState
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.model.toAttachmentItems
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -46,20 +52,28 @@ class SubmissionDetailsComponent(
 
     private val submission = flow {
         emit(findSubmissionByIdUseCase(courseId, workId, submissionId))
-    }.shareIn(componentScope, SharingStarted.Lazily)
+    }.shareIn(componentScope, SharingStarted.Lazily, 1)
 
     private val attachments = findSubmissionAttachmentsUseCase(courseId, workId, submissionId)
         .shareIn(componentScope, SharingStarted.Lazily)
 
-    val uiState = combine(submission, attachments) { submissionRes, attachmentsRes ->
-        submissionRes.mapResource { submission ->
-            attachmentsRes.map { attachments ->
-                submission.toUiState(attachments.toAttachmentItems())
-            }
-        }
-    }.stateInResource(componentScope)
+    val uiState = MutableStateFlow<Resource<SubmissionUiState>>(resourceOf())
 
     val openAttachment = MutableSharedFlow<AttachmentItem>()
+
+    init {
+        componentScope.launch {
+            uiState.emitAll(
+                combine(submission, attachments) { submissionRes, attachmentsRes ->
+                    submissionRes.mapResource { submission ->
+                        attachmentsRes.map { attachments ->
+                            submission.toUiState(attachments.toAttachmentItems())
+                        }
+                    }
+                }
+            )
+        }
+    }
 
     fun onAttachmentClick(item: AttachmentItem) {
         when (item) {
@@ -81,12 +95,18 @@ class SubmissionDetailsComponent(
     fun onGrade(value: Int) {
         componentScope.launch {
             gradeSubmissionUseCase(courseId, workId, submissionId, value)
+                .onSuccess { response ->
+                    uiState.update { resource ->
+                        resource.map { it.copy(grade = response.grade) }
+                    }
+                }
         }
     }
 
     fun onGradeCancel() {
         componentScope.launch {
             cancelGradeSubmissionUseCase(courseId, workId, submissionId)
+                .onSuccess { uiState.update { resource -> resource.map { it.copy(grade = null) } } }
         }
     }
 }
