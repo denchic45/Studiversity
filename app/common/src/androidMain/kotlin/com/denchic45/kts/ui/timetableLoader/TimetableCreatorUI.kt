@@ -16,10 +16,14 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,14 +38,13 @@ import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
-import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.datetime.date.datepicker
+import com.denchic45.stuiversity.util.toToLocalDateTime
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
-import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toKotlinLocalDate
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
+import java.time.temporal.WeekFields
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,20 +81,48 @@ fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
             mutableStateOf(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
         }
 
-        MaterialDialog(dialogState = weekPickerState, buttons = {
-            positiveButton("Выбрать") {
-                component.onWeekSelect(
-                    selectedDate.toString(DateTimePatterns.YYYY_ww)
-                )
+        DatePickerDialog(
+            onDismissRequest = { component.onCancelWeekPicker() },
+            dismissButton = {
+                TextButton(onClick = { component.onCancelWeekPicker() }) {
+                    Text(text = "Отмена")
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    component.onWeekSelect(
+                        selectedDate.toString(DateTimePatterns.YYYY_ww)
+                    )
+                }) {
+                    Text(text = "ОК")
+                }
+
+            }) {
+            val datePickerState = rememberDatePickerState()
+            DatePicker(state = datePickerState,
+                dateValidator = {
+                    it.toToLocalDateTime().dayOfWeek == WeekFields.of(Locale.getDefault()).firstDayOfWeek
+                })
+            datePickerState.selectedDateMillis?.let {
+                selectedDate = it.toToLocalDateTime().toLocalDate()
+
             }
-            negativeButton("Отмена", onClick = component::onCancelWeekPicker)
-        }) {
-            datepicker(
-                title = "Выберите неделю расписания",
-                allowedDateValidator = { it.dayOfWeek == DayOfWeek.MONDAY },
-                initialDate = selectedDate.toKotlinLocalDate()
-            ) { date -> selectedDate = date.toJavaLocalDate() }
         }
+
+//        MaterialDialog(dialogState = weekPickerState, buttons = {
+//            positiveButton("Выбрать") {
+//                component.onWeekSelect(
+//                    selectedDate.toString(DateTimePatterns.YYYY_ww)
+//                )
+//            }
+//            negativeButton("Отмена", onClick = component::onCancelWeekPicker)
+//        }) {
+//            datepicker(
+//                title = "Выберите неделю расписания",
+//                allowedDateValidator = { it.dayOfWeek == DayOfWeek.MONDAY },
+//                initialDate = selectedDate.toKotlinLocalDate()
+//            ) { date -> selectedDate = date.toJavaLocalDate() }
+//        }
 
         val showFilePicker by component.showFilePicker.collectAsState()
         if (showFilePicker) {
