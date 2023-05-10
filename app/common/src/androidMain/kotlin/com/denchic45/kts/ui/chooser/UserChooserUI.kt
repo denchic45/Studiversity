@@ -10,23 +10,30 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.model.UserItem
 
 @Composable
 fun UserChooserScreen(component: UserChooserComponent, appBarInteractor: AppBarInteractor) {
     ChooserScreen(component = component,
         appBarInteractor = appBarInteractor,
-        keyItem = { it.id }, itemContent = {
-            ListItem(
-                headlineContent = { Text(it.fullName) },
-                leadingContent = {
-                    AsyncImage(
-                        model = it.avatarUrl,
-                        contentDescription = "user avatar",
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape),
-                    )
-                }
+        keyItem = { it.id },
+        itemContent = { UserItemUI(it) }
+    )
+}
+
+@Composable
+fun UserItemUI(item: UserItem, modifier: Modifier = Modifier) {
+    ListItem(
+        headlineContent = { Text(item.title) },
+        leadingContent = {
+            AsyncImage(
+                model = item.avatarUrl,
+                contentDescription = "user avatar",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
             )
-        })
+        },
+        modifier = modifier
+    )
 }
