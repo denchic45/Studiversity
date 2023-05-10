@@ -25,18 +25,38 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.arkivanov.essenty.lifecycle.doOnStart
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.theme.spacing
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> ChooserScreen(
     component: ChooserComponent<T>,
+    appBarInteractor: AppBarInteractor,
     keyItem: (T) -> Any,
     itemContent: @Composable (T) -> Unit
 ) {
+
+    component.lifecycle.doOnStart {
+        appBarInteractor.set(AppBarState(visible = false))
+    }
+
     val itemsResource by component.items.collectAsState()
+    ChooserContent(component, itemsResource, keyItem, itemContent)
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun <T> ChooserContent(
+    component: ChooserComponent<T>,
+    itemsResource: Resource<List<T>>,
+    keyItem: (T) -> Any,
+    itemContent: @Composable (T) -> Unit
+) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxWidth()) {
             val query by component.query.collectAsState()
