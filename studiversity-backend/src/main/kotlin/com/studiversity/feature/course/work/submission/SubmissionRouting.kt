@@ -167,6 +167,7 @@ fun Route.submissionByIdRoute() {
 //        }
         route("/grade") {
             val setGradeSubmission: SetGradeSubmissionUseCase by inject()
+            val cancelGradeSubmission: CancelGradeSubmissionUseCase by inject()
             put {
                 val currentUserId = call.jwtPrincipal().payload.claimId
                 val courseId = call.parameters.getUuidOrFail("courseId")
@@ -184,6 +185,21 @@ fun Route.submissionByIdRoute() {
                     grade = SubmissionGradeRequest(body.value, courseId, currentUserId, submissionId)
                 )
                 call.respond(HttpStatusCode.OK, submission)
+            }
+            delete {
+                val currentUserId = call.jwtPrincipal().payload.claimId
+                val courseId = call.parameters.getUuidOrFail("courseId")
+//                val workId = call.parameters.getUuidOrFail("workId")
+                val submissionId = call.parameters.getUuidOrFail("submissionId")
+
+                requireCapability(
+                    userId = currentUserId,
+                    capability = Capability.GradeSubmission,
+                    scopeId = courseId
+                )
+
+                cancelGradeSubmission(submissionId)
+                call.respond(HttpStatusCode.OK)
             }
         }
         post("/submit") {

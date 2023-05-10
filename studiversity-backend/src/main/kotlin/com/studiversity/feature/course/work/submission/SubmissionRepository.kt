@@ -135,4 +135,8 @@ class SubmissionRepository {
         }
         return SubmissionDao.findById(grade.submissionId)!!.toResponse()
     }
+
+    fun removeGradeSubmission(submissionId: UUID): Boolean {
+        return GradeDao.find(Grades.submissionId eq submissionId).singleOrNull()?.delete() != null
+    }
 }
