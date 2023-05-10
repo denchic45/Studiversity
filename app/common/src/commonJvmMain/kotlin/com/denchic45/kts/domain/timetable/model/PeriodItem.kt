@@ -2,6 +2,7 @@ package com.denchic45.kts.domain.timetable.model
 
 import com.denchic45.kts.domain.model.StudyGroupNameItem
 import com.denchic45.kts.ui.model.UserItem
+import java.time.Instant
 import java.util.*
 
 data class PeriodItem(
@@ -10,7 +11,9 @@ data class PeriodItem(
     val room: String?,
     val members: List<UserItem>,
     val details: PeriodDetails
-)
+) {
+//    val timestamp = System.currentTimeMillis()
+}
 
 sealed interface PeriodDetails {
     data class Lesson(

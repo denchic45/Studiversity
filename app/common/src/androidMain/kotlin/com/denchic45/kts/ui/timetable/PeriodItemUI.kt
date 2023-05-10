@@ -82,9 +82,10 @@ fun PeriodItemUI(
                             )
                             .build()
                     )
-                    Image(
+                    Icon(
                         painter = painter,
                         contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier
                             .padding(horizontal = MaterialTheme.spacing.normal)
                             .size(32.dp)

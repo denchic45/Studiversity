@@ -36,6 +36,8 @@ fun List<PeriodResponse>.toDayTimetableViewState(
     bellSchedule: BellSchedule,
     isEdit: Boolean = false,
 ): DayTimetableViewState {
+    if (date.dayOfWeek.ordinal == 6) return emptyTimetable(date)
+
     val latestEventOrder = max(maxOfOrNull { last().order } ?: 0, 6)
     return DayTimetableViewState(
         date = date,
@@ -51,3 +53,11 @@ fun DayTimetableViewState.update(bellSchedule: BellSchedule): DayTimetableViewSt
 }
 
 fun DayTimetableViewState.update(periodsOfDay: List<PeriodItem?>) = copy(periods = periodsOfDay)
+
+private fun emptyTimetable(date: LocalDate) = DayTimetableViewState(
+    date = date,
+    periods = emptyList(),
+    orders = emptyList(),
+    maxEventsSize = 0,
+    isEdit = false
+)

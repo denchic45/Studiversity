@@ -32,6 +32,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.UUID
+import kotlin.random.Random
 
 @Inject
 class TimetableParser(
@@ -218,7 +219,7 @@ class TimetableParser(
         val course = subject?.let { findCourseBySubjectAndStudyGroupId(it, currentStudyGroup.id) }
         return if (course != null) {
             LessonResponse(
-                id = -1,
+                id = Random.nextLong(0, 1000),
                 date = date,
                 order = order,
                 room = null,
@@ -228,7 +229,7 @@ class TimetableParser(
             )
         } else {
             EventResponse(
-                id = -1,
+                id = Random.nextLong(0, 1000),
                 date = date,
                 order = order,
                 room = null,

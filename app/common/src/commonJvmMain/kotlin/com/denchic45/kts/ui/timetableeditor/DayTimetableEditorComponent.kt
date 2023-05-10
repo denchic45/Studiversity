@@ -49,24 +49,30 @@ class DayTimetableEditorComponent(
 
     private val selectedDay = _selectedDate.map(componentScope) { it.dayOfWeek.ordinal }
 
-    val editingWeekTimetable: List<MutableStateFlow<List<PeriodResponse>>> = listOf(
-        MutableStateFlow(emptyList()),
-        MutableStateFlow(emptyList()),
-        MutableStateFlow(emptyList()),
-        MutableStateFlow(emptyList()),
-        MutableStateFlow(emptyList()),
-        MutableStateFlow(emptyList()),
+//    val editingWeekTimetable: List<MutableStateFlow<List<PeriodResponse>>> = listOf(
+//        MutableStateFlow(emptyList()),
+//        MutableStateFlow(emptyList()),
+//        MutableStateFlow(emptyList()),
+//        MutableStateFlow(emptyList()),
+//        MutableStateFlow(emptyList()),
+//        MutableStateFlow(emptyList()),
+//    )
+
+    val editingWeekTimetable = MutableStateFlow<List<List<PeriodResponse>>>(
+        listOf(
+            emptyList(),
+            emptyList(),
+            emptyList(),
+            emptyList(),
+            emptyList(),
+            emptyList(),
+        )
     )
 
     init {
         componentScope.launch {
             source.let { response ->
-                editingWeekTimetable[0].value = response.monday
-                editingWeekTimetable[1].value = response.tuesday
-                editingWeekTimetable[2].value = response.wednesday
-                editingWeekTimetable[3].value = response.thursday
-                editingWeekTimetable[4].value = response.friday
-                editingWeekTimetable[5].value = response.saturday
+                editingWeekTimetable.value = response.days
             }
         }
     }
@@ -102,26 +108,48 @@ class DayTimetableEditorComponent(
 //    }.shareIn(componentScope, SharingStarted.Lazily, 1)
 
     fun onAddPeriod(period: PeriodResponse) {
-        editingWeekTimetable[selectedDay.value].update { it + period }
+        editingWeekTimetable.update {
+            it.copy {
+                this[selectedDay.value] = this[selectedDay.value] + period
+            }
+        }
     }
 
     fun onUpdatePeriod(position: Int, period: PeriodResponse) {
-        editingWeekTimetable[selectedDay.value].update {
+        editingWeekTimetable.update {
             it.copy {
-                this[position] = period
+                this[selectedDay.value] = this[selectedDay.value].copy {
+                    this[position] = period
+                }
             }
         }
     }
 
     fun onPeriodRemove(position: Int) {
-        editingWeekTimetable[selectedDay.value].update {
-            it - it[position]
+        editingWeekTimetable.update { timetable ->
+            timetable.copy {
+                this[selectedDay.value] = this[selectedDay.value].copy {
+                    removeAt(position)
+                    val diff = size - position
+                    if (diff > 0)
+                        repeat(diff) {
+                            val response = this[position + it]
+                            this[position + it] = response.updateOrder(response.order - 1)
+                        }
+                }
+            }
         }
     }
 
+    private fun PeriodResponse.updateOrder(order: Int) = when (this) {
+        is EventResponse -> copy(order = order)
+        is LessonResponse -> copy(order = order)
+    }
+
+
     val request: PutTimetableRequest
-        get() = editingWeekTimetable.map {
-            it.value.map { response ->
+        get() = editingWeekTimetable.value.map {
+            it.map { response ->
                 when (response) {
                     is EventResponse -> EventRequest(
                         order = response.order,

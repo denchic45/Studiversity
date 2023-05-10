@@ -3,7 +3,7 @@ package com.denchic45.kts.ui.timetable.state
 import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.domain.timetable.model.PeriodItem
 import com.denchic45.kts.util.copy
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder
@@ -15,15 +15,16 @@ data class WeekTimetableViewState(
     val periods: List<List<PeriodItem?>>,
     val orders: List<CellOrder>,
     val maxEventsSize: Int,
-    val isEdit: Boolean = false
+    val isEdit: Boolean = false,
 ) {
     val title = getMonthTitle(mondayDate)
 }
 
-fun TimetableResponse.toDayTimetableViewState(
+fun List<List<PeriodResponse>>.toDayTimetableViewState(
+    weekOfYear:String,
     bellSchedule: BellSchedule,
 ): WeekTimetableViewState {
-    val latestEventOrder = max(days.maxOf { it.lastOrNull()?.order ?: 0 }, 6)
+    val latestEventOrder = max(maxOf { it.size }, 6)
     return WeekTimetableViewState(
         mondayDate = LocalDate.parse(
             weekOfYear, DateTimeFormatterBuilder()
@@ -38,15 +39,13 @@ fun TimetableResponse.toDayTimetableViewState(
 }
 
 
-private fun TimetableResponse.toItemsForWeek(
-    latestPeriodOrder: Int
-): List<List<PeriodItem?>> = buildList {
-    days.forEach { periods ->
+ private fun List<List<PeriodResponse>>.toItemsForWeek(latestPeriodOrder:Int): List<List<PeriodItem?>> = buildList {
+//    val latestPeriodOrder = max(maxOf { it.size }, 6)
+    this@toItemsForWeek.forEach { periods ->
         add(periods.toPeriodItems().let {
             it + List(latestPeriodOrder - size) { null }
         })
     }
-
 }
 
 fun WeekTimetableViewState.update(bellSchedule: BellSchedule): WeekTimetableViewState {
@@ -55,5 +54,5 @@ fun WeekTimetableViewState.update(bellSchedule: BellSchedule): WeekTimetableView
 
 fun WeekTimetableViewState.update(
     dayOfWeek: Int,
-    periodsOfDay: List<PeriodItem?>
+    periodsOfDay: List<PeriodItem?>,
 ): WeekTimetableViewState = copy(periods = periods.copy { this[dayOfWeek] = periodsOfDay })

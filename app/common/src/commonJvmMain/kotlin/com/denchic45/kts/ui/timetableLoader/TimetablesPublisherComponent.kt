@@ -19,9 +19,11 @@ import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.periodeditor.EditingPeriod
 import com.denchic45.kts.ui.periodeditor.EditingPeriodDetails
 import com.denchic45.kts.ui.periodeditor.PeriodEditorComponent
-import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
-import com.denchic45.kts.ui.timetable.state.toDayTimetableViewState
+import com.denchic45.kts.ui.timetable.TimetableOwnerComponent
+import com.denchic45.kts.ui.timetable.TimetableOwnerDelegate
+import com.denchic45.kts.ui.timetable.state.TimetableState
 import com.denchic45.kts.ui.timetable.state.toLocalDateOfWeekOfYear
+import com.denchic45.kts.ui.timetable.state.toTimetableState
 import com.denchic45.kts.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
@@ -37,7 +39,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -73,7 +74,7 @@ class TimetablesPublisherComponent(
     _studyGroupTimetables: List<Pair<StudyGroupResponse, TimetableResponse>>,
     @Assisted
     private val componentContext: ComponentContext,
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, TimetableOwnerComponent by TimetableOwnerDelegate(componentContext,weekOfYear.toLocalDateOfWeekOfYear()) {
 
     private val componentScope = componentScope()
 
@@ -129,7 +130,7 @@ class TimetablesPublisherComponent(
 
     val studyGroups = MutableStateFlow(_studyGroupTimetables.map { it.first })
 
-    val selectedDate = MutableStateFlow(weekOfYear.toLocalDateOfWeekOfYear())
+//    val selectedDate = MutableStateFlow(weekOfYear.toLocalDateOfWeekOfYear())
 
     private val editorComponents = MutableStateFlow(
         _studyGroupTimetables.map {
@@ -153,7 +154,7 @@ class TimetablesPublisherComponent(
 
     val publishState = MutableStateFlow(PublishState.PREPARATION)
 
-    val timetablesViewStates: MutableStateFlow<List<StateFlow<DayTimetableViewState>>> =
+    val timetablesViewStates: MutableStateFlow<List<StateFlow<TimetableState>>> =
         MutableStateFlow(emptyList())
 
     init {
@@ -165,17 +166,12 @@ class TimetablesPublisherComponent(
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun getViewState(component: DayTimetableEditorComponent) =
         bellSchedule.flatMapLatest { schedule ->
-            selectedDate.flatMapLatest { selectedDate ->
-                isEdit.flatMapLatest { isEdit ->
-                    val dayOfWeek = selectedDate.dayOfWeek.ordinal
-                    val periodsFlow = if (dayOfWeek == 6) flowOf(emptyList())
-                    else component.editingWeekTimetable[dayOfWeek]
-
-                    periodsFlow.map {
-                        it.toDayTimetableViewState(selectedDate, schedule, isEdit)
-                    }
+            isEdit.flatMapLatest { isEdit ->
+                component.editingWeekTimetable.map {
+                    it.toTimetableState(weekOfYear, schedule, isEdit)
                 }
             }
+
         }.stateIn(componentScope)
 
     val selectedGroup = MutableStateFlow(0)
@@ -226,9 +222,9 @@ class TimetablesPublisherComponent(
         selectedGroup.value = position
     }
 
-    fun onDateSelect(date: LocalDate) {
-        selectedDate.value = date
-    }
+//    fun onDateSelect(date: LocalDate) {
+//        selectedDate.value = date
+//    }
 
     fun onEditEnableClick(edit: Boolean) {
         isEdit.value = edit
@@ -280,7 +276,7 @@ class TimetablesPublisherComponent(
     }
 
     private val currentSelectedDayTimetable: List<PeriodResponse>
-        get() = currentEditor.editingWeekTimetable[selectedDate.value.dayOfWeek.ordinal].value
+        get() = currentEditor.editingWeekTimetable.value[selectedDate.value.dayOfWeek.ordinal]
 
 
     private val currentEditor

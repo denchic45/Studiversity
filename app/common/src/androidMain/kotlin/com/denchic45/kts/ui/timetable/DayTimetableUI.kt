@@ -36,24 +36,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.theme.spacing
-import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
+import com.denchic45.kts.ui.timetable.state.TimetableState
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.daysOfWeek
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.TextStyle
+import java.time.temporal.WeekFields
 import java.util.Locale
+import kotlin.random.Random
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DayTimetableContent(
     selectedDate: LocalDate,
-    viewStateResource: Resource<DayTimetableViewState?>,
+    timetableResource: Resource<TimetableState?>,
     onDateSelect: (date: LocalDate) -> Unit,
     onAddPeriodClick: (() -> Unit)? = null,
     onEditPeriodClick: ((Int) -> Unit)? = null,
@@ -67,9 +68,10 @@ fun DayTimetableContent(
             val state = rememberWeekCalendarState(
                 startDate = startDate,
                 endDate = endDate,
-                firstVisibleWeekDate = selectedDate
+                firstVisibleWeekDate = selectedDate,
+                firstDayOfWeek = DayOfWeek.MONDAY
             )
-            val daysOfWeek = daysOfWeek()
+            val daysOfWeek = daysOfWeek(DayOfWeek.MONDAY)
             Row {
                 daysOfWeek.forEach {
                     Text(
@@ -103,84 +105,105 @@ fun DayTimetableContent(
                     }
                 }
             )
-//            AndroidView(factory = {
-//                WeekCalendarView(it).apply {
-//                    weekCalendarListener = object : WeekCalendarListener {
-//                        override fun onDaySelect(date: LocalDate) {
-//                            onDateSelect(date)
-//                        }
-//
-//                        override fun onWeekSelect(weekItem: WeekItem) {}
-//                    }
-//                }
-//            }, update = {
-//                if (it.selectDate != selectedDate) {
-//                    println(selectedDate)
-//                    it.selectDate = selectedDate
-//                }
-//            },
-//                onReset = {},
-//                onRelease = {
-//                    it.removeListeners()
-//                })
-            viewStateResource.onSuccess { viewState ->
-                viewState?.let {
-                    LazyColumn {
-                        itemsIndexed(viewState.periods) { index, item ->
-                            val periodItemUI = @Composable {
-                                PeriodItemUI(
-                                    order = index + 1,
-                                    item = item,
-                                    time = viewState.orders[index].time,
-                                    isEdit = viewState.isEdit,
-                                    onEditClick = { onEditPeriodClick?.invoke(index) }
-                                )
-                            }
-                            if (viewState.isEdit) {
-                                val dismissState = rememberDismissState(confirmValueChange = {
-                                    when (it) {
-                                        DismissValue.Default -> false
-                                        DismissValue.DismissedToStart -> {
-                                            onRemovePeriodSwipe?.invoke(index)
-                                            true
-                                        }
-
-                                        else -> throw IllegalStateException()
-                                    }
-                                })
-                                SwipeToDismiss(
-                                    state = dismissState,
-                                    background = { SwipePeriodBackground(dismissState) },
-                                    dismissContent = { periodItemUI() },
-                                    directions = setOf(DismissDirection.EndToStart)
-                                )
-                            } else {
-                                periodItemUI()
-                            }
-                        }
-                        if (viewState.isEdit) {
-                            item {
-                                ListItem(
-                                    modifier = Modifier.clickable { onAddPeriodClick?.invoke() },
-                                    headlineContent = { Text("Добавить") },
-                                    leadingContent = {
-                                        Icon(
-                                            imageVector = Icons.Default.Add,
-                                            contentDescription = "add period"
-                                        )
-                                    }
-                                )
-                            }
-                        }
+            timetableResource.onSuccess { timetable ->
+                timetable?.let {
+                    val selectedDayOfWeek = selectedDate.dayOfWeek
+//                    val b = getWeek(selectedDate) == getWeek(it.firstWeekDate)
+//                    Text(text = "Week of selected: ${getWeek(selectedDate)}")
+//                    Text(text = "Week of first date state ${getWeek(it.firstWeekDate)} ${it.firstWeekDate.dayOfWeek}")
+//                    Text(text = it.firstWeekDate.plusDays(6).toString(DateTimePatterns.DD_MM_yy))
+//                    Text(text = "${it.contains(selectedDate)}")
+//                    Text(text = selectedDate.toString(DateTimePatterns.YYYY_ww))
+                    if (it.contains(selectedDate)) {
+                        PeriodsList(
+                            timetable = timetable,
+                            selectedDayOfWeek = selectedDayOfWeek,
+                            onEditPeriodClick = onEditPeriodClick,
+                            onRemovePeriodSwipe = onRemovePeriodSwipe,
+                            onAddPeriodClick = onAddPeriodClick
+                        )
+                    } else {
+                        TimetableLoading()
                     }
                 }
             }.onLoading {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                TimetableLoading()
+            }
+        }
+    }
+}
+
+private fun getWeek(selectedDate: LocalDate): Int {
+    return selectedDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())
+}
+
+@Composable
+private fun TimetableLoading() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun PeriodsList(
+    timetable: TimetableState,
+    selectedDayOfWeek: DayOfWeek,
+    onEditPeriodClick: ((Int) -> Unit)?,
+    onRemovePeriodSwipe: ((Int) -> Unit)?,
+    onAddPeriodClick: (() -> Unit)?,
+) {
+    LazyColumn {
+        itemsIndexed(
+            items = timetable.getDay(selectedDayOfWeek),
+            key = { _, item -> item?.id ?: Random.nextLong(0, 1000) }
+        ) { index, item ->
+            val periodItemUI = @Composable {
+                PeriodItemUI(
+                    order = timetable.orders[index].order,
+                    item = item,
+                    time = timetable.orders[index].time,
+                    isEdit = timetable.isEdit,
+                    onEditClick = { onEditPeriodClick?.invoke(index) }
+                )
+            }
+            if (timetable.isEdit) {
+                val dismissState = rememberDismissState(confirmValueChange = {
+                    when (it) {
+                        DismissValue.Default -> false
+                        DismissValue.DismissedToStart -> {
+                            onRemovePeriodSwipe?.invoke(index)
+                            true
+                        }
+
+                        else -> throw IllegalStateException()
+                    }
+                })
+                SwipeToDismiss(
+                    state = dismissState,
+                    background = { SwipePeriodBackground(dismissState) },
+                    dismissContent = { periodItemUI() },
+                    directions = setOf(DismissDirection.EndToStart)
+                )
+            } else {
+                periodItemUI()
+            }
+        }
+        if (timetable.isEdit) {
+            item {
+                ListItem(
+                    modifier = Modifier.clickable { onAddPeriodClick?.invoke() },
+                    headlineContent = { Text("Добавить") },
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "add period"
+                        )
+                    }
+                )
             }
         }
     }
@@ -217,19 +240,19 @@ fun SwipePeriodBackground(dismissState: DismissState) {
     }
 }
 
-@Preview
-@Composable
-fun TimetableEditorContentPreview() {
-    DayTimetableContent(
-        selectedDate = LocalDate.now(),
-        viewStateResource = Resource.Success(
-            DayTimetableViewState(
-                LocalDate.now(),
-                listOf(),
-                listOf(),
-                6,
-                true
-            )
-        ),
-        onDateSelect = {})
-}
+//@Preview
+//@Composable
+//fun TimetableEditorContentPreview() {
+//    DayTimetableContent(
+//        selectedDate = LocalDate.now(),
+//        timetableResource = Resource.Success(
+//            DayTimetableViewState(
+//                LocalDate.now(),
+//                listOf(),
+//                listOf(),
+//                6,
+//                true
+//            )
+//        ),
+//        onDateSelect = {})
+//}

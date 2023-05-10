@@ -25,8 +25,7 @@ import java.util.*
 class DayTimetableComponent(
 //    metaRepository: MetaRepository,
     private val findTimetableOfWeekUseCase: FindTimetableOfWeekUseCase,
-    @Assisted
-    private val selectedDate: StateFlow<LocalDate>,
+    @Assisted val selectedWeekOfYear: StateFlow<String>,
     @Assisted
     private val owner: Flow<TimetableOwner>,
     @Assisted
@@ -34,16 +33,16 @@ class DayTimetableComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    private val _selectedWeekOfYear = selectedDate.map(componentScope) {
-        it.toString(DateTimePatterns.YYYY_ww)
-    }
+//    private val _selectedWeekOfYear = selectedDate.map(componentScope) {
+//        it.toString(DateTimePatterns.YYYY_ww)
+//    }
 
-    val selectedWeekOfYear = _selectedWeekOfYear
-        .shareIn(componentScope, SharingStarted.Lazily, 1)
+//    val selectedWeekOfYear = _selectedWeekOfYear
+//        .shareIn(componentScope, SharingStarted.Lazily, 1)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _weekTimetable = owner.flatMapLatest { owner ->
-        _selectedWeekOfYear.flatMapLatest { weekOfYear ->
+        selectedWeekOfYear.flatMapLatest { weekOfYear ->
             flow {
                 emit(Resource.Loading)
                 emit(findTimetableOfWeekUseCase(weekOfYear, owner))
@@ -65,21 +64,21 @@ class DayTimetableComponent(
 //    }.stateInResource(componentScope)
 
 
-    private fun getTimetableOfSelectedDateFlow(
-        weekOfYear: String,
-        timetableResource: Resource<TimetableResponse>,
-        schedule: BellSchedule,
-    ) = selectedDate.filter { it.toString(DateTimePatterns.YYYY_ww) == weekOfYear }
-        .map { selected ->
-            timetableResource.map {
-                val selectedDay = selected.dayOfWeek.ordinal
-                if (selectedDay == 6) null
-                else it.days[selectedDay].toDayTimetableViewState(
-                    date = selected,
-                    bellSchedule = schedule
-                )
-            }
-        }
+//    private fun getTimetableOfSelectedDateFlow(
+//        weekOfYear: String,
+//        timetableResource: Resource<TimetableResponse>,
+//        schedule: BellSchedule,
+//    ) = selectedDate.filter { it.toString(DateTimePatterns.YYYY_ww) == weekOfYear }
+//        .map { selected ->
+//            timetableResource.map {
+//                val selectedDay = selected.dayOfWeek.ordinal
+//                if (selectedDay == 6) null
+//                else it.days[selectedDay].toDayTimetableViewState(
+//                    date = selected,
+//                    bellSchedule = schedule
+//                )
+//            }
+//        }
 
 //    fun onDateSelect(date: LocalDate) {
 //        selectedDate.value = date

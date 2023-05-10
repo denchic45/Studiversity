@@ -39,7 +39,6 @@ import com.denchic45.kts.util.getFile
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import com.denchic45.stuiversity.util.toToLocalDateTime
-import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
@@ -73,41 +72,41 @@ fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
             }
         }
 
-        val showWeekPicker by component.showWeekPicker.collectAsState()
-        val weekPickerState = rememberMaterialDialogState()
-        if (showWeekPicker) weekPickerState.show()
+//        val weekPickerState = rememberMaterialDialogState()
+//        if (showWeekPicker) weekPickerState.show()
 
         var selectedDate by remember {
             mutableStateOf(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
         }
 
-        DatePickerDialog(
-            onDismissRequest = { component.onCancelWeekPicker() },
-            dismissButton = {
-                TextButton(onClick = { component.onCancelWeekPicker() }) {
-                    Text(text = "Отмена")
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    component.onWeekSelect(
-                        selectedDate.toString(DateTimePatterns.YYYY_ww)
-                    )
+        val showWeekPicker by component.showWeekPicker.collectAsState()
+        val datePickerState = rememberDatePickerState()
+        if (showWeekPicker)
+            DatePickerDialog(
+                onDismissRequest = { component.onCancelWeekPicker() },
+                dismissButton = {
+                    TextButton(onClick = { component.onCancelWeekPicker() }) {
+                        Text(text = "Отмена")
+                    }
+                },
+                confirmButton = {
+                    TextButton(enabled = datePickerState.selectedDateMillis != null,onClick = {
+                        component.onWeekSelect(
+                            selectedDate.toString(DateTimePatterns.YYYY_ww)
+                        )
+                    }) {
+                        Text(text = "ОК")
+                    }
+
                 }) {
-                    Text(text = "ОК")
+                DatePicker(state = datePickerState,
+                    dateValidator = {
+                        it.toToLocalDateTime().dayOfWeek == WeekFields.of(Locale.getDefault()).firstDayOfWeek
+                    })
+                datePickerState.selectedDateMillis?.let {
+                    selectedDate = it.toToLocalDateTime().toLocalDate()
                 }
-
-            }) {
-            val datePickerState = rememberDatePickerState()
-            DatePicker(state = datePickerState,
-                dateValidator = {
-                    it.toToLocalDateTime().dayOfWeek == WeekFields.of(Locale.getDefault()).firstDayOfWeek
-                })
-            datePickerState.selectedDateMillis?.let {
-                selectedDate = it.toToLocalDateTime().toLocalDate()
-
             }
-        }
 
 //        MaterialDialog(dialogState = weekPickerState, buttons = {
 //            positiveButton("Выбрать") {

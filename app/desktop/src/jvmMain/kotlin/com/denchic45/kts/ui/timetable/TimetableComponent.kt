@@ -40,7 +40,7 @@ class TimetableComponent(
         metaRepository.observeBellSchedule
     ) { timetableResource, bellSchedule ->
         timetableResource.map { timetable ->
-            timetable.toDayTimetableViewState(bellSchedule)
+            timetable.days.toDayTimetableViewState(currentWeek.toString(DateTimePatterns.YYYY_ww),bellSchedule)
         }
     }.stateInResource(coroutineScope)
 

@@ -9,22 +9,16 @@ import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.kts.domain.usecase.TimetableOwner
 import com.denchic45.kts.ui.timetable.DayTimetableComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerComponent
+import com.denchic45.kts.ui.timetable.TimetableOwnerDelegate
 import com.denchic45.kts.util.componentScope
-import com.denchic45.kts.util.map
-import com.denchic45.stuiversity.util.DateTimePatterns
-import com.denchic45.stuiversity.util.toString
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.shareIn
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.time.LocalDate
 
 
 @Inject
@@ -32,29 +26,18 @@ class YourTimetablesComponent(
     metaRepository: MetaRepository,
     private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
     _dayTimetableComponent: (
-        StateFlow<LocalDate>,
+        StateFlow<String>,
         Flow<TimetableOwner>,
         ComponentContext,
     ) -> DayTimetableComponent,
     @Assisted
     componentContext: ComponentContext,
-) : ComponentContext by componentContext, TimetableOwnerComponent {
+) : ComponentContext by componentContext, TimetableOwnerComponent by TimetableOwnerDelegate(componentContext) {
 
     init {
         println("COMPONENT $this")
     }
 
-//    private val navigation = OverlayNavigation<TimetableConfig>()
-
-//    val childOverlay = childOverlay(
-//        source = navigation,
-//        initialConfiguration = { TimetableConfig(LocalDate.now(),TimetableOwner.Member, null) },
-//        childFactory = { config, _ ->
-//            TimetableChild(
-//                _dayTimetableComponent(config.date, config.owner, config.ownerId)
-//            )
-//        }
-//    )
 
     fun onTimetableSelect(position: Int) {
         selectedTimetable.value = position
@@ -73,54 +56,23 @@ class YourTimetablesComponent(
     val selectedTimetable = MutableStateFlow(-1)
 
     private val selectedOwner = MutableStateFlow<TimetableOwner>(TimetableOwner.Member(null))
-    val selectedDate = MutableStateFlow(LocalDate.now())
+
     private val bellSchedule = metaRepository.observeBellSchedule
         .shareIn(componentScope, SharingStarted.Lazily)
 
-    private val selectedWeekOfYear = selectedDate.map(componentScope) {
-        it.toString(DateTimePatterns.YYYY_ww)
-    }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val dayViewState = bellSchedule.flatMapLatest { schedule ->
-        selectedWeekOfYear.flatMapLatest { selectedWeek ->
-            selectedDate.filter { it.toString(DateTimePatterns.YYYY_ww) == selectedWeek }
-                .flatMapLatest { selectedDate ->
-                    dayViewStateFlow(selectedDate, schedule, timetableComponent.weekTimetable)
-                }
-        }
-    }.stateInResource(componentScope)
-
-
-//    val timetableComponent = studyGroups.flatMapResourceFlow { studyGroupResponses ->
-//        selectedTimetable.map { selectedTimetable ->
-//            Resource.Success(
-//                if (selectedTimetable == -1) {
-//                    _dayTimetableComponent(
-//                        LocalDate.now(),
-//                        TimetableOwner.Member,
-//                        UUID.randomUUID()
-//                    )
-//                } else {
-//                    _dayTimetableComponent(
-//                        LocalDate.now(),
-//                        TimetableOwner.StudyGroup,
-//                        studyGroupResponses[selectedTimetable].id
-//                    )
-//                }
-//            )
-//        }
-//    }.stateInResource(componentScope)
-
-    val timetableComponent = _dayTimetableComponent(
-        selectedDate,
+    private val timetableComponent = _dayTimetableComponent(
+        selectedWeekOfYear,
         selectedOwner,
         componentContext.childContext("DayTimetable")
     )
 
-    fun onDateSelect(date: LocalDate) {
-        selectedDate.value = date
-    }
+    val timetableState = getTimetableOfResponseState(
+        bellSchedule,
+        selectedWeekOfYear,
+        timetableComponent.weekTimetable
+    ).stateInResource(componentScope)
+
 
 //    @Parcelize
 //    data class TimetableConfig(

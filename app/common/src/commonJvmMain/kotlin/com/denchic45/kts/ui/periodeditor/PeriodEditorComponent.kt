@@ -43,6 +43,7 @@ import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.time.LocalDate
 import java.util.UUID
+import kotlin.random.Random
 
 @Inject
 class PeriodEditorComponent(
@@ -215,7 +216,7 @@ class PeriodEditorComponent(
         onFinish(
             when (val details = state.details) {
                 is EditingPeriodDetails.Event -> EventResponse(
-                    id = -1,
+                    id = Random.nextLong(0, 1000),
                     date = state.date,
                     order = state.order,
                     room = state.room,

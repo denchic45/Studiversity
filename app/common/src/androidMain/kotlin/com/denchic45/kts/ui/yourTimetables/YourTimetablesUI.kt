@@ -78,7 +78,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: A
                 }
             }
             val selectedDate by component.selectedDate.collectAsState()
-            val viewState by component.dayViewState.collectAsState()
+            val viewState by component.timetableState.collectAsState()
 
             LaunchedEffect(viewState) {
                 viewState.onSuccess {
@@ -88,7 +88,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: A
 
             DayTimetableContent(
                 selectedDate = selectedDate,
-                viewStateResource = viewState,
+                timetableResource = viewState,
                 onDateSelect = component::onDateSelect
             )
         }

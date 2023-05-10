@@ -40,13 +40,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.domain.resourceOf
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.chooser.StudyGroupChooserScreen
 import com.denchic45.kts.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.DayTimetableContent
-import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
+import com.denchic45.kts.ui.timetable.state.TimetableState
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
@@ -57,6 +59,11 @@ fun TimetablesPublisherScreen(
     component: TimetablesPublisherComponent,
     appBarInteractor: AppBarInteractor,
 ) {
+
+    component.lifecycle.doOnStart {
+        appBarInteractor.set(AppBarState())
+    }
+
     val publishState by component.publishState.collectAsState()
     val viewStates by component.timetablesViewStates.collectAsState()
     val studyGroups by component.studyGroups.collectAsState()
@@ -120,7 +127,7 @@ private fun TimetablePublisherContent(
     isEdit: Boolean,
     studyGroups: List<StudyGroupResponse>,
     pagerState: PagerState,
-    viewStates: List<StateFlow<DayTimetableViewState>>,
+    viewStates: List<StateFlow<TimetableState>>,
     selectedDate: LocalDate,
     onDateSelect: (LocalDate) -> Unit,
     onEditEnableClick: (Boolean) -> Unit,
@@ -254,11 +261,11 @@ private fun TimetablePublisherContent(
                 val viewState by viewStates[position].collectAsState()
                 DayTimetableContent(
                     selectedDate = selectedDate,
-                    viewStateResource = resourceOf(viewState),
+                    timetableResource = resourceOf(viewState),
                     scrollableWeeks = false,
                     onDateSelect = onDateSelect,
                     onAddPeriodClick = onAddPeriodClick,
-                    onEditPeriodClick = { onEditPeriodClick(position) },
+                    onEditPeriodClick = onEditPeriodClick,
                     onRemovePeriodSwipe = onRemovePeriodSwipe
                 )
             }

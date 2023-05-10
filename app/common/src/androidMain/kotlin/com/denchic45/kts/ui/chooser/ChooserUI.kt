@@ -20,9 +20,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.essenty.lifecycle.doOnStart
@@ -38,7 +35,7 @@ fun <T> ChooserScreen(
     component: ChooserComponent<T>,
     appBarInteractor: AppBarInteractor,
     keyItem: (T) -> Any,
-    itemContent: @Composable (T) -> Unit
+    itemContent: @Composable (T) -> Unit,
 ) {
 
     component.lifecycle.doOnStart {
@@ -55,16 +52,15 @@ private fun <T> ChooserContent(
     component: ChooserComponent<T>,
     itemsResource: Resource<List<T>>,
     keyItem: (T) -> Any,
-    itemContent: @Composable (T) -> Unit
+    itemContent: @Composable (T) -> Unit,
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxWidth()) {
             val query by component.query.collectAsState()
-            var active by remember { mutableStateOf(false) }
             SearchBar(
                 query = query,
                 onQueryChange = component::onQueryChange,
-                onSearch = { active = false },
+                onSearch = { },
                 active = false,
                 onActiveChange = { },
                 modifier = Modifier
