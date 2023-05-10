@@ -18,6 +18,8 @@ import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindRoomByContainsNameUseCase
 import com.denchic45.kts.ui.chooser.CourseChooserComponent
 import com.denchic45.kts.ui.chooser.UserChooserComponent
+import com.denchic45.kts.ui.model.UserItem
+import com.denchic45.kts.ui.model.toPeriodMember
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.room.model.RoomResponse
@@ -28,8 +30,6 @@ import com.denchic45.stuiversity.api.timetable.model.LessonResponse
 import com.denchic45.stuiversity.api.timetable.model.PeriodMember
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.StudyGroupName
-import com.denchic45.stuiversity.api.timetable.model.toPeriodMember
-import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
@@ -48,7 +48,7 @@ import java.util.UUID
 class PeriodEditorComponent(
     private val findRoomByContainsNameUseCase: FindRoomByContainsNameUseCase,
     private val courseChooserComponent: (onFinish: (CourseResponse?) -> Unit, ComponentContext) -> CourseChooserComponent,
-    private val userChooserComponent: (onFinish: (UserResponse?) -> Unit, ComponentContext) -> UserChooserComponent,
+    private val userChooserComponent: (onFinish: (UserItem?) -> Unit, ComponentContext) -> UserChooserComponent,
     private val eventDetailsEditorComponent: (EditingPeriod, ComponentContext) -> EventDetailsEditorComponent,
     private val lessonDetailsEditorComponent: (EditingPeriod, OverlayNavigation<OverlayConfig>, ComponentContext) -> LessonDetailsEditorComponent,
     @Assisted
@@ -135,7 +135,7 @@ class PeriodEditorComponent(
     )
 
     private val stackNavigation = StackNavigation<DetailsConfig>()
-    val childStack = childStack(
+    val childDetailsStack = childStack(
         source = stackNavigation,
         initialConfiguration = when (state.details) {
             is EditingPeriodDetails.Event -> DetailsConfig.Event
@@ -187,8 +187,8 @@ class PeriodEditorComponent(
 //        }
     }
 
-    private fun onTeacherSelect(userResponse: UserResponse) {
-        state.members = state.members + userResponse.toPeriodMember()
+    private fun onTeacherSelect(userItem: UserItem) {
+        state.members = state.members + userItem.toPeriodMember()
     }
 
 //    fun onCourseChoose() {
@@ -253,7 +253,7 @@ class PeriodEditorComponent(
     sealed class OverlayConfig : Parcelable {
         data class CourseChooser(val onFinish: (CourseResponse?) -> Unit) : OverlayConfig()
 
-        data class UserChooser(val onFinish: (UserResponse?) -> Unit) : OverlayConfig()
+        data class UserChooser(val onFinish: (UserItem?) -> Unit) : OverlayConfig()
     }
 
     sealed class OverlayChild {

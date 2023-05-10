@@ -14,8 +14,11 @@ class LessonDetailsEditorComponent(
     private val overlayNavigation: OverlayNavigation<PeriodEditorComponent.OverlayConfig>,
     @Assisted
     componentContext: ComponentContext,
-) : PeriodDetailsEditorComponent<EditingPeriodDetails.Lesson>(_state, componentContext) {
-
+) : PeriodDetailsEditorComponent<EditingPeriodDetails.Lesson>(
+    _state,
+    EditingPeriodDetails::Lesson,
+    componentContext
+) {
 
     fun onCourseChoose() {
         overlayNavigation.activate(PeriodEditorComponent.OverlayConfig.CourseChooser {
