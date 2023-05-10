@@ -63,6 +63,14 @@ class SubmissionRepository @javax.inject.Inject constructor(
         submissionsApi.gradeSubmission(courseId, workId, submissionId, grade)
     }
 
+    suspend fun removeSubmissionGrade(
+        courseId: UUID,
+        workId: UUID,
+        submissionId: UUID
+    ) = fetchResource {
+        submissionsApi.cancelGradeSubmission(courseId, workId, submissionId)
+    }
+
     suspend fun findSubmissionsByWork(courseId: UUID, workId: UUID) = fetchResource {
         submissionsApi.getAllByCourseWorkId(courseId, workId)
     }

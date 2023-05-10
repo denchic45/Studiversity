@@ -1,19 +1,32 @@
 package com.denchic45.stuiversity.api.submission
 
-import com.denchic45.stuiversity.api.course.element.model.*
-import com.denchic45.stuiversity.api.course.work.grade.GradeRequest
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
-import com.denchic45.stuiversity.api.common.toAttachmentResult
 import com.denchic45.stuiversity.api.common.toResult
+import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
+import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
+import com.denchic45.stuiversity.api.course.element.model.FileAttachmentHeader
+import com.denchic45.stuiversity.api.course.element.model.LinkAttachmentHeader
+import com.denchic45.stuiversity.api.course.work.grade.GradeRequest
+import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.util.orMe
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
-import java.io.File
-import java.util.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.append
+import io.ktor.http.contentType
+import io.ktor.http.defaultForFilePath
+import java.util.UUID
 
 interface SubmissionsApi {
     suspend fun getAllByCourseWorkId(
@@ -39,18 +52,17 @@ interface SubmissionsApi {
         grade: Int
     ): ResponseResult<SubmissionResponse>
 
+    suspend fun cancelGradeSubmission(
+        courseId: UUID,
+        workId: UUID,
+        submissionId: UUID
+    ): EmptyResponseResult
+
     suspend fun getAttachments(
         courseId: UUID,
         courseWorkId: UUID,
         submissionId: UUID
     ): ResponseResult<List<AttachmentHeader>>
-
-//    suspend fun getAttachment(
-//        courseId: UUID,
-//        courseWorkId: UUID,
-//        submissionId: UUID,
-//        attachmentId: UUID
-//    ): ResponseResult<AttachmentResponse>
 
     suspend fun uploadFileToSubmission(
         courseId: UUID,
@@ -124,6 +136,16 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
         }.toResult()
     }
 
+    override suspend fun cancelGradeSubmission(
+        courseId: UUID,
+        workId: UUID,
+        submissionId: UUID
+    ): EmptyResponseResult {
+        return client.delete("/courses/${courseId}/works/${workId}/submissions/${submissionId}/grade") {
+            contentType(ContentType.Application.Json)
+        }.toResult()
+    }
+
     override suspend fun getAttachments(
         courseId: UUID,
         courseWorkId: UUID,
@@ -133,21 +155,11 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
             .toResult()
     }
 
-//    override suspend fun getAttachment(
-//        courseId: UUID,
-//        courseWorkId: UUID,
-//        submissionId: UUID,
-//        attachmentId: UUID
-//    ): ResponseResult<AttachmentResponse> {
-//        return client.get("/courses/$courseId/works/$courseWorkId/submissions/$submissionId/attachments/$attachmentId")
-//            .toAttachmentResult()
-//    }
-
     override suspend fun uploadFileToSubmission(
         courseId: UUID,
         courseWorkId: UUID,
         submissionId: UUID,
-        request:CreateFileRequest
+        request: CreateFileRequest
     ): ResponseResult<FileAttachmentHeader> =
         client.post("/courses/$courseId/works/$courseWorkId/submissions/${submissionId}/attachments") {
             parameter("upload", "file")
@@ -156,7 +168,10 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
                 MultiPartFormDataContent(
                     formData {
                         append("file", request.bytes, Headers.build {
-                            append(HttpHeaders.ContentType,ContentType.defaultForFilePath(request.name))
+                            append(
+                                HttpHeaders.ContentType,
+                                ContentType.defaultForFilePath(request.name)
+                            )
                             append(HttpHeaders.ContentDisposition, "filename=${request.name}")
                         })
                     }
@@ -191,7 +206,8 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
         courseWorkId: UUID,
         submissionId: UUID
     ): ResponseResult<SubmissionResponse> {
-        return client.post("/courses/$courseId/works/$courseWorkId/submissions/${submissionId}/submit").toResult()
+        return client.post("/courses/$courseId/works/$courseWorkId/submissions/${submissionId}/submit")
+            .toResult()
     }
 
     override suspend fun cancelSubmission(
@@ -199,7 +215,8 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
         courseWorkId: UUID,
         submissionId: UUID
     ): ResponseResult<SubmissionResponse> {
-        return client.post("/courses/$courseId/works/$courseWorkId/submissions/${submissionId}/cancel").toResult()
+        return client.post("/courses/$courseId/works/$courseWorkId/submissions/${submissionId}/cancel")
+            .toResult()
     }
 }
 
