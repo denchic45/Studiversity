@@ -93,7 +93,7 @@ kotlin {
 
                 implementation("net.harawata:appdirs:1.2.1")
 
-                api("org.jetbrains.kotlin:kotlin-reflect:1.7.0")
+                api("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
 
                 //Dagger
                 api("com.google.dagger:dagger:$daggerVersion")
@@ -120,11 +120,9 @@ kotlin {
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.10.0")
 
-                api ("com.kizitonwose.calendar:compose:2.3.0")
+                api("com.kizitonwose.calendar:compose:2.3.0")
 
                 api("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
-
-//                implementation ("com.github.JoelKanyi:HorizontalCalendarView:1.0.4")
 
                 api("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.3")
 
@@ -205,10 +203,6 @@ kotlin {
                 api("app.cash.sqldelight:sqlite-driver:$sqlDelightVersion")
                 api("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
-                // Dagger
-//                api("com.google.dagger:dagger:$daggerVersion")
-//                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
-
                 // Decompose
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
 
@@ -226,6 +220,8 @@ kotlin {
 dependencies {
     add("kspAndroid", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
     add("kspDesktop", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
+    // support new language API
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 }
 
 android {
@@ -254,6 +250,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -264,10 +261,6 @@ android {
     kapt {
         correctErrorTypes = true
     }
-}
-dependencies {
-//    testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
-//    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
 }
 
 sqldelight {

@@ -90,20 +90,18 @@ val daggerVersion = "2.44"
 dependencies {
     implementation(project((":common")))
 
-//    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
-    implementation("com.google.android.material:material:1.9.0-beta01")
     implementation("androidx.preference:preference-ktx:1.2.0")
 
     implementation(project(":appbarcontroller"))
     implementation("com.github.denchic45:SearchBar:1.1")
 
     implementation("androidx.test:core-ktx:1.5.0")
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0")
+    implementation("androidx.core:core-ktx:1.10.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 
     // support new language API
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
     implementation("com.github.alexmamo:FirestoreDocument-Android:0.1.5")
 
@@ -152,5 +150,4 @@ dependencies {
     implementation("com.github.chrisbanes:PhotoView:2.3.0")
 
     implementation("com.sun.mail:javax.mail:1.6.2")
-
 }
