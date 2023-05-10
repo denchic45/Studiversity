@@ -6,9 +6,10 @@ import android.content.Intent
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
+import com.denchic45.kts.ui.model.AttachmentItem
 import java.io.File
 
-class FileViewer(private val activity: Activity, private val onNotFoundActivity: () -> Unit) {
+class AttachmentViewer(private val activity: Activity, private val onNotFoundActivity: () -> Unit) {
     fun openFile(file: File) {
         // Get URI and MIME type of file
         // Open file with user selected app
@@ -28,16 +29,18 @@ class FileViewer(private val activity: Activity, private val onNotFoundActivity:
         open(intent)
     }
 
-    fun openFile(uri: Uri) {
+    fun openAttachment(item:AttachmentItem) {
+        when(item) {
+            is AttachmentItem.FileAttachmentItem -> openFile(item.path.toFile())
+            is AttachmentItem.LinkAttachmentItem -> openLink(Uri.parse(item.url))
+        }
+    }
+
+    fun openLink(uri: Uri) {
         // Get URI and MIME type of file
         // Open file with user selected app
         val intent = Intent().apply {
             action = Intent.ACTION_VIEW
-            val extensionFromMimeType = MimeTypeMap
-                .getSingleton()
-                .getExtensionFromMimeType(uri.toString())
-            setDataAndType(uri, extensionFromMimeType)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         open(intent)
     }

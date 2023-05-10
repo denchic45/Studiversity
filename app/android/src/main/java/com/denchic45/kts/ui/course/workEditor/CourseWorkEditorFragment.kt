@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
@@ -27,7 +26,6 @@ import com.denchic45.kts.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.kts.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.kts.ui.model.UiModel
 import com.denchic45.kts.ui.theme.AppTheme
-import com.denchic45.kts.util.FileViewer
 import com.denchic45.kts.util.getType
 import com.denchic45.kts.util.viewBinding
 import com.denchic45.stuiversity.util.toUUID
@@ -54,10 +52,6 @@ class CourseWorkEditorFragment(
         const val SECTION_ID = "SECTION_ID"
     }
 
-//    private var oldToolbarScrollFlags by Delegates.notNull<Int>()
-
-//    private lateinit var appBarController: AppBarController
-
     override val navArgs: CourseWorkEditorFragmentArgs by navArgs()
 
     private val component by lazy {
@@ -78,7 +72,7 @@ class CourseWorkEditorFragment(
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             AppTheme {
-                CourseWorkEditorScreen(component,appBarInteractor)
+                CourseWorkEditorScreen(component, appBarInteractor)
             }
         }
     }

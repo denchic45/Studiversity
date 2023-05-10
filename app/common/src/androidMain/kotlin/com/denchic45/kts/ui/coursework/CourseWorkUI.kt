@@ -69,7 +69,7 @@ import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiTextOf
-import com.denchic45.kts.util.FileViewer
+import com.denchic45.kts.util.AttachmentViewer
 import com.denchic45.kts.util.OpenMultipleAnyDocuments
 import com.denchic45.kts.util.collectWithLifecycle
 import com.denchic45.kts.util.findActivity
@@ -96,8 +96,8 @@ fun CourseWorkScreen(component: CourseWorkComponent, appBarInteractor: AppBarInt
         yourSubmissionComponent.onFilesSelect(uris.map { it.getFile(context) })
     }
 
-    val fileViewer by lazy {
-        FileViewer(context.findActivity()) {
+    val attachmentViewer by lazy {
+        AttachmentViewer(context.findActivity()) {
             Toast.makeText(
                 context,
                 "Невозможно открыть файл на данном устройстве",
@@ -128,10 +128,7 @@ fun CourseWorkScreen(component: CourseWorkComponent, appBarInteractor: AppBarInt
     }
 
     component.openAttachment.collectWithLifecycle {
-        when (it) {
-            is AttachmentItem.FileAttachmentItem -> fileViewer.openFile(it.path.toFile())
-            is AttachmentItem.LinkAttachmentItem -> {}
-        }
+        attachmentViewer.openAttachment(it)
     }
 
     CourseWorkContent(

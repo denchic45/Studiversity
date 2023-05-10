@@ -11,14 +11,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AlarmAdd
-import androidx.compose.material.icons.outlined.AttachFile
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Comment
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,7 +35,7 @@ import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
-import com.denchic45.kts.util.FileViewer
+import com.denchic45.kts.util.AttachmentViewer
 import com.denchic45.kts.util.collectWithLifecycle
 import com.denchic45.kts.util.findActivity
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
@@ -56,8 +53,8 @@ fun CourseWorkDetailsScreen(component: CourseWorkDetailsComponent) {
     val attachmentsResource by component.attachments.collectAsState()
     val context = LocalContext.current
 
-    val fileViewer by lazy {
-        FileViewer(context.findActivity()) {
+    val attachmentViewer by lazy {
+        AttachmentViewer(context.findActivity()) {
             Toast.makeText(
                 context,
                 "Невозможно открыть файл на данном устройстве",
@@ -67,10 +64,7 @@ fun CourseWorkDetailsScreen(component: CourseWorkDetailsComponent) {
     }
 
     component.openAttachment.collectWithLifecycle {
-        when (it) {
-            is AttachmentItem.FileAttachmentItem -> fileViewer.openFile(it.path.toFile())
-            is AttachmentItem.LinkAttachmentItem -> {}
-        }
+        attachmentViewer.openAttachment(it)
     }
 
     CourseWorkDetailsContent(
@@ -120,7 +114,7 @@ private fun CourseWorkDetailsContent(
             }
             attachmentsResource.onSuccess { attachments ->
                 if (attachments.isNotEmpty()) {
-                    HeaderItemUI(name = "Прикрепления")
+                    HeaderItemUI(name = "Прикрепленные файлы")
                     LazyRow {
                         items(attachments, key = { it.attachmentId ?: Unit }) {
                             AttachmentItemUI(item = it, onClick = { onAttachmentClick(it) })

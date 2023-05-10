@@ -68,7 +68,7 @@ import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiIconOf
-import com.denchic45.kts.util.FileViewer
+import com.denchic45.kts.util.AttachmentViewer
 import com.denchic45.kts.util.OpenMultipleAnyDocuments
 import com.denchic45.kts.util.collectWithLifecycle
 import com.denchic45.kts.util.findActivity
@@ -86,8 +86,8 @@ fun CourseWorkEditorScreen(
     appBarInteractor: AppBarInteractor,
 ) {
     val context = LocalContext.current
-    val fileViewer by lazy {
-        FileViewer(context.findActivity()) {
+    val attachmentViewer by lazy {
+        AttachmentViewer(context.findActivity()) {
             Toast.makeText(
                 context,
                 "Невозможно открыть файл на данном устройстве",
@@ -100,16 +100,7 @@ fun CourseWorkEditorScreen(
     }
 
     component.openAttachment.collectWithLifecycle {
-        when (it) {
-            is AttachmentItem.FileAttachmentItem -> fileViewer.openFile(it.path.toFile())
-            is AttachmentItem.LinkAttachmentItem -> {
-                Toast.makeText(
-                    context,
-                    "Открытие ссылок пока не поддерживается",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+        attachmentViewer.openAttachment(it)
     }
 
     val state by component.viewState.collectAsState()
@@ -232,7 +223,7 @@ fun CourseWorkEditorContent(
                 }
 
                 ListItem(
-                    headlineContent = { Text("Добавить вложение") },
+                    headlineContent = { Text("Добавить файл") },
                     modifier = Modifier.clickable(onClick = onAttachmentAdd),
                     leadingContent = {
                         Icon(
@@ -244,7 +235,7 @@ fun CourseWorkEditorContent(
 
                 attachmentsResource.onSuccess { attachmentItems ->
                     if (attachmentItems.isNotEmpty()) {
-                        HeaderItemUI(name = "Вложения")
+                        HeaderItemUI(name = "Прикрепленные файлы")
                         LazyRow {
                             itemsIndexed(
                                 items = attachmentItems,

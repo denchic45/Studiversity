@@ -35,7 +35,8 @@ import com.denchic45.kts.ui.coursework.SubmissionHeaderContent
 import com.denchic45.kts.ui.coursework.SubmissionUiState
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.spacing
-import com.denchic45.kts.util.FileViewer
+import com.denchic45.kts.util.AttachmentViewer
+import com.denchic45.kts.util.collectWithLifecycle
 import com.denchic45.kts.util.findActivity
 import java.util.UUID
 
@@ -46,8 +47,8 @@ fun SubmissionDetailsScreen(
     onDismissRequest: () -> Unit
 ) {
     val context = LocalContext.current
-    val fileViewer by lazy {
-        FileViewer(context.findActivity()) {
+    val attachmentViewer by lazy {
+        AttachmentViewer(context.findActivity()) {
             Toast.makeText(
                 context,
                 "Невозможно открыть файл на данном устройстве",
@@ -59,6 +60,11 @@ fun SubmissionDetailsScreen(
     val sheetState = rememberModalBottomSheetState()
 
     val uiStateResource by component.uiState.collectAsState()
+
+    component.openAttachment.collectWithLifecycle {
+        attachmentViewer.openAttachment(it)
+    }
+
     uiStateResource.onSuccess { uiState ->
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
@@ -76,7 +82,7 @@ fun SubmissionDetailsScreen(
                         text = it.value.toString(),
                         modifier = Modifier.weight(1f),
                     )
-                    TextButton(onClick = { component.onGradeCancel() }) {
+                    TextButton(onClick = component::onGradeCancel) {
                         Text("Отменить")
                     }
                 } ?: run {
@@ -108,7 +114,7 @@ fun SubmissionDetailsContent(
 ) {
     Column {
         if (uiState.attachments.isNotEmpty()) {
-            HeaderItemUI(name = "Вложения")
+            HeaderItemUI(name = "Прикрепленные файлы")
             LazyRow(Modifier) {
                 items(uiState.attachments, key = { it.attachmentId?.toString() ?: "" }) { item ->
                     Spacer(Modifier.width(MaterialTheme.spacing.normal))
