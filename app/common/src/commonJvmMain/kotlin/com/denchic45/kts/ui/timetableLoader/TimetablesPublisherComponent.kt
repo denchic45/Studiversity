@@ -74,7 +74,11 @@ class TimetablesPublisherComponent(
     _studyGroupTimetables: List<Pair<StudyGroupResponse, TimetableResponse>>,
     @Assisted
     private val componentContext: ComponentContext,
-) : ComponentContext by componentContext, TimetableOwnerComponent by TimetableOwnerDelegate(componentContext,weekOfYear.toLocalDateOfWeekOfYear()) {
+) : ComponentContext by componentContext,
+    TimetableOwnerComponent by TimetableOwnerDelegate(
+        componentContext,
+        weekOfYear.toLocalDateOfWeekOfYear()
+    ) {
 
     private val componentScope = componentScope()
 
@@ -125,12 +129,9 @@ class TimetablesPublisherComponent(
         class PeriodEditor(val component: PeriodEditorComponent) : OverlayChild()
     }
 
-
     private val bellSchedule = metaRepository.observeBellSchedule
 
     val studyGroups = MutableStateFlow(_studyGroupTimetables.map { it.first })
-
-//    val selectedDate = MutableStateFlow(weekOfYear.toLocalDateOfWeekOfYear())
 
     private val editorComponents = MutableStateFlow(
         _studyGroupTimetables.map {
@@ -221,10 +222,6 @@ class TimetablesPublisherComponent(
     fun onStudyGroupSelect(position: Int) {
         selectedGroup.value = position
     }
-
-//    fun onDateSelect(date: LocalDate) {
-//        selectedDate.value = date
-//    }
 
     fun onEditEnableClick(edit: Boolean) {
         isEdit.value = edit

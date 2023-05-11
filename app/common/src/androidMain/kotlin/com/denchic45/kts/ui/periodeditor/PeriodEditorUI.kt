@@ -72,7 +72,10 @@ fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBa
             }
 
             is PeriodEditorComponent.OverlayChild.UserChooser -> {
-                UserChooserScreen(component = overlayChild.component, appBarInteractor = appBarInteractor)
+                UserChooserScreen(
+                    component = overlayChild.component,
+                    appBarInteractor = appBarInteractor
+                )
             }
 
             null -> {
@@ -192,7 +195,7 @@ fun PeriodEditorContent(state: EditingPeriod) {
 }
 
 @Composable
-private fun TransparentTextField(
+fun TransparentTextField(
     value: String,
     onValueChange: (String) -> Unit,
     singleLine: Boolean = true,

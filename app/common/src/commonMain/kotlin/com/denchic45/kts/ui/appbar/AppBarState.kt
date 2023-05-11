@@ -15,3 +15,5 @@ data class AppBarState(
     val onActionMenuItemClick: (ActionMenuItem) -> Unit = {},
     val onDropdownMenuItemClick: (DropdownMenuItem) -> Unit = {}
 )
+
+val EmptyAppBar = AppBarState()

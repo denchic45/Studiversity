@@ -32,12 +32,8 @@ class YourTimetablesComponent(
     ) -> DayTimetableComponent,
     @Assisted
     componentContext: ComponentContext,
-) : ComponentContext by componentContext, TimetableOwnerComponent by TimetableOwnerDelegate(componentContext) {
-
-    init {
-        println("COMPONENT $this")
-    }
-
+) : ComponentContext by componentContext,
+    TimetableOwnerComponent by TimetableOwnerDelegate(componentContext) {
 
     fun onTimetableSelect(position: Int) {
         selectedTimetable.value = position
@@ -72,17 +68,4 @@ class YourTimetablesComponent(
         selectedWeekOfYear,
         timetableComponent.weekTimetable
     ).stateInResource(componentScope)
-
-
-//    @Parcelize
-//    data class TimetableConfig(
-//        val date: LocalDate,
-//        val owner: TimetableOwner,
-//        val ownerId: UUID?,
-//    ) : Parcelable
-
-//    data class TimetableChild(
-//        val component: DayTimetableComponent,
-//    )
-
 }
