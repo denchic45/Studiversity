@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -171,11 +172,12 @@ private fun PeriodsList(
                 )
             }
             if (timetable.isEdit) {
+                val currentIndex by rememberUpdatedState(index)
                 val dismissState = rememberDismissState(confirmValueChange = {
                     when (it) {
                         DismissValue.Default -> false
                         DismissValue.DismissedToStart -> {
-                            onRemovePeriodSwipe?.invoke(index)
+                            onRemovePeriodSwipe?.invoke(currentIndex)
                             true
                         }
 
