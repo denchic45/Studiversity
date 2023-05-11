@@ -9,7 +9,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.arkivanov.essenty.lifecycle.doOnStop
 import com.denchic45.kts.R
@@ -45,6 +45,8 @@ import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.courseelements.CourseElementsScreen
 import com.denchic45.kts.ui.coursemembers.CourseMembersScreen
+import com.denchic45.kts.ui.coursetimetable.CourseTimetableScreen
+import com.denchic45.kts.ui.coursetopics.CourseTopicsScreen
 import com.denchic45.kts.ui.fab.FabInteractor
 import com.denchic45.kts.ui.fab.FabState
 import com.denchic45.stuiversity.api.course.model.CourseResponse
@@ -77,13 +79,20 @@ fun CourseScreen(
     val allowEdit by component.allowEdit.collectAsState(false)
     val children by component.children.collectAsState()
 
-    CourseContent(
-        course = course,
-        allowEdit = allowEdit,
-        childrenResource = children,
-        onCourseEditClick = component::onCourseEditClick,
-        onTopicsEditClick = component::onTopicEditClick
-    )
+    val childOverlay by component.childOverlay.subscribeAsState()
+    when(val child = childOverlay.overlay?.instance) {
+        is CourseComponent.OverlayChild.Topics -> CourseTopicsScreen(
+            component = child.component,
+            appBarInteractor = appBarInteractor
+        )
+        null -> CourseContent(
+            course = course,
+            allowEdit = allowEdit,
+            childrenResource = children,
+            onCourseEditClick = component::onCourseEditClick,
+            onTopicsEditClick = component::onTopicEditClick
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -177,6 +186,10 @@ fun CourseContent(
                             )
 
                             is CourseComponent.Child.Members -> CourseMembersScreen(
+                                component = child.component
+                            )
+
+                            is CourseComponent.Child.Timetable -> CourseTimetableScreen(
                                 component = child.component
                             )
                         }
