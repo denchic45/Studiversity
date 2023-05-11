@@ -99,7 +99,7 @@ class CourseTopicsComponent(
         }
     }
 
-    fun onTopicRename(name: String, position: Int) {
+    fun onTopicRename( position: Int, name: String) {
         topics.value.onSuccess { list ->
             componentScope.launch {
                 updateCourseTopicUseCase(
@@ -111,7 +111,7 @@ class CourseTopicsComponent(
         }
     }
 
-    fun onSectionRemove(position: Int) {
+    fun onTopicRemove(position: Int) {
         topics.value.onSuccess { list ->
             componentScope.launch {
                 removeCourseTopicUseCase(

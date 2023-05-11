@@ -69,10 +69,10 @@ class CourseTopicsFragment(
         val adapter = adapter {
             delegates(
                 EditSectionAdapterDelegate(
-                    renameCallback = { name, position ->
-                        component.onTopicRename(name, position)
+                    renameCallback = { position, name ->
+                        component.onTopicRename(position, name)
                     },
-                    removeCallback = { component.onSectionRemove(it) },
+                    removeCallback = { component.onTopicRemove(it) },
                 ), AddSectionAdapterDelegate(component::onTopicAdd)
             )
             extensions {
@@ -147,7 +147,7 @@ class CourseTopicsFragment(
 }
 
 class EditSectionAdapterDelegate(
-    private val renameCallback: (name: String, position: Int) -> Unit,
+    private val renameCallback: (position: Int, name: String) -> Unit,
     private val removeCallback: (position: Int) -> Unit
 ) :
     ListItemAdapterDelegate<TopicResponse, EditSectionAdapterDelegate.EditSectionHolder>() {
@@ -171,7 +171,7 @@ class EditSectionAdapterDelegate(
 
     class EditSectionHolder(
         itemEditSectionBinding: ItemEditSectionBinding,
-        private val renameCallback: (name: String, position: Int) -> Unit,
+        private val renameCallback: (position: Int, name: String) -> Unit,
         private val removeCallback: (position: Int) -> Unit
     ) :
         BaseViewHolder<TopicResponse, ItemEditSectionBinding>(itemEditSectionBinding) {
@@ -205,7 +205,7 @@ class EditSectionAdapterDelegate(
                 ivDone.setOnClickListener {
                     tvName.text = etName.text.toString()
                     closeEditing()
-                    renameCallback(etName.text.toString(), absoluteAdapterPosition - 1)
+                    renameCallback(absoluteAdapterPosition - 1, etName.text.toString())
                 }
 
                 ivRemove.setOnClickListener {
