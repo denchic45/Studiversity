@@ -1,4 +1,4 @@
-package com.denchic45.kts.util
+package com.denchic45.kts.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

@@ -253,7 +253,6 @@ private fun TimetablePublisherContent(
                 )
             }
             Divider()
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
             HorizontalPager(
                 pageCount = viewStates.size,
                 state = pagerState

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/menu_timetable"
-        android:name="com.denchic45.kts.ui.yourTimetables.YourTimetablesFragment"
+        android:name="com.denchic45.kts.ui.yourtimetables.YourTimetablesFragment"
         android:label="@string/menu_title_timetable" />
 
     <fragment

@@ -4,9 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
-import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
 import com.denchic45.kts.ui.timetable.state.TimetableState
-import com.denchic45.kts.ui.timetable.state.toDayTimetableViewState
 import com.denchic45.kts.ui.timetable.state.toTimetableState
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.map
@@ -17,29 +15,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.update
+import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
 import java.time.temporal.WeekFields
 
 interface TimetableOwnerComponent {
-
-    fun dayViewStateFlow(
-        selectedDate: LocalDate,
-        schedule: BellSchedule,
-        timetableResource: Flow<Resource<TimetableResponse>>,
-    ): Flow<Resource<DayTimetableViewState>> {
-        val dayOfWeek = selectedDate.dayOfWeek.ordinal
-        return timetableResource.mapResource {
-            (if (dayOfWeek == 6) emptyList()
-            else it.days[dayOfWeek]).toDayTimetableViewState(selectedDate, schedule, false)
-        }
-    }
-
     val selectedDate: MutableStateFlow<LocalDate>
     val selectedWeekOfYear: StateFlow<String>
+    val mondayDate: StateFlow<LocalDate>
 
     fun onDateSelect(date: LocalDate) {
         selectedDate.value = date
     }
+
+    fun onTodayClick() = selectedDate.update { LocalDate.now() }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getTimetableState(
@@ -67,17 +58,23 @@ interface TimetableOwnerComponent {
             selectedWeekOfYear,
             timetableResource.mapResource { it.days })
     }
+
 }
 
 class TimetableOwnerDelegate(
     componentContext: ComponentContext,
-    private val initialDate: LocalDate = LocalDate.now()
+    private val initialDate: LocalDate = LocalDate.now(),
 ) :
     TimetableOwnerComponent {
     override val selectedDate = MutableStateFlow(initialDate)
-    override val selectedWeekOfYear = selectedDate.map(componentContext.componentScope()) {
+    private val coroutineScope = componentContext.componentScope()
+
+    override val selectedWeekOfYear = selectedDate.map(coroutineScope) {
         val week = it.get(WeekFields.ISO.weekOfWeekBasedYear())
         val year = it.get(WeekFields.ISO.weekBasedYear())
         "${year}_${week}".apply { println("WEEK owner: $this") }
+    }
+    override val mondayDate: StateFlow<LocalDate> = selectedDate.map(coroutineScope) {
+        it.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
     }
 }

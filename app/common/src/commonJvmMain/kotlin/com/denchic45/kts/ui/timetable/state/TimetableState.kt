@@ -20,7 +20,7 @@ data class TimetableState(
     val isEdit: Boolean = false,
 ) {
 
-    val title = getMonthTitle(firstWeekDate)
+//    val title = getMonthTitle(firstWeekDate)
 
     val timetable = periods
 
@@ -30,7 +30,7 @@ data class TimetableState(
     }
 
     private val lastWeekDate = firstWeekDate.plusDays(6)
-private val yearWeek = firstWeekDate.get(WeekFields.ISO.weekOfWeekBasedYear())
+    private val yearWeek = firstWeekDate.get(WeekFields.ISO.weekOfWeekBasedYear())
 
     fun contains(selectedDate: LocalDate): Boolean {
         return yearWeek == selectedDate.get(WeekFields.ISO.weekOfWeekBasedYear())
@@ -47,10 +47,7 @@ fun List<List<PeriodResponse>>.toTimetableState(
         firstWeekDate = LocalDate.parse(
             yearWeek, DateTimeFormatterBuilder()
                 .appendPattern("YYYY_ww")
-                .parseDefaulting(
-                    ChronoField.DAY_OF_WEEK,
-                    DayOfWeek.MONDAY.value.toLong()
-                )
+                .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.value.toLong())
                 .toFormatter()
         ),
         periods = toItems(latestEventOrder),
@@ -64,7 +61,7 @@ private fun List<List<PeriodResponse>>.toItems(latestPeriodOrder: Int): List<Lis
     buildList {
         this@toItems.forEach { periods ->
             add(periods.toPeriodItems().let {
-                it + List(latestPeriodOrder - size) { null }
+                it + List(latestPeriodOrder - periods.size) { null }
             })
         }
     }

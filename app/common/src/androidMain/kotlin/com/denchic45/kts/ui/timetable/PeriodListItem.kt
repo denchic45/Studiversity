@@ -2,6 +2,7 @@ package com.denchic45.kts.ui.timetable
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,7 +45,7 @@ import com.denchic45.kts.ui.theme.spacing
 import java.util.UUID
 
 @Composable
-fun PeriodItemUI(
+fun PeriodListItem(
     item: PeriodItem?,
     order: Int,
     time: String,
@@ -57,8 +58,7 @@ fun PeriodItemUI(
             var expanded by remember { mutableStateOf(false) }
             Row(
                 modifier = Modifier
-                    .clickable { expanded = !expanded }
-                    .padding(horizontal = MaterialTheme.spacing.normal),
+                    .clickable { expanded = !expanded },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -149,7 +149,6 @@ fun PeriodItemUI(
                 }
 
                 if (isEdit) {
-                    Spacer(Modifier.weight(1f))
                     IconButton(onClick = { onEditClick() }) {
                         Icon(painterResource(id = R.drawable.ic_edit), null)
                     }
@@ -171,7 +170,7 @@ fun PeriodItemUI(
 @Composable
 fun PeriodItemPreview() {
     AppTheme {
-        PeriodItemUI(
+        PeriodListItem(
             order = 1,
             item = PeriodItem(
                 id = -1,
@@ -191,7 +190,8 @@ fun PeriodItemPreview() {
                     "Математика"
                 )
             ),
-            time = "8:30 - 9:20"
+            time = "8:30 - 9:20",
+            isEdit = true
         )
     }
 }
@@ -200,7 +200,7 @@ fun PeriodItemPreview() {
 @Composable
 fun EmptyPeriodItemPreview() {
     AppTheme {
-        PeriodItemUI(
+        PeriodListItem(
             order = 1,
             item = null,
             time = "8:30 - 9:20"

@@ -20,6 +20,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.essenty.lifecycle.doOnStart
@@ -56,10 +59,13 @@ private fun <T> ChooserContent(
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxWidth()) {
-            val query by component.query.collectAsState()
+            var query by remember { mutableStateOf(component.query.value) }
             SearchBar(
                 query = query,
-                onQueryChange = component::onQueryChange,
+                onQueryChange = {
+                    query = it
+                    component.onQueryChange(it)
+                },
                 onSearch = { },
                 active = false,
                 onActiveChange = { },

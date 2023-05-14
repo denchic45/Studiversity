@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.yourTimetables
+package com.denchic45.kts.ui.yourtimetables
 
 import android.os.Bundle
 import android.view.LayoutInflater

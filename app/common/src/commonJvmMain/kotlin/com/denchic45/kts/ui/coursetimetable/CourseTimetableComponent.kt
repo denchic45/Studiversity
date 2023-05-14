@@ -5,7 +5,7 @@ import com.arkivanov.decompose.childContext
 import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.TimetableOwner
-import com.denchic45.kts.ui.timetable.DayTimetableComponent
+import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerDelegate
 import com.denchic45.kts.util.componentScope
@@ -21,11 +21,11 @@ import java.util.UUID
 @Inject
 class CourseTimetableComponent(
     metaRepository: MetaRepository,
-    _dayTimetableComponent: (
+    _TimetableComponent: (
         StateFlow<String>,
         Flow<TimetableOwner>,
         ComponentContext,
-    ) -> DayTimetableComponent,
+    ) -> TimetableComponent,
     @Assisted
     private val courseId: UUID,
     @Assisted
@@ -33,7 +33,7 @@ class CourseTimetableComponent(
 ) : ComponentContext by componentContext,
     TimetableOwnerComponent by TimetableOwnerDelegate(componentContext) {
     private val componentScope = componentScope()
-    private val timetableComponent = _dayTimetableComponent(
+    private val timetableComponent = _TimetableComponent(
         selectedWeekOfYear,
         flowOf(TimetableOwner.Course(courseId)),
         componentContext.childContext("Timetable")

@@ -17,7 +17,7 @@ data class WeekTimetableViewState(
     val maxEventsSize: Int,
     val isEdit: Boolean = false,
 ) {
-    val title = getMonthTitle(mondayDate)
+//    val title = getMonthTitle(mondayDate)
 }
 
 fun List<List<PeriodResponse>>.toDayTimetableViewState(

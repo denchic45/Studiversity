@@ -13,7 +13,7 @@ import com.denchic45.kts.ui.timetableLoader.TimetableLoaderFragment
 import com.denchic45.kts.ui.timetablefinder.TimetableFinderFragment
 import com.denchic45.kts.ui.usereditor.UserEditorFragment
 import com.denchic45.kts.ui.yourStudyGroups.YourStudyGroupsFragment
-import com.denchic45.kts.ui.yourTimetables.YourTimetablesFragment
+import com.denchic45.kts.ui.yourtimetables.YourTimetablesFragment
 import me.tatarka.inject.annotations.Inject
 
 @AppScope

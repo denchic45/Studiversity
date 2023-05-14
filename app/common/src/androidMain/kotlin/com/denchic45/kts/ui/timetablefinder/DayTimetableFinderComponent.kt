@@ -25,10 +25,9 @@ import com.denchic45.kts.domain.usecase.TimetableOwner
 import com.denchic45.kts.ui.periodeditor.EditingPeriod
 import com.denchic45.kts.ui.periodeditor.EditingPeriodDetails
 import com.denchic45.kts.ui.periodeditor.PeriodEditorComponent
-import com.denchic45.kts.ui.timetable.DayTimetableComponent
+import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerDelegate
-import com.denchic45.kts.ui.timetable.state.DayTimetableViewState
 import com.denchic45.kts.ui.timetable.state.TimetableState
 import com.denchic45.kts.ui.timetable.state.toTimetableState
 import com.denchic45.kts.ui.timetableeditor.DayTimetableEditorComponent
@@ -62,11 +61,11 @@ class DayTimetableFinderComponent(
     metaRepository: MetaRepository,
     private val putTimetableUseCase: PutTimetableUseCase,
     private val findStudyGroupByContainsNameUseCase: FindStudyGroupByContainsNameUseCase,
-    _dayTimetableComponent: (
+    _TimetableComponent: (
         StateFlow<String>,
         Flow<TimetableOwner>,
         ComponentContext,
-    ) -> DayTimetableComponent,
+    ) -> TimetableComponent,
     private val _dayTimetableEditorComponent: (
         timetable: TimetableResponse,
         studyGroupId: UUID,
@@ -128,7 +127,7 @@ class DayTimetableFinderComponent(
 
     private val owner = MutableStateFlow<TimetableOwner.StudyGroup?>(null)
 
-    private val dayTimetableComponent = _dayTimetableComponent(
+    private val dayTimetableComponent = _TimetableComponent(
         selectedWeekOfYear,
         owner.filterNotNull(),
         componentContext.childContext("DayTimetable")
@@ -219,9 +218,9 @@ class DayTimetableFinderComponent(
                     group.id,
                     group.name
                 ).apply {
-                    order =
-                        dayTimetableEditorComponent!!.editingWeekTimetable.value[selectedDate.value.dayOfWeek.ordinal]
-                            .lastOrNull()?.order?.let { it + 1 } ?: 1
+                    order = dayTimetableEditorComponent!!
+                        .editingWeekTimetable.value[selectedDate.value.dayOfWeek.ordinal]
+                        .lastOrNull()?.order?.let { it + 1 } ?: 1
                 }
             ) { it?.let(dayTimetableEditorComponent!!::onAddPeriod) })
     }
@@ -284,5 +283,4 @@ class TimetableFinderState {
     var query by mutableStateOf("")
     var foundGroups: Resource<List<StudyGroupResponse>> by mutableStateOf(resourceOf(emptyList()))
     var selectedStudyGroup by mutableStateOf<StudyGroupResponse?>(null)
-    var timetable by mutableStateOf<DayTimetableViewState?>(null)
 }

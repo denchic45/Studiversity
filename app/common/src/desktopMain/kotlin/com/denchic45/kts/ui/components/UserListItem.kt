@@ -21,8 +21,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.model.UserItem
-import com.denchic45.kts.util.AsyncImage
-import com.denchic45.kts.util.loadImageBitmap
 import java.util.*
 
 @Composable

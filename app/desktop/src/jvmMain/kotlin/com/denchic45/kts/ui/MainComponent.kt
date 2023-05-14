@@ -21,8 +21,8 @@ import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.navigation.UserEditorChild
 import com.denchic45.kts.ui.navigation.UserEditorConfig
 import com.denchic45.kts.ui.studygroups.StudyGroupsComponent
-import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
+import com.denchic45.kts.ui.yourtimetables.YourTimetablesComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.launch
@@ -33,7 +33,7 @@ import java.util.UUID
 @Inject
 class MainComponent constructor(
     private val removeUserUseCase: RemoveUserUseCase,
-    private val _timetableComponent: (ComponentContext) -> TimetableComponent,
+    private val _timetableComponent: (ComponentContext) -> YourTimetablesComponent,
     private val _studyGroupsComponent: (ComponentContext) -> StudyGroupsComponent,
     mainInteractor: MainInteractor,
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,
@@ -112,7 +112,7 @@ class MainComponent constructor(
     sealed class Child {
         abstract val component: ComponentContext
 
-        class Timetable(override val component: TimetableComponent) : Child()
+        class Timetable(override val component: YourTimetablesComponent) : Child()
         class StudyGroups(override val component: StudyGroupsComponent) : Child()
     }
 }

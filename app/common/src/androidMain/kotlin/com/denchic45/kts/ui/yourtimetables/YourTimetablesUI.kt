@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.yourTimetables
+package com.denchic45.kts.ui.yourtimetables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +24,7 @@ import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.DayTimetableContent
+import com.denchic45.kts.ui.timetable.getMonthTitle
 import com.denchic45.kts.ui.uiTextOf
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,6 +32,12 @@ import com.denchic45.kts.ui.uiTextOf
 fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: AppBarInteractor) {
     val selectedTimetable by component.selectedTimetable.collectAsState()
     val groups by component.studyGroups.collectAsState()
+    val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
+    val selectedDate by component.selectedDate.collectAsState()
+
+    LaunchedEffect(selectedYearWeek) {
+        appBarInteractor.set(AppBarState(uiTextOf(getMonthTitle(selectedYearWeek))))
+    }
 
     Surface {
         Column {
@@ -77,14 +84,10 @@ fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: A
                     }
                 }
             }
-            val selectedDate by component.selectedDate.collectAsState()
+
             val viewState by component.timetableState.collectAsState()
 
-            LaunchedEffect(viewState) {
-                viewState.onSuccess {
-                    appBarInteractor.set(AppBarState(uiTextOf(it.title)))
-                }
-            }
+
 
             DayTimetableContent(
                 selectedDate = selectedDate,

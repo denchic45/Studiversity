@@ -25,8 +25,8 @@ import com.denchic45.kts.ui.components.SupportingText
 import com.denchic45.kts.ui.components.dialog.AlertDialog
 import com.denchic45.kts.ui.onString
 import com.denchic45.kts.ui.theme.toDrawablePath
-import com.denchic45.kts.util.AsyncImage
-import com.denchic45.kts.util.loadImageBitmap
+import com.denchic45.kts.ui.components.AsyncImage
+import com.denchic45.kts.ui.components.loadImageBitmap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

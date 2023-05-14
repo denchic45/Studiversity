@@ -37,7 +37,6 @@
             android:name=".ui.profile.fullAvatar.FullAvatarActivity"
             android:theme="@style/FullActivityTheme" />
         <activity android:name=".ui.avatar.FullImageActivity" />
-        <activity android:name=".ui.adminPanel.timetableEditor.eventEditor.EventEditorActivity" />
         <activity
             android:name=".ui.login.LoginActivity"
             android:windowSoftInputMode="adjustResize" />

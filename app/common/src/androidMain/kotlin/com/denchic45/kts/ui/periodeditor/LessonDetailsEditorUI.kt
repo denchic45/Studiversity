@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -61,7 +60,7 @@ fun LessonDetailsEditorContent(
     onRemoveMemberClick: (PeriodMember) -> Unit,
     onCourseChoose: () -> Unit,
 ) {
-    Column(modifier = Modifier.clickable(onClick = onCourseChoose)) {
+    Column {
         details.course?.let {
             ListItem(
                 headlineContent = { Text(text = it.subject?.name ?: it.name) },
@@ -81,7 +80,8 @@ fun LessonDetailsEditorContent(
                         imageVector = Icons.Outlined.School,
                         contentDescription = ""
                     )
-                }
+                },
+                modifier = Modifier.clickable(onClick = onCourseChoose)
             )
         } ?: ListItem(
             headlineContent = {
@@ -101,11 +101,11 @@ fun LessonDetailsEditorContent(
         HeaderItemUI("Преподаватели")
         Row(
             Modifier
-                .padding(horizontal = MaterialTheme.spacing.normal)
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
         ) {
             members.forEach {
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
                 AssistChip(
                     onClick = { /*TODO*/ },
                     label = { Text(text = it.fullName) },

@@ -13,7 +13,7 @@ data class DayTimetableViewState(
     val maxEventsSize: Int,
     val isEdit: Boolean,
 ) {
-    val title = getMonthTitle(date)
+//    val title = getMonthTitle(date)
 
     companion object {
         fun create(

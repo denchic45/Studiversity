@@ -157,7 +157,3 @@ private fun MainAppBar(
     }
 }
 
-class AppBarMediator {
-    var title by mutableStateOf("")
-    var content by mutableStateOf<(@Composable RowScope.() -> Unit)?>({})
-}

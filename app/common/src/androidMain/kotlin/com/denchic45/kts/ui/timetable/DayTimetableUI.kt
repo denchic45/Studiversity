@@ -163,7 +163,7 @@ private fun PeriodsList(
             key = { _, item -> item?.id ?: Random.nextLong(0, 1000) }
         ) { index, item ->
             val periodItemUI = @Composable {
-                PeriodItemUI(
+                PeriodListItem(
                     order = timetable.orders[index].order,
                     item = item,
                     time = timetable.orders[index].time,
@@ -241,6 +241,7 @@ fun SwipePeriodBackground(dismissState: DismissState) {
         )
     }
 }
+
 
 //@Preview
 //@Composable

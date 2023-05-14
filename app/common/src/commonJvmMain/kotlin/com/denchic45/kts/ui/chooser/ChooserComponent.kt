@@ -12,14 +12,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 abstract class ChooserComponent<T>(componentContext: ComponentContext) :
     ComponentContext by componentContext {
 
     abstract val onFinish: (T?) -> Unit
 
-    val query = MutableStateFlow("")
+    var query = MutableStateFlow("")
 
     protected val componentScope = componentScope()
 
@@ -42,6 +41,6 @@ abstract class ChooserComponent<T>(componentContext: ComponentContext) :
     }
 
     fun onQueryChange(typedName: String) {
-        componentScope.launch { query.emit(typedName) }
+        query.value = typedName
     }
 }

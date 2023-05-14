@@ -1,3 +1,5 @@
+package com.denchic45.kts
+
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue

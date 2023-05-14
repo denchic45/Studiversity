@@ -229,6 +229,9 @@ class TimetablesPublisherComponent(
 
     fun onAddPeriodClick() {
         val group = studyGroups.value[selectedGroup.value].toStudyGroupName()
+
+        // TODO: Вместо EditingPeriod передавать данные в другой обертке т.к. выбрасывается:
+        //  Parcelable encountered IOException writing serializable object (name = com.denchic45.kts.ui.timetableLoader.TimetablesPublisherComponent$onAddPeriodClick$2)
         overlayNavigation.activate(
             OverlayConfig.PeriodEditor(
                 EditingPeriod(

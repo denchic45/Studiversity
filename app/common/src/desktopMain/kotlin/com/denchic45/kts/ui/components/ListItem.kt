@@ -41,19 +41,23 @@ fun ListItem(
     if (styledSecondaryText == null && styledOverlineText == null) {
         OneLine.ListItem(semanticsModifier, icon, styledText, styledTrailing)
     } else if ((styledOverlineText == null && singleLineSecondaryText) || styledSecondaryText == null) {
-        TwoLine.ListItem(semanticsModifier,
+        TwoLine.ListItem(
+            semanticsModifier,
             icon,
             styledText,
             styledSecondaryText,
             styledOverlineText,
-            styledTrailing)
+            styledTrailing
+        )
     } else {
-        ThreeLine.ListItem(semanticsModifier,
+        ThreeLine.ListItem(
+            semanticsModifier,
             icon,
             styledText,
             styledSecondaryText,
             styledOverlineText,
-            styledTrailing)
+            styledTrailing
+        )
     }
 }
 
@@ -90,7 +94,8 @@ private object OneLine {
                     .widthIn(min = IconLeftPadding + IconMinPaddedWidth)
                     .padding(start = IconLeftPadding,
                         top = IconVerticalPadding,
-                        bottom = IconVerticalPadding),
+                        bottom = IconVerticalPadding
+                    ),
                     contentAlignment = Alignment.CenterStart) { icon() }
             }
             Box(Modifier.weight(1f).align(Alignment.CenterVertically)
@@ -145,13 +150,16 @@ private object TwoLine {
                 Box(Modifier.sizeIn(minWidth = IconLeftPadding + IconMinPaddedWidth,
                     minHeight = minHeight).padding(start = IconLeftPadding,
                     top = IconVerticalPadding,
-                    bottom = IconVerticalPadding),
+                    bottom = IconVerticalPadding
+                ),
                     contentAlignment = Alignment.CenterStart) { icon() }
             }
 
             if (overlineText != null) {
-                BaselinesOffsetColumn(listOf(OverlineBaselineOffset,
-                    OverlineToPrimaryBaselineOffset), columnModifier) {
+                BaselinesOffsetColumn(listOf(
+                    OverlineBaselineOffset,
+                    OverlineToPrimaryBaselineOffset
+                ), columnModifier) {
                     overlineText()
                     text()
                 }
@@ -220,12 +228,15 @@ private object ThreeLine {
                 Box(Modifier.sizeIn(minWidth = minSize, minHeight = minSize)
                     .padding(start = IconLeftPadding,
                         top = IconThreeLineVerticalPadding,
-                        bottom = IconThreeLineVerticalPadding),
+                        bottom = IconThreeLineVerticalPadding
+                    ),
                     contentAlignment = Alignment.CenterStart) { icon() }
             }
-            BaselinesOffsetColumn(listOf(ThreeLineBaselineFirstOffset,
+            BaselinesOffsetColumn(listOf(
+                ThreeLineBaselineFirstOffset,
                 ThreeLineBaselineSecondOffset,
-                ThreeLineBaselineThirdOffset),
+                ThreeLineBaselineThirdOffset
+            ),
                 Modifier.weight(1f)
                     .padding(start = ContentLeftPadding, end = ContentRightPadding)) {
                 if (overlineText != null) overlineText()
@@ -233,7 +244,8 @@ private object ThreeLine {
                 secondaryText()
             }
             if (trailing != null) {
-                OffsetToBaselineOrCenter(ThreeLineBaselineFirstOffset - ThreeLineTrailingTopPadding,
+                OffsetToBaselineOrCenter(
+                    ThreeLineBaselineFirstOffset - ThreeLineTrailingTopPadding,
                     Modifier.padding(top = ThreeLineTrailingTopPadding, end = TrailingRightPadding),
                     trailing)
             }

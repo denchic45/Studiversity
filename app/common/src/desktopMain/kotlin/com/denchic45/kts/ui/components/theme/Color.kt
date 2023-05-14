@@ -9,7 +9,7 @@ import com.denchic45.kts.ui.components.tokens.ColorSchemeKeyTokens
 
 @ReadOnlyComposable
 @Composable
-internal fun com.denchic45.kts.ui.components.tokens.ColorSchemeKeyTokens.toColor(): Color {
+internal fun ColorSchemeKeyTokens.toColor(): Color {
     return MaterialTheme.colorScheme.fromToken(this)
 }
 
