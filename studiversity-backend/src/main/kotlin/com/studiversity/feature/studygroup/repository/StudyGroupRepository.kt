@@ -57,8 +57,8 @@ class StudyGroupRepository {
         q?.let {
             query.andWhere {
                 StudyGroups.name.lowerCase().trim() like "%$q%" or
-                        (Specialties.name.lowerCase().trim() like "%$q%") or
-                        (Specialties.shortname.lowerCase().trim() like "%$q%")
+                        (Specialties.name.lowerCase().trim() like "%$q") or
+                        (Specialties.shortname.lowerCase().trim() like "%$q")
             }
         }
         memberId?.let {

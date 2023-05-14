@@ -75,7 +75,6 @@ tasks {
     }
 }
 dependencies {
-//    implementation(project(":common:api"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     // Ktor server
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
