@@ -18,6 +18,7 @@ import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.MenuItem
 import com.denchic45.kts.ui.theme.toDrawablePath
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T : MenuAction> Spinner(
     items: List<MenuItem<T>>,
@@ -60,16 +61,17 @@ fun <T : MenuAction> Spinner(
                 DropdownMenuItem(onClick = {
                     onActionClick(item.action)
                     selectedItem = item
-                }, enabled = item.enabled) {
-                    item.action.iconName?.let {
-                        Icon(
-                            painter = painterResource(it.toDrawablePath()),
-                            null,
-                            Modifier.padding(end = 12.dp)
-                        )
-                    }
-                    Text(text = item.title, style = MaterialTheme.typography.bodyMedium)
-                }
+                }, enabled = item.enabled,
+                text = {
+                        item.action.iconName?.let {
+                            Icon(
+                                painter = painterResource(it.toDrawablePath()),
+                                null,
+                                Modifier.padding(end = 12.dp)
+                            )
+                        }
+                        Text(text = item.title, style = MaterialTheme.typography.bodyMedium)
+                })
             }
         }
     }
