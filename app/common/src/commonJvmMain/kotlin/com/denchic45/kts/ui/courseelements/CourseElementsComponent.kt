@@ -23,7 +23,6 @@ class CourseElementsComponent(
     private val courseId: UUID,
     @Assisted
     private val onElementOpen: (courseId: UUID, elementId: UUID) -> Unit,
-
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {

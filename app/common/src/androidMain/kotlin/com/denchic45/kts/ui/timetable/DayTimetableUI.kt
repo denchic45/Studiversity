@@ -65,7 +65,7 @@ fun DayTimetableContent(
     scrollableWeeks: Boolean = true,
 ) {
     Surface {
-        Column(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize().padding(top = MaterialTheme.spacing.small)) {
             val state = rememberWeekCalendarState(
                 startDate = startDate,
                 endDate = endDate,

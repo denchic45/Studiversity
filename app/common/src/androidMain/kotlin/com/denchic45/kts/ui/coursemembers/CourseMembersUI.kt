@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,8 +17,9 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.CourseMembersComponent
+import com.denchic45.kts.ui.chooser.UserItemUI
+import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.theme.spacing
-import com.denchic45.stuiversity.api.membership.model.ScopeMember
 import java.util.UUID
 
 @Composable
@@ -34,23 +33,23 @@ fun CourseMembersScreen(component: CourseMembersComponent) {
 
 @Composable
 fun CourseMembersContent(
-    membersResource: Resource<List<ScopeMember>>,
+    membersResource: Resource<List<UserItem>>,
     onMemberClick: (UUID) -> Unit
 ) {
-
     membersResource.onSuccess { members ->
         LazyColumn(contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)) {
-            items(members, key = { it.user.id }) {
-                ListItem(
-                    headlineContent = { Text(it.fullName) },
-                    modifier = Modifier.clickable { onMemberClick(it.user.id) }
-                )
+            items(members, key = { it.id }) {
+                UserItemUI(
+                    item = it,
+                    modifier = Modifier.clickable { onMemberClick(it.id) })
             }
         }
     }.onLoading {
-        Box(  modifier = Modifier.fillMaxHeight(),
-            contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
-    }
+        Box(
+            modifier = Modifier.fillMaxHeight(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
     }
 }

@@ -104,6 +104,7 @@ class DayTimetableFinderComponent(
     private val overlayNavigation = OverlayNavigation<OverlayConfig>()
     val childOverlay = childOverlay<OverlayConfig, OverlayChild>(
         source = overlayNavigation,
+        key = "TimetableFinderChildOverlay",
         handleBackButton = true,
         childFactory = { config, componentContext ->
             when (config) {
@@ -205,6 +206,7 @@ class DayTimetableFinderComponent(
 
     fun onGroupSelect(response: StudyGroupResponse) {
         state.selectedStudyGroup = response
+        state.query = response.name
         owner.update { TimetableOwner.StudyGroup(response.id) }
     }
 

@@ -7,7 +7,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.SearchBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.domain.Resource
@@ -95,17 +98,29 @@ fun TimetableFinderContent(
     Column(Modifier.fillMaxSize()) {
         var active by remember { mutableStateOf(false) }
         SearchBar(
-            query = state.query,
+            query = if (state.selectedStudyGroup != null && active) state.selectedStudyGroup!!.name
+            else state.query,
             onQueryChange = onQueryType,
             onSearch = {},
             active = active,
-            onActiveChange = { active = it }) {
+            onActiveChange = { active = it },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "search"
+                )
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
             state.foundGroups.onSuccess { groups ->
                 LazyColumn {
                     items(items = groups, key = { it.id }) {
                         StudyGroupItemUI(
                             response = it,
-                            modifier = Modifier.clickable { onGroupSelect(it) }
+                            modifier = Modifier.clickable {
+                                active = false
+                                onGroupSelect(it)
+                            }
                         )
                     }
                 }
@@ -115,14 +130,16 @@ fun TimetableFinderContent(
             Resource.Loading, is Resource.Error -> true
             is Resource.Success -> !timetableResource.value.isEdit
         }
-        DayTimetableContent(
-            selectedDate = selectedDate,
-            timetableResource = timetableResource,
-            onDateSelect = onDateSelect,
-            onAddPeriodClick = onAddPeriodClick,
-            onEditPeriodClick = onEditPeriodClick,
-            onRemovePeriodSwipe = onRemovePeriodSwipe,
-            scrollableWeeks = scrollableWeeks
-        )
+        state.selectedStudyGroup?.let {
+            DayTimetableContent(
+                selectedDate = selectedDate,
+                timetableResource = timetableResource,
+                onDateSelect = onDateSelect,
+                onAddPeriodClick = onAddPeriodClick,
+                onEditPeriodClick = onEditPeriodClick,
+                onRemovePeriodSwipe = onRemovePeriodSwipe,
+                scrollableWeeks = scrollableWeeks
+            )
+        }
     }
 }
