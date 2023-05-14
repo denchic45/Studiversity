@@ -18,6 +18,6 @@ class StudyGroupChooserComponent(
     val componentContext: ComponentContext,
 ) : ChooserComponent<StudyGroupResponse>(componentContext) {
     override fun search(query: String): Flow<Resource<List<StudyGroupResponse>>> {
-        return flow { emit(findStudyGroupByContainsNameUseCase(query)) }
+        return findStudyGroupByContainsNameUseCase(query)
     }
 }

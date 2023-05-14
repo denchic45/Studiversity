@@ -8,6 +8,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.EdgesensorHigh
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SearchBar
@@ -37,7 +39,7 @@ import java.time.LocalDate
 @Composable
 fun TimetableFinderScreen(
     component: DayTimetableFinderComponent,
-    appBarInteractor: AppBarInteractor
+    appBarInteractor: AppBarInteractor,
 ) {
     val selectedDate by component.selectedDate.collectAsState()
     val state = component.state
@@ -49,14 +51,26 @@ fun TimetableFinderScreen(
                 appBarInteractor.set(
                     AppBarState(
                         actions = listOf(
-                            ActionMenuItem(id = "save", icon = uiIconOf(
-                                Icons.Default.Done
-                            ), onClick = { component.onSaveChangesClick() })
+                            ActionMenuItem(
+                                id = "save",
+                                icon = uiIconOf(Icons.Default.Done),
+                                onClick = component::onSaveChangesClick
+                            )
                         )
                     )
                 )
             } else {
-                appBarInteractor.set(AppBarState())
+                appBarInteractor.set(
+                    AppBarState(
+                        actions = listOf(
+                            ActionMenuItem(
+                                id = "edit",
+                                icon = uiIconOf(Icons.Outlined.Edit),
+                                onClick = component::onEditClick
+                            )
+                        )
+                    )
+                )
             }
         }
     }
@@ -93,7 +107,7 @@ fun TimetableFinderContent(
     onGroupSelect: (StudyGroupResponse) -> Unit,
     onAddPeriodClick: () -> Unit,
     onEditPeriodClick: (Int) -> Unit,
-    onRemovePeriodSwipe: (Int) -> Unit
+    onRemovePeriodSwipe: (Int) -> Unit,
 ) {
     Column(Modifier.fillMaxSize()) {
         var active by remember { mutableStateOf(false) }

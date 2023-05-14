@@ -32,7 +32,7 @@ class CourseChooserViewModel @Inject constructor(
     }
 
     override val sourceFlow: (String) -> Flow<Resource<List<CourseResponse>>> = {
-        flow { emit(findCourseByContainsNameUseCase(it)) }
+       findCourseByContainsNameUseCase(it)
     }
 
 

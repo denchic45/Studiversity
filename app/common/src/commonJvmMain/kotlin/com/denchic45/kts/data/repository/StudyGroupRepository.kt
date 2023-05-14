@@ -1,8 +1,15 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.db.local.source.*
+import com.denchic45.kts.data.db.local.source.CourseLocalDataSource
+import com.denchic45.kts.data.db.local.source.GroupCourseLocalDataSource
+import com.denchic45.kts.data.db.local.source.GroupLocalDataSource
+import com.denchic45.kts.data.db.local.source.SectionLocalDataSource
+import com.denchic45.kts.data.db.local.source.SpecialtyLocalDataSource
+import com.denchic45.kts.data.db.local.source.SubjectLocalDataSource
+import com.denchic45.kts.data.db.local.source.UserLocalDataSource
 import com.denchic45.kts.data.fetchObservingResource
 import com.denchic45.kts.data.fetchResource
+import com.denchic45.kts.data.fetchResourceFlow
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.pref.TimestampPreferences
 import com.denchic45.kts.data.pref.UserPreferences
@@ -28,7 +35,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
@@ -52,8 +59,8 @@ class StudyGroupRepository @Inject constructor(
 ) : NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
     FindByContainsNameRepository<StudyGroupResponse> {
 
-    override suspend fun findByContainsName(text: String): Resource<List<StudyGroupResponse>> {
-        return fetchResource {
+    override fun findByContainsName(text: String): Flow<Resource<List<StudyGroupResponse>>> {
+        return fetchResourceFlow {
             studyGroupApi.search(text)
         }
     }

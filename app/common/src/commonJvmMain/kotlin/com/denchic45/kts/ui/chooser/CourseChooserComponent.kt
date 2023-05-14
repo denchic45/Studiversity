@@ -18,6 +18,6 @@ class CourseChooserComponent(
     val componentContext: ComponentContext,
 ) : ChooserComponent<CourseResponse>(componentContext) {
     override fun search(query: String): Flow<Resource<List<CourseResponse>>> {
-        return flow { emit(findCourseByContainsNameUseCase(query)) }
+        return findCourseByContainsNameUseCase(query)
     }
 }

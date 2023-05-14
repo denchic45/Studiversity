@@ -2,6 +2,7 @@ package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.db.local.source.SpecialtyLocalDataSource
 import com.denchic45.kts.data.fetchResource
+import com.denchic45.kts.data.fetchResourceFlow
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.stuiversity.api.specialty.SpecialtyApi
 import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
@@ -18,7 +19,7 @@ class SpecialtyRepository @Inject constructor(
 ) : NetworkServiceOwner,
     FindByContainsNameRepository<SpecialtyResponse> {
 
-    override suspend fun findByContainsName(text: String) = fetchResource {
+    override  fun findByContainsName(text: String) = fetchResourceFlow {
         specialtyApi.search(text)
     }
 

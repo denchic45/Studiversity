@@ -37,6 +37,7 @@ import com.denchic45.uivalidator.experimental2.validator.observable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Assisted
@@ -67,7 +68,7 @@ class PeriodEditorComponent(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val foundRooms = roomQuery.filter(String::isNotEmpty)
-        .mapLatest { findRoomByContainsNameUseCase(it) }
+        .flatMapLatest { findRoomByContainsNameUseCase(it) }
         .stateInResource(componentScope)
 
     private val validator = CompositeValidator(

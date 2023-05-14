@@ -44,6 +44,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -167,7 +168,8 @@ class DayTimetableFinderComponent(
 
     private val query = MutableStateFlow("")
 
-    private val foundGroups = query.map {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val foundGroups = query.filter(String::isNotEmpty).flatMapLatest {
         findStudyGroupByContainsNameUseCase(it)
     }
 

@@ -104,8 +104,8 @@ fun LessonDetailsEditorContent(
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
         ) {
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
             members.forEach {
-                Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
                 AssistChip(
                     onClick = { /*TODO*/ },
                     label = { Text(text = it.fullName) },

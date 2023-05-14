@@ -25,12 +25,15 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.denchic45.stuiversity.util.optPropertyOf
 import com.denchic45.stuiversity.util.toUUID
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class StudyGroupEditorViewModel @Inject constructor(
     @Named(StudyGroupEditorFragment.GROUP_ID) _studyGroupId: String?,
     private val userChooserInteractor: UserChooserInteractor,
@@ -64,7 +67,7 @@ class StudyGroupEditorViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            typedSpecialtyByName.map { specialtyName: String ->
+            typedSpecialtyByName.flatMapLatest { specialtyName: String ->
                 findSpecialtyByContainsNameUseCase(specialtyName)
             }.collect { result ->
                 result.onSuccess {

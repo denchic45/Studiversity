@@ -33,6 +33,7 @@ import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
 import com.denchic45.uivalidator.experimental2.validator.observable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -124,9 +125,11 @@ class StudyGroupEditorComponent(
 
     val searchSpecialtiesText = MutableStateFlow("")
 
-    val searchedSpecialties = searchSpecialtiesText.filter(String::isNotEmpty).map {
-        findSpecialtyByContainsNameUseCase(it)
-    }.filterSuccess().map { it.value }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val searchedSpecialties = searchSpecialtiesText.filter(String::isNotEmpty)
+        .flatMapLatest(findSpecialtyByContainsNameUseCase::invoke)
+        .filterSuccess()
+        .map { it.value }
 
     fun onNameType(name: String) {
         editingState.name = name

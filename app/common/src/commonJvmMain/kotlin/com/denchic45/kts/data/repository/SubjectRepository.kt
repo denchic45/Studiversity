@@ -2,6 +2,7 @@ package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.fetchResource
+import com.denchic45.kts.data.fetchResourceFlow
 import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.stuiversity.api.course.subject.SubjectApi
@@ -24,7 +25,7 @@ class SubjectRepository @Inject constructor(
 ) : NetworkServiceOwner, SaveCourseRepository,
     FindByContainsNameRepository<SubjectResponse> {
 
-    override suspend fun findByContainsName(text: String) = fetchResource {
+    override fun findByContainsName(text: String) = fetchResourceFlow {
         subjectApi.search(text)
     }
 

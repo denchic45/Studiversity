@@ -1,7 +1,7 @@
 package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.db.local.source.UserLocalDataSource
-import com.denchic45.kts.data.fetchResource
+import com.denchic45.kts.data.fetchResourceFlow
 import com.denchic45.kts.data.mapper.toEntity
 import com.denchic45.kts.data.mapper.toUserResponse
 import com.denchic45.kts.data.observeResource
@@ -18,7 +18,7 @@ import com.denchic45.stuiversity.api.user.model.UserResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
@@ -29,10 +29,8 @@ class UserRepository @Inject constructor(
     private val userApi: UserApi,
 ) : FindByContainsNameRepository<UserResponse>, NetworkServiceOwner {
 
-    override suspend fun findByContainsName(text: String): Resource<List<UserResponse>> {
-        return fetchResource {
-            userApi.getList(text)
-        }
+    override fun findByContainsName(text: String) = fetchResourceFlow {
+        userApi.getList(text)
     }
 
     fun findSelf() = UserResponse(

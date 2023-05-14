@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 
 interface FindByContainsNameRepository<T> {
     val networkService: NetworkService
-    suspend fun findByContainsName(text: String): Resource<List<T>>
+     fun findByContainsName(text: String):Flow< Resource<List<T>>>
 }
 
 suspend fun <T : DomainModel> FindByContainsNameRepository<T>.findByContainsName(

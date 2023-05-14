@@ -62,89 +62,98 @@ fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBa
     }
     val childOverlay by component.childOverlay.subscribeAsState()
 
-    Column {
-        when (val overlayChild = childOverlay.overlay?.instance) {
-            is PeriodEditorComponent.OverlayChild.CourseChooser -> {
-                CourseChooserScreen(
-                    component = overlayChild.component,
-                    appBarInteractor = appBarInteractor
-                )
-            }
+    Surface {
+        Column {
+            when (val overlayChild = childOverlay.overlay?.instance) {
+                is PeriodEditorComponent.OverlayChild.CourseChooser -> {
+                    CourseChooserScreen(
+                        component = overlayChild.component,
+                        appBarInteractor = appBarInteractor
+                    )
+                }
 
-            is PeriodEditorComponent.OverlayChild.UserChooser -> {
-                UserChooserScreen(
-                    component = overlayChild.component,
-                    appBarInteractor = appBarInteractor
-                )
-            }
+                is PeriodEditorComponent.OverlayChild.UserChooser -> {
+                    UserChooserScreen(
+                        component = overlayChild.component,
+                        appBarInteractor = appBarInteractor
+                    )
+                }
 
-            null -> {
-                var expanded by remember { mutableStateOf(false) }
-                TopAppBar(
-                    title = {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .clickable { expanded = true },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = when (component.state.details) {
-                                    is EditingPeriodDetails.Event -> "Событие"
-                                    is EditingPeriodDetails.Lesson -> "Урок"
+                null -> {
+                    var expanded by remember { mutableStateOf(false) }
+                    TopAppBar(
+                        title = {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .clickable { expanded = true },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = when (component.state.details) {
+                                        is EditingPeriodDetails.Event -> "Событие"
+                                        is EditingPeriodDetails.Lesson -> "Урок"
+                                    }
+                                )
+                                Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "dropdown period type"
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { component.onSaveClick() }) {
+                                Icon(imageVector = Icons.Default.Done, contentDescription = "save")
+                            }
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { component.onCloseClick() }) {
+                                Icon(imageVector = Icons.Default.Close, contentDescription = "close")
+                            }
+                        }
+                    )
+                    Box {
+                        DropdownMenu(expanded = expanded,
+                            offset = DpOffset(48.dp, 0.dp),
+                            onDismissRequest = { expanded = false }) {
+                            DropdownMenuItem(
+                                text = { Text(text = "Урок") },
+                                onClick = {
+                                    expanded = false
+                                    component.onDetailsTypeSelect(PeriodEditorComponent.DetailsType.LESSON)
                                 }
                             )
-                            Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = "dropdown period type"
+                            DropdownMenuItem(
+                                text = { Text(text = "Событие") },
+                                onClick = {
+                                    expanded = false
+                                    component.onDetailsTypeSelect(PeriodEditorComponent.DetailsType.EVENT)
+                                }
                             )
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { component.onSaveClick() }) {
-                            Icon(imageVector = Icons.Default.Done, contentDescription = "save")
-                        }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { component.onCloseClick() }) {
-                            Icon(imageVector = Icons.Default.Close, contentDescription = "close")
                         }
                     }
-                )
-                Box {
-                    DropdownMenu(expanded = expanded,
-                        offset = DpOffset(48.dp, 0.dp),
-                        onDismissRequest = { expanded = false }) {
-                        DropdownMenuItem(
-                            text = { Text(text = "Урок") },
-                            onClick = {
-                                expanded = false
-                                component.onDetailsTypeSelect(PeriodEditorComponent.DetailsType.LESSON)
+                    Children(component.childDetailsStack) {
+                        when (val child = it.instance) {
+                            is PeriodEditorComponent.DetailsChild.Event -> {
+                                EventDetailsEditorScreen(
+                                    component = child.component
+                                )
                             }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(text = "Событие") },
-                            onClick = {
-                                expanded = false
-                                component.onDetailsTypeSelect(PeriodEditorComponent.DetailsType.EVENT)
+
+                            is PeriodEditorComponent.DetailsChild.Lesson -> {
+                                LessonDetailsEditorScreen(
+                                    component = child.component,
+                                    members = component.state.members,
+                                    onAddMemberClick = component::onAddMemberClick,
+                                    onRemoveMemberClick = component::onRemoveMemberClick
+                                )
                             }
-                        )
+                        }
                     }
+                    PeriodEditorContent(state = component.state)
                 }
-                Children(component.childDetailsStack) {
-                    when (val child = it.instance) {
-                        is PeriodEditorComponent.DetailsChild.Event -> {}
-                        is PeriodEditorComponent.DetailsChild.Lesson -> LessonDetailsEditorScreen(
-                            component = child.component,
-                            members = component.state.members,
-                            onAddMemberClick = component::onAddMemberClick,
-                            onRemoveMemberClick = component::onRemoveMemberClick
-                        )
-                    }
-                }
-                PeriodEditorContent(state = component.state)
             }
         }
     }

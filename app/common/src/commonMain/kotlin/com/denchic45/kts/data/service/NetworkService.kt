@@ -2,6 +2,8 @@ package com.denchic45.kts.data.service
 
 import com.denchic45.kts.data.domain.NoConnection
 import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.resourceOf
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -17,6 +19,13 @@ suspend fun <T> NetworkService.withHasNetwork(
     block()
 } else Resource.Error(NoConnection)
 
+fun <T> NetworkService.withHasNetworkFlow(
+    block: () -> Flow<Resource<T>>,
+): Flow<Resource<T>> = if (isNetworkAvailable) {
+    block()
+} else flowOf(resourceOf(NoConnection))
+
+@OptIn(ExperimentalCoroutinesApi::class)
 fun <T> NetworkService.withCollectHasNetwork(
     block: () -> Flow<Resource<T>>,
 ): Flow<Resource<T>> = observeNetwork().flatMapLatest {

@@ -23,13 +23,15 @@ sealed interface Resource<out T> {
 
 typealias EmptyResource = Resource<Unit>
 
+fun loadingResource() = Resource.Loading
+
 fun emptyResource(): EmptyResource = Resource.Success(Unit)
 
 fun <T> resourceOf(value: T) = Resource.Success(value)
 
 fun resourceOf(failure: Failure) = Resource.Error(failure)
 
-fun resourceOf() = Resource.Loading
+fun resourceOf() = loadingResource()
 
 
 fun <T> Resource<T>.success() = this as Resource.Success

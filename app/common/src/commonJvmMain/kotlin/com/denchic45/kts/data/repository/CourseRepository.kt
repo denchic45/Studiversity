@@ -2,6 +2,7 @@ package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.db.local.source.*
 import com.denchic45.kts.data.fetchResource
+import com.denchic45.kts.data.fetchResourceFlow
 import com.denchic45.kts.data.mapper.*
 import com.denchic45.kts.data.observeResource
 import com.denchic45.kts.data.pref.AppPreferences
@@ -51,8 +52,8 @@ class CourseRepository @Inject constructor(
 ) : NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
     FindByContainsNameRepository<CourseResponse> {
 
-    override suspend fun findByContainsName(text: String): Resource<List<CourseResponse>> {
-        return fetchResource { coursesApi.search(text) }
+    override fun findByContainsName(text: String): Flow<Resource<List<CourseResponse>>> {
+        return fetchResourceFlow { coursesApi.search(text) }
     }
 
     fun observeById(courseId: UUID) = observeResource(

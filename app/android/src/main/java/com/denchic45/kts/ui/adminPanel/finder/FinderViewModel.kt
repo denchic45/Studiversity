@@ -99,8 +99,9 @@ class FinderViewModel @Inject constructor(
         queryToSearchFlow(4),
     )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun queryToSearchFlow(index: Int): StateFlow<Resource<List<Any>>> {
-        return queryNames[index].map { text ->
+        return queryNames[index].flatMapLatest { text ->
             findUseCases[index].invoke(text)
         }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading)
     }

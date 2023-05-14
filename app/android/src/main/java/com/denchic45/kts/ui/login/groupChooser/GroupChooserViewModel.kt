@@ -26,7 +26,7 @@ class GroupChooserViewModel @Inject constructor(
 //    }
 
     override val sourceFlow: (String) -> Flow<Resource<List<StudyGroupResponse>>> = {
-        flow { emit(findStudyGroupByContainsNameUseCase(it)) }
+      findStudyGroupByContainsNameUseCase(it)
     }
 
     override fun onItemClick(position: Int) {

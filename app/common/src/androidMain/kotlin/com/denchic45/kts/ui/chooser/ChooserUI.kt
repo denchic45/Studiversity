@@ -40,7 +40,6 @@ fun <T> ChooserScreen(
     keyItem: (T) -> Any,
     itemContent: @Composable (T) -> Unit,
 ) {
-
     component.lifecycle.doOnStart {
         appBarInteractor.set(AppBarState(visible = false))
     }

@@ -4,11 +4,15 @@ import com.denchic45.kts.data.domain.Cause
 import com.denchic45.kts.data.repository.NetworkServiceOwner
 import com.denchic45.kts.data.service.withCollectHasNetwork
 import com.denchic45.kts.data.service.withHasNetwork
+import com.denchic45.kts.data.service.withHasNetworkFlow
 import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.loadingResource
 import com.denchic45.kts.domain.onFailure
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.domain.resourceOf
 import com.denchic45.kts.domain.toResource
 import com.denchic45.stuiversity.api.common.ResponseResult
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -44,6 +48,7 @@ fun <T, R> NetworkServiceOwner.observeResource(
     emitAll(query.map { Resource.Success(it) })
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 fun <T, R> NetworkServiceOwner.observeResource(
     query: Flow<T>,
     observe: () -> Flow<ResponseResult<R>>,
@@ -71,15 +76,24 @@ fun <T, R> NetworkServiceOwner.observeResource(
     emitAll(query.map { Resource.Success(it) })
 }
 
-
 suspend fun <T> NetworkServiceOwner.fetchResource(
-    searchLambda: suspend () -> ResponseResult<T>,
+    block: suspend () -> ResponseResult<T>,
 ): Resource<T> = networkService.withHasNetwork {
-    searchLambda().toResource()
+    block().toResource()
 }
 
+ fun <T> NetworkServiceOwner.fetchResourceFlow(
+    block: suspend () -> ResponseResult<T>,
+): Flow<Resource<T>> = networkService.withHasNetworkFlow {
+    flow {
+        emit(loadingResource())
+        emit(block().toResource())
+    }
+}
+
+
 fun <T> NetworkServiceOwner.fetchObservingResource(
-    searchLambda: () -> Flow<ResponseResult<T>>,
+    block: () -> Flow<ResponseResult<T>>,
 ): Flow<Resource<T>> = networkService.withCollectHasNetwork {
-    searchLambda().map { it.toResource() }
+    block().map { it.toResource() }
 }

@@ -18,7 +18,7 @@ class UserChooserViewModel @Inject constructor(
 ) : ChooserViewModel<UserResponse>() {
 
     override val sourceFlow: (String) -> Flow<Resource<List<UserResponse>>> = {
-        flow { emit(findUserByContainsNameUseCase(it)) }
+       findUserByContainsNameUseCase(it)
     }
 
     override fun onItemClick(position: Int) {
