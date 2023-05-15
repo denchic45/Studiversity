@@ -2,6 +2,7 @@ package com.denchic45.kts.ui.yourtimetables
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
@@ -15,7 +16,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Assisted
@@ -25,6 +28,7 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class YourTimetablesComponent(
     metaRepository: MetaRepository,
+    private val appPreferences: AppPreferences,
     private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
     _TimetableComponent: (
         StateFlow<String>,
@@ -58,7 +62,9 @@ class YourTimetablesComponent(
     private val componentScope = componentScope()
 
     val studyGroups = flow { emit(findYourStudyGroupsUseCase()) }.stateInResource(componentScope)
-    val selectedTimetable = MutableStateFlow(-1)
+    val selectedTimetable = combine(studyGroups,appPreferences.selectedStudyGroupTimetableIdFlow) {groups, id -> }.map {
+
+    }
 
     private val selectedOwner = MutableStateFlow<TimetableOwner>(TimetableOwner.Member(null))
 

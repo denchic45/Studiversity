@@ -2,9 +2,11 @@ package com.denchic45.kts.data.pref
 
 import com.russhwolf.settings.*
 import com.russhwolf.settings.coroutines.getIntFlow
+import com.russhwolf.settings.coroutines.getIntOrNullFlow
 import com.russhwolf.settings.coroutines.getStringFlow
 import com.russhwolf.settings.coroutines.getStringOrNullFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalSettingsApi::class)
 class AppPreferences(val settings: ObservableSettings) : Settings by settings {
@@ -22,6 +24,12 @@ class AppPreferences(val settings: ObservableSettings) : Settings by settings {
     var yourStudyGroups by string(defaultValue = "")
 
     val observeToken = settings.getStringFlow("token","")
-    var observeBellSchedule = settings.getStringFlow("bellSchedule","")
-    var observeYourStudyGroups = settings.getStringOrNullFlow("yourStudyGroups")
+    val observeBellSchedule = settings.getStringFlow("bellSchedule","")
+    val observeYourStudyGroups = settings.getStringOrNullFlow("yourStudyGroups")
+
+    var selectedStudyGroupTimetableId by nullableString()
+    val selectedStudyGroupTimetableIdFlow = settings.getStringOrNullFlow("selectedStudyGroupTimetableId")
+
+    var selectedStudyGroupId by nullableString()
+    val selectedStudyGroupIdFlow = settings.getStringOrNullFlow("selectedStudyGroupId")
 }
