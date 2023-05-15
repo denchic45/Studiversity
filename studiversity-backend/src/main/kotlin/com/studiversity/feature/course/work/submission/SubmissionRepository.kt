@@ -81,7 +81,7 @@ class SubmissionRepository {
                             surname = it[Users.surname],
                             avatarUrl = it[Users.avatarUrl]
                         ),
-                        state = SubmissionState.NEW,
+                        state = it[Submissions.state],
                         courseWorkId = courseWorkId,
                         content = when (CourseWorkDao.findById(courseWorkId)!!.type) {
                             CourseWorkType.ASSIGNMENT -> {
