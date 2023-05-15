@@ -17,14 +17,15 @@ fun StudyGroupChooserScreen(
 ) {
     ChooserScreen(
         component = component,
-        appBarInteractor = appBarInteractor, keyItem = { it.id },
+        appBarInteractor = appBarInteractor,
+        keyItem = { it.id },
         itemContent = {
             StudyGroupItemUI(it)
         })
 }
 
 @Composable
-fun StudyGroupItemUI(response: StudyGroupResponse,modifier: Modifier = Modifier) {
+fun StudyGroupItemUI(response: StudyGroupResponse, modifier: Modifier = Modifier) {
     ListItem(
         headlineContent = { Text(response.name) },
         leadingContent = {

@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.overlay.ChildOverlay
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
@@ -13,8 +12,8 @@ import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.data.repository.MetaRepository
-import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.resourceOf
 import com.denchic45.kts.domain.stateInResource
@@ -28,7 +27,6 @@ import com.denchic45.kts.ui.periodeditor.PeriodEditorComponent
 import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerDelegate
-import com.denchic45.kts.ui.timetable.state.TimetableState
 import com.denchic45.kts.ui.timetable.state.toTimetableState
 import com.denchic45.kts.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.kts.util.asFlow
@@ -49,7 +47,9 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
@@ -92,7 +92,7 @@ class DayTimetableFinderComponent(
         childFactory = { _, componentContext ->
             TimetableEditorChild(
                 _dayTimetableEditorComponent(
-                    dayTimetableComponent.weekTimetable.value.success().value,
+                    timetableComponent.weekTimetable.value.success().value,
                     owner.value!!.ownerId,
                     selectedDate,
                     componentContext
@@ -128,40 +128,37 @@ class DayTimetableFinderComponent(
 
     private val owner = MutableStateFlow<TimetableOwner.StudyGroup?>(null)
 
-    private val dayTimetableComponent = _TimetableComponent(
+    private val timetableComponent = _TimetableComponent(
         selectedWeekOfYear,
         owner.filterNotNull(),
         componentContext.childContext("DayTimetable")
     )
 
-    private val actualTimetable = dayTimetableComponent.weekTimetable
+    private val actualTimetable = timetableComponent.weekTimetable
         .shareIn(componentScope, SharingStarted.Lazily)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val timetable = bellSchedule.flatMapLatest { schedule ->
-        timetableEditorOverlay.asFlow().flatMapLatest { child ->
-            selectedWeekOfYear.flatMapLatest { selectedWeek ->
-                timetableFlow(selectedWeek, child, schedule)
+        selectedWeekOfYear.flatMapLatest { selectedWeek ->
+            weekTimetableFlow().stateIn(componentScope).flatMapLatest { timetableResource ->
+                isShowEditorFlow.mapLatest { isEdit ->
+                    timetableResource.map {
+                        it.toTimetableState(selectedWeek, schedule, isEdit)
+                    }
+                }
             }
         }
     }.stateInResource(componentScope)
 
-    private fun timetableFlow(
-        yearWeek: String,
-        child: ChildOverlay<TimetableEditorConfig, TimetableEditorChild>,
-        schedule: BellSchedule,
-    ): Flow<Resource<TimetableState>> = child.overlay?.let {
-        it.instance.component.editingWeekTimetable.map { periods ->
-            resourceOf(
-                periods.toTimetableState(
-                    yearWeek,
-                    schedule,
-                    true
-                )
-            )
-        }
-    } ?: actualTimetable.mapResource {
-        it.days.toTimetableState(yearWeek, schedule)
+    private val editorComponentFlow = timetableEditorOverlay.asFlow()
+        .shareIn(componentScope, SharingStarted.Lazily, 1)
+
+    private val isShowEditorFlow = editorComponentFlow.map { it.overlay != null }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun weekTimetableFlow() = editorComponentFlow.flatMapLatest { overlay ->
+        overlay.overlay?.instance?.component?.editingWeekTimetable?.map { resourceOf(it) }
+            ?: actualTimetable.mapResource { it.days }
     }
 
     val state = TimetableFinderState()
@@ -192,7 +189,7 @@ class DayTimetableFinderComponent(
         dayTimetableEditorComponent?.request?.let {
             componentScope().launch {
                 putTimetableUseCase(
-                    weekOfYear = dayTimetableComponent.selectedWeekOfYear.first(),
+                    weekOfYear = timetableComponent.selectedWeekOfYear.first(),
                     putTimetableRequest = it
                 )
             }

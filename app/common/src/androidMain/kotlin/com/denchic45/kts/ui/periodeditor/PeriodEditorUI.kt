@@ -40,9 +40,9 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.chooser.CourseChooserScreen
 import com.denchic45.kts.ui.chooser.UserChooserScreen
 import com.denchic45.kts.ui.theme.AppTheme
@@ -58,7 +58,10 @@ import java.util.UUID
 @Composable
 fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBarInteractor) {
     component.lifecycle.doOnStart {
-        appBarInteractor.set(AppBarState(visible = false))
+        appBarInteractor.update { it.copy(visible = false) }
+    }
+    component.lifecycle.doOnDestroy {
+        appBarInteractor.update { it.copy(visible = true) }
     }
     val childOverlay by component.childOverlay.subscribeAsState()
 
@@ -110,7 +113,10 @@ fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBa
                         },
                         navigationIcon = {
                             IconButton(onClick = { component.onCloseClick() }) {
-                                Icon(imageVector = Icons.Default.Close, contentDescription = "close")
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "close"
+                                )
                             }
                         }
                     )

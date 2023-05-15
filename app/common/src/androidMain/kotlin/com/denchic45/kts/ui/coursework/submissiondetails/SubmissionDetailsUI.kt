@@ -90,13 +90,18 @@ fun SubmissionDetailsScreen(
                     OutlinedTextField(
                         value = typedGrade,
                         onValueChange = { value ->
-                            if (value.isDigitsOnly()) typedGrade = value
+                            if (value.isDigitsOnly() && value.toInt() in 1..5)
+                                typedGrade = value
                         },
+                        trailingIcon = { Text("/5") },
                         modifier = Modifier.weight(1f),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
                     )
                     Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
-                    FilledTonalButton(onClick = { component.onGrade(typedGrade.toInt()) }) {
+                    FilledTonalButton(
+                        onClick = { component.onGrade(typedGrade.toInt()) },
+                        enabled = typedGrade.isNotEmpty()
+                    ) {
                         Text("Оценить")
                     }
                 }

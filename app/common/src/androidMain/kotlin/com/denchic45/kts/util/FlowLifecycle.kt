@@ -45,7 +45,7 @@ inline fun <reified T> Flow<T>.collectWithLifecycle(
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
     noinline action: suspend (T) -> Unit
 ) {
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(lifecycleOwner.lifecycle) {
         lifecycleOwner.lifecycleScope.launch {
             flowWithLifecycle(lifecycleOwner.lifecycle, minActiveState).collect(action)
         }

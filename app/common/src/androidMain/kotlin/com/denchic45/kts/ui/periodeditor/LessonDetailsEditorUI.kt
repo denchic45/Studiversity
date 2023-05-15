@@ -3,6 +3,7 @@ package com.denchic45.kts.ui.periodeditor
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -61,43 +62,44 @@ fun LessonDetailsEditorContent(
     onCourseChoose: () -> Unit,
 ) {
     Column {
-        details.course?.let {
-            ListItem(
-                headlineContent = { Text(text = it.subject?.name ?: it.name) },
-                leadingContent = {
-                    it.subject?.let {
-                        Image(
-                            painter = rememberAsyncImagePainter(
-                                ImageRequest.Builder(LocalContext.current)
-                                    .decoderFactory(SvgDecoder.Factory())
-                                    .data(it.iconUrl)
-                                    .build()
-                            ),
-                            contentDescription = "subject icon",
-                            modifier = Modifier.size(40.dp)
+        Box(modifier = Modifier.clickable(onClick = onCourseChoose)) {
+            details.course?.let {
+                ListItem(
+                    headlineContent = { Text(text = it.subject?.name ?: it.name) },
+                    leadingContent = {
+                        it.subject?.let {
+                            Image(
+                                painter = rememberAsyncImagePainter(
+                                    ImageRequest.Builder(LocalContext.current)
+                                        .decoderFactory(SvgDecoder.Factory())
+                                        .data(it.iconUrl)
+                                        .build()
+                                ),
+                                contentDescription = "subject icon",
+                                modifier = Modifier.size(40.dp)
+                            )
+                        } ?: Icon(
+                            imageVector = Icons.Outlined.School,
+                            contentDescription = ""
                         )
-                    } ?: Icon(
+                    },
+                )
+            } ?: ListItem(
+                headlineContent = {
+                    Text(
+                        text = "Выбрать курс",
+                        color = if (details.courseError) MaterialTheme.colorScheme.error
+                        else Color.Unspecified
+                    )
+                },
+                leadingContent = {
+                    Icon(
                         imageVector = Icons.Outlined.School,
                         contentDescription = ""
                     )
-                },
-                modifier = Modifier.clickable(onClick = onCourseChoose)
+                }
             )
-        } ?: ListItem(
-            headlineContent = {
-                Text(
-                    text = "Выбрать курс",
-                    color = if (details.courseError) MaterialTheme.colorScheme.error
-                    else Color.Unspecified
-                )
-            },
-            leadingContent = {
-                Icon(
-                    imageVector = Icons.Outlined.School,
-                    contentDescription = ""
-                )
-            }
-        )
+        }
         HeaderItemUI("Преподаватели")
         Row(
             Modifier

@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.EdgesensorHigh
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,8 +30,10 @@ import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.chooser.StudyGroupItemUI
 import com.denchic45.kts.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.kts.ui.timetable.DayTimetableContent
+import com.denchic45.kts.ui.timetable.getMonthTitle
 import com.denchic45.kts.ui.timetable.state.TimetableState
 import com.denchic45.kts.ui.uiIconOf
+import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import java.time.LocalDate
 
@@ -42,57 +43,130 @@ fun TimetableFinderScreen(
     appBarInteractor: AppBarInteractor,
 ) {
     val selectedDate by component.selectedDate.collectAsState()
-    val state = component.state
+    val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
+    val state = remember(component::state)
     val timetableResource by component.timetable.collectAsState()
 
-    LaunchedEffect(timetableResource) {
-        timetableResource.onSuccess {
-            if (it.isEdit) {
-                appBarInteractor.set(
-                    AppBarState(
-                        actions = listOf(
-                            ActionMenuItem(
-                                id = "save",
-                                icon = uiIconOf(Icons.Default.Done),
-                                onClick = component::onSaveChangesClick
-                            )
-                        )
-                    )
-                )
-            } else {
-                appBarInteractor.set(
-                    AppBarState(
-                        actions = listOf(
-                            ActionMenuItem(
-                                id = "edit",
-                                icon = uiIconOf(Icons.Outlined.Edit),
-                                onClick = component::onEditClick
-                            )
-                        )
-                    )
-                )
-            }
-        }
-    }
+//    component.timetable.collectWithLifecycle {
+//        appBarInteractor.update {
+//            it.copy(
+//                actions = if ((timetableResource as? Resource.Success)?.value?.isEdit == true) {
+//                    listOf(
+//                        ActionMenuItem(
+//                            id = "save",
+//                            icon = uiIconOf(Icons.Default.Done),
+//                            onClick = component::onSaveChangesClick
+//                        )
+//                    )
+//                } else {
+//                    listOf(
+//                        ActionMenuItem(
+//                            id = "edit",
+//                            icon = uiIconOf(Icons.Outlined.Edit),
+//                            onClick = component::onEditClick
+//                        )
+//                    )
+//                }
+//            )
+//        }
+//    }
+
+//    LocalLifecycleOwner.current.lifecycle.currentState
 
     val overlay by component.childOverlay.subscribeAsState()
+
+
+//    LaunchedEffect(key1 = Unit ) {
+//        snapshotFlow(state::selectedStudyGroup).collectWithLifecycle() {
+//            appBarInteractor.set(
+//                if (it == null) {
+//                    EmptyAppBar
+//                } else {
+//                    AppBarState(
+//                        title = uiTextOf( getMonthTitle (selectedYearWeek)),
+//                        actions = if ((timetableResource as? Resource.Success)?.value?.isEdit == true) {
+//                            listOf(
+//                                ActionMenuItem(
+//                                    id = "save",
+//                                    icon = uiIconOf(Icons.Default.Done),
+//                                    onClick = component::onSaveChangesClick
+//                                )
+//                            )
+//                        } else {
+//                            listOf(
+//                                ActionMenuItem(
+//                                    id = "edit",
+//                                    icon = uiIconOf(Icons.Outlined.Edit),
+//                                    onClick = component::onEditClick
+//                                )
+//                            )
+//                        }
+//                    )
+//                }
+//            )
+//        }
+//    }
+
+//    component.lifecycle.doOnStart {
+//        appBarInteractor.update { it.copy(visible = true) }
+//    }
+
     when (val child = overlay.overlay?.instance) {
         is DayTimetableFinderComponent.OverlayChild.PeriodEditor -> PeriodEditorScreen(
             component = child.component,
             appBarInteractor = appBarInteractor
         )
 
-        null -> TimetableFinderContent(
-            selectedDate = selectedDate,
-            state = state,
-            timetableResource = timetableResource,
-            onQueryType = component::onQueryType,
-            onDateSelect = component::onDateSelect,
-            onGroupSelect = component::onGroupSelect,
-            onAddPeriodClick = component::onAddPeriodClick,
-            onEditPeriodClick = component::onEditPeriodClick,
-            onRemovePeriodSwipe = component::onRemovePeriodSwipe
-        )
+        null -> {
+            LaunchedEffect(
+                selectedYearWeek,
+                timetableResource,
+                state.selectedStudyGroup
+            ) {
+                appBarInteractor.set(
+                    AppBarState(
+                        title = uiTextOf(
+                            if (state.selectedStudyGroup != null) getMonthTitle(selectedYearWeek)
+                            else ""
+                        ),
+                        actions = when (val resource = timetableResource) {
+                            is Resource.Success -> {
+                                if (resource.value.isEdit) {
+                                    listOf(
+                                        ActionMenuItem(
+                                            id = "save",
+                                            icon = uiIconOf(Icons.Default.Done),
+                                            onClick = component::onSaveChangesClick
+                                        )
+                                    )
+                                } else {
+                                    listOf(
+                                        ActionMenuItem(
+                                            id = "edit",
+                                            icon = uiIconOf(Icons.Outlined.Edit),
+                                            onClick = component::onEditClick
+                                        )
+                                    )
+                                }
+                            }
+
+                            else -> emptyList()
+                        }
+                    )
+                )
+            }
+            TimetableFinderContent(
+                selectedDate = selectedDate,
+                state = state,
+                timetableResource = timetableResource,
+                onQueryType = component::onQueryType,
+                onDateSelect = component::onDateSelect,
+                onGroupSelect = component::onGroupSelect,
+                onAddPeriodClick = component::onAddPeriodClick,
+                onEditPeriodClick = component::onEditPeriodClick,
+                onRemovePeriodSwipe = component::onRemovePeriodSwipe
+            )
+        }
     }
 }
 

@@ -147,6 +147,8 @@ kotlin {
                 api("androidx.compose.foundation:foundation:$composeVersion")
                 // Material Design
                 api("androidx.compose.material3:material3:1.1.0-rc01")
+                // Lifecycle
+                api("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
                 api("androidx.recyclerview:recyclerview:1.3.0")
 
