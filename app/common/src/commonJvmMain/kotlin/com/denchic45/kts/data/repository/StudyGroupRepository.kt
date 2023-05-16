@@ -148,7 +148,7 @@ class StudyGroupRepository @Inject constructor(
             }
         }
 
-    suspend fun findById(studyGroupId: UUID) = fetchResource {
+    fun findById(studyGroupId: UUID) = fetchResourceFlow {
         studyGroupApi.getById(studyGroupId)
     }
 

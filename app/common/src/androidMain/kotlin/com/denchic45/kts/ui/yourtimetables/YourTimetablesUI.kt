@@ -30,7 +30,7 @@ import com.denchic45.kts.ui.uiTextOf
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: AppBarInteractor) {
-    val selectedTimetable by component.selectedTimetable.collectAsState()
+    val selectedTimetable by component.selectedTimetablePosition.collectAsState()
     val groups by component.studyGroups.collectAsState()
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
     val selectedDate by component.selectedDate.collectAsState()
@@ -45,49 +45,51 @@ fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: A
                 var expanded by remember { mutableStateOf(false) }
                 val showList = expanded && groups.isNotEmpty()
 
-                ExposedDropdownMenuBox(expanded = showList, onExpandedChange = { expanded = it }) {
-                    OutlinedTextField(
-                        value = if (selectedTimetable == -1) "Мое расписание" else groups[selectedTimetable].name,
-                        readOnly = true,
-                        onValueChange = {},
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = showList
-                            )
-                        },
-                        singleLine = true,
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(MaterialTheme.spacing.small)
-                            .menuAnchor(),
-                    )
-                    ExposedDropdownMenu(
+                selectedTimetable.onSuccess { selectedTimetable ->
+                    ExposedDropdownMenuBox(
                         expanded = showList,
-                        onDismissRequest = { expanded = false }) {
-                        DropdownMenuItem(
-                            text = { Text("Мое расписание") },
-                            onClick = {
-                                component.onTimetableSelect(-1)
-                                expanded = false
-                            }
+                        onExpandedChange = { expanded = it }) {
+                        OutlinedTextField(
+                            value = if (selectedTimetable == -1) "Мое расписание" else groups[selectedTimetable].name,
+                            readOnly = true,
+                            onValueChange = {},
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                    expanded = showList
+                                )
+                            },
+                            singleLine = true,
+                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(MaterialTheme.spacing.small)
+                                .menuAnchor(),
                         )
-                        groups.forEachIndexed { index, group ->
+                        ExposedDropdownMenu(
+                            expanded = showList,
+                            onDismissRequest = { expanded = false }) {
                             DropdownMenuItem(
-                                text = { Text(group.name) },
+                                text = { Text("Мое расписание") },
                                 onClick = {
-                                    component.onTimetableSelect(index)
+                                    component.onTimetableSelect(-1)
                                     expanded = false
                                 }
                             )
+                            groups.forEachIndexed { index, group ->
+                                DropdownMenuItem(
+                                    text = { Text(group.name) },
+                                    onClick = {
+                                        component.onTimetableSelect(index)
+                                        expanded = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }
             }
 
             val viewState by component.timetableState.collectAsState()
-
-
 
             DayTimetableContent(
                 selectedDate = selectedDate,

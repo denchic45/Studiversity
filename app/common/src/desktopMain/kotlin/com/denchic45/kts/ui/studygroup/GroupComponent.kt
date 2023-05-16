@@ -2,12 +2,10 @@ package com.denchic45.kts.ui.studygroup
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.StackNavigator
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
-import com.denchic45.kts.ui.studygroup.courses.GroupCoursesComponent
+import com.denchic45.kts.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.kts.ui.studygroup.members.StudyGroupMembersComponent
-import com.denchic45.kts.ui.navigation.GroupConfig
 import com.denchic45.kts.ui.navigation.StudyGroupTabsChild
 import com.denchic45.kts.ui.navigation.GroupTabsConfig
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +17,9 @@ import java.util.UUID
 @Inject
 class GroupComponent(
     studyGroupMembersComponent: (UUID, ComponentContext) -> StudyGroupMembersComponent,
-    groupCourseComponent: (groupId: UUID,ComponentContext) -> GroupCoursesComponent,
+    groupCourseComponent: (groupId: UUID,ComponentContext) -> StudyGroupCoursesComponent,
     @Assisted
-    private val groupId: UUID,
+    private val studyGroupId: UUID,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -33,10 +31,10 @@ class GroupComponent(
         childFactory = { tabConfig: GroupTabsConfig, _ ->
             when (tabConfig) {
                 is GroupTabsConfig.Members -> {
-                    StudyGroupTabsChild.Members(studyGroupMembersComponent(groupId, componentContext))
+                    StudyGroupTabsChild.Members(studyGroupMembersComponent(studyGroupId, componentContext))
                 }
                 is GroupTabsConfig.Courses -> {
-                    StudyGroupTabsChild.Courses(groupCourseComponent(groupId,componentContext))
+                    StudyGroupTabsChild.Courses(groupCourseComponent(studyGroupId,componentContext))
                 }
             }
         })

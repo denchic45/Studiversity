@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.yourStudyGroups
+package com.denchic45.kts.ui.yourstudygroups
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -18,7 +18,7 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
     Column {
         groups.onSuccess {
             it.forEachIndexed { index, group ->
-                TimetableItem(group.name) { component.onGroupSelect(index) }
+                TimetableItem(group.name) { component.onGroupSelect(group.id) }
             }
         }
     }

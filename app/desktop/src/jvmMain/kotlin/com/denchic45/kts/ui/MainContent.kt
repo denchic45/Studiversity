@@ -9,8 +9,6 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,11 +44,11 @@ fun MainContent(mainComponent: MainComponent) {
                 NavigationRailItem(icon = {
                     Icon(painterResource("ic_timetable".toDrawablePath()), null)
                 },
-                    selected = activeComponent is Child.Timetable,
+                    selected = activeComponent is Child.YourTimetables,
                     onClick = { mainComponent.onTimetableClick() })
                 NavigationRailItem(
                     icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
-                    selected = activeComponent is Child.StudyGroups,
+                    selected = activeComponent is Child.YourStudyGroups,
                     onClick = { mainComponent.onGroupClick() })
                 Spacer(Modifier.weight(1f))
             }
@@ -92,8 +90,8 @@ fun MainContent(mainComponent: MainComponent) {
                 })
 
                 when (val child = childStack.active.instance) {
-                    is Child.Timetable -> TimetableScreen(appBarMediator, child.component)
-                    is Child.StudyGroups -> StudyGroupsScreen(appBarMediator, child.component)
+                    is Child.YourTimetables -> TimetableScreen(appBarMediator, child.component)
+                    is Child.YourStudyGroups -> StudyGroupsScreen(appBarMediator, child.component)
                 }
 
                 val overlay by mainComponent.childOverlay.subscribeAsState()

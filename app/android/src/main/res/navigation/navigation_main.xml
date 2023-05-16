@@ -28,7 +28,7 @@
 
     <fragment
         android:id="@+id/menu_group"
-        android:name="com.denchic45.kts.ui.yourStudyGroups.YourStudyGroupsFragment"
+        android:name="com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsFragment"
         android:label="YourStudyGroupsFragment" />
 
     <fragment

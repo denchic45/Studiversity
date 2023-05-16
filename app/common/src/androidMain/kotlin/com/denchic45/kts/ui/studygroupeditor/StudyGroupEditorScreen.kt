@@ -46,7 +46,7 @@ private fun StudyGroupEditorContent(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val showList = expanded && searchedSpecialties.isNotEmpty()
-    StudyGroupEditorUI(
+    StudyGroupEditorContent(
         viewState = viewState,
         inputState = inputState,
         searchedSpecialties = searchedSpecialties,

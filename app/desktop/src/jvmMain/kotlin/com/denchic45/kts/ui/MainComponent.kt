@@ -20,8 +20,8 @@ import com.denchic45.kts.ui.navigation.OverlayChild
 import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.navigation.UserEditorChild
 import com.denchic45.kts.ui.navigation.UserEditorConfig
-import com.denchic45.kts.ui.studygroups.StudyGroupsComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
+import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsComponent
 import com.denchic45.kts.ui.yourtimetables.YourTimetablesComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Role
@@ -33,15 +33,13 @@ import java.util.UUID
 @Inject
 class MainComponent constructor(
     private val removeUserUseCase: RemoveUserUseCase,
-    private val _timetableComponent: (ComponentContext) -> YourTimetablesComponent,
-    private val _studyGroupsComponent: (ComponentContext) -> StudyGroupsComponent,
+    private val _yourTimetablesComponent: (ComponentContext) -> YourTimetablesComponent,
+    private val _yourStudyGroupsComponent: (ComponentContext) -> YourStudyGroupsComponent,
     mainInteractor: MainInteractor,
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     userEditorComponent: (
-        AppBarInteractor,
         onFinish: () -> Unit,
         userId: UUID?,
-        role: Role?,
         ComponentContext
     ) -> UserEditorComponent,
     @Assisted
@@ -56,11 +54,20 @@ class MainComponent constructor(
 
     val stack: Value<ChildStack<Config, Child>> = childStack(
         source = navigation,
-        initialConfiguration = Config.Timetable,
+        initialConfiguration = Config.YourTimetables,
         childFactory = { config, componentContext ->
             when (config) {
-                is Config.Timetable -> Child.Timetable(_timetableComponent(componentContext))
-                is Config.StudyGroups -> Child.StudyGroups(_studyGroupsComponent(componentContext))
+                is Config.YourTimetables -> Child.YourTimetables(
+                    _yourTimetablesComponent(
+                        componentContext
+                    )
+                )
+
+                is Config.YourStudyGroups -> Child.YourStudyGroups(
+                    _yourStudyGroupsComponent(
+                        componentContext
+                    )
+                )
             }
         })
 
@@ -93,11 +100,11 @@ class MainComponent constructor(
     }
 
     fun onTimetableClick() {
-        navigation.bringToFront(Config.Timetable)
+        navigation.bringToFront(Config.YourTimetables)
     }
 
     fun onGroupClick() {
-        navigation.bringToFront(Config.StudyGroups)
+        navigation.bringToFront(Config.YourStudyGroups)
     }
 
     fun onOverlayDismiss() {
@@ -105,14 +112,15 @@ class MainComponent constructor(
     }
 
     sealed class Config : Parcelable {
-        object Timetable : Config()
-        object StudyGroups : Config()
+        object YourTimetables : Config()
+        object YourStudyGroups : Config()
     }
 
     sealed class Child {
         abstract val component: ComponentContext
 
-        class Timetable(override val component: YourTimetablesComponent) : Child()
-        class StudyGroups(override val component: StudyGroupsComponent) : Child()
+        class YourTimetables(override val component: YourTimetablesComponent) : Child()
+
+        class YourStudyGroups(override val component: YourStudyGroupsComponent) : Child()
     }
 }

@@ -2,6 +2,7 @@ package com.denchic45.kts.ui.studygroup.members
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
@@ -16,12 +17,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.components.UserListItem
 import com.denchic45.kts.ui.model.UserItem
-import com.denchic45.kts.ui.navigation.GroupMembersChild
-import com.denchic45.kts.ui.navigation.ProfileChild
-import com.denchic45.kts.ui.navigation.UserEditorChild
 import com.denchic45.kts.ui.profile.ProfileScreen
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.ui.usereditor.UserEditorScreen
@@ -29,7 +28,7 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupMembersScreen(studyGroupMembersComponent: StudyGroupMembersComponent) {
+fun StudyGroupMembersScreen(studyGroupMembersComponent: StudyGroupMembersComponent) {
     Row {
         val members by studyGroupMembersComponent.members.collectAsState()
         val selectedItemId by studyGroupMembersComponent.selectedMember.collectAsState()
@@ -50,22 +49,26 @@ fun GroupMembersScreen(studyGroupMembersComponent: StudyGroupMembersComponent) {
                 )
             }
         }
-        val stack by studyGroupMembersComponent.stack.subscribeAsState()
+        val overlay by studyGroupMembersComponent.childOverlay.subscribeAsState()
 
-        when (val child = stack.active.instance) {
-            GroupMembersChild.Unselected -> {
+        Box(Modifier.width(472.dp)) {
+            when (val child = overlay.overlay?.instance) {
 
+                is StudyGroupMembersComponent.OverlayChild.Member -> {
+                    ProfileScreen(
+                        Modifier,
+                        child.component
+                    ) { studyGroupMembersComponent.onCloseProfileClick() }
+                }
+
+                is StudyGroupMembersComponent.OverlayChild.UserEditor -> {
+                    UserEditorScreen(
+                        child.component
+                    )
+                }
+
+                null -> TODO()
             }
-            is ProfileChild -> {
-                ProfileScreen(
-                    Modifier.width(422.dp), child.profileComponent
-                ) { studyGroupMembersComponent.onCloseProfileClick() }
-            }
-            is UserEditorChild -> UserEditorScreen(
-                child.userEditorComponent,
-                child.appBarInteractor,
-                Modifier.width(472.dp)
-            )
         }
     }
 }

@@ -33,9 +33,9 @@ interface TimetableOwnerComponent {
     fun onTodayClick() = selectedDate.update { LocalDate.now() }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun getTimetableState(
+    fun getTimetableStateOfLists(
         bellSchedule: Flow<BellSchedule>,
-        selectedWeekOfYear: Flow<String>,
+//        selectedWeekOfYear: Flow<String>,
         timetableResource: Flow<Resource<List<List<PeriodResponse>>>>,
     ): Flow<Resource<TimetableState>> {
         return bellSchedule.flatMapLatest { schedule ->
@@ -48,14 +48,13 @@ interface TimetableOwnerComponent {
     }
 
 
-    fun getTimetableOfResponseState(
+    fun getTimetableState(
         bellSchedule: Flow<BellSchedule>,
-        selectedWeekOfYear: Flow<String>,
+//        selectedWeekOfYear: Flow<String>,
         timetableResource: Flow<Resource<TimetableResponse>>,
     ): Flow<Resource<TimetableState>> {
-        return getTimetableState(
+        return getTimetableStateOfLists(
             bellSchedule,
-            selectedWeekOfYear,
             timetableResource.mapResource { it.days })
     }
 

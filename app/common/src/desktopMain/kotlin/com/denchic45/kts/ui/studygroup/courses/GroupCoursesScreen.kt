@@ -26,9 +26,9 @@ import com.denchic45.kts.ui.theme.toDrawablePath
 import java.util.*
 
 @Composable
-fun GroupCoursesScreen(groupCoursesComponent: GroupCoursesComponent) {
+fun GroupCoursesScreen(studyGroupCoursesComponent: StudyGroupCoursesComponent) {
     Column(Modifier.width(1040.dp)) {
-        val courses by groupCoursesComponent.courses.collectAsState()
+        val courses by studyGroupCoursesComponent.courses.collectAsState()
         courses.onSuccess {
             GroupCourseList(it)
         }

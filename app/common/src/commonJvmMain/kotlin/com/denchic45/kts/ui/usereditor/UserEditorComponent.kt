@@ -41,14 +41,14 @@ class UserEditorComponent(
     private val addUserUseCase: AddUserUseCase,
     private val removeUserUseCase: RemoveUserUseCase,
     private val confirmInteractor: ConfirmDialogInteractor,
-    @Assisted
-    private val appBarInteractor: AppBarInteractor,
+//    @Assisted
+//    private val appBarInteractor: AppBarInteractor,
     @Assisted
     val onFinish: () -> Unit,
     @Assisted
     val userId: UUID?,
-    @Assisted
-    val role: Role? = null,
+//    @Assisted
+//    val role: Role? = null,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -217,18 +217,18 @@ class UserEditorComponent(
         }
     }
 
-    init {
-        lifecycle.doOnStart {
-            appBarInteractor.update {
-                it.copy(
-                    title = uiTextOf(
-                        if (uiEditor.isNew) "Новый пользователь"
-                        else "Редактировать пользователя"
-                    )
-                )
-            }
-        }
-    }
+//    init {
+//        lifecycle.doOnStart {
+//            appBarInteractor.update {
+//                it.copy(
+//                    title = uiTextOf(
+//                        if (uiEditor.isNew) "Новый пользователь"
+//                        else "Редактировать пользователя"
+//                    )
+//                )
+//            }
+//        }
+//    }
 
     data class ErrorState(
         val firstNameMessage: String? = null,

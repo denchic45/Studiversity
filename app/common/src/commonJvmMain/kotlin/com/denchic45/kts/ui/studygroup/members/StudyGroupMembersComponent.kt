@@ -2,12 +2,11 @@ package com.denchic45.kts.ui.studygroup.members
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.bringToFront
-import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.router.overlay.activate
+import com.arkivanov.decompose.router.overlay.childOverlay
+import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.model.GroupMembers
@@ -16,16 +15,8 @@ import com.denchic45.kts.domain.usecase.AssignUserRoleInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindGroupMembersUseCase
 import com.denchic45.kts.domain.usecase.RemoveUserRoleFromScopeUseCase
 import com.denchic45.kts.domain.usecase.RemoveUserUseCase
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.toUserItem
-import com.denchic45.kts.ui.navigation.GroupMembersChild
-import com.denchic45.kts.ui.navigation.GroupMembersConfig
-import com.denchic45.kts.ui.navigation.OverlayConfig
-import com.denchic45.kts.ui.navigation.ProfileChild
-import com.denchic45.kts.ui.navigation.ProfileConfig
-import com.denchic45.kts.ui.navigation.UserEditorChild
-import com.denchic45.kts.ui.navigation.UserEditorConfig
 import com.denchic45.kts.ui.profile.ProfileComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
@@ -49,60 +40,79 @@ class StudyGroupMembersComponent(
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
     profileComponent: (UUID, ComponentContext) -> ProfileComponent,
     userEditorComponent: (
-        AppBarInteractor,
         onFinish: () -> Unit,
         userId: UUID?,
-        role: Role?,
         ComponentContext
     ) -> UserEditorComponent,
-    private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     @Assisted
-    private val groupId: UUID,
+    private val studyGroupId: UUID,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
-    private val navigation = StackNavigation<GroupMembersConfig>()
+    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
 
-    val stack: Value<ChildStack<GroupMembersConfig, GroupMembersChild>> = childStack(
-        source = navigation,
-        initialConfiguration = GroupMembersConfig.Unselected,
-        childFactory = { config, _ ->
+    val childOverlay = childOverlay(
+        source = overlayNavigation,
+        childFactory = { config, componentContext ->
             when (config) {
-                GroupMembersConfig.Unselected -> GroupMembersChild.Unselected
-                is ProfileConfig -> ProfileChild(profileComponent(config.userId, componentContext))
-                is UserEditorConfig -> {
-                    val appBarInteractor = AppBarInteractor()
-                    UserEditorChild(
+                is OverlayConfig.Member -> {
+                    OverlayChild.Member(profileComponent(config.memberId, componentContext))
+                }
+
+                is OverlayConfig.UserEditor -> {
+                    OverlayChild.UserEditor(
                         userEditorComponent(
-                            appBarInteractor,
-                            navigation::pop,
+                            overlayNavigation::dismiss,
                             config.userId,
-                            config.role,
                             componentContext
-                        ),
-                        appBarInteractor
+                        )
                     )
                 }
             }
-        })
+        }
+    )
+
+//    private val navigation = StackNavigation<GroupMembersConfig>()
+
+//    val stack: Value<ChildStack<GroupMembersConfig, GroupMembersChild>> = childStack(
+//        source = navigation,
+//        initialConfiguration = GroupMembersConfig.Unselected,
+//        childFactory = { config, _ ->
+//            when (config) {
+//                GroupMembersConfig.Unselected -> GroupMembersChild.Unselected
+//                is ProfileConfig -> ProfileChild(profileComponent(config.userId, componentContext))
+//                is UserEditorConfig -> {
+//                    val appBarInteractor = AppBarInteractor()
+//                    UserEditorChild(
+//                        userEditorComponent(
+//                            appBarInteractor,
+//                            navigation::pop,
+//                            config.userId,
+//                            config.role,
+//                            componentContext
+//                        ),
+//                        appBarInteractor
+//                    )
+//                }
+//            }
+//        })
 
     private val componentScope = componentScope()
 
     val members: StateFlow<Resource<GroupMembers>> = flow {
-        emit(findGroupMembersUseCase(groupId))
+        emit(findGroupMembersUseCase(studyGroupId))
     }.mapResource { scopeMembers ->
         val curatorMember = scopeMembers.firstOrNull { member -> Role.Curator in member.roles }
         val groupCurator = curatorMember?.user?.toUserItem()
         val students = (curatorMember?.let { scopeMembers - it }
             ?: scopeMembers).map { it.user.toUserItem() }
         GroupMembers(
-            groupId = groupId,
+            groupId = studyGroupId,
             curator = groupCurator,
             headmanId = scopeMembers.find { member -> Role.Headman in member.roles }?.user?.id,
             students = students
         )
-
     }.stateIn(
         componentScope,
         SharingStarted.Lazily,
@@ -113,15 +123,15 @@ class StudyGroupMembersComponent(
 
     val memberAction = MutableStateFlow<Pair<List<StudentAction>, UUID>?>(null)
 
-    init {
-        componentScope.launch {
-            selectedMember.collect { userId ->
-                val config = if (userId != null) ProfileConfig(userId)
-                else GroupMembersConfig.Unselected
-                navigation.bringToFront(config)
-            }
-        }
-    }
+//    init {
+//        componentScope.launch {
+//            selectedMember.collect { userId ->
+//                val config = if (userId != null) ProfileConfig(userId)
+//                else GroupMembersConfig.Unselected
+//                navigation.bringToFront(config)
+//            }
+//        }
+//    }
 
     fun onMemberSelect(userId: UUID) {
         selectedMember.value = userId
@@ -149,20 +159,17 @@ class StudyGroupMembersComponent(
                 StudentAction.SetHeadman -> assignUserRoleInScopeUseCase(
                     memberAction.value!!.second,
                     Role.Headman.id,
-                    groupId
+                    studyGroupId
                 )
 
                 StudentAction.RemoveHeadman -> removeUserRoleFromScopeUseCase(
-                    groupId,
+                    studyGroupId,
                     Role.Headman.id,
-                    groupId
+                    studyGroupId
                 )
 
-                StudentAction.Edit -> navigation.bringToFront(
-                    UserEditorConfig(
-                        userId = memberAction.value!!.second,
-                        role = Role.Student
-                    )
+                StudentAction.Edit -> overlayNavigation.activate(
+                    OverlayConfig.UserEditor(userId = memberAction.value!!.second)
                 )
             }
         }
@@ -170,6 +177,21 @@ class StudyGroupMembersComponent(
 
     fun onDismissAction() {
         memberAction.value = null
+    }
+
+    @Parcelize
+    sealed class OverlayConfig : Parcelable {
+
+        data class Member(val memberId: UUID) : OverlayConfig()
+
+        data class UserEditor(val userId: UUID) : OverlayConfig()
+    }
+
+    sealed class OverlayChild {
+
+        class Member(val component: ProfileComponent) : OverlayChild()
+
+        class UserEditor(val component: UserEditorComponent) : OverlayChild()
     }
 
     enum class StudentAction(

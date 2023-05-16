@@ -5,7 +5,6 @@ import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
-import com.denchic45.kts.data.domain.model.UserRole
 import com.denchic45.kts.ui.navigation.GroupChild
 import com.denchic45.kts.ui.navigation.GroupConfig
 import com.denchic45.kts.ui.navigation.OverlayConfig
@@ -16,7 +15,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class GroupRootComponent(
+class YourStudyGroupsRootComponent(
     groupComponent: (groupId: UUID, ComponentContext) -> GroupComponent,
     @Assisted
     private val overlayNavigator: OverlayNavigation<OverlayConfig>,

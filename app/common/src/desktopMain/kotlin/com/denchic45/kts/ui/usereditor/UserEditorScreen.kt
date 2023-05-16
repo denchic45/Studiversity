@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.components.Spinner
 import com.denchic45.kts.ui.components.SupportingText
@@ -32,10 +33,9 @@ import com.denchic45.kts.ui.components.loadImageBitmap
 @Composable
 fun UserEditorScreen(
     component: UserEditorComponent,
-    appBarInteractor: AppBarInteractor,
     modifier: Modifier = Modifier
 ) {
-    val appBarState by appBarInteractor.stateFlow.collectAsState()
+    val appBarState by LocalAppBarInteractor.current.stateFlow.collectAsState()
     Column(modifier) {
         TopAppBar(
             title = {

@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.yourStudyGroups
+package com.denchic45.kts.ui.yourstudygroups
 
 import android.os.Bundle
 import android.view.Menu
@@ -24,6 +24,7 @@ import com.arkivanov.essenty.lifecycle.essentyLifecycle
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentGroupBinding
 import com.denchic45.kts.databinding.FragmentYourStudyGroupsBinding
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupViewModel
@@ -57,6 +58,7 @@ class YourStudyGroupsFragment(
     }
 
 
+    @OptIn(ExperimentalDecomposeApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         println("FRAGMENT $this")
@@ -78,7 +80,7 @@ class YourStudyGroupsFragment(
 
         val viewContext = DefaultViewContext(binding.studyGroup, essentyLifecycle())
 
-        component.openGroupEditor.collectWhenStarted(viewLifecycleOwner) { groupId ->
+        component.openStudyGroupEditor.collectWhenStarted(viewLifecycleOwner) { groupId ->
             findNavController().navigate(
                 R.id.action_global_groupEditorFragment,
                 bundleOf("studyGroupId" to groupId)
@@ -86,25 +88,19 @@ class YourStudyGroupsFragment(
         }
 
         component.selectedStudyGroup.collectWhenStarted(viewLifecycleOwner) {
-            it?.let {
-                viewContext.apply {
-                    child(parent) {
-                        StudyGroupView(
-                            component = studyGroupViewModel(
-                                it.id.toString(),
-                                componentContext
+            it.onSuccess {
+                it.let {
+                    viewContext.apply {
+                        child(parent) {
+                            StudyGroupView(
+                                component = studyGroupViewModel(
+                                    it.id.toString(),
+                                    componentContext
+                                )
                             )
-                        )
+                        }
                     }
                 }
-//                childFragmentManager.commit {
-//                    replace(
-//                        binding.fragmentContainerView.id,
-//                        studyGroupFragment().apply {
-//                            arguments = bundleOf("groupId" to it.id.toString())
-//                        }
-//                    )
-//                }
             }
         }
     }

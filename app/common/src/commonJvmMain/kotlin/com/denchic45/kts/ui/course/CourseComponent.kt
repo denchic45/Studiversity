@@ -96,7 +96,7 @@ class CourseComponent(
 
     private val courseTimetableComponent = _courseTimetableComponent(
         courseId,
-        componentContext.childContext("timetable")
+        componentContext.childContext("Timetable")
     )
 
     val capabilities = flow {

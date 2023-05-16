@@ -48,9 +48,9 @@ class StudyGroupEditorComponent(
     private val addStudyGroupUseCase: AddStudyGroupUseCase,
     private val updateStudyGroupUseCase: UpdateStudyGroupUseCase,
     @Assisted
-    private val studyGroupId: UUID?,
-    @Assisted
     private val onFinish: () -> Unit,
+    @Assisted
+    private val studyGroupId: UUID?,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -102,8 +102,8 @@ class StudyGroupEditorComponent(
     )
 
     val viewState = (studyGroupId?.let {
-        flow<Resource<EditingStudyGroup>> {
-            findStudyGroupByIdUseCase(it).onSuccess { response ->
+        findStudyGroupByIdUseCase(it).map { resource ->
+            resource.map { response ->
                 editingState.apply {
                     name = response.name
                     specialty = response.specialty
@@ -116,11 +116,10 @@ class StudyGroupEditorComponent(
                     "endAcademicYear" to response.academicYear.end,
                     "specialtyId" to response.specialty?.id
                 )
-                emit(Resource.Success(editingState))
-            }.onFailure {
-                emit(Resource.Error(it))
+                editingState
             }
         }
+
     } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
 
     val searchSpecialtiesText = MutableStateFlow("")

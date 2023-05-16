@@ -13,7 +13,7 @@ fun StudyGroupEditorScreen(component: StudyGroupEditorComponent) {
 
     var expanded by remember { mutableStateOf(false) }
 
-    StudyGroupEditorUI(
+    StudyGroupEditorContent(
         viewState = viewState,
         searchedSpecialties = searchedSpecialties,
         onNameType = component::onNameType,

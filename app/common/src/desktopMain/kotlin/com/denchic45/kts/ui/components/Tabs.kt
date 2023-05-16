@@ -32,7 +32,7 @@ fun Tab(
     text: String? = null,
     icon: @Composable (() -> Unit)? = null,
 ) {
-    androidx.compose.material.Tab(selected,
+    androidx.compose.material3.Tab(selected,
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,

@@ -1,7 +1,7 @@
 package com.denchic45.kts.ui.navigation
 
 import com.arkivanov.essenty.parcelable.Parcelable
-import com.denchic45.kts.ui.studygroup.courses.GroupCoursesComponent
+import com.denchic45.kts.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.kts.ui.studygroup.members.StudyGroupMembersComponent
 
 sealed class GroupTabsConfig : Parcelable {
@@ -11,5 +11,5 @@ sealed class GroupTabsConfig : Parcelable {
 
 sealed class StudyGroupTabsChild {
     class Members(val membersComponent: StudyGroupMembersComponent) : StudyGroupTabsChild()
-    class Courses(val coursesComponent: GroupCoursesComponent) : StudyGroupTabsChild()
+    class Courses(val coursesComponent: StudyGroupCoursesComponent) : StudyGroupTabsChild()
 }

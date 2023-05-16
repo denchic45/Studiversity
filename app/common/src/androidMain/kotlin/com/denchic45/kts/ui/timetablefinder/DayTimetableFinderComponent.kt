@@ -62,7 +62,7 @@ class DayTimetableFinderComponent(
     metaRepository: MetaRepository,
     private val putTimetableUseCase: PutTimetableUseCase,
     private val findStudyGroupByContainsNameUseCase: FindStudyGroupByContainsNameUseCase,
-    _TimetableComponent: (
+    _timetableComponent: (
         StateFlow<String>,
         Flow<TimetableOwner>,
         ComponentContext,
@@ -128,10 +128,10 @@ class DayTimetableFinderComponent(
 
     private val owner = MutableStateFlow<TimetableOwner.StudyGroup?>(null)
 
-    private val timetableComponent = _TimetableComponent(
+    private val timetableComponent = _timetableComponent(
         selectedWeekOfYear,
         owner.filterNotNull(),
-        componentContext.childContext("DayTimetable")
+        componentContext.childContext("Timetable")
     )
 
     private val actualTimetable = timetableComponent.weekTimetable

@@ -14,7 +14,7 @@ import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StudyGroupEditorUI(
+fun StudyGroupEditorContent(
     viewState: Resource<EditingStudyGroup>,
     inputState: StudyGroupEditorComponent.InputState,
     searchedSpecialties: List<SpecialtyResponse>,

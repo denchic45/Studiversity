@@ -20,9 +20,12 @@ import java.util.UUID
 @Inject
 class StudyGroupEditorFragment(
     private val appBarInteractor: AppBarInteractor,
-    private val component: (studyGroupId: UUID?, () -> Unit, ComponentContext) -> StudyGroupEditorComponent,
-) :
-    Fragment() {
+    private val component: (
+            () -> Unit,
+            studyGroupId: UUID?,
+            ComponentContext
+    ) -> StudyGroupEditorComponent,
+) : Fragment() {
 //     val binding: FragmentGroupEditorBinding by viewBinding(FragmentGroupEditorBinding::bind)
 
     override fun onCreateView(
@@ -34,8 +37,8 @@ class StudyGroupEditorFragment(
         setContent {
             AppTheme {
                 val component = component(
+                    findNavController()::navigateUp,
                     arguments?.getString("studyGroupId")?.toUUID(),
-                    { findNavController().navigateUp() },
                     defaultComponentContext(requireActivity().onBackPressedDispatcher)
                 )
                 component.appBarState.collectWhenStarted(viewLifecycleOwner) {

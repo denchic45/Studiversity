@@ -27,10 +27,8 @@ import java.util.UUID
 class UserEditorFragment(
     appBarInteractor: AppBarInteractor,
     component: (
-        AppBarInteractor,
         onFinish: () -> Unit,
         userId: UUID?,
-        role: Role?,
         ComponentContext
     ) -> UserEditorComponent,
 ) : Fragment(R.layout.fragment_user_editor), HasNavArgs<UserEditorFragmentArgs> {
