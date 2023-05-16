@@ -37,10 +37,8 @@ class UserEditorFragment(
 
         private val component: UserEditorComponent by lazy {
         component(
-            appBarInteractor,
             findNavController()::navigateUp,
             navArgs.userId?.toUUID(),
-            null,
             defaultComponentContext(requireActivity().onBackPressedDispatcher)
         )
     }

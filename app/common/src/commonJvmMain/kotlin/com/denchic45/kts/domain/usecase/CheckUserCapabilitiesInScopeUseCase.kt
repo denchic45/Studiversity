@@ -4,6 +4,7 @@ import com.denchic45.kts.data.repository.RoleRepository
 import com.denchic45.kts.domain.Resource
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.api.role.model.CheckCapabilitiesResponse
+import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
@@ -11,11 +12,11 @@ import java.util.*
 class CheckUserCapabilitiesInScopeUseCase @javax.inject.Inject constructor(
     private val roleRepository: RoleRepository
 ) {
-    suspend operator fun invoke(
+    operator fun invoke(
         userId: UUID? = null,
         scopeId: UUID? = null,
         capabilities: List<Capability>,
-    ): Resource<CheckCapabilitiesResponse> {
+    ): Flow<Resource<CheckCapabilitiesResponse>> {
         return roleRepository.findUserCapabilitiesIdAndScopeId(userId, scopeId, capabilities)
     }
 }

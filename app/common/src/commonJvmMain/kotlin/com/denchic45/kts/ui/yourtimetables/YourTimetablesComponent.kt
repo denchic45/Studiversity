@@ -58,8 +58,6 @@ class YourTimetablesComponent(
         selectedDate.update { it.minusWeeks(1) }
     }
 
-    private val componentScope = componentScope()
-
     val studyGroups = flow { emit(findYourStudyGroupsUseCase()) }.stateInResource(componentScope)
     val selectedTimetablePosition = combine(
         studyGroups,
@@ -96,5 +94,5 @@ class YourTimetablesComponent(
     val timetableState = getTimetableState(
         bellSchedule,
         timetableComponent.weekTimetable
-    ).stateInResource(componentScope)
+    )
 }

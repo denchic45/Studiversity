@@ -4,13 +4,16 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.data.service.model.BellSchedule
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
+import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.ui.timetable.state.TimetableState
 import com.denchic45.kts.ui.timetable.state.toTimetableState
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.map
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +29,8 @@ interface TimetableOwnerComponent {
     val selectedWeekOfYear: StateFlow<String>
     val mondayDate: StateFlow<LocalDate>
 
+    val componentScope:CoroutineScope
+
     fun onDateSelect(date: LocalDate) {
         selectedDate.value = date
     }
@@ -35,24 +40,22 @@ interface TimetableOwnerComponent {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getTimetableStateOfLists(
         bellSchedule: Flow<BellSchedule>,
-//        selectedWeekOfYear: Flow<String>,
         timetableResource: Flow<Resource<List<List<PeriodResponse>>>>,
-    ): Flow<Resource<TimetableState>> {
+    ): StateFlow<Resource<TimetableState>> {
         return bellSchedule.flatMapLatest { schedule ->
             selectedWeekOfYear.flatMapLatest { selectedWeek ->
                 timetableResource.mapResource {
                     it.toTimetableState(selectedWeek, schedule)
                 }
             }
-        }
+        }.stateInResource(componentScope)
     }
 
 
     fun getTimetableState(
         bellSchedule: Flow<BellSchedule>,
-//        selectedWeekOfYear: Flow<String>,
         timetableResource: Flow<Resource<TimetableResponse>>,
-    ): Flow<Resource<TimetableState>> {
+    ): StateFlow<Resource<TimetableState>> {
         return getTimetableStateOfLists(
             bellSchedule,
             timetableResource.mapResource { it.days })
@@ -62,18 +65,17 @@ interface TimetableOwnerComponent {
 
 class TimetableOwnerDelegate(
     componentContext: ComponentContext,
-    private val initialDate: LocalDate = LocalDate.now(),
-) :
-    TimetableOwnerComponent {
+    initialDate: LocalDate = LocalDate.now(),
+) : TimetableOwnerComponent {
     override val selectedDate = MutableStateFlow(initialDate)
-    private val coroutineScope = componentContext.componentScope()
+    override val componentScope = componentContext.componentScope()
 
-    override val selectedWeekOfYear = selectedDate.map(coroutineScope) {
+    override val selectedWeekOfYear = selectedDate.map(componentScope) {
         val week = it.get(WeekFields.ISO.weekOfWeekBasedYear())
         val year = it.get(WeekFields.ISO.weekBasedYear())
         "${year}_${week}".apply { println("WEEK owner: $this") }
     }
-    override val mondayDate: StateFlow<LocalDate> = selectedDate.map(coroutineScope) {
+    override val mondayDate: StateFlow<LocalDate> = selectedDate.map(componentScope) {
         it.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
     }
 }

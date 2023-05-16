@@ -64,7 +64,7 @@ abstract class NetworkComponent(
     @Provides
     fun guestClient(appPreferences: AppPreferences): GuestHttpClient = HttpClient(engine) {
         defaultRequest {
-            url("https://studiversity-deploy-production.up.railway.app/")
+            url("http://192.168.0.104:8080/")
         }
         installContentNegotiation()
     }
@@ -78,7 +78,7 @@ abstract class NetworkComponent(
     fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(engine) {
         println("TOKENS: authedClient")
         defaultRequest {
-            url("https://studiversity-deploy-production.up.railway.app/")
+            url("http://192.168.0.104:8080/")
         }
         installContentNegotiation()
         install(WebSockets)

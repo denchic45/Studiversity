@@ -3,14 +3,14 @@ package com.denchic45.kts.ui.model
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import java.util.*
 
-data class GroupCourseItem(
+data class StudyGroupCourseItem(
     val id: UUID,
     val name: String,
-    val iconName: String?,
+    val iconUrl: String?,
 )
 
-fun CourseResponse.toGroupCourseItem() = GroupCourseItem(
+fun CourseResponse.toGroupCourseItem() = StudyGroupCourseItem(
     id = id,
     name = name,
-    iconName = subject?.iconUrl
+    iconUrl = subject?.iconUrl
 )

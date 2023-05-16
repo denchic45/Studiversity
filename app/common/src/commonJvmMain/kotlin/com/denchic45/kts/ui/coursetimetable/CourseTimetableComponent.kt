@@ -32,7 +32,6 @@ class CourseTimetableComponent(
     componentContext: ComponentContext
 ) : ComponentContext by componentContext,
     TimetableOwnerComponent by TimetableOwnerDelegate(componentContext) {
-    private val componentScope = componentScope()
     private val timetableComponent = _timetableComponent(
         selectedWeekOfYear,
         flowOf(TimetableOwner.Course(courseId)),
@@ -45,5 +44,5 @@ class CourseTimetableComponent(
             SharingStarted.Lazily
         ),
         timetableComponent.weekTimetable
-    ).stateInResource(componentScope)
+    )
 }

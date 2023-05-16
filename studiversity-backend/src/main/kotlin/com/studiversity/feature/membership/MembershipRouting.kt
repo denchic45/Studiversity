@@ -15,6 +15,7 @@ import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.feature.role.usecase.RequirePermissionToAssignRolesUseCase
 import com.studiversity.ktor.ForbiddenException
 import com.studiversity.ktor.claimId
+import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.jwtPrincipal
 import com.studiversity.util.hasNotDuplicates
 import com.studiversity.validation.buildValidationResult
@@ -125,10 +126,10 @@ private fun Route.memberByIdRoute() {
         val removeSelfMemberFromScope: RemoveSelfMemberFromScopeUseCase by inject()
 
         delete {
-            val currentUserId = call.principal<JWTPrincipal>()!!.payload.getClaim("sub").asString().toUUID()
-            val scopeId = call.parameters["scopeId"]!!.toUUID()
-            val memberId = call.parameters["memberId"]!!.toUUID()
-            when (call.request.queryParameters["action"]!!) {
+            val currentUserId = call.currentUserId()
+            val scopeId = call.parameters.getOrFail("scopeId").toUUID()
+            val memberId = call.parameters.getOrFail("memberId").toUUID()
+            when (call.request.queryParameters.getOrFail("action")) {
                 "manual" -> {
                     requireCapability(currentUserId, Capability.WriteMembers, scopeId)
                     removeMemberFromScope(memberId, scopeId)

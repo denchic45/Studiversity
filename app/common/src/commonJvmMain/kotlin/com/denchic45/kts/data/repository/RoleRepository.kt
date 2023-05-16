@@ -1,6 +1,7 @@
 package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.fetchResource
+import com.denchic45.kts.data.fetchResourceFlow
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
@@ -13,6 +14,7 @@ import com.denchic45.stuiversity.api.role.model.UserRolesResponse
 import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.util.uuidOrMe
 import com.github.michaelbull.result.unwrapError
+import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
@@ -32,11 +34,11 @@ class RoleRepository @javax.inject.Inject constructor(
         roleApi.deleteRoleFromUserInScope(userId, scopeId, roleId)
     }
 
-    suspend fun findUserCapabilitiesIdAndScopeId(
+    fun findUserCapabilitiesIdAndScopeId(
         userId: UUID? = null,
         scopeId: UUID? = null,
         capabilities: List<Capability>,
-    ): Resource<CheckCapabilitiesResponse> = fetchResource {
+    ): Flow<Resource<CheckCapabilitiesResponse>> = fetchResourceFlow {
         capabilityApi.check(userId, scopeId ?: appPreferences.organizationId.toUUID(), capabilities)
     }
 

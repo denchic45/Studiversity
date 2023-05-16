@@ -16,9 +16,12 @@ import com.denchic45.kts.ui.courseelements.CourseElementsComponent
 import com.denchic45.kts.ui.coursetimetable.CourseTimetableComponent
 import com.denchic45.kts.ui.coursetopics.CourseTopicsComponent
 import com.denchic45.kts.util.componentScope
+import com.denchic45.kts.util.map
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -66,20 +69,20 @@ class CourseComponent(
 
     val course = flow { emit(findCourseByIdUseCase(courseId)) }.stateInResource(componentScope)
 
-    val allowEdit = flow {
-        emit(
-            when (val resource = checkUserCapabilitiesInScopeUseCase(
-                scopeId = courseId,
-                capabilities = listOf(Capability.WriteCourse)
-            )) {
-                Resource.Loading,
-                is Resource.Error -> false
+    private val capabilitiesFlow = checkUserCapabilitiesInScopeUseCase(
+        scopeId = courseId,
+        capabilities = listOf(Capability.WriteCourse)
+    ).stateInResource(componentScope)
 
-                is Resource.Success -> {
-                    resource.value.hasCapability(Capability.WriteCourse)
-                }
+    val allowEdit = capabilitiesFlow.map {
+        when (val resource = it) {
+            Resource.Loading,
+            is Resource.Error -> false
+
+            is Resource.Success -> {
+                resource.value.hasCapability(Capability.WriteCourse)
             }
-        )
+        }
     }
 
     private val courseElementsComponent = _courseElementsComponent(
@@ -99,14 +102,10 @@ class CourseComponent(
         componentContext.childContext("Timetable")
     )
 
-    val capabilities = flow {
-        emit(
-            checkUserCapabilitiesInScopeUseCase(
+    val capabilities = checkUserCapabilitiesInScopeUseCase(
                 scopeId = courseId,
                 capabilities = listOf()
-            )
-        )
-    }.shareIn(componentScope, SharingStarted.Lazily)
+            ).shareIn(componentScope, SharingStarted.Lazily)
 
     private val defaultChildren =
         listOf(

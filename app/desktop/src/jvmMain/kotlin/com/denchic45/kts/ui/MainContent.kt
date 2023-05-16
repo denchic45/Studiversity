@@ -2,7 +2,6 @@ package com.denchic45.kts.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Notifications
@@ -24,13 +23,13 @@ import com.denchic45.kts.ui.MainComponent.Child
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.navigation.ConfirmChild
 import com.denchic45.kts.ui.navigation.UserEditorChild
-import com.denchic45.kts.ui.studygroups.StudyGroupsScreen
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.ui.timetable.TimetableScreen
 import com.denchic45.kts.ui.usereditor.UserEditorDialog
+import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsScreen
 
 
-@OptIn(ExperimentalUnitApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun MainContent(mainComponent: MainComponent) {
@@ -54,44 +53,49 @@ fun MainContent(mainComponent: MainComponent) {
             }
 
             Column {
-                val appBarMediator = AppBarMediator()
-                SmallTopAppBar(title = {
-                    Row {
-                        Text(
-                            text = appBarMediator.title,
-                            fontSize = TextUnit(32F, TextUnitType.Sp),
-                            style = MaterialTheme.typography.headlineLarge
-                        )
-                        appBarMediator.content?.let {
-                            it(this)
-                            Divider(
-                                Modifier
-                                    .padding(horizontal = 24.dp)
-                                    .align(Alignment.CenterVertically).size(1.dp, 24.dp)
+                val appBarMediator = LocalAppBarMediator.current
+                TopAppBar(
+                    title = {
+                        Row {
+                            Text(
+                                text = appBarMediator.title,
+                                fontSize = TextUnit(32F, TextUnitType.Sp),
+                                style = MaterialTheme.typography.headlineLarge
+                            )
+                            appBarMediator.content?.let {
+                                it(this)
+                                Divider(
+                                    Modifier
+                                        .padding(horizontal = 24.dp)
+                                        .align(Alignment.CenterVertically).size(1.dp, 24.dp)
+                                )
+                            }
+                        }
+                    },
+                    modifier = Modifier.padding(top = 24.dp, bottom = 8.dp, end = 24.dp),
+                    actions = {
+                        Spacer(Modifier.width(4.dp))
+                        IconButton(onClick = {}) {
+                            Icon(
+                                imageVector = Icons.Outlined.Notifications,
+                                tint = Color.DarkGray,
+                                contentDescription = "Notifications"
                             )
                         }
-                    }
-                }, modifier = Modifier.padding(top = 24.dp, bottom = 8.dp, end = 24.dp), actions = {
-                    Spacer(Modifier.width(4.dp))
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Outlined.Notifications,
-                            tint = Color.DarkGray,
-                            contentDescription = "Notifications"
-                        )
-                    }
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Outlined.AccountCircle,
-                            tint = Color.DarkGray,
-                            contentDescription = "Avatar"
-                        )
-                    }
-                })
+                        IconButton(onClick = {}) {
+                            Icon(
+                                imageVector = Icons.Outlined.AccountCircle,
+                                tint = Color.DarkGray,
+                                contentDescription = "Avatar"
+                            )
+                        }
+                    })
 
                 when (val child = childStack.active.instance) {
                     is Child.YourTimetables -> TimetableScreen(appBarMediator, child.component)
-                    is Child.YourStudyGroups -> StudyGroupsScreen(appBarMediator, child.component)
+                    is Child.YourStudyGroups -> {
+                        YourStudyGroupsScreen(child.component)
+                    }
                 }
 
                 val overlay by mainComponent.childOverlay.subscribeAsState()
@@ -102,6 +106,7 @@ fun MainContent(mainComponent: MainComponent) {
                             instance.appBarInteractor,
                             mainComponent::onOverlayDismiss
                         )
+
                         is ConfirmChild -> with(instance.config) {
                             ConfirmDialog(
                                 title = title,

@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.component.HeaderItemUI
-import com.denchic45.kts.ui.model.GroupCourseItem
+import com.denchic45.kts.ui.model.StudyGroupCourseItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.toDrawablePath
 import java.util.*
@@ -36,7 +36,7 @@ fun GroupCoursesScreen(studyGroupCoursesComponent: StudyGroupCoursesComponent) {
 }
 
 @Composable
-fun GroupCourseList(list: List<GroupCourseItem>) {
+fun GroupCourseList(list: List<StudyGroupCourseItem>) {
     Spacer(Modifier.height(8.dp))
     HeaderItemUI("${list.size} курсов")
     Spacer(Modifier.height(8.dp))
@@ -52,7 +52,7 @@ fun GroupCourseList(list: List<GroupCourseItem>) {
 }
 
 @Composable
-fun GroupCourseListItem(item: GroupCourseItem, modifier: Modifier = Modifier) {
+fun GroupCourseListItem(item: StudyGroupCourseItem, modifier: Modifier = Modifier) {
     Card(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
         elevation = 0.dp,
@@ -63,7 +63,7 @@ fun GroupCourseListItem(item: GroupCourseItem, modifier: Modifier = Modifier) {
             Modifier.size(512.dp, 104.dp).padding(horizontal = 32.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            item.iconName?.let {
+            item.iconUrl?.let {
                 Icon(
                     painterResource(it.toDrawablePath()),
                     null,
@@ -76,20 +76,20 @@ fun GroupCourseListItem(item: GroupCourseItem, modifier: Modifier = Modifier) {
             }
         }
     }
+}
 
-    @Preview
-    @Composable
-    fun GroupCourseListItemPreview() {
-        AppTheme {
-            val url =
-                "https://sun9-46.userapi.com/impg/uWGoczB9st04meAMg6wWn4iSlmUXIjckTZNyqg/pb7GZSpZUAA.jpg?size=1080x2033&quality=96&sign=1320149c468c5ee8341e40a5f58f8923&type=album"
-            GroupCourseListItem(
-                GroupCourseItem(
-                    UUID.randomUUID(),
-                    "История",
-                    "ic_subject_history"
-                )
+@Preview
+@Composable
+fun GroupCourseListItemPreview() {
+    AppTheme {
+        val url =
+            "https://sun9-46.userapi.com/impg/uWGoczB9st04meAMg6wWn4iSlmUXIjckTZNyqg/pb7GZSpZUAA.jpg?size=1080x2033&quality=96&sign=1320149c468c5ee8341e40a5f58f8923&type=album"
+        GroupCourseListItem(
+            StudyGroupCourseItem(
+                UUID.randomUUID(),
+                "История",
+                "ic_subject_history"
             )
-        }
+        )
     }
 }

@@ -27,25 +27,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.AppBarMediator
-import com.denchic45.kts.ui.components.TabIndicator
+import com.denchic45.kts.ui.LocalAppBarMediator
+import com.denchic45.kts.ui.component.TabIndicator
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesScreen
-import com.denchic45.kts.ui.studygroup.members.StudyGroupMembersScreen
+import com.denchic45.kts.ui.studygroup.members.SelectableStudyGroupMembersScreen
 import com.denchic45.kts.ui.theme.toDrawablePath
 
 
 @Composable
-fun StudyGroupScreen(
-    component: StudyGroupComponent,
-    appBarMediator: AppBarMediator
-) {
-
+fun StudyGroupScreen(component: StudyGroupComponent) {
     val studyGroupResource by component.studyGroup.collectAsState()
     val selectedTab by component.selectedTab.collectAsState()
 
-    appBarMediator.title = "Группа"
-    appBarMediator.content = {
-        Spacer(Modifier.weight(1f))
+    LocalAppBarMediator.current.let { appBarMediator->
+        appBarMediator.title = "Группа"
+        appBarMediator.content = {
+            Spacer(Modifier.weight(1f))
 //        IconButton(onClick = component::onAddStudentClick) {
 //            Icon(
 //                imageVector = Icons.Rounded.Add,
@@ -53,14 +50,16 @@ fun StudyGroupScreen(
 //                contentDescription = ""
 //            )
 //        }
-        IconButton(onClick = {}) {
-            Icon(
-                painter = painterResource("ic_settings".toDrawablePath()),
-                tint = Color.DarkGray,
-                contentDescription = ""
-            )
+            IconButton(onClick = {}) {
+                Icon(
+                    painter = painterResource("ic_settings".toDrawablePath()),
+                    tint = Color.DarkGray,
+                    contentDescription = ""
+                )
+            }
         }
     }
+
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
@@ -102,7 +101,7 @@ fun StudyGroupContent(
         }
         Divider()
         when (val child = children[selectedTab]) {
-            is StudyGroupComponent.TabChild.Members -> StudyGroupMembersScreen(child.component)
+            is StudyGroupComponent.TabChild.Members -> SelectableStudyGroupMembersScreen(child.component)
             is StudyGroupComponent.TabChild.Courses -> GroupCoursesScreen(child.component)
             is StudyGroupComponent.TabChild.Timetable -> TODO()
         }

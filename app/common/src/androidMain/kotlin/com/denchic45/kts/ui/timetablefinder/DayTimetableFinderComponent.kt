@@ -83,8 +83,6 @@ class DayTimetableFinderComponent(
 ) : ComponentContext by componentContext,
     TimetableOwnerComponent by TimetableOwnerDelegate(componentContext) {
 
-    private val componentScope = componentScope()
-
     private val timetableEditorNavigation = OverlayNavigation<TimetableEditorConfig>()
     private val timetableEditorOverlay = childOverlay(
         source = timetableEditorNavigation,

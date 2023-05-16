@@ -26,7 +26,7 @@ import io.ktor.http.*
 @ExperimentalMaterial3Api
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ProfileScreen(
+fun ProfileSideBar(
     modifier: Modifier,
     profileComponent: ProfileComponent,
     onCloseClick: () -> Unit,

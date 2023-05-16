@@ -57,14 +57,10 @@ class YourSubmissionComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    private val capabilities = flow {
-        emit(
-            checkUserCapabilitiesInScopeUseCase(
+    private val capabilities = checkUserCapabilitiesInScopeUseCase(
                 scopeId = courseId,
                 capabilities = listOf(Capability.ReadSubmissions, Capability.SubmitSubmission)
-            )
-        )
-    }.stateInResource(componentScope)
+            ).stateInResource(componentScope)
 
     private val _observeYourSubmission: Flow<Resource<SubmissionResponse>> =
         capabilities.flatMapResourceFlow {

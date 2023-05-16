@@ -80,8 +80,6 @@ class TimetablesPublisherComponent(
         weekOfYear.toLocalDateOfWeekOfYear()
     ) {
 
-    private val componentScope = componentScope()
-
     private val overlayNavigation = OverlayNavigation<OverlayConfig>()
 
     val childOverlay: Value<ChildOverlay<OverlayConfig, OverlayChild>> = childOverlay(

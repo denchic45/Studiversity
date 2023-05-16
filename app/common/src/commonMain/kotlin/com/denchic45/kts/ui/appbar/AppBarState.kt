@@ -1,5 +1,6 @@
 package com.denchic45.kts.ui.appbar
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -14,6 +15,7 @@ import com.denchic45.kts.ui.theme.Spacing
 data class AppBarState(
     val title: UiText = UiText.StringText(""),
     val actions: List<ActionMenuItem> = emptyList(),
+    val actionsUI: (@Composable RowScope.() -> Unit)? = null,
     val dropdown: List<DropdownMenuItem> = emptyList(),
     val visible:Boolean = true,
 

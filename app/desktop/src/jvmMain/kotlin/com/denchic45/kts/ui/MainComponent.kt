@@ -80,10 +80,8 @@ class MainComponent constructor(
                 val appBarInteractor = AppBarInteractor()
                 UserEditorChild(
                     userEditorComponent(
-                        appBarInteractor,
                         overlayNavigation::dismiss,
                         config.userId,
-                        null,
                         componentContext
                     ),
                     appBarInteractor

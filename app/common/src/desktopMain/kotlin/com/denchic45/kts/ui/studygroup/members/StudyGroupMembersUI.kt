@@ -16,59 +16,64 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.model.GroupMembers
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.components.UserListItem
 import com.denchic45.kts.ui.model.UserItem
-import com.denchic45.kts.ui.profile.ProfileScreen
+import com.denchic45.kts.ui.profile.ProfileSideBar
 import com.denchic45.kts.ui.theme.toDrawablePath
-import com.denchic45.kts.ui.usereditor.UserEditorScreen
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StudyGroupMembersScreen(studyGroupMembersComponent: StudyGroupMembersComponent) {
+fun SelectableStudyGroupMembersScreen(component: SelectableStudyGroupMembersComponent) {
     Row {
-        val members by studyGroupMembersComponent.members.collectAsState()
-        val selectedItemId by studyGroupMembersComponent.selectedMember.collectAsState()
-
-        members.let {
-            val options by studyGroupMembersComponent.memberAction.collectAsState()
-            it.onSuccess {
-                MemberList(
-                    modifier = Modifier.weight(3f),
-                    curator = it.curator,
-                    students = it.students,
-                    selectedItemId = selectedItemId,
-                    actions = options,
-                    onClick = studyGroupMembersComponent::onMemberSelect,
-                    onExpandActions = studyGroupMembersComponent::onExpandMemberAction,
-                    onClickAction = studyGroupMembersComponent::onClickMemberAction,
-                    onDismissAction = studyGroupMembersComponent::onDismissAction
-                )
-            }
+        val selectedItemId by component.selectedMember.collectAsState()
+        Box(modifier = Modifier.weight(3f)) {
+            StudyGroupMemberScreen(component.studyGroupMembersComponent, selectedItemId)
         }
-        val overlay by studyGroupMembersComponent.childOverlay.subscribeAsState()
+
+        val overlay by component.childOverlay.subscribeAsState()
 
         Box(Modifier.width(472.dp)) {
             when (val child = overlay.overlay?.instance) {
-
-                is StudyGroupMembersComponent.OverlayChild.Member -> {
-                    ProfileScreen(
-                        Modifier,
-                        child.component
-                    ) { studyGroupMembersComponent.onCloseProfileClick() }
-                }
-
-                is StudyGroupMembersComponent.OverlayChild.UserEditor -> {
-                    UserEditorScreen(
-                        child.component
-                    )
-                }
-
-                null -> TODO()
+                is SelectableStudyGroupMembersComponent.OverlayChild.Member -> ProfileSideBar(
+                    Modifier,
+                    child.component, 
+                    component::onCloseProfileClick)
+                null -> {}
             }
+        }
+    }
+}
+
+@Composable
+private fun StudyGroupMemberScreen(component: StudyGroupMembersComponent, selectedItemId: UUID?) {
+    val members by component.members.collectAsState()
+    StudyGroupMemberContent(members, component, selectedItemId)
+}
+
+@Composable
+private fun StudyGroupMemberContent(
+    members: Resource<GroupMembers>,
+    component: StudyGroupMembersComponent,
+    selectedItemId: UUID?,
+) {
+    members.let {
+        val options by component.memberAction.collectAsState()
+        it.onSuccess {
+            MemberList(
+                curator = it.curator,
+                students = it.students,
+                selectedItemId = selectedItemId,
+                actions = options,
+                onClick = component::onMemberSelect,
+                onExpandActions = component::onExpandMemberAction,
+                onClickAction = component::onClickMemberAction,
+                onDismissAction = component::onDismissAction
+            )
         }
     }
 }

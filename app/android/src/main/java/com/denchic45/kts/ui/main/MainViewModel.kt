@@ -1,10 +1,8 @@
 package com.denchic45.kts.ui.main
 
 import android.app.Activity
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.denchic45.appVersion.GoogleAppVersionService
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.MainInteractor
@@ -41,7 +39,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.lang.ref.WeakReference
 import java.util.UUID
 import javax.inject.Inject
 
@@ -58,9 +55,9 @@ class MainViewModel @Inject constructor(
 //        R.id.studyGroupEditorFragment
 //    )
 
-    private val checkCapabilities = flow {
-        emit(checkUserCapabilitiesInScopeUseCase(capabilities = emptyList()))
-    }.stateInResource(viewModelScope)
+    private val checkCapabilities = checkUserCapabilitiesInScopeUseCase(
+        capabilities = emptyList()
+    ).stateInResource(viewModelScope)
 
     private val userRoles = flow {
         emit(findAssignedUserRolesInScopeUseCase())
@@ -324,9 +321,13 @@ class MainViewModel @Inject constructor(
     ) {
         val topItems = listOf(
             NavDrawerItem(
-                UiText.ResourceText(R.string.nav_schedule), uiIconOf(R.drawable.ic_time), enabled = false
+                UiText.ResourceText(R.string.nav_schedule),
+                uiIconOf(R.drawable.ic_time),
+                enabled = false
             ), NavDrawerItem(
-                UiText.ResourceText(R.string.nav_tasks), uiIconOf(R.drawable.ic_tasks), enabled = false
+                UiText.ResourceText(R.string.nav_tasks),
+                uiIconOf(R.drawable.ic_tasks),
+                enabled = false
             )
         )
 
@@ -346,7 +347,9 @@ class MainViewModel @Inject constructor(
             )
             add(
                 NavDrawerItem(
-                    UiText.ResourceText(R.string.nav_help), uiIconOf(R.drawable.ic_help), enabled = false
+                    UiText.ResourceText(R.string.nav_help),
+                    uiIconOf(R.drawable.ic_help),
+                    enabled = false
                 )
             )
         }

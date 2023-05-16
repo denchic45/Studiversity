@@ -70,20 +70,10 @@ class GroupMembersViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading)
 
-    private val capabilities = flow {
-        emit(
-            checkUserCapabilitiesInScopeUseCase(
-                scopeId = groupId,
-                capabilities = listOf(Capability.WriteUser)
-            )
-        )
-    }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading)
-
-    init {
-//        uiPermissions.putPermissions(
-//            Permission(ALLOW_EDIT_USERS, { isTeacher }, { hasAdminPerms() })
-//        )
-    }
+    private val capabilities = checkUserCapabilitiesInScopeUseCase(
+        scopeId = groupId,
+        capabilities = listOf(Capability.WriteUser)
+    ).stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading)
 
     fun onMemberClick(position: Int) {
         viewModelScope.launch {
@@ -143,6 +133,7 @@ class GroupMembersViewModel @Inject constructor(
             when (optionId) {
                 OPTION_SHOW_PROFILE -> {
                 }
+
                 OPTION_EDIT_USER -> {
                     navigateTo(
                         MobileNavigationDirections.actionGlobalUserEditorFragment(
@@ -150,9 +141,11 @@ class GroupMembersViewModel @Inject constructor(
                         )
                     )
                 }
+
                 OPTION_SET_HEADMAN -> {
                     assignUserRoleInScopeUseCase(memberId, Role.Headman.id, groupId)
                 }
+
                 OPTION_REMOVE_HEADMAN -> {
                     removeUserRoleFromScopeUseCase(memberId, Role.Headman.id, groupId)
                 }

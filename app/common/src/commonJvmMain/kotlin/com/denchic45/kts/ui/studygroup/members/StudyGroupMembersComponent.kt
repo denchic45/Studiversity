@@ -1,12 +1,6 @@
 package com.denchic45.kts.ui.studygroup.members
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.model.GroupMembers
@@ -35,43 +29,39 @@ import java.util.UUID
 @Inject
 class StudyGroupMembersComponent(
     findGroupMembersUseCase: FindGroupMembersUseCase,
-    private val removeUserUseCase: RemoveUserUseCase,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
     profileComponent: (UUID, ComponentContext) -> ProfileComponent,
-    userEditorComponent: (
-        onFinish: () -> Unit,
-        userId: UUID?,
-        ComponentContext
-    ) -> UserEditorComponent,
+    @Assisted
+    private val onMemberOpen: (memberId: UUID) -> Unit,
     @Assisted
     private val studyGroupId: UUID,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
-    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
-
-    val childOverlay = childOverlay(
-        source = overlayNavigation,
-        childFactory = { config, componentContext ->
-            when (config) {
-                is OverlayConfig.Member -> {
-                    OverlayChild.Member(profileComponent(config.memberId, componentContext))
-                }
-
-                is OverlayConfig.UserEditor -> {
-                    OverlayChild.UserEditor(
-                        userEditorComponent(
-                            overlayNavigation::dismiss,
-                            config.userId,
-                            componentContext
-                        )
-                    )
-                }
-            }
-        }
-    )
+//    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
+//
+//    val childOverlay = childOverlay(
+//        source = overlayNavigation,
+//        childFactory = { config, componentContext ->
+//            when (config) {
+//                is OverlayConfig.Member -> {
+//                    OverlayChild.Member(profileComponent(config.memberId, componentContext))
+//                }
+//
+//                is OverlayConfig.UserEditor -> {
+//                    OverlayChild.UserEditor(
+//                        userEditorComponent(
+//                            overlayNavigation::dismiss,
+//                            config.userId,
+//                            componentContext
+//                        )
+//                    )
+//                }
+//            }
+//        }
+//    )
 
 //    private val navigation = StackNavigation<GroupMembersConfig>()
 
@@ -119,7 +109,7 @@ class StudyGroupMembersComponent(
         Resource.Loading
     )
 
-    val selectedMember = MutableStateFlow<UUID?>(null)
+
 
     val memberAction = MutableStateFlow<Pair<List<StudentAction>, UUID>?>(null)
 
@@ -133,21 +123,18 @@ class StudyGroupMembersComponent(
 //        }
 //    }
 
-    fun onMemberSelect(userId: UUID) {
-        selectedMember.value = userId
+    fun onMemberSelect(memberId: UUID) {
+        onMemberOpen(memberId)
     }
 
-    fun onCloseProfileClick() {
-        selectedMember.value = null
-    }
+
 
     fun onExpandMemberAction(memberId: UUID) {
         members.value.onSuccess { members ->
             memberAction.update {
                 listOf(
                     if (members.headmanId == memberId) StudentAction.RemoveHeadman
-                    else StudentAction.SetHeadman,
-                    StudentAction.Edit
+                    else StudentAction.SetHeadman
                 ) to memberId
             }
         }
@@ -167,10 +154,6 @@ class StudyGroupMembersComponent(
                     Role.Headman.id,
                     studyGroupId
                 )
-
-                StudentAction.Edit -> overlayNavigation.activate(
-                    OverlayConfig.UserEditor(userId = memberAction.value!!.second)
-                )
             }
         }
     }
@@ -179,20 +162,20 @@ class StudyGroupMembersComponent(
         memberAction.value = null
     }
 
-    @Parcelize
-    sealed class OverlayConfig : Parcelable {
-
-        data class Member(val memberId: UUID) : OverlayConfig()
-
-        data class UserEditor(val userId: UUID) : OverlayConfig()
-    }
-
-    sealed class OverlayChild {
-
-        class Member(val component: ProfileComponent) : OverlayChild()
-
-        class UserEditor(val component: UserEditorComponent) : OverlayChild()
-    }
+//    @Parcelize
+//    sealed class OverlayConfig : Parcelable {
+//
+//        data class Member(val memberId: UUID) : OverlayConfig()
+//
+//        data class UserEditor(val userId: UUID) : OverlayConfig()
+//    }
+//
+//    sealed class OverlayChild {
+//
+//        class Member(val component: ProfileComponent) : OverlayChild()
+//
+//        class UserEditor(val component: UserEditorComponent) : OverlayChild()
+//    }
 
     enum class StudentAction(
         override val title: String,
@@ -200,6 +183,6 @@ class StudyGroupMembersComponent(
     ) : MenuAction {
         SetHeadman("Назначить старостой"),
         RemoveHeadman("Лишить прав старосты"),
-        Edit("Редактировать")
+//        Edit("Редактировать")
     }
 }

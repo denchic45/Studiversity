@@ -165,7 +165,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                     TopAppBar(
                         title = { Text(state.title.get(LocalContext.current)) },
                         navigationIcon = {
-                            val icon by appBarInteractor.navigationIcon.collectAsState()
+                            val icon = remember { appBarInteractor.navigationIcon }
 
                             when (icon) {
                                 NavigationIcon.TOGGLE -> IconButton(
@@ -224,6 +224,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                                     }
                                 }
                             }
+                            state.actions
                         }
                     )
                 ConfirmDialog(confirmInteractor)
@@ -485,11 +486,10 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                 viewModel.onDestinationChanged(destination.id)
 
 
-                appBarInteractor.navigationIcon.update {
-                    if (destination.id in viewModel.mainScreenIds)
+                appBarInteractor.navigationIcon = if (destination.id in viewModel.mainScreenIds)
                         NavigationIcon.TOGGLE
                     else NavigationIcon.BACK
-                }
+
             }
         }
 

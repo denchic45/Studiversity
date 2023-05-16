@@ -7,6 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.DefaultComponentContext
+import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.kts.Field
 import com.denchic45.kts.FieldEditor
 import com.denchic45.kts.domain.*
@@ -50,14 +52,14 @@ class StudyGroupEditorComponent(
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
-    private val studyGroupId: UUID?,
+    private val _studyGroupId_: UUID?,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
     val appBarState = MutableStateFlow(AppBarState(
-        title = uiTextOf(studyGroupId?.let { "Редактирование группы" } ?: "Создание группы"),
+        title = uiTextOf(_studyGroupId_?.let { "Редактирование группы" } ?: "Создание группы"),
         actions = listOf(
             ActionMenuItem(
                 id = "save",
@@ -101,7 +103,7 @@ class StudyGroupEditorComponent(
         )
     )
 
-    val viewState = (studyGroupId?.let {
+    val viewState = (_studyGroupId_?.let {
         findStudyGroupByIdUseCase(it).map { resource ->
             resource.map { response ->
                 editingState.apply {
@@ -160,7 +162,7 @@ class StudyGroupEditorComponent(
     fun onSaveClick() {
         if (validator.validate()) {
             componentScope.launch {
-                val resource = studyGroupId?.let {
+                val resource = _studyGroupId_?.let {
                     updateStudyGroupUseCase(
                         it, UpdateStudyGroupRequest(
                             name = fieldEditor.getOptProperty("name"),

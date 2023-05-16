@@ -21,7 +21,6 @@ import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -66,18 +65,14 @@ class CourseWorkComponent(
 
     val openAttachment = MutableSharedFlow<AttachmentItem>()
 
-    private val capabilities = flow {
-        emit(
-            checkUserCapabilitiesInScopeUseCase(
-                scopeId = courseId,
-                capabilities = listOf(
-                    Capability.ReadSubmissions,
-                    Capability.WriteCourseElements,
-                    Capability.SubmitSubmission
-                )
-            )
+    private val capabilities = checkUserCapabilitiesInScopeUseCase(
+        scopeId = courseId,
+        capabilities = listOf(
+            Capability.ReadSubmissions,
+            Capability.WriteCourseElements,
+            Capability.SubmitSubmission
         )
-    }.stateInResource(componentScope)
+    ).stateInResource(componentScope)
 
     val yourSubmissionComponent = _yourSubmissionComponent(
         courseId,

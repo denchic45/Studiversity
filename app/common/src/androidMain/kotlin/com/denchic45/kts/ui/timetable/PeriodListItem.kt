@@ -2,11 +2,9 @@ package com.denchic45.kts.ui.timetable
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,7 +36,7 @@ import com.denchic45.kts.R
 import com.denchic45.kts.domain.model.StudyGroupNameItem
 import com.denchic45.kts.domain.timetable.model.PeriodDetails
 import com.denchic45.kts.domain.timetable.model.PeriodItem
-import com.denchic45.kts.ui.chooser.UserItemUI
+import com.denchic45.kts.ui.chooser.UserListItem
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
@@ -158,7 +156,7 @@ fun PeriodListItem(
             AnimatedVisibility(visible = expanded) {
                 item?.let {
                     it.members.forEach { item ->
-                        UserItemUI(item)
+                        UserListItem(item)
                     }
                 }
             }

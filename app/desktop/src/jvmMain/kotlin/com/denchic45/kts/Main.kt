@@ -13,6 +13,8 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.kts.di.*
+import com.denchic45.kts.ui.AppBarMediator
+import com.denchic45.kts.ui.LocalAppBarMediator
 import com.denchic45.kts.ui.MainContent
 import com.denchic45.kts.ui.login.LoginScreen
 import com.denchic45.kts.ui.theme.AppTheme
@@ -43,7 +45,7 @@ private fun mainApp() {
                     state = state
                 ) {
                     AppTheme {
-                        CompositionLocalProvider {
+                        CompositionLocalProvider(LocalAppBarMediator provides AppBarMediator()) {
                             MainContent(appComponent.mainComponent(componentContext))
                         }
                     }

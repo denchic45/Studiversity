@@ -3,10 +3,12 @@ package com.denchic45.kts.ui.studygroup.timetable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.denchic45.kts.data.repository.MetaRepository
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.usecase.TimetableOwner
 import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerDelegate
+import com.denchic45.kts.ui.timetable.state.TimetableState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -35,7 +37,7 @@ class StudyGroupTimetableComponent(
         componentContext.childContext("Timetable")
     )
 
-    val timetableState = getTimetableState(
+    val timetableState: StateFlow<Resource<TimetableState>> = getTimetableState(
         bellSchedule = metaRepository.observeBellSchedule,
         timetableResource = timetableComponent.weekTimetable
     )

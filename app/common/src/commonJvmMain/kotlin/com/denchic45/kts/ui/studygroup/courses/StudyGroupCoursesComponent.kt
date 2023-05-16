@@ -18,6 +18,8 @@ import java.util.UUID
 class StudyGroupCoursesComponent(
     findCoursesByGroupUseCase: FindCoursesByGroupUseCase,
     @Assisted
+    private val onCourseOpen: (UUID) -> Unit,
+    @Assisted
     studyGroupId: UUID,
     @Assisted
     componentContext: ComponentContext,
@@ -28,4 +30,8 @@ class StudyGroupCoursesComponent(
     val courses = flow {
         emit(findCoursesByGroupUseCase(studyGroupId).map { list -> list.map(CourseResponse::toGroupCourseItem) })
     }.stateIn(componentScope, SharingStarted.Lazily, Resource.Loading)
+
+    fun onCourseClick(courseId: UUID) {
+        onCourseOpen(courseId)
+    }
 }
