@@ -2,51 +2,39 @@ package com.denchic45.kts.ui.studygroup.members
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.GroupMembers
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.components.UserListItem
 import com.denchic45.kts.ui.model.UserItem
-import com.denchic45.kts.ui.profile.ProfileSideBar
 import com.denchic45.kts.ui.theme.toDrawablePath
 import java.util.UUID
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun SelectableStudyGroupMembersScreen(component: SelectableStudyGroupMembersComponent) {
-    Row {
-        val selectedItemId by component.selectedMember.collectAsState()
-        Box(modifier = Modifier.weight(3f)) {
-            StudyGroupMemberScreen(component.studyGroupMembersComponent, selectedItemId)
-        }
-
-        val overlay by component.childOverlay.subscribeAsState()
-
-        Box(Modifier.width(472.dp)) {
-            when (val child = overlay.overlay?.instance) {
-                is SelectableStudyGroupMembersComponent.OverlayChild.Member -> ProfileSideBar(
-                    Modifier,
-                    child.component, 
-                    component::onCloseProfileClick)
-                null -> {}
-            }
-        }
-    }
+fun SelectableStudyGroupMembersScreen(component: StudyGroupMembersComponent) {
+    val selectedItemId by remember { mutableStateOf<UUID?>(null) }
+    StudyGroupMemberScreen(component, selectedItemId)
 }
 
 @Composable

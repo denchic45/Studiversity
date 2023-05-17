@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import com.denchic45.kts.ui.MainComponent.Child
+import com.denchic45.kts.ui.MainComponent.RootChild
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.navigation.ConfirmChild
 import com.denchic45.kts.ui.navigation.UserEditorChild
@@ -43,11 +43,11 @@ fun MainContent(mainComponent: MainComponent) {
                 NavigationRailItem(icon = {
                     Icon(painterResource("ic_timetable".toDrawablePath()), null)
                 },
-                    selected = activeComponent is Child.YourTimetables,
+                    selected = activeComponent is RootChild.YourTimetables,
                     onClick = { mainComponent.onTimetableClick() })
                 NavigationRailItem(
                     icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
-                    selected = activeComponent is Child.YourStudyGroups,
+                    selected = activeComponent is RootChild.YourStudyGroups,
                     onClick = { mainComponent.onGroupClick() })
                 Spacer(Modifier.weight(1f))
             }
@@ -92,8 +92,8 @@ fun MainContent(mainComponent: MainComponent) {
                     })
 
                 when (val child = childStack.active.instance) {
-                    is Child.YourTimetables -> TimetableScreen(appBarMediator, child.component)
-                    is Child.YourStudyGroups -> {
+                    is RootChild.YourTimetables -> TimetableScreen(appBarMediator, child.component)
+                    is RootChild.YourStudyGroups -> {
                         YourStudyGroupsScreen(child.component)
                     }
                 }

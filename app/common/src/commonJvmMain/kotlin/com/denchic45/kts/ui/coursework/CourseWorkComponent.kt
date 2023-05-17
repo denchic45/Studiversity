@@ -50,13 +50,13 @@ class CourseWorkComponent(
         ComponentContext,
     ) -> YourSubmissionComponent,
     @Assisted
-    private val onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
+    private val onEditorOpen: (courseId: UUID, elementId: UUID?) -> Unit,
+    @Assisted
+    private val onFinish: () -> Unit,
     @Assisted
     private val courseId: UUID,
     @Assisted
     private val elementId: UUID,
-    @Assisted
-    private val onFinish: () -> Unit,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -117,7 +117,7 @@ class CourseWorkComponent(
     }.stateInResource(componentScope)
 
     fun onEditClick() {
-        onEdit(courseId, elementId)
+        onEditorOpen(courseId, elementId)
     }
 
     fun onRemoveClick() {

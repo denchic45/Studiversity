@@ -4,11 +4,9 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.data.pref.AppPreferences
-import com.denchic45.kts.domain.flatMapResourceFlow
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
@@ -17,7 +15,6 @@ import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.kts.util.componentScope
-import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,7 +30,11 @@ class YourStudyGroupsComponent(
     private val appPreferences: AppPreferences,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
-    private val _studyGroupComponent: (UUID, ComponentContext) -> StudyGroupComponent,
+    private val _studyGroupComponent: (
+        onCourseOpen: (UUID) -> Unit,
+        UUID,
+        ComponentContext
+    ) -> StudyGroupComponent,
     private val studyGroupEditorComponent: (
         onFinish: () -> Unit,
         UUID?,
@@ -42,8 +43,13 @@ class YourStudyGroupsComponent(
 //    @Assisted
 //    private val onStudyGroupEditClick: (UUID) -> Unit,
     @Assisted
+    onCourseOpen: (UUID) -> Unit,
+    @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
+
+    object Config
+    object Child
 
     private val componentScope = componentScope()
 
@@ -54,16 +60,13 @@ class YourStudyGroupsComponent(
     val childStudyGroup = childOverlay(
         source = studyGroupNavigation,
         childFactory = { config, componentContext ->
-            _studyGroupComponent(config.studyGroupId, componentContext)
+            _studyGroupComponent(onCourseOpen,config.studyGroupId, componentContext)
         },
         key = "StudyGroup"
     )
 
     @Parcelize
     data class StudyGroupConfig(val studyGroupId: UUID) : Parcelable
-
-
-
 
 
 //    val appBarState = MutableStateFlow(
@@ -102,16 +105,6 @@ class YourStudyGroupsComponent(
             }
         }.stateInResource(componentScope)
 
-    private val checkUserCapabilities = selectedStudyGroup.flatMapResourceFlow {
-        checkUserCapabilitiesInScopeUseCase(
-            scopeId = it.id,
-            capabilities = listOf(Capability.WriteStudyGroup)
-        )
-    }
-
-    val allowEdit = checkUserCapabilities
-        .mapResource { it.hasCapability(Capability.WriteStudyGroup) }
-        .stateInResource(componentScope)
 
 //    init {
 //        lifecycle.subscribe(onResume = {

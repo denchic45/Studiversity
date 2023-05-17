@@ -20,11 +20,10 @@ import com.denchic45.kts.ui.navigation.OverlayChild
 import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.navigation.UserEditorChild
 import com.denchic45.kts.ui.navigation.UserEditorConfig
+import com.denchic45.kts.ui.root.YourStudyGroupsRootComponent
+import com.denchic45.kts.ui.root.YourTimetablesRootComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
-import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsComponent
-import com.denchic45.kts.ui.yourtimetables.YourTimetablesComponent
 import com.denchic45.kts.util.componentScope
-import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -32,9 +31,8 @@ import java.util.UUID
 
 @Inject
 class MainComponent constructor(
-    private val removeUserUseCase: RemoveUserUseCase,
-    private val _yourTimetablesComponent: (ComponentContext) -> YourTimetablesComponent,
-    private val _yourStudyGroupsComponent: (ComponentContext) -> YourStudyGroupsComponent,
+    private val yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootComponent,
+    private val yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootComponent,
     mainInteractor: MainInteractor,
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     userEditorComponent: (
@@ -50,21 +48,21 @@ class MainComponent constructor(
 
     data class DialogConfig(val title: String) : Parcelable
 
-    private val navigation = StackNavigation<Config>()
+    private val navigation = StackNavigation<RootConfig>()
 
-    val stack: Value<ChildStack<Config, Child>> = childStack(
+    val stack: Value<ChildStack<RootConfig, RootChild>> = childStack(
         source = navigation,
-        initialConfiguration = Config.YourTimetables,
+        initialConfiguration = RootConfig.YourTimetables,
         childFactory = { config, componentContext ->
             when (config) {
-                is Config.YourTimetables -> Child.YourTimetables(
-                    _yourTimetablesComponent(
+                is RootConfig.YourTimetables -> RootChild.YourTimetables(
+                    yourTimetablesRootComponent(
                         componentContext
                     )
                 )
 
-                is Config.YourStudyGroups -> Child.YourStudyGroups(
-                    _yourStudyGroupsComponent(
+                is RootConfig.YourStudyGroups -> RootChild.YourStudyGroups(
+                    yourStudyGroupsRootComponent(
                         componentContext
                     )
                 )
@@ -98,27 +96,27 @@ class MainComponent constructor(
     }
 
     fun onTimetableClick() {
-        navigation.bringToFront(Config.YourTimetables)
+        navigation.bringToFront(RootConfig.YourTimetables)
     }
 
     fun onGroupClick() {
-        navigation.bringToFront(Config.YourStudyGroups)
+        navigation.bringToFront(RootConfig.YourStudyGroups)
     }
 
     fun onOverlayDismiss() {
         overlayNavigation.dismiss()
     }
 
-    sealed class Config : Parcelable {
-        object YourTimetables : Config()
-        object YourStudyGroups : Config()
+    sealed class RootConfig : Parcelable {
+        object YourTimetables : RootConfig()
+        object YourStudyGroups : RootConfig()
     }
 
-    sealed class Child {
-        abstract val component: ComponentContext
+    sealed class RootChild {
+        abstract val component: RootComponent<*,*>
 
-        class YourTimetables(override val component: YourTimetablesComponent) : Child()
+        class YourTimetables(override val component: YourTimetablesRootComponent) : RootChild()
 
-        class YourStudyGroups(override val component: YourStudyGroupsComponent) : Child()
+        class YourStudyGroups(override val component: YourStudyGroupsRootComponent) : RootChild()
     }
 }

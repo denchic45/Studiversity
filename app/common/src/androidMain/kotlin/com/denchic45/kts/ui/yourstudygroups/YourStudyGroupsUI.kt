@@ -36,29 +36,10 @@ import com.denchic45.kts.ui.uiTextOf
 fun YourStudyGroupsScreen(component: YourStudyGroupsComponent, appBarInteractor: AppBarInteractor) {
     val groups by component.studyGroups.collectAsState()
     val selectedStudyGroup by component.selectedStudyGroup.collectAsState()
-    val allowEdit by component.allowEdit.collectAsState()
 
     Surface {
         selectedStudyGroup.onSuccess { group ->
-            appBarInteractor.set(
-                when (val resource = allowEdit) {
-                    is Resource.Success -> AppBarState(
-                        title = uiTextOf(group.name),
-                        actionsUI = {
-                            if (resource.value) {
-                                IconButton(onClick = component::onGroupEditClick) {
-                                    Icon(Icons.Outlined.Edit, null)
-                                }
-                            }
-                        }
-                    )
 
-                    is Resource.Error, Resource.Loading -> AppBarState(
-                        title = uiTextOf(group.name)
-                    )
-                }
-
-            )
 
         }
 
@@ -105,7 +86,7 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent, appBarInteractor:
             val childStudyGroup by component.childStudyGroup.subscribeAsState()
 
             childStudyGroup.overlay?.instance?.let {
-                StudyGroupScreen(component = it)
+                StudyGroupScreen(component = it,appBarInteractor = appBarInteractor)
             }
         }
     }

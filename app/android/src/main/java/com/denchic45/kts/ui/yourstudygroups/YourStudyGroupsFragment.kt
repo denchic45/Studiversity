@@ -19,6 +19,7 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.defaultComponentContext
 import com.arkivanov.decompose.extensions.android.ViewContext
 import com.arkivanov.decompose.extensions.android.layoutInflater
+import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentGroupBinding
 import com.denchic45.kts.ui.appbar.AppBarInteractor
@@ -28,11 +29,13 @@ import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.util.collectWhenStarted
 import com.google.android.material.tabs.TabLayoutMediator
 import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
 @Inject
 class YourStudyGroupsFragment(
     private val appBarInteractor: AppBarInteractor,
     yourStudyGroupsComponent: (
+        onCourseOpen: (UUID) -> Unit,
         ComponentContext,
     ) -> YourStudyGroupsComponent,
 //    private val studyGroupFragment: () -> StudyGroupFragment,
@@ -41,7 +44,14 @@ class YourStudyGroupsFragment(
     val navController: NavController by lazy(::findNavController)
 
     val component by lazy {
-        yourStudyGroupsComponent(defaultComponentContext(requireActivity().onBackPressedDispatcher))
+        yourStudyGroupsComponent(
+            {
+                findNavController().navigate(
+                    MobileNavigationDirections.actionGlobalCourseFragment(it.toString())
+                )
+            },
+            defaultComponentContext(requireActivity().onBackPressedDispatcher)
+        )
     }
 
     override fun onCreateView(
@@ -57,50 +67,6 @@ class YourStudyGroupsFragment(
                 YourStudyGroupsScreen(component, appBarInteractor)
             }
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-//        binding.composeView.apply {
-//            // Dispose the Composition when viewLifecycleOwner is destroyed
-//            setViewCompositionStrategy(
-//                ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner)
-//            )
-//            setContent {
-//                AppTheme {
-//                    YourStudyGroupsScreen(component, appBarInteractor)
-//                }
-//            }
-//        }
-
-//        component.appBarState.collectWhenStarted(viewLifecycleOwner) {
-//            appBarInteractor.set(it)
-//        }
-
-//        val viewContext = DefaultViewContext(binding.studyGroup, essentyLifecycle())
-
-//        component.openStudyGroupEditor.collectWhenStarted(viewLifecycleOwner) { groupId ->
-//            findNavController().navigate(
-//                R.id.action_global_groupEditorFragment,
-//                bundleOf("studyGroupId" to groupId)
-//            )
-//        }
-//        component.selectedStudyGroup.collectWhenStarted(viewLifecycleOwner) {
-//            it.onSuccess {
-//                it.let {
-//                    viewContext.apply {
-//                        child(parent) {
-//                            StudyGroupView(
-//                                component = studyGroupViewModel(
-//                                    it.id.toString(),
-//                                    componentContext
-//                                )
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
     @OptIn(ExperimentalDecomposeApi::class)

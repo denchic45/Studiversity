@@ -8,7 +8,6 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.kts.ui.navigation.OverlayConfig
-import com.denchic45.kts.ui.studygroup.YourStudyGroupsRootComponent
 import kotlinx.coroutines.flow.flow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject

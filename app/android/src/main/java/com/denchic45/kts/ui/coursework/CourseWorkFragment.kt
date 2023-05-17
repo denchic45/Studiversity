@@ -23,9 +23,9 @@ class CourseWorkFragment(
     private val appBarInteractor: AppBarInteractor,
     private val component: (
         onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
+        onFinish: () -> Unit,
         courseId: UUID,
         elementId: UUID,
-        onFinish: () -> Unit,
         ComponentContext,
     ) -> CourseWorkComponent,
 ) : Fragment(), HasNavArgs<CourseWorkFragmentArgs> {

@@ -28,8 +28,8 @@ import java.util.UUID
 class CourseEditorFragment(
     private val appBarInteractor: AppBarInteractor,
     private val _courseEditorComponent: (
-        courseId: UUID?,
         onFinish: () -> Unit,
+        courseId: UUID?,
         ComponentContext
     ) -> CourseEditorComponent
 ) : Fragment(), HasNavArgs<CourseEditorFragmentArgs> {
@@ -50,8 +50,8 @@ class CourseEditorFragment(
             AppTheme {
                 CourseEditorScreen(
                     component = _courseEditorComponent(
-                        navArgs.courseId?.toUUID(),
                         { requireActivity().onBackPressedDispatcher.onBackPressed() },
+                        navArgs.courseId?.toUUID(),
                         defaultComponentContext(requireActivity().onBackPressedDispatcher)
                     ),
                     appBarInteractor = appBarInteractor

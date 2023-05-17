@@ -57,9 +57,9 @@ class CourseEditorComponent(
     private val findCourseByIdUseCase: FindCourseByIdUseCase,
     private val _subjectChooserComponent: (onFinish: (SubjectResponse?) -> Unit, ComponentContext) -> SubjectChooserComponent,
     @Assisted
-    private val courseId: UUID?,
-    @Assisted
     private val onFinish: () -> Unit,
+    @Assisted
+    private val courseId: UUID?,
     @Assisted
     private val componentContext: ComponentContext
 ) : ComponentContext by componentContext {

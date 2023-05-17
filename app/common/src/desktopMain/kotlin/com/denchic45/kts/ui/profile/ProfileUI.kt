@@ -1,12 +1,27 @@
 package com.denchic45.kts.ui.profile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,15 +31,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.components.ListItem
-import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.ui.components.AsyncImage
 import com.denchic45.kts.ui.components.loadImageBitmap
-import io.ktor.http.*
+import com.denchic45.kts.ui.theme.toDrawablePath
 
 
-@ExperimentalMaterial3Api
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ProfileSideBar(
     modifier: Modifier,
@@ -33,7 +45,7 @@ fun ProfileSideBar(
 ) {
     val profileViewState by profileComponent.profileViewState.collectAsState()
     Column(modifier) {
-        SmallTopAppBar(
+        TopAppBar(
             title = {},
             actions = {
                 IconButton(onCloseClick) {
@@ -57,11 +69,14 @@ fun ProfileSideBar(
 //            }
             Divider(Modifier.fillMaxWidth())
             profile.personalDate?.let { personalDate ->
-                ListItem(icon = {
-                    Icon(painterResource("ic_email".toDrawablePath()), null)
-                }, text = {
-                    Text(personalDate.email, style = MaterialTheme.typography.bodyLarge)
-                }, secondaryText = { Text("Почта", style = MaterialTheme.typography.bodyMedium) })
+                ListItem(
+                    leadingContent = {
+                        Icon(painterResource("ic_email".toDrawablePath()), null)
+                    },
+                    headlineText = {
+                        Text(personalDate.email, style = MaterialTheme.typography.bodyLarge)
+                    },
+                    supportingText = { Text("Почта", style = MaterialTheme.typography.bodyMedium) })
             }
         }
     }

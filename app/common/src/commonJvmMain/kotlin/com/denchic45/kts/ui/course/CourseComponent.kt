@@ -88,13 +88,13 @@ class CourseComponent(
     private val courseElementsComponent = _courseElementsComponent(
         courseId,
         onElementOpen,
-        componentContext.childContext("elements")
+        componentContext.childContext("Elements")
     )
 
     private val courseMembersComponent = _courseMembersComponent(
         courseId,
         onMemberOpen,
-        componentContext.childContext("members")
+        componentContext.childContext("Members")
     )
 
     private val courseTimetableComponent = _courseTimetableComponent(

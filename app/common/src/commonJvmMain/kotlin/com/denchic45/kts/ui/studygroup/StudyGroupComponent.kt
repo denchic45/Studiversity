@@ -8,7 +8,9 @@ import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.stateInResource
+import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.kts.ui.profile.ProfileComponent
 import com.denchic45.kts.ui.studygroup.courses.StudyGroupCoursesComponent
@@ -17,7 +19,10 @@ import com.denchic45.kts.ui.studygroup.timetable.StudyGroupTimetableComponent
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
+import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.shareIn
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -25,6 +30,7 @@ import java.util.UUID
 
 @Inject
 class StudyGroupComponent(
+    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val profileComponent: (UUID, ComponentContext) -> ProfileComponent,
     private val userEditorComponent: (
         onFinish: () -> Unit,
@@ -41,9 +47,15 @@ class StudyGroupComponent(
         UUID,
         ComponentContext,
     ) -> StudyGroupMembersComponent,
-    private val studyGroupCoursesComponent: (UUID, ComponentContext) -> StudyGroupCoursesComponent,
+    private val studyGroupCoursesComponent: (
+        onCourseOpen: (UUID) -> Unit,
+        UUID,
+        ComponentContext
+    ) -> StudyGroupCoursesComponent,
     private val studyGroupTimetableComponent: (UUID, ComponentContext) -> StudyGroupTimetableComponent,
     private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
+    @Assisted
+    private val onCourseOpen: (UUID) -> Unit,
     @Assisted
     private val studyGroupId: UUID,
     @Assisted
@@ -51,6 +63,15 @@ class StudyGroupComponent(
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
+
+    private val checkUserCapabilities = checkUserCapabilitiesInScopeUseCase(
+        scopeId = studyGroupId,
+        capabilities = listOf(Capability.WriteStudyGroup)
+    ).shareIn(componentScope, SharingStarted.Lazily)
+
+    val allowEdit = checkUserCapabilities
+        .mapResource { it.hasCapability(Capability.WriteStudyGroup) }
+        .stateInResource(componentScope)
 
 //    val appBarState = MutableStateFlow(
 //        AppBarState(
@@ -68,21 +89,22 @@ class StudyGroupComponent(
 //            })
 //    )
 
-    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
+    private val sidebarNavigation = OverlayNavigation<OverlayConfig>()
 
-    val childOverlay = childOverlay(
-        source = overlayNavigation,
+    val childSidebar = childOverlay(
+        source = sidebarNavigation,
         childFactory = { config, componentContext ->
             when (config) {
                 is OverlayConfig.StudyGroupEditor -> {
                     OverlayChild.StudyGroupEditor(
                         studyGroupEditorComponent(
-                            overlayNavigation::dismiss,
+                            sidebarNavigation::dismiss,
                             config.studyGroupId,
                             componentContext
                         )
                     )
                 }
+
                 is OverlayConfig.Member -> {
                     OverlayChild.Member(profileComponent(config.memberId, componentContext))
                 }
@@ -90,7 +112,7 @@ class StudyGroupComponent(
                 is OverlayConfig.UserEditor -> {
                     OverlayChild.UserEditor(
                         userEditorComponent(
-                            overlayNavigation::dismiss,
+                            sidebarNavigation::dismiss,
                             config.userId,
                             componentContext
                         )
@@ -103,13 +125,14 @@ class StudyGroupComponent(
     val childTabs = listOf(
         TabChild.Members(
             studyGroupMembersComponent(
-                {},
+                onCourseOpen,
                 studyGroupId,
                 componentContext.childContext("Members")
             )
         ),
         TabChild.Courses(
             studyGroupCoursesComponent(
+                onCourseOpen,
                 studyGroupId,
                 componentContext.childContext(" Курсы")
             )
@@ -154,7 +177,11 @@ class StudyGroupComponent(
     }
 
     fun onEditClick() {
-        overlayNavigation.activate(OverlayConfig.StudyGroupEditor(studyGroupId))
+        sidebarNavigation.activate(OverlayConfig.StudyGroupEditor(studyGroupId))
+    }
+
+    fun onSidebarClose() {
+        sidebarNavigation.dismiss()
     }
 
     @Parcelize
