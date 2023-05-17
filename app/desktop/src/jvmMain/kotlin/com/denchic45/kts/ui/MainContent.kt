@@ -23,10 +23,10 @@ import com.denchic45.kts.ui.MainComponent.RootChild
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.navigation.ConfirmChild
 import com.denchic45.kts.ui.navigation.UserEditorChild
+import com.denchic45.kts.ui.root.YourStudyGroupsRootScreen
+import com.denchic45.kts.ui.root.YourTimetablesRootScreen
 import com.denchic45.kts.ui.theme.toDrawablePath
-import com.denchic45.kts.ui.timetable.TimetableScreen
 import com.denchic45.kts.ui.usereditor.UserEditorDialog
-import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,11 +64,7 @@ fun MainContent(mainComponent: MainComponent) {
                             )
                             appBarMediator.content?.let {
                                 it(this)
-                                Divider(
-                                    Modifier
-                                        .padding(horizontal = 24.dp)
-                                        .align(Alignment.CenterVertically).size(1.dp, 24.dp)
-                                )
+
                             }
                         }
                     },
@@ -92,9 +88,9 @@ fun MainContent(mainComponent: MainComponent) {
                     })
 
                 when (val child = childStack.active.instance) {
-                    is RootChild.YourTimetables -> TimetableScreen(appBarMediator, child.component)
+                    is RootChild.YourTimetables -> YourTimetablesRootScreen(child.component)
                     is RootChild.YourStudyGroups -> {
-                        YourStudyGroupsScreen(child.component)
+                        YourStudyGroupsRootScreen(child.component)
                     }
                 }
 

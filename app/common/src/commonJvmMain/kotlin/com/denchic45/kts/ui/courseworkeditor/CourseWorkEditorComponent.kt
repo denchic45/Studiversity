@@ -75,13 +75,13 @@ class CourseWorkEditorComponent(
     private val addCourseWorkUseCase: AddCourseWorkUseCase,
     private val updateCourseWorkUseCase: UpdateCourseWorkUseCase,
     @Assisted
+    private val onFinish: () -> Unit,
+    @Assisted
     private val courseId: UUID,
     @Assisted
     private val workId: UUID?,
     @Assisted
     topicId: UUID?,
-    @Assisted
-    private val onFinish: () -> Unit,
     @Assisted
     private val componentContext: ComponentContext
 ) : ComponentContext by componentContext {

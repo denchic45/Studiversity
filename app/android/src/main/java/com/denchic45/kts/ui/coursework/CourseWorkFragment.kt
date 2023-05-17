@@ -43,9 +43,9 @@ class CourseWorkFragment(
                     )
                 )
             },
+            { requireActivity().onBackPressedDispatcher.onBackPressed() },
             navArgs.courseId.toUUID(),
             navArgs.elementId.toUUID(),
-            { requireActivity().onBackPressedDispatcher.onBackPressed() },
             defaultComponentContext(requireActivity().onBackPressedDispatcher)
         )
     }

@@ -10,7 +10,7 @@ import com.denchic45.kts.ui.appbar.AppBarInteractor
 
 class AppBarMediator {
     var title by mutableStateOf("")
-    var content by mutableStateOf<(@Composable RowScope.() -> Unit)?>({})
+    var content by mutableStateOf<(@Composable RowScope.() -> Unit)?>(null)
 }
 
 val LocalAppBarMediator = staticCompositionLocalOf<AppBarMediator> { error("Nothing AppBarMediator") }

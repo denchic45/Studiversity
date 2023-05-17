@@ -38,10 +38,10 @@ import java.util.UUID
 class CourseWorkEditorFragment(
     private val appBarInteractor: AppBarInteractor,
     private val _courseWorkEditorComponent: (
+        onFinish: () -> Unit,
         courseId: UUID,
         workId: UUID?,
         topicId: UUID?,
-        onFinish: () -> Unit,
         ComponentContext
     ) -> CourseWorkEditorComponent
 ) : Fragment(), HasNavArgs<CourseWorkEditorFragmentArgs> {
@@ -56,10 +56,10 @@ class CourseWorkEditorFragment(
 
     private val component by lazy {
         _courseWorkEditorComponent(
+            { requireActivity().onBackPressedDispatcher.onBackPressed() },
             navArgs.courseId.toUUID(),
             navArgs.workId?.toUUID(),
             navArgs.topicId?.toUUID(),
-            { requireActivity().onBackPressedDispatcher.onBackPressed() },
             defaultComponentContext(requireActivity().onBackPressedDispatcher)
         )
     }

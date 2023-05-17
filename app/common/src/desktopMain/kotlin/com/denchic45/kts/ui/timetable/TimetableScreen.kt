@@ -1,14 +1,13 @@
 package com.denchic45.kts.ui.timetable
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -25,17 +24,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -50,7 +49,7 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.timetable.model.PeriodDetails
 import com.denchic45.kts.domain.timetable.model.PeriodItem
 import com.denchic45.kts.ui.AppBarMediator
-import com.denchic45.kts.ui.components.TextButtonContent
+import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.state.CellOrder
 import com.denchic45.kts.ui.timetable.state.TimetableState
 import com.denchic45.kts.ui.yourtimetables.YourTimetablesComponent
@@ -58,6 +57,7 @@ import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import com.seiko.imageloader.rememberAsyncImagePainter
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Preview
 @Composable
@@ -66,60 +66,19 @@ fun TimetableScreen(appBarMediator: AppBarMediator, component: YourTimetablesCom
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
     val mondayDate by component.mondayDate.collectAsState()
 
-    appBarMediator.apply {
-        LaunchedEffect(selectedYearWeek) {
-            title = getMonthTitle(selectedYearWeek)
-        }
-        content = {
-            val contentHeight = 40.dp
-//            Spacer(Modifier.width(24.dp))
-            Spacer(Modifier.weight(1f))
 
-            OutlinedButton(
-                modifier = Modifier.height(contentHeight),
-                onClick = component::onTodayClick,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-            ) {
-                TextButtonContent("Сегодня")
-            }
-            Spacer(Modifier.width(16.dp))
-            OutlinedButton(
-                onClick = component::onPreviousWeekClick,
-                modifier = Modifier.size(contentHeight),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = "previous week arrow icon"
-                )
-            }
-            Spacer(Modifier.width(16.dp))
-            OutlinedButton(
-                onClick = component::onNextWeekClick,
-                modifier = Modifier.size(contentHeight),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.DarkGray)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = "next week arrow icon"
-                )
-            }
-
-//            Spacer(Modifier.weight(1f))
-//            Spinner() TODO add later
-//            Spacer(Modifier.width(24.dp))
-        }
-    }
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
         elevation = 0.dp
     ) {
-        TimetableContent2(mondayDate, timetable)
+        TimetableContent2(
+            selectedDate = mondayDate,
+            timetableResource = timetable,
+            onTodayClick = component::onTodayClick,
+            onPreviousWeekClick = component::onPreviousWeekClick,
+            onNextWeekClick = component::onNextWeekClick
+        )
     }
 }
 
@@ -160,7 +119,13 @@ fun TimetableContent(selectedDate: LocalDate, timetableResource: Resource<Timeta
 
 @Composable
 @Preview
-fun TimetableContent2(selectedDate: LocalDate, timetableResource: Resource<TimetableState>) {
+fun TimetableContent2(
+    selectedDate: LocalDate,
+    timetableResource: Resource<TimetableState>,
+    onTodayClick: () -> Unit,
+    onPreviousWeekClick: () -> Unit,
+    onNextWeekClick: () -> Unit,
+) {
     val verticalScroll: ScrollState = rememberScrollState()
     val horizontalScroll: ScrollState = rememberScrollState()
     BoxWithConstraints(Modifier) {
@@ -169,6 +134,12 @@ fun TimetableContent2(selectedDate: LocalDate, timetableResource: Resource<Timet
                 Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
             else Modifier
         Column(Modifier.fillMaxWidth()) {
+            TimetableBar(
+                onTodayClick = onTodayClick,
+                onPreviousWeekClick = onPreviousWeekClick,
+                onNextWeekClick = onNextWeekClick,
+                selectedDate = selectedDate
+            )
             Row {
                 Box(Modifier.size(78.dp, 124.dp), contentAlignment = Alignment.BottomEnd) {
                     Divider(Modifier.width(1.dp).height(24.dp))
@@ -187,6 +158,46 @@ fun TimetableContent2(selectedDate: LocalDate, timetableResource: Resource<Timet
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TimetableBar(
+    onTodayClick: () -> Unit,
+    onPreviousWeekClick: () -> Unit,
+    onNextWeekClick: () -> Unit,
+    selectedDate: LocalDate,
+) {
+    Row(
+        Modifier.fillMaxWidth().height(64.dp).background(MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp)).padding(horizontal = 78.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        OutlinedButton(onClick = onTodayClick) {
+            Text("Сегодня")
+        }
+        Spacer(Modifier.width(MaterialTheme.spacing.small))
+        IconButton(onClick = onPreviousWeekClick) {
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowLeft,
+                contentDescription = "previous week arrow icon"
+            )
+        }
+//        Spacer(Modifier.width(MaterialTheme.spacing.small))
+        IconButton(
+            onClick = onNextWeekClick
+        ) {
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = "next week arrow icon"
+            )
+        }
+        Spacer(Modifier.width(MaterialTheme.spacing.small))
+        Text(
+            text = getMonthTitle(
+                selectedDate.format(DateTimeFormatter.ofPattern(DateTimePatterns.YYYY_ww))
+            ),
+            style = MaterialTheme.typography.titleLarge
+        )
     }
 }
 

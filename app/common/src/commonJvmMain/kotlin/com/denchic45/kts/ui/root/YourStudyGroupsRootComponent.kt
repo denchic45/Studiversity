@@ -29,7 +29,7 @@ import java.util.UUID
 class YourStudyGroupsRootComponent(
     yourStudyGroupsComponent: (
         onCourseOpen: (UUID) -> Unit,
-        ComponentContext
+        ComponentContext,
     ) -> YourStudyGroupsComponent,
     courseComponent: (
         UUID,
@@ -38,12 +38,12 @@ class YourStudyGroupsRootComponent(
         onWorkEditorOpen: (courseId: UUID, elementId: UUID?) -> Unit,
         onCourseTopicsOpen: (courseId: UUID) -> Unit,
         onMemberOpen: (memberId: UUID) -> Unit,
-        ComponentContext
+        ComponentContext,
     ) -> CourseComponent,
     courseEditorComponent: (
         onFinish: () -> Unit,
         UUID?,
-        ComponentContext
+        ComponentContext,
     ) -> CourseEditorComponent,
     courseTopicsComponent: (UUID, ComponentContext) -> CourseTopicsComponent,
     courseWorkComponent: (
@@ -53,11 +53,17 @@ class YourStudyGroupsRootComponent(
         elementId: UUID,
         ComponentContext,
     ) -> CourseWorkComponent,
-    courseWorkEditorComponent: (UUID, UUID?, ComponentContext) -> CourseWorkEditorComponent,
+    courseWorkEditorComponent: (
+        onFinish: () -> Unit,
+        courseId: UUID,
+        workId: UUID?,
+        topicId: UUID?,
+        ComponentContext,
+    ) -> CourseWorkEditorComponent,
 
     profileComponent: (UUID, ComponentContext) -> ProfileComponent,
     @Assisted
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
     RootComponent<YourStudyGroupsRootComponent.Config, YourStudyGroupsRootComponent.Child> {
 
@@ -134,7 +140,13 @@ class YourStudyGroupsRootComponent(
 
                 is Config.CourseWorkEditor -> {
                     Child.CourseWorkEditor(
-                        courseWorkEditorComponent(config.courseId, config.workId, context)
+                        courseWorkEditorComponent(
+                            navigation::pop,
+                            config.courseId,
+                            config.workId,
+                            null,
+                            context
+                        )
                     )
                 }
             }
