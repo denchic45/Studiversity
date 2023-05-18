@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.studygroup.members
+package com.denchic45.kts.ui.studygroup
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +27,7 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.components.UserListItem
 import com.denchic45.kts.ui.model.UserItem
+import com.denchic45.kts.ui.studygroup.members.StudyGroupMembersComponent
 import com.denchic45.kts.ui.theme.toDrawablePath
 import java.util.UUID
 
@@ -103,12 +104,17 @@ private fun StudentListItem(
             }) {
 
             actions?.first?.forEach { action ->
-                DropdownMenuItem(onClick = {
-                    expanded = false
-                    onClickAction(action)
-                }) {
-                    Text(text = action.title, style = MaterialTheme.typography.bodyMedium)
-                }
+                DropdownMenuItem(
+                    onClick = {
+                        expanded = false
+                        onClickAction(action)
+                    },
+                    text = {
+                        Text(
+                            text = action.title,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    })
             }
         }
     }

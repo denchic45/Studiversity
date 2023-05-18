@@ -7,8 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.DefaultComponentContext
-import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.kts.Field
 import com.denchic45.kts.FieldEditor
 import com.denchic45.kts.domain.*
@@ -104,24 +102,20 @@ class StudyGroupEditorComponent(
     )
 
     val viewState = (_studyGroupId_?.let {
-        findStudyGroupByIdUseCase(it).map { resource ->
-            resource.map { response ->
-                editingState.apply {
-                    name = response.name
-                    specialty = response.specialty
-                    startAcademicYear = response.academicYear.start
-                    endAcademicYear = response.academicYear.end
-                }
-                fieldEditor.updateOldValues(
-                    "name" to response.name,
-                    "startAcademicYear" to response.academicYear.start,
-                    "endAcademicYear" to response.academicYear.end,
-                    "specialtyId" to response.specialty?.id
-                )
-                editingState
+        findStudyGroupByIdUseCase(it).mapResource { response ->
+            fieldEditor.updateOldValues(
+                "name" to response.name,
+                "startAcademicYear" to response.academicYear.start,
+                "endAcademicYear" to response.academicYear.end,
+                "specialtyId" to response.specialty?.id
+            )
+            editingState.apply {
+                name = response.name
+                specialty = response.specialty
+                startAcademicYear = response.academicYear.start
+                endAcademicYear = response.academicYear.end
             }
         }
-
     } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
 
     val searchSpecialtiesText = MutableStateFlow("")

@@ -164,6 +164,10 @@ class StudyGroupRepository @Inject constructor(
 //        }
 //    }
 
+    fun findYourStudyGroups() = fetchResourceFlow {
+        studyGroupApi.getList(memberId = uuidOfMe())
+    }
+
     suspend fun add(createStudyGroupRequest: CreateStudyGroupRequest) = fetchResource {
         studyGroupApi.create(createStudyGroupRequest)
     }

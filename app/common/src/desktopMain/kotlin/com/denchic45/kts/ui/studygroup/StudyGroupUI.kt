@@ -9,11 +9,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.IconButton
-import androidx.compose.material.TabRow
-import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
@@ -27,12 +28,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.ui.LocalAppBarMediator
 import com.denchic45.kts.ui.ResourceContent
 import com.denchic45.kts.ui.component.TabIndicator
 import com.denchic45.kts.ui.profile.ProfileSideBar
-import com.denchic45.kts.ui.studygroup.courses.GroupCoursesScreen
-import com.denchic45.kts.ui.studygroup.members.SelectableStudyGroupMembersScreen
 import com.denchic45.kts.ui.theme.toDrawablePath
 
 
@@ -43,7 +43,10 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
     val childSidebar by component.childSidebar.subscribeAsState()
 
     LocalAppBarMediator.current.let { appBarMediator ->
-        appBarMediator.title = "Группа"
+        appBarMediator.title = when (val resource = studyGroupResource) {
+            is Resource.Success -> "Группа ${resource.value.name}"
+            else -> "Группа"
+        }
         appBarMediator.content = {
             Spacer(Modifier.weight(1f))
 //        IconButton(onClick = component::onAddStudentClick) {
@@ -66,7 +69,7 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
-        elevation = 0.dp
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         ResourceContent(studyGroupResource) {
             StudyGroupContent(
@@ -91,7 +94,6 @@ fun StudyGroupContent(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TabRow(selectedTabIndex = selectedTab,
             modifier = Modifier.width(396.dp).height(56.dp),
-            backgroundColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.primary,
             indicator = { tabPositions -> TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab])) },
             divider = {}) {
@@ -109,12 +111,16 @@ fun StudyGroupContent(
         Row {
             Box(modifier = Modifier.weight(3f)) {
                 when (val child = children[selectedTab]) {
-                    is StudyGroupComponent.TabChild.Members -> SelectableStudyGroupMembersScreen(
-                        child.component
-                    )
+                    is StudyGroupComponent.TabChild.Members -> {
+                        SelectableStudyGroupMembersScreen(child.component)
+                    }
 
-                    is StudyGroupComponent.TabChild.Courses -> GroupCoursesScreen(child.component)
-                    is StudyGroupComponent.TabChild.Timetable -> TODO()
+                    is StudyGroupComponent.TabChild.Courses -> {
+                        StudyGroupCoursesScreen(child.component)
+                    }
+                    is StudyGroupComponent.TabChild.Timetable -> {
+                        StudyGroupTimetableScreen(child.component)
+                    }
                 }
             }
             Box(Modifier.width(472.dp)) {

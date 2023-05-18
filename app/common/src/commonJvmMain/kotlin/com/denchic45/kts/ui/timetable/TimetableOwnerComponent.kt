@@ -37,6 +37,14 @@ interface TimetableOwnerComponent {
 
     fun onTodayClick() = selectedDate.update { LocalDate.now() }
 
+    fun onNextWeekClick() {
+        selectedDate.update { it.plusWeeks(1) }
+    }
+
+    fun onPreviousWeekClick() {
+        selectedDate.update { it.minusWeeks(1) }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getTimetableStateOfLists(
         bellSchedule: Flow<BellSchedule>,

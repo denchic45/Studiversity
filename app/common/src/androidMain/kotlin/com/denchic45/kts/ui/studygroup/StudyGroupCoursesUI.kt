@@ -64,9 +64,7 @@ fun StudyGroupCourseListItem(
 ) {
     OutlinedCard(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
-//        shape = RoundedCornerShape(16.dp),
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier.padding(MaterialTheme.spacing.normal),

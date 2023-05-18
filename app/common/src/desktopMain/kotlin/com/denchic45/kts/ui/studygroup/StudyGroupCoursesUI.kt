@@ -1,14 +1,22 @@
-package com.denchic45.kts.ui.studygroup.courses
+package com.denchic45.kts.ui.studygroup
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,27 +24,27 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.model.StudyGroupCourseItem
+import com.denchic45.kts.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.kts.ui.theme.AppTheme
-import com.denchic45.kts.ui.theme.toDrawablePath
-import java.util.*
+import com.seiko.imageloader.rememberAsyncImagePainter
+import java.util.UUID
 
 @Composable
-fun GroupCoursesScreen(studyGroupCoursesComponent: StudyGroupCoursesComponent) {
+fun StudyGroupCoursesScreen(studyGroupCoursesComponent: StudyGroupCoursesComponent) {
     Column(Modifier.width(1040.dp)) {
         val courses by studyGroupCoursesComponent.courses.collectAsState()
         courses.onSuccess {
-            GroupCourseList(it)
+            StudyGroupCourseList(it)
         }
     }
 }
 
 @Composable
-fun GroupCourseList(list: List<StudyGroupCourseItem>) {
+fun StudyGroupCourseList(list: List<StudyGroupCourseItem>) {
     Spacer(Modifier.height(8.dp))
     HeaderItemUI("${list.size} курсов")
     Spacer(Modifier.height(8.dp))
@@ -46,16 +54,19 @@ fun GroupCourseList(list: List<StudyGroupCourseItem>) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(list) {
-            GroupCourseListItem(it)
+            StudyGroupCourseListItem(it)
         }
     }
 }
 
 @Composable
-fun GroupCourseListItem(item: StudyGroupCourseItem, modifier: Modifier = Modifier) {
+fun StudyGroupCourseListItem(
+    item: StudyGroupCourseItem,
+    modifier: Modifier = Modifier
+) {
     Card(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
-        elevation = 0.dp,
+        elevation = CardDefaults.cardElevation(0.dp),
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
     ) {
@@ -65,7 +76,7 @@ fun GroupCourseListItem(item: StudyGroupCourseItem, modifier: Modifier = Modifie
         ) {
             item.iconUrl?.let {
                 Icon(
-                    painterResource(it.toDrawablePath()),
+                    painter = rememberAsyncImagePainter(it),
                     null,
                     Modifier.size(48.dp),
                     MaterialTheme.colorScheme.secondary
@@ -84,7 +95,7 @@ fun GroupCourseListItemPreview() {
     AppTheme {
         val url =
             "https://sun9-46.userapi.com/impg/uWGoczB9st04meAMg6wWn4iSlmUXIjckTZNyqg/pb7GZSpZUAA.jpg?size=1080x2033&quality=96&sign=1320149c468c5ee8341e40a5f58f8923&type=album"
-        GroupCourseListItem(
+        StudyGroupCourseListItem(
             StudyGroupCourseItem(
                 UUID.randomUUID(),
                 "История",

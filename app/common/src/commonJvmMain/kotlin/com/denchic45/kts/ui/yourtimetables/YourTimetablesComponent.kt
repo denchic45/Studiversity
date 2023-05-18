@@ -50,13 +50,7 @@ class YourTimetablesComponent(
         }
     }
 
-    fun onNextWeekClick() {
-        selectedDate.update { it.plusWeeks(1) }
-    }
 
-    fun onPreviousWeekClick() {
-        selectedDate.update { it.minusWeeks(1) }
-    }
 
     val studyGroups = flow { emit(findYourStudyGroupsUseCase()) }.stateInResource(componentScope)
     val selectedTimetablePosition = combine(
