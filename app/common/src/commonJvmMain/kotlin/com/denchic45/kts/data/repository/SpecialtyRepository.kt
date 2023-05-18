@@ -8,7 +8,7 @@ import com.denchic45.stuiversity.api.specialty.SpecialtyApi
 import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
@@ -19,11 +19,11 @@ class SpecialtyRepository @Inject constructor(
 ) : NetworkServiceOwner,
     FindByContainsNameRepository<SpecialtyResponse> {
 
-    override  fun findByContainsName(text: String) = fetchResourceFlow {
+    override fun findByContainsName(text: String) = fetchResourceFlow {
         specialtyApi.search(text)
     }
 
-    suspend fun findById(specialtyId: UUID) = fetchResource {
+    fun findById(specialtyId: UUID) = fetchResourceFlow {
         specialtyApi.getById(specialtyId)
     }
 
@@ -47,10 +47,12 @@ class SpecialtyRepository @Inject constructor(
         specialtyApi.create(createSpecialtyRequest)
     }
 
-    suspend fun update(specialtyId: UUID, updateSpecialtyRequest: UpdateSpecialtyRequest) =
-        fetchResource {
-            specialtyApi.update(specialtyId, updateSpecialtyRequest)
-        }
+    suspend fun update(
+        specialtyId: UUID,
+        updateSpecialtyRequest: UpdateSpecialtyRequest
+    ) = fetchResource {
+        specialtyApi.update(specialtyId, updateSpecialtyRequest)
+    }
 
     suspend fun remove(specialtyId: UUID) = fetchResource {
         specialtyApi.delete(specialtyId)

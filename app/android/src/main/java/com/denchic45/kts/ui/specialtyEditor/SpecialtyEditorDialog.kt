@@ -10,17 +10,18 @@ import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentSpecialtyEditorBinding
 import com.denchic45.kts.rx.EditTextTransformer
 import com.denchic45.kts.ui.base.BaseDialogFragment
+import com.denchic45.kts.ui.specialtyeditor.SpecialtyEditorComponent
 import com.denchic45.kts.util.collectWhenStarted
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jakewharton.rxbinding4.widget.textChanges
 
 class SpecialtyEditorDialog :
-    BaseDialogFragment<SpecialtyEditorViewModel, FragmentSpecialtyEditorBinding>(R.layout.fragment_specialty_editor) {
+    BaseDialogFragment<SpecialtyEditorComponent, FragmentSpecialtyEditorBinding>(R.layout.fragment_specialty_editor) {
 
     override val binding: FragmentSpecialtyEditorBinding by viewBinding(
         FragmentSpecialtyEditorBinding::bind
     )
-    override val viewModel: SpecialtyEditorViewModel by viewModels { viewModelFactory }
+    override val viewModel: SpecialtyEditorComponent by viewModels { viewModelFactory }
 
     override fun onBuildDialog(dialog: MaterialAlertDialogBuilder, savedInstanceState: Bundle?) {
         dialog.setTitle("Редактор специальности")
@@ -37,10 +38,10 @@ class SpecialtyEditorDialog :
             val btnPositive = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             btnDelete.setTextColor(Color.RED)
             btnDelete.setOnClickListener { viewModel.onDeleteClick() }
-            btnPositive.setOnClickListener { viewModel.onPositiveClick() }
+            btnPositive.setOnClickListener { viewModel.onSaveClick() }
         }
 
-        viewModel.enablePositiveBtn.observe(viewLifecycleOwner) { enabled: Boolean? ->
+        viewModel.saveEnabled.observe(viewLifecycleOwner) { enabled: Boolean? ->
             alertDialog.getButton(
                 AlertDialog.BUTTON_POSITIVE
             ).isEnabled = enabled!!
@@ -54,7 +55,7 @@ class SpecialtyEditorDialog :
                 if (!etName.text.contentEquals(name)) etName.setText(name)
             }
         }
-        viewModel.deleteBtnVisibility.observe(viewLifecycleOwner) { visibility: Boolean ->
+        viewModel.removeEnabled.observe(viewLifecycleOwner) { visibility: Boolean ->
             alertDialog.getButton(
                 AlertDialog.BUTTON_NEUTRAL
             ).visibility = if (visibility) View.VISIBLE else View.GONE
