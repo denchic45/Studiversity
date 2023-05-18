@@ -29,7 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.core.text.isDigitsOnly
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.attachment.AttachmentItemUI
+import com.denchic45.kts.ui.attachment.AttachmentListItem
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.coursework.SubmissionHeaderContent
 import com.denchic45.kts.ui.coursework.SubmissionUiState
@@ -123,7 +123,7 @@ fun SubmissionDetailsContent(
             LazyRow(Modifier) {
                 items(uiState.attachments, key = { it.attachmentId?.toString() ?: "" }) { item ->
                     Spacer(Modifier.width(MaterialTheme.spacing.normal))
-                    AttachmentItemUI(item = item, onClick = { onAttachmentClick(item) }) {
+                    AttachmentListItem(item = item, onClick = { onAttachmentClick(item) }) {
                         onAttachmentRemove?.let { it(item.attachmentId!!) }
                     }
                 }

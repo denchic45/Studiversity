@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -105,6 +106,7 @@ class MainViewModel @Inject constructor(
     val bottomMenuVisibility: MutableLiveData<Boolean> = MutableLiveData(true)
 
     private val yourCourses = flow { emit(findYourCoursesUseCase()) }
+        .shareIn(viewModelScope, SharingStarted.Lazily)
 
     val navMenuState: StateFlow<NavDrawerState> = yourCourses.filterSuccess()
         .combine(userRoles.filterSuccess()) { courses, roles ->
@@ -216,10 +218,6 @@ class MainViewModel @Inject constructor(
 //            fabInteractor.update { it.copy(visible = false) }
     }
 
-    companion object {
-        private const val ALLOW_CONTROL = "ALLOW_CONTROL"
-    }
-
     init {
 //        addCloseable(appVersionService)
 //        appVersionService.onUpdateDownloaded = {
@@ -258,47 +256,16 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) { interactor.startListeners() }
 
         viewModelScope.launch {
-            // TODO: Решить, что делать с этим
-//            interactor.observeHasGroup().collect { hasGroup: Boolean ->
-//                menuBtnVisibility.value = Pair(R.id.menu_group, hasGroup)
-//            }
+            interactor.observeHasGroup().collect { hasGroup: Boolean ->
+                menuBtnVisibility.emit(R.id.menu_group to hasGroup)
+            }
         }
-        // TODO: Решить, что делать с этим
         viewModelScope.launch {
-//            combine(
-//                flow { emit(findYourCoursesUseCase()) },
-//                checkCapabilities
-//            ) { courses, capabilities ->
-//                courses.map {
-//                    capabilities.map {
-//
-//                    }
-//                }
-//                courseIds = courses.associate { it.name to it.id }
-//                NavMenuState.NavMenu(
-//                    courses,
-//                    interactor.findThisUser(),
-//                    capabilities
-//                )
-//            }.stateIn(
-//                viewModelScope,
-//                SharingStarted.WhileSubscribed(5000),
-//                NavMenuState.NavMenuEmpty
-//            ).collect {
-//                navMenuItems.value = it
-//            }
-//        }
-
-            viewModelScope.launch {
-                interactor.listenAuthState.collect { logged: Boolean ->
-                    if (!logged) {
-                        viewModelScope.launch { openLogin.emit(Unit) }
-                    }
+            interactor.listenAuthState.collect { logged: Boolean ->
+                if (!logged) {
+                    viewModelScope.launch { openLogin.emit(Unit) }
                 }
             }
-
-//        uiPermissions = UiPermissions(interactor.findThisUser())
-//        uiPermissions.putPermissions(Permission(ALLOW_CONTROL, { hasAdminPerms() }))
         }
     }
 
@@ -477,5 +444,8 @@ class MainViewModel @Inject constructor(
 }
 
 data class NavDrawerItem(
-    val name: UiText, val icon: UiIcon, var selected: Boolean = false, val enabled: Boolean = true,
+    val name: UiText,
+    val icon: UiIcon,
+    val selected: Boolean = false,
+    val enabled: Boolean = true
 )

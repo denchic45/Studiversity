@@ -142,7 +142,7 @@ class CourseEditorComponent(
     private val validator = CompositeValidator(
         validators = listOf(
             ValueValidator(
-                value = { editingState.name },
+                value = editingState::name,
                 conditions = listOf(Condition(String::isNotEmpty))
             )
         )
@@ -212,25 +212,12 @@ class CourseEditorComponent(
                     is Resource.Success -> onFinish()
                 }
             }
-
     }
-
-//    fun onSubjectNameType(subjectName: String) {
-//        componentScope.launch { typedSubjectName.emit(subjectName) }
-//    }
-
 
     fun onCourseNameType(name: String) {
         editingState.name = name
         updateEnableSave()
     }
-
-//    private fun enablePositiveBtn() {
-//        componentScope.launch {
-//            delay(500) // Needed for waiting menu of this fragment
-//            setSaveOptionVisibility(validator.runValidates() && validator.hasBeenChanged())
-//        }
-//    }
 
     private fun updateEnableSave() {
         appBarState.update { state ->

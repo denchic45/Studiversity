@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.IconButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.Attachment
@@ -62,7 +62,7 @@ import com.denchic45.kts.ui.ActionMenuItem
 import com.denchic45.kts.ui.DropdownMenuItem
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.asString
-import com.denchic45.kts.ui.attachment.AttachmentItemUI
+import com.denchic45.kts.ui.attachment.AttachmentListItem
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
@@ -240,7 +240,7 @@ fun CourseWorkEditorContent(
                             itemsIndexed(
                                 items = attachmentItems,
                                 key = { _, item -> item.attachmentId ?: "" }) { index, item ->
-                                AttachmentItemUI(
+                                AttachmentListItem(
                                     item = item,
                                     onClick = { onAttachmentClick(item) },
                                     onRemove = { onAttachmentRemove(index) })

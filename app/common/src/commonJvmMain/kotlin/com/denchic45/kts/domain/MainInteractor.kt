@@ -12,6 +12,7 @@ import com.denchic45.kts.util.databaseFile
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,16 +40,10 @@ class MainInteractor @Inject constructor(
 
     }
 
-//    suspend fun observeHasGroup(): Flow<Boolean> = flow {
-//        coroutineScope {
-//            groupRepository.observeHasGroup().collect {
-//                if (it) {
-//                    launch { eventRepository.observeEventsOfYourGroup() }
-//                }
-//                emit(it)
-//            }
-//        }
-//    }
+    fun observeHasGroup(): Flow<Boolean> = studyGroupRepository.findYourStudyGroups()
+        .filterSuccess()
+        .map { it.value.isNotEmpty() }
+
 
     fun findThisUser() = userRepository.findSelf()
 

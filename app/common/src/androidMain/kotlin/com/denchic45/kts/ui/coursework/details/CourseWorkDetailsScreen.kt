@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.attachment.AttachmentItemUI
+import com.denchic45.kts.ui.attachment.AttachmentListItem
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.theme.AppTheme
@@ -117,7 +117,7 @@ private fun CourseWorkDetailsContent(
                     HeaderItemUI(name = "Прикрепленные файлы")
                     LazyRow {
                         items(attachments, key = { it.attachmentId ?: Unit }) {
-                            AttachmentItemUI(item = it, onClick = { onAttachmentClick(it) })
+                            AttachmentListItem(item = it, onClick = { onAttachmentClick(it) })
                         }
                     }
                 }
