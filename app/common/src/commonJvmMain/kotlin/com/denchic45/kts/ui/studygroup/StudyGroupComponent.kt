@@ -13,6 +13,7 @@ import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.kts.ui.profile.ProfileComponent
+import com.denchic45.kts.ui.root.YourStudyGroupsRootComponent
 import com.denchic45.kts.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.kts.ui.studygroup.members.StudyGroupMembersComponent
 import com.denchic45.kts.ui.studygroup.timetable.StudyGroupTimetableComponent
@@ -125,7 +126,7 @@ class StudyGroupComponent(
     val childTabs = listOf(
         TabChild.Members(
             studyGroupMembersComponent(
-                onCourseOpen,
+                {sidebarNavigation.activate(OverlayConfig.Member(it))},
                 studyGroupId,
                 componentContext.childContext("Members")
             )
@@ -134,7 +135,7 @@ class StudyGroupComponent(
             studyGroupCoursesComponent(
                 onCourseOpen,
                 studyGroupId,
-                componentContext.childContext(" Курсы")
+                componentContext.childContext("Courses")
             )
         ),
         TabChild.Timetable(

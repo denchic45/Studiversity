@@ -1,11 +1,13 @@
 package com.denchic45.kts.ui.yourtimetables
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,57 +31,56 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
     val appBarMediator = LocalAppBarMediator.current
     appBarMediator.title = "Расписание"
     appBarMediator.content = {
+        Spacer(Modifier.width(MaterialTheme.spacing.normal))
         groups.onSuccess { groups ->
             var expanded by remember { mutableStateOf(false) }
             val showList = expanded && groups.isNotEmpty()
 
             selectedTimetable.onSuccess { selectedTimetable ->
+                Column {
+                    OutlinedButton(onClick = { expanded = true }) {
+                        Text(
+                            text = if (selectedTimetable == -1) "Мое расписание" else groups[selectedTimetable].name,
+                            modifier = Modifier.padding(end = MaterialTheme.spacing.small)
+                        )
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+                    }
 
-                OutlinedButton(onClick = { expanded = !expanded }) {
-                    Text(
-                        text = if (selectedTimetable == -1) "Мое расписание" else groups[selectedTimetable].name,
-                        modifier = Modifier.padding(end = MaterialTheme.spacing.small)
-                    )
-
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded)
-                }
-
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }) {
-                    DropdownMenuItem(
-                        text = { Text("Мое расписание") },
-                        onClick = {
-                            component.onTimetableSelect(-1)
-                            expanded = false
-                        }
-                    )
-                    groups.forEachIndexed { index, group ->
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }) {
                         DropdownMenuItem(
-                            text = { Text(group.name) },
+                            text = { Text("Мое расписание") },
                             onClick = {
-                                component.onTimetableSelect(index)
+                                component.onTimetableSelect(-1)
                                 expanded = false
                             }
                         )
+                        groups.forEachIndexed { index, group ->
+                            DropdownMenuItem(
+                                text = { Text(group.name) },
+                                onClick = {
+                                    component.onTimetableSelect(index)
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
         }
     }
 
+    Column {
+        val timetable by component.timetableState.collectAsState()
+        val mondayDate by component.mondayDate.collectAsState()
 
-        Column {
-            val timetable by component.timetableState.collectAsState()
-            val mondayDate by component.mondayDate.collectAsState()
-
-
-                TimetableContent(
-                    selectedDate = mondayDate,
-                    timetableResource = timetable,
-                    onTodayClick = component::onTodayClick,
-                    onPreviousWeekClick = component::onPreviousWeekClick,
-                    onNextWeekClick = component::onNextWeekClick
-                )
-        }
+        TimetableContent(
+            selectedDate = mondayDate,
+            timetableResource = timetable,
+            onTodayClick = component::onTodayClick,
+            onPreviousWeekClick = component::onPreviousWeekClick,
+            onNextWeekClick = component::onNextWeekClick
+        )
+    }
 }

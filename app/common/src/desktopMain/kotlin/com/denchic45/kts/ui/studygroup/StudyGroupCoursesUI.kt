@@ -3,9 +3,11 @@ package com.denchic45.kts.ui.studygroup
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,7 +37,7 @@ import java.util.UUID
 
 @Composable
 fun StudyGroupCoursesScreen(studyGroupCoursesComponent: StudyGroupCoursesComponent) {
-    Column(Modifier.width(1040.dp)) {
+    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
         val courses by studyGroupCoursesComponent.courses.collectAsState()
         courses.onSuccess {
             StudyGroupCourseList(it)
@@ -45,16 +47,19 @@ fun StudyGroupCoursesScreen(studyGroupCoursesComponent: StudyGroupCoursesCompone
 
 @Composable
 fun StudyGroupCourseList(list: List<StudyGroupCourseItem>) {
-    Spacer(Modifier.height(8.dp))
-    HeaderItemUI("${list.size} курсов")
-    Spacer(Modifier.height(8.dp))
-    LazyVerticalGrid(
-        GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(list) {
-            StudyGroupCourseListItem(it)
+    Column {
+        Spacer(Modifier.height(8.dp))
+        HeaderItemUI("${list.size} курсов")
+        Spacer(Modifier.height(8.dp))
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.width(1040.dp)
+        ) {
+            items(list) {
+                StudyGroupCourseListItem(it)
+            }
         }
     }
 }

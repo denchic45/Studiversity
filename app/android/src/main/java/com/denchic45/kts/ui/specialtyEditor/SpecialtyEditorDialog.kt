@@ -14,9 +14,10 @@ import com.denchic45.kts.ui.specialtyeditor.SpecialtyEditorComponent
 import com.denchic45.kts.util.collectWhenStarted
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jakewharton.rxbinding4.widget.textChanges
+import me.tatarka.inject.annotations.Inject
 
-class SpecialtyEditorDialog :
-    BaseDialogFragment<SpecialtyEditorComponent, FragmentSpecialtyEditorBinding>(R.layout.fragment_specialty_editor) {
+@Inject
+class SpecialtyEditorDialog : BaseDialogFragment<SpecialtyEditorComponent, FragmentSpecialtyEditorBinding>(R.layout.fragment_specialty_editor) {
 
     override val binding: FragmentSpecialtyEditorBinding by viewBinding(
         FragmentSpecialtyEditorBinding::bind

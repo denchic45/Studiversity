@@ -12,12 +12,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.LocalAppBarMediator
 import com.denchic45.kts.ui.ResourceContent
 import com.denchic45.kts.ui.component.TabIndicator
@@ -43,32 +43,15 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
     val childSidebar by component.childSidebar.subscribeAsState()
 
     LocalAppBarMediator.current.let { appBarMediator ->
-        appBarMediator.title = when (val resource = studyGroupResource) {
-            is Resource.Success -> "Группа ${resource.value.name}"
-            else -> "Группа"
-        }
-        appBarMediator.content = {
-            Spacer(Modifier.weight(1f))
-//        IconButton(onClick = component::onAddStudentClick) {
-//            Icon(
-//                imageVector = Icons.Rounded.Add,
-//                tint = Color.DarkGray,
-//                contentDescription = ""
-//            )
-//        }
-            IconButton(onClick = {}) {
-                Icon(
-                    painter = painterResource("ic_settings".toDrawablePath()),
-                    tint = Color.DarkGray,
-                    contentDescription = ""
-                )
-            }
+        studyGroupResource.onSuccess {
+            appBarMediator.title = "Группа ${it.name}"
         }
     }
 
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         ResourceContent(studyGroupResource) {
@@ -89,11 +72,11 @@ fun StudyGroupContent(
     children: List<StudyGroupComponent.TabChild>,
     sidebarChild: StudyGroupComponent.OverlayChild?,
     onTabSelect: (Int) -> Unit,
-    onSidebarClose: () -> Unit
+    onSidebarClose: () -> Unit,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TabRow(selectedTabIndex = selectedTab,
-            modifier = Modifier.width(396.dp).height(56.dp),
+            modifier = Modifier.width(396.dp),
             contentColor = MaterialTheme.colorScheme.primary,
             indicator = { tabPositions -> TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab])) },
             divider = {}) {
@@ -107,7 +90,6 @@ fun StudyGroupContent(
             }
         }
         Divider()
-
         Row {
             Box(modifier = Modifier.weight(3f)) {
                 when (val child = children[selectedTab]) {
@@ -118,22 +100,24 @@ fun StudyGroupContent(
                     is StudyGroupComponent.TabChild.Courses -> {
                         StudyGroupCoursesScreen(child.component)
                     }
+
                     is StudyGroupComponent.TabChild.Timetable -> {
                         StudyGroupTimetableScreen(child.component)
                     }
                 }
             }
-            Box(Modifier.width(472.dp)) {
-                when (val child = sidebarChild) {
-                    is StudyGroupComponent.OverlayChild.Member -> ProfileSideBar(
-                        Modifier,
-                        child.component,
-                        onSidebarClose
-                    )
+            sidebarChild?.let {
+                Box(Modifier.weight(1f)) {
+                    when (val child = it) {
+                        is StudyGroupComponent.OverlayChild.Member -> ProfileSideBar(
+                            Modifier,
+                            child.component,
+                            onSidebarClose
+                        )
 
-                    is StudyGroupComponent.OverlayChild.StudyGroupEditor -> TODO()
-                    is StudyGroupComponent.OverlayChild.UserEditor -> TODO()
-                    null -> {}
+                        is StudyGroupComponent.OverlayChild.StudyGroupEditor -> TODO()
+                        is StudyGroupComponent.OverlayChild.UserEditor -> TODO()
+                    }
                 }
             }
         }

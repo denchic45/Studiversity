@@ -34,7 +34,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -132,6 +131,7 @@ fun TimetableContent(
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         BoxWithConstraints(Modifier) {
@@ -177,7 +177,7 @@ private fun TimetableBar(
 ) {
     Row(
         Modifier.fillMaxWidth().height(64.dp)
-            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp))
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 78.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -305,11 +305,11 @@ fun LessonCells(
 @Composable
 @Preview
 fun LessonCell(item: PeriodItem?) {
-    Column(Modifier.widthIn(min = 196.dp).height(128.dp).padding(18.dp)) {
+    Column(Modifier.widthIn(min = 196.dp).height(128.dp).padding(MaterialTheme.spacing.normal)) {
         item?.let {
             when (val details = item.details) {
                 is PeriodDetails.Lesson -> {
-                    Box(Modifier.size(28.dp)) {
+                    Box(Modifier.size(32.dp)) {
                         details.subjectIconUrl?.let {
                             Icon(
                                 painter = rememberAsyncImagePainter(it),

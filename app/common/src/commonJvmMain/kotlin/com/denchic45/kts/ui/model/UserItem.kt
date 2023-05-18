@@ -26,13 +26,13 @@ fun GroupMember.toUserItem(groupMembers: GroupMembers): UserItem {
     )
 }
 
-fun UserResponse.toUserItem(): UserItem {
+fun UserResponse.toUserItem(subtitle: String? = null): UserItem {
     return UserItem(
         id = id,
         firstName = firstName,
         surname = surname,
         avatarUrl = avatarUrl,
-        subtitle = null
+        subtitle = subtitle
     )
 }
 

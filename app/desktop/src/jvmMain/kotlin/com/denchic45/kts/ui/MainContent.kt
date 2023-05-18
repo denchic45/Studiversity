@@ -56,7 +56,7 @@ fun MainContent(mainComponent: MainComponent) {
                 val appBarMediator = LocalAppBarMediator.current
                 TopAppBar(
                     title = {
-                        Row {
+                        Row() {
                             Text(
                                 text = appBarMediator.title,
                                 fontSize = TextUnit(32F, TextUnitType.Sp),
@@ -68,7 +68,7 @@ fun MainContent(mainComponent: MainComponent) {
                             }
                         }
                     },
-                    modifier = Modifier.padding(top = 24.dp, bottom = 8.dp, end = 24.dp),
+                    modifier = Modifier.height(96.dp).padding(top = 36.dp, bottom = 8.dp, end = 24.dp),
                     actions = {
                         Spacer(Modifier.width(4.dp))
                         IconButton(onClick = {}) {
@@ -87,10 +87,12 @@ fun MainContent(mainComponent: MainComponent) {
                         }
                     })
 
-                when (val child = childStack.active.instance) {
-                    is RootChild.YourTimetables -> YourTimetablesRootScreen(child.component)
-                    is RootChild.YourStudyGroups -> {
-                        YourStudyGroupsRootScreen(child.component)
+                Surface(tonalElevation = (-1).dp,color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)) {
+                    when (val child = childStack.active.instance) {
+                        is RootChild.YourTimetables -> YourTimetablesRootScreen(child.component)
+                        is RootChild.YourStudyGroups -> {
+                            YourStudyGroupsRootScreen(child.component)
+                        }
                     }
                 }
 

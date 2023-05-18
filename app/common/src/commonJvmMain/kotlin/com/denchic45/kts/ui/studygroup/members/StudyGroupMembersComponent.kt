@@ -8,11 +8,9 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.AssignUserRoleInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindGroupMembersUseCase
 import com.denchic45.kts.domain.usecase.RemoveUserRoleFromScopeUseCase
-import com.denchic45.kts.domain.usecase.RemoveUserUseCase
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.toUserItem
 import com.denchic45.kts.ui.profile.ProfileComponent
-import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -96,7 +94,9 @@ class StudyGroupMembersComponent(
         val curatorMember = scopeMembers.firstOrNull { member -> Role.Curator in member.roles }
         val groupCurator = curatorMember?.user?.toUserItem()
         val students = (curatorMember?.let { scopeMembers - it }
-            ?: scopeMembers).map { it.user.toUserItem() }
+            ?: scopeMembers).map {
+            it.user.toUserItem(if (it.roles.contains(Role.Headman)) "Староста" else null)
+        }
         GroupMembers(
             groupId = studyGroupId,
             curator = groupCurator,
@@ -108,7 +108,6 @@ class StudyGroupMembersComponent(
         SharingStarted.Lazily,
         Resource.Loading
     )
-
 
 
     val memberAction = MutableStateFlow<Pair<List<StudentAction>, UUID>?>(null)
@@ -126,7 +125,6 @@ class StudyGroupMembersComponent(
     fun onMemberSelect(memberId: UUID) {
         onMemberOpen(memberId)
     }
-
 
 
     fun onExpandMemberAction(memberId: UUID) {
@@ -150,7 +148,7 @@ class StudyGroupMembersComponent(
                 )
 
                 StudentAction.RemoveHeadman -> removeUserRoleFromScopeUseCase(
-                    studyGroupId,
+                    memberAction.value!!.second,
                     Role.Headman.id,
                     studyGroupId
                 )
