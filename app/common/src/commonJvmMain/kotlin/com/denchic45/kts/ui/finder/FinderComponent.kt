@@ -8,6 +8,7 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.ui.chooser.StudyGroupSearchComponent
 import com.denchic45.kts.ui.chooser.UserSearchComponent
+import com.denchic45.kts.ui.course.CourseComponent
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.profile.ProfileComponent
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
@@ -31,7 +32,12 @@ class FinderComponent(
             ComponentContext
     ) -> StudyGroupSearchComponent,
     profileComponent: (UUID, ComponentContext) -> ProfileComponent,
-    studyGroupComponent: (UUID, ComponentContext) -> StudyGroupComponent,
+    studyGroupComponent: (
+            (UUID) -> Unit,
+            UUID,
+            ComponentContext
+    ) -> StudyGroupComponent,
+    courseComponent: (UUID, ComponentContext) -> CourseComponent,
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
@@ -58,7 +64,7 @@ class FinderComponent(
                 )
 
                 is OverlayConfig.StudyGroup -> OverlayChild.StudyGroup(
-                    studyGroupComponent(config.studyGroupId, context)
+                    studyGroupComponent({}, config.studyGroupId, context)
                 )
             }
         }

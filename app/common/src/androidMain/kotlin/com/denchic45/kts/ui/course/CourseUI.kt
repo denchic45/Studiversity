@@ -43,6 +43,7 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.UiIcon
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.courseeditor.CourseEditorScreen
 import com.denchic45.kts.ui.courseelements.CourseElementsScreen
 import com.denchic45.kts.ui.coursemembers.CourseMembersScreen
 import com.denchic45.kts.ui.coursetimetable.CourseTimetableScreen
@@ -80,11 +81,17 @@ fun CourseScreen(
     val children by component.children.collectAsState()
 
     val childOverlay by component.childOverlay.subscribeAsState()
-    when(val child = childOverlay.overlay?.instance) {
-        is CourseComponent.OverlayChild.Topics -> CourseTopicsScreen(
+    when (val child = childOverlay.overlay?.instance) {
+        is CourseComponent.Child.Topics -> CourseTopicsScreen(
             component = child.component,
             appBarInteractor = appBarInteractor
         )
+
+        is CourseComponent.Child.CourseEditor -> CourseEditorScreen(
+            component = child.component,
+            appBarInteractor = appBarInteractor
+        )
+
         null -> CourseContent(
             course = course,
             allowEdit = allowEdit,
@@ -100,7 +107,7 @@ fun CourseScreen(
 fun CourseContent(
     course: Resource<CourseResponse>,
     allowEdit: Boolean,
-    childrenResource: Resource<List<CourseComponent.Child>>,
+    childrenResource: Resource<List<CourseComponent.TabChild>>,
     onCourseEditClick: () -> Unit,
     onTopicsEditClick: () -> Unit
 ) {
@@ -183,15 +190,15 @@ fun CourseContent(
                 ) {
                     Box(modifier = Modifier.fillMaxHeight()) {
                         when (val child = children[it]) {
-                            is CourseComponent.Child.Elements -> CourseElementsScreen(
+                            is CourseComponent.TabChild.Elements -> CourseElementsScreen(
                                 component = child.component
                             )
 
-                            is CourseComponent.Child.Members -> CourseMembersScreen(
+                            is CourseComponent.TabChild.Members -> CourseMembersScreen(
                                 component = child.component
                             )
 
-                            is CourseComponent.Child.Timetable -> CourseTimetableScreen(
+                            is CourseComponent.TabChild.Timetable -> CourseTimetableScreen(
                                 component = child.component
                             )
                         }
