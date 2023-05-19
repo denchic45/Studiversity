@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -62,6 +63,7 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.DropdownMenuItem
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.coursework.details.CourseWorkDetailsScreen
 import com.denchic45.kts.ui.coursework.submissiondetails.SubmissionDetailsContent
 import com.denchic45.kts.ui.coursework.submissions.CourseWorkSubmissionsScreen
@@ -108,23 +110,19 @@ fun CourseWorkScreen(component: CourseWorkComponent, appBarInteractor: AppBarInt
 
     val allowEdit by component.allowEditWork.collectAsState(initial = false)
     component.lifecycle.doOnStart {
-        appBarInteractor.update {
-            it.copy(
-                dropdown = if (allowEdit)
-                    listOf(
-                        DropdownMenuItem(
-                            id = "edit",
-                            title = uiTextOf("Изменить"),
-                            onClick = { component.onEditClick() }
-                        ),
-                        DropdownMenuItem(
-                            id = "edit",
-                            title = uiTextOf("Удалить"),
-                            onClick = { component.onRemoveClick() }
-                        )
-                    ) else emptyList()
-            )
-        }
+        appBarInteractor.set(AppBarState(dropdown = if (allowEdit)
+            listOf(
+                DropdownMenuItem(
+                    id = "edit",
+                    title = uiTextOf("Изменить"),
+                    onClick = { component.onEditClick() }
+                ),
+                DropdownMenuItem(
+                    id = "edit",
+                    title = uiTextOf("Удалить"),
+                    onClick = { component.onRemoveClick() }
+                )
+            ) else emptyList()))
     }
 
     component.openAttachment.collectWithLifecycle {
@@ -155,7 +153,7 @@ private fun CourseWorkContent(
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
     submissionExpanded: Boolean,
-    onSubmissionExpandChange: (Boolean) -> Unit
+    onSubmissionExpandChange: (Boolean) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -522,13 +520,13 @@ fun SubmissionSheetExpanded(
                 -> {
                     OutlinedButton(
                         onClick = { onAttachmentAdd() },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(2f),
                     ) {
                         Text(text = "Прикрепить файл")
                     }
                     if (uiState.attachments.isNotEmpty()) {
                         Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
-                        Button(onClick = { onSubmit() }, modifier = Modifier.weight(1f)) {
+                        Button(onClick = { onSubmit() }, modifier = Modifier) {
                             Text(text = "Сдать работу")
                         }
                     }

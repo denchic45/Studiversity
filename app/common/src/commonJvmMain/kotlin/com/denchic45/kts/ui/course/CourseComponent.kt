@@ -189,7 +189,7 @@ class CourseComponent(
         }
     )
 
-    fun onFabClick() {
+    fun onAddWorkClick() {
         stackNavigation.push(Config.CourseWorkEditor(null))
     }
 

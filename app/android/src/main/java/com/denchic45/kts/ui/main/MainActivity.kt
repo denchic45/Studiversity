@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -78,7 +77,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.seiko.imageloader.rememberAsyncImagePainter
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.update
 
 
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.activity_main) {
@@ -88,7 +86,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 
     //    private lateinit var appBarLayout: AppBarLayout
 //    private lateinit var toolbar: CustomToolbar
-    private lateinit var toggle: ActionBarDrawerToggle
+//    private lateinit var toggle: ActionBarDrawerToggle
 
     private lateinit var snackbar: Snackbar
 
@@ -165,7 +163,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                     TopAppBar(
                         title = { Text(state.title.get(LocalContext.current)) },
                         navigationIcon = {
-                            val icon = remember { appBarInteractor.navigationIcon }
+                            val icon by remember { appBarInteractor.navigationIcon }
 
                             when (icon) {
                                 NavigationIcon.TOGGLE -> IconButton(
@@ -224,7 +222,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
                                     }
                                 }
                             }
-                            state.actions
+                            state.actionsUI?.invoke(this)
                         }
                     )
                 ConfirmDialog(confirmInteractor)
@@ -440,33 +438,33 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
 //                if (it) fabMain.show() else fabMain.hide()
 //            }
 
-            viewModel.toolbarNavigationState.collectWhenResumed(this@MainActivity) {
-                toggle = ActionBarDrawerToggle(
-                    this@MainActivity,
-                    drawerLayout,
-                    R.string.navigation_drawer_open,
-                    R.string.navigation_drawer_close
-                )
-                when (it) {
-                    MainViewModel.ToolbarNavigationState.MENU -> {
-                        drawerLayout.addDrawerListener(toggle)
-                        toggle.isDrawerIndicatorEnabled = true
-                        toggle.syncState()
-                    }
-
-                    MainViewModel.ToolbarNavigationState.BACK -> {
-                        toggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
-                        toggle.isDrawerIndicatorEnabled = false
-                        toggle.syncState()
-                    }
-
-                    else -> {}
-                }
-
-                toggle.toolbarNavigationClickListener = View.OnClickListener {
-                    onBackPressed()
-                }
-            }
+//            viewModel.toolbarNavigationState.collectWhenResumed(this@MainActivity) {
+//                toggle = ActionBarDrawerToggle(
+//                    this@MainActivity,
+//                    drawerLayout,
+//                    R.string.navigation_drawer_open,
+//                    R.string.navigation_drawer_close
+//                )
+//                when (it) {
+//                    MainViewModel.ToolbarNavigationState.MENU -> {
+//                        drawerLayout.addDrawerListener(toggle)
+//                        toggle.isDrawerIndicatorEnabled = true
+//                        toggle.syncState()
+//                    }
+//
+//                    MainViewModel.ToolbarNavigationState.BACK -> {
+//                        toggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+//                        toggle.isDrawerIndicatorEnabled = false
+//                        toggle.syncState()
+//                    }
+//
+//                    else -> {}
+//                }
+//
+//                toggle.toolbarNavigationClickListener = View.OnClickListener {
+//                    onBackPressed()
+//                }
+//            }
 
 //            viewModel.userInfo.collectWhenStarted(this@MainActivity) { user ->
 //                user.onSuccess {
@@ -485,8 +483,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layout.a
             navController.addOnDestinationChangedListener { _, destination, _ ->
                 viewModel.onDestinationChanged(destination.id)
 
-
-                appBarInteractor.navigationIcon = if (destination.id in viewModel.mainScreenIds)
+                appBarInteractor.navigationIcon.value =
+                    if (destination.id in viewModel.mainScreenIds)
                         NavigationIcon.TOGGLE
                     else NavigationIcon.BACK
 

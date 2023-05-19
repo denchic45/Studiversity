@@ -15,7 +15,7 @@ import com.denchic45.kts.data.pref.TimestampPreferences
 import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.toResource
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.member.MembersApi
 import com.denchic45.stuiversity.api.membership.MembershipApi
@@ -28,10 +28,10 @@ import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.util.uuidOf
 import com.denchic45.stuiversity.util.uuidOfMe
-import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -164,10 +164,6 @@ class StudyGroupRepository @Inject constructor(
 //        }
 //    }
 
-    fun findYourStudyGroups() = fetchResourceFlow {
-        studyGroupApi.getList(memberId = uuidOfMe())
-    }
-
     suspend fun add(createStudyGroupRequest: CreateStudyGroupRequest) = fetchResource {
         studyGroupApi.create(createStudyGroupRequest)
     }
@@ -235,9 +231,14 @@ class StudyGroupRepository @Inject constructor(
         .map { Json.decodeFromString<List<String>>(it).map(String::toUUID) }
 
     // TODO: Make observable
-    suspend fun findByMe(): Resource<List<StudyGroupResponse>> {
-        return studyGroupApi.getList(memberId = uuidOfMe()).onSuccess { responses ->
-            appPreferences.yourStudyGroups = Json.encodeToString(responses.map { it.id.toString() })
-        }.toResource()
+    fun findByMe(): Flow<Resource<List<StudyGroupResponse>>> {
+        return fetchResourceFlow { studyGroupApi.getList(memberId = uuidOfMe()) }
+            .onEach { resource ->
+                resource.onSuccess { responses ->
+                    appPreferences.yourStudyGroups =
+                        Json.encodeToString(responses.map { it.id.toString() })
+                }
+            }
+
     }
 }

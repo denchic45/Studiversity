@@ -52,7 +52,7 @@ class YourTimetablesComponent(
 
 
 
-    val studyGroups = flow { emit(findYourStudyGroupsUseCase()) }.stateInResource(componentScope)
+    val studyGroups = findYourStudyGroupsUseCase().stateInResource(componentScope)
     val selectedTimetablePosition = combine(
         studyGroups,
         appPreferences.selectedStudyGroupTimetableIdFlow

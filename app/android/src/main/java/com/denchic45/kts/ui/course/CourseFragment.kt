@@ -15,7 +15,6 @@ import com.arkivanov.decompose.defaultComponentContext
 import com.denchic45.kts.databinding.FragmentCourseBinding
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.base.HasNavArgs
-import com.denchic45.kts.ui.fab.FabInteractor
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.stuiversity.util.toUUID
 import me.tatarka.inject.annotations.Inject
@@ -24,7 +23,7 @@ import java.util.*
 @Inject
 class CourseFragment(
     private val appBarInteractor: AppBarInteractor,
-    private val fabInteractor: FabInteractor,
+//    private val fabInteractor: FabInteractor,
     component: (courseId: UUID, ComponentContext) -> CourseComponent,
 ) : Fragment(), HasNavArgs<CourseFragmentArgs> {
 
@@ -59,8 +58,7 @@ class CourseFragment(
             AppTheme {
                 CourseScreen(
                     component = component,
-                    appBarInteractor = appBarInteractor,
-                    fabInteractor = fabInteractor
+                    appBarInteractor = appBarInteractor
                 )
             }
         }

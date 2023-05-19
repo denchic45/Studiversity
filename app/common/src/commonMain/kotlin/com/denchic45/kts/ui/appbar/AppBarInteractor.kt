@@ -13,7 +13,7 @@ import me.tatarka.inject.annotations.Inject
 @AppScope
 @Inject
 class AppBarInteractor(state: AppBarState = AppBarState()) : UiInteractor<AppBarState>(state) {
-    var navigationIcon by mutableStateOf(NavigationIcon.TOGGLE)
+    var navigationIcon = mutableStateOf(NavigationIcon.TOGGLE)
     var actions  by mutableStateOf<(@Composable RowScope.() -> Unit)?>({})
 }
 

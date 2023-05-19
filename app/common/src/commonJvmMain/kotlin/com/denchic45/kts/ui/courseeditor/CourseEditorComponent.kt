@@ -31,7 +31,6 @@ import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.updateOldValues
 import com.denchic45.kts.util.componentScope
-import com.denchic45.kts.util.copy
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
@@ -39,11 +38,13 @@ import com.denchic45.stuiversity.util.optPropertyOf
 import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -52,7 +53,6 @@ import java.util.UUID
 class CourseEditorComponent(
     private val addCourseUseCase: AddCourseUseCase,
     private val updateCourseUseCase: UpdateCourseUseCase,
-    private val findSubjectByContainsNameUseCase: FindSubjectByContainsNameUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val findCourseByIdUseCase: FindCourseByIdUseCase,
     private val _subjectChooserComponent: ((SubjectResponse) -> Unit, ComponentContext) -> SubjectSearchComponent,
@@ -61,28 +61,23 @@ class CourseEditorComponent(
     @Assisted
     private val courseId: UUID?,
     @Assisted
-    private val componentContext: ComponentContext
+    private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
 
-    val appBarState = MutableStateFlow(AppBarState(
-        title = courseId?.let { uiTextOf("Редактирование курса") }
-            ?: uiTextOf("Новый курс"),
-        actions = listOf(
-            ActionMenuItem(
-                id = "save",
-                icon = uiIconOf(Icons.Default.Done),
-                enabled = false,
-                onClick = ::onSaveClick
-            )
-        ),
-//        onActionMenuItemClick = {
-//            when (it.id) {
-//                "save" -> onSaveClick()
-//            }
-//        }
-    ))
+//    val appBarState = MutableStateFlow(AppBarState(
+//        title = courseId?.let { uiTextOf("Редактирование курса") }
+//            ?: uiTextOf("Новый курс"),
+//        actions = listOf(
+//            ActionMenuItem(
+//                id = "save",
+//                icon = uiIconOf(Icons.Default.Done),
+//                enabled = false,
+//                onClick = ::onSaveClick
+//            )
+//        ),
+//    ))
 
     private val overlayNavigation = OverlayNavigation<DialogConfig>()
     val childOverlay = childOverlay(
@@ -90,15 +85,13 @@ class CourseEditorComponent(
         source = overlayNavigation,
         childFactory = { config, componentContext ->
             when (config) {
-                DialogConfig.SubjectChooser -> DialogChild.SubjectChooser(_subjectChooserComponent({
-                    it?.let { response ->
-                        editingState.subject = SelectedSubject(
-                            subjectId = response.id,
-                            subjectName = response.name,
-                            subjectIconUrl = response.iconUrl
-                        )
-                        updateEnableSave()
-                    }
+                DialogConfig.SubjectChooser -> DialogChild.SubjectChooser(_subjectChooserComponent({ response ->
+                    editingState.subject = SelectedSubject(
+                        subjectId = response.id,
+                        subjectName = response.name,
+                        subjectIconUrl = response.iconUrl
+                    )
+                    updateEnableSave()
                     overlayNavigation.dismiss()
                 }, componentContext))
             }
@@ -106,6 +99,9 @@ class CourseEditorComponent(
     )
 
     private val editingState = EditingCourse()
+
+    val isNew: Boolean = courseId == null
+    val saveEnabled = MutableStateFlow(false)
 
     @Stable
     class EditingCourse {
@@ -118,7 +114,7 @@ class CourseEditorComponent(
     data class SelectedSubject(
         val subjectId: UUID,
         val subjectName: String,
-        val subjectIconUrl: String
+        val subjectIconUrl: String,
     )
 
 //    val uiState = MutableStateFlow<Resource<EditingCourse>>(Resource.Loading)
@@ -188,7 +184,7 @@ class CourseEditorComponent(
         }
     } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
 
-    private fun onSaveClick() {
+    fun onSaveClick() {
         if (validator.validate())
             componentScope.launch {
                 val result = courseId?.let {
@@ -209,7 +205,9 @@ class CourseEditorComponent(
                 when (result) {
                     is Resource.Error -> {}
                     is Resource.Loading -> {}
-                    is Resource.Success -> onFinish()
+                    is Resource.Success -> withContext(Dispatchers.Main.immediate) {
+                        onFinish()
+                    }
                 }
             }
     }
@@ -220,40 +218,8 @@ class CourseEditorComponent(
     }
 
     private fun updateEnableSave() {
-        appBarState.update { state ->
-            state.copy(actions = state.actions.copy {
-                val itemIndex = state.actions.indexOfFirst { it.id == "save" }
-                this[itemIndex] = this[itemIndex].copy(enabled = fieldEditor.hasChanges())
-            })
-        }
+        saveEnabled.update { fieldEditor.hasChanges() }
     }
-
-//    private fun setSaveOptionVisibility(visible: Boolean) {
-//        componentScope.launch {
-//            setMenuItemVisible(R.id.option_course_save to visible)
-//        }
-//    }
-
-//    fun onSubjectSelect(selectedSubject: SelectedSubject) {
-//        editingState.subject = selectedSubject
-//        updateEnableSave()
-//    }
-
-//    override fun onOptionClick(itemId: Int) {
-//        when (itemId) {
-//            android.R.id.home -> {
-//                confirmFinish()
-//            }
-//
-//            R.id.option_course_save -> {
-//                onSaveClick()
-//            }
-//
-//            R.id.option_course_delete -> {
-//                onDeleteClick()
-//            }
-//        }
-//    }
 
     private fun onDeleteClick() {
         componentScope.launch {

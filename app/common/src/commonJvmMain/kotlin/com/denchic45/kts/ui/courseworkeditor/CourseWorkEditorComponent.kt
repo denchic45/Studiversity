@@ -70,8 +70,7 @@ class CourseWorkEditorComponent(
     private val uploadAttachmentToCourseWorkUseCase: UploadAttachmentToCourseWorkUseCase,
     private val downloadFileUseCase: DownloadFileUseCase,
     private val removeAttachmentFromCourseWorkUseCase: RemoveAttachmentFromCourseWorkUseCase,
-    private val findCourseTopicUseCase: FindCourseTopicUseCase,
-    private val observeCourseTopicsUseCase: ObserveCourseTopicsUseCase,
+    observeCourseTopicsUseCase: ObserveCourseTopicsUseCase,
     private val addCourseWorkUseCase: AddCourseWorkUseCase,
     private val updateCourseWorkUseCase: UpdateCourseWorkUseCase,
     @Assisted

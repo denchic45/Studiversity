@@ -93,7 +93,7 @@ class MainViewModel @Inject constructor(
 
     val menuBtnVisibility = MutableSharedFlow<Pair<Int, Boolean>>()
 
-    val toolbarNavigationState = MutableStateFlow(ToolbarNavigationState.MENU)
+//    val toolbarNavigationState = MutableSharedFlow<ToolbarNavigationState>()
 
     enum class ToolbarNavigationState { NONE, MENU, BACK }
 
@@ -204,18 +204,15 @@ class MainViewModel @Inject constructor(
     }
 
     fun onDestinationChanged(id: Int) {
-        if (mainScreenIds.contains(id)) {
-            toolbarNavigationState.value = ToolbarNavigationState.MENU
-            if (!bottomMenuVisibility.value!!) {
-                bottomMenuVisibility.value = true
+        viewModelScope.launch {
+            if (mainScreenIds.contains(id)) {
+                if (!bottomMenuVisibility.value!!) {
+                    bottomMenuVisibility.value = true
+                }
+            } else if (bottomMenuVisibility.value!!) {
+                bottomMenuVisibility.value = false
             }
-        } else if (bottomMenuVisibility.value!!) {
-            toolbarNavigationState.value = ToolbarNavigationState.BACK
-            bottomMenuVisibility.value = false
         }
-
-//        if (!screenIdsWithFab.contains(id))
-//            fabInteractor.update { it.copy(visible = false) }
     }
 
     init {
@@ -319,110 +316,6 @@ class MainViewModel @Inject constructor(
                     enabled = false
                 )
             )
-        }
-    }
-
-
-    data class NavMenu(
-        val courses: List<CourseResponse>,
-        private val hasGroup: Boolean,
-        private val isModerator: Boolean,
-        val expandAllCourse: Boolean = false,
-    ) {
-        private val mainTextItems: MutableList<NavTextItem> = mutableListOf()
-        private val footerTextItems: MutableList<NavTextItem> = mutableListOf()
-
-        init {
-            with(mainTextItems) {
-//                    if (user.isStudent)
-//                        mainTextItems.add(
-//                            NavTextItem(
-//                                UiText.IdText(R.string.nav_tasks),
-//                                UiText.IdText(R.drawable.ic_tasks)
-//                            )
-//                        )
-                if (hasGroup) {
-                    mainTextItems.add(
-                        NavTextItem(
-                            UiText.ResourceText(R.string.nav_duty_roster),
-                            UiText.ResourceText(R.drawable.ic_clean),
-                            enabled = false
-                        )
-                    )
-                }
-                add(
-                    NavTextItem(
-                        UiText.ResourceText(R.string.nav_schedule),
-                        UiText.ResourceText(R.drawable.ic_time),
-                        enabled = false
-                    )
-                )
-            }
-            with(footerTextItems) {
-                if (isModerator) {
-                    add(
-                        NavTextItem(
-                            UiText.ResourceText(R.string.nav_control_panel),
-                            UiText.ResourceText(R.drawable.ic_control_panel)
-                        )
-                    )
-                }
-                addAll(
-                    listOf(
-                        NavTextItem(
-                            UiText.ResourceText(R.string.nav_settings),
-                            UiText.ResourceText(R.drawable.ic_settings)
-                        ), NavTextItem(
-                            UiText.ResourceText(R.string.nav_help),
-                            UiText.ResourceText(R.drawable.ic_help),
-                            enabled = false
-                        )
-                    )
-                )
-            }
-        }
-
-        val items: List<NavItem> = create()
-
-        private fun create(): List<NavItem> {
-            return buildList {
-                addAll(mainTextItems)
-                add(DividerItem())
-                if (courses.isNotEmpty()) {
-                    val nameOfDropdownCoursesNavItem: Int
-                    add(NavSubHeaderItem(UiText.ResourceText(R.string.nav_courses_my)))
-                    val visibleCourses = if (expandAllCourse) {
-                        nameOfDropdownCoursesNavItem = R.string.nav_courses_hide
-                        courses
-                    } else {
-                        nameOfDropdownCoursesNavItem = R.string.nav_courses_show_all
-                        courses.take(5)
-                    }
-                    addAll(visibleCourses.map {
-                        NavTextItem(
-                            UiText.StringText(it.name),
-                            id = it.id,
-                            iconType = NavTextItem.IconType.CIRCLE,
-                            color = UiText.StringText("dark_blue")
-                        )
-                    })
-                    if (courses.size > 5) add(
-                        NavDropdownItem(
-                            UiText.ResourceText(nameOfDropdownCoursesNavItem), expandAllCourse
-                        )
-                    )
-                    add(
-                        NavTextItem(
-                            UiText.ResourceText(R.string.nav_courses_archive),
-                            UiText.ResourceText(R.drawable.ic_archive),
-                            enabled = false
-                        )
-                    )
-                    add(DividerItem())
-                }
-                addAll(footerTextItems)
-
-            }
         }
     }
 

@@ -1,7 +1,5 @@
 package com.denchic45.kts.ui.courseeditor
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,10 +9,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -29,40 +28,58 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.resourceOf
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.chooser.SubjectChooserScreen
 import com.denchic45.kts.ui.theme.spacing
+import com.denchic45.kts.ui.uiTextOf
 import java.util.UUID
 
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun CourseEditorScreen(component: CourseEditorComponent, appBarInteractor: AppBarInteractor) {
     val resource by component.viewState.collectAsState()
     val navigation by component.childOverlay.subscribeAsState()
+    val saveEnabled by component.saveEnabled.collectAsState()
 
-    AnimatedContent(targetState = navigation.overlay?.instance) {
-        when (it) {
-            is CourseEditorComponent.DialogChild.SubjectChooser -> {
-                SubjectChooserScreen(component = it.component, appBarInteractor = appBarInteractor)
-            }
+    component.lifecycle.doOnStart {
+        appBarInteractor.set(
+            AppBarState(
+                title = uiTextOf(if (component.isNew) "Новый курс" else "Редактировать курс"),
+                actionsUI = {
+                    IconButton(enabled = saveEnabled, onClick = component::onSaveClick) {
+                        Icon(
+                            imageVector = Icons.Default.Done,
+                            contentDescription = "done"
+                        )
+                    }
+                })
+        )
+    }
 
-            null -> CourseEditorContent(
-                uiStateResource = resource,
-                onNameType = component::onCourseNameType,
-                onSubjectChoose = component::onSubjectChoose,
-                onSubjectClose = component::onSubjectClose
+    when (val child = navigation.overlay?.instance) {
+        is CourseEditorComponent.DialogChild.SubjectChooser -> {
+            SubjectChooserScreen(
+                component = child.component,
+                appBarInteractor = appBarInteractor
             )
         }
+
+        null -> CourseEditorContent(
+            uiStateResource = resource,
+            onNameType = component::onCourseNameType,
+            onSubjectChoose = component::onSubjectChoose,
+            onSubjectClose = component::onSubjectClose
+        )
     }
 }
 
@@ -71,7 +88,7 @@ fun CourseEditorContent(
     uiStateResource: Resource<CourseEditorComponent.EditingCourse>,
     onNameType: (String) -> Unit,
     onSubjectChoose: () -> Unit,
-    onSubjectClose: () -> Unit
+    onSubjectClose: () -> Unit,
 ) {
     Surface {
         uiStateResource.onSuccess { uiState ->
@@ -102,10 +119,12 @@ fun CourseEditorContent(
                     leadingContent = {
                         uiState.subject?.subjectIconUrl?.let {
                             Icon(
-                                painter = rememberAsyncImagePainter(ImageRequest.Builder(LocalContext.current)
-                                    .decoderFactory(SvgDecoder.Factory())
-                                    .data(it)
-                                    .build()),
+                                painter = rememberAsyncImagePainter(
+                                    ImageRequest.Builder(LocalContext.current)
+                                        .decoderFactory(SvgDecoder.Factory())
+                                        .data(it)
+                                        .build()
+                                ),
                                 contentDescription = "subject icon",
                                 modifier = Modifier.size(40.dp),
                                 tint = MaterialTheme.colorScheme.secondary

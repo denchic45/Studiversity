@@ -33,7 +33,7 @@ class YourStudyGroupsComponent(
     private val _studyGroupComponent: (
         onCourseOpen: (UUID) -> Unit,
         UUID,
-        ComponentContext
+        ComponentContext,
     ) -> StudyGroupComponent,
     private val studyGroupEditorComponent: (
         onFinish: () -> Unit,
@@ -60,7 +60,7 @@ class YourStudyGroupsComponent(
     val childStudyGroup = childOverlay(
         source = studyGroupNavigation,
         childFactory = { config, componentContext ->
-            _studyGroupComponent(onCourseOpen,config.studyGroupId, componentContext)
+            _studyGroupComponent(onCourseOpen, config.studyGroupId, componentContext)
         },
         key = "StudyGroup"
     )
@@ -85,7 +85,7 @@ class YourStudyGroupsComponent(
 //            })
 //    )
 
-    val studyGroups = flow { emit(findYourStudyGroupsUseCase()) }.stateInResource(componentScope)
+    val studyGroups = findYourStudyGroupsUseCase().stateInResource(componentScope)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val selectedStudyGroup = appPreferences.selectedStudyGroupIdFlow

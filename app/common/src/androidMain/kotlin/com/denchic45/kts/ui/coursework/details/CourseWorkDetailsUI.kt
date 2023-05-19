@@ -70,16 +70,15 @@ fun CourseWorkDetailsScreen(component: CourseWorkDetailsComponent) {
     CourseWorkDetailsContent(
         workResource = workResource,
         attachmentsResource = attachmentsResource,
-        onAttachmentClick = {
-            component.onAttachmentClick(it)
-        })
+        onAttachmentClick = component::onAttachmentClick
+    )
 }
 
 @Composable
 private fun CourseWorkDetailsContent(
     workResource: Resource<CourseWorkResponse>,
     attachmentsResource: Resource<List<AttachmentItem>>,
-    onAttachmentClick: (item: AttachmentItem) -> Unit
+    onAttachmentClick: (item: AttachmentItem) -> Unit,
 ) {
     workResource.onSuccess { work ->
         Column(
@@ -96,7 +95,7 @@ private fun CourseWorkDetailsContent(
                         Text(dueDate.let { date ->
                             val pattern = DateTimeFormatter.ofPattern("dd MMM")
                             date.format(pattern)
-                        } + work.dueTime?.let { time ->
+                        } + " " + work.dueTime?.let { time ->
                             val pattern = DateTimeFormatter.ofPattern("HH:mm")
                             time.format(pattern)
                         })

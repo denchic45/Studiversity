@@ -3,6 +3,7 @@ package com.denchic45.kts.ui.coursework.submissiondetails
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -78,7 +79,7 @@ fun SubmissionDetailsScreen(
             SubmissionHeaderContent(uiState)
             SubmissionDetailsContent(uiState, component::onAttachmentClick)
             Spacer(Modifier.height(MaterialTheme.spacing.normal))
-            Column(Modifier.padding(MaterialTheme.spacing.normal)) {
+            Row(Modifier.padding(MaterialTheme.spacing.normal)) {
                 uiState.grade?.let {
                     Text(
                         text = it.value.toString(),
@@ -99,7 +100,7 @@ fun SubmissionDetailsScreen(
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
                     )
-                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
                     FilledTonalButton(
                         onClick = { component.onGrade(typedGrade.toInt()) },
                         enabled = typedGrade.isNotEmpty()

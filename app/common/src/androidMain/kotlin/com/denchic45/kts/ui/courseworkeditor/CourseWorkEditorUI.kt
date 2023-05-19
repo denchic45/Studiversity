@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.Attachment
@@ -31,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -61,6 +61,7 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.ActionMenuItem
 import com.denchic45.kts.ui.DropdownMenuItem
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.asString
 import com.denchic45.kts.ui.attachment.AttachmentListItem
 import com.denchic45.kts.ui.component.HeaderItemUI
@@ -85,6 +86,7 @@ fun CourseWorkEditorScreen(
     component: CourseWorkEditorComponent,
     appBarInteractor: AppBarInteractor,
 ) {
+
     val context = LocalContext.current
     val attachmentViewer by lazy {
         AttachmentViewer(context.findActivity()) {
@@ -108,9 +110,8 @@ fun CourseWorkEditorScreen(
     val allowSave by component.allowSave.collectAsState()
 
     component.lifecycle.doOnStart {
-        appBarInteractor.update {
-            it.copy(
-                title = component.title,
+        appBarInteractor.set(
+            AppBarState(
                 actions = listOf(
                     ActionMenuItem(
                         id = "save",
@@ -120,7 +121,7 @@ fun CourseWorkEditorScreen(
                     )
                 )
             )
-        }
+        )
     }
 
     CourseWorkEditorContent(

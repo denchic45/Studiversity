@@ -29,20 +29,25 @@ fun UserChooserScreen(component: UserSearchComponent, appBarInteractor: AppBarIn
 fun UserListItem(
     item: UserItem,
     modifier: Modifier = Modifier,
-    trailingContent: (@Composable () -> Unit)? = null
+    trailingContent: (@Composable () -> Unit)? = null,
 ) {
     ListItem(
         headlineContent = { Text(item.title) },
         leadingContent = {
-            AsyncImage(
-                model = item.avatarUrl,
-                contentDescription = "user avatar",
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape),
-            )
+            UserAvatarImage(item.avatarUrl)
         },
         modifier = modifier.padding(vertical = MaterialTheme.spacing.small),
         trailingContent = trailingContent
+    )
+}
+
+@Composable
+fun UserAvatarImage(url: String) {
+    AsyncImage(
+        model = url,
+        contentDescription = "user avatar",
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape),
     )
 }

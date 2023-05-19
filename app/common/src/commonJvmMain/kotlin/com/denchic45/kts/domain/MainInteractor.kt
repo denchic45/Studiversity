@@ -40,7 +40,7 @@ class MainInteractor @Inject constructor(
 
     }
 
-    fun observeHasGroup(): Flow<Boolean> = studyGroupRepository.findYourStudyGroups()
+    fun observeHasGroup(): Flow<Boolean> = studyGroupRepository.findByMe()
         .filterSuccess()
         .map { it.value.isNotEmpty() }
 
