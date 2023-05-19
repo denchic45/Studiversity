@@ -25,16 +25,12 @@ class SubjectRepository {
         SubjectDao.findById(id)?.toResponse()
     }
 
-    fun findAll() = transaction {
-        SubjectDao.all().toResponses()
-    }
-
     fun find(q: String?): List<SubjectResponse> {
         val query = Subjects.selectAll()
         q?.let {
             query.andWhere {
-                Subjects.name.lowerCase().trim() like "%$query%" or
-                        (Subjects.shortname.lowerCase().trim() like "%$query%")
+                Subjects.name.lowerCase().trim() like "%$q%" or
+                        (Subjects.shortname.lowerCase().trim() like "%$q%")
             }
         }
         return SubjectDao.wrapRows(query).map(SubjectDao::toResponse)
