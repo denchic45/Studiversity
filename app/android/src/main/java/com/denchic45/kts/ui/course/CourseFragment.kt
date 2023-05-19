@@ -8,12 +8,10 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.defaultComponentContext
-import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.databinding.FragmentCourseBinding
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.base.HasNavArgs
@@ -27,15 +25,7 @@ import java.util.*
 class CourseFragment(
     private val appBarInteractor: AppBarInteractor,
     private val fabInteractor: FabInteractor,
-    component: (
-        courseId: UUID,
-        onCourseEditorOpen: (courseId: UUID) -> Unit,
-        onElementOpen: (courseId: UUID, elementId: UUID) -> Unit,
-        onCourseElementEditorOpen: (courseId: UUID, elementId: UUID?) -> Unit,
-        onCourseTopicsOpen: (courseId: UUID) -> Unit,
-        onMemberOpen: (memberId: UUID) -> Unit,
-        ComponentContext,
-    ) -> CourseComponent,
+    component: (courseId: UUID, ComponentContext) -> CourseComponent,
 ) : Fragment(), HasNavArgs<CourseFragmentArgs> {
 
     override val navArgs: CourseFragmentArgs by navArgs()
@@ -43,40 +33,6 @@ class CourseFragment(
     val component: CourseComponent by lazy {
         component(
             navArgs.courseId.toUUID(),
-            { courseId ->
-                findNavController().navigate(
-                    MobileNavigationDirections.actionGlobalCourseEditorFragment(
-                        courseId.toString()
-                    )
-                )
-            },
-            { courseId, elementId ->
-                findNavController().navigate(
-                    CourseFragmentDirections.actionCourseFragmentToCourseWorkFragment(
-                        courseId.toString(),
-                        elementId.toString()
-                    )
-                )
-            },
-            { courseId, elementId ->
-                findNavController().navigate(
-                    CourseFragmentDirections.actionCourseFragmentToCourseWorkEditorFragment(
-                        courseId.toString(),
-                        elementId?.toString(),
-                        null
-                    )
-                )
-            },
-            {
-                findNavController().navigate(
-                    CourseFragmentDirections.actionCourseFragmentToCourseTopicsFragment(it.toString())
-                )
-            },
-            { userId ->
-                findNavController().navigate(
-                    MobileNavigationDirections.actionGlobalUserEditorFragment(userId.toString())
-                )
-            },
             defaultComponentContext(requireActivity().onBackPressedDispatcher)
         )
     }
