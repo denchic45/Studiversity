@@ -1,7 +1,9 @@
 package com.denchic45.kts.ui
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Notifications
@@ -10,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
@@ -30,16 +34,33 @@ import com.denchic45.kts.ui.usereditor.UserEditorDialog
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun MainContent(mainComponent: MainComponent) {
     Surface(tonalElevation = 1.dp) {
         val childStack by mainComponent.stack.subscribeAsState()
         val activeComponent = childStack.active.instance
-
         Row {
-            NavigationRail {
-                Spacer(Modifier.weight(1f))
+            NavigationRail(
+                header = {
+                    Spacer(Modifier.height(56.dp))
+                    IconButton(onClick = {}) {
+                        Image(
+                            painter = rememberVectorPainter(Icons.Outlined.AccountCircle),
+                            contentDescription = "Avatar",
+                            modifier = Modifier.size(40.dp)
+                                .clip(CircleShape)
+                                .background(Color.LightGray),
+                        )
+                    }
+                    IconButton(onClick = {}) {
+                        Icon(
+                            imageVector = Icons.Outlined.Notifications,
+                            tint = Color.DarkGray,
+                            contentDescription = "Notifications"
+                        )
+                    }
+                }) {
+                Spacer(Modifier.height(56.dp))
                 NavigationRailItem(icon = {
                     Icon(painterResource("ic_timetable".toDrawablePath()), null)
                 },
@@ -49,14 +70,14 @@ fun MainContent(mainComponent: MainComponent) {
                     icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
                     selected = activeComponent is RootChild.YourStudyGroups,
                     onClick = { mainComponent.onGroupClick() })
-                Spacer(Modifier.weight(1f))
+//                Spacer(Modifier.weight(1f))
             }
 
             Column {
                 val appBarMediator = LocalAppBarMediator.current
                 TopAppBar(
                     title = {
-                        Row() {
+                        Row {
                             Text(
                                 text = appBarMediator.title,
                                 fontSize = TextUnit(32F, TextUnitType.Sp),
@@ -64,30 +85,32 @@ fun MainContent(mainComponent: MainComponent) {
                             )
                             appBarMediator.content?.let {
                                 it(this)
-
                             }
                         }
                     },
-                    modifier = Modifier.height(96.dp).padding(top = 36.dp, bottom = 8.dp, end = 24.dp),
+                    modifier = Modifier.height(96.dp)
+                        .padding(top = 36.dp, bottom = 8.dp, end = 24.dp),
                     actions = {
                         Spacer(Modifier.width(4.dp))
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Outlined.Notifications,
-                                tint = Color.DarkGray,
-                                contentDescription = "Notifications"
-                            )
-                        }
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Outlined.AccountCircle,
-                                tint = Color.DarkGray,
-                                contentDescription = "Avatar"
-                            )
-                        }
+//                        IconButton(onClick = {}) {
+//                            Icon(
+//                                imageVector = Icons.Outlined.Notifications,
+//                                tint = Color.DarkGray,
+//                                contentDescription = "Notifications"
+//                            )
+//                        }
+//                        IconButton(onClick = {}) {
+//                            Icon(
+//                                imageVector = Icons.Outlined.AccountCircle,
+//                                tint = Color.DarkGray,
+//                                contentDescription = "Avatar"
+//                            )
+//                        }
                     })
-
-                Surface(tonalElevation = (-1).dp,color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)) {
+                Surface(
+                    tonalElevation = (-1).dp,
+                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
+                ) {
                     when (val child = childStack.active.instance) {
                         is RootChild.YourTimetables -> YourTimetablesRootScreen(child.component)
                         is RootChild.YourStudyGroups -> {
