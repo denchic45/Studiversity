@@ -12,7 +12,6 @@ import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindCourseByIdUseCase
@@ -38,7 +37,7 @@ import java.util.UUID
 @Inject
 class CourseComponent(
     findCourseByIdUseCase: FindCourseByIdUseCase,
-    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
+    checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     _courseTopicsComponent: (
         courseId: UUID,
         ComponentContext
@@ -49,13 +48,17 @@ class CourseComponent(
         ComponentContext
     ) -> CourseEditorComponent,
     _courseWorkComponent: (
+        onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
+        onFinish: () -> Unit,
         courseId: UUID,
-        workId: UUID,
-        ComponentContext
+        elementId: UUID,
+        ComponentContext,
     ) -> CourseWorkComponent,
     _courseWorkEditorComponent: (
+        onFinish: () -> Unit,
         courseId: UUID,
         workId: UUID?,
+        topicId: UUID?,
         ComponentContext
     ) -> CourseWorkEditorComponent,
     _courseElementsComponent: (
@@ -103,7 +106,7 @@ class CourseComponent(
 
     private val courseElementsComponent = _courseElementsComponent(
         courseId,
-        { courseId, workId ->
+        { _, workId ->
             stackNavigation.push(
                 Config.CourseWork(workId)
             )
@@ -134,12 +137,7 @@ class CourseComponent(
             TabChild.Timetable(courseTimetableComponent)
         )
 
-    val children = capabilities.mapResource {
-        defaultTabChildren
-    }.stateInResource(
-        scope = componentScope,
-        initialValue = Resource.Success(defaultTabChildren)
-    )
+    val children = defaultTabChildren
 
     private val sidebarNavigation = OverlayNavigation<SidebarConfig>()
     val childSidebar = childOverlay(
@@ -155,7 +153,7 @@ class CourseComponent(
     )
 
     private val stackNavigation = StackNavigation<Config>()
-    val childOverlay = childStack(
+    val childStack = childStack(
         source = stackNavigation,
         handleBackButton = true,
         initialConfiguration = Config.None,
@@ -170,11 +168,20 @@ class CourseComponent(
                 )
 
                 is Config.CourseWorkEditor -> Child.CourseWorkEditor(
-                    _courseWorkEditorComponent(courseId, config.workId, context)
+                    _courseWorkEditorComponent(
+                        stackNavigation::pop,
+                        courseId,
+                        config.workId,
+                        null,
+                        context
+                    )
                 )
 
                 is Config.CourseWork -> Child.CourseWork(
-                    _courseWorkComponent(courseId, config.workId, context)
+                    _courseWorkComponent(
+                        { _, workId -> stackNavigation.push(Config.CourseWorkEditor(workId)) },
+                        stackNavigation::pop, courseId, config.workId, context
+                    )
                 )
 
                 Config.None -> Child.None
@@ -190,7 +197,7 @@ class CourseComponent(
         stackNavigation.push(Config.CourseEditor)
     }
 
-    fun onTopicEditClick() {
+    fun onOpenTopicsClick() {
         stackNavigation.push(Config.Topics)
     }
 

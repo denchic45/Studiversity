@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.arkivanov.essenty.lifecycle.doOnStop
@@ -48,6 +49,8 @@ import com.denchic45.kts.ui.courseelements.CourseElementsScreen
 import com.denchic45.kts.ui.coursemembers.CourseMembersScreen
 import com.denchic45.kts.ui.coursetimetable.CourseTimetableScreen
 import com.denchic45.kts.ui.coursetopics.CourseTopicsScreen
+import com.denchic45.kts.ui.coursework.CourseWorkScreen
+import com.denchic45.kts.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.kts.ui.fab.FabInteractor
 import com.denchic45.kts.ui.fab.FabState
 import com.denchic45.stuiversity.api.course.model.CourseResponse
@@ -78,27 +81,39 @@ fun CourseScreen(
 
     val course by component.course.collectAsState()
     val allowEdit by component.allowEdit.collectAsState(false)
-    val children by component.children.collectAsState()
+    val children = component.children
 
-    val childOverlay by component.childOverlay.subscribeAsState()
-    when (val child = childOverlay.overlay?.instance) {
-        is CourseComponent.Child.Topics -> CourseTopicsScreen(
-            component = child.component,
-            appBarInteractor = appBarInteractor
-        )
+    val childStack by component.childStack.subscribeAsState()
+    Children(stack = component.childStack) {
+        when (val child = childStack.active.instance) {
+            is CourseComponent.Child.Topics -> CourseTopicsScreen(
+                component = child.component,
+                appBarInteractor = appBarInteractor
+            )
 
-        is CourseComponent.Child.CourseEditor -> CourseEditorScreen(
-            component = child.component,
-            appBarInteractor = appBarInteractor
-        )
+            is CourseComponent.Child.CourseEditor -> CourseEditorScreen(
+                component = child.component,
+                appBarInteractor = appBarInteractor
+            )
 
-        null -> CourseContent(
-            course = course,
-            allowEdit = allowEdit,
-            childrenResource = children,
-            onCourseEditClick = component::onCourseEditClick,
-            onTopicsEditClick = component::onTopicEditClick
-        )
+            is CourseComponent.Child.CourseWork -> CourseWorkScreen(
+                component = child.component,
+                appBarInteractor = appBarInteractor
+            )
+
+            is CourseComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(
+                component = child.component,
+                appBarInteractor = appBarInteractor
+            )
+
+            CourseComponent.Child.None -> CourseContent(
+                course = course,
+                allowEdit = allowEdit,
+                children = children,
+                onCourseEditClick = component::onCourseEditClick,
+                onTopicsEditClick = component::onOpenTopicsClick
+            )
+        }
     }
 }
 
@@ -107,7 +122,7 @@ fun CourseScreen(
 fun CourseContent(
     course: Resource<CourseResponse>,
     allowEdit: Boolean,
-    childrenResource: Resource<List<CourseComponent.TabChild>>,
+    children: List<CourseComponent.TabChild>,
     onCourseEditClick: () -> Unit,
     onTopicsEditClick: () -> Unit
 ) {
@@ -128,7 +143,7 @@ fun CourseContent(
                     if (allowEdit) {
                         var menuExpanded by remember { mutableStateOf(false) }
                         IconButton(onClick = { menuExpanded = !menuExpanded }) {
-                            Icon(Icons.Filled.MoreVert, "Меню")
+                            Icon(Icons.Filled.MoreVert, "Menu")
                         }
                         DropdownMenu(
                             expanded = menuExpanded,
@@ -160,48 +175,45 @@ fun CourseContent(
             )
         }
     ) { paddingValues ->
-        childrenResource.onSuccess { children ->
-            Column(Modifier.padding(paddingValues)) {
-                val coroutineScope = rememberCoroutineScope()
-                val pagerState = rememberPagerState()
+        Column(Modifier.padding(paddingValues)) {
+            val coroutineScope = rememberCoroutineScope()
+            val pagerState = rememberPagerState()
 
-
-                TabRow(selectedTabIndex = pagerState.currentPage,
-                    indicator = { positions ->
-                        TabRowDefaults.Indicator(
-                            Modifier.tabIndicatorOffset(positions[pagerState.currentPage])
-                        )
-                    }) {
-                    children.forEachIndexed { index, child ->
-                        Tab(
-                            text = { Text(child.title) },
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                        )
-                    }
+            TabRow(selectedTabIndex = pagerState.currentPage,
+                indicator = { positions ->
+                    TabRowDefaults.Indicator(
+                        Modifier.tabIndicatorOffset(positions[pagerState.currentPage])
+                    )
+                }) {
+                children.forEachIndexed { index, child ->
+                    Tab(
+                        text = { Text(child.title) },
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        },
+                    )
                 }
-                HorizontalPager(
-                    state = pagerState,
-                    pageCount = children.size,
-                ) {
-                    Box(modifier = Modifier.fillMaxHeight()) {
-                        when (val child = children[it]) {
-                            is CourseComponent.TabChild.Elements -> CourseElementsScreen(
-                                component = child.component
-                            )
+            }
+            HorizontalPager(
+                state = pagerState,
+                pageCount = children.size,
+            ) {
+                Box(modifier = Modifier.fillMaxHeight()) {
+                    when (val child = children[it]) {
+                        is CourseComponent.TabChild.Elements -> CourseElementsScreen(
+                            component = child.component
+                        )
 
-                            is CourseComponent.TabChild.Members -> CourseMembersScreen(
-                                component = child.component
-                            )
+                        is CourseComponent.TabChild.Members -> CourseMembersScreen(
+                            component = child.component
+                        )
 
-                            is CourseComponent.TabChild.Timetable -> CourseTimetableScreen(
-                                component = child.component
-                            )
-                        }
+                        is CourseComponent.TabChild.Timetable -> CourseTimetableScreen(
+                            component = child.component
+                        )
                     }
                 }
             }
