@@ -2,7 +2,6 @@ package com.denchic45.kts.ui.root
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.decompose.router.stack.ChildStack
@@ -33,11 +32,6 @@ class YourStudyGroupsRootComponent(
     ) -> YourStudyGroupsComponent,
     courseComponent: (
         UUID,
-        onCourseEditorOpen: (courseId: UUID) -> Unit,
-        onWorkOpen: (courseId: UUID, elementId: UUID) -> Unit,
-        onWorkEditorOpen: (courseId: UUID, elementId: UUID?) -> Unit,
-        onCourseTopicsOpen: (courseId: UUID) -> Unit,
-        onMemberOpen: (memberId: UUID) -> Unit,
         ComponentContext,
     ) -> CourseComponent,
     courseEditorComponent: (
@@ -86,20 +80,6 @@ class YourStudyGroupsRootComponent(
                     Child.Course(
                         courseComponent(
                             config.courseId,
-                            { navigation.push(Config.CourseEditor(it)) },
-                            { courseId, workId ->
-                                navigation.push(Config.CourseWork(courseId, workId))
-                            },
-                            { courseId, workId ->
-                                navigation.push(
-                                    Config.CourseWorkEditor(
-                                        courseId,
-                                        workId
-                                    )
-                                )
-                            },
-                            { navigation.push(Config.CourseTopics(it)) },
-                            { sidebarNavigation.activate(SidebarConfig.Profile(it)) },
                             context
                         )
                     )
