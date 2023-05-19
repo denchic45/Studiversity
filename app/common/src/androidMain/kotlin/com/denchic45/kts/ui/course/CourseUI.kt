@@ -157,6 +157,8 @@ fun CourseContent(
             Column(Modifier.padding(paddingValues)) {
                 val coroutineScope = rememberCoroutineScope()
                 val pagerState = rememberPagerState()
+
+
                 TabRow(selectedTabIndex = pagerState.currentPage,
                     indicator = { positions ->
                         TabRowDefaults.Indicator(

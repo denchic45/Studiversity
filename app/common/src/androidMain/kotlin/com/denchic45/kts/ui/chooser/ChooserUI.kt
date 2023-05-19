@@ -16,7 +16,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,8 +33,8 @@ import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.theme.spacing
 
 @Composable
-fun <T> ChooserScreen(
-    component: ChooserComponent<T>,
+fun <T> SearchScreen(
+    component: SearchComponent<T>,
     appBarInteractor: AppBarInteractor,
     keyItem: (T) -> Any,
     itemContent: @Composable (T) -> Unit,
@@ -43,20 +42,16 @@ fun <T> ChooserScreen(
     component.lifecycle.doOnStart {
         appBarInteractor.set(AppBarState(visible = false))
     }
-
-    val itemsResource by component.items.collectAsState()
-    ChooserContent(component, itemsResource, keyItem, itemContent)
+    SearchContent(component, keyItem, itemContent)
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun <T> ChooserContent(
-    component: ChooserComponent<T>,
-    itemsResource: Resource<List<T>>,
+private fun <T> SearchContent(
+    component: SearchComponent<T>,
     keyItem: (T) -> Any,
     itemContent: @Composable (T) -> Unit,
 ) {
-    Surface(modifier = Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxWidth()) {
             var query by remember { mutableStateOf(component.query.value) }
             SearchBar(
@@ -78,22 +73,31 @@ private fun <T> ChooserContent(
                     )
                 }
             ) {}
-            itemsResource.onSuccess {
-                LazyColumn(contentPadding = PaddingValues(vertical = MaterialTheme.spacing.medium)) {
-                    items(it, key = keyItem) {
-                        Box(modifier = Modifier.clickable { component.onItemClick(it) }) {
-                            itemContent(it)
-                        }
-                    }
-                }
-            }.onLoading {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+            SearchedItemsContent(keyItem, component, itemContent)
+    }
+}
+
+@Composable
+fun <T> SearchedItemsContent(
+    keyItem: (T) -> Any,
+    component: SearchComponent<T>,
+    itemContent: @Composable (T) -> Unit
+) {
+    val itemsResource: Resource<List<T>> by component.items.collectAsState()
+    itemsResource.onSuccess {
+        LazyColumn(contentPadding = PaddingValues(vertical = MaterialTheme.spacing.medium)) {
+            items(it, key = keyItem) {
+                Box(modifier = Modifier.clickable { component.onItemClick(it) }) {
+                    itemContent(it)
                 }
             }
+        }
+    }.onLoading {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
     }
 }

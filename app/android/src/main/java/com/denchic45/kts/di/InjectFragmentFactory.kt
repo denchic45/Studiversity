@@ -2,6 +2,7 @@ package com.denchic45.kts.di
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
+import com.denchic45.kts.ui.adminPanel.finder.FinderFragment
 import com.denchic45.kts.ui.course.CourseFragment
 import com.denchic45.kts.ui.course.workEditor.CourseWorkEditorFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
@@ -30,7 +31,8 @@ class InjectFragmentFactory(
     private val courseEditorFragment: () -> CourseEditorFragment,
     private val courseWorkEditorFragment: () -> CourseWorkEditorFragment,
     private val timetableFinderFragment: () -> TimetableFinderFragment,
-    private val timetableLoaderFragment:()-> TimetableLoaderFragment
+    private val timetableLoaderFragment:()-> TimetableLoaderFragment,
+    private val finderFragment: ()->FinderFragment
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
@@ -46,6 +48,7 @@ class InjectFragmentFactory(
             name<CourseWorkEditorFragment>() -> courseWorkEditorFragment()
             name<TimetableFinderFragment>() -> timetableFinderFragment()
             name<TimetableLoaderFragment>() -> timetableLoaderFragment()
+            name<FinderFragment>() -> finderFragment()
             else -> super.instantiate(classLoader, className)
         }
     }

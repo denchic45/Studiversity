@@ -16,10 +16,11 @@ import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.theme.spacing
 
 @Composable
-fun UserChooserScreen(component: UserChooserComponent, appBarInteractor: AppBarInteractor) {
-    ChooserScreen(component = component,
+fun UserChooserScreen(component: UserSearchComponent, appBarInteractor: AppBarInteractor) {
+    SearchScreen(
+        component = component,
         appBarInteractor = appBarInteractor,
-        keyItem = { it.id },
+        keyItem = UserItem::id,
         itemContent = { UserListItem(it) }
     )
 }
@@ -28,6 +29,7 @@ fun UserChooserScreen(component: UserChooserComponent, appBarInteractor: AppBarI
 fun UserListItem(
     item: UserItem,
     modifier: Modifier = Modifier,
+    trailingContent: (@Composable () -> Unit)? = null
 ) {
     ListItem(
         headlineContent = { Text(item.title) },
@@ -40,6 +42,7 @@ fun UserListItem(
                     .clip(CircleShape),
             )
         },
-        modifier = modifier.padding(vertical = MaterialTheme.spacing.small)
+        modifier = modifier.padding(vertical = MaterialTheme.spacing.small),
+        trailingContent = trailingContent
     )
 }

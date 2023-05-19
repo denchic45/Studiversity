@@ -27,7 +27,7 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.ActionMenuItem
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
-import com.denchic45.kts.ui.chooser.StudyGroupItemUI
+import com.denchic45.kts.ui.chooser.StudyGroupListItem
 import com.denchic45.kts.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.kts.ui.timetable.DayTimetableContent
 import com.denchic45.kts.ui.timetable.getMonthTitle
@@ -39,7 +39,7 @@ import java.time.LocalDate
 
 @Composable
 fun TimetableFinderScreen(
-    component: DayTimetableFinderComponent,
+    component: TimetableFinderComponent,
     appBarInteractor: AppBarInteractor,
 ) {
     val selectedDate by component.selectedDate.collectAsState()
@@ -112,7 +112,7 @@ fun TimetableFinderScreen(
 //    }
 
     when (val child = overlay.overlay?.instance) {
-        is DayTimetableFinderComponent.OverlayChild.PeriodEditor -> PeriodEditorScreen(
+        is TimetableFinderComponent.OverlayChild.PeriodEditor -> PeriodEditorScreen(
             component = child.component,
             appBarInteractor = appBarInteractor
         )
@@ -203,7 +203,7 @@ fun TimetableFinderContent(
             state.foundGroups.onSuccess { groups ->
                 LazyColumn {
                     items(items = groups, key = { it.id }) {
-                        StudyGroupItemUI(
+                        StudyGroupListItem(
                             response = it,
                             modifier = Modifier.clickable {
                                 active = false

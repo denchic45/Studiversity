@@ -32,10 +32,6 @@ kotlin {
                 implementation(project(mapOf("path" to ":common")))
 
                 implementation(compose.desktop.currentOs)
-                // Dagger
-                val daggerVersion = "2.44"
-                implementation("com.google.dagger:dagger:$daggerVersion")
-                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
 
                 // Kamel
                 implementation("com.alialbaali.kamel:kamel-image:0.4.0")

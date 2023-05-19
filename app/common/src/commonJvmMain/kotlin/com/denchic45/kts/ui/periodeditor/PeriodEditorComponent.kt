@@ -16,8 +16,8 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindRoomByContainsNameUseCase
-import com.denchic45.kts.ui.chooser.CourseChooserComponent
-import com.denchic45.kts.ui.chooser.UserChooserComponent
+import com.denchic45.kts.ui.chooser.CourseSearchComponent
+import com.denchic45.kts.ui.chooser.UserSearchComponent
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.model.toPeriodMember
 import com.denchic45.kts.util.componentScope
@@ -38,7 +38,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -49,8 +48,8 @@ import kotlin.random.Random
 @Inject
 class PeriodEditorComponent(
     private val findRoomByContainsNameUseCase: FindRoomByContainsNameUseCase,
-    private val courseChooserComponent: (onFinish: (CourseResponse?) -> Unit, ComponentContext) -> CourseChooserComponent,
-    private val userChooserComponent: (onFinish: (UserItem?) -> Unit, ComponentContext) -> UserChooserComponent,
+    private val courseChooserComponent: (onFinish: (CourseResponse) -> Unit, ComponentContext) -> CourseSearchComponent,
+    private val userChooserComponent: (onFinish: (UserItem) -> Unit, ComponentContext) -> UserSearchComponent,
     private val eventDetailsEditorComponent: (EditingPeriod, ComponentContext) -> EventDetailsEditorComponent,
     private val lessonDetailsEditorComponent: (EditingPeriod, OverlayNavigation<OverlayConfig>, ComponentContext) -> LessonDetailsEditorComponent,
     @Assisted
@@ -129,7 +128,7 @@ class PeriodEditorComponent(
                 is OverlayConfig.UserChooser -> OverlayChild.UserChooser(
                     userChooserComponent({
                         overlayNavigation.dismiss()
-                        config.onFinish(it)
+                        config.onSelect(it)
                     }, componentContext)
                 )
             }
@@ -253,15 +252,15 @@ class PeriodEditorComponent(
 
     @Parcelize
     sealed class OverlayConfig : Parcelable {
-        data class CourseChooser(val onFinish: (CourseResponse?) -> Unit) : OverlayConfig()
+        data class CourseChooser(val onFinish: (CourseResponse) -> Unit) : OverlayConfig()
 
-        data class UserChooser(val onFinish: (UserItem?) -> Unit) : OverlayConfig()
+        data class UserChooser(val onSelect: (UserItem) -> Unit) : OverlayConfig()
     }
 
     sealed class OverlayChild {
-        class CourseChooser(val component: CourseChooserComponent) : OverlayChild()
+        class CourseChooser(val component: CourseSearchComponent) : OverlayChild()
 
-        class UserChooser(val component: UserChooserComponent) : OverlayChild()
+        class UserChooser(val component: UserSearchComponent) : OverlayChild()
     }
 
     @Parcelize

@@ -15,7 +15,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class TimetableFinderFragment(
-    component: (ComponentContext) -> DayTimetableFinderComponent,
+    component: (ComponentContext) -> TimetableFinderComponent,
     private val appBarInteractor: AppBarInteractor
 ) : Fragment() {
 

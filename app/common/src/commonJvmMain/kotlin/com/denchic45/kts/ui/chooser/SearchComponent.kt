@@ -1,7 +1,6 @@
 package com.denchic45.kts.ui.chooser
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.essenty.backhandler.BackCallback
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,10 +12,10 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
-abstract class ChooserComponent<T>(componentContext: ComponentContext) :
+abstract class SearchComponent<T>(componentContext: ComponentContext) :
     ComponentContext by componentContext {
 
-    abstract val onFinish: (T?) -> Unit
+    abstract val onSelect: (T) -> Unit
 
     var query = MutableStateFlow("")
 
@@ -30,17 +29,17 @@ abstract class ChooserComponent<T>(componentContext: ComponentContext) :
 
     protected abstract fun search(query: String): Flow<Resource<List<T>>>
 
-    private val backCallback = BackCallback { onFinish(null) }
+//    private val backCallback = BackCallback { onSelect(null) }
 
     init {
-        backHandler.register(backCallback)
+//        backHandler.register(backCallback)
     }
 
     fun onItemClick(item: T) {
-        onFinish(item)
+        onSelect(item)
     }
 
-    fun onQueryChange(typedName: String) {
-        query.value = typedName
+    fun onQueryChange(text: String) {
+        query.value = text
     }
 }

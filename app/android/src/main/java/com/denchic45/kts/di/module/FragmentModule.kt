@@ -16,7 +16,6 @@ import com.denchic45.kts.ui.login.groupChooser.GroupChooserFragment
 import com.denchic45.kts.ui.login.resetPassword.ResetPasswordFragment
 import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.settings.SettingsFragment
-import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment
@@ -71,8 +70,8 @@ interface FragmentModule {
     @ContributesAndroidInjector(modules = [IntentModule::class, RawModule::class])
     fun contributeGroupEditorFragment(): StudyGroupEditorFragment
 
-    @ContributesAndroidInjector(modules = [IntentModule::class])
-    fun contributeSpecialtyEditorDialog(): SpecialtyEditorDialog
+//    @ContributesAndroidInjector(modules = [IntentModule::class])
+//    fun contributeSpecialtyEditorDialog(): SpecialtyEditorDialog
 
     @ContributesAndroidInjector(modules = [IntentModule::class, RawModule::class])
     fun contributeFinderFragment(): FinderFragment

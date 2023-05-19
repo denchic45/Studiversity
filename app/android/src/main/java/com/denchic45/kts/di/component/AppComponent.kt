@@ -1,6 +1,7 @@
 package com.denchic45.kts.di.component
 
 import com.denchic45.kts.AndroidApp
+import com.denchic45.kts.di.module.PreferencesModule
 import com.denchic45.kts.di.module.NetworkModule
 import com.denchic45.kts.di.module.*
 import dagger.Component

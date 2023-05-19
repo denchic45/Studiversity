@@ -23,7 +23,6 @@ import com.denchic45.kts.ui.adapter.OnItemClickListener
 import com.denchic45.kts.ui.base.HasViewModel
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
 import com.denchic45.kts.ui.onVector
-import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
 import com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog
 import com.denchic45.kts.util.collectWhenResumed
 import com.denchic45.kts.util.viewBinding
@@ -78,9 +77,10 @@ class CreatorDialog : BottomSheetDialogFragment(), HasViewModel<CreatorViewModel
             )
         }
         viewModel.openSpecialtyEditor.observe(viewLifecycleOwner) {
-            SpecialtyEditorDialog.newInstance(null).show(
-                parentFragmentManager, null
-            )
+            TODO()
+//            SpecialtyEditorDialog.newInstance(null).show(
+//                parentFragmentManager, null
+//            )
         }
         viewModel.openCourseEditor.observe(viewLifecycleOwner) {
             findNavController().navigate(

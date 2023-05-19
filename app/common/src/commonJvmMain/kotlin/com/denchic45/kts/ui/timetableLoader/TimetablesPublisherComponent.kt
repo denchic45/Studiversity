@@ -13,7 +13,7 @@ import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.usecase.PutTimetableUseCase
-import com.denchic45.kts.ui.chooser.StudyGroupChooserComponent
+import com.denchic45.kts.ui.chooser.StudyGroupSearchComponent
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.periodeditor.EditingPeriod
@@ -26,7 +26,6 @@ import com.denchic45.kts.ui.timetable.state.toLocalDateOfWeekOfYear
 import com.denchic45.kts.ui.timetable.state.toTimetableState
 import com.denchic45.kts.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.kts.ui.uiTextOf
-import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.model.EventDetails
 import com.denchic45.stuiversity.api.timetable.model.LessonDetails
@@ -53,9 +52,9 @@ class TimetablesPublisherComponent(
     metaRepository: MetaRepository,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val studyGroupChooserComponent: (
-        onFinish: (StudyGroupResponse?) -> Unit,
-        ComponentContext,
-    ) -> StudyGroupChooserComponent,
+            (StudyGroupResponse) -> Unit,
+            ComponentContext,
+    ) -> StudyGroupSearchComponent,
     private val periodEditorComponent: (
         EditingPeriod,
         (PeriodResponse?) -> Unit,
@@ -91,7 +90,7 @@ class TimetablesPublisherComponent(
                     studyGroupChooserComponent(
                         {
                             overlayNavigation.dismiss()
-                            it?.let(::onAddStudyGroup)
+                            it.let(::onAddStudyGroup)
                         },
                         componentContext
                     )
@@ -122,7 +121,7 @@ class TimetablesPublisherComponent(
     }
 
     sealed class OverlayChild {
-        class GroupChooser(val component: StudyGroupChooserComponent) : OverlayChild()
+        class GroupChooser(val component: StudyGroupSearchComponent) : OverlayChild()
 
         class PeriodEditor(val component: PeriodEditorComponent) : OverlayChild()
     }

@@ -12,20 +12,20 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 
 @Composable
 fun StudyGroupChooserScreen(
-    component: StudyGroupChooserComponent,
+    component: StudyGroupSearchComponent,
     appBarInteractor: AppBarInteractor
 ) {
-    ChooserScreen(
+    SearchScreen(
         component = component,
         appBarInteractor = appBarInteractor,
         keyItem = { it.id },
         itemContent = {
-            StudyGroupItemUI(it)
+            StudyGroupListItem(it)
         })
 }
 
 @Composable
-fun StudyGroupItemUI(response: StudyGroupResponse, modifier: Modifier = Modifier) {
+fun StudyGroupListItem(response: StudyGroupResponse, modifier: Modifier = Modifier) {
     ListItem(
         headlineContent = { Text(response.name) },
         leadingContent = {

@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 
 @Composable
-fun CourseChooserScreen(component: CourseChooserComponent, appBarInteractor: AppBarInteractor) {
-    ChooserScreen(
+fun CourseChooserScreen(component: CourseSearchComponent, appBarInteractor: AppBarInteractor) {
+    SearchScreen(
         component = component,
         appBarInteractor = appBarInteractor,
         keyItem = { it.id }, itemContent = {

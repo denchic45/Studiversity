@@ -58,7 +58,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Inject
-class DayTimetableFinderComponent(
+class TimetableFinderComponent(
     metaRepository: MetaRepository,
     private val putTimetableUseCase: PutTimetableUseCase,
     private val findStudyGroupByContainsNameUseCase: FindStudyGroupByContainsNameUseCase,

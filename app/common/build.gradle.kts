@@ -94,12 +94,10 @@ kotlin {
                 implementation("net.harawata:appdirs:1.2.1")
 
                 api("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
-
-                //Dagger
-                api("com.google.dagger:dagger:$daggerVersion")
-                configurations.getByName("kapt").dependencies.add(project.dependencies.create("com.google.dagger:dagger-compiler:$daggerVersion"))
-
                 implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
+                // Dagger
+                api("com.google.dagger:dagger:$daggerVersion")
             }
         }
         val commonJvmTest by creating {

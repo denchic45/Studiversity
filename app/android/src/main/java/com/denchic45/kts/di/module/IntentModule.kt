@@ -8,7 +8,6 @@ import com.denchic45.kts.ui.course.workEditor.CourseWorkEditorFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
 import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
-import com.denchic45.kts.ui.specialtyEditor.SpecialtyEditorDialog
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
 import com.denchic45.kts.ui.studygroup.users.GroupMembersFragment
@@ -83,12 +82,12 @@ object IntentModule {
         return userEditorFragment.navArgs.userId
     }
 
-    @Named(SpecialtyEditorDialog.SPECIALTY_ID)
-    @Provides
-    fun provideSpecialtyId(specialtyEditorDialog: SpecialtyEditorDialog): String? {
-        return specialtyEditorDialog.requireArguments()
-            .getString(SpecialtyEditorDialog.SPECIALTY_ID)
-    }
+//    @Named(SpecialtyEditorDialog.SPECIALTY_ID)
+//    @Provides
+//    fun provideSpecialtyId(specialtyEditorDialog: SpecialtyEditorDialog): String? {
+//        return specialtyEditorDialog.requireArguments()
+//            .getString(SpecialtyEditorDialog.SPECIALTY_ID)
+//    }
 
     @Named(CourseFragment.COURSE_ID)
     @Provides
