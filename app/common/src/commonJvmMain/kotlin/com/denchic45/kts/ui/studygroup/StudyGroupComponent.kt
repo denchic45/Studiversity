@@ -13,7 +13,6 @@ import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.kts.ui.profile.ProfileComponent
-import com.denchic45.kts.ui.root.YourStudyGroupsRootComponent
 import com.denchic45.kts.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.kts.ui.studygroup.members.StudyGroupMembersComponent
 import com.denchic45.kts.ui.studygroup.timetable.StudyGroupTimetableComponent
@@ -94,6 +93,7 @@ class StudyGroupComponent(
 
     val childSidebar = childOverlay(
         source = sidebarNavigation,
+        handleBackButton = true,
         childFactory = { config, componentContext ->
             when (config) {
                 is OverlayConfig.StudyGroupEditor -> {
@@ -126,7 +126,7 @@ class StudyGroupComponent(
     val childTabs = listOf(
         TabChild.Members(
             studyGroupMembersComponent(
-                {sidebarNavigation.activate(OverlayConfig.Member(it))},
+                { sidebarNavigation.activate(OverlayConfig.Member(it)) },
                 studyGroupId,
                 componentContext.childContext("Members")
             )

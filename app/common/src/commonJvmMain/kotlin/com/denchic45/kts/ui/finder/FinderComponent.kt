@@ -37,7 +37,10 @@ class FinderComponent(
             UUID,
             ComponentContext
     ) -> StudyGroupComponent,
-    courseComponent: (UUID, ComponentContext) -> CourseComponent,
+    courseComponent: (
+        onStudyGroupOpen: (UUID) -> Unit, UUID,
+        ComponentContext
+    ) -> CourseComponent,
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {

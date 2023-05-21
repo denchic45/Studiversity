@@ -70,7 +70,6 @@ fun StudyGroupContent(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             TabRow(selectedTabIndex = selectedTab,
                 modifier = Modifier.width(396.dp),
-                contentColor = MaterialTheme.colorScheme.primary,
                 indicator = { tabPositions -> TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab])) },
                 divider = {}) {
                 children.forEachIndexed { index, item ->

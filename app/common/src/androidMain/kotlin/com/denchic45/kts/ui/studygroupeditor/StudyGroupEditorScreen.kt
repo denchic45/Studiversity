@@ -97,7 +97,7 @@ private fun StudyGroupEditorContent(
 
 @Preview
 @Composable
-fun StudyGroupEditorScreen() {
+fun StudyGroupEditorPreview() {
     StudyGroupEditorContent(
         viewState = Resource.Success(EditingStudyGroup()),
         inputState = StudyGroupEditorComponent.InputState(),

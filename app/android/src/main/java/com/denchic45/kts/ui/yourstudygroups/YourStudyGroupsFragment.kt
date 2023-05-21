@@ -19,37 +19,31 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.defaultComponentContext
 import com.arkivanov.decompose.extensions.android.ViewContext
 import com.arkivanov.decompose.extensions.android.layoutInflater
-import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentGroupBinding
 import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.root.YourStudyGroupsRootComponent
+import com.denchic45.kts.ui.root.YourStudyGroupsRootScreen
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupViewModel
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.util.collectWhenStarted
 import com.google.android.material.tabs.TabLayoutMediator
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
 
 @Inject
 class YourStudyGroupsFragment(
     private val appBarInteractor: AppBarInteractor,
-    yourStudyGroupsComponent: (
-        onCourseOpen: (UUID) -> Unit,
+    yourStudyGroupsRootComponent: (
         ComponentContext,
-    ) -> YourStudyGroupsComponent,
+    ) -> YourStudyGroupsRootComponent,
 //    private val studyGroupFragment: () -> StudyGroupFragment,
 //    private val studyGroupViewModel: (String, ComponentContext) -> StudyGroupViewModel,
 ) : Fragment(R.layout.fragment_your_study_groups) {
     val navController: NavController by lazy(::findNavController)
 
     val component by lazy {
-        yourStudyGroupsComponent(
-            {
-                findNavController().navigate(
-                    MobileNavigationDirections.actionGlobalCourseFragment(it.toString())
-                )
-            },
+        yourStudyGroupsRootComponent(
             defaultComponentContext(requireActivity().onBackPressedDispatcher)
         )
     }
@@ -64,7 +58,7 @@ class YourStudyGroupsFragment(
         )
         setContent {
             AppTheme {
-                YourStudyGroupsScreen(component, appBarInteractor)
+                YourStudyGroupsRootScreen(component, appBarInteractor)
             }
         }
     }

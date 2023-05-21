@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
@@ -19,6 +20,7 @@ import com.denchic45.kts.ui.coursetopics.CourseTopicsComponent
 import com.denchic45.kts.ui.coursework.CourseWorkComponent
 import com.denchic45.kts.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.kts.ui.profile.ProfileComponent
+import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsComponent
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -30,7 +32,12 @@ class YourStudyGroupsRootComponent(
         onCourseOpen: (UUID) -> Unit,
         ComponentContext,
     ) -> YourStudyGroupsComponent,
+    studyGroupComponent: (
+        onCourseOpen: (UUID) -> Unit,
+        UUID, ComponentContext
+    ) -> StudyGroupComponent,
     courseComponent: (
+        onStudyGroupOpen: (UUID) -> Unit,
         UUID,
         ComponentContext,
     ) -> CourseComponent,
@@ -76,9 +83,20 @@ class YourStudyGroupsRootComponent(
                     )
                 }
 
+                is Config.StudyGroup -> {
+                    Child.StudyGroup(
+                        studyGroupComponent(
+                            { navigation.bringToFront(Config.Course(it)) },
+                            config.studyGroupId,
+                            context
+                        )
+                    )
+                }
+
                 is Config.Course -> {
                     Child.Course(
                         courseComponent(
+                            { navigation.bringToFront(Config.StudyGroup(it)) },
                             config.courseId,
                             context
                         )
@@ -154,6 +172,7 @@ class YourStudyGroupsRootComponent(
     @Parcelize
     sealed class Config : Parcelable {
         object YourStudyGroups : Config()
+        data class StudyGroup(val studyGroupId: UUID) : Config()
         data class Course(val courseId: UUID) : Config()
         data class CourseEditor(val courseId: UUID) : Config()
         data class CourseWork(val courseId: UUID, val workId: UUID) : Config()
@@ -163,6 +182,7 @@ class YourStudyGroupsRootComponent(
 
     sealed class Child {
         class YourStudyGroups(val component: YourStudyGroupsComponent) : Child()
+        class StudyGroup(val component: StudyGroupComponent) : Child()
         class Course(val component: CourseComponent) : Child()
         class CourseEditor(val component: CourseEditorComponent) : Child()
         class CourseWork(val component: CourseWorkComponent) : Child()

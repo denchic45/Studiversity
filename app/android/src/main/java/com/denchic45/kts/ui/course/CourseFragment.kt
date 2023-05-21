@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.arkivanov.decompose.ComponentContext
@@ -23,14 +24,18 @@ import java.util.*
 @Inject
 class CourseFragment(
     private val appBarInteractor: AppBarInteractor,
-//    private val fabInteractor: FabInteractor,
-    component: (courseId: UUID, ComponentContext) -> CourseComponent,
+    component: (
+        onStudyGroupOpen: (UUID) -> Unit,
+        UUID,
+        ComponentContext
+    ) -> CourseComponent,
 ) : Fragment(), HasNavArgs<CourseFragmentArgs> {
 
     override val navArgs: CourseFragmentArgs by navArgs()
 
     val component: CourseComponent by lazy {
         component(
+            {findNavController().navigate(CourseFragmentDirections.actionGlobalStudyGroupFragment(it.toString()))},
             navArgs.courseId.toUUID(),
             defaultComponentContext(requireActivity().onBackPressedDispatcher)
         )

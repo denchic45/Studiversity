@@ -7,6 +7,7 @@ import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.data.pref.AppPreferences
+import com.denchic45.kts.domain.flatMapResourceFlow
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
@@ -15,6 +16,7 @@ import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.kts.util.componentScope
+import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +31,7 @@ import java.util.*
 class YourStudyGroupsComponent(
     private val appPreferences: AppPreferences,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
-    private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
+    findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
     private val _studyGroupComponent: (
         onCourseOpen: (UUID) -> Unit,
         UUID,
@@ -41,7 +43,7 @@ class YourStudyGroupsComponent(
         ComponentContext,
     ) -> StudyGroupEditorComponent,
 //    @Assisted
-//    private val onStudyGroupEditClick: (UUID) -> Unit,
+//    private val onStudyGroupEditorOpen: (UUID) -> Unit,
     @Assisted
     onCourseOpen: (UUID) -> Unit,
     @Assisted
@@ -53,7 +55,6 @@ class YourStudyGroupsComponent(
 
     private val componentScope = componentScope()
 
-    val openStudyGroupEditor = MutableSharedFlow<String>()
 
     private val studyGroupNavigation = OverlayNavigation<StudyGroupConfig>()
 
@@ -105,6 +106,13 @@ class YourStudyGroupsComponent(
             }
         }.stateInResource(componentScope)
 
+    val allowEditSelected = selectedStudyGroup.flatMapResourceFlow { response ->
+        checkUserCapabilitiesInScopeUseCase(
+            scopeId = response.id,
+            capabilities = listOf(Capability.WriteStudyGroup)
+        )
+    }.mapResource { it.hasCapability(Capability.WriteStudyGroup) }
+        .stateInResource(componentScope)
 
 //    init {
 //        lifecycle.subscribe(onResume = {
@@ -134,4 +142,9 @@ class YourStudyGroupsComponent(
     fun onGroupSelect(id: UUID) {
         appPreferences.selectedStudyGroupId = id.toString()
     }
+
+    fun onEditStudyGroupClick() {
+        childStudyGroup.value.overlay?.instance?.onEditClick()
+    }
+
 }

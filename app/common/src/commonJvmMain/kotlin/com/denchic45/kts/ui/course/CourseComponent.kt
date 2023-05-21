@@ -80,6 +80,8 @@ class CourseComponent(
         ComponentContext
     ) -> ProfileComponent,
     @Assisted
+    private val onStudyGroupOpen:(studyGroupId:UUID)->Unit,
+    @Assisted
     private val courseId: UUID,
     @Assisted
     componentContext: ComponentContext,
@@ -180,7 +182,9 @@ class CourseComponent(
                 is Config.CourseWork -> Child.CourseWork(
                     _courseWorkComponent(
                         { _, workId -> stackNavigation.push(Config.CourseWorkEditor(workId)) },
-                        stackNavigation::pop, courseId, config.workId, context
+                        stackNavigation::pop,
+                        courseId, config.workId,
+                        context
                     )
                 )
 

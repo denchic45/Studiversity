@@ -1,22 +1,20 @@
 package com.denchic45.kts.ui.studygroup
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Divider
-import androidx.compose.material.TabRow
-import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
@@ -70,14 +68,11 @@ fun StudyGroupContent(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TabRow(
             selectedTabIndex = selectedTab,
-            backgroundColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.primary,
             indicator = { tabPositions -> TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab])) },
             divider = {}) {
-//            val tabs by response.tabs.collectAsState()
             children.forEachIndexed { index, item ->
                 Tab(
-                    selectedTab == index,
+                    selected = selectedTab == index,
                     onClick = { onTabSelect(index) },
                     text = { Text(item.title) }
                 )
