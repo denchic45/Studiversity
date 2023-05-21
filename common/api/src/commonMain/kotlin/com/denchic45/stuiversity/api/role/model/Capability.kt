@@ -5,7 +5,9 @@ data class Capability(val resource: String) {
     override fun toString(): String = resource
 
     companion object {
+        val WriteUserConfidentialData: Capability = Capability("user/confidential:write")
         val ReadUserConfidentialData: Capability = Capability("user/confidential:read")
+        val UpdateProfile: Capability = Capability("user/profile:update")
         val WriteUser: Capability = Capability("user:write")
         val DeleteUser: Capability = Capability("user:delete")
 

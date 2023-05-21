@@ -72,12 +72,13 @@ class YourStudyGroupsRootComponent(
     override val childStack: Value<ChildStack<Config, Child>> = childStack(
         source = navigation,
         initialConfiguration = Config.YourStudyGroups,
+        handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
                 Config.YourStudyGroups -> {
                     Child.YourStudyGroups(
                         yourStudyGroupsComponent(
-                            { navigation.push(Config.Course(it)) },
+                            { navigation.bringToFront(Config.Course(it)) },
                             context
                         )
                     )

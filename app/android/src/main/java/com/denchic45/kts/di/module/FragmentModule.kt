@@ -14,7 +14,6 @@ import com.denchic45.kts.ui.iconPicker.IconPickerDialog
 import com.denchic45.kts.ui.login.auth.AuthFragment
 import com.denchic45.kts.ui.login.groupChooser.GroupChooserFragment
 import com.denchic45.kts.ui.login.resetPassword.ResetPasswordFragment
-import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.settings.SettingsFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
@@ -88,8 +87,8 @@ interface FragmentModule {
     @ContributesAndroidInjector
     fun contributeAdminPanelFragment(): AdminPanelFragment
 
-    @ContributesAndroidInjector(modules = [IntentModule::class])
-    fun contributeProfileFragment(): ProfileFragment
+//    @ContributesAndroidInjector(modules = [IntentModule::class])
+//    fun contributeProfileFragment(): ProfileFragment
 
     @ContributesAndroidInjector
     fun contributeResetPasswordFragment(): ResetPasswordFragment

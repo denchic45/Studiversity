@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.denchic45.kts.ui.course.CourseScreen
 import com.denchic45.kts.ui.studygroup.StudyGroupScreen
 import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsScreen
 
@@ -22,7 +23,7 @@ fun YourStudyGroupsRootScreen(component: YourStudyGroupsRootComponent) {
             }
 
             is YourStudyGroupsRootComponent.Child.Course -> {
-                TODO()
+                CourseScreen(child.component)
             }
 
             is YourStudyGroupsRootComponent.Child.CourseEditor -> TODO()

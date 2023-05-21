@@ -6,7 +6,6 @@ import com.denchic45.kts.ui.course.sections.CourseTopicsFragment
 import com.denchic45.kts.ui.course.submission.SubmissionDialog
 import com.denchic45.kts.ui.course.workEditor.CourseWorkEditorFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
-import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.profile.fullAvatar.FullAvatarActivity
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.courses.GroupCoursesFragment
@@ -58,11 +57,11 @@ object IntentModule {
         return fullAvatarActivity.intent.getStringExtra(FullImageActivity.IMAGE_URL)!!
     }
 
-    @Named(ProfileFragment.USER_ID)
-    @Provides
-    fun provideUserIdFromProfileFragment(profileFragment: ProfileFragment): String {
-        return profileFragment.navArgs.userId
-    }
+//    @Named(ProfileFragment.USER_ID)
+//    @Provides
+//    fun provideUserIdFromProfileFragment(profileFragment: ProfileFragment): String {
+//        return profileFragment.navArgs.userId
+//    }
 
     @Named(StudyGroupFragment.GROUP_ID)
     @Provides

@@ -7,7 +7,6 @@ import com.denchic45.kts.data.db.local.source.SectionLocalDataSource
 import com.denchic45.kts.data.db.local.source.SpecialtyLocalDataSource
 import com.denchic45.kts.data.db.local.source.SubjectLocalDataSource
 import com.denchic45.kts.data.db.local.source.UserLocalDataSource
-import com.denchic45.kts.data.fetchObservingResource
 import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.fetchResourceFlow
 import com.denchic45.kts.data.pref.AppPreferences
@@ -25,11 +24,11 @@ import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.stuiversity.util.UUIDWrapper
 import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.util.uuidOf
 import com.denchic45.stuiversity.util.uuidOfMe
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.decodeFromString
@@ -129,6 +128,16 @@ class StudyGroupRepository @Inject constructor(
             studyGroupApi.getList(specialtyId = specialtyId)
         }
 
+    fun findBy(
+        memberId: UUIDWrapper? = null,
+        roleId: Long? = null,
+        specialtyId: UUID? = null,
+        academicYear: Int? = null,
+        query: String? = null,
+    ): Flow<Resource<List<StudyGroupResponse>>> = fetchResourceFlow {
+        studyGroupApi.getList(memberId, roleId, specialtyId, academicYear, query)
+    }
+
 //    suspend fun findBySpecialtyId(specialtyId: String): List<GroupHeader> {
 //        return groupRemoteDataSource.findBySpecialtyId(specialtyId).mapsToGroupHeaders()
 //    }
@@ -140,13 +149,6 @@ class StudyGroupRepository @Inject constructor(
 //            .map { it?.toGroup() }
 //            .collect { send(it) }
 //    }
-
-    fun observeById(studyGroupId: UUID): Flow<Resource<StudyGroupResponse>> =
-        fetchObservingResource {
-            flow {
-                emit(studyGroupApi.getById(studyGroupId))
-            }
-        }
 
     fun findById(studyGroupId: UUID) = fetchResourceFlow {
         studyGroupApi.getById(studyGroupId)

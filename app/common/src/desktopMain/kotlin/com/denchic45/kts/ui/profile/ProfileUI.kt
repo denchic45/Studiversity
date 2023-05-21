@@ -36,14 +36,14 @@ import com.denchic45.kts.ui.components.loadImageBitmap
 import com.denchic45.kts.ui.theme.toDrawablePath
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileSideBar(
     modifier: Modifier,
     profileComponent: ProfileComponent,
     onCloseClick: () -> Unit,
 ) {
-    val profileViewState by profileComponent.profileViewState.collectAsState()
+    val profileViewState by profileComponent.viewState.collectAsState()
     Column(modifier) {
         TopAppBar(
             title = {},

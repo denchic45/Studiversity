@@ -7,7 +7,6 @@ import com.denchic45.kts.ui.course.CourseFragment
 import com.denchic45.kts.ui.course.workEditor.CourseWorkEditorFragment
 import com.denchic45.kts.ui.courseEditor.CourseEditorFragment
 import com.denchic45.kts.ui.coursework.CourseWorkFragment
-import com.denchic45.kts.ui.profile.ProfileFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment
 import com.denchic45.kts.ui.timetableLoader.TimetableLoaderFragment
@@ -24,7 +23,6 @@ class InjectFragmentFactory(
     private val yourStudyGroupsFragment: () -> YourStudyGroupsFragment,
     private val studyGroupFragment: () -> StudyGroupFragment,
     private val courseFragment: () -> CourseFragment,
-    private val profileFragment: () -> ProfileFragment,
     private val studyGroupEditorFragment: () -> StudyGroupEditorFragment,
     private val userEditorFragment: () -> UserEditorFragment,
     private val courseWorkFragment: () -> CourseWorkFragment,
@@ -40,7 +38,6 @@ class InjectFragmentFactory(
             name<YourStudyGroupsFragment>() -> yourStudyGroupsFragment()
             name<StudyGroupFragment>() -> studyGroupFragment()
             name<CourseFragment>() -> courseFragment()
-            name<ProfileFragment>() -> profileFragment()
             name<StudyGroupEditorFragment>() -> studyGroupEditorFragment()
             name<UserEditorFragment>() -> userEditorFragment()
             name<CourseWorkFragment>() -> courseWorkFragment()

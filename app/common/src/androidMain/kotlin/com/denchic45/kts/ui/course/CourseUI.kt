@@ -1,5 +1,9 @@
 package com.denchic45.kts.ui.course
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -111,7 +115,9 @@ fun CourseScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalAnimationApi::class
+)
 @Composable
 fun CourseContent(
     course: Resource<CourseResponse>,
@@ -170,13 +176,18 @@ fun CourseContent(
             )
         },
         floatingActionButton = {
-            if (allowEdit)
+            AnimatedVisibility(
+                visible = allowEdit,
+                enter = scaleIn(),
+                exit = scaleOut(),
+            ) {
                 FloatingActionButton(onClick = onAddWorkClick) {
                     Icon(
                         painter = rememberVectorPainter(Icons.Default.Add),
                         contentDescription = "add work"
                     )
                 }
+            }
         }
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {

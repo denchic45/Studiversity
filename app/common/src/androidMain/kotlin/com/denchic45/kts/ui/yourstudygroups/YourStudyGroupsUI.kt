@@ -29,6 +29,7 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.profile.ProfileScreen
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.ui.studygroup.StudyGroupContent
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorScreen
@@ -80,7 +81,7 @@ fun YourStudyGroupsScreen(
                 val childSidebar by it.childSidebar.subscribeAsState()
                 showSpinner = childSidebar.overlay == null
                 when (val child = childSidebar.overlay?.instance) {
-                    is StudyGroupComponent.OverlayChild.Member -> TODO()
+                    is StudyGroupComponent.OverlayChild.Member -> ProfileScreen(child.component,appBarInteractor)
                     is StudyGroupComponent.OverlayChild.StudyGroupEditor -> {
                         StudyGroupEditorScreen(child.component)
                     }

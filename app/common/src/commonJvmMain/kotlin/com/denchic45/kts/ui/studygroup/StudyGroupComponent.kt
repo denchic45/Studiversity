@@ -42,18 +42,18 @@ class StudyGroupComponent(
         UUID?,
         ComponentContext,
     ) -> StudyGroupEditorComponent,
-    private val studyGroupMembersComponent: (
+    studyGroupMembersComponent: (
         onCourseOpen: (UUID) -> Unit,
         UUID,
         ComponentContext,
     ) -> StudyGroupMembersComponent,
-    private val studyGroupCoursesComponent: (
+    studyGroupCoursesComponent: (
         onCourseOpen: (UUID) -> Unit,
         UUID,
         ComponentContext
     ) -> StudyGroupCoursesComponent,
-    private val studyGroupTimetableComponent: (UUID, ComponentContext) -> StudyGroupTimetableComponent,
-    private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
+    studyGroupTimetableComponent: (UUID, ComponentContext) -> StudyGroupTimetableComponent,
+    findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     @Assisted
     private val onCourseOpen: (UUID) -> Unit,
     @Assisted

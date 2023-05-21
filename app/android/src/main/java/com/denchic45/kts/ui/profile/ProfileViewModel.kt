@@ -11,38 +11,38 @@ import com.denchic45.stuiversity.util.toUUID
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
-@Inject
-class ProfileViewModel constructor(
-    observeUserUseCase: ObserveUserUseCase,
-    @Assisted
-    _userId: String,
-    @Assisted
-    private val componentContext: ComponentContext
-) : ProfileUiLogic(observeUserUseCase, _userId.toUUID(), componentContext),
-    AndroidUiComponent by AndroidUiComponentDelegate(componentContext) {
-
-    val openFullImage = SingleLiveData<String>()
-    val openGallery = SingleLiveData<Void>()
-
-    override fun onAvatarClick() {
-        profileViewState.value.onSuccess {
-            openFullImage.value = it.avatarUrl
-        }
-    }
-
-    override fun onOptionClick(itemId: Int) {
-        when (itemId) {
-            R.id.menu_select_avatar -> openGallery.call()
-        }
-    }
-
-//    fun onImageLoad(imageBytes: ByteArray?) {
-//        viewModelScope.launch {
-//            interactor.updateAvatar(userOfProfile!!, imageBytes!!)
+//@Inject
+//class ProfileViewModel constructor(
+//    observeUserUseCase: ObserveUserUseCase,
+//    @Assisted
+//    _userId: String,
+//    @Assisted
+//    private val componentContext: ComponentContext
+//) : ProfileUiLogic(observeUserUseCase, _userId.toUUID(), componentContext),
+//    AndroidUiComponent by AndroidUiComponentDelegate(componentContext) {
+//
+//    val openFullImage = SingleLiveData<String>()
+//    val openGallery = SingleLiveData<Void>()
+//
+//    override fun onAvatarClick() {
+//        profileViewState.value.onSuccess {
+//            openFullImage.value = it.avatarUrl
 //        }
 //    }
-
-    companion object {
-        private const val PERMISSION_USER_NFO = "PERMISSION_USER_NFO"
-    }
-}
+//
+//    override fun onOptionClick(itemId: Int) {
+//        when (itemId) {
+//            R.id.menu_select_avatar -> openGallery.call()
+//        }
+//    }
+//
+////    fun onImageLoad(imageBytes: ByteArray?) {
+////        viewModelScope.launch {
+////            interactor.updateAvatar(userOfProfile!!, imageBytes!!)
+////        }
+////    }
+//
+//    companion object {
+//        private const val PERMISSION_USER_NFO = "PERMISSION_USER_NFO"
+//    }
+//}
