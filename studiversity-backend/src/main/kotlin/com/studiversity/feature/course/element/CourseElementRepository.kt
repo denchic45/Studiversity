@@ -82,6 +82,7 @@ class CourseElementRepository {
             val elementDao = CourseElementDao.wrapRow(row)
             val workDao = CourseWorkDao.wrapRow(row)
             request.name.ifPresent { elementDao.name = it }
+            request.description.ifPresent { elementDao.description = it }
             request.topicId.ifPresent { elementDao.topic = it?.let { id -> CourseTopicDao.findById(id) } }
 
             request.dueDate.ifPresent { workDao.dueDate = it }

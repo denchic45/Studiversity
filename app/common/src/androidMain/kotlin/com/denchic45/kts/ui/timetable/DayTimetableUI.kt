@@ -102,7 +102,7 @@ fun DayTimetableContent(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = day.date.dayOfMonth.toString())
+                        Text(text = day.date.dayOfMonth.toString(), style = MaterialTheme.typography.titleMedium)
                     }
                 }
             )

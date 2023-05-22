@@ -2,7 +2,6 @@ package com.denchic45.kts.ui.component
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HeaderItemUI(name: String) {
+fun HeaderItemUI(name: String, modifier: Modifier = Modifier) {
     Row(
-        Modifier.height(56.dp).padding(horizontal = 16.dp),
+        modifier = modifier.height(56.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(name, style = MaterialTheme.typography.titleMedium)

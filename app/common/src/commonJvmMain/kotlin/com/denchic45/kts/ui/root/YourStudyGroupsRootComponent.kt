@@ -30,11 +30,13 @@ import java.util.UUID
 class YourStudyGroupsRootComponent(
     yourStudyGroupsComponent: (
         onCourseOpen: (UUID) -> Unit,
+        onStudyGroupOpen: (UUID) -> Unit,
         ComponentContext,
     ) -> YourStudyGroupsComponent,
     studyGroupComponent: (
         onCourseOpen: (UUID) -> Unit,
-        UUID, ComponentContext
+        onStudyGroupOpen: (UUID) -> Unit,
+        UUID, ComponentContext,
     ) -> StudyGroupComponent,
     courseComponent: (
         onStudyGroupOpen: (UUID) -> Unit,
@@ -61,8 +63,7 @@ class YourStudyGroupsRootComponent(
         topicId: UUID?,
         ComponentContext,
     ) -> CourseWorkEditorComponent,
-
-    profileComponent: (UUID, ComponentContext) -> ProfileComponent,
+    profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
@@ -79,6 +80,7 @@ class YourStudyGroupsRootComponent(
                     Child.YourStudyGroups(
                         yourStudyGroupsComponent(
                             { navigation.bringToFront(Config.Course(it)) },
+                            { navigation.bringToFront(Config.StudyGroup(it)) },
                             context
                         )
                     )
@@ -88,6 +90,7 @@ class YourStudyGroupsRootComponent(
                     Child.StudyGroup(
                         studyGroupComponent(
                             { navigation.bringToFront(Config.Course(it)) },
+                            { navigation.bringToFront(Config.StudyGroup(it)) },
                             config.studyGroupId,
                             context
                         )
@@ -159,7 +162,13 @@ class YourStudyGroupsRootComponent(
         childFactory = { config, context ->
             when (config) {
                 is SidebarConfig.Profile -> {
-                    SidebarChild.Profile(profileComponent(config.userId, context))
+                    SidebarChild.Profile(
+                        profileComponent(
+                            { navigation.push(Config.StudyGroup(it)) },
+                            config.userId,
+                            context
+                        )
+                    )
                 }
             }
         }

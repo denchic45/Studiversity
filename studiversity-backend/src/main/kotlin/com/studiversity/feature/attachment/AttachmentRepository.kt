@@ -316,14 +316,9 @@ class AttachmentRepository(private val bucket: BucketApi) {
 
     fun findAttachmentsByReferenceId(consumerId: UUID): List<AttachmentHeader> {
         return AttachmentDao.wrapRows(
-            Attachments.innerJoin(
-                AttachmentReferences,
-                { Attachments.id },
-                { attachmentId })
-                .innerJoin(Submissions, { AttachmentReferences.consumerId }, { Submissions.id })
+            Attachments.innerJoin(AttachmentReferences, { Attachments.id }, { attachmentId })
                 .select(AttachmentReferences.consumerId eq consumerId)
-        )
-            .map { (it).toHeader() }
+        ).map { (it).toHeader() }
     }
 
     private suspend fun AttachmentDao.toAttachment(): AttachmentResponse {

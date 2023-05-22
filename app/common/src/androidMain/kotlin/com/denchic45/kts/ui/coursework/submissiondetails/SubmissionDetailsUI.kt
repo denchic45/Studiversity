@@ -6,18 +6,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Attachment
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -34,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.attachment.AttachmentListItem
 import com.denchic45.kts.ui.component.HeaderItemUI
@@ -44,13 +51,14 @@ import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.util.AttachmentViewer
 import com.denchic45.kts.util.collectWithLifecycle
 import com.denchic45.kts.util.findActivity
+import com.denchic45.kts.util.rememberImeState
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubmissionDetailsScreen(
     component: SubmissionDetailsComponent,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
 ) {
     val context = LocalContext.current
     val attachmentViewer by lazy {
@@ -63,7 +71,7 @@ fun SubmissionDetailsScreen(
         }
     }
 
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val uiStateResource by component.uiState.collectAsState()
 
@@ -74,39 +82,63 @@ fun SubmissionDetailsScreen(
     uiStateResource.onSuccess { uiState ->
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
-            sheetState = sheetState
+            sheetState = sheetState,
         ) {
-            SubmissionHeaderContent(uiState)
-            SubmissionDetailsContent(uiState, component::onAttachmentClick)
-            Spacer(Modifier.height(MaterialTheme.spacing.normal))
-            Row(Modifier.padding(MaterialTheme.spacing.normal)) {
-                uiState.grade?.let {
-                    Text(
-                        text = it.value.toString(),
-                        modifier = Modifier.weight(1f),
-                    )
-                    TextButton(onClick = component::onGradeCancel) {
-                        Text("Отменить")
+
+            val imeState by rememberImeState()
+            Column(Modifier.imePadding().let { if (imeState) it.padding(bottom = 220.dp) else it }) {
+                SubmissionHeaderContent(uiState)
+                SubmissionDetailsContent(uiState, component::onAttachmentClick)
+                Spacer(Modifier.height(MaterialTheme.spacing.normal))
+                Row(
+                    Modifier.padding(MaterialTheme.spacing.normal),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    uiState.grade?.let {
+                        Text(
+                            text = it.value.toString(),
+                            modifier = Modifier.weight(1f),
+                        )
+                        TextButton(onClick = component::onGradeCancel) {
+                            Text("Отменить")
+                        }
+                    } ?: run {
+                        var typedGrade by remember { mutableStateOf("") }
+                        OutlinedTextField(
+                            value = typedGrade,
+                            onValueChange = { value ->
+                                if (value.isDigitsOnly() && value.toInt() in 1..5)
+                                    typedGrade = value
+                            },
+                            trailingIcon = { Text("/5") },
+                            modifier = Modifier.weight(1f),
+                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                        )
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
+                        FilledTonalButton(
+                            onClick = { component.onGrade(typedGrade.toInt()) },
+                            enabled = typedGrade.isNotEmpty()
+                        ) {
+                            Text("Оценить")
+                        }
                     }
-                } ?: run {
-                    var typedGrade by remember { mutableStateOf("") }
-                    OutlinedTextField(
-                        value = typedGrade,
-                        onValueChange = { value ->
-                            if (value.isDigitsOnly() && value.toInt() in 1..5)
-                                typedGrade = value
-                        },
-                        trailingIcon = { Text("/5") },
-                        modifier = Modifier.weight(1f),
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-                    )
-                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
-                    FilledTonalButton(
-                        onClick = { component.onGrade(typedGrade.toInt()) },
-                        enabled = typedGrade.isNotEmpty()
-                    ) {
-                        Text("Оценить")
-                    }
+                }
+            }
+
+        }
+    }.onLoading {
+        AlertDialog(onDismissRequest = {}) {
+            Surface(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .wrapContentHeight(),
+                shape = MaterialTheme.shapes.large
+            ) {
+                Row(
+                    modifier = Modifier.padding(24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator()
                 }
             }
         }
@@ -117,7 +149,7 @@ fun SubmissionDetailsScreen(
 fun SubmissionDetailsContent(
     uiState: SubmissionUiState,
     onAttachmentClick: (AttachmentItem) -> Unit,
-    onAttachmentRemove: ((attachmentId: UUID) -> Unit)? = null
+    onAttachmentRemove: ((attachmentId: UUID) -> Unit)? = null,
 ) {
     Column {
         HeaderItemUI(name = "Прикрепленные файлы")

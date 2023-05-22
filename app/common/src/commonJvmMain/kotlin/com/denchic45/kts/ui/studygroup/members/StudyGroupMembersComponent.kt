@@ -29,7 +29,6 @@ class StudyGroupMembersComponent(
     findGroupMembersUseCase: FindGroupMembersUseCase,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
-    profileComponent: (UUID, ComponentContext) -> ProfileComponent,
     @Assisted
     private val onMemberOpen: (memberId: UUID) -> Unit,
     @Assisted

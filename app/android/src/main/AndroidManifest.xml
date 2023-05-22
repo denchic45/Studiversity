@@ -52,6 +52,6 @@
         </activity>
         <activity
             android:name=".ui.main.MainActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>

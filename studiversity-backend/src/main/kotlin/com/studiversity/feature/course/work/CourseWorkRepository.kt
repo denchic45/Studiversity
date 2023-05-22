@@ -21,6 +21,7 @@ class CourseWorkRepository {
                this.course = CourseDao.findById(courseId) ?: throw NotFoundException()
                this.topic = request.topicId?.let { CourseTopicDao.findById(it) }
                this.name = request.name
+               this.description = request.description
                this.type = CourseElementType.WORK
                this.order = generateOrderByCourseAndTopicId(courseId, request.topicId)
            }

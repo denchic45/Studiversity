@@ -72,9 +72,6 @@ fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
             }
         }
 
-//        val weekPickerState = rememberMaterialDialogState()
-//        if (showWeekPicker) weekPickerState.show()
-
         var selectedDate by remember {
             mutableStateOf(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
         }
@@ -90,7 +87,7 @@ fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
                     }
                 },
                 confirmButton = {
-                    TextButton(enabled = datePickerState.selectedDateMillis != null,onClick = {
+                    TextButton(enabled = datePickerState.selectedDateMillis != null, onClick = {
                         component.onWeekSelect(
                             selectedDate.toString(DateTimePatterns.YYYY_ww)
                         )
@@ -102,26 +99,12 @@ fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
                 DatePicker(state = datePickerState,
                     dateValidator = {
                         it.toToLocalDateTime().dayOfWeek == WeekFields.of(Locale.getDefault()).firstDayOfWeek
-                    })
+                    }
+                )
                 datePickerState.selectedDateMillis?.let {
                     selectedDate = it.toToLocalDateTime().toLocalDate()
                 }
             }
-
-//        MaterialDialog(dialogState = weekPickerState, buttons = {
-//            positiveButton("Выбрать") {
-//                component.onWeekSelect(
-//                    selectedDate.toString(DateTimePatterns.YYYY_ww)
-//                )
-//            }
-//            negativeButton("Отмена", onClick = component::onCancelWeekPicker)
-//        }) {
-//            datepicker(
-//                title = "Выберите неделю расписания",
-//                allowedDateValidator = { it.dayOfWeek == DayOfWeek.MONDAY },
-//                initialDate = selectedDate.toKotlinLocalDate()
-//            ) { date -> selectedDate = date.toJavaLocalDate() }
-//        }
 
         val showFilePicker by component.showFilePicker.collectAsState()
         if (showFilePicker) {

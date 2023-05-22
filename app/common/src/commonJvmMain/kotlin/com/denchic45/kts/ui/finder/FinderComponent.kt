@@ -3,6 +3,7 @@ package com.denchic45.kts.ui.finder
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
+import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -25,24 +26,25 @@ import java.util.UUID
 class FinderComponent(
     userChooserComponent: (
             (UserItem) -> Unit,
-            ComponentContext
+            ComponentContext,
     ) -> UserSearchComponent,
     studyGroupChooserComponent: (
             (StudyGroupResponse) -> Unit,
-            ComponentContext
+            ComponentContext,
     ) -> StudyGroupSearchComponent,
-    profileComponent: (UUID, ComponentContext) -> ProfileComponent,
+    profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
     studyGroupComponent: (
-            (UUID) -> Unit,
-            UUID,
-            ComponentContext
+        onCourseOpen: (UUID) -> Unit,
+        onStudyGroupOpen: (UUID) -> Unit,
+        UUID,
+        ComponentContext,
     ) -> StudyGroupComponent,
     courseComponent: (
         onStudyGroupOpen: (UUID) -> Unit, UUID,
-        ComponentContext
+        ComponentContext,
     ) -> CourseComponent,
     @Assisted
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     val query = MutableStateFlow("")
@@ -63,11 +65,27 @@ class FinderComponent(
         childFactory = { config, context ->
             when (config) {
                 is OverlayConfig.Profile -> OverlayChild.Profile(
-                    profileComponent(config.userId, context)
+                    profileComponent(
+                        { overlayNavigation.activate(OverlayConfig.StudyGroup(it)) },
+                        config.userId,
+                        context
+                    )
                 )
 
                 is OverlayConfig.StudyGroup -> OverlayChild.StudyGroup(
-                    studyGroupComponent({}, config.studyGroupId, context)
+                    studyGroupComponent(
+                        { overlayNavigation.activate(OverlayConfig.Course(it)) },
+                        { overlayNavigation.activate(OverlayConfig.StudyGroup(it)) },
+                        config.studyGroupId, context
+                    )
+                )
+
+                is OverlayConfig.Course -> OverlayChild.Course(
+                    courseComponent(
+                        { overlayNavigation.activate(OverlayConfig.StudyGroup(it)) },
+                        config.courseId,
+                        context
+                    )
                 )
             }
         }
@@ -100,12 +118,13 @@ class FinderComponent(
     @Parcelize
     sealed class OverlayConfig : Parcelable {
         data class Profile(val userId: UUID) : OverlayConfig()
-
         data class StudyGroup(val studyGroupId: UUID) : OverlayConfig()
+        data class Course(val courseId: UUID) : OverlayConfig()
     }
 
     sealed class OverlayChild {
         class Profile(val component: ProfileComponent) : OverlayChild()
         class StudyGroup(val component: StudyGroupComponent) : OverlayChild()
+        class Course(val component: CourseComponent) : OverlayChild()
     }
 }

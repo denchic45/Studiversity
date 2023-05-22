@@ -4,11 +4,14 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AlarmAdd
 import androidx.compose.material.icons.outlined.Comment
@@ -84,6 +87,8 @@ private fun CourseWorkDetailsContent(
         Column(
             Modifier
                 .fillMaxWidth()
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState())
                 .padding(MaterialTheme.spacing.normal)
         ) {
             CourseWorkHeader(work.name)
@@ -109,7 +114,7 @@ private fun CourseWorkDetailsContent(
             }
             work.description?.let {
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
-                Text(text = it)
+                Text(text = it, style = MaterialTheme.typography.bodyLarge)
             }
             attachmentsResource.onSuccess { attachments ->
                 if (attachments.isNotEmpty()) {

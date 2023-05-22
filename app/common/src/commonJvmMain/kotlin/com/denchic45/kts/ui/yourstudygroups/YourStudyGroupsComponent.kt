@@ -34,6 +34,7 @@ class YourStudyGroupsComponent(
     findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
     private val _studyGroupComponent: (
         onCourseOpen: (UUID) -> Unit,
+        onStudyGroupOpen: (UUID) -> Unit,
         UUID,
         ComponentContext,
     ) -> StudyGroupComponent,
@@ -46,6 +47,8 @@ class YourStudyGroupsComponent(
 //    private val onStudyGroupEditorOpen: (UUID) -> Unit,
     @Assisted
     onCourseOpen: (UUID) -> Unit,
+    @Assisted
+    onStudyGroupOpen: (UUID) -> Unit,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -61,7 +64,12 @@ class YourStudyGroupsComponent(
     val childStudyGroup = childOverlay(
         source = studyGroupNavigation,
         childFactory = { config, componentContext ->
-            _studyGroupComponent(onCourseOpen, config.studyGroupId, componentContext)
+            _studyGroupComponent(
+                onCourseOpen,
+                onStudyGroupOpen,
+                config.studyGroupId,
+                componentContext
+            )
         },
         key = "StudyGroup"
     )

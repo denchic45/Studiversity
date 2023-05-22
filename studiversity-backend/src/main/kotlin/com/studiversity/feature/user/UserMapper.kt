@@ -20,5 +20,6 @@ fun UserDao.toUserResponse() = UserResponse(
     patronymic = patronymic,
     account = Account(email),
     avatarUrl = avatarUrl,
-    gender = gender
+    gender = gender,
+    generatedAvatar = generatedAvatar
 )

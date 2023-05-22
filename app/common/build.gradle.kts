@@ -135,7 +135,7 @@ kotlin {
                 api("androidx.work:work-runtime-ktx:2.8.1")
 
                 // Compose
-                val composeVersion = "1.4.0"
+                val composeVersion = "1.4.3"
                 api("androidx.compose.runtime:runtime:$composeVersion")
                 api("androidx.compose.ui:ui:$composeVersion")
                 api("androidx.activity:activity-compose:1.7.1")
@@ -144,7 +144,7 @@ kotlin {
                 // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
                 api("androidx.compose.foundation:foundation:$composeVersion")
                 // Material Design
-                api("androidx.compose.material3:material3:1.1.0-rc01")
+                api("androidx.compose.material3:material3:1.1.0")
                 // Lifecycle
                 api("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
@@ -156,6 +156,9 @@ kotlin {
 
                 // Decompose
                 api("com.arkivanov.decompose:extensions-compose-jetpack:$decomposeVersion")
+
+                // Cropper
+                implementation("com.github.SmartToolFactory:Compose-Cropper:0.3.0")
 
                 // Navigation
                 api("androidx.navigation:navigation-fragment-ktx:2.5.3")

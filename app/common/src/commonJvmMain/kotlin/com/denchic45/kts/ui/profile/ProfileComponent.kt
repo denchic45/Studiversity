@@ -24,10 +24,12 @@ import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.util.uuidOf
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -71,7 +73,7 @@ class ProfileComponent(
             when (config) {
                 OverlayConfig.AvatarDialog -> OverlayChild.AvatarDialog
                 OverlayConfig.FullAvatar -> OverlayChild.FullAvatar
-                OverlayConfig.ImageChooser -> OverlayChild.ImageChoose
+                OverlayConfig.ImageChooser -> OverlayChild.AvatarChooser
             }
         }
     )
@@ -132,6 +134,9 @@ class ProfileComponent(
         userFlow.value.onSuccess {
             componentScope.launch {
                 updateAvatarUseCase(it.id, CreateFileRequest(name, bytes))
+                withContext(Dispatchers.Main.immediate) {
+                    overlayNavigation.dismiss()
+                }
             }
         }
     }
@@ -146,6 +151,6 @@ class ProfileComponent(
     sealed class OverlayChild {
         object AvatarDialog : OverlayChild()
         object FullAvatar : OverlayChild()
-        object ImageChoose : OverlayChild()
+        object AvatarChooser : OverlayChild()
     }
 }

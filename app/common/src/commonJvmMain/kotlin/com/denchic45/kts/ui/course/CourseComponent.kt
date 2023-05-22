@@ -40,12 +40,12 @@ class CourseComponent(
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     _courseTopicsComponent: (
         courseId: UUID,
-        ComponentContext
+        ComponentContext,
     ) -> CourseTopicsComponent,
     _courseEditorComponent: (
         onFinish: () -> Unit,
         courseId: UUID?,
-        ComponentContext
+        ComponentContext,
     ) -> CourseEditorComponent,
     _courseWorkComponent: (
         onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
@@ -59,28 +59,29 @@ class CourseComponent(
         courseId: UUID,
         workId: UUID?,
         topicId: UUID?,
-        ComponentContext
+        ComponentContext,
     ) -> CourseWorkEditorComponent,
     _courseElementsComponent: (
         courseId: UUID,
         onElementOpen: (courseId: UUID, elementId: UUID) -> Unit,
-        ComponentContext
+        ComponentContext,
     ) -> CourseElementsComponent,
     _courseMembersComponent: (
         courseId: UUID,
         onMemberOpen: (memberId: UUID) -> Unit,
-        ComponentContext
+        ComponentContext,
     ) -> CourseMembersComponent,
     _courseTimetableComponent: (
         courseId: UUID,
-        ComponentContext
+        ComponentContext,
     ) -> CourseTimetableComponent,
     _profileComponent: (
+        onStudyGroupOpen: (UUID) -> Unit,
         UUID,
-        ComponentContext
+        ComponentContext,
     ) -> ProfileComponent,
     @Assisted
-    private val onStudyGroupOpen:(studyGroupId:UUID)->Unit,
+    private val onStudyGroupOpen: (studyGroupId: UUID) -> Unit,
     @Assisted
     private val courseId: UUID,
     @Assisted
@@ -98,7 +99,8 @@ class CourseComponent(
     val allowEdit = capabilitiesFlow.map {
         when (val resource = it) {
             Resource.Loading,
-            is Resource.Error -> false
+            is Resource.Error,
+            -> false
 
             is Resource.Success -> {
                 resource.value.hasCapability(Capability.WriteCourse)
@@ -148,7 +150,7 @@ class CourseComponent(
         childFactory = { config, context ->
             when (config) {
                 is SidebarConfig.Profile -> SidebarChild.Profile(
-                    _profileComponent(config.userId, context)
+                    _profileComponent(onStudyGroupOpen, config.userId, context)
                 )
             }
         }

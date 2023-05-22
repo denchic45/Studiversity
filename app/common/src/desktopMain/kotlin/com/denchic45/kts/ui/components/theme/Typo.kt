@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.components
+package com.denchic45.kts.ui.components.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

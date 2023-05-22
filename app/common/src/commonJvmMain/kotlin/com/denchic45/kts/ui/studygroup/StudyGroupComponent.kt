@@ -31,7 +31,7 @@ import java.util.UUID
 @Inject
 class StudyGroupComponent(
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
-    private val profileComponent: (UUID, ComponentContext) -> ProfileComponent,
+    private val profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
     private val userEditorComponent: (
         onFinish: () -> Unit,
         userId: UUID?,
@@ -50,12 +50,14 @@ class StudyGroupComponent(
     studyGroupCoursesComponent: (
         onCourseOpen: (UUID) -> Unit,
         UUID,
-        ComponentContext
+        ComponentContext,
     ) -> StudyGroupCoursesComponent,
     studyGroupTimetableComponent: (UUID, ComponentContext) -> StudyGroupTimetableComponent,
     findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     @Assisted
     private val onCourseOpen: (UUID) -> Unit,
+    @Assisted
+    private val onStudyGroupOpen: (UUID) -> Unit,
     @Assisted
     private val studyGroupId: UUID,
     @Assisted
@@ -107,7 +109,7 @@ class StudyGroupComponent(
                 }
 
                 is OverlayConfig.Member -> {
-                    OverlayChild.Member(profileComponent(config.memberId, componentContext))
+                    OverlayChild.Member(profileComponent(onStudyGroupOpen,config.memberId, componentContext))
                 }
 
                 is OverlayConfig.UserEditor -> {

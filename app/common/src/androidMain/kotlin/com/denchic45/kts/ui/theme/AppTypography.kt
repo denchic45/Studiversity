@@ -106,8 +106,8 @@ val AndroidTypography = Typography(
         fontSize = 14.sp
     ),
     bodyLarge = TextStyle(
-        fontFamily = ManropeFamily,
-        fontWeight = FontWeight.SemiBold,
+        fontFamily = RobotoFamily,
+        fontWeight = FontWeight.Normal,
         letterSpacing = 0.sp,
         lineHeight = 24.sp,
         fontSize = 16.sp

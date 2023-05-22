@@ -51,7 +51,7 @@ fun CourseWorkSubmissionsScreen(component: CourseWorkSubmissionsComponent) {
                                 SubmissionState.CREATED,
                                 -> "Не сдано"
 
-                                SubmissionState.SUBMITTED -> "Отправлено $updatedAt"
+                                SubmissionState.SUBMITTED -> "Сдано $updatedAt"
                                 SubmissionState.CANCELED_BY_AUTHOR -> "Отменено автором $updatedAt"
                             }
                         )

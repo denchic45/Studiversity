@@ -162,17 +162,11 @@ private fun CourseWorkContent(
 
     val topHeight = headerHeight + collapsedHeight
 
-//    var expandedHeight by remember { mutableStateOf(0F) }
     var offset by remember { mutableStateOf(0F) }
-    var hidden by remember {
-        mutableStateOf(false)
-    }
+    var hidden by remember { mutableStateOf(false) }
     val bottomSheetState = rememberStandardBottomSheetState(
         skipHiddenState = false,
-        confirmValueChange = {
-            if (it == SheetValue.Hidden) !hidden
-            else true
-        }
+        confirmValueChange = { it != SheetValue.Hidden }
     )
 
 

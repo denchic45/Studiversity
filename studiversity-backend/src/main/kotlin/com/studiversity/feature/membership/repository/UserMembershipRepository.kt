@@ -84,7 +84,8 @@ class UserMembershipRepository(
                     patronymic = rows.first()[Users.patronymic],
                     account = Account(rows.first()[Users.email]),
                     avatarUrl = rows.first()[Users.avatarUrl],
-                   gender = rows.first()[Users.gender]
+                    generatedAvatar = rows.first()[Users.generatedAvatar],
+                    gender = rows.first()[Users.gender]
                 ),
                 scopeId = scopeId,
                 membershipIds = rows.map { it[UsersMemberships.membershipId].value },
@@ -111,6 +112,7 @@ class UserMembershipRepository(
                     patronymic = rows.first()[Users.patronymic],
                     account = Account(rows.first()[Users.email]),
                     avatarUrl = rows.first()[Users.avatarUrl],
+                    generatedAvatar = rows.first()[Users.generatedAvatar],
                     gender = rows.first()[Users.gender]
                 ),
                 scopeId = scopeId,
