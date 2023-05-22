@@ -1,7 +1,6 @@
 package com.denchic45.kts.ui.usereditor
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.UIEditor
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onFailure
@@ -9,14 +8,12 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.AddUserUseCase
 import com.denchic45.kts.domain.usecase.ObserveUserUseCase
 import com.denchic45.kts.domain.usecase.RemoveUserUseCase
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.ui.model.MenuItem
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
-import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.user.model.Account
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.model.Gender
@@ -63,6 +60,7 @@ class UserEditorComponent(
             patronymicField.value,
             Account(emailField.value),
             avatarUrl.value,
+            false,
             when (genderField.value) {
                 GenderAction.Undefined -> Gender.UNKNOWN
                 GenderAction.Female -> Gender.FEMALE
@@ -197,7 +195,7 @@ class UserEditorComponent(
     fun onRemoveClick() {
         confirmInteractor.set(ConfirmState(uiTextOf("Удалить пользователя")))
         componentScope.launch {
-            if(confirmInteractor.receiveConfirm())
+            if (confirmInteractor.receiveConfirm())
                 removeUserUseCase(userId!!)
         }
     }

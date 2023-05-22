@@ -1,6 +1,7 @@
 package com.denchic45.kts.data.repository
 
 import com.denchic45.kts.data.db.local.source.UserLocalDataSource
+import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.fetchResourceFlow
 import com.denchic45.kts.data.mapper.toEntity
 import com.denchic45.kts.data.mapper.toUserResponse
@@ -9,7 +10,9 @@ import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.EmptyResource
 import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.toResource
+import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.Account
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
@@ -40,11 +43,20 @@ class UserRepository @Inject constructor(
         userPreferences.patronymic,
         Account(userPreferences.email),
         userPreferences.avatarUrl,
+        userPreferences.isGeneratedAvatar,
         Gender.valueOf(userPreferences.gender)
     )
 
-    suspend fun updateUserAvatar(avatarBytes: ByteArray, userId: UUID): String {
-        TODO("Not implemented")
+    suspend fun updateAvatar(userId: UUID, request: CreateFileRequest): Resource<String> {
+        return fetchResource { userApi.updateAvatar(userId, request) }.onSuccess {
+            userLocalDataSource.updateAvatar(userId.toString(), it, true)
+        }
+    }
+
+    suspend fun removeAvatar(userId: UUID): Resource<String> {
+        return fetchResource { userApi.deleteAvatar(userId) }.onSuccess {
+            userLocalDataSource.updateAvatar(userId.toString(), it, false)
+        }
     }
 
     suspend fun add(createUserRequest: CreateUserRequest): Resource<UserResponse> {

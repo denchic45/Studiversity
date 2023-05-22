@@ -1,10 +1,10 @@
 package com.denchic45.kts.data.db.local.source
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.denchic45.kts.AppDatabase
 import com.denchic45.kts.UserEntity
 import com.denchic45.kts.UserEntityQueries
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -39,5 +39,9 @@ class UserLocalDataSource @Inject constructor(db: AppDatabase) {
 
     suspend fun isExist(id: String) = withContext(Dispatchers.IO) {
         queries.isExist(id).executeAsOne()
+    }
+
+    fun updateAvatar(userId: String, avatarUrl: String, isGenerated: Boolean) {
+        queries.updateAvatar(avatarUrl, isGenerated, userId)
     }
 }

@@ -15,9 +15,9 @@ class UserPreferences(val settings: ObservableSettings) : Settings by settings {
     var role: String by string(defaultValue = "")
     var groupId: String by string(defaultValue = "")
     var avatarUrl: String by string(defaultValue = "")
+    var isGeneratedAvatar: Boolean by boolean(defaultValue = true)
     var timestamp: Long by long(defaultValue = 0)
     var email: String by string(defaultValue = "")
-    var isGeneratedAvatar: Boolean by boolean(defaultValue = true)
     var isAdmin: Boolean by boolean(defaultValue = true)
 
     val observeId = settings.getStringFlow("id",defaultValue = "")

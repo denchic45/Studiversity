@@ -17,10 +17,7 @@ class FullAvatarInteractor @javax.inject.Inject constructor(
     }
 
     suspend fun removeUserAvatar(user: UserResponse) {
-        userRepository.updateUserAvatar(
-            avatarService.generateAvatar(user.firstName),
-            user.id
-        )
+        userRepository.removeAvatar(user.id)
     }
 
     override fun removeListeners() {}

@@ -1,4 +1,5 @@
 import com.denchic45.stuiversity.api.user.model.Gender;
+import kotlin.Boolean;
 
 CREATE TABLE IF NOT EXISTS userEntity (
     user_id TEXT NOT NULL UNIQUE PRIMARY KEY,
@@ -7,6 +8,7 @@ CREATE TABLE IF NOT EXISTS userEntity (
     patronymic TEXT,
     email TEXT NOT NULL,
     avatar_url TEXT NOT NULL,
+    generated_avatar INTEGER AS Boolean NOT NULL,
     gender TEXT AS Gender NOT NULL
 );
 
@@ -37,6 +39,10 @@ SELECT EXISTS(
 SELECT * FROM userEntity
 WHERE user_id = :id
 );
+
+updateAvatar:
+UPDATE userEntity SET avatar_url = :avatarUrl, generated_avatar = :isGenerated
+WHERE user_id = :userId;
 
 -- getByGroupId:
 -- SELECT * FROM userEntity

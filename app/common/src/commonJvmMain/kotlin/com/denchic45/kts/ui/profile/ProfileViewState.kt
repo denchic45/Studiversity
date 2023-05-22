@@ -12,6 +12,7 @@ data class ProfileViewState(
 
     val allowEditConfidential: Boolean,
     val allowEditProfile: Boolean,
+    val allowUpdateAvatar: Boolean,
 ) {
     data class PersonalData(val email: String)
 }
@@ -22,5 +23,6 @@ fun UserResponse.toProfileViewState(studyGroups:List<StudyGroupResponse>,allowEd
     personalDate = account.email.let { ProfileViewState.PersonalData(it) },
     studyGroups = studyGroups,
     allowEditConfidential = allowEdit,
-    allowEditProfile = isOwned
+    allowEditProfile = allowEdit,
+    allowUpdateAvatar = isOwned
 )

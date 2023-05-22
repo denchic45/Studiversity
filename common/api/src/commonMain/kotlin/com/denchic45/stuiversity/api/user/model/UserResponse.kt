@@ -13,6 +13,7 @@ data class UserResponse(
     val patronymic: String?,
     val account: Account,
     val avatarUrl: String,
+    val generatedAvatar: Boolean,
     val gender: Gender,
 ) {
     val fullName: String

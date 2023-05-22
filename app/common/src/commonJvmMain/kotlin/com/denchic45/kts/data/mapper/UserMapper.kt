@@ -30,6 +30,7 @@ fun UserEntity.toUserResponse() = UserResponse(
         email = email
     ),
     avatarUrl = avatar_url,
+    generatedAvatar = generated_avatar,
     gender = gender
 )
 
@@ -42,5 +43,6 @@ fun UserResponse.toEntity() = UserEntity(
     patronymic = patronymic,
     email = account.email,
     avatar_url =  avatarUrl,
+    generated_avatar = generatedAvatar,
     gender = gender
 )

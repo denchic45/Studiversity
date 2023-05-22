@@ -68,6 +68,7 @@ class AuthService @javax.inject.Inject constructor(
             patronymic = userResponse.patronymic ?: ""
             gender = userResponse.gender.name
             avatarUrl = userResponse.avatarUrl
+            isGeneratedAvatar = userResponse.generatedAvatar
             email = userResponse.account.email
         }
     }
