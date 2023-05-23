@@ -129,9 +129,9 @@ fun <T, V> combine(resource1: Resource<T>, resource2: Resource<V>): Resource<Pai
     }
 }
 
-fun <T, V> Resource<T>.combine(resource2: Resource<V>): Resource<Pair<T, V>> {
-    return combine(this, resource2)
-}
+//fun <T, V> Resource<T>.combine(resource2: Resource<V>): Resource<Pair<T, V>> {
+//    return combine(this, resource2)
+//}
 
 fun <T> Flow<Resource<T>>.filterResource(
     onSuccess: suspend (T) -> Boolean = { true },

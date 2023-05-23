@@ -34,7 +34,6 @@ class StudyGroupComponent(
     private val profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
     private val userEditorComponent: (
         onFinish: () -> Unit,
-        userId: UUID?,
         ComponentContext,
     ) -> UserEditorComponent,
     private val studyGroupEditorComponent: (
@@ -116,7 +115,6 @@ class StudyGroupComponent(
                     OverlayChild.UserEditor(
                         userEditorComponent(
                             sidebarNavigation::dismiss,
-                            config.userId,
                             componentContext
                         )
                     )

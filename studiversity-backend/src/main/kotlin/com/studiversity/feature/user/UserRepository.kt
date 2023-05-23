@@ -30,6 +30,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.mindrot.jbcrypt.BCrypt
+import java.io.File
 import java.time.Instant
 import java.util.*
 
@@ -80,8 +81,8 @@ class UserRepository(
     suspend fun updateAvatar(userId: UUID, request: CreateFileRequest, generated: Boolean): String {
         val name = bucket.list(prefix = "avatars") { search = userId.toString() }.single().name
         bucket.delete("avatars/$name")
-        val newPath = "avatars/$userId.${ContentType.defaultForFilePath(request.name)}"
-        bucket.update(newPath, request.bytes)
+        val newPath = "avatars/$userId.${File(request.name).extension}"
+        bucket.upload(newPath, request.bytes)
         return bucket.publicUrl(newPath).also {
             UserDao.findById(userId)!!.apply {
                 avatarUrl = it
@@ -92,9 +93,10 @@ class UserRepository(
 
     suspend fun deleteAvatar(userId: UUID): String {
         val newImageBytes = client.get("https://ui-avatars.com/api") {
-            parameter("name", UserDao.findById(userId)!!.firstName)
+            parameter("name", UserDao.findById(userId)!!.firstName[0])
             parameter("background", "random")
             parameter("format", "png")
+            parameter("size", 128)
         }.readBytes()
 
         return updateAvatar(userId, CreateFileRequest("avatar.png", newImageBytes), true)

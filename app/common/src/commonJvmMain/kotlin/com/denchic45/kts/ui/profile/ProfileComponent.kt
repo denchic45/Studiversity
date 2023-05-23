@@ -24,12 +24,10 @@ import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.util.uuidOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -47,7 +45,7 @@ class ProfileComponent(
     @Assisted
     userId: UUID,
     @Assisted
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
@@ -94,14 +92,19 @@ class ProfileComponent(
         }.stateInResource(componentScope)
 
     fun onAvatarClick() {
-        viewState.value.onSuccess {
-            overlayNavigation.activate(
-                if (it.allowUpdateAvatar) {
-                    OverlayConfig.ImageChooser
-                } else {
-                    OverlayConfig.FullAvatar
-                }
-            )
+        viewState.value.onSuccess { profile ->
+            userFlow.value.onSuccess { user ->
+                overlayNavigation.activate(
+                    if (profile.allowUpdateAvatar) {
+                        if (user.generatedAvatar)
+                            OverlayConfig.AvatarDialog
+                        else
+                            OverlayConfig.ImageChooser
+                    } else {
+                        OverlayConfig.FullAvatar
+                    }
+                )
+            }
         }
     }
 
@@ -123,6 +126,7 @@ class ProfileComponent(
     }
 
     fun onRemoveAvatarClick() {
+        overlayNavigation.dismiss()
         userFlow.value.onSuccess {
             componentScope.launch {
                 removeAvatarUseCase(it.id)
@@ -134,10 +138,8 @@ class ProfileComponent(
         userFlow.value.onSuccess {
             componentScope.launch {
                 updateAvatarUseCase(it.id, CreateFileRequest(name, bytes))
-                withContext(Dispatchers.Main.immediate) {
-                    overlayNavigation.dismiss()
-                }
             }
+            overlayNavigation.dismiss()
         }
     }
 

@@ -18,27 +18,22 @@ import com.denchic45.kts.databinding.FragmentUserEditorBinding
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.theme.AppTheme
-import com.denchic45.stuiversity.api.role.model.Role
-import com.denchic45.stuiversity.util.toUUID
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
 
 @Inject
 class UserEditorFragment(
     appBarInteractor: AppBarInteractor,
     component: (
         onFinish: () -> Unit,
-        userId: UUID?,
-        ComponentContext
+        ComponentContext,
     ) -> UserEditorComponent,
 ) : Fragment(R.layout.fragment_user_editor), HasNavArgs<UserEditorFragmentArgs> {
 
     override val navArgs: UserEditorFragmentArgs by navArgs()
 
-        private val component: UserEditorComponent by lazy {
+    private val component: UserEditorComponent by lazy {
         component(
             findNavController()::navigateUp,
-            navArgs.userId?.toUUID(),
             defaultComponentContext(requireActivity().onBackPressedDispatcher)
         )
     }
@@ -53,7 +48,7 @@ class UserEditorFragment(
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             AppTheme {
-                UserEditorContent(component = component)
+                UserEditorScreen(component = component)
             }
         }
     }

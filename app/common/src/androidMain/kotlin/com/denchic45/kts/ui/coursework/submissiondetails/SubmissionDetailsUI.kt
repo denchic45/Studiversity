@@ -91,11 +91,12 @@ fun SubmissionDetailsScreen(
                 SubmissionHeaderContent(uiState.first)
                 SubmissionDetailsContent(uiState.first, component::onAttachmentClick)
                 Spacer(Modifier.height(MaterialTheme.spacing.normal))
-                SubmissionGradeContent(
-                    uiState = uiState,
-                    onGrade = component::onGrade,
-                    onCancel = component::onGradeCancel
-                )
+                if (uiState.second)
+                    SubmissionGradeContent(
+                        uiState = uiState,
+                        onGrade = component::onGrade,
+                        onCancel = component::onGradeCancel
+                    )
             }
 
         }
@@ -122,7 +123,7 @@ fun SubmissionDetailsScreen(
 private fun SubmissionGradeContent(
     uiState: Pair<SubmissionUiState, Boolean>,
     onGrade: (Int) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
 ) {
     Row(
         Modifier.padding(MaterialTheme.spacing.normal),
@@ -166,14 +167,15 @@ fun SubmissionDetailsContent(
     onAttachmentRemove: ((attachmentId: UUID) -> Unit)? = null,
 ) {
     Column {
-        HeaderItemUI(name = "Прикрепленные файлы")
+        HeaderItemUI(name = "Прикрепленные файлы",Modifier.padding(horizontal = MaterialTheme.spacing.normal))
         if (uiState.attachments.isNotEmpty()) {
             LazyRow(Modifier) {
                 items(uiState.attachments, key = { it.attachmentId?.toString() ?: "" }) { item ->
                     Spacer(Modifier.width(MaterialTheme.spacing.normal))
-                    AttachmentListItem(item = item, onClick = { onAttachmentClick(item) }) {
-                        onAttachmentRemove?.let { it(item.attachmentId!!) }
-                    }
+                    AttachmentListItem(
+                        item = item,
+                        onClick = { onAttachmentClick(item) },
+                        onRemove = onAttachmentRemove?.let { { it(item.attachmentId!!) } })
                 }
             }
         } else {

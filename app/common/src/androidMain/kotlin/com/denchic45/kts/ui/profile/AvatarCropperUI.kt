@@ -29,11 +29,15 @@ import com.smarttoolfactory.cropper.settings.CropOutlineProperty
 
 @Composable
 fun AvatarCropperScreen(imageBitmap: ImageBitmap, onResult: (ImageBitmap?) -> Unit) {
-    var croppedImage by remember { mutableStateOf(imageBitmap) }
+    var croppedImage by remember { mutableStateOf<ImageBitmap?>(null) }
 
     val handleSize: Float = LocalDensity.current.run { 20.dp.toPx() }
     var isCropping by remember { mutableStateOf(false) }
     var crop by remember { mutableStateOf(false) }
+
+    croppedImage?.let {
+        onResult(croppedImage)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         ImageCropper(
@@ -57,7 +61,7 @@ fun AvatarCropperScreen(imageBitmap: ImageBitmap, onResult: (ImageBitmap?) -> Un
         ) {
             croppedImage = it
             isCropping = false
-            crop = false
+//            crop = false
         }
         AppTheme(true) {
             Row(Modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
@@ -66,7 +70,9 @@ fun AvatarCropperScreen(imageBitmap: ImageBitmap, onResult: (ImageBitmap?) -> Un
                     Text("Отмена")
                 }
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
-                TextButton(onClick = { onResult(croppedImage) }) {
+                TextButton(onClick = {
+                    crop = true
+                }) {
                     Text("Подтвердить")
                 }
             }

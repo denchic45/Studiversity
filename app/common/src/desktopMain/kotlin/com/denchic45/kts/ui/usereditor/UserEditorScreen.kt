@@ -1,9 +1,7 @@
 package com.denchic45.kts.ui.usereditor
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -12,28 +10,22 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
 import com.denchic45.kts.ui.component.HeaderItemUI
-import com.denchic45.kts.ui.components.Spinner
-import com.denchic45.kts.ui.components.SupportingText
+import com.denchic45.kts.ui.components.Spinner2
 import com.denchic45.kts.ui.components.dialog.AlertDialog
 import com.denchic45.kts.ui.onString
 import com.denchic45.kts.ui.theme.toDrawablePath
-import com.denchic45.kts.ui.components.AsyncImage
-import com.denchic45.kts.ui.components.loadImageBitmap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserEditorScreen(
+fun UserEditorSidebar(
     component: UserEditorComponent,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val appBarState by LocalAppBarInteractor.current.stateFlow.collectAsState()
     Column(modifier) {
@@ -60,18 +52,8 @@ fun UserEditorScreen(
             }, colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
         )
         Column(Modifier.verticalScroll(rememberScrollState())) {
-            UserEditorContent(component)
-            component.userId?.let {
-                OutlinedButton(
-                    onClick = component::onRemoveClick,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                        .align(Alignment.End),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text("Удалить пользователя")
-                }
-            }
-
+            TODO()
+//            UserEditorContent()
             Spacer(Modifier.height(24.dp))
         }
     }
@@ -81,7 +63,7 @@ fun UserEditorScreen(
 fun UserEditorDialog(
     component: UserEditorComponent,
     appBarInteractor: AppBarInteractor,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
 ) {
     AlertDialog(
         modifier = Modifier.heightIn(max = 648.dp),
@@ -102,92 +84,101 @@ fun UserEditorDialog(
         },
         onDismissRequest = onDismissRequest,
         text = {
+            val state = remember { component.state }
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                UserEditorContent(component)
+                UserEditorContent(
+                    state = state,
+                    component::onFirstNameType,
+                    component::onSurnameType,
+                    component::onPatronymicType,
+                    component::onGenderSelect,
+                    component::onEmailType
+                )
             }
         },
         confirmButton = { TextButton(component::onSaveClick) { Text("Сохранить") } },
-        dismissButton = { TextButton({ onDismissRequest() }) { Text("Отмена") } },
-        optionalButton = { TextButton(component::onRemoveClick) { Text("Удалить") } }
+        dismissButton = { TextButton({ onDismissRequest() }) { Text("Отмена") } }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UserEditorContent(component: UserEditorComponent) {
+private fun UserEditorContent(
+    state: UserEditorComponent.CreatableUserState,
+    onFirstNameType: (String) -> Unit,
+    onSurnameType: (String) -> Unit,
+    onPatronymicType: (String) -> Unit,
+    onGenderSelect: (UserEditorComponent.GenderAction) -> Unit,
+    onEmailType: (String) -> Unit,
+) {
     Column(Modifier.padding(horizontal = 16.dp)) {
-        val photoUrl by component.avatarUrl.collectAsState()
-        AsyncImage(
-            load = { loadImageBitmap(photoUrl) },
-            painterFor = { BitmapPainter(it) },
-            key = photoUrl,
-            null,
-            modifier = Modifier.padding(top = 48.dp).size(136.dp)
-                .align(Alignment.CenterHorizontally)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-        Box(Modifier.size(148.dp).background(Color.Gray))
-
-        val errorState by component.errorState.collectAsState()
-
         HeaderItemUI("Личные данные")
-
-        val firstName by component.firstNameField.collectAsState()
         OutlinedTextField(
-            value = firstName,
-            onValueChange = component::onFirstNameType,
+            value = state.firstName,
+            onValueChange = onFirstNameType,
             Modifier.fillMaxWidth(),
             label = { Text("Имя") },
             singleLine = true,
-            isError = errorState.firstNameMessage != null,
+            isError = state.firstNameMessage != null,
+            supportingText = { Text(state.firstNameMessage ?: "") }
         )
-        SupportingText(errorState.firstNameMessage ?: "", true)
-        val surname by component.surnameField.collectAsState()
+
         OutlinedTextField(
-            value = surname,
-            onValueChange = component::onSurnameType,
+            value = state.surname,
+            onValueChange = onSurnameType,
             Modifier.padding(top = 4.dp).fillMaxWidth(),
             label = { Text("Фамилия") },
             singleLine = true,
-            isError = errorState.surnameMessage != null,
+            isError = state.surnameMessage != null,
+            supportingText = { Text(state.surnameMessage ?: "") }
         )
-        SupportingText(errorState.surnameMessage ?: "", true)
-        val patronymic by component.patronymicField.collectAsState()
+
         OutlinedTextField(
-            value = patronymic,
-            onValueChange = component::onPatronymicType,
+            value = state.patronymic,
+            onValueChange = onPatronymicType,
             Modifier.padding(top = 4.dp).fillMaxWidth(),
             label = { Text("Отчество") },
             placeholder = { Text("Отчество (необязательно)") },
             singleLine = true
         )
-        val gender by component.genderField.collectAsState()
         var expandedGenders by remember { mutableStateOf(false) }
-        Spinner(
-            items = component.genders,
-            onActionClick = component::onGenderSelect,
-            Modifier.padding(top = 24.dp).fillMaxWidth(),
+
+        Spinner2(
+            text = state.gender.title,
+            label = { Text("Пол") },
             expanded = expandedGenders,
             onExpandedChange = { expandedGenders = it },
-            placeholder = "Пол",
-            activeAction = gender
+            itemsContent = {
+                state.genders.forEach {
+                    DropdownMenuItem(
+                        text = { Text(it.title) },
+                        onClick = { onGenderSelect(it) },
+                    )
+                }
+            }
         )
 
-        val accountFieldsVisibility by component.accountFieldsVisibility.collectAsState()
-        if (accountFieldsVisibility) {
-            HeaderItemUI("Вход в аккаунт")
-            val email by component.emailField.collectAsState()
-            OutlinedTextField(
-                value = email,
-                onValueChange = component::onEmailType,
-                Modifier.fillMaxWidth(),
-                label = { Text("Почта") },
-                leadingIcon = { Icon(painterResource("ic_email".toDrawablePath()), null) },
-                singleLine = true,
-                isError = errorState.emailMessage != null,
-            )
-            SupportingText(errorState.emailMessage ?: "", true)
+//        Spinner(
+//            items = state.genders,
+//            onActionClick = onGenderSelect,
+//            Modifier.padding(top = 24.dp).fillMaxWidth(),
+//            expanded = expandedGenders,
+//            onExpandedChange = { expandedGenders = it },
+//            placeholder = "Пол",
+//            activeAction = state.gender
+//        )
+
+        HeaderItemUI("Вход в аккаунт")
+        OutlinedTextField(
+            value = state.email,
+            onValueChange = onEmailType,
+            Modifier.fillMaxWidth(),
+            label = { Text("Почта") },
+            leadingIcon = { Icon(painterResource("ic_email".toDrawablePath()), null) },
+            singleLine = true,
+            isError = state.emailMessage != null,
+            supportingText = { Text(state.emailMessage ?: "") }
+        )
 
 //            val password by component.passwordField.collectAsState()
 //            var passwordVisible by remember { mutableStateOf(false) }
@@ -211,7 +202,7 @@ private fun UserEditorContent(component: UserEditorComponent) {
 //            )
 //            SupportingText(errorState.passwordMessage ?: "", true)
 
-        }
+    }
 
 //        val groupVisibility by component.groupFieldVisibility.collectAsState()
 //        if (groupVisibility) {
@@ -241,5 +232,4 @@ private fun UserEditorContent(component: UserEditorComponent) {
 //            )
 //        }
 //        SupportingText(errorState.groupMessage ?: "", true)
-    }
 }

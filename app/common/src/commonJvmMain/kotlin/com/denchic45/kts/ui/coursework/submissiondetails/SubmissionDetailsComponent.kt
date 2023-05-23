@@ -50,7 +50,7 @@ class SubmissionDetailsComponent(
     @Assisted
     private val submissionId: UUID,
     @Assisted
-    private val componentContext: ComponentContext
+    private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
@@ -77,7 +77,8 @@ class SubmissionDetailsComponent(
     val uiState = combine(
         submissionState,
         allowGradeSubmission
-    ) { submissionState, allowGrade -> submissionState.combine(allowGrade) }.stateInResource(componentScope)
+    ) { submissionState, allowGrade -> combine(submissionState, allowGrade) }
+        .stateInResource(componentScope)
 
     init {
         componentScope.launch {

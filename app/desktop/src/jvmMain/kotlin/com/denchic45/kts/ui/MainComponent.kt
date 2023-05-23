@@ -12,7 +12,6 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.denchic45.kts.domain.MainInteractor
-import com.denchic45.kts.domain.usecase.RemoveUserUseCase
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.navigation.ConfirmChild
 import com.denchic45.kts.ui.navigation.ConfirmConfig
@@ -27,7 +26,6 @@ import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
 
 @Inject
 class MainComponent constructor(
@@ -37,8 +35,7 @@ class MainComponent constructor(
     private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     userEditorComponent: (
         onFinish: () -> Unit,
-        userId: UUID?,
-        ComponentContext
+        ComponentContext,
     ) -> UserEditorComponent,
     @Assisted
     componentContext: ComponentContext,
@@ -79,7 +76,6 @@ class MainComponent constructor(
                 UserEditorChild(
                     userEditorComponent(
                         overlayNavigation::dismiss,
-                        config.userId,
                         componentContext
                     ),
                     appBarInteractor
@@ -113,7 +109,7 @@ class MainComponent constructor(
     }
 
     sealed class RootChild {
-        abstract val component: RootComponent<*,*>
+        abstract val component: RootComponent<*, *>
 
         class YourTimetables(override val component: YourTimetablesRootComponent) : RootChild()
 
