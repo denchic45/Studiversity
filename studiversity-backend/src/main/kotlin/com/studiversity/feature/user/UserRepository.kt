@@ -5,6 +5,7 @@ import com.denchic45.stuiversity.api.account.model.UpdateEmailRequest
 import com.denchic45.stuiversity.api.account.model.UpdatePasswordRequest
 import com.denchic45.stuiversity.api.auth.AuthErrors
 import com.denchic45.stuiversity.api.auth.model.SignupRequest
+import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.studiversity.database.exists
@@ -17,6 +18,11 @@ import com.studiversity.feature.auth.model.RefreshToken
 import com.studiversity.feature.auth.model.UserByEmail
 import com.studiversity.feature.role.ScopeType
 import com.studiversity.feature.role.repository.AddScopeRepoExt
+import io.github.jan.supabase.storage.BucketApi
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -28,7 +34,9 @@ import java.time.Instant
 import java.util.*
 
 class UserRepository(
-    private val organizationId: UUID
+    private val organizationId: UUID,
+    private val bucket: BucketApi,
+    private val client: HttpClient
 ) : AddScopeRepoExt {
 
 
@@ -67,6 +75,29 @@ class UserRepository(
                 patronymic = it
             }
         }
+    }
+
+    suspend fun updateAvatar(userId: UUID, request: CreateFileRequest, generated: Boolean): String {
+        val name = bucket.list(prefix = "avatars") { search = userId.toString() }.single().name
+        bucket.delete("avatars/$name")
+        val newPath = "avatars/$userId.${ContentType.defaultForFilePath(request.name)}"
+        bucket.update(newPath, request.bytes)
+        return bucket.publicUrl(newPath).also {
+            UserDao.findById(userId)!!.apply {
+                avatarUrl = it
+                generatedAvatar = generated
+            }
+        }
+    }
+
+    suspend fun deleteAvatar(userId: UUID): String {
+        val newImageBytes = client.get("https://ui-avatars.com/api") {
+            parameter("name", UserDao.findById(userId)!!.firstName)
+            parameter("background", "random")
+            parameter("format", "png")
+        }.readBytes()
+
+        return updateAvatar(userId, CreateFileRequest("avatar.png", newImageBytes), true)
     }
 
     fun update(userId: UUID, updatePasswordRequest: UpdatePasswordRequest) {

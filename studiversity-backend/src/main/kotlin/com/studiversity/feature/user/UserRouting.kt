@@ -1,20 +1,25 @@
 package com.studiversity.feature.user
 
+import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.stuiversity.api.role.model.Capability
 import com.studiversity.config
 import com.studiversity.feature.auth.usecase.SignUpUserManuallyUseCase
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
+import com.studiversity.feature.user.account.usecase.RemoveAvatarUseCase
+import com.studiversity.feature.user.account.usecase.UpdateAvatarUseCase
 import com.studiversity.feature.user.usecase.FindUserByIdUseCase
 import com.studiversity.feature.user.usecase.RemoveUserUseCase
 import com.studiversity.feature.user.usecase.SearchUsersUseCase
+import com.studiversity.ktor.CommonErrors
 import com.studiversity.ktor.currentUserId
 import com.studiversity.ktor.getUuidOrFail
 import com.studiversity.util.tryToUUID
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.studiversity.ktor.CommonErrors
 import com.studiversity.validation.require
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -76,6 +81,31 @@ private fun Route.userByIdRoute() {
 
             removeUser(call.parameters.getUuidOrFail("userId"))
             call.respond(HttpStatusCode.NoContent)
+        }
+        route("/avatar") {
+            val updateAvatar: UpdateAvatarUseCase by inject()
+            val removeAvatar: RemoveAvatarUseCase by inject()
+
+            put {
+                val photoRequest = call.receiveMultipart().readPart()?.let { part ->
+                    if (part is PartData.FileItem) {
+                        val fileSourceName = part.originalFileName as String
+                        val fileBytes = part.streamProvider().readBytes()
+                        CreateFileRequest(fileSourceName, fileBytes)
+                    } else throw BadRequestException("INVALID_AVATAR")
+                } ?: throw BadRequestException("INVALID_AVATAR")
+
+                val url = updateAvatar(
+                    userId = call.parameters.getUuidOrFail("userId"),
+                    request = photoRequest
+                )
+                call.respond(url)
+            }
+
+            delete {
+                val url = removeAvatar(call.parameters.getUuidOrFail("userId"))
+                call.respond(url)
+            }
         }
     }
 }
