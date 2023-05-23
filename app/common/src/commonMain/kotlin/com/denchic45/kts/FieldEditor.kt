@@ -27,9 +27,16 @@ class FieldEditor(private val fields: Map<String, Field<*>>) {
 }
 
 class Field<T>(
-    var oldValue: T,
     val currentValue: () -> T,
 ) {
+
+    constructor(
+        _oldValue_: T,
+        currentValue: () -> T,
+    ) : this(currentValue)
+
+    var oldValue: T = currentValue()
+
     fun hasChanged() = oldValue != currentValue()
 }
 

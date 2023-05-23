@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -73,6 +72,8 @@ fun SubmissionDetailsScreen(
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
+//    val uiStateResource by component.submissionState.collectAsState()
+//    val allowGrade by component.allowGradeSubmission.collectAsState()
     val uiStateResource by component.uiState.collectAsState()
 
     component.openAttachment.collectWithLifecycle {
@@ -86,43 +87,15 @@ fun SubmissionDetailsScreen(
         ) {
 
             val imeState by rememberImeState()
-            Column(Modifier.imePadding().let { if (imeState) it.padding(bottom = 220.dp) else it }) {
-                SubmissionHeaderContent(uiState)
-                SubmissionDetailsContent(uiState, component::onAttachmentClick)
+            Column(Modifier.let { if (imeState) it.padding(bottom = 220.dp) else it }) {
+                SubmissionHeaderContent(uiState.first)
+                SubmissionDetailsContent(uiState.first, component::onAttachmentClick)
                 Spacer(Modifier.height(MaterialTheme.spacing.normal))
-                Row(
-                    Modifier.padding(MaterialTheme.spacing.normal),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    uiState.grade?.let {
-                        Text(
-                            text = it.value.toString(),
-                            modifier = Modifier.weight(1f),
-                        )
-                        TextButton(onClick = component::onGradeCancel) {
-                            Text("Отменить")
-                        }
-                    } ?: run {
-                        var typedGrade by remember { mutableStateOf("") }
-                        OutlinedTextField(
-                            value = typedGrade,
-                            onValueChange = { value ->
-                                if (value.isDigitsOnly() && value.toInt() in 1..5)
-                                    typedGrade = value
-                            },
-                            trailingIcon = { Text("/5") },
-                            modifier = Modifier.weight(1f),
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-                        )
-                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
-                        FilledTonalButton(
-                            onClick = { component.onGrade(typedGrade.toInt()) },
-                            enabled = typedGrade.isNotEmpty()
-                        ) {
-                            Text("Оценить")
-                        }
-                    }
-                }
+                SubmissionGradeContent(
+                    uiState = uiState,
+                    onGrade = component::onGrade,
+                    onCancel = component::onGradeCancel
+                )
             }
 
         }
@@ -140,6 +113,47 @@ fun SubmissionDetailsScreen(
                 ) {
                     CircularProgressIndicator()
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SubmissionGradeContent(
+    uiState: Pair<SubmissionUiState, Boolean>,
+    onGrade: (Int) -> Unit,
+    onCancel: () -> Unit
+) {
+    Row(
+        Modifier.padding(MaterialTheme.spacing.normal),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        uiState.first.grade?.let {
+            Text(
+                text = it.value.toString(),
+                modifier = Modifier.weight(1f),
+            )
+            TextButton(onClick = onCancel) {
+                Text("Отменить")
+            }
+        } ?: run {
+            var typedGrade by remember { mutableStateOf("") }
+            OutlinedTextField(
+                value = typedGrade,
+                onValueChange = { value ->
+                    if (value.isDigitsOnly() && value.toInt() in 1..5)
+                        typedGrade = value
+                },
+                trailingIcon = { Text("/5") },
+                modifier = Modifier.weight(1f),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+            )
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
+            FilledTonalButton(
+                onClick = { onGrade(typedGrade.toInt()) },
+                enabled = typedGrade.isNotEmpty()
+            ) {
+                Text("Оценить")
             }
         }
     }

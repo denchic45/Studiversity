@@ -38,16 +38,18 @@ fun <T> Resource<T>.success() = this as Resource.Success
 
 fun <T> ResponseResult<T>.toResource(): Resource<T> = mapBoth(
     success = { Resource.Success(it) },
-    failure = { Resource.Error(it.toFailure()).apply {
-        when(val failure = failure) {
-            is Cause -> failure.throwable.printStackTrace()
-            is ClientError -> println(failure.response.error)
-            Forbidden -> println("Forbidden")
-            NoConnection -> println("NoConnection")
-            NotFound -> println("NotFound")
-            ServerError -> println("ServerError")
+    failure = {
+        Resource.Error(it.toFailure()).apply {
+            when (val failure = failure) {
+                is Cause -> failure.throwable.printStackTrace()
+                is ClientError -> println(failure.response.error)
+                Forbidden -> println("Forbidden")
+                NoConnection -> println("NoConnection")
+                NotFound -> println("NotFound")
+                ServerError -> println("ServerError")
+            }
         }
-    } }
+    }
 )
 
 fun <T> ResponseResult<T>.toEmptyResource(): EmptyResource = mapBoth(
@@ -72,6 +74,17 @@ inline infix fun <T> Resource<T>.onLoading(action: () -> Unit): Resource<T> = ap
         action()
     }
 }
+
+fun <T> Resource<T>.takeIfSuccess(): T? = run {
+    if (this is Resource.Success) value else null
+}
+
+inline infix fun <T, V> Resource<T>.ifSuccess(function: (T) -> V): V? = run {
+    if (this is Resource.Success) {
+        function(value)
+    } else null
+}
+
 
 inline fun <T, V> Resource<T>.map(transform: (T) -> V): Resource<V> {
     return when (this) {
@@ -106,6 +119,18 @@ inline fun <T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T
         is Resource.Success,
         -> this
     }
+}
+
+fun <T, V> combine(resource1: Resource<T>, resource2: Resource<V>): Resource<Pair<T, V>> {
+    return resource1.mapResource { value1 ->
+        resource2.map { value2 ->
+            value1 to value2
+        }
+    }
+}
+
+fun <T, V> Resource<T>.combine(resource2: Resource<V>): Resource<Pair<T, V>> {
+    return combine(this, resource2)
 }
 
 fun <T> Flow<Resource<T>>.filterResource(
