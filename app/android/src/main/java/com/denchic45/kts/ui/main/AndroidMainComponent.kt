@@ -2,7 +2,13 @@ package com.denchic45.kts.ui.main
 
 import android.app.Activity
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.MobileNavigationDirections
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.MainInteractor
@@ -13,14 +19,18 @@ import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindAssignedUserRolesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindYourCoursesUseCase
 import com.denchic45.kts.ui.NavigationCommand
+import com.denchic45.kts.ui.UiIcon
 import com.denchic45.kts.ui.UiText
 import com.denchic45.kts.ui.adminPanel.AdminPanelFragmentDirections
-import com.denchic45.kts.ui.base.BaseViewModel
 import com.denchic45.kts.ui.course.CourseFragmentDirections
+import com.denchic45.kts.ui.navigation.RootStackChildrenContainer
 import com.denchic45.kts.ui.onResource
+import com.denchic45.kts.ui.root.YourStudyGroupsRootStackChildrenContainer
+import com.denchic45.kts.ui.root.YourTimetablesRootStackChildrenContainer
 import com.denchic45.kts.ui.settings.SettingsFragmentDirections
 import com.denchic45.kts.ui.tasks.TasksFragmentDirections
 import com.denchic45.kts.ui.uiIconOf
+import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.Dispatchers
@@ -35,25 +45,50 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.UUID
-import javax.inject.Inject
 
-class MainViewModel @Inject constructor(
+class MainComponent constructor(
     private val interactor: MainInteractor,
 //    private val appVersionService: GoogleAppVersionService,
     private val findYourCoursesUseCase: FindYourCoursesUseCase,
+    private val yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootStackChildrenContainer,
+    private val yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootStackChildrenContainer,
     private val findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
-) : BaseViewModel() {
+    private val componentContext: ComponentContext
+) : ComponentContext by componentContext {
+
+    private val componentScope = componentScope()
 
     private val checkCapabilities = checkUserCapabilitiesInScopeUseCase(
         capabilities = emptyList()
-    ).stateInResource(viewModelScope)
+    ).stateInResource(componentScope)
 
     private val userRoles = flow {
         emit(findAssignedUserRolesInScopeUseCase())
-    }.stateInResource(viewModelScope)
+    }.stateInResource(componentScope)
 
     val updateBannerState = MutableStateFlow<UpdateBannerState>(UpdateBannerState.Hidden)
+
+    private val navigation = StackNavigation<RootConfig>()
+
+    val stack: Value<ChildStack<RootConfig, RootChild>> = childStack(
+        source = navigation,
+        initialConfiguration = RootConfig.YourTimetables,
+        childFactory = { config, componentContext ->
+            when (config) {
+                is RootConfig.YourTimetables -> RootChild.YourTimetables(
+                    yourTimetablesRootComponent(
+                        componentContext
+                    )
+                )
+
+                is RootConfig.YourStudyGroups -> RootChild.YourStudyGroups(
+                    yourStudyGroupsRootComponent(
+                        componentContext
+                    )
+                )
+            }
+        })
 
     fun setActivityForService(activity: Activity) {
 //        appVersionService.activityRef = WeakReference(activity)
@@ -71,7 +106,7 @@ class MainViewModel @Inject constructor(
 
     enum class ToolbarNavigationState { NONE, MENU, BACK }
 
-    val userInfo = interactor.observeThisUser().filterNotNull().stateInResource(viewModelScope)
+    val userInfo = interactor.observeThisUser().filterNotNull().stateInResource(componentScope)
 
 //    private val uiPermissions: UiPermissions
 
@@ -80,16 +115,16 @@ class MainViewModel @Inject constructor(
     val bottomMenuVisibility: MutableLiveData<Boolean> = MutableLiveData(true)
 
     private val yourCourses = flow { emit(findYourCoursesUseCase()) }
-        .shareIn(viewModelScope, SharingStarted.Lazily)
+        .shareIn(componentScope, SharingStarted.Lazily)
 
     val navMenuState: StateFlow<NavDrawerState> = yourCourses.filterSuccess()
         .combine(userRoles.filterSuccess()) { courses, roles ->
             NavDrawerState(courses.value, roles.value.roles.contains(Role.Moderator))
-        }.stateIn(viewModelScope, SharingStarted.Lazily, NavDrawerState(emptyList(), false))
+        }.stateIn(componentScope, SharingStarted.Lazily, NavDrawerState(emptyList(), false))
 
     fun onOptionItemSelect(itemId: Int) {
         when (itemId) {
-            android.R.id.home -> viewModelScope.launch { goBack.emit(Unit) }
+            android.R.id.home -> componentScope.launch { goBack.emit(Unit) }
         }
     }
 
@@ -133,7 +168,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun onCourseClick(courseId: UUID) {
-        viewModelScope.launch {
+        componentScope.launch {
             navigate.emit(
                 NavigationCommand.To(
                     CourseFragmentDirections.actionGlobalCourseFragment(
@@ -173,7 +208,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun onDestinationChanged(id: Int) {
-        viewModelScope.launch {
+        componentScope.launch {
             if (mainScreenIds.contains(id)) {
                 if (!bottomMenuVisibility.value!!) {
                     bottomMenuVisibility.value = true
@@ -219,17 +254,17 @@ class MainViewModel @Inject constructor(
 //            )
 //        }
 
-        viewModelScope.launch(Dispatchers.IO) { interactor.startListeners() }
+        componentScope.launch(Dispatchers.IO) { interactor.startListeners() }
 
-        viewModelScope.launch {
+        componentScope.launch {
             interactor.observeHasGroup().collect { hasGroup: Boolean ->
                 menuBtnVisibility.emit(R.id.menu_group to hasGroup)
             }
         }
-        viewModelScope.launch {
+        componentScope.launch {
             interactor.listenAuthState.collect { logged: Boolean ->
                 if (!logged) {
-                    viewModelScope.launch { openLogin.emit(Unit) }
+                    componentScope.launch { openLogin.emit(Unit) }
                 }
             }
         }
@@ -303,11 +338,25 @@ class MainViewModel @Inject constructor(
 
         object Install : UpdateBannerState()
     }
+
+    @Parcelize
+    sealed class RootConfig : Parcelable {
+        object YourTimetables : RootConfig()
+        object YourStudyGroups : RootConfig()
+    }
+
+    sealed class RootChild {
+        abstract val component: RootStackChildrenContainer<*, *>
+
+        class YourTimetables(override val component: YourTimetablesRootStackChildrenContainer) : RootChild()
+
+        class YourStudyGroups(override val component: YourStudyGroupsRootStackChildrenContainer) : RootChild()
+    }
 }
 
-//data class NavDrawerItem(
-//    val name: UiText,
-//    val icon: UiIcon,
-//    val selected: Boolean = false,
-//    val enabled: Boolean = true
-//)
+data class NavDrawerItem(
+    val name: UiText,
+    val icon: UiIcon,
+    val selected: Boolean = false,
+    val enabled: Boolean = true
+)

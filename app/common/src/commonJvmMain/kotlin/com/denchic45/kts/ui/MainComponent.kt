@@ -11,16 +11,17 @@ import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.MainInteractor
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.navigation.ConfirmChild
 import com.denchic45.kts.ui.navigation.ConfirmConfig
 import com.denchic45.kts.ui.navigation.OverlayChild
 import com.denchic45.kts.ui.navigation.OverlayConfig
+import com.denchic45.kts.ui.navigation.RootStackChildrenContainer
 import com.denchic45.kts.ui.navigation.UserEditorChild
 import com.denchic45.kts.ui.navigation.UserEditorConfig
-import com.denchic45.kts.ui.root.YourStudyGroupsRootComponent
-import com.denchic45.kts.ui.root.YourTimetablesRootComponent
+import com.denchic45.kts.ui.root.YourStudyGroupsRootStackChildrenContainer
+import com.denchic45.kts.ui.root.YourTimetablesRootStackChildrenContainer
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.launch
@@ -29,10 +30,9 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class MainComponent constructor(
-    private val yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootComponent,
-    private val yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootComponent,
+    private val yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootStackChildrenContainer,
+    private val yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootStackChildrenContainer,
     mainInteractor: MainInteractor,
-    private val overlayNavigation: OverlayNavigation<OverlayConfig>,
     userEditorComponent: (
         onFinish: () -> Unit,
         ComponentContext,
@@ -63,8 +63,13 @@ class MainComponent constructor(
                         componentContext
                     )
                 )
+
+                RootConfig.Settings -> TODO()
+                RootConfig.Works -> TODO()
             }
         })
+
+    private val overlayNavigation: OverlayNavigation<OverlayConfig> = OverlayNavigation()
 
     val childOverlay: Value<ChildOverlay<OverlayConfig, OverlayChild>> = childOverlay(
         source = overlayNavigation,
@@ -72,13 +77,11 @@ class MainComponent constructor(
     ) { config, _ ->
         when (config) {
             is UserEditorConfig -> {
-                val appBarInteractor = AppBarInteractor()
                 UserEditorChild(
                     userEditorComponent(
                         overlayNavigation::dismiss,
                         componentContext
-                    ),
-                    appBarInteractor
+                    )
                 )
             }
 
@@ -103,16 +106,38 @@ class MainComponent constructor(
         overlayNavigation.dismiss()
     }
 
+    @Parcelize
     sealed class RootConfig : Parcelable {
+
         object YourTimetables : RootConfig()
+
         object YourStudyGroups : RootConfig()
+
+        object Works : RootConfig()
+
+        object Settings : RootConfig()
     }
 
+    sealed interface PrimaryChild
+    sealed interface ExtraChild
+
     sealed class RootChild {
-        abstract val component: RootComponent<*, *>
+        abstract val component: RootStackChildrenContainer<*, *>
 
-        class YourTimetables(override val component: YourTimetablesRootComponent) : RootChild()
+        class YourTimetables(
+            override val component: YourTimetablesRootStackChildrenContainer
+        ) : RootChild(), PrimaryChild
 
-        class YourStudyGroups(override val component: YourStudyGroupsRootComponent) : RootChild()
+        class YourStudyGroups(
+            override val component: YourStudyGroupsRootStackChildrenContainer
+        ) : RootChild(), PrimaryChild
+
+        class Works(
+            override val component: RootStackChildrenContainer<*, *>
+        ) : RootChild(), ExtraChild
+
+        class Settings(
+            override val component: RootStackChildrenContainer<*, *>
+        ) : RootChild(), ExtraChild
     }
 }

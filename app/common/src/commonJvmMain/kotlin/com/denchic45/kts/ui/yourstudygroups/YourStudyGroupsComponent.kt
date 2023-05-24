@@ -13,6 +13,8 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
+import com.denchic45.kts.ui.navigation.ChildrenContainer
+import com.denchic45.kts.ui.navigation.isActiveFlow
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.kts.util.componentScope
@@ -51,13 +53,12 @@ class YourStudyGroupsComponent(
     onStudyGroupOpen: (UUID) -> Unit,
     @Assisted
     componentContext: ComponentContext,
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ChildrenContainer {
 
     object Config
     object Child
 
     private val componentScope = componentScope()
-
 
     private val studyGroupNavigation = OverlayNavigation<StudyGroupConfig>()
 
@@ -76,23 +77,6 @@ class YourStudyGroupsComponent(
 
     @Parcelize
     data class StudyGroupConfig(val studyGroupId: UUID) : Parcelable
-
-
-//    val appBarState = MutableStateFlow(
-//        AppBarState(
-//            title = uiTextOf("Ваши группы"),
-//            onDropdownMenuItemClick = {
-//                it.title.onString { action ->
-//                    when (action) {
-//                        "Редактировать" -> {
-//                            selectedStudyGroup.value.onSuccess {
-//                                onStudyGroupEditClick(it.id)
-//                            }
-//                        }
-//                    }
-//                }
-//            })
-//    )
 
     val studyGroups = findYourStudyGroupsUseCase().stateInResource(componentScope)
 
@@ -153,6 +137,10 @@ class YourStudyGroupsComponent(
 
     fun onEditStudyGroupClick() {
         childStudyGroup.value.overlay?.instance?.onEditClick()
+    }
+
+    override fun hasChildrenFlow(): Flow<Boolean> {
+        return childStudyGroup.isActiveFlow()
     }
 
 }

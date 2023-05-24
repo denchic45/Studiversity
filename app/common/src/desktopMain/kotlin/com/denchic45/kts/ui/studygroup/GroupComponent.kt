@@ -1,19 +1,5 @@
 package com.denchic45.kts.ui.studygroup
 
-import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.bringToFront
-import com.arkivanov.decompose.router.stack.childStack
-import com.denchic45.kts.ui.studygroup.courses.StudyGroupCoursesComponent
-import com.denchic45.kts.ui.studygroup.members.StudyGroupMembersComponent
-import com.denchic45.kts.ui.navigation.StudyGroupTabsChild
-import com.denchic45.kts.ui.navigation.GroupTabsConfig
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import me.tatarka.inject.annotations.Assisted
-import me.tatarka.inject.annotations.Inject
-import java.util.UUID
-
 //@Inject
 //class GroupComponent(
 //    studyGroupMembersComponent: (UUID, ComponentContext) -> StudyGroupMembersComponent,

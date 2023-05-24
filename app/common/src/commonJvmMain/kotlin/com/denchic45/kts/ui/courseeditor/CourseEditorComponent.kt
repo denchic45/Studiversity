@@ -1,16 +1,16 @@
 package com.denchic45.kts.ui.courseeditor
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.overlay.ChildOverlay
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.Field
@@ -20,14 +20,11 @@ import com.denchic45.kts.domain.map
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.AddCourseUseCase
 import com.denchic45.kts.domain.usecase.FindCourseByIdUseCase
-import com.denchic45.kts.domain.usecase.FindSubjectByContainsNameUseCase
 import com.denchic45.kts.domain.usecase.UpdateCourseUseCase
-import com.denchic45.kts.ui.ActionMenuItem
-import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.chooser.SubjectSearchComponent
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
-import com.denchic45.kts.ui.uiIconOf
+import com.denchic45.kts.ui.navigation.OverlayChildrenContainer
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.updateOldValues
 import com.denchic45.kts.util.componentScope
@@ -62,7 +59,8 @@ class CourseEditorComponent(
     private val courseId: UUID?,
     @Assisted
     private val componentContext: ComponentContext,
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext,
+    OverlayChildrenContainer<CourseEditorComponent.DialogConfig, CourseEditorComponent.DialogChild> {
 
     private val componentScope = componentScope()
 
@@ -79,8 +77,8 @@ class CourseEditorComponent(
 //        ),
 //    ))
 
-    private val overlayNavigation = OverlayNavigation<DialogConfig>()
-    val childOverlay = childOverlay(
+    override val overlayNavigation = OverlayNavigation<DialogConfig>()
+    override val childOverlay: Value<ChildOverlay<DialogConfig, DialogChild>> = childOverlay(
         handleBackButton = true,
         source = overlayNavigation,
         childFactory = { config, componentContext ->
@@ -290,6 +288,6 @@ class CourseEditorComponent(
     }
 
     sealed class DialogChild {
-        class SubjectChooser(val component: SubjectSearchComponent)
+        class SubjectChooser(val component: SubjectSearchComponent) : DialogChild()
     }
 }

@@ -7,12 +7,12 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.ui.yourtimetables.YourTimetablesScreen
 
 @Composable
-fun YourTimetablesRootScreen(component: YourTimetablesRootComponent) {
+fun YourTimetablesRootScreen(component: YourTimetablesRootStackChildrenContainer) {
     val stack by component.childStack.subscribeAsState()
 
     Children(stack) {
         when(val child = it.instance) {
-            is YourTimetablesRootComponent.Child.YourTimetables -> {
+            is YourTimetablesRootStackChildrenContainer.Child.YourTimetables -> {
                 YourTimetablesScreen(child.component)
             }
         }

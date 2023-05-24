@@ -15,7 +15,6 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.AddCourseWorkUseCase
 import com.denchic45.kts.domain.usecase.DownloadFileUseCase
-import com.denchic45.kts.domain.usecase.FindCourseTopicUseCase
 import com.denchic45.kts.domain.usecase.FindCourseWorkAttachmentsUseCase
 import com.denchic45.kts.domain.usecase.FindCourseWorkUseCase
 import com.denchic45.kts.domain.usecase.ObserveCourseTopicsUseCase
@@ -29,6 +28,7 @@ import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.model.AttachmentItem
 import com.denchic45.kts.ui.model.toAttachmentItems
 import com.denchic45.kts.ui.model.toRequest
+import com.denchic45.kts.ui.navigation.EmptyChildrenContainer
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.updateOldValues
 import com.denchic45.kts.util.componentScope
@@ -83,7 +83,7 @@ class CourseWorkEditorComponent(
     topicId: UUID?,
     @Assisted
     private val componentContext: ComponentContext
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, EmptyChildrenContainer {
 
     private val componentScope = componentScope()
 

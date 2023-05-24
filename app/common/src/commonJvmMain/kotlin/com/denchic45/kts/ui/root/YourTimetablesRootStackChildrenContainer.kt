@@ -7,24 +7,25 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.kts.ui.RootComponent
+import com.denchic45.kts.ui.navigation.ChildrenContainerChild
+import com.denchic45.kts.ui.navigation.RootStackChildrenContainer
 import com.denchic45.kts.ui.yourtimetables.YourTimetablesComponent
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class YourTimetablesRootComponent(
+class YourTimetablesRootStackChildrenContainer(
     yourTimetablesComponent: (ComponentContext) -> YourTimetablesComponent,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext,
-    RootComponent<YourTimetablesRootComponent.Config, YourTimetablesRootComponent.Child> {
+    RootStackChildrenContainer<YourTimetablesRootStackChildrenContainer.Config, YourTimetablesRootStackChildrenContainer.Child> {
 
     @Parcelize
     sealed class Config : Parcelable {
         object YourTimetables : Config()
     }
 
-    sealed class Child {
-        class YourTimetables(val component: YourTimetablesComponent) : Child()
+    sealed class Child : ChildrenContainerChild {
+        class YourTimetables(override val component: YourTimetablesComponent) : Child()
     }
 
     override val navigation: StackNavigation<Config> = StackNavigation()

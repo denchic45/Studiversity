@@ -12,6 +12,8 @@ import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
+import com.denchic45.kts.ui.navigation.ChildrenContainer
+import com.denchic45.kts.ui.navigation.isActiveFlow
 import com.denchic45.kts.ui.profile.ProfileComponent
 import com.denchic45.kts.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.kts.ui.studygroup.members.StudyGroupMembersComponent
@@ -20,6 +22,7 @@ import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.shareIn
@@ -61,7 +64,7 @@ class StudyGroupComponent(
     private val studyGroupId: UUID,
     @Assisted
     componentContext: ComponentContext,
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ChildrenContainer {
 
     private val componentScope = componentScope()
 
@@ -207,5 +210,9 @@ class StudyGroupComponent(
         class Members(val component: StudyGroupMembersComponent) : TabChild("Участники")
         class Courses(val component: StudyGroupCoursesComponent) : TabChild("Курсы")
         class Timetable(val component: StudyGroupTimetableComponent) : TabChild("Расписание")
+    }
+
+    override fun hasChildrenFlow(): Flow<Boolean> {
+       return childSidebar.isActiveFlow()
     }
 }

@@ -11,6 +11,5 @@ class UserEditorConfig(
 ) : GroupMembersConfig, OverlayConfig
 
 class UserEditorChild(
-    val userEditorComponent: UserEditorComponent,
-    val appBarInteractor: AppBarInteractor
+    val userEditorComponent: UserEditorComponent
 ) : GroupMembersChild, OverlayChild

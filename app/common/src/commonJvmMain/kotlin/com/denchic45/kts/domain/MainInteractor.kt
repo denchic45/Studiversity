@@ -26,7 +26,7 @@ class MainInteractor @Inject constructor(
     private val courseRepository: CourseRepository,
     private val dbHelper: DbHelper,
     private val systemDirs: SystemDirs,
-) : Interactor {
+)  {
 
     val listenAuthState: Flow<Boolean> = authService.observeIsAuthenticated
 
@@ -36,14 +36,9 @@ class MainInteractor @Inject constructor(
         systemDirs.prefsDir.listFiles()!!.forEach { it.delete() }
     }
 
-    override fun removeListeners() {
-
-    }
-
     fun observeHasGroup(): Flow<Boolean> = studyGroupRepository.findByMe()
         .filterSuccess()
         .map { it.value.isNotEmpty() }
-
 
     fun findThisUser() = userRepository.findSelf()
 

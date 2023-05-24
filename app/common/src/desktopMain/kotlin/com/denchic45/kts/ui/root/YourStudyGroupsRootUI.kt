@@ -9,27 +9,27 @@ import com.denchic45.kts.ui.studygroup.StudyGroupScreen
 import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsScreen
 
 @Composable
-fun YourStudyGroupsRootScreen(component: YourStudyGroupsRootComponent) {
+fun YourStudyGroupsRootScreen(component: YourStudyGroupsRootStackChildrenContainer) {
     val childStack by component.childStack.subscribeAsState()
 
     Children(childStack) {
         when (val child = it.instance) {
-            is YourStudyGroupsRootComponent.Child.YourStudyGroups -> {
+            is YourStudyGroupsRootStackChildrenContainer.Child.YourStudyGroups -> {
                 YourStudyGroupsScreen(child.component)
             }
 
-            is YourStudyGroupsRootComponent.Child.StudyGroup -> {
+            is YourStudyGroupsRootStackChildrenContainer.Child.StudyGroup -> {
                 StudyGroupScreen(child.component)
             }
 
-            is YourStudyGroupsRootComponent.Child.Course -> {
+            is YourStudyGroupsRootStackChildrenContainer.Child.Course -> {
                 CourseScreen(child.component)
             }
 
-            is YourStudyGroupsRootComponent.Child.CourseEditor -> TODO()
-            is YourStudyGroupsRootComponent.Child.CourseTopics -> TODO()
-            is YourStudyGroupsRootComponent.Child.CourseWork -> TODO()
-            is YourStudyGroupsRootComponent.Child.CourseWorkEditor -> TODO()
+            is YourStudyGroupsRootStackChildrenContainer.Child.CourseEditor -> TODO()
+            is YourStudyGroupsRootStackChildrenContainer.Child.CourseTopics -> TODO()
+            is YourStudyGroupsRootStackChildrenContainer.Child.CourseWork -> TODO()
+            is YourStudyGroupsRootStackChildrenContainer.Child.CourseWorkEditor -> TODO()
         }
     }
 }

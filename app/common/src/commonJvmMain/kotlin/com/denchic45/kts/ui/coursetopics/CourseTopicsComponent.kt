@@ -8,6 +8,7 @@ import com.denchic45.kts.domain.usecase.AddCourseTopicUseCase
 import com.denchic45.kts.domain.usecase.ObserveCourseTopicsUseCase
 import com.denchic45.kts.domain.usecase.RemoveCourseTopicUseCase
 import com.denchic45.kts.domain.usecase.UpdateCourseTopicUseCase
+import com.denchic45.kts.ui.navigation.EmptyChildrenContainer
 import com.denchic45.kts.util.componentScope
 import com.denchic45.kts.util.swap
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
@@ -31,7 +32,7 @@ class CourseTopicsComponent(
     private val courseId: UUID,
     @Assisted
     private val componentContext: ComponentContext
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, EmptyChildrenContainer {
 
     private val componentScope = componentScope()
 

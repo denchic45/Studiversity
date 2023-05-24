@@ -22,9 +22,12 @@ import com.denchic45.kts.ui.coursetimetable.CourseTimetableComponent
 import com.denchic45.kts.ui.coursetopics.CourseTopicsComponent
 import com.denchic45.kts.ui.coursework.CourseWorkComponent
 import com.denchic45.kts.ui.courseworkeditor.CourseWorkEditorComponent
+import com.denchic45.kts.ui.navigation.ChildrenContainer
+import com.denchic45.kts.ui.navigation.isActiveFlow
 import com.denchic45.kts.ui.profile.ProfileComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -86,7 +89,7 @@ class CourseComponent(
     private val courseId: UUID,
     @Assisted
     componentContext: ComponentContext,
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ChildrenContainer {
     private val componentScope = componentScope()
 
     val course = flow { emit(findCourseByIdUseCase(courseId)) }.stateInResource(componentScope)
@@ -252,5 +255,9 @@ class CourseComponent(
     sealed class SidebarChild {
 
         class Profile(val component: ProfileComponent) : SidebarChild()
+    }
+
+    override fun hasChildrenFlow(): Flow<Boolean> {
+        return childSidebar.isActiveFlow()
     }
 }

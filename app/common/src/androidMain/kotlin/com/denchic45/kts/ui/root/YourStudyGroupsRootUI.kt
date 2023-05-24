@@ -12,32 +12,32 @@ import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsScreen
 
 @Composable
 fun YourStudyGroupsRootScreen(
-    component: YourStudyGroupsRootComponent,
+    component: YourStudyGroupsRootStackChildrenContainer,
     appBarInteractor: AppBarInteractor,
 ) {
     val childStack by component.childStack.subscribeAsState()
 
     Children(childStack) {
         when (val child = it.instance) {
-            is YourStudyGroupsRootComponent.Child.YourStudyGroups -> {
+            is YourStudyGroupsRootStackChildrenContainer.Child.YourStudyGroups -> {
                 YourStudyGroupsScreen(child.component, appBarInteractor)
             }
 
-            is YourStudyGroupsRootComponent.Child.StudyGroup -> {
+            is YourStudyGroupsRootStackChildrenContainer.Child.StudyGroup -> {
                 StudyGroupScreen(child.component, appBarInteractor)
             }
 
-            is YourStudyGroupsRootComponent.Child.Course -> {
+            is YourStudyGroupsRootStackChildrenContainer.Child.Course -> {
                 CourseScreen(child.component, appBarInteractor)
             }
 
-            is YourStudyGroupsRootComponent.Child.CourseEditor -> {
+            is YourStudyGroupsRootStackChildrenContainer.Child.CourseEditor -> {
                 CourseEditorScreen(child.component, appBarInteractor)
             }
 
-            is YourStudyGroupsRootComponent.Child.CourseTopics -> TODO()
-            is YourStudyGroupsRootComponent.Child.CourseWork -> TODO()
-            is YourStudyGroupsRootComponent.Child.CourseWorkEditor -> TODO()
+            is YourStudyGroupsRootStackChildrenContainer.Child.CourseTopics -> TODO()
+            is YourStudyGroupsRootStackChildrenContainer.Child.CourseWork -> TODO()
+            is YourStudyGroupsRootStackChildrenContainer.Child.CourseWorkEditor -> TODO()
         }
     }
 }

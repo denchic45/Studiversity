@@ -13,12 +13,13 @@ import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.kts.ui.RootComponent
 import com.denchic45.kts.ui.course.CourseComponent
 import com.denchic45.kts.ui.courseeditor.CourseEditorComponent
 import com.denchic45.kts.ui.coursetopics.CourseTopicsComponent
 import com.denchic45.kts.ui.coursework.CourseWorkComponent
 import com.denchic45.kts.ui.courseworkeditor.CourseWorkEditorComponent
+import com.denchic45.kts.ui.navigation.ChildrenContainerChild
+import com.denchic45.kts.ui.navigation.RootStackChildrenContainer
 import com.denchic45.kts.ui.profile.ProfileComponent
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsComponent
@@ -27,7 +28,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class YourStudyGroupsRootComponent(
+class YourStudyGroupsRootStackChildrenContainer(
     yourStudyGroupsComponent: (
         onCourseOpen: (UUID) -> Unit,
         onStudyGroupOpen: (UUID) -> Unit,
@@ -67,7 +68,7 @@ class YourStudyGroupsRootComponent(
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
-    RootComponent<YourStudyGroupsRootComponent.Config, YourStudyGroupsRootComponent.Child> {
+    RootStackChildrenContainer<YourStudyGroupsRootStackChildrenContainer.Config, YourStudyGroupsRootStackChildrenContainer.Child> {
 
     override val navigation: StackNavigation<Config> = StackNavigation()
     override val childStack: Value<ChildStack<Config, Child>> = childStack(
@@ -190,14 +191,14 @@ class YourStudyGroupsRootComponent(
         data class CourseTopics(val courseId: UUID) : Config()
     }
 
-    sealed class Child {
-        class YourStudyGroups(val component: YourStudyGroupsComponent) : Child()
-        class StudyGroup(val component: StudyGroupComponent) : Child()
-        class Course(val component: CourseComponent) : Child()
-        class CourseEditor(val component: CourseEditorComponent) : Child()
-        class CourseWork(val component: CourseWorkComponent) : Child()
-        class CourseWorkEditor(val component: CourseWorkEditorComponent) : Child()
-        class CourseTopics(val component: CourseTopicsComponent) : Child()
+    sealed class Child : ChildrenContainerChild {
+        class YourStudyGroups(override val component: YourStudyGroupsComponent) : Child()
+        class StudyGroup(override val component: StudyGroupComponent) : Child()
+        class Course(override val component: CourseComponent) : Child()
+        class CourseEditor(override val component: CourseEditorComponent) : Child()
+        class CourseWork(override val component: CourseWorkComponent) : Child()
+        class CourseWorkEditor(override val component: CourseWorkEditorComponent) : Child()
+        class CourseTopics(override val component: CourseTopicsComponent) : Child()
     }
 
     @Parcelize

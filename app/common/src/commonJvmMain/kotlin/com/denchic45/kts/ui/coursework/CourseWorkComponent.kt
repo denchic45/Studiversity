@@ -16,6 +16,7 @@ import com.denchic45.kts.ui.coursework.details.CourseWorkDetailsComponent
 import com.denchic45.kts.ui.coursework.submissions.CourseWorkSubmissionsComponent
 import com.denchic45.kts.ui.coursework.yourSubmission.YourSubmissionComponent
 import com.denchic45.kts.ui.model.AttachmentItem
+import com.denchic45.kts.ui.navigation.EmptyChildrenContainer
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -59,7 +60,7 @@ class CourseWorkComponent(
     private val elementId: UUID,
     @Assisted
     private val componentContext: ComponentContext,
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, EmptyChildrenContainer {
 
     private val componentScope = componentScope()
 

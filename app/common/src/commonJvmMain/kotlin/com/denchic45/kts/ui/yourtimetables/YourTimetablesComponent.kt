@@ -10,19 +10,17 @@ import com.denchic45.kts.domain.resourceOf
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.kts.domain.usecase.TimetableOwner
+import com.denchic45.kts.ui.navigation.EmptyChildrenContainer
 import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerDelegate
-import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
@@ -40,6 +38,7 @@ class YourTimetablesComponent(
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
+    EmptyChildrenContainer,
     TimetableOwnerComponent by TimetableOwnerDelegate(componentContext) {
 
     fun onTimetableSelect(position: Int) {
@@ -49,7 +48,6 @@ class YourTimetablesComponent(
             else groups[position].id.toString()
         }
     }
-
 
 
     val studyGroups = findYourStudyGroupsUseCase().stateInResource(componentScope)
