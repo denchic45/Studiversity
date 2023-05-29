@@ -1,8 +1,8 @@
 package com.denchic45.kts.ui
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.ChildOverlay
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
+import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.decompose.router.stack.ChildStack
@@ -13,84 +13,137 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.MainInteractor
-import com.denchic45.kts.ui.navigation.ConfirmChild
-import com.denchic45.kts.ui.navigation.ConfirmConfig
+import com.denchic45.kts.domain.ifSuccess
+import com.denchic45.kts.domain.stateInResource
+import com.denchic45.kts.domain.usecase.FindYourCoursesUseCase
+import com.denchic45.kts.ui.course.CourseComponent
 import com.denchic45.kts.ui.navigation.OverlayChild
 import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.navigation.RootStackChildrenContainer
-import com.denchic45.kts.ui.navigation.UserEditorChild
-import com.denchic45.kts.ui.navigation.UserEditorConfig
+import com.denchic45.kts.ui.profile.ProfileComponent
 import com.denchic45.kts.ui.root.YourStudyGroupsRootStackChildrenContainer
-import com.denchic45.kts.ui.root.YourTimetablesRootStackChildrenContainer
-import com.denchic45.kts.ui.usereditor.UserEditorComponent
+import com.denchic45.kts.ui.root.YourTimetablesRootComponent
+import com.denchic45.kts.ui.settings.SettingsComponent
+import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.util.componentScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
 @Inject
 class MainComponent constructor(
-    private val yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootStackChildrenContainer,
+    private val yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootComponent,
     private val yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootStackChildrenContainer,
-    mainInteractor: MainInteractor,
-    userEditorComponent: (
-        onFinish: () -> Unit,
+    interactor: MainInteractor,
+    private val findYourCoursesUseCase: FindYourCoursesUseCase,
+    private val profileComponent: (
+        onStudyGroupOpen: (UUID) -> Unit,
+        UUID, ComponentContext
+    ) -> ProfileComponent,
+    private val studyGroupComponent: (
+        onCourseOpen: (UUID) -> Unit,
+        onStudyGroupOpen: (UUID) -> Unit,
+        UUID,
         ComponentContext,
-    ) -> UserEditorComponent,
+    ) -> StudyGroupComponent,
+    courseComponent: (
+        onStudyGroupOpen: (UUID) -> Unit,
+        UUID,
+        ComponentContext,
+    ) -> CourseComponent,
+    private val settingsComponent: (ComponentContext) -> SettingsComponent,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
 
-    data class DialogConfig(val title: String) : Parcelable
-
     private val navigation = StackNavigation<RootConfig>()
 
     val stack: Value<ChildStack<RootConfig, RootChild>> = childStack(
         source = navigation,
         initialConfiguration = RootConfig.YourTimetables,
-        childFactory = { config, componentContext ->
+        childFactory = { config, context ->
             when (config) {
                 is RootConfig.YourTimetables -> RootChild.YourTimetables(
-                    yourTimetablesRootComponent(
-                        componentContext
-                    )
+                    yourTimetablesRootComponent(context)
                 )
 
                 is RootConfig.YourStudyGroups -> RootChild.YourStudyGroups(
-                    yourStudyGroupsRootComponent(
-                        componentContext
+                    yourStudyGroupsRootComponent(context)
+                )
+
+                RootConfig.Works -> TODO()
+                is RootConfig.StudyGroup -> RootChild.StudyGroup(
+                    studyGroupComponent(
+                        { navigation.bringToFront(RootConfig.Course(it)) },
+                        { navigation.bringToFront(RootConfig.StudyGroup(it)) },
+                        config.studyGroupId,
+                        context
                     )
                 )
 
-                RootConfig.Settings -> TODO()
-                RootConfig.Works -> TODO()
+                is RootConfig.Course -> RootChild.Course(
+                    courseComponent(
+                        { navigation.bringToFront(RootConfig.StudyGroup(it)) },
+                        config.courseId,
+                        context
+                    )
+                )
             }
         })
 
     private val overlayNavigation: OverlayNavigation<OverlayConfig> = OverlayNavigation()
 
-    val childOverlay: Value<ChildOverlay<OverlayConfig, OverlayChild>> = childOverlay(
+    val childOverlay = childOverlay(
         source = overlayNavigation,
         handleBackButton = true
-    ) { config, _ ->
+    ) { config, context ->
         when (config) {
-            is UserEditorConfig -> {
-                UserEditorChild(
-                    userEditorComponent(
-                        overlayNavigation::dismiss,
-                        componentContext
-                    )
+            is OverlayConfig.Confirm -> OverlayChild.Confirm(config)
+            OverlayConfig.YourProfile -> OverlayChild.YourProfile(
+                profileComponent(
+                    {
+                        navigation.bringToFront(RootConfig.StudyGroup(it))
+                        overlayNavigation.dismiss()
+                    },
+                    userInfo.value.ifSuccess { it.id } ?: error("Id required"),
+                    context
                 )
-            }
+            )
 
-            is ConfirmConfig -> ConfirmChild(config)
+            is OverlayConfig.Settings -> OverlayChild.Settings(settingsComponent(context))
         }
     }
 
+    // TODO listen root role of current user to show works screen
+    val availableScreens = combine(
+        interactor.observeHasGroup(),
+        flowOf(true), // is teacher
+        flowOf(true), // is student
+        flowOf(true) // is moderator
+    ) { hasStudyGroups, isTeacher, isStudent, isModerator ->
+        AvailableScreens(
+            yourStudyGroups = hasStudyGroups,
+            yourWorks = isStudent,
+            controlPanel = isModerator
+        )
+    }.stateIn(componentScope, SharingStarted.Lazily, AvailableScreens())
+
+    val userInfo = interactor.observeThisUser().filterNotNull().stateInResource(componentScope)
+
+    val yourCourses = flow { emit(findYourCoursesUseCase()) }
+        .stateInResource(componentScope)
+
     init {
-        componentScope.launch { mainInteractor.startListeners() }
+        componentScope.launch { interactor.startListeners() }
 //        coroutineScope.launch { mainInteractor.observeHasGroup() }
     }
 
@@ -106,38 +159,61 @@ class MainComponent constructor(
         overlayNavigation.dismiss()
     }
 
-    @Parcelize
-    sealed class RootConfig : Parcelable {
-
-        object YourTimetables : RootConfig()
-
-        object YourStudyGroups : RootConfig()
-
-        object Works : RootConfig()
-
-        object Settings : RootConfig()
+    fun onProfileClick() {
+        overlayNavigation.activate(OverlayConfig.YourProfile)
     }
 
-    sealed interface PrimaryChild
+    fun onCourseClick(courseId: UUID) {
+        navigation.bringToFront(RootConfig.Course(courseId))
+    }
+
+    data class AvailableScreens(
+        val yourStudyGroups: Boolean = false,
+        val yourWorks: Boolean = false,
+        val controlPanel: Boolean = false
+    )
+
+    @Parcelize
+    sealed interface RootConfig : Parcelable {
+
+        object YourTimetables : RootConfig
+
+        object YourStudyGroups : RootConfig
+
+        object Works : RootConfig
+
+        data class StudyGroup(val studyGroupId: UUID) : RootConfig
+
+        data class Course(val courseId: UUID) : RootConfig
+    }
+
+    sealed interface PrimaryChild {
+        val component: RootStackChildrenContainer<*, *>
+    }
+
     sealed interface ExtraChild
 
-    sealed class RootChild {
-        abstract val component: RootStackChildrenContainer<*, *>
+    sealed interface RootChild {
 
         class YourTimetables(
-            override val component: YourTimetablesRootStackChildrenContainer
-        ) : RootChild(), PrimaryChild
+            override val component: YourTimetablesRootComponent
+        ) : RootChild, PrimaryChild
 
         class YourStudyGroups(
             override val component: YourStudyGroupsRootStackChildrenContainer
-        ) : RootChild(), PrimaryChild
+        ) : RootChild, PrimaryChild
 
         class Works(
-            override val component: RootStackChildrenContainer<*, *>
-        ) : RootChild(), ExtraChild
+            val component: RootStackChildrenContainer<*, *>
+        ) : RootChild, ExtraChild
 
-        class Settings(
-            override val component: RootStackChildrenContainer<*, *>
-        ) : RootChild(), ExtraChild
+
+        class StudyGroup(
+            val component: StudyGroupComponent
+        ) : RootChild, ExtraChild
+
+        class Course(
+            val component: CourseComponent
+        ) : RootChild, ExtraChild
     }
 }

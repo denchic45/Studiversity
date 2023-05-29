@@ -13,11 +13,11 @@ import com.denchic45.kts.ui.yourtimetables.YourTimetablesComponent
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class YourTimetablesRootStackChildrenContainer(
-    yourTimetablesComponent: (ComponentContext) -> YourTimetablesComponent,
+class YourTimetablesRootComponent(
+    yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesComponent,
     componentContext: ComponentContext
 ) : ComponentContext by componentContext,
-    RootStackChildrenContainer<YourTimetablesRootStackChildrenContainer.Config, YourTimetablesRootStackChildrenContainer.Child> {
+    RootStackChildrenContainer<YourTimetablesRootComponent.Config, YourTimetablesRootComponent.Child> {
 
     @Parcelize
     sealed class Config : Parcelable {
@@ -36,7 +36,7 @@ class YourTimetablesRootStackChildrenContainer(
         childFactory = { config, context ->
             when (config) {
                 Config.YourTimetables -> {
-                    Child.YourTimetables(yourTimetablesComponent(context))
+                    Child.YourTimetables(yourTimetablesRootComponent(context))
                 }
             }
         }

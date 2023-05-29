@@ -33,7 +33,7 @@ class YourTimetablesFragment(
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             AppTheme {
-                YourTimetablesScreen(yourTimetablesComponent, appBarInteractor)
+                YourTimetablesScreen(yourTimetablesComponent)
             }
         }
     }

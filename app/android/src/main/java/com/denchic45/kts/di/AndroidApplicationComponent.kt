@@ -4,11 +4,13 @@ import android.app.Application
 import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
+import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.storage.AttachmentStorage
 import com.denchic45.kts.data.storage.FileProvider
 import com.denchic45.kts.data.workmanager.AppWorkerFactory
 import com.denchic45.kts.data.workmanager.DownloadWorker
+import com.denchic45.kts.ui.MainComponent
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.fab.FabInteractor
@@ -59,6 +61,8 @@ abstract class AndroidApplicationComponent(
         }
     }
 
+    abstract val mainComponent: (ComponentContext) -> MainComponent
+
     abstract val authedClient: HttpClient
 
     abstract val workFactory: AppWorkerFactory
@@ -67,7 +71,7 @@ abstract class AndroidApplicationComponent(
 
     abstract val fabInteractor: FabInteractor
 
-    abstract val confirmInteractor: ConfirmDialogInteractor
+    abstract val confirmDialogInteractor: ConfirmDialogInteractor
 
     abstract val injectFragmentFactory: InjectFragmentFactory
 }

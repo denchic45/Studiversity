@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.denchic45.kts.R
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
 import com.denchic45.kts.ui.login.LoginActivity
-import com.denchic45.kts.ui.main.MainActivity
+import com.denchic45.kts.ui.main.OldMainActivity
 import com.denchic45.kts.ui.splash.SplashViewModel.NextActivity
 import dagger.android.AndroidInjection
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
         viewModel.nextScreenMLiveData.observe(this) { nextActivity: NextActivity ->
             if (nextActivity === NextActivity.MAIN) {
-                startActivity(Intent(this, MainActivity::class.java))
+                startActivity(Intent(this, OldMainActivity::class.java))
             } else if (nextActivity === NextActivity.LOGIN) {
                 startActivity(Intent(this, LoginActivity::class.java))
             }

@@ -25,12 +25,10 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.kts.ui.MainComponent.RootChild
 import com.denchic45.kts.ui.confirm.ConfirmDialog
-import com.denchic45.kts.ui.navigation.ConfirmChild
-import com.denchic45.kts.ui.navigation.UserEditorChild
+import com.denchic45.kts.ui.navigation.OverlayChild
 import com.denchic45.kts.ui.root.YourStudyGroupsRootScreen
 import com.denchic45.kts.ui.root.YourTimetablesRootScreen
 import com.denchic45.kts.ui.theme.toDrawablePath
-import com.denchic45.kts.ui.usereditor.UserEditorDialog
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,19 +114,17 @@ fun MainContent(mainComponent: MainComponent) {
                         is RootChild.YourStudyGroups -> {
                             YourStudyGroupsRootScreen(child.component)
                         }
+
+                        is RootChild.Works -> TODO()
+                        is RootChild.StudyGroup -> TODO()
+                        is RootChild.Course -> TODO()
                     }
                 }
 
                 val overlay by mainComponent.childOverlay.subscribeAsState()
                 overlay.overlay?.let {
                     when (val instance = it.instance) {
-                        is UserEditorChild -> UserEditorDialog(
-                            instance.userEditorComponent,
-                            instance.appBarInteractor,
-                            mainComponent::onOverlayDismiss
-                        )
-
-                        is ConfirmChild -> with(instance.config) {
+                        is OverlayChild.Confirm -> with(instance.config) {
                             ConfirmDialog(
                                 title = title,
                                 text = text,
@@ -136,6 +132,9 @@ fun MainContent(mainComponent: MainComponent) {
                                 onDismiss = mainComponent::onOverlayDismiss
                             )
                         }
+
+                        is OverlayChild.YourProfile -> TODO("Open profile dialog")
+                        is OverlayChild.Settings -> TODO()
                     }
                 }
             }

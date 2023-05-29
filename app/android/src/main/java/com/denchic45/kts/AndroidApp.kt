@@ -26,7 +26,7 @@ class AndroidApp : DaggerApplication(), Configuration.Provider {
             .preferencesModule(PreferencesModule(SettingsFactory(this)))
             .create(this)
 
-    val appComponent by lazy {
+    val appComponent: AndroidApplicationComponent by lazy {
         AndroidApplicationComponent::class.create(
             this,
             PreferencesComponent::class.create(SettingsFactory(applicationContext)),

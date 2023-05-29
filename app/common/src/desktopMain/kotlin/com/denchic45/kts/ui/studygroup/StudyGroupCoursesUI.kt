@@ -31,7 +31,7 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.model.StudyGroupCourseItem
 import com.denchic45.kts.ui.studygroup.courses.StudyGroupCoursesComponent
-import com.denchic45.kts.ui.theme.AppTheme
+import com.denchic45.kts.ui.theme.DesktopAppTheme
 import com.seiko.imageloader.rememberAsyncImagePainter
 import java.util.UUID
 
@@ -97,7 +97,7 @@ fun StudyGroupCourseListItem(
 @Preview
 @Composable
 fun GroupCourseListItemPreview() {
-    AppTheme {
+    DesktopAppTheme {
         val url =
             "https://sun9-46.userapi.com/impg/uWGoczB9st04meAMg6wWn4iSlmUXIjckTZNyqg/pb7GZSpZUAA.jpg?size=1080x2033&quality=96&sign=1320149c468c5ee8341e40a5f58f8923&type=album"
         StudyGroupCourseListItem(

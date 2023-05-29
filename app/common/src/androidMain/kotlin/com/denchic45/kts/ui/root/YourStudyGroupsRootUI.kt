@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
 import com.denchic45.kts.ui.course.CourseScreen
 import com.denchic45.kts.ui.courseeditor.CourseEditorScreen
 import com.denchic45.kts.ui.studygroup.StudyGroupScreen
@@ -13,8 +13,8 @@ import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsScreen
 @Composable
 fun YourStudyGroupsRootScreen(
     component: YourStudyGroupsRootStackChildrenContainer,
-    appBarInteractor: AppBarInteractor,
 ) {
+    val appBarInteractor = LocalAppBarInteractor.current
     val childStack by component.childStack.subscribeAsState()
 
     Children(childStack) {

@@ -20,8 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.DayTimetableContent
 import com.denchic45.kts.ui.timetable.getMonthTitle
@@ -29,7 +29,9 @@ import com.denchic45.kts.ui.uiTextOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun YourTimetablesScreen(component: YourTimetablesComponent, appBarInteractor: AppBarInteractor) {
+fun YourTimetablesScreen(component: YourTimetablesComponent) {
+    val appBarInteractor = LocalAppBarInteractor.current
+
     val selectedTimetable by component.selectedTimetablePosition.collectAsState()
     val groups by component.studyGroups.collectAsState()
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()

@@ -3,6 +3,9 @@ package com.denchic45.kts.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
 
 @Composable
 fun AppTheme(
@@ -10,8 +13,10 @@ fun AppTheme(
     content: @Composable () -> Unit
 ) {
     CommonAppTheme(useDarkTheme, AndroidTypography) {
-        Surface {
-            content()
-        }
+       CompositionLocalProvider(LocalAppBarInteractor provides AppBarInteractor()) {
+           Surface {
+               content()
+           }
+       }
     }
 }

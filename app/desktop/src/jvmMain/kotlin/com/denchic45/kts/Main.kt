@@ -17,7 +17,7 @@ import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.LocalAppBarMediator
 import com.denchic45.kts.ui.MainContent
 import com.denchic45.kts.ui.login.LoginScreen
-import com.denchic45.kts.ui.theme.AppTheme
+import com.denchic45.kts.ui.theme.DesktopApp
 import java.awt.Toolkit
 
 val splashComponent = appComponent.splashComponent
@@ -36,27 +36,27 @@ private fun mainApp() {
                 val size = Toolkit.getDefaultToolkit().screenSize.run {
                     DpSize((width - 124).dp, (height - 124).dp)
                 }
-                val state = rememberWindowState(size = size, position = WindowPosition(Alignment.Center))
+                val state =
+                    rememberWindowState(size = size, position = WindowPosition(Alignment.Center))
                 LifecycleController(lifecycle, state)
 
-                Window(
+                DesktopApp(
                     title = "Studiversity",
                     onCloseRequest = ::exitApplication,
                     state = state
                 ) {
-                    AppTheme {
-                        CompositionLocalProvider(LocalAppBarMediator provides AppBarMediator()) {
-                            MainContent(appComponent.mainComponent(componentContext))
-                        }
+                    CompositionLocalProvider(LocalAppBarMediator provides AppBarMediator()) {
+                        MainContent(appComponent.mainComponent(componentContext))
                     }
                 }
+
             } else {
-                Window(
+                DesktopApp(
                     title = "Studiversity - Авторизация",
                     onCloseRequest = ::exitApplication,
                     state = rememberWindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))
                 ) {
-                    AppTheme { LoginScreen(appComponent.loginComponent(componentContext)) }
+                    LoginScreen(appComponent.loginComponent(componentContext))
                 }
             }
         }

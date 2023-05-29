@@ -39,6 +39,8 @@ kotlin {
 
                 api("io.github.qdsfdhvh:image-loader:1.3.1")
 
+                api("androidx.compose.material3:material3-window-size-class:1.1.0")
+
                 // Ktor
                 api("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")

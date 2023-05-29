@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.denchic45.kts.ui.LocalAppBarMediator
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
 import com.denchic45.kts.ui.component.HeaderItemUI
@@ -27,13 +28,11 @@ fun UserEditorSidebar(
     component: UserEditorComponent,
     modifier: Modifier = Modifier,
 ) {
-    val appBarState by LocalAppBarInteractor.current.stateFlow.collectAsState()
+    val appBarState = LocalAppBarMediator.current
     Column(modifier) {
         TopAppBar(
             title = {
-                appBarState.title.onString {
-                    Text(it)
-                }
+                Text(appBarState.title)
             },
             navigationIcon = {
                 IconButton(onClick = { component.onFinish() }) {
@@ -62,9 +61,9 @@ fun UserEditorSidebar(
 @Composable
 fun UserEditorDialog(
     component: UserEditorComponent,
-    appBarInteractor: AppBarInteractor,
     onDismissRequest: () -> Unit,
 ) {
+    val state = remember { component.state }
     AlertDialog(
         modifier = Modifier.heightIn(max = 648.dp),
         title = {
@@ -72,10 +71,7 @@ fun UserEditorDialog(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
             ) {
-                val appBarState by appBarInteractor.stateFlow.collectAsState()
-                appBarState.title.onString {
-                    Text(it)
-                }
+                    Text("Создать пользователя")
                 Spacer(Modifier.weight(1f))
                 IconButton({ onDismissRequest() }) {
                     Icon(Icons.Rounded.Close, "")
@@ -84,7 +80,7 @@ fun UserEditorDialog(
         },
         onDismissRequest = onDismissRequest,
         text = {
-            val state = remember { component.state }
+
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 UserEditorContent(
                     state = state,

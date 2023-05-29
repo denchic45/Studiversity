@@ -10,13 +10,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import com.denchic45.kts.ui.theme.AppTheme
+import com.denchic45.kts.ui.theme.DesktopApp
+import com.denchic45.kts.ui.theme.DesktopAppTheme
 import com.denchic45.kts.ui.theme.toDrawablePath
 
 
 @Preview
 @Composable
-fun PreviewButtons() = AppTheme {
+fun PreviewButtons() = DesktopAppTheme {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button({}) {
             IconWithTextButtonContent(painterResource("ic_timetable".toDrawablePath()), "Hello")

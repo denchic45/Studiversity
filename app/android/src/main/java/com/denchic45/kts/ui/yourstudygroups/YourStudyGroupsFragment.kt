@@ -58,7 +58,7 @@ class YourStudyGroupsFragment(
         )
         setContent {
             AppTheme {
-                YourStudyGroupsRootScreen(component, appBarInteractor)
+                YourStudyGroupsRootScreen(component)
             }
         }
     }
