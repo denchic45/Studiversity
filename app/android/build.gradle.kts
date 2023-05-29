@@ -97,7 +97,7 @@ dependencies {
     implementation("com.github.denchic45:SearchBar:1.1")
 
     implementation("androidx.test:core-ktx:1.5.0")
-    implementation("androidx.core:core-ktx:1.10.0")
+//    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 
     // support new language API
@@ -127,7 +127,7 @@ dependencies {
 
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
-    // kotlin-inejct
+    // kotlin-inject
     ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
 
     // Dagger-android

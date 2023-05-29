@@ -118,7 +118,7 @@ kotlin {
                 kotlin.srcDir("build/generated/ksp/android/androidDebug")
 
                 api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.10.0")
+                api("androidx.core:core-ktx:1.10.1")
 
                 api("com.kizitonwose.calendar:compose:2.3.0")
 
@@ -140,7 +140,7 @@ kotlin {
                 val composeVersion = "1.4.3"
                 api("androidx.compose.runtime:runtime:$composeVersion")
                 api("androidx.compose.ui:ui:$composeVersion")
-                api("androidx.activity:activity-compose:1.7.1")
+                api("androidx.activity:activity-compose:1.7.2")
                 // Tooling support (Previews, etc.)
                 api("androidx.compose.ui:ui-tooling:$composeVersion")
                 // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
@@ -240,7 +240,6 @@ android {
     }
     defaultConfig {
         minSdk = 24
-        targetSdk = 33
         buildFeatures {
             viewBinding = true
             compose = true
