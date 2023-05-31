@@ -133,9 +133,9 @@ val AndroidTypography = Typography(
         fontSize = 14.sp
     ),
     labelMedium = TextStyle(
-        fontFamily = RobotoFamily,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.10000000149011612.sp,
+        fontFamily = ManropeFamily,
+        fontWeight = FontWeight.SemiBold,
+//        letterSpacing = 0.10000000149011612.sp,
         lineHeight = 16.sp,
         fontSize = 12.sp
     ),

@@ -9,13 +9,13 @@ import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class StudyGroupSearchComponent(
+class StudyGroupChooserComponent(
     private val findStudyGroupByContainsNameUseCase: FindStudyGroupByContainsNameUseCase,
     @Assisted
     override val onSelect: (StudyGroupResponse) -> Unit,
     @Assisted
     val componentContext: ComponentContext,
-) : SearchComponent<StudyGroupResponse>(componentContext) {
+) : ChooserComponent<StudyGroupResponse>(componentContext) {
 
     override fun search(query: String): Flow<Resource<List<StudyGroupResponse>>> {
         return findStudyGroupByContainsNameUseCase(query)

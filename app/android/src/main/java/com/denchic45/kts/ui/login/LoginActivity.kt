@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import com.denchic45.kts.R
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
+import com.denchic45.kts.ui.main.MainActivity
 import com.denchic45.kts.ui.main.OldMainActivity
 import com.denchic45.kts.util.closeKeyboard
 import com.denchic45.kts.util.collectWhenStarted
@@ -52,7 +53,7 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login) {
         viewModel.openMain.observe(this) {
             Handler(Looper.getMainLooper()).postDelayed(
                 {
-                    startActivity(Intent(this, OldMainActivity::class.java))
+                    startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 }, 500
             )

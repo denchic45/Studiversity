@@ -12,13 +12,13 @@ import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class UserSearchComponent(
+class UserChooserComponent(
     private val findUserByContainsNameUseCase: FindUserByContainsNameUseCase,
     @Assisted
     override val onSelect: (UserItem) -> Unit,
     @Assisted
     val componentContext: ComponentContext,
-) : SearchComponent<UserItem>(componentContext) {
+) : ChooserComponent<UserItem>(componentContext) {
     override fun search(query: String): Flow<Resource<List<UserItem>>> {
         return findUserByContainsNameUseCase(query).mapResource { it.map(UserResponse::toUserItem) }
     }

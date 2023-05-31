@@ -13,7 +13,7 @@ import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.data.repository.MetaRepository
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.usecase.PutTimetableUseCase
-import com.denchic45.kts.ui.chooser.StudyGroupSearchComponent
+import com.denchic45.kts.ui.chooser.StudyGroupChooserComponent
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.periodeditor.EditingPeriod
@@ -54,7 +54,7 @@ class TimetablesPublisherComponent(
     private val studyGroupChooserComponent: (
             (StudyGroupResponse) -> Unit,
             ComponentContext,
-    ) -> StudyGroupSearchComponent,
+    ) -> StudyGroupChooserComponent,
     private val periodEditorComponent: (
         EditingPeriod,
         (PeriodResponse?) -> Unit,
@@ -121,7 +121,7 @@ class TimetablesPublisherComponent(
     }
 
     sealed class OverlayChild {
-        class GroupChooser(val component: StudyGroupSearchComponent) : OverlayChild()
+        class GroupChooser(val component: StudyGroupChooserComponent) : OverlayChild()
 
         class PeriodEditor(val component: PeriodEditorComponent) : OverlayChild()
     }

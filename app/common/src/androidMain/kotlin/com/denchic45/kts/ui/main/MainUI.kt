@@ -1,6 +1,6 @@
 package com.denchic45.kts.ui.main
 
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -28,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -65,6 +68,8 @@ import com.denchic45.kts.R
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.MainComponent
 import com.denchic45.kts.ui.ResourceContent
+import com.denchic45.kts.ui.admindashboard.AdminDashboardScreen
+import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
 import com.denchic45.kts.ui.appbar.NavigationIcon
 import com.denchic45.kts.ui.confirm.ConfirmDialog
@@ -81,8 +86,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     component: MainComponent,
-    activity: AppCompatActivity,
-    confirmDialogInteractor: ConfirmDialogInteractor
+    activity: ComponentActivity,
+    confirmDialogInteractor: ConfirmDialogInteractor,
 ) {
     val sizeClass = calculateWindowSizeClass(activity)
     when (sizeClass.widthSizeClass) {
@@ -101,7 +106,7 @@ fun MainScreen(
 }
 
 @Composable
-private fun CompactMainScreen(component: MainComponent, activity: AppCompatActivity) {
+private fun CompactMainScreen(component: MainComponent, activity: ComponentActivity) {
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     ModalNavigationDrawer(
@@ -113,7 +118,7 @@ private fun CompactMainScreen(component: MainComponent, activity: AppCompatActiv
         val stack by component.stack.subscribeAsState()
         Scaffold(
             topBar = {
-                TopBarContent(activity)
+                TopBarContent(activity, drawerState)
             },
             bottomBar = {
                 val instance = stack.active.instance
@@ -152,7 +157,7 @@ private fun CompactMainScreen(component: MainComponent, activity: AppCompatActiv
 @Composable
 fun MediumMainScreen(
     component: MainComponent,
-    activity: AppCompatActivity,
+    activity: ComponentActivity,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -179,21 +184,22 @@ fun MediumMainScreen(
                         label = { Text("Расписание") }
                     )
 
-                    if (availableScreens.yourStudyGroups)
-                    NavigationRailItem(selected = instance is MainComponent.RootChild.YourStudyGroups,
-                        onClick = component::onTimetableClick,
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_group),
-                                contentDescription = "your groups menu"
-                            )
-                        },
-                        label = { Text("Группы") }
-                    )
+                    if (availableScreens.yourStudyGroups) {
+                        NavigationRailItem(selected = instance is MainComponent.RootChild.YourStudyGroups,
+                            onClick = component::onTimetableClick,
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_group),
+                                    contentDescription = "your groups menu"
+                                )
+                            },
+                            label = { Text("Группы") }
+                        )
+                    }
                 }
             }
 
-            Scaffold(topBar = { TopBarContent(activity = activity) }) {
+            Scaffold(topBar = { TopBarContent(activity, drawerState) }) {
                 ScreenContainer(paddingValues = it, stack = stack)
             }
         }
@@ -205,103 +211,132 @@ fun MediumMainScreen(
 private fun DrawerContent(
     component: MainComponent,
     coroutineScope: CoroutineScope,
-    drawerState: DrawerState
+    drawerState: DrawerState,
 ) {
-    val userInfo by component.userInfo.collectAsState()
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .height(84.dp)
-            .clickable {
-                component.onProfileClick()
-                coroutineScope.launch {
-                    drawerState.close()
-                }
-            }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        userInfo.onSuccess { info ->
-            Image(
-                painter = rememberAsyncImagePainter(info.avatarUrl),
-                contentDescription = "user avatar",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape),
-            )
-            Spacer(Modifier.width(16.dp))
-            Text(
-                text = info.fullName,
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-    }
-    Divider(Modifier.padding(vertical = 4.dp))
 
-    val yourCourses by component.yourCourses.collectAsState()
+    fun closeDrawer() = coroutineScope.launch { drawerState.close() }
 
-    ResourceContent(resource = yourCourses) { courses ->
-        if (courses.isNotEmpty()) {
-            Box(
-                modifier = Modifier
+    val availableScreens by component.availableScreens.collectAsState()
+    val stack by component.stack.subscribeAsState()
+
+    ModalDrawerSheet(Modifier.requiredWidth(300.dp)) {
+        Column(Modifier.padding(horizontal = 8.dp)) {
+            val userInfo by component.userInfo.collectAsState()
+            Row(
+                Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
-                    .padding(horizontal = 28.dp),
-                contentAlignment = Alignment.CenterStart
+                    .height(84.dp)
+                    .clickable {
+                        component.onProfileClick()
+                        closeDrawer()
+                    }
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Курсы",
-                    style = MaterialTheme.typography.titleSmall
-                )
-            }
-
-            Column(Modifier.padding(8.dp)) {
-                courses.forEach { course ->
-                    NavigationDrawerItem(
-                        label = {
-                            Text(
-                                course.name,
-                                style = MaterialTheme.typography.labelLarge
-                            )
-                        },
-                        icon = {
-                            Box(
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .clip(CircleShape)
-                                    .background(colorResource(R.color.blue))
-                                    .padding(8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = course.name.first().uppercase(),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = Color.White
-                                )
-                            }
-                        },
-                        selected = false,
-                        onClick = {
-                           coroutineScope.launch {
-                               drawerState.close()
-                           }
-                            component.onCourseClick(course.id)
-                        })
+                userInfo.onSuccess { info ->
+                    Image(
+                        painter = rememberAsyncImagePainter(info.avatarUrl),
+                        contentDescription = "user avatar",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape),
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = info.fullName,
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
             }
             Divider(Modifier.padding(vertical = 4.dp))
+
+            val yourCourses by component.yourCourses.collectAsState()
+
+            ResourceContent(resource = yourCourses) { courses ->
+                if (courses.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .padding(horizontal = 28.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            text = "Курсы",
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
+
+//                    Column {
+                    courses.forEach { course ->
+                        NavigationDrawerItem(
+                            label = {
+                                Text(
+                                    course.name,
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            },
+                            icon = {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .clip(CircleShape)
+                                        .background(colorResource(R.color.blue))
+                                        .padding(8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = course.name.first().uppercase(),
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = Color.White
+                                    )
+                                }
+                            },
+                            selected = false,
+                            onClick = {
+                                closeDrawer()
+                                component.onCourseClick(course.id)
+                            })
+                    }
+                }
+                Divider(Modifier.padding(vertical = 4.dp))
+//                }
+            }
+            if (availableScreens.adminDashboard) {
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            "Панель управления",
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_control_panel),
+                            contentDescription = "admin dashboard"
+                        )
+                    },
+                    selected = stack.active.instance is MainComponent.RootChild.AdminDashboard,
+                    onClick = {
+                        closeDrawer()
+                        component.onAdminDashboardClick()
+                    },
+                    shape = RoundedCornerShape(0, 50, 50, 0)
+                )
+            }
         }
     }
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun TopBarContent(activity: AppCompatActivity) {
+private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState) {
     val appBarInteractor = LocalAppBarInteractor.current
-    val state by appBarInteractor.stateFlow.collectAsState()
-
-    if (state.visible)
+    val state by appBarInteractor.mutableSharedFlow.collectAsState(initial = AppBarState())
+    println("TITLE: ${state.title.get(LocalContext.current)} $appBarInteractor")
+    val coroutineScope = rememberCoroutineScope()
+    if (state.visible) {
         TopAppBar(
             title = { Text(state.title.get(LocalContext.current)) },
             navigationIcon = {
@@ -309,7 +344,7 @@ private fun TopBarContent(activity: AppCompatActivity) {
 
                 when (icon) {
                     NavigationIcon.TOGGLE -> IconButton(
-                        onClick = { TODO("Open navigation drawer") }) {
+                        onClick = { coroutineScope.launch { drawerState.open() } }) {
                         Icon(
                             imageVector = Icons.Outlined.Menu,
                             contentDescription = "menu"
@@ -367,12 +402,13 @@ private fun TopBarContent(activity: AppCompatActivity) {
                 state.actionsUI?.invoke(this)
             }
         )
+    }
 }
 
 @Composable
 private fun ScreenContainer(
     paddingValues: PaddingValues,
-    stack: ChildStack<MainComponent.RootConfig, MainComponent.RootChild>
+    stack: ChildStack<MainComponent.RootConfig, MainComponent.RootChild>,
 ) {
     Children(modifier = Modifier.padding(paddingValues), stack = stack) {
         when (val child = it.instance) {
@@ -387,6 +423,7 @@ private fun ScreenContainer(
             is MainComponent.RootChild.Works -> TODO()
             is MainComponent.RootChild.StudyGroup -> TODO()
             is MainComponent.RootChild.Course -> TODO()
+            is MainComponent.RootChild.AdminDashboard -> AdminDashboardScreen(child.component)
         }
     }
 }

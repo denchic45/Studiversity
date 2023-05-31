@@ -16,6 +16,7 @@ import com.denchic45.kts.domain.MainInteractor
 import com.denchic45.kts.domain.ifSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindYourCoursesUseCase
+import com.denchic45.kts.ui.admindashboard.AdminDashboardComponent
 import com.denchic45.kts.ui.course.CourseComponent
 import com.denchic45.kts.ui.navigation.OverlayChild
 import com.denchic45.kts.ui.navigation.OverlayConfig
@@ -38,16 +39,15 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class MainComponent constructor(
-    private val yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootComponent,
-    private val yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootStackChildrenContainer,
-    interactor: MainInteractor,
-    private val findYourCoursesUseCase: FindYourCoursesUseCase,
-    private val profileComponent: (
+class MainComponent(
+    yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootComponent,
+    yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootStackChildrenContainer,
+    findYourCoursesUseCase: FindYourCoursesUseCase,
+    profileComponent: (
         onStudyGroupOpen: (UUID) -> Unit,
-        UUID, ComponentContext
+        UUID, ComponentContext,
     ) -> ProfileComponent,
-    private val studyGroupComponent: (
+    studyGroupComponent: (
         onCourseOpen: (UUID) -> Unit,
         onStudyGroupOpen: (UUID) -> Unit,
         UUID,
@@ -58,7 +58,9 @@ class MainComponent constructor(
         UUID,
         ComponentContext,
     ) -> CourseComponent,
-    private val settingsComponent: (ComponentContext) -> SettingsComponent,
+    adminDashboardComponent: (ComponentContext) -> AdminDashboardComponent,
+    settingsComponent: (ComponentContext) -> SettingsComponent,
+    interactor: MainInteractor,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -69,6 +71,7 @@ class MainComponent constructor(
 
     val stack: Value<ChildStack<RootConfig, RootChild>> = childStack(
         source = navigation,
+        handleBackButton = true,
         initialConfiguration = RootConfig.YourTimetables,
         childFactory = { config, context ->
             when (config) {
@@ -94,6 +97,12 @@ class MainComponent constructor(
                     courseComponent(
                         { navigation.bringToFront(RootConfig.StudyGroup(it)) },
                         config.courseId,
+                        context
+                    )
+                )
+
+                RootConfig.AdminDashboard -> RootChild.AdminDashboard(
+                    adminDashboardComponent(
                         context
                     )
                 )
@@ -133,7 +142,7 @@ class MainComponent constructor(
         AvailableScreens(
             yourStudyGroups = hasStudyGroups,
             yourWorks = isStudent,
-            controlPanel = isModerator
+            adminDashboard = isModerator
         )
     }.stateIn(componentScope, SharingStarted.Lazily, AvailableScreens())
 
@@ -167,10 +176,18 @@ class MainComponent constructor(
         navigation.bringToFront(RootConfig.Course(courseId))
     }
 
+    fun onAdminDashboardClick() {
+        navigation.bringToFront(RootConfig.AdminDashboard)
+    }
+
+    fun onSettingsClick() {
+        overlayNavigation.activate(OverlayConfig.Settings)
+    }
+
     data class AvailableScreens(
         val yourStudyGroups: Boolean = false,
         val yourWorks: Boolean = false,
-        val controlPanel: Boolean = false
+        val adminDashboard: Boolean = false,
     )
 
     @Parcelize
@@ -185,6 +202,8 @@ class MainComponent constructor(
         data class StudyGroup(val studyGroupId: UUID) : RootConfig
 
         data class Course(val courseId: UUID) : RootConfig
+
+        object AdminDashboard : RootConfig
     }
 
     sealed interface PrimaryChild {
@@ -196,24 +215,28 @@ class MainComponent constructor(
     sealed interface RootChild {
 
         class YourTimetables(
-            override val component: YourTimetablesRootComponent
+            override val component: YourTimetablesRootComponent,
         ) : RootChild, PrimaryChild
 
         class YourStudyGroups(
-            override val component: YourStudyGroupsRootStackChildrenContainer
+            override val component: YourStudyGroupsRootStackChildrenContainer,
         ) : RootChild, PrimaryChild
 
         class Works(
-            val component: RootStackChildrenContainer<*, *>
+            val component: RootStackChildrenContainer<*, *>,
         ) : RootChild, ExtraChild
 
 
         class StudyGroup(
-            val component: StudyGroupComponent
+            val component: StudyGroupComponent,
         ) : RootChild, ExtraChild
 
         class Course(
-            val component: CourseComponent
+            val component: CourseComponent,
+        ) : RootChild, ExtraChild
+
+        class AdminDashboard(
+            val component: AdminDashboardComponent,
         ) : RootChild, ExtraChild
     }
 }

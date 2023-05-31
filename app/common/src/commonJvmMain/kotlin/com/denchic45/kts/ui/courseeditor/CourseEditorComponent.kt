@@ -21,7 +21,7 @@ import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.AddCourseUseCase
 import com.denchic45.kts.domain.usecase.FindCourseByIdUseCase
 import com.denchic45.kts.domain.usecase.UpdateCourseUseCase
-import com.denchic45.kts.ui.chooser.SubjectSearchComponent
+import com.denchic45.kts.ui.chooser.SubjectChooserComponent
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.navigation.OverlayChildrenContainer
@@ -52,7 +52,7 @@ class CourseEditorComponent(
     private val updateCourseUseCase: UpdateCourseUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val findCourseByIdUseCase: FindCourseByIdUseCase,
-    private val _subjectChooserComponent: ((SubjectResponse) -> Unit, ComponentContext) -> SubjectSearchComponent,
+    private val _subjectChooserComponent: ((SubjectResponse) -> Unit, ComponentContext) -> SubjectChooserComponent,
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
@@ -288,6 +288,6 @@ class CourseEditorComponent(
     }
 
     sealed class DialogChild {
-        class SubjectChooser(val component: SubjectSearchComponent) : DialogChild()
+        class SubjectChooser(val component: SubjectChooserComponent) : DialogChild()
     }
 }

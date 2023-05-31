@@ -7,8 +7,8 @@ import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.kts.ui.chooser.StudyGroupSearchComponent
-import com.denchic45.kts.ui.chooser.UserSearchComponent
+import com.denchic45.kts.ui.chooser.StudyGroupChooserComponent
+import com.denchic45.kts.ui.chooser.UserChooserComponent
 import com.denchic45.kts.ui.course.CourseComponent
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.profile.ProfileComponent
@@ -27,11 +27,11 @@ class FinderComponent(
     userChooserComponent: (
             (UserItem) -> Unit,
             ComponentContext,
-    ) -> UserSearchComponent,
+    ) -> UserChooserComponent,
     studyGroupChooserComponent: (
             (StudyGroupResponse) -> Unit,
             ComponentContext,
-    ) -> StudyGroupSearchComponent,
+    ) -> StudyGroupChooserComponent,
     profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
     studyGroupComponent: (
         onCourseOpen: (UUID) -> Unit,
@@ -111,8 +111,8 @@ class FinderComponent(
     }
 
     sealed class TabChild {
-        class Users(val component: UserSearchComponent) : TabChild()
-        class StudyGroups(val component: StudyGroupSearchComponent) : TabChild()
+        class Users(val component: UserChooserComponent) : TabChild()
+        class StudyGroups(val component: StudyGroupChooserComponent) : TabChild()
     }
 
     @Parcelize

@@ -38,6 +38,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
     val selectedDate by component.selectedDate.collectAsState()
 
     LaunchedEffect(selectedYearWeek) {
+//    println("STATE COMPOSE: ${AppBarState(uiTextOf(getMonthTitle(selectedYearWeek)))}")
         appBarInteractor.set(AppBarState(uiTextOf(getMonthTitle(selectedYearWeek))))
     }
 

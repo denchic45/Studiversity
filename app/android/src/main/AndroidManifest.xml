@@ -51,7 +51,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.main.OldMainActivity"
+            android:name=".ui.main.MainActivity"
             android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>

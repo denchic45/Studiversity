@@ -86,7 +86,7 @@ fun YourStudyGroupsScreen(
                         StudyGroupEditorScreen(child.component)
                     }
 
-                    is StudyGroupComponent.OverlayChild.UserEditor -> TODO()
+                    is StudyGroupComponent.OverlayChild.UserEditor -> {}
                     null -> YourStudyGroupScreen(component = it)
                 }
             }

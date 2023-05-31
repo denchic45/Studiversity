@@ -12,7 +12,7 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 
 @Composable
 fun StudyGroupChooserScreen(
-    component: StudyGroupSearchComponent,
+    component: StudyGroupChooserComponent,
     appBarInteractor: AppBarInteractor
 ) {
     SearchScreen(

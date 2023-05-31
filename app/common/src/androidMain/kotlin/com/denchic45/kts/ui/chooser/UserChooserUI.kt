@@ -17,7 +17,7 @@ import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.theme.spacing
 
 @Composable
-fun UserChooserScreen(component: UserSearchComponent, appBarInteractor: AppBarInteractor) {
+fun UserChooserScreen(component: UserChooserComponent, appBarInteractor: AppBarInteractor) {
     SearchScreen(
         component = component,
         appBarInteractor = appBarInteractor,

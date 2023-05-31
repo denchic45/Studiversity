@@ -16,8 +16,8 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindRoomByContainsNameUseCase
-import com.denchic45.kts.ui.chooser.CourseSearchComponent
-import com.denchic45.kts.ui.chooser.UserSearchComponent
+import com.denchic45.kts.ui.chooser.CourseChooserComponent
+import com.denchic45.kts.ui.chooser.UserChooserComponent
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.model.toPeriodMember
 import com.denchic45.kts.util.componentScope
@@ -48,8 +48,8 @@ import kotlin.random.Random
 @Inject
 class PeriodEditorComponent(
     private val findRoomByContainsNameUseCase: FindRoomByContainsNameUseCase,
-    private val courseChooserComponent: (onFinish: (CourseResponse) -> Unit, ComponentContext) -> CourseSearchComponent,
-    private val userChooserComponent: (onFinish: (UserItem) -> Unit, ComponentContext) -> UserSearchComponent,
+    private val courseChooserComponent: (onFinish: (CourseResponse) -> Unit, ComponentContext) -> CourseChooserComponent,
+    private val userChooserComponent: (onFinish: (UserItem) -> Unit, ComponentContext) -> UserChooserComponent,
     private val eventDetailsEditorComponent: (EditingPeriod, ComponentContext) -> EventDetailsEditorComponent,
     private val lessonDetailsEditorComponent: (EditingPeriod, OverlayNavigation<OverlayConfig>, ComponentContext) -> LessonDetailsEditorComponent,
     @Assisted
@@ -258,9 +258,9 @@ class PeriodEditorComponent(
     }
 
     sealed class OverlayChild {
-        class CourseChooser(val component: CourseSearchComponent) : OverlayChild()
+        class CourseChooser(val component: CourseChooserComponent) : OverlayChild()
 
-        class UserChooser(val component: UserSearchComponent) : OverlayChild()
+        class UserChooser(val component: UserChooserComponent) : OverlayChild()
     }
 
     @Parcelize

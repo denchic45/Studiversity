@@ -10,11 +10,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import com.denchic45.kts.ui.get
+import com.denchic45.kts.ui.uiTextOf
 import kotlinx.coroutines.launch
 
 @Composable
 fun ConfirmDialog(interactor: ConfirmDialogInteractor) {
-    val state by interactor.stateFlow.collectAsState()
+    val state by interactor.mutableSharedFlow.collectAsState(initial = null)
     state?.let {
         val coroutineScope = rememberCoroutineScope()
         AlertDialog(
