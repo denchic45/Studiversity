@@ -21,7 +21,7 @@ fun TimetableLoaderScreen(
             }
 
             is TimetableLoaderComponent.TimetableLoaderChild.Publisher -> {
-                TimetablesPublisherScreen(instance.component, appBarInteractor)
+                TimetablesPublisherScreen(instance.component)
             }
         }
     }

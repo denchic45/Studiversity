@@ -37,40 +37,55 @@ import com.denchic45.kts.R
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.resourceOf
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.appbar2.ActionMenuItem2
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.chooser.SubjectChooserScreen
 import com.denchic45.kts.ui.theme.spacing
+import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.ui.uiTextOf
 import java.util.UUID
 
 
 @Composable
-fun CourseEditorScreen(component: CourseEditorComponent, appBarInteractor: AppBarInteractor) {
+fun CourseEditorScreen(component: CourseEditorComponent) {
     val resource by component.viewState.collectAsState()
     val navigation by component.childOverlay.subscribeAsState()
     val saveEnabled by component.saveEnabled.collectAsState()
 
+    val appBarState = LocalAppBarState.current
+
     component.lifecycle.doOnStart {
-        appBarInteractor.set(
-            AppBarState(
-                title = uiTextOf(if (component.isNew) "Новый курс" else "Редактировать курс"),
-                actionsUI = {
-                    IconButton(enabled = saveEnabled, onClick = component::onSaveClick) {
-                        Icon(
-                            imageVector = Icons.Default.Done,
-                            contentDescription = "done"
-                        )
-                    }
-                })
+        appBarState.content = AppBarContent(
+            title = uiTextOf(if (component.isNew) "Новый курс" else "Редактировать курс"),
+            actionItems = listOf(ActionMenuItem2(
+                uiIconOf(Icons.Default.Done),
+                uiTextOf(if (component.isNew) "Новый курс" else "Редактировать курс"),
+            saveEnabled,
+                component::onSaveClick
+                ))
         )
+
+
+//        appBarState.set(
+//            AppBarState(
+//                title = uiTextOf(if (component.isNew) "Новый курс" else "Редактировать курс"),
+//                actionsUI = {
+//                    IconButton(enabled = saveEnabled, onClick = component::onSaveClick) {
+//                        Icon(
+//                            imageVector = Icons.Default.Done,
+//                            contentDescription = "done"
+//                        )
+//                    }
+//                })
+//        )
     }
 
     when (val child = navigation.overlay?.instance) {
         is CourseEditorComponent.DialogChild.SubjectChooser -> {
             SubjectChooserScreen(
                 component = child.component,
-                appBarInteractor = appBarInteractor
             )
         }
 

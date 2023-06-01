@@ -15,10 +15,9 @@ import coil.request.ImageRequest
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 
 @Composable
-fun SubjectChooserScreen(component: SubjectChooserComponent, appBarInteractor: AppBarInteractor) {
+fun SubjectChooserScreen(component: SubjectChooserComponent) {
     SearchScreen(
         component = component,
-        appBarInteractor = appBarInteractor,
         keyItem = { it.id }, itemContent = {
             ListItem(
                 headlineContent = { Text(it.name) },

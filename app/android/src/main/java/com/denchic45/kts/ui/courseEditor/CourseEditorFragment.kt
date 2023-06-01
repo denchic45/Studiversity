@@ -26,7 +26,6 @@ import java.util.UUID
 
 @Inject
 class CourseEditorFragment(
-    private val appBarInteractor: AppBarInteractor,
     private val _courseEditorComponent: (
         onFinish: () -> Unit,
         courseId: UUID?,
@@ -53,8 +52,7 @@ class CourseEditorFragment(
                         { requireActivity().onBackPressedDispatcher.onBackPressed() },
                         navArgs.courseId?.toUUID(),
                         defaultComponentContext(requireActivity().onBackPressedDispatcher)
-                    ),
-                    appBarInteractor = appBarInteractor
+                    )
                 )
             }
         }

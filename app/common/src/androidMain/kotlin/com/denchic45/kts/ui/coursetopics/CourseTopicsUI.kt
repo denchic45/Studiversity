@@ -22,14 +22,15 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.appbar.EmptyAppBar
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.periodeditor.TransparentTextField
 import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 
 @Composable
-fun CourseTopicsScreen(component: CourseTopicsComponent, appBarInteractor: AppBarInteractor) {
-    component.lifecycle.doOnStart { appBarInteractor.set(EmptyAppBar) }
+fun CourseTopicsScreen(component: CourseTopicsComponent) {
+    val appBarState = LocalAppBarState.current
+    component.lifecycle.doOnStart { appBarState.content = AppBarContent() }
     val topicsResource by component.topics.collectAsState()
     CourseTopicsContent(
         topicsResource,

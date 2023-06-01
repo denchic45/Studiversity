@@ -118,6 +118,7 @@ fun MainContent(mainComponent: MainComponent) {
                         is RootChild.Works -> TODO()
                         is RootChild.StudyGroup -> TODO()
                         is RootChild.Course -> TODO()
+                        is RootChild.AdminDashboard -> TODO()
                     }
                 }
 

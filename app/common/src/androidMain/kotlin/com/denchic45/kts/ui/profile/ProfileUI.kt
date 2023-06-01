@@ -59,8 +59,13 @@ import com.denchic45.kts.ui.ExpandableMenu
 import com.denchic45.kts.ui.ResourceContent
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.appbar2.ActionMenuItem2
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.DropdownMenuItem2
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.chooser.StudyGroupListItem
 import com.denchic45.kts.ui.theme.spacing
+import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.toast
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import java.io.ByteArrayOutputStream
@@ -69,8 +74,8 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(component: ProfileComponent, appBarInteractor: AppBarInteractor) {
-    appBarInteractor.set(AppBarState())
+fun ProfileScreen(component: ProfileComponent) {
+    LocalAppBarState.current.hide()
 
     val viewStateResource by component.viewState.collectAsState()
     val childOverlay by component.childOverlay.subscribeAsState()
@@ -108,7 +113,6 @@ fun ProfileScreen(component: ProfileComponent, appBarInteractor: AppBarInteracto
 
                     ProfileComponent.OverlayChild.FullAvatar -> FullAvatarScreen(
                         url = viewState.avatarUrl,
-                        appBarInteractor = appBarInteractor,
                         allowUpdateAvatar = viewState.allowUpdateAvatar,
                         onDeleteClick = {}
                     )
@@ -186,18 +190,14 @@ private fun Uri.decodeBitmap(
 @Composable
 fun FullAvatarScreen(
     url: String,
-    appBarInteractor: AppBarInteractor,
     allowUpdateAvatar: Boolean,
     onDeleteClick: () -> Unit,
 ) {
-    appBarInteractor.set(AppBarState(
-        actionsUI = {
-            if (allowUpdateAvatar)
-                ExpandableMenu {
-                    DropdownMenuItem(text = { Text(text = "Удалить") }, onClick = onDeleteClick)
-                }
-        }
-    ))
+    if (allowUpdateAvatar)
+    LocalAppBarState.current.content = AppBarContent(dropdownItems = listOf(DropdownMenuItem2(
+       title = uiTextOf("Удалить"), onClick = onDeleteClick)))
+
+
     AsyncImage(
         model = url,
         contentDescription = "full avatar",

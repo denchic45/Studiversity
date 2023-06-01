@@ -19,8 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -69,9 +67,7 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.MainComponent
 import com.denchic45.kts.ui.ResourceContent
 import com.denchic45.kts.ui.admindashboard.AdminDashboardScreen
-import com.denchic45.kts.ui.appbar.AppBarState
-import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
-import com.denchic45.kts.ui.appbar.NavigationIcon
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.get
@@ -332,77 +328,73 @@ private fun DrawerContent(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState) {
-    val appBarInteractor = LocalAppBarInteractor.current
-    val state by appBarInteractor.mutableSharedFlow.collectAsState(initial = AppBarState())
-    println("TITLE: ${state.title.get(LocalContext.current)} $appBarInteractor")
+    val state = LocalAppBarState.current
+    println("TITLE: ${state.content.title.get(LocalContext.current)} $state")
     val coroutineScope = rememberCoroutineScope()
-    if (state.visible) {
-        TopAppBar(
-            title = { Text(state.title.get(LocalContext.current)) },
-            navigationIcon = {
-                val icon by remember { appBarInteractor.navigationIcon }
-
-                when (icon) {
-                    NavigationIcon.TOGGLE -> IconButton(
-                        onClick = { coroutineScope.launch { drawerState.open() } }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Menu,
-                            contentDescription = "menu"
-                        )
-                    }
-
-                    NavigationIcon.BACK -> IconButton(
-                        onClick = { activity.onBackPressedDispatcher.onBackPressed() }) {
-                        Icon(
-                            imageVector = Icons.Outlined.ArrowBack,
-                            contentDescription = "back"
-                        )
-                    }
+//    if (state.visible) {
+    TopAppBar(
+        title = { Text(state.content.title.get(LocalContext.current)) },
+        navigationIcon = {
+//                val icon by remember { state.navigationIcon }
+//                when (icon) {
+//                    NavigationIcon.TOGGLE -> IconButton(
+//                        onClick = { coroutineScope.launch { drawerState.open() } }) {
+//                        Icon(
+//                            imageVector = Icons.Outlined.Menu,
+//                            contentDescription = "menu"
+//                        )
+//                    }
+//
+//                    NavigationIcon.BACK -> IconButton(
+//                        onClick = { activity.onBackPressedDispatcher.onBackPressed() }) {
+//                        Icon(
+//                            imageVector = Icons.Outlined.ArrowBack,
+//                            contentDescription = "back"
+//                        )
+//                    }
+//                }
+        },
+        actions = {
+            state.content.actionItems.forEach { actionMenuItem ->
+                val contentDescription = actionMenuItem.title
+                    ?.get(LocalContext.current)
+                IconButton(
+                    onClick = { actionMenuItem.onClick() },
+                    enabled = actionMenuItem.enabled
+                ) {
+                    Icon(
+                        painter = actionMenuItem.icon.getPainter(),
+                        contentDescription = contentDescription
+                    )
                 }
-            },
-            actions = {
-                state.actions.forEach { actionMenuItem ->
-                    val contentDescription = actionMenuItem.title
-                        ?.get(LocalContext.current)
-                    IconButton(
-                        onClick = { actionMenuItem.onClick() },
-                        enabled = actionMenuItem.enabled
-                    ) {
-                        Icon(
-                            painter = actionMenuItem.icon.getPainter(),
-                            contentDescription = contentDescription
-                        )
-                    }
-                }
-
-                if (state.dropdown.isNotEmpty()) {
-                    var menuExpanded by remember { mutableStateOf(false) }
-                    IconButton(onClick = { menuExpanded = !menuExpanded }) {
-                        Icon(Icons.Filled.MoreVert, "menu")
-                    }
-                    DropdownMenu(
-                        expanded = menuExpanded,
-                        offset = DpOffset(x = (-84).dp, y = 0.dp),
-                        onDismissRequest = { menuExpanded = false },
-                    ) {
-                        state.dropdown.forEach { item ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(item.title.get(LocalContext.current))
-                                },
-                                onClick = {
-                                    menuExpanded = false
-                                    item.onClick()
-                                    state.onDropdownMenuItemClick(item)
-                                },
-                            )
-                        }
-                    }
-                }
-                state.actionsUI?.invoke(this)
             }
-        )
-    }
+
+            if (state.content.dropdownItems.isNotEmpty()) {
+                var menuExpanded by remember { mutableStateOf(false) }
+                IconButton(onClick = { menuExpanded = !menuExpanded }) {
+                    Icon(Icons.Filled.MoreVert, "menu")
+                }
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    offset = DpOffset(x = (-84).dp, y = 0.dp),
+                    onDismissRequest = { menuExpanded = false },
+                ) {
+                    state.content.dropdownItems.forEach { item ->
+                        DropdownMenuItem(
+                            text = { Text(item.title.get(LocalContext.current)) },
+                            onClick = {
+                                menuExpanded = false
+                                item.onClick()
+//                                    state.onDropdownMenuItemClick(item)
+                            },
+                        )
+                    }
+                }
+            }
+//                state.actionsUI?.invoke(this)
+        }
+    )
+//    }
 }
 
 @Composable
@@ -422,7 +414,8 @@ private fun ScreenContainer(
 
             is MainComponent.RootChild.Works -> TODO()
             is MainComponent.RootChild.StudyGroup -> TODO()
-            is MainComponent.RootChild.Course -> TODO()
+            is MainComponent.RootChild.Course,
+            is MainComponent.RootChild.YourCourse -> {}
             is MainComponent.RootChild.AdminDashboard -> AdminDashboardScreen(child.component)
         }
     }

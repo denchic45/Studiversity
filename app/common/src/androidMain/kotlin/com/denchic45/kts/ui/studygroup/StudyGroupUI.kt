@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -16,40 +14,57 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.essenty.lifecycle.doOnStart
-import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.domain.ifSuccess
+import com.denchic45.kts.ui.appbar2.ActionMenuItem2
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.component.TabIndicator
+import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.ui.uiTextOf
 
 @Composable
-fun StudyGroupScreen(component: StudyGroupComponent, appBarInteractor: AppBarInteractor) {
+fun StudyGroupScreen(component: StudyGroupComponent) {
     val selectedTab by component.selectedTab.collectAsState()
     val studyGroup by component.studyGroup.collectAsState()
-    val allowEdit by component.allowEdit.collectAsState()
+    val allowEditResource by component.allowEdit.collectAsState()
+
+    val appBarState = LocalAppBarState.current
+
+    val studyGroupName = studyGroup.ifSuccess { it.name } ?: ""
+    val allowEdit = allowEditResource.ifSuccess { it } ?: false
+
+
 
     component.lifecycle.doOnStart {
-        studyGroup.onSuccess { studyGroup ->
-            appBarInteractor.set(
-                when (val resource = allowEdit) {
-                    is Resource.Success -> AppBarState(
-                        title = uiTextOf(studyGroup.name),
-                        actionsUI = {
-                            if (resource.value) {
-                                IconButton(onClick = component::onEditClick) {
-                                    Icon(Icons.Outlined.Edit, null)
-                                }
-                            }
-                        }
-                    )
-
-                    is Resource.Error, Resource.Loading -> AppBarState(
-                        title = uiTextOf(studyGroup.name)
-                    )
-                }
-            )
-        }
+        appBarState.content = AppBarContent(
+            title = uiTextOf(studyGroupName),
+            actionItems = if (allowEdit) listOf(
+                ActionMenuItem2(
+                    icon = uiIconOf(Icons.Outlined.Edit),
+                    onClick = component::onEditClick
+                )
+            ) else emptyList()
+        )
+//        studyGroup.onSuccess { studyGroup ->
+//            .set(
+//                when (val resource = allowEditResource) {
+//                    is Resource.Success -> AppBarState(
+//                        title = uiTextOf(studyGroup.name),
+//                        actionsUI = {
+//                            if (resource.value) {
+//                                IconButton(onClick = component::onEditClick) {
+//                                    Icon(Icons.Outlined.Edit, null)
+//                                }
+//                            }
+//                        }
+//                    )
+//
+//                    is Resource.Error, Resource.Loading -> AppBarState(
+//                        title = uiTextOf(studyGroup.name)
+//                    )
+//                }
+//            )
+//        }
     }
 
     StudyGroupContent(

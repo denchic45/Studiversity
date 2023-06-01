@@ -58,7 +58,7 @@ class MainComponent(
         UUID,
         ComponentContext,
     ) -> CourseComponent,
-    adminDashboardComponent: (ComponentContext) -> AdminDashboardComponent,
+    adminDashboardComponent: (StackNavigation<RootConfig>, ComponentContext) -> AdminDashboardComponent,
     settingsComponent: (ComponentContext) -> SettingsComponent,
     interactor: MainInteractor,
     @Assisted
@@ -101,10 +101,16 @@ class MainComponent(
                     )
                 )
 
-                RootConfig.AdminDashboard -> RootChild.AdminDashboard(
-                    adminDashboardComponent(
+                is RootConfig.YourCourse -> RootChild.YourCourse(
+                    courseComponent(
+                        { navigation.bringToFront(RootConfig.StudyGroup(it)) },
+                        config.courseId,
                         context
                     )
+                )
+
+                RootConfig.AdminDashboard -> RootChild.AdminDashboard(
+                    adminDashboardComponent(navigation, context)
                 )
             }
         })
@@ -203,6 +209,8 @@ class MainComponent(
 
         data class Course(val courseId: UUID) : RootConfig
 
+        data class YourCourse(val courseId: UUID) : RootConfig
+
         object AdminDashboard : RootConfig
     }
 
@@ -232,6 +240,10 @@ class MainComponent(
         ) : RootChild, ExtraChild
 
         class Course(
+            val component: CourseComponent,
+        ) : RootChild, ExtraChild
+
+        class YourCourse(
             val component: CourseComponent,
         ) : RootChild, ExtraChild
 

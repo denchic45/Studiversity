@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -61,9 +60,9 @@ import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.DropdownMenuItem
-import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.DropdownMenuItem2
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.coursework.details.CourseWorkDetailsScreen
 import com.denchic45.kts.ui.coursework.submissiondetails.SubmissionDetailsContent
 import com.denchic45.kts.ui.coursework.submissions.CourseWorkSubmissionsScreen
@@ -83,7 +82,7 @@ import okio.Path.Companion.toPath
 import java.util.UUID
 
 @Composable
-fun CourseWorkScreen(component: CourseWorkComponent, appBarInteractor: AppBarInteractor) {
+fun CourseWorkScreen(component: CourseWorkComponent) {
     val childrenResource by component.children.collectAsState()
 
     val yourSubmissionComponent = component.yourSubmissionComponent
@@ -109,20 +108,19 @@ fun CourseWorkScreen(component: CourseWorkComponent, appBarInteractor: AppBarInt
     }
 
     val allowEdit by component.allowEditWork.collectAsState(initial = false)
+    val appBarState = LocalAppBarState.current
     component.lifecycle.doOnStart {
-        appBarInteractor.set(AppBarState(dropdown = if (allowEdit)
+        appBarState.content = AppBarContent(dropdownItems = if (allowEdit)
             listOf(
-                DropdownMenuItem(
-                    id = "edit",
+                DropdownMenuItem2(
                     title = uiTextOf("Изменить"),
                     onClick = { component.onEditClick() }
                 ),
-                DropdownMenuItem(
-                    id = "edit",
+                DropdownMenuItem2(
                     title = uiTextOf("Удалить"),
                     onClick = { component.onRemoveClick() }
                 )
-            ) else emptyList()))
+            ) else emptyList())
     }
 
     component.openAttachment.collectWithLifecycle {

@@ -47,8 +47,7 @@ import com.arkivanov.essenty.lifecycle.doOnStart
 import com.arkivanov.essenty.lifecycle.doOnStop
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.courseeditor.CourseEditorScreen
 import com.denchic45.kts.ui.courseelements.CourseElementsScreen
 import com.denchic45.kts.ui.coursemembers.CourseMembersScreen
@@ -61,13 +60,11 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun CourseScreen(
-    component: CourseComponent,
-    appBarInteractor: AppBarInteractor,
-) {
+fun CourseScreen(component: CourseComponent) {
+    val appBarState = LocalAppBarState.current
     component.lifecycle.apply {
         doOnStop {
-            appBarInteractor.set(AppBarState(visible = true))
+            appBarState.expand()
         }
     }
 
@@ -79,28 +76,24 @@ fun CourseScreen(
     Children(stack = component.childStack) {
         when (val child = childStack.active.instance) {
             is CourseComponent.Child.Topics -> CourseTopicsScreen(
-                component = child.component,
-                appBarInteractor = appBarInteractor
+                component = child.component
             )
 
             is CourseComponent.Child.CourseEditor -> CourseEditorScreen(
                 component = child.component,
-                appBarInteractor = appBarInteractor
             )
 
             is CourseComponent.Child.CourseWork -> CourseWorkScreen(
                 component = child.component,
-                appBarInteractor = appBarInteractor
             )
 
             is CourseComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(
                 component = child.component,
-                appBarInteractor = appBarInteractor
             )
 
             CourseComponent.Child.None -> {
                 component.lifecycle.doOnStart {
-                    appBarInteractor.set(AppBarState(visible = false))
+                    appBarState.hide()
                 }
                 CourseContent(
                     course = course,
@@ -115,7 +108,8 @@ fun CourseScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
     ExperimentalAnimationApi::class
 )
 @Composable

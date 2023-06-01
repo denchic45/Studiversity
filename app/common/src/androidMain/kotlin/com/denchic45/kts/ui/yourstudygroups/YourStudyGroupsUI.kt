@@ -1,7 +1,6 @@
 package com.denchic45.kts.ui.yourstudygroups
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -10,8 +9,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -27,43 +24,52 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.appbar2.ActionMenuItem2
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.profile.ProfileScreen
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.ui.studygroup.StudyGroupContent
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorScreen
 import com.denchic45.kts.ui.theme.spacing
+import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun YourStudyGroupsScreen(
-    component: YourStudyGroupsComponent,
-    appBarInteractor: AppBarInteractor
-) {
+fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
     val groups by component.studyGroups.collectAsState()
     val selectedStudyGroup by component.selectedStudyGroup.collectAsState()
     val allowEditSelected by component.allowEditSelected.collectAsState()
 
+    val appBarState = LocalAppBarState.current
+
     Surface {
-        val actions: @Composable RowScope.() -> Unit = @Composable {
-            val allow = when (val resource = allowEditSelected) {
-                is Resource.Success -> resource.value
-                else -> false
-            }
-            if (allow)
-                IconButton(onClick = component::onEditStudyGroupClick) {
-                    Icon(Icons.Outlined.Edit, null)
-                }
-        }
+//        val actions: @Composable RowScope.() -> Unit = @Composable {
+//            val allow = when (val resource = allowEditSelected) {
+//                is Resource.Success -> resource.value
+//                else -> false
+//            }
+//            if (allow)
+//                IconButton(onClick = component::onEditStudyGroupClick) {
+//                    Icon(Icons.Outlined.Edit, null)
+//                }
+//        }
 
         LaunchedEffect(allowEditSelected) {
-            appBarInteractor.set(
-                AppBarState(
-                    actionsUI = actions
+            appBarState.content = AppBarContent(
+                actionItems = listOf(
+                    ActionMenuItem2(
+                        uiIconOf(Icons.Outlined.Edit),
+                        onClick = component::onEditStudyGroupClick
+                    )
                 )
             )
+//            appBarInteractor.set(
+//                AppBarState(
+//                    actionsUI = actions
+//                )
+//            )
         }
 
         selectedStudyGroup.onSuccess { group ->
@@ -81,7 +87,8 @@ fun YourStudyGroupsScreen(
                 val childSidebar by it.childSidebar.subscribeAsState()
                 showSpinner = childSidebar.overlay == null
                 when (val child = childSidebar.overlay?.instance) {
-                    is StudyGroupComponent.OverlayChild.Member -> ProfileScreen(child.component,appBarInteractor)
+                    is StudyGroupComponent.OverlayChild.Member -> ProfileScreen(child.component)
+
                     is StudyGroupComponent.OverlayChild.StudyGroupEditor -> {
                         StudyGroupEditorScreen(child.component)
                     }

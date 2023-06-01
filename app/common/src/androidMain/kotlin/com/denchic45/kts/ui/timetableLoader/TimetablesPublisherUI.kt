@@ -42,8 +42,9 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.domain.resourceOf
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.chooser.StudyGroupChooserScreen
 import com.denchic45.kts.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.kts.ui.theme.spacing
@@ -56,12 +57,11 @@ import java.time.LocalDate
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TimetablesPublisherScreen(
-    component: TimetablesPublisherComponent,
-    appBarInteractor: AppBarInteractor,
+    component: TimetablesPublisherComponent
 ) {
-
+val appBarState = LocalAppBarState.current
     component.lifecycle.doOnStart {
-        appBarInteractor.set(AppBarState())
+        appBarState.content = AppBarContent()
     }
 
     val publishState by component.publishState.collectAsState()
@@ -89,14 +89,12 @@ fun TimetablesPublisherScreen(
         when (val child = it.instance) {
             is TimetablesPublisherComponent.OverlayChild.GroupChooser -> {
                 StudyGroupChooserScreen(
-                    component = child.component,
-                    appBarInteractor = appBarInteractor
+                    component = child.component
                 )
             }
 
             is TimetablesPublisherComponent.OverlayChild.PeriodEditor -> PeriodEditorScreen(
-                component = child.component,
-                appBarInteractor = appBarInteractor
+                component = child.component
             )
         }
     } ?: run {

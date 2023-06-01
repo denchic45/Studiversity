@@ -1,8 +1,10 @@
 package com.denchic45.kts.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +17,7 @@ abstract class UiInteractor<T>(state: T) {
 
     val mutableSharedFlow = MutableSharedFlow<T>(replay = 1)
 
-    val state = mutableStateOf(state)
+    var state by mutableStateOf(state)
 
     @Composable
     fun rememberState() = remember { state }
@@ -23,11 +25,11 @@ abstract class UiInteractor<T>(state: T) {
     fun set(state: T) {
         _stateFlow.value = (state)
         mutableSharedFlow.tryEmit(state)
-        this.state.value = state
+        this.state = state
     }
 
     fun update(function: (T) -> T) {
         _stateFlow.update { function(it) }
-        this.state.value = function(state.value)
+        this.state = function(state)
     }
 }

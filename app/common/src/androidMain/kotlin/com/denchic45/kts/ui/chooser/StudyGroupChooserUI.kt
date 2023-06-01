@@ -13,11 +13,9 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 @Composable
 fun StudyGroupChooserScreen(
     component: StudyGroupChooserComponent,
-    appBarInteractor: AppBarInteractor
 ) {
     SearchScreen(
         component = component,
-        appBarInteractor = appBarInteractor,
         keyItem = { it.id },
         itemContent = {
             StudyGroupListItem(it)

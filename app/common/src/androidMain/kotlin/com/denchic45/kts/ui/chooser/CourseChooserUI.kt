@@ -6,13 +6,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 
 @Composable
-fun CourseChooserScreen(component: CourseChooserComponent, appBarInteractor: AppBarInteractor) {
+fun CourseChooserScreen(component: CourseChooserComponent) {
     SearchScreen(
         component = component,
-        appBarInteractor = appBarInteractor,
         keyItem = { it.id }, itemContent = {
             ListItem(
                 headlineContent = { Text(it.name) },

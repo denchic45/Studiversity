@@ -23,7 +23,6 @@ import java.util.*
 
 @Inject
 class CourseFragment(
-    private val appBarInteractor: AppBarInteractor,
     component: (
         onStudyGroupOpen: (UUID) -> Unit,
         UUID,
@@ -62,8 +61,7 @@ class CourseFragment(
         setContent {
             AppTheme {
                 CourseScreen(
-                    component = component,
-                    appBarInteractor = appBarInteractor
+                    component = component
                 )
             }
         }

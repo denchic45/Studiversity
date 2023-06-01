@@ -15,8 +15,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class TimetableFinderFragment(
-    component: (ComponentContext) -> TimetableFinderComponent,
-    private val appBarInteractor: AppBarInteractor
+    component: (ComponentContext) -> TimetableFinderComponent
 ) : Fragment() {
 
     private val component by lazy {
@@ -33,10 +32,7 @@ class TimetableFinderFragment(
         )
         setContent {
             AppTheme {
-                TimetableFinderScreen(
-                    component,
-                    appBarInteractor
-                )
+                TimetableFinderScreen(component)
             }
         }
     }

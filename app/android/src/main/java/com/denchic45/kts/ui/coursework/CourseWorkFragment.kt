@@ -20,7 +20,6 @@ import java.util.UUID
 
 @Inject
 class CourseWorkFragment(
-    private val appBarInteractor: AppBarInteractor,
     private val component: (
         onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
         onFinish: () -> Unit,
@@ -59,8 +58,7 @@ class CourseWorkFragment(
         setContent {
             AppTheme {
                 CourseWorkScreen(
-                    component = courseWorkComponent,
-                    appBarInteractor = appBarInteractor
+                    component = courseWorkComponent
                 )
             }
         }

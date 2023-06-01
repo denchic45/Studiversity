@@ -58,10 +58,10 @@ import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.ActionMenuItem
 import com.denchic45.kts.ui.DropdownMenuItem
-import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.appbar2.ActionMenuItem2
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.asString
 import com.denchic45.kts.ui.attachment.AttachmentListItem
 import com.denchic45.kts.ui.component.HeaderItemUI
@@ -83,8 +83,7 @@ import java.time.ZoneId
 
 @Composable
 fun CourseWorkEditorScreen(
-    component: CourseWorkEditorComponent,
-    appBarInteractor: AppBarInteractor,
+    component: CourseWorkEditorComponent
 ) {
 
     val context = LocalContext.current
@@ -109,16 +108,15 @@ fun CourseWorkEditorScreen(
     val attachments by component.attachmentItems.collectAsState()
     val allowSave by component.allowSave.collectAsState()
 
+    val appBarState = LocalAppBarState.current
+
     component.lifecycle.doOnStart {
-        appBarInteractor.set(
-            AppBarState(
-                actions = listOf(
-                    ActionMenuItem(
-                        id = "save",
-                        icon = uiIconOf(Icons.Default.Done),
-                        enabled = allowSave,
-                        onClick = component::onSaveClick
-                    )
+        appBarState.content = AppBarContent(
+            actionItems = listOf(
+                ActionMenuItem2(
+                    icon = uiIconOf(Icons.Default.Done),
+                    enabled = allowSave,
+                    onClick = component::onSaveClick
                 )
             )
         )

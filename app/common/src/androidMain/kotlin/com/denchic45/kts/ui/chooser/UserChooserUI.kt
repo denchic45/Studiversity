@@ -12,15 +12,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.theme.spacing
 
 @Composable
-fun UserChooserScreen(component: UserChooserComponent, appBarInteractor: AppBarInteractor) {
+fun UserChooserScreen(component: UserChooserComponent) {
     SearchScreen(
         component = component,
-        appBarInteractor = appBarInteractor,
         keyItem = UserItem::id,
         itemContent = { UserListItem(it) }
     )

@@ -42,7 +42,7 @@ import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.doOnStart
-import com.denchic45.kts.ui.appbar.AppBarInteractor
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.chooser.CourseChooserScreen
 import com.denchic45.kts.ui.chooser.UserChooserScreen
 import com.denchic45.kts.ui.theme.AppTheme
@@ -56,12 +56,13 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBarInteractor) {
+fun PeriodEditorScreen(component: PeriodEditorComponent) {
+    val appBarState = LocalAppBarState.current
     component.lifecycle.doOnStart {
-        appBarInteractor.update { it.copy(visible = false) }
+        appBarState.hide()
     }
     component.lifecycle.doOnDestroy {
-        appBarInteractor.update { it.copy(visible = true) }
+        appBarState.expand()
     }
     val childOverlay by component.childOverlay.subscribeAsState()
 
@@ -70,15 +71,13 @@ fun PeriodEditorScreen(component: PeriodEditorComponent, appBarInteractor: AppBa
             when (val overlayChild = childOverlay.overlay?.instance) {
                 is PeriodEditorComponent.OverlayChild.CourseChooser -> {
                     CourseChooserScreen(
-                        component = overlayChild.component,
-                        appBarInteractor = appBarInteractor
+                        component = overlayChild.component
                     )
                 }
 
                 is PeriodEditorComponent.OverlayChild.UserChooser -> {
                     UserChooserScreen(
-                        component = overlayChild.component,
-                        appBarInteractor = appBarInteractor
+                        component = overlayChild.component
                     )
                 }
 

@@ -36,7 +36,6 @@ import java.util.UUID
 
 @Inject
 class CourseWorkEditorFragment(
-    private val appBarInteractor: AppBarInteractor,
     private val _courseWorkEditorComponent: (
         onFinish: () -> Unit,
         courseId: UUID,
@@ -72,7 +71,7 @@ class CourseWorkEditorFragment(
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             AppTheme {
-                CourseWorkEditorScreen(component, appBarInteractor)
+                CourseWorkEditorScreen(component)
             }
         }
     }

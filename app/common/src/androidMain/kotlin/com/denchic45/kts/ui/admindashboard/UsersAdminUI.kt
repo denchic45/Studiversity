@@ -11,22 +11,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.denchic45.kts.ui.chooser.SearchScreen
+import com.denchic45.kts.ui.chooser.UserListItem
+import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 
 @Composable
-fun CoursesAdminScreen(component: CoursesAdminComponent) {
+fun UsersAdminScreen(component: UsersAdminComponent) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = component::onAddCourseClick) {
                 Icon(Icons.Default.Add, "add course")
             }
-        }) {
-        Box(Modifier.padding(it)) {
+        }) { paddingValues ->
+        Box(Modifier.padding(paddingValues)) {
             SearchScreen(
                 component = component,
-                keyItem = CourseResponse::id
-            ) {
-                Text(text = it.name)
+                keyItem = UserItem::id
+            ) { item ->
+                UserListItem(item)
             }
         }
     }

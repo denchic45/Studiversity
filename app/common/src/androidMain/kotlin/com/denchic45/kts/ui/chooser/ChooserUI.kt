@@ -2,7 +2,6 @@ package com.denchic45.kts.ui.chooser
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,19 +29,19 @@ import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiTextOf
 
 @Composable
 fun <T> SearchScreen(
     component: SearchableComponent<T>,
-    appBarInteractor: AppBarInteractor,
     keyItem: (T) -> Any,
     itemContent: @Composable (T) -> Unit,
 ) {
 //    component.lifecycle.doOnStart {
 //    LaunchedEffect(Unit) {
-        appBarInteractor.set(AppBarState(title = uiTextOf("123"),visible = false))
+        LocalAppBarState.current.hide()
 //    }
     SearchContent(component, keyItem, itemContent)
 }

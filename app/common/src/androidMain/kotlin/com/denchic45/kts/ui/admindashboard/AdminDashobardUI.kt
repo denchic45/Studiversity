@@ -19,13 +19,14 @@ import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.R
 import com.denchic45.kts.ui.appbar.AppBarState
-import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiTextOf
 
 @Composable
 fun AdminDashboardScreen(component: AdminDashboardComponent) {
-    val appBarInteractor = LocalAppBarInteractor.current
+    val appBarState = LocalAppBarState.current
 
 
     val childStack by component.childStack.subscribeAsState()
@@ -34,7 +35,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
         when(val child = it.instance) {
             AdminDashboardComponent.Child.None -> {
                 LaunchedEffect(Unit) {
-                    appBarInteractor.set(AppBarState(title = uiTextOf("Панель управления")))
+                    appBarState.content = AppBarContent(title = uiTextOf("Панель управления"))
                 }
                 Column {
                     AdminListItem(

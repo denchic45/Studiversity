@@ -24,9 +24,9 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.ActionMenuItem
-import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.appbar.AppBarState
+import com.denchic45.kts.ui.appbar2.ActionMenuItem2
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.chooser.StudyGroupListItem
 import com.denchic45.kts.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.kts.ui.timetable.DayTimetableContent
@@ -40,13 +40,13 @@ import java.time.LocalDate
 @Composable
 fun TimetableFinderScreen(
     component: TimetableFinderComponent,
-    appBarInteractor: AppBarInteractor,
 ) {
     val selectedDate by component.selectedDate.collectAsState()
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
     val state = remember(component::state)
     val timetableResource by component.timetable.collectAsState()
 
+    val appBarState = LocalAppBarState.current
 //    component.timetable.collectWithLifecycle {
 //        appBarInteractor.update {
 //            it.copy(
@@ -114,7 +114,6 @@ fun TimetableFinderScreen(
     when (val child = overlay.overlay?.instance) {
         is TimetableFinderComponent.OverlayChild.PeriodEditor -> PeriodEditorScreen(
             component = child.component,
-            appBarInteractor = appBarInteractor
         )
 
         null -> {
@@ -123,37 +122,33 @@ fun TimetableFinderScreen(
                 timetableResource,
                 state.selectedStudyGroup
             ) {
-                appBarInteractor.set(
-                    AppBarState(
-                        title = uiTextOf(
-                            if (state.selectedStudyGroup != null) getMonthTitle(selectedYearWeek)
-                            else ""
-                        ),
-                        actions = when (val resource = timetableResource) {
-                            is Resource.Success -> {
-                                if (resource.value.isEdit) {
-                                    listOf(
-                                        ActionMenuItem(
-                                            id = "save",
-                                            icon = uiIconOf(Icons.Default.Done),
-                                            onClick = component::onSaveChangesClick
-                                        )
-                                    )
-                                } else {
-                                    listOf(
-                                        ActionMenuItem(
-                                            id = "edit",
-                                            icon = uiIconOf(Icons.Outlined.Edit),
-                                            onClick = component::onEditClick
-                                        )
-                                    )
-                                }
-                            }
-
-                            else -> emptyList()
-                        }
-                    )
+                val title = uiTextOf(
+                    if (state.selectedStudyGroup != null) getMonthTitle(selectedYearWeek)
+                    else ""
                 )
+
+                val actions = when (val resource = timetableResource) {
+                    is Resource.Success -> {
+                        if (resource.value.isEdit) {
+                            listOf(
+                                ActionMenuItem2(
+                                    icon = uiIconOf(Icons.Default.Done),
+                                    onClick = component::onSaveChangesClick
+                                )
+                            )
+                        } else {
+                            listOf(
+                                ActionMenuItem2(
+                                    icon = uiIconOf(Icons.Outlined.Edit),
+                                    onClick = component::onEditClick
+                                )
+                            )
+                        }
+                    }
+
+                    else -> emptyList()
+                }
+                appBarState.content = AppBarContent(title = title, actionItems = actions)
             }
             TimetableFinderContent(
                 selectedDate = selectedDate,
