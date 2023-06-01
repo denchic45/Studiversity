@@ -21,7 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar.AppBarState
-import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.DayTimetableContent
 import com.denchic45.kts.ui.timetable.getMonthTitle
@@ -30,7 +31,7 @@ import com.denchic45.kts.ui.uiTextOf
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun YourTimetablesScreen(component: YourTimetablesComponent) {
-    val appBarInteractor = LocalAppBarInteractor.current
+    val appBarState = LocalAppBarState.current
 
     val selectedTimetable by component.selectedTimetablePosition.collectAsState()
     val groups by component.studyGroups.collectAsState()
@@ -39,7 +40,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
 
     LaunchedEffect(selectedYearWeek) {
 //    println("STATE COMPOSE: ${AppBarState(uiTextOf(getMonthTitle(selectedYearWeek)))}")
-        appBarInteractor.set(AppBarState(uiTextOf(getMonthTitle(selectedYearWeek))))
+        appBarState.content = AppBarContent(uiTextOf(getMonthTitle(selectedYearWeek)))
     }
 
     Surface {

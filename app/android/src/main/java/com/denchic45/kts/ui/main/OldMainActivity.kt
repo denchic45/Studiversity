@@ -58,7 +58,7 @@ import com.denchic45.kts.R
 import com.denchic45.kts.app
 import com.denchic45.kts.databinding.ActivityMainBinding
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.appbar.NavigationIcon
+import com.denchic45.kts.ui.appbar2.NavigationIcon
 import com.denchic45.kts.ui.base.BaseActivity
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.get

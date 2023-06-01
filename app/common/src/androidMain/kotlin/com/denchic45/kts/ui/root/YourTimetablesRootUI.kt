@@ -6,15 +6,15 @@ import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.ui.yourtimetables.YourTimetablesScreen
 
-@Composable
-fun YourTimetablesRootScreen(component: YourTimetablesRootComponent) {
-    val stack by component.childStack.subscribeAsState()
-
-    Children(stack) {
-        when(val child = it.instance) {
-            is YourTimetablesRootComponent.Child.YourTimetables -> {
-                YourTimetablesScreen(child.component)
-            }
-        }
-    }
-}
+//@Composable
+//fun YourTimetablesRootScreen(component: YourTimetablesRootComponent) {
+//    val stack by component.childStack.subscribeAsState()
+//
+//    Children(stack) {
+//        when(val child = it.instance) {
+//            is YourTimetablesRootComponent.Child.YourTimetables -> {
+//                YourTimetablesScreen(child.component)
+//            }
+//        }
+//    }
+//}

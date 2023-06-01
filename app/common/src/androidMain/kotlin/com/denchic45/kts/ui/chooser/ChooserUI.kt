@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,11 +28,8 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.theme.spacing
-import com.denchic45.kts.ui.uiTextOf
 
 @Composable
 fun <T> SearchScreen(
@@ -39,9 +37,10 @@ fun <T> SearchScreen(
     keyItem: (T) -> Any,
     itemContent: @Composable (T) -> Unit,
 ) {
-//    component.lifecycle.doOnStart {
+    val coroutineScope = rememberCoroutineScope()
+    val appBarState = LocalAppBarState.current
 //    LaunchedEffect(Unit) {
-        LocalAppBarState.current.hide()
+    appBarState.hide()
 //    }
     SearchContent(component, keyItem, itemContent)
 }
@@ -86,7 +85,12 @@ fun <T> SearchedItemsContent(
 ) {
     val itemsResource: Resource<List<T>> by component.foundItems.collectAsState()
     itemsResource.onSuccess {
-        LazyColumn(contentPadding = PaddingValues(top = 64.dp,bottom = MaterialTheme.spacing.medium)) {
+        LazyColumn(
+            contentPadding = PaddingValues(
+                top = 64.dp,
+                bottom = MaterialTheme.spacing.medium
+            )
+        ) {
             items(it, key = keyItem) {
                 Box(modifier = Modifier.clickable { component.onItemClick(it) }) {
                     itemContent(it)

@@ -28,7 +28,6 @@ import com.denchic45.kts.ui.uiTextOf
 fun AdminDashboardScreen(component: AdminDashboardComponent) {
     val appBarState = LocalAppBarState.current
 
-
     val childStack by component.childStack.subscribeAsState()
 
     Children(component.childStack) {

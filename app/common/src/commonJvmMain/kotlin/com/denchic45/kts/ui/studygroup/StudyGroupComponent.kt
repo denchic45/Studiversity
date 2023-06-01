@@ -33,7 +33,7 @@ import java.util.UUID
 
 @Inject
 class StudyGroupComponent(
-    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
+    checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
     private val userEditorComponent: (
         onFinish: () -> Unit,

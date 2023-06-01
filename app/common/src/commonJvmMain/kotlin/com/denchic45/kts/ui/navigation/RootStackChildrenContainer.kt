@@ -3,14 +3,15 @@ package com.denchic45.kts.ui.navigation
 import com.arkivanov.decompose.router.overlay.ChildOverlay
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
+import com.denchic45.kts.ui.navigator.RootChild
+import com.denchic45.kts.ui.navigator.RootConfig
 import com.denchic45.kts.util.asFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
-interface RootStackChildrenContainer<C : Any, T : ChildrenContainerChild> :
-    StackChildrenContainer<C, T> {
+interface RootStackChildrenContainer : StackChildrenContainer<RootConfig, RootChild> {
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun hasChildrenFlow(): Flow<Boolean> {
         return childStack.asFlow().flatMapLatest { childStack ->

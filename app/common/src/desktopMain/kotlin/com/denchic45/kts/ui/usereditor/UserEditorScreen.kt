@@ -14,12 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.LocalAppBarMediator
-import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.appbar.LocalAppBarInteractor
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.components.Spinner2
 import com.denchic45.kts.ui.components.dialog.AlertDialog
-import com.denchic45.kts.ui.onString
 import com.denchic45.kts.ui.theme.toDrawablePath
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +68,7 @@ fun UserEditorDialog(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
             ) {
-                    Text("Создать пользователя")
+                Text("Создать пользователя")
                 Spacer(Modifier.weight(1f))
                 IconButton({ onDismissRequest() }) {
                     Icon(Icons.Rounded.Close, "")

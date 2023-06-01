@@ -23,11 +23,10 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import com.denchic45.kts.ui.MainComponent.RootChild
+import com.denchic45.kts.ui.MainComponent.Child
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.navigation.OverlayChild
-import com.denchic45.kts.ui.root.YourStudyGroupsRootScreen
-import com.denchic45.kts.ui.root.YourTimetablesRootScreen
+import com.denchic45.kts.ui.root.RootScreen
 import com.denchic45.kts.ui.theme.toDrawablePath
 
 
@@ -62,12 +61,12 @@ fun MainContent(mainComponent: MainComponent) {
                 NavigationRailItem(icon = {
                     Icon(painterResource("ic_timetable".toDrawablePath()), null)
                 },
-                    selected = activeComponent is RootChild.YourTimetables,
+                    selected = activeComponent is Child.YourTimetables,
                     onClick = { mainComponent.onTimetableClick() })
                 NavigationRailItem(
                     icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
-                    selected = activeComponent is RootChild.YourStudyGroups,
-                    onClick = { mainComponent.onGroupClick() })
+                    selected = activeComponent is Child.YourStudyGroups,
+                    onClick = { mainComponent.onStudyGroupsClick() })
 //                Spacer(Modifier.weight(1f))
             }
 
@@ -110,15 +109,16 @@ fun MainContent(mainComponent: MainComponent) {
                     color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
                 ) {
                     when (val child = childStack.active.instance) {
-                        is RootChild.YourTimetables -> YourTimetablesRootScreen(child.component)
-                        is RootChild.YourStudyGroups -> {
-                            YourStudyGroupsRootScreen(child.component)
+                        is Child.YourTimetables -> RootScreen(child.component)
+                        is Child.YourStudyGroups -> {
+                            RootScreen(child.component)
                         }
 
-                        is RootChild.Works -> TODO()
-                        is RootChild.StudyGroup -> TODO()
-                        is RootChild.Course -> TODO()
-                        is RootChild.AdminDashboard -> TODO()
+                        is Child.Works -> TODO()
+                        is Child.StudyGroup -> TODO()
+                        is Child.Course -> TODO()
+                        is Child.AdminDashboard -> TODO()
+                        is Child.YourCourse -> TODO()
                     }
                 }
 

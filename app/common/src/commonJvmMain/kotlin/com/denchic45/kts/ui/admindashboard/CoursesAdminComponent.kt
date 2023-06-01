@@ -2,6 +2,7 @@ package com.denchic45.kts.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
+import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
@@ -19,21 +20,23 @@ class CoursesAdminComponent(
     courseChooserComponent: (onSelect: (CourseResponse) -> Unit, ComponentContext) -> CourseChooserComponent,
     courseEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> CourseEditorComponent,
     @Assisted
+   private val sidebarNavigation: OverlayNavigation<AdminDashboardComponent.SidebarConfig>,
+    @Assisted
     onSelect: (CourseResponse) -> Unit,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
     SearchableComponent<CourseResponse> by courseChooserComponent(onSelect, componentContext) {
 
-    private val overlayNavigation = OverlayNavigation<AddCourseConfig>()
-    val childOverlay = childOverlay(source = overlayNavigation,
-        handleBackButton = true,
-        childFactory = { _, context ->
-            AddCourseChild(courseEditorComponent(overlayNavigation::dismiss, null, context))
-        })
+//    private val overlayNavigation = OverlayNavigation<AddCourseConfig>()
+//    val childOverlay = childOverlay(source = overlayNavigation,
+//        handleBackButton = true,
+//        childFactory = { _, context ->
+//            AddCourseChild(courseEditorComponent(overlayNavigation::dismiss, null, context))
+//        })
 
     fun onAddCourseClick() {
-        overlayNavigation
+       TODO("Add course click")
     }
 
     @Parcelize

@@ -1,6 +1,7 @@
 package com.denchic45.kts.ui.main
 
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,9 +17,10 @@ import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -66,14 +68,15 @@ import com.denchic45.kts.R
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.MainComponent
 import com.denchic45.kts.ui.ResourceContent
-import com.denchic45.kts.ui.admindashboard.AdminDashboardScreen
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.NavigationIcon
 import com.denchic45.kts.ui.confirm.ConfirmDialog
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
+import com.denchic45.kts.ui.course.CourseScreen
 import com.denchic45.kts.ui.get
 import com.denchic45.kts.ui.getPainter
-import com.denchic45.kts.ui.root.YourStudyGroupsRootScreen
-import com.denchic45.kts.ui.root.YourTimetablesRootScreen
+import com.denchic45.kts.ui.root.RootStackScreen
+import com.denchic45.kts.ui.studygroup.StudyGroupScreen
 import com.seiko.imageloader.rememberAsyncImagePainter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -105,6 +108,13 @@ fun MainScreen(
 private fun CompactMainScreen(component: MainComponent, activity: ComponentActivity) {
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    BackHandler(drawerState.isOpen) {
+        coroutineScope.launch {
+            drawerState.close()
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -112,6 +122,17 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
         }
     ) {
         val stack by component.stack.subscribeAsState()
+        val appBarState = LocalAppBarState.current
+        appBarState.navigationIcon = when (val child = stack.active.instance) {
+            is MainComponent.PrimaryChild -> {
+                val hasChildren by child.component.hasChildrenFlow().collectAsState(initial = false)
+                if (hasChildren) NavigationIcon.BACK
+                else NavigationIcon.TOGGLE
+            }
+
+            else -> NavigationIcon.BACK
+        }
+
         Scaffold(
             topBar = {
                 TopBarContent(activity, drawerState)
@@ -121,7 +142,7 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
                 if (instance is MainComponent.ExtraChild) return@Scaffold
 
                 NavigationBar {
-                    NavigationBarItem(selected = instance is MainComponent.RootChild.YourTimetables,
+                    NavigationBarItem(selected = instance is MainComponent.Child.YourTimetables,
                         onClick = component::onTimetableClick,
                         icon = {
                             Icon(
@@ -131,8 +152,8 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
                         },
                         label = { Text("Расписание") }
                     )
-                    NavigationBarItem(selected = instance is MainComponent.RootChild.YourStudyGroups,
-                        onClick = component::onTimetableClick,
+                    NavigationBarItem(selected = instance is MainComponent.Child.YourStudyGroups,
+                        onClick = component::onStudyGroupsClick,
                         icon = {
                             Icon(
                                 painter = painterResource(R.drawable.ic_group),
@@ -169,7 +190,7 @@ fun MediumMainScreen(
             if (instance is MainComponent.PrimaryChild) {
                 val availableScreens by component.availableScreens.collectAsState()
                 NavigationRail {
-                    NavigationRailItem(selected = instance is MainComponent.RootChild.YourTimetables,
+                    NavigationRailItem(selected = instance is MainComponent.Child.YourTimetables,
                         onClick = component::onTimetableClick,
                         icon = {
                             Icon(
@@ -181,8 +202,8 @@ fun MediumMainScreen(
                     )
 
                     if (availableScreens.yourStudyGroups) {
-                        NavigationRailItem(selected = instance is MainComponent.RootChild.YourStudyGroups,
-                            onClick = component::onTimetableClick,
+                        NavigationRailItem(selected = instance is MainComponent.Child.YourStudyGroups,
+                            onClick = component::onStudyGroupsClick,
                             icon = {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_group),
@@ -255,7 +276,7 @@ private fun DrawerContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp)
-                            .padding(horizontal = 28.dp),
+                            .padding(horizontal = 16.dp),
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Text(
@@ -313,12 +334,11 @@ private fun DrawerContent(
                             contentDescription = "admin dashboard"
                         )
                     },
-                    selected = stack.active.instance is MainComponent.RootChild.AdminDashboard,
+                    selected = stack.active.instance is MainComponent.Child.AdminDashboard,
                     onClick = {
                         closeDrawer()
                         component.onAdminDashboardClick()
-                    },
-                    shape = RoundedCornerShape(0, 50, 50, 0)
+                    }
                 )
             }
         }
@@ -328,34 +348,33 @@ private fun DrawerContent(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState) {
-    val state = LocalAppBarState.current
-    println("TITLE: ${state.content.title.get(LocalContext.current)} $state")
+    val appBarState = LocalAppBarState.current
+    println("TITLE: ${appBarState.content.title.get(LocalContext.current)} $appBarState")
     val coroutineScope = rememberCoroutineScope()
 //    if (state.visible) {
     TopAppBar(
-        title = { Text(state.content.title.get(LocalContext.current)) },
+        title = { Text(appBarState.content.title.get(LocalContext.current)) },
         navigationIcon = {
-//                val icon by remember { state.navigationIcon }
-//                when (icon) {
-//                    NavigationIcon.TOGGLE -> IconButton(
-//                        onClick = { coroutineScope.launch { drawerState.open() } }) {
-//                        Icon(
-//                            imageVector = Icons.Outlined.Menu,
-//                            contentDescription = "menu"
-//                        )
-//                    }
-//
-//                    NavigationIcon.BACK -> IconButton(
-//                        onClick = { activity.onBackPressedDispatcher.onBackPressed() }) {
-//                        Icon(
-//                            imageVector = Icons.Outlined.ArrowBack,
-//                            contentDescription = "back"
-//                        )
-//                    }
-//                }
+            when (appBarState.navigationIcon) {
+                NavigationIcon.TOGGLE -> IconButton(
+                    onClick = { coroutineScope.launch { drawerState.open() } }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Menu,
+                        contentDescription = "menu"
+                    )
+                }
+
+                NavigationIcon.BACK -> IconButton(
+                    onClick = { activity.onBackPressedDispatcher.onBackPressed() }) {
+                    Icon(
+                        imageVector = Icons.Outlined.ArrowBack,
+                        contentDescription = "back"
+                    )
+                }
+            }
         },
         actions = {
-            state.content.actionItems.forEach { actionMenuItem ->
+            appBarState.content.actionItems.forEach { actionMenuItem ->
                 val contentDescription = actionMenuItem.title
                     ?.get(LocalContext.current)
                 IconButton(
@@ -369,7 +388,7 @@ private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState)
                 }
             }
 
-            if (state.content.dropdownItems.isNotEmpty()) {
+            if (appBarState.content.dropdownItems.isNotEmpty()) {
                 var menuExpanded by remember { mutableStateOf(false) }
                 IconButton(onClick = { menuExpanded = !menuExpanded }) {
                     Icon(Icons.Filled.MoreVert, "menu")
@@ -379,7 +398,7 @@ private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState)
                     offset = DpOffset(x = (-84).dp, y = 0.dp),
                     onDismissRequest = { menuExpanded = false },
                 ) {
-                    state.content.dropdownItems.forEach { item ->
+                    appBarState.content.dropdownItems.forEach { item ->
                         DropdownMenuItem(
                             text = { Text(item.title.get(LocalContext.current)) },
                             onClick = {
@@ -392,7 +411,8 @@ private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState)
                 }
             }
 //                state.actionsUI?.invoke(this)
-        }
+        },
+        scrollBehavior = appBarState.scrollBehavior,
     )
 //    }
 }
@@ -400,23 +420,17 @@ private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState)
 @Composable
 private fun ScreenContainer(
     paddingValues: PaddingValues,
-    stack: ChildStack<MainComponent.RootConfig, MainComponent.RootChild>,
+    stack: ChildStack<MainComponent.Config, MainComponent.Child>,
 ) {
     Children(modifier = Modifier.padding(paddingValues), stack = stack) {
         when (val child = it.instance) {
-            is MainComponent.RootChild.YourTimetables -> YourTimetablesRootScreen(
-                component = child.component
-            )
-
-            is MainComponent.RootChild.YourStudyGroups -> YourStudyGroupsRootScreen(
-                component = child.component
-            )
-
-            is MainComponent.RootChild.Works -> TODO()
-            is MainComponent.RootChild.StudyGroup -> TODO()
-            is MainComponent.RootChild.Course,
-            is MainComponent.RootChild.YourCourse -> {}
-            is MainComponent.RootChild.AdminDashboard -> AdminDashboardScreen(child.component)
+            is MainComponent.Child.YourStudyGroups -> RootStackScreen(component = child.component)
+            is MainComponent.Child.YourTimetables -> RootStackScreen(component = child.component)
+            is MainComponent.Child.AdminDashboard -> RootStackScreen(component = child.component)
+            is MainComponent.Child.YourCourse -> CourseScreen(component = child.component)
+            is MainComponent.Child.Course -> CourseScreen(component = child.component)
+            is MainComponent.Child.StudyGroup -> StudyGroupScreen(component = child.component)
+            is MainComponent.Child.Works -> {}
         }
     }
 }

@@ -31,7 +31,7 @@ fun UserListItem(
     trailingContent: (@Composable () -> Unit)? = null,
 ) {
     ListItem(
-        headlineContent = { Text(item.title) },
+        headlineContent = { Text(item.title,) },
         leadingContent = {
             UserAvatarImage(item.avatarUrl)
         },

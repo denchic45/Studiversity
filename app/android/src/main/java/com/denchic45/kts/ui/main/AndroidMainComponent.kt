@@ -1,50 +1,7 @@
 package com.denchic45.kts.ui.main
 
-import android.app.Activity
-import androidx.lifecycle.MutableLiveData
-import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.value.Value
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.kts.MobileNavigationDirections
-import com.denchic45.kts.R
-import com.denchic45.kts.domain.MainInteractor
-import com.denchic45.kts.domain.filterSuccess
-import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.domain.stateInResource
-import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
-import com.denchic45.kts.domain.usecase.FindAssignedUserRolesInScopeUseCase
-import com.denchic45.kts.domain.usecase.FindYourCoursesUseCase
-import com.denchic45.kts.ui.NavigationCommand
 import com.denchic45.kts.ui.UiIcon
 import com.denchic45.kts.ui.UiText
-import com.denchic45.kts.ui.adminPanel.AdminPanelFragmentDirections
-import com.denchic45.kts.ui.course.CourseFragmentDirections
-import com.denchic45.kts.ui.navigation.RootStackChildrenContainer
-import com.denchic45.kts.ui.onResource
-import com.denchic45.kts.ui.root.YourStudyGroupsRootStackChildrenContainer
-import com.denchic45.kts.ui.root.YourTimetablesRootComponent
-import com.denchic45.kts.ui.settings.SettingsFragmentDirections
-import com.denchic45.kts.ui.tasks.TasksFragmentDirections
-import com.denchic45.kts.ui.uiIconOf
-import com.denchic45.kts.util.componentScope
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.role.model.Role
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import java.util.UUID
 
 //class MainComponent constructor(
 //    private val interactor: MainInteractor,
@@ -346,7 +303,7 @@ import java.util.UUID
 //    }
 //
 //    sealed class RootChild {
-//        abstract val component: RootStackChildrenContainer<*, *>
+//        abstract val component: RootStackChildrenContainer
 //
 //        class YourTimetables(override val component: YourTimetablesRootComponent) : RootChild()
 //

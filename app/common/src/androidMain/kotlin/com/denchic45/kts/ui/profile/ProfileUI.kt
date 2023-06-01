@@ -30,7 +30,6 @@ import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -55,11 +54,7 @@ import coil.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.ExpandableMenu
 import com.denchic45.kts.ui.ResourceContent
-import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.appbar.AppBarState
-import com.denchic45.kts.ui.appbar2.ActionMenuItem2
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.DropdownMenuItem2
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
@@ -193,9 +188,10 @@ fun FullAvatarScreen(
     allowUpdateAvatar: Boolean,
     onDeleteClick: () -> Unit,
 ) {
-    if (allowUpdateAvatar)
-    LocalAppBarState.current.content = AppBarContent(dropdownItems = listOf(DropdownMenuItem2(
-       title = uiTextOf("Удалить"), onClick = onDeleteClick)))
+    if (allowUpdateAvatar) {
+        LocalAppBarState.current.content = AppBarContent(dropdownItems = listOf(DropdownMenuItem2(
+            title = uiTextOf("Удалить"), onClick = onDeleteClick)))
+    }
 
 
     AsyncImage(

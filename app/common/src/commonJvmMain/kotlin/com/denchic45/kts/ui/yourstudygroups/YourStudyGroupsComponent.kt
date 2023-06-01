@@ -17,6 +17,7 @@ import com.denchic45.kts.ui.navigation.ChildrenContainer
 import com.denchic45.kts.ui.navigation.isActiveFlow
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorComponent
+import com.denchic45.kts.util.asFlow
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
@@ -54,9 +55,6 @@ class YourStudyGroupsComponent(
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext, ChildrenContainer {
-
-    object Config
-    object Child
 
     private val componentScope = componentScope()
 
@@ -139,8 +137,9 @@ class YourStudyGroupsComponent(
         childStudyGroup.value.overlay?.instance?.onEditClick()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun hasChildrenFlow(): Flow<Boolean> {
-        return childStudyGroup.isActiveFlow()
+        return childStudyGroup.asFlow().flatMapLatest { it.overlay?.instance?.hasChildrenFlow() ?: flowOf(false) }
     }
 
 }

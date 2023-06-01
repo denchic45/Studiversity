@@ -16,13 +16,14 @@ import com.denchic45.kts.domain.MainInteractor
 import com.denchic45.kts.domain.ifSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindYourCoursesUseCase
-import com.denchic45.kts.ui.admindashboard.AdminDashboardComponent
+import com.denchic45.kts.ui.admindashboard.AdminDashboardRootComponent
 import com.denchic45.kts.ui.course.CourseComponent
+import com.denchic45.kts.ui.navigation.ChildrenContainerChild
 import com.denchic45.kts.ui.navigation.OverlayChild
 import com.denchic45.kts.ui.navigation.OverlayConfig
 import com.denchic45.kts.ui.navigation.RootStackChildrenContainer
 import com.denchic45.kts.ui.profile.ProfileComponent
-import com.denchic45.kts.ui.root.YourStudyGroupsRootStackChildrenContainer
+import com.denchic45.kts.ui.root.YourStudyGroupsRootComponent
 import com.denchic45.kts.ui.root.YourTimetablesRootComponent
 import com.denchic45.kts.ui.settings.SettingsComponent
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
@@ -41,7 +42,7 @@ import java.util.UUID
 @Inject
 class MainComponent(
     yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootComponent,
-    yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootStackChildrenContainer,
+    yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootComponent,
     findYourCoursesUseCase: FindYourCoursesUseCase,
     profileComponent: (
         onStudyGroupOpen: (UUID) -> Unit,
@@ -58,7 +59,7 @@ class MainComponent(
         UUID,
         ComponentContext,
     ) -> CourseComponent,
-    adminDashboardComponent: (StackNavigation<RootConfig>, ComponentContext) -> AdminDashboardComponent,
+    adminDashboardRootComponent: (ComponentContext) -> AdminDashboardRootComponent,
     settingsComponent: (ComponentContext) -> SettingsComponent,
     interactor: MainInteractor,
     @Assisted
@@ -67,50 +68,50 @@ class MainComponent(
 
     private val componentScope = componentScope()
 
-    private val navigation = StackNavigation<RootConfig>()
+    private val navigation = StackNavigation<Config>()
 
-    val stack: Value<ChildStack<RootConfig, RootChild>> = childStack(
+    val stack: Value<ChildStack<Config, Child>> = childStack(
         source = navigation,
         handleBackButton = true,
-        initialConfiguration = RootConfig.YourTimetables,
+        initialConfiguration = Config.YourTimetables,
         childFactory = { config, context ->
             when (config) {
-                is RootConfig.YourTimetables -> RootChild.YourTimetables(
+                is Config.YourTimetables -> Child.YourTimetables(
                     yourTimetablesRootComponent(context)
                 )
 
-                is RootConfig.YourStudyGroups -> RootChild.YourStudyGroups(
+                is Config.YourStudyGroups -> Child.YourStudyGroups(
                     yourStudyGroupsRootComponent(context)
                 )
 
-                RootConfig.Works -> TODO()
-                is RootConfig.StudyGroup -> RootChild.StudyGroup(
+                Config.Works -> TODO()
+                is Config.StudyGroup -> Child.StudyGroup(
                     studyGroupComponent(
-                        { navigation.bringToFront(RootConfig.Course(it)) },
-                        { navigation.bringToFront(RootConfig.StudyGroup(it)) },
+                        { navigation.bringToFront(Config.Course(it)) },
+                        { navigation.bringToFront(Config.StudyGroup(it)) },
                         config.studyGroupId,
                         context
                     )
                 )
 
-                is RootConfig.Course -> RootChild.Course(
+                is Config.Course -> Child.Course(
                     courseComponent(
-                        { navigation.bringToFront(RootConfig.StudyGroup(it)) },
+                        { navigation.bringToFront(Config.StudyGroup(it)) },
                         config.courseId,
                         context
                     )
                 )
 
-                is RootConfig.YourCourse -> RootChild.YourCourse(
+                is Config.YourCourse -> Child.YourCourse(
                     courseComponent(
-                        { navigation.bringToFront(RootConfig.StudyGroup(it)) },
+                        { navigation.bringToFront(Config.StudyGroup(it)) },
                         config.courseId,
                         context
                     )
                 )
 
-                RootConfig.AdminDashboard -> RootChild.AdminDashboard(
-                    adminDashboardComponent(navigation, context)
+                Config.AdminDashboard -> Child.AdminDashboard(
+                    adminDashboardRootComponent(context)
                 )
             }
         })
@@ -126,7 +127,7 @@ class MainComponent(
             OverlayConfig.YourProfile -> OverlayChild.YourProfile(
                 profileComponent(
                     {
-                        navigation.bringToFront(RootConfig.StudyGroup(it))
+                        navigation.bringToFront(Config.StudyGroup(it))
                         overlayNavigation.dismiss()
                     },
                     userInfo.value.ifSuccess { it.id } ?: error("Id required"),
@@ -163,11 +164,11 @@ class MainComponent(
     }
 
     fun onTimetableClick() {
-        navigation.bringToFront(RootConfig.YourTimetables)
+        navigation.bringToFront(Config.YourTimetables)
     }
 
-    fun onGroupClick() {
-        navigation.bringToFront(RootConfig.YourStudyGroups)
+    fun onStudyGroupsClick() {
+        navigation.bringToFront(Config.YourStudyGroups)
     }
 
     fun onOverlayDismiss() {
@@ -179,11 +180,11 @@ class MainComponent(
     }
 
     fun onCourseClick(courseId: UUID) {
-        navigation.bringToFront(RootConfig.Course(courseId))
+        navigation.bringToFront(Config.Course(courseId))
     }
 
     fun onAdminDashboardClick() {
-        navigation.bringToFront(RootConfig.AdminDashboard)
+        navigation.bringToFront(Config.AdminDashboard)
     }
 
     fun onSettingsClick() {
@@ -197,58 +198,58 @@ class MainComponent(
     )
 
     @Parcelize
-    sealed interface RootConfig : Parcelable {
+    sealed interface Config : Parcelable {
 
-        object YourTimetables : RootConfig
+        object YourTimetables : Config
 
-        object YourStudyGroups : RootConfig
+        object YourStudyGroups : Config
 
-        object Works : RootConfig
+        object Works : Config
 
-        data class StudyGroup(val studyGroupId: UUID) : RootConfig
+        data class StudyGroup(val studyGroupId: UUID) : Config
 
-        data class Course(val courseId: UUID) : RootConfig
+        data class Course(val courseId: UUID) : Config
 
-        data class YourCourse(val courseId: UUID) : RootConfig
+        data class YourCourse(val courseId: UUID) : Config
 
-        object AdminDashboard : RootConfig
+        object AdminDashboard : Config
     }
 
     sealed interface PrimaryChild {
-        val component: RootStackChildrenContainer<*, *>
+        val component: RootStackChildrenContainer
     }
 
     sealed interface ExtraChild
 
-    sealed interface RootChild {
+    sealed interface Child {
 
         class YourTimetables(
             override val component: YourTimetablesRootComponent,
-        ) : RootChild, PrimaryChild
+        ) : Child, ChildrenContainerChild, PrimaryChild
 
         class YourStudyGroups(
-            override val component: YourStudyGroupsRootStackChildrenContainer,
-        ) : RootChild, PrimaryChild
+            override val component: YourStudyGroupsRootComponent,
+        ) : Child, ChildrenContainerChild, PrimaryChild
 
         class Works(
-            val component: RootStackChildrenContainer<*, *>,
-        ) : RootChild, ExtraChild
+            override val component: RootStackChildrenContainer,
+        ) : Child, ChildrenContainerChild, ExtraChild
 
 
         class StudyGroup(
-            val component: StudyGroupComponent,
-        ) : RootChild, ExtraChild
+            override val component: StudyGroupComponent,
+        ) : Child, ChildrenContainerChild, ExtraChild
 
         class Course(
             val component: CourseComponent,
-        ) : RootChild, ExtraChild
+        ) : Child, ExtraChild
 
         class YourCourse(
-            val component: CourseComponent,
-        ) : RootChild, ExtraChild
+            override val component: CourseComponent,
+        ) : Child, ChildrenContainerChild, ExtraChild
 
         class AdminDashboard(
-            val component: AdminDashboardComponent,
-        ) : RootChild, ExtraChild
+            val component: AdminDashboardRootComponent,
+        ) : Child, ExtraChild
     }
 }

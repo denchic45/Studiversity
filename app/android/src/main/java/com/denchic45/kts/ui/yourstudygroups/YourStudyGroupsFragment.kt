@@ -22,8 +22,7 @@ import com.arkivanov.decompose.extensions.android.layoutInflater
 import com.denchic45.kts.R
 import com.denchic45.kts.databinding.FragmentGroupBinding
 import com.denchic45.kts.ui.appbar.AppBarInteractor
-import com.denchic45.kts.ui.root.YourStudyGroupsRootStackChildrenContainer
-import com.denchic45.kts.ui.root.YourStudyGroupsRootScreen
+import com.denchic45.kts.ui.root.YourStudyGroupsRootComponent
 import com.denchic45.kts.ui.studygroup.StudyGroupFragment
 import com.denchic45.kts.ui.studygroup.StudyGroupViewModel
 import com.denchic45.kts.ui.theme.AppTheme
@@ -36,7 +35,7 @@ class YourStudyGroupsFragment(
     private val appBarInteractor: AppBarInteractor,
     yourStudyGroupsRootComponent: (
         ComponentContext,
-    ) -> YourStudyGroupsRootStackChildrenContainer,
+    ) -> YourStudyGroupsRootComponent,
 //    private val studyGroupFragment: () -> StudyGroupFragment,
 //    private val studyGroupViewModel: (String, ComponentContext) -> StudyGroupViewModel,
 ) : Fragment(R.layout.fragment_your_study_groups) {
@@ -51,14 +50,14 @@ class YourStudyGroupsFragment(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(
             ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner)
         )
         setContent {
             AppTheme {
-                YourStudyGroupsRootScreen(component)
+//                YourStudyGroupsRootScreen(component)
             }
         }
     }

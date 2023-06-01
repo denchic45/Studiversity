@@ -9,12 +9,13 @@ import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.kts.ui.MainComponent
-import com.denchic45.kts.ui.course.CourseComponent
 import com.denchic45.kts.ui.model.UserItem
+import com.denchic45.kts.ui.navigation.ChildrenContainer
+import com.denchic45.kts.ui.navigation.isActiveFlow
+import com.denchic45.kts.ui.navigator.RootConfig
 import com.denchic45.kts.ui.profile.ProfileComponent
-import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.stuiversity.api.course.model.CourseResponse
+import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -22,17 +23,18 @@ import java.util.UUID
 @Inject
 class AdminDashboardComponent(
     coursesAdminComponent: (
+        rootNavigation: StackNavigation<RootConfig>,
         onSelect: (CourseResponse) -> Unit,
-        ComponentContext
+        ComponentContext,
     ) -> CoursesAdminComponent,
     usersAdminComponent: (onSelect: (UserItem) -> Unit, ComponentContext) -> UsersAdminComponent,
 
     profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
     @Assisted
-    rootNavigation: StackNavigation<MainComponent.RootConfig>,
+    rootNavigation: StackNavigation<RootConfig>,
     @Assisted
     componentContext: ComponentContext,
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, ChildrenContainer {
 
     private val navigation = StackNavigation<Config>()
 
@@ -43,8 +45,8 @@ class AdminDashboardComponent(
         childFactory = { config, context ->
             when (config) {
                 Config.None -> Child.None
-                Config.Courses -> Child.Courses(coursesAdminComponent({
-                    rootNavigation.bringToFront(MainComponent.RootConfig.Course(it.id))
+                Config.Courses -> Child.Courses(coursesAdminComponent(rootNavigation, {
+                    rootNavigation.bringToFront(RootConfig.Course(it.id))
                 }, context))
 
                 Config.Users -> Child.Users(usersAdminComponent({
@@ -65,7 +67,7 @@ class AdminDashboardComponent(
             when (config) {
                 is SidebarConfig.Profile -> SidebarChild.Profile(profileComponent({
                     rootNavigation.bringToFront(
-                        MainComponent.RootConfig.StudyGroup(it)
+                        RootConfig.StudyGroup(it)
                     )
                 }, config.userId, context))
             }
@@ -104,14 +106,18 @@ class AdminDashboardComponent(
         class Profile(val component: ProfileComponent) : SidebarChild
     }
 
-    @Parcelize
-    sealed interface StackOverlayConfig : Parcelable {
-        data class Course(val courseId: UUID) : StackOverlayConfig
-        data class StudyGroup(val studyGroupId: UUID) : StackOverlayConfig
-    }
+//    @Parcelize
+//    sealed interface StackOverlayConfig : Parcelable {
+//        data class Course(val courseId: UUID) : StackOverlayConfig
+//        data class StudyGroup(val studyGroupId: UUID) : StackOverlayConfig
+//    }
+//
+//    sealed interface StackOverlayChild {
+//        class Course(val component: CourseComponent) : StackOverlayChild
+//        class StudyGroup(val component: StudyGroupComponent) : StackOverlayChild
+//    }
 
-    sealed interface StackOverlayChild {
-        class Course(val component: CourseComponent) : StackOverlayChild
-        class StudyGroup(val component: StudyGroupComponent) : StackOverlayChild
+    override fun hasChildrenFlow(): Flow<Boolean> {
+        return childSidebar.isActiveFlow()
     }
 }
