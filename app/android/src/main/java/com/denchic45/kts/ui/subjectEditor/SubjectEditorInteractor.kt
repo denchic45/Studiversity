@@ -7,7 +7,8 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
-import java.util.*
+import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 import javax.inject.Inject
 
 class SubjectEditorInteractor @Inject constructor(
@@ -27,7 +28,7 @@ class SubjectEditorInteractor @Inject constructor(
     }
 
 
-    suspend fun find(id: UUID): Resource<SubjectResponse> {
+    fun find(id: UUID): Flow<Resource<SubjectResponse>> {
         return subjectRepository.findById(id)
     }
 

@@ -121,44 +121,44 @@ class SubjectEditorViewModel @Inject constructor(
         showColors.value = Pair(Colors.ids, 0)
     }
 
-    private fun setupForExistItem() {
-        title.value = "Редактировать предмет"
-        viewModelScope.launch {
-            findSubjectByIdUseCase(subjectId!!)
-                .onSuccess { subject ->
-
-                    uiState.updateResource {
-                        EditableSubjectState(
-                            name = subject.name,
-                            shortname = subject.shortname,
-                            iconUrl = subject.iconUrl
-                        )
-                    }
-
-                    uiEditor.oldItem = uiState.value
-
-//                    colorIcon.value = Colors.colorIdOfName[subject.colorName]
-
-//                    currentSelectedColorPosition.value = IntStream.range(0, Colors.names.size)
-//                        .filter { value: Int -> Colors.names[value] == subject.colorName }
-//                        .findFirst()
-//                        .orElse(-1)
-//                    icon.value = subject.iconName
-
-//                    Colors.names
-//                        .firstOrNull { name -> name == subject.colorName }
-//                        ?.let { name ->
-//                            colorIcon.value = Colors.colorIdOfName[name]
-//                            showColors.setValue(Pair(Colors.ids, Colors.names.indexOf(name)))
-//                        }
-
-//                    colorName = subject.colorName
-                }.onFailure {
-                    finish()
-                }
-
-        }
-    }
+//    private fun setupForExistItem() {
+//        title.value = "Редактировать предмет"
+//        viewModelScope.launch {
+//            findSubjectByIdUseCase(subjectId!!)
+//                .onSuccess { subject ->
+//
+//                    uiState.updateResource {
+//                        EditableSubjectState(
+//                            name = subject.name,
+//                            shortname = subject.shortname,
+//                            iconUrl = subject.iconUrl
+//                        )
+//                    }
+//
+//                    uiEditor.oldItem = uiState.value
+//
+////                    colorIcon.value = Colors.colorIdOfName[subject.colorName]
+//
+////                    currentSelectedColorPosition.value = IntStream.range(0, Colors.names.size)
+////                        .filter { value: Int -> Colors.names[value] == subject.colorName }
+////                        .findFirst()
+////                        .orElse(-1)
+////                    icon.value = subject.iconName
+//
+////                    Colors.names
+////                        .firstOrNull { name -> name == subject.colorName }
+////                        ?.let { name ->
+////                            colorIcon.value = Colors.colorIdOfName[name]
+////                            showColors.setValue(Pair(Colors.ids, Colors.names.indexOf(name)))
+////                        }
+//
+////                    colorName = subject.colorName
+//                }.onFailure {
+//                    finish()
+//                }
+//
+//        }
+//    }
 
 //    private fun findColorId(colorName: String): Int {
 //        return colorsNames.firstOrNull { name -> name == colorName }
