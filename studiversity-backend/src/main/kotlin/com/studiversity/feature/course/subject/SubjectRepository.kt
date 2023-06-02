@@ -7,12 +7,14 @@ import com.studiversity.database.table.CourseDao
 import com.studiversity.database.table.Courses
 import com.studiversity.database.table.SubjectDao
 import com.studiversity.database.table.Subjects
+import io.github.jan.supabase.storage.BucketApi
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-class SubjectRepository {
+class SubjectRepository(private val bucket: BucketApi) {
+
     fun add(request: CreateSubjectRequest) = transaction {
         SubjectDao.new {
             name = request.name
@@ -50,5 +52,9 @@ class SubjectRepository {
             it.subjectId = null
         }
         subjectDao.delete()
+    }
+
+    suspend fun findIconsUrls(): List<String> {
+        return bucket.list("subjects_icons").map { bucket.publicUrl("subjects_icons/${it.name}") }
     }
 }

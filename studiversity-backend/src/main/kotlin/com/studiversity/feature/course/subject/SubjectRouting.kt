@@ -62,6 +62,9 @@ fun Application.subjectRoutes() {
                 }
                 subjectByIdRoute()
             }
+            get("/subjects-icons") {
+
+            }
         }
     }
 }
