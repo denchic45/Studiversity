@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import com.denchic45.kts.WindowSizeClass
 
 @Composable
-fun calculateWindowSizeClass(): WindowSizeClass {
+actual fun calculateWindowSizeClass(): WindowSizeClass {
     val size = LocalWindowState.current.size
     return WindowSizeClass.calculateFromSize(size)
 }
