@@ -1,15 +1,19 @@
 package com.denchic45.kts.data.repository
 
-import com.denchic45.kts.data.db.local.source.*
+import com.denchic45.kts.data.db.local.source.CourseLocalDataSource
+import com.denchic45.kts.data.db.local.source.GroupCourseLocalDataSource
+import com.denchic45.kts.data.db.local.source.GroupLocalDataSource
+import com.denchic45.kts.data.db.local.source.SectionLocalDataSource
+import com.denchic45.kts.data.db.local.source.SubjectLocalDataSource
+import com.denchic45.kts.data.db.local.source.UserLocalDataSource
 import com.denchic45.kts.data.fetchResource
 import com.denchic45.kts.data.fetchResourceFlow
-import com.denchic45.kts.data.service.AppVersionService
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
@@ -44,7 +48,11 @@ class SubjectRepository @Inject constructor(
         subjectApi.delete(subjectId)
     }
 
-    suspend fun findById(subjectId: UUID) = fetchResource {
+    fun findById(subjectId: UUID) = fetchResourceFlow {
         subjectApi.getById(subjectId)
+    }
+
+    fun findIcons() = fetchResourceFlow {
+        subjectApi.getIconsUrls()
     }
 }

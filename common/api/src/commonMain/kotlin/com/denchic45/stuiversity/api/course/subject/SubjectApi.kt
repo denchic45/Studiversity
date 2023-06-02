@@ -6,10 +6,16 @@ import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import java.util.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import java.util.UUID
 
 interface SubjectApi {
     suspend fun create(createSubjectRequest: CreateSubjectRequest): ResponseResult<SubjectResponse>
@@ -26,6 +32,8 @@ interface SubjectApi {
     suspend fun search(query: String): ResponseResult<List<SubjectResponse>>
 
     suspend fun delete(subjectId: UUID): EmptyResponseResult
+
+    suspend fun getIconsUrls(): ResponseResult<List<String>>
 }
 
 class SubjectApiImpl(private val client: HttpClient) : SubjectApi {
@@ -64,5 +72,9 @@ class SubjectApiImpl(private val client: HttpClient) : SubjectApi {
 
     override suspend fun delete(subjectId: UUID): EmptyResponseResult {
         return client.delete("/subjects/$subjectId").toResult()
+    }
+
+    override suspend fun getIconsUrls(): ResponseResult<List<String>> {
+        return client.get("/subjects-icons").toResult()
     }
 }
