@@ -40,9 +40,9 @@ class StudyGroupEditorFragment(
                     arguments?.getString("studyGroupId")?.toUUID(),
                     defaultComponentContext(requireActivity().onBackPressedDispatcher)
                 )
-                component.appBarState.collectWhenStarted(viewLifecycleOwner) {
-                    appBarInteractor.set(it)
-                }
+//                component.appBarState.collectWhenStarted(viewLifecycleOwner) {
+//                    appBarInteractor.set(it)
+//                }
                 StudyGroupEditorScreen(component)
             }
         }

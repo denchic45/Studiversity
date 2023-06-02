@@ -1,7 +1,5 @@
 package com.denchic45.kts.ui.studygroupeditor
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,13 +13,8 @@ import com.denchic45.kts.domain.usecase.FindSpecialtyByContainsNameUseCase
 import com.denchic45.kts.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.kts.domain.usecase.UpdateStudyGroupUseCase
 import com.denchic45.kts.getOptProperty
-import com.denchic45.kts.ui.ActionMenuItem
-import com.denchic45.kts.ui.appbar.AppBarState
-import com.denchic45.kts.ui.uiIconOf
-import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.updateOldValues
 import com.denchic45.kts.util.componentScope
-import com.denchic45.kts.util.copy
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
@@ -50,25 +43,14 @@ class StudyGroupEditorComponent(
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
-    private val _studyGroupId_: UUID?,
+    private val studyGroupId: UUID?,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    val appBarState = MutableStateFlow(AppBarState(
-        title = uiTextOf(_studyGroupId_?.let { "Редактирование группы" } ?: "Создание группы"),
-        actions = listOf(
-            ActionMenuItem(
-                id = "save",
-                icon = uiIconOf(Icons.Default.Done),
-                enabled = false,
-                onClick = ::onSaveClick
-            )
-        ),
-    ))
-
     private val editingState = EditingStudyGroup()
+    val allowSave = MutableStateFlow(false)
     val inputState = InputState()
 
     private val fieldEditor = FieldEditor(mapOf(
@@ -101,7 +83,7 @@ class StudyGroupEditorComponent(
         )
     )
 
-    val viewState = (_studyGroupId_?.let {
+    val viewState = (studyGroupId?.let {
         findStudyGroupByIdUseCase(it).mapResource { response ->
             fieldEditor.updateOldValues(
                 "name" to response.name,
@@ -128,35 +110,35 @@ class StudyGroupEditorComponent(
 
     fun onNameType(name: String) {
         editingState.name = name
-        updateEnableSave()
+        updateAllowSave()
     }
 
     fun onSpecialtySelect(specialty: SpecialtyResponse?) {
         searchSpecialtiesText.value = ""
         editingState.specialty = specialty
-        updateEnableSave()
+        updateAllowSave()
     }
 
     fun onSpecialtyNameType(text: String) {
         searchSpecialtiesText.update { text }
-        updateEnableSave()
+        updateAllowSave()
     }
 
     fun onStartYearType(startYear: Int) {
         editingState.startAcademicYear = startYear
-        updateEnableSave()
+        updateAllowSave()
     }
 
 
     fun onEndYearType(endYear: Int) {
         editingState.endAcademicYear = endYear
-        updateEnableSave()
+        updateAllowSave()
     }
 
     fun onSaveClick() {
         if (validator.validate()) {
             componentScope.launch {
-                val resource = _studyGroupId_?.let {
+                val resource = studyGroupId?.let {
                     updateStudyGroupUseCase(
                         it, UpdateStudyGroupRequest(
                             name = fieldEditor.getOptProperty("name"),
@@ -196,13 +178,8 @@ class StudyGroupEditorComponent(
         }
     }
 
-    private fun updateEnableSave() {
-        appBarState.update { state ->
-            state.copy(actions = state.actions.copy {
-                val itemIndex = state.actions.indexOfFirst { it.id == "save" }
-                this[itemIndex] = this[itemIndex].copy(enabled = fieldEditor.hasChanges())
-            })
-        }
+    private fun updateAllowSave() {
+        allowSave.update { fieldEditor.hasChanges() && validator.validate() }
     }
 
     @Stable
