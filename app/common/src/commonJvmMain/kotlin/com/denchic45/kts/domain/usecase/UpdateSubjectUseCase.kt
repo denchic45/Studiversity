@@ -3,15 +3,19 @@ package com.denchic45.kts.domain.usecase
 import com.denchic45.kts.data.repository.SubjectRepository
 import com.denchic45.kts.domain.Resource
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import kotlinx.coroutines.flow.Flow
+import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
 import java.util.UUID
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
-class FindSubjectByIdUseCase @Inject constructor(
+class UpdateSubjectUseCase @Inject constructor(
     private val subjectRepository: SubjectRepository,
 ) {
-    operator fun invoke(courseId: UUID): Flow<Resource<SubjectResponse>> {
-        return subjectRepository.findById(courseId)
+
+    suspend operator fun invoke(
+        subjectId: UUID,
+        request: UpdateSubjectRequest
+    ): Resource<SubjectResponse> {
+        return subjectRepository.update(subjectId, request)
     }
 }
