@@ -18,13 +18,13 @@ fun CoursesAdminScreen(component: CoursesAdminComponent) {
     Scaffold(
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = component::onAddCourseClick,
+                onClick = component::onAddClick,
                 text = { Text(text = "Создать курс") },
                 icon = { Icon(Icons.Default.Add, "add course") })
         }) {
         Box(Modifier.padding(it)) {
             SearchScreen(
-                component = component,
+                component = component.chooserComponent,
                 keyItem = CourseResponse::id
             ) {
                 Text(text = it.name)

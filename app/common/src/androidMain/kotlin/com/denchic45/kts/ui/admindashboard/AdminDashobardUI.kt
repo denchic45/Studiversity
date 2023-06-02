@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.R
-import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.theme.spacing
@@ -31,12 +30,28 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
     val childStack by component.childStack.subscribeAsState()
 
     Children(component.childStack) {
-        when(val child = it.instance) {
+        when (val child = it.instance) {
             AdminDashboardComponent.Child.None -> {
                 LaunchedEffect(Unit) {
                     appBarState.content = AppBarContent(title = uiTextOf("Панель управления"))
                 }
                 Column {
+                    AdminListItem(
+                        title = "Расписания",
+                        subtitle = "Просмотр и редактирование",
+                        painter = painterResource(id = R.drawable.ic_timetable),
+                        contentDescription = "timetables",
+                        onClick = component::onTimetableFinderClick
+                    )
+
+                    AdminListItem(
+                        title = "Создать расписание",
+                        subtitle = "С нуля или из документа",
+                        painter = painterResource(id = R.drawable.ic_timetable),
+                        contentDescription = "timetables",
+                        onClick = component::onTimetableLoaderClick
+                    )
+
                     AdminListItem(
                         title = "Курсы",
                         painter = painterResource(id = R.drawable.ic_course),
@@ -50,10 +65,37 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
                         contentDescription = "users",
                         onClick = component::onUsersClick
                     )
+
+                    AdminListItem(
+                        title = "Учебные группы",
+                        painter = painterResource(id = R.drawable.ic_study_group),
+                        contentDescription = "study groups",
+                        onClick = component::onStudyGroupsClick
+                    )
+
+                    AdminListItem(
+                        title = "Предметы",
+                        painter = painterResource(id = R.drawable.ic_subject),
+                        contentDescription = "subjects",
+                        onClick = component::onSubjectsClick
+                    )
+
+                    AdminListItem(
+                        title = "Специальности",
+                        painter = painterResource(id = R.drawable.ic_specialty),
+                        contentDescription = "specialties",
+                        onClick = component::onSpecialtiesClick
+                    )
                 }
             }
+            is AdminDashboardComponent.Child.TimetableFinder -> TODO()
+            is AdminDashboardComponent.Child.TimetableLoader -> TODO()
             is AdminDashboardComponent.Child.Courses -> CoursesAdminScreen(child.component)
-            is AdminDashboardComponent.Child.Users -> TODO()
+            is AdminDashboardComponent.Child.Users -> UsersAdminScreen(child.component)
+            is AdminDashboardComponent.Child.StudyGroups -> TODO()
+            is AdminDashboardComponent.Child.Subjects -> TODO()
+            is AdminDashboardComponent.Child.Specialties -> TODO()
+
         }
     }
 }
@@ -61,6 +103,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
 @Composable
 fun AdminListItem(
     title: String,
+    subtitle: String? = null,
     painter: Painter,
     contentDescription: String,
     onClick: () -> Unit,
@@ -68,6 +111,11 @@ fun AdminListItem(
     ListItem(
         headlineContent = {
             Text(text = title, style = MaterialTheme.typography.titleMedium)
+        },
+        supportingContent = subtitle?.let {
+            {
+                Text(text = subtitle)
+            }
         },
         leadingContent = {
             Icon(
