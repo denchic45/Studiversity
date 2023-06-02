@@ -89,7 +89,7 @@
                 android:layout_width="26dp"
                 android:layout_height="26dp"
                 android:layout_margin="8dp"
-                app:srcCompat="@drawable/ic_group"
+                app:srcCompat="@drawable/ic_study_group"
                 app:tint="@color/blue"
                 tools:ignore="ContentDescription" />
 

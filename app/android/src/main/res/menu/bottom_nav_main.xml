@@ -15,7 +15,7 @@
 
     <item
         android:id="@+id/menu_group"
-        android:icon="@drawable/ic_group"
+        android:icon="@drawable/ic_study_group"
         android:title="@string/menu_title_group" />
 
 </menu>
