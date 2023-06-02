@@ -156,7 +156,7 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
                         onClick = component::onStudyGroupsClick,
                         icon = {
                             Icon(
-                                painter = painterResource(R.drawable.ic_group),
+                                painter = painterResource(R.drawable.ic_study_group),
                                 contentDescription = "your groups menu"
                             )
                         },
@@ -206,7 +206,7 @@ fun MediumMainScreen(
                             onClick = component::onStudyGroupsClick,
                             icon = {
                                 Icon(
-                                    painter = painterResource(R.drawable.ic_group),
+                                    painter = painterResource(R.drawable.ic_study_group),
                                     contentDescription = "your groups menu"
                                 )
                             },
@@ -267,6 +267,48 @@ private fun DrawerContent(
                 }
             }
             Divider(Modifier.padding(vertical = 4.dp))
+
+            if (availableScreens.yourWorks) {
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            "Задания",
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_works),
+                            contentDescription = "works"
+                        )
+                    },
+                    selected = stack.active.instance is MainComponent.Child.AdminDashboard,
+                    onClick = {
+                        closeDrawer()
+                        component.onAdminDashboardClick()
+                    }
+                )
+            }
+
+            NavigationDrawerItem(
+                label = {
+                    Text(
+                        "Расписание звонков",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_time),
+                        contentDescription = "schedule"
+                    )
+                },
+                selected = stack.active.instance is MainComponent.Child.AdminDashboard,
+                onClick = {
+                    closeDrawer()
+                    component.onAdminDashboardClick()
+                }
+            )
 
             val yourCourses by component.yourCourses.collectAsState()
 

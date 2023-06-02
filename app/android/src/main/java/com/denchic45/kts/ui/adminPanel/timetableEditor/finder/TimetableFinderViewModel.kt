@@ -188,7 +188,7 @@
 //                            ListItem(
 //                                id = id,
 //                                title = name,
-//                                icon = UiImage.IdImage(R.drawable.ic_group)
+//                                icon = UiImage.IdImage(R.drawable.ic_study_group)
 //                            )
 //                        })
 //                    }, failure = {})

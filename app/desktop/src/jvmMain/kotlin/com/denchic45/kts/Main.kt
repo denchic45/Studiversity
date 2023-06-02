@@ -11,6 +11,7 @@ import androidx.compose.ui.window.*
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleController
+import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.kts.di.*
 import com.denchic45.kts.ui.AppBarMediator
@@ -27,7 +28,11 @@ fun main() = mainApp()
 @OptIn(ExperimentalDecomposeApi::class)
 private fun mainApp() {
     val lifecycle = LifecycleRegistry()
-    val componentContext = DefaultComponentContext(lifecycle)
+    val backDispatcher = BackDispatcher()
+    val componentContext = DefaultComponentContext(
+        lifecycle = lifecycle,
+        backHandler = backDispatcher
+    )
     application {
         val isAuth by splashComponent.isAuth.collectAsState(null)
 

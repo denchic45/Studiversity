@@ -113,7 +113,7 @@ fun PeriodListItem(
                     if (groupShowing)
                         Row {
                             Image(
-                                painter = painterResource(id = R.drawable.ic_group),
+                                painter = painterResource(id = R.drawable.ic_study_group),
                                 contentDescription = null,
                                 modifier = Modifier.padding(8.dp)
                             )

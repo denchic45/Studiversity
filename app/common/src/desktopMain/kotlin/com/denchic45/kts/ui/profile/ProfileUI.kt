@@ -62,7 +62,7 @@ fun ProfileSideBar(
 //                    profile.groupClickable,
 //                    onClick = profileComponent::onGroupClick
 //                ),
-//                    icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
+//                    icon = { Icon(painterResource("ic_study_group".toDrawablePath()), null) },
 //                    text = {
 //                        Text(text = profile.groupInfo, style = MaterialTheme.typography.bodyLarge)
 //                    })

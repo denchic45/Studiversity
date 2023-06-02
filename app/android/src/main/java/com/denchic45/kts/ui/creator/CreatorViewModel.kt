@@ -33,7 +33,7 @@ class CreatorViewModel @Inject constructor() : BaseViewModel() {
     fun createEntityList(): List<ListItem> {
         return listOf(
             ListItem(title = "Пользователя", icon = UiImage.IdImage(R.drawable.ic_user)),
-            ListItem(title = "Группу", icon = UiImage.IdImage(R.drawable.ic_group)),
+            ListItem(title = "Группу", icon = UiImage.IdImage(R.drawable.ic_study_group)),
             ListItem(title = "Предмет", icon = UiImage.IdImage(R.drawable.ic_subject)),
             ListItem(title = "Специальность", icon = UiImage.IdImage(R.drawable.ic_specialty)),
             ListItem(title = "Курс", icon = UiImage.IdImage(R.drawable.ic_course))

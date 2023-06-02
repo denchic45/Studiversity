@@ -113,7 +113,7 @@ fun ProfileScreen(component: ProfileComponent) {
                     )
 
                     ProfileComponent.OverlayChild.AvatarChooser -> {
-                        AvatarChooser(component::onNewAvatarSelect,component::onDialogClose)
+                        AvatarChooser(component::onNewAvatarSelect, component::onDialogClose)
                     }
                 }
             }
@@ -122,7 +122,7 @@ fun ProfileScreen(component: ProfileComponent) {
 }
 
 @Composable
-private fun AvatarChooser(onNewAvatarSelect: (String, ByteArray) -> Unit,onClose:()->Unit) {
+private fun AvatarChooser(onNewAvatarSelect: (String, ByteArray) -> Unit, onClose: () -> Unit) {
     val context = LocalContext.current
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -171,12 +171,6 @@ private fun AvatarChooser(onNewAvatarSelect: (String, ByteArray) -> Unit,onClose
 private fun Uri.decodeBitmap(
     context: Context,
 ) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-//    ImageDecoder.decodeBitmap(
-//        ImageDecoder.createSource(context.contentResolver, this)
-//    ) { decoder, info, source ->
-//        decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
-//        decoder.isMutableRequired = true
-//    }
     ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, this))
 } else {
     MediaStore.Images.Media.getBitmap(context.contentResolver, this)
@@ -189,10 +183,14 @@ fun FullAvatarScreen(
     onDeleteClick: () -> Unit,
 ) {
     if (allowUpdateAvatar) {
-        LocalAppBarState.current.content = AppBarContent(dropdownItems = listOf(DropdownMenuItem2(
-            title = uiTextOf("Удалить"), onClick = onDeleteClick)))
+        LocalAppBarState.current.content = AppBarContent(
+            dropdownItems = listOf(
+                DropdownMenuItem2(
+                    title = uiTextOf("Удалить"), onClick = onDeleteClick
+                )
+            )
+        )
     }
-
 
     AsyncImage(
         model = url,
@@ -233,17 +231,6 @@ fun ProfileContent(
                     .padding(MaterialTheme.spacing.small)
             )
             ProfileStudyGroups(profile.studyGroups, onStudyGroupClick)
-
-//            if (profile.groupInfo != null) {
-//                ListItem(Modifier.clickable(
-//                    profile.groupClickable,
-//                    onClick = profileComponent::onGroupClick
-//                ),
-//                    icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
-//                    text = {
-//                        Text(text = profile.groupInfo, style = MaterialTheme.typography.bodyLarge)
-//                    })
-//            }
 
             profile.personalDate?.let { personalDate ->
                 ListItem(

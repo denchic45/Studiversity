@@ -182,7 +182,7 @@ class FinderViewModel @Inject constructor(
             ),
             ListItem(
                 title = "Группы",
-                icon = UiImage.IdImage(R.drawable.ic_group)
+                icon = UiImage.IdImage(R.drawable.ic_study_group)
             ),
             ListItem(
                 title = "Предметы",

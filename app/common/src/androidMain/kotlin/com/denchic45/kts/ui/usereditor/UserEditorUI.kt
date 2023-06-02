@@ -19,8 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.R
+import com.denchic45.kts.ui.Sidebar
 import com.denchic45.kts.ui.component.HeaderItemUI
 
+
+@Composable
+fun UserEditorSidebar(component: UserEditorComponent) {
+    Sidebar(onDismiss = {}, title = { Text(text = "Создать пользователя") }) {
+
+    }
+}
 
 @Composable
 fun UserEditorScreen(component: UserEditorComponent) {

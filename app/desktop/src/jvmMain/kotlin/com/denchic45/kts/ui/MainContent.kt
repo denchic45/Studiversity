@@ -64,7 +64,7 @@ fun MainContent(mainComponent: MainComponent) {
                     selected = activeComponent is Child.YourTimetables,
                     onClick = { mainComponent.onTimetableClick() })
                 NavigationRailItem(
-                    icon = { Icon(painterResource("ic_group".toDrawablePath()), null) },
+                    icon = { Icon(painterResource("ic_study_group".toDrawablePath()), null) },
                     selected = activeComponent is Child.YourStudyGroups,
                     onClick = { mainComponent.onStudyGroupsClick() })
 //                Spacer(Modifier.weight(1f))

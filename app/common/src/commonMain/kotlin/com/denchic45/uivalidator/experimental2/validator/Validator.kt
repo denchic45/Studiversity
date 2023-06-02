@@ -25,4 +25,8 @@ class CompositeValidator<T>(
 ) : Validator<T> {
 
     override fun validate(): Boolean = validators.validate(operator)
+
+    fun onValid(block: () -> Unit) {
+        if (validate()) block()
+    }
 }

@@ -259,7 +259,7 @@ class MainViewModel @Inject constructor(
                 enabled = false
             ), NavDrawerItem(
                 UiText.ResourceText(R.string.nav_tasks),
-                uiIconOf(R.drawable.ic_tasks),
+                uiIconOf(R.drawable.ic_works),
                 enabled = false
             )
         )
