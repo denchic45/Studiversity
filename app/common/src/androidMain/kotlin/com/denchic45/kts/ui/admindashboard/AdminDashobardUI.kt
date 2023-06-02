@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
@@ -47,7 +50,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
                     AdminListItem(
                         title = "Создать расписание",
                         subtitle = "С нуля или из документа",
-                        painter = painterResource(id = R.drawable.ic_timetable),
+                        painter = rememberVectorPainter(Icons.Outlined.AddBox),
                         contentDescription = "timetables",
                         onClick = component::onTimetableLoaderClick
                     )
@@ -88,6 +91,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
                     )
                 }
             }
+
             is AdminDashboardComponent.Child.TimetableFinder -> TODO()
             is AdminDashboardComponent.Child.TimetableLoader -> TODO()
             is AdminDashboardComponent.Child.Courses -> CoursesAdminScreen(child.component)

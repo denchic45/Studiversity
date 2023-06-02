@@ -2,103 +2,108 @@ package com.denchic45.kts.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.denchic45.kts.WindowSizeClass
 import com.denchic45.kts.WindowWidthSizeClass
 import com.denchic45.kts.ui.theme.calculateWindowSizeClass
 
 
 typealias MasterDetailDrawContent = @Composable (
     mainContent: @Composable () -> Unit,
-    detailContent: @Composable () -> Unit
+    detailContent: @Composable () -> Unit,
 ) -> Unit
 
 @Composable
 fun MasterDetailContent(
     mainContent: @Composable () -> Unit,
-    detailContent: @Composable () -> Unit
+    detailContent: @Composable () -> Unit,
 ) {
     ResponsiveContent(
-        compactContent = { CompactMasterDetailScreen(mainContent, detailContent) },
-        mediumDrawContent = { MasterDetailSidebarScreen(mainContent, detailContent) },
-        expandedDrawContent = { MasterDetailSidebarScreen(mainContent, detailContent) }
+        compactContent = { CompactMasterDetailLayout(mainContent, detailContent) },
+        mediumDrawContent = { MasterDetailSidebarLayout(mainContent, detailContent) },
+        expandedDrawContent = { MasterDetailSidebarLayout(mainContent, detailContent) }
     )
 }
 
 @Composable
 fun MasterDetailSidebarContent(
     masterContent: @Composable () -> Unit,
-    detailContent: @Composable () -> Unit
+    detailContent: @Composable () -> Unit,
 ) {
     ResponsiveContent(
-        compactContent = { CompactMasterDetailScreen(masterContent, detailContent) },
-        mediumDrawContent = { MediumMasterDetailScreen(masterContent, detailContent) },
-        expandedDrawContent = { MediumMasterDetailScreen(masterContent, detailContent) }
+        compactContent = { CompactMasterDetailLayout(masterContent, detailContent) },
+        mediumDrawContent = { MediumMasterDetailLayout(masterContent, detailContent) },
+        expandedDrawContent = { MediumMasterDetailLayout(masterContent, detailContent) }
     )
 }
 
 @Composable
 fun ResponsiveContent(
-    compactContent: @Composable (WindowSizeClass) -> Unit,
-    mediumDrawContent: @Composable (WindowSizeClass) -> Unit,
-    expandedDrawContent: @Composable (WindowSizeClass) -> Unit,
+    compactContent: @Composable () -> Unit,
+    mediumDrawContent: @Composable () -> Unit,
+    expandedDrawContent: @Composable () -> Unit,
 ) {
     val sizeClass = calculateWindowSizeClass()
     when (sizeClass.widthSizeClass) {
         WindowWidthSizeClass.Compact -> {
-            compactContent(sizeClass)
+            compactContent()
         }
 
         WindowWidthSizeClass.Medium -> {
-            mediumDrawContent(sizeClass)
+            mediumDrawContent()
         }
 
         WindowWidthSizeClass.Expanded -> {
-            expandedDrawContent(sizeClass)
+            expandedDrawContent()
         }
     }
 }
 
 @Composable
-fun CompactMasterDetailScreen(
-    mainContent: @Composable () -> Unit,
-    detailContent: @Composable () -> Unit,
+fun CompactMasterDetailLayout(
+    masterContent: @Composable () -> Unit,
+    detailContent: (@Composable () -> Unit)?,
 ) {
-    Box() {
-        mainContent()
-        detailContent()
+    Box(Modifier.fillMaxSize()) {
+        detailContent?.let {
+            detailContent()
+        } ?: masterContent()
     }
 }
 
 @Composable
-fun MediumMasterDetailScreen(
+fun MediumMasterDetailLayout(
     masterContent: @Composable () -> Unit,
-    detailContent: @Composable () -> Unit,
+    detailContent: (@Composable () -> Unit)?,
 ) {
-    Row {
+    Row(Modifier.fillMaxSize()) {
         Box(Modifier.weight(0.4f)) {
             masterContent()
         }
-        Box(Modifier.weight(0.6f)) {
-            detailContent()
+        detailContent?.let {
+            Box(Modifier.weight(0.6f)) {
+                detailContent()
+            }
         }
     }
 }
 
 @Composable
-fun MasterDetailSidebarScreen(
+fun MasterDetailSidebarLayout(
     masterContent: @Composable () -> Unit,
-    detailContent: @Composable () -> Unit,
+    detailContent: (@Composable () -> Unit)?,
 ) {
-    Row {
+    Row(Modifier.fillMaxSize()) {
         Box(Modifier.weight(1f)) {
             masterContent()
         }
-        Box(Modifier.width(500.dp)) {
-            detailContent()
+        detailContent?.let {
+            Box(Modifier.width(500.dp)) {
+                detailContent()
+            }
         }
     }
 }
