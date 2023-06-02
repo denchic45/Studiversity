@@ -9,16 +9,22 @@ import com.denchic45.kts.util.asFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 interface RootStackChildrenContainer : StackChildrenContainer<RootConfig, RootChild> {
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun hasChildrenFlow(): Flow<Boolean> {
         return childStack.asFlow().flatMapLatest { childStack ->
-            childStack.active.instance.component.hasChildrenFlow()
-                .map { hasBackStackFromActiveChild ->
-                    childStack.hasBackStack() || hasBackStackFromActiveChild
-                }
+            val instance = childStack.active.instance
+            if (instance is ChildrenContainerChild) {
+                instance.component.hasChildrenFlow()
+                    .map { hasBackStackFromActiveChild ->
+                        childStack.hasBackStack() || hasBackStackFromActiveChild
+                    }
+            } else {
+                flowOf(childStack.hasBackStack())
+            }
         }
     }
 }

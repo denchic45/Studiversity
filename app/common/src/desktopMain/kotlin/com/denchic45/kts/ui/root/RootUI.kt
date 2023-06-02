@@ -25,6 +25,9 @@ fun RootScreen(component: RootStackChildrenContainer) {
             is RootChild.AdminDashboard -> TODO()
             is RootChild.Works -> TODO()
             is RootChild.YourTimetables -> TODO()
+            is RootChild.CourseEditor -> TODO()
+            is RootChild.CourseWork -> TODO()
+            is RootChild.CourseWorkEditor -> TODO()
         }
     }
 }

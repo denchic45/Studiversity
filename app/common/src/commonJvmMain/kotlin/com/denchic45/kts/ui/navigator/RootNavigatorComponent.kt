@@ -5,16 +5,22 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.ui.admindashboard.AdminDashboardComponent
 import com.denchic45.kts.ui.course.CourseComponent
+import com.denchic45.kts.ui.courseeditor.CourseEditorComponent
+import com.denchic45.kts.ui.coursework.CourseWorkComponent
+import com.denchic45.kts.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.kts.ui.navigation.ChildrenContainerChild
 import com.denchic45.kts.ui.navigation.RootStackChildrenContainer
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsComponent
 import com.denchic45.kts.ui.yourtimetables.YourTimetablesComponent
+import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -25,7 +31,6 @@ class RootNavigatorComponent(
     yourTimetablesComponent: (ComponentContext) -> YourTimetablesComponent,
     yourStudyGroupsComponent: (
         onCourseOpen: (UUID) -> Unit,
-
         onStudyGroupOpen: (UUID) -> Unit, ComponentContext,
     ) -> YourStudyGroupsComponent,
     courseComponent: (
@@ -40,6 +45,18 @@ class RootNavigatorComponent(
         ComponentContext,
     ) -> StudyGroupComponent,
     adminDashboardComponent: (StackNavigation<RootConfig>, ComponentContext) -> AdminDashboardComponent,
+    courseEditorComponent: (
+        onFinish: () -> Unit,
+        courseId: UUID?,
+        ComponentContext
+    ) -> CourseEditorComponent,
+    courseWorkComponent: (
+        onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
+        onFinish: () -> Unit,
+        courseId: UUID,
+        elementId: UUID,
+        ComponentContext,
+    ) -> CourseWorkComponent,
     @Assisted
     initialConfiguration: RootConfig,
     @Assisted
@@ -84,14 +101,33 @@ class RootNavigatorComponent(
 
                 RootConfig.Works -> TODO()
                 RootConfig.AdminDashboard -> RootChild.AdminDashboard(
-                    adminDashboardComponent(
-                        navigation,
+                    adminDashboardComponent(navigation, context)
+                )
+
+                is RootConfig.CourseEditor -> RootChild.CourseEditor(
+                    courseEditorComponent(
+                        navigation::pop, config.courseId, context
+                    )
+                )
+
+                is RootConfig.CourseWork -> RootChild.CourseWork(
+                    courseWorkComponent(
+                        { _, workId -> navigation.push(RootConfig.CourseWorkEditor(workId)) },
+                        navigation::pop,
+                        config.courseId,
+                        config.workId,
                         context
                     )
                 )
+
+                is RootConfig.CourseWorkEditor -> TODO()
             }
         }
     )
+
+    override fun hasChildrenFlow(): Flow<Boolean> {
+        return super.hasChildrenFlow()
+    }
 }
 
 @Parcelize
@@ -107,31 +143,42 @@ sealed interface RootConfig : Parcelable {
     data class Course(val courseId: UUID) : RootConfig
 
     object AdminDashboard : RootConfig
+
+    data class CourseEditor(val courseId: UUID?) : RootConfig
+
+    data class CourseWork(val courseId: UUID, val workId: UUID) : RootConfig
+
+    data class CourseWorkEditor(val workId: UUID?) : RootConfig
 }
 
-sealed interface RootChild : ChildrenContainerChild {
+sealed interface RootChild {
     class YourTimetables(
         override val component: YourTimetablesComponent,
-    ) : RootChild
+    ) : RootChild, ChildrenContainerChild
 
     class YourStudyGroups(
         override val component: YourStudyGroupsComponent,
-    ) : RootChild
+    ) : RootChild, ChildrenContainerChild
 
     class Works(
         override val component: RootStackChildrenContainer,
-    ) : RootChild
+    ) : RootChild, ChildrenContainerChild
 
     class StudyGroup(
         override val component: StudyGroupComponent,
-    ) : RootChild
+    ) : RootChild, ChildrenContainerChild
 
     class Course(
         override val component: CourseComponent,
-    ) : RootChild
-
+    ) : RootChild, ChildrenContainerChild
 
     class AdminDashboard(
-        override val component: AdminDashboardComponent,
-    ) : RootChild
+        override val component: AdminDashboardComponent
+    ) : RootChild, ChildrenContainerChild
+
+    class CourseEditor(val component: CourseEditorComponent) : RootChild
+
+    class CourseWork(val component: CourseWorkComponent) : RootChild
+
+    class CourseWorkEditor(val component: CourseWorkEditorComponent) : RootChild
 }
