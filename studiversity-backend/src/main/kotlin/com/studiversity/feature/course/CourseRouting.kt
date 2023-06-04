@@ -45,13 +45,15 @@ fun Application.courseRoutes() {
                 val searchCourses: SearchCoursesUseCase by inject()
 
                 get {
+                    val memberId = call.getUserUuidByQueryParameterOrMe("member_id")
+                    val studyGroupId = call.getUserUuidByQueryParameterOrMe("study_group_id")
+                    val subjectId = call.request.queryParameters.getUuid("subject_id")
+                    val archived = call.request.queryParameters["archived"]?.toBoolean()
                     val q = call.request.queryParameters["q"]?.require(
                         String::isNotBlank,
                         CommonErrors::PARAMETER_MUST_NOT_BE_EMPTY
                     )
-                    val memberId = call.getUserUuidByQueryParameterOrMe("member_id")
-                    val subjectId = call.request.queryParameters.getUuid("subject_id")
-                    call.respond(HttpStatusCode.OK, searchCourses(q, memberId, subjectId))
+                    call.respond(HttpStatusCode.OK, searchCourses(memberId, studyGroupId, subjectId, archived, q))
                 }
 
                 post {
@@ -133,17 +135,17 @@ private fun Route.courseByIdRoutes() {
                 val courseId = call.parameters.getUuidOrFail("courseId")
                 val currentUserId = call.jwtPrincipal().payload.claimId
 
-                requireCapability(currentUserId, Capability.DeleteCourse, courseId)
+                requireCapability(currentUserId, Capability.WriteCourse, courseId)
 
                 unarchiveCourse(courseId)
                 call.respond(HttpStatusCode.NoContent)
             }
         }
         delete {
-            val currentUserId = call.jwtPrincipal().payload.claimId
+            val currentUserId = call.currentUserId()
             val courseId = call.parameters.getUuidOrFail("courseId")
 
-            requireCapability(currentUserId, Capability.WriteCourse, courseId)
+            requireCapability(currentUserId, Capability.DeleteCourse, courseId)
 
             removeCourse(courseId)
             call.respond(HttpStatusCode.NoContent)

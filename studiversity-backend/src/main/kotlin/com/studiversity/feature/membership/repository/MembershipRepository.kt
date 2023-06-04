@@ -121,7 +121,7 @@ class MembershipRepository(private val realtime: Realtime, private val coroutine
     }
 
     fun findScopeIdByMembershipId(membershipId: UUID): UUID = transaction {
-        Memberships.slice(Memberships.scopeId).select(Memberships.id eq membershipId).single()[Memberships.scopeId]
+        Memberships.slice(Memberships.scopeId).select(Memberships.id eq membershipId).single()[Memberships.scopeId].value
     }
 
     fun observeOnFirstAddExternalStudyGroupMembershipInMembership(): Flow<UUID> {

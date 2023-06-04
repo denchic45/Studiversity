@@ -7,11 +7,17 @@ import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
 import com.denchic45.stuiversity.util.UUIDWrapper
-import com.denchic45.stuiversity.util.uuidOfMe
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import java.util.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import java.util.UUID
 
 interface CoursesApi {
     suspend fun create(createCourseRequest: CreateCourseRequest): ResponseResult<CourseResponse>
@@ -19,9 +25,10 @@ interface CoursesApi {
     suspend fun getById(courseId: UUID): ResponseResult<CourseResponse>
 
     suspend fun getList(
-        memberId: UUIDWrapper = uuidOfMe(),
+        memberId: UUIDWrapper? = null,
         studyGroupId: UUID? = null,
         subjectId: UUID? = null,
+        archived: Boolean? = false,
         query: String? = null
     ): ResponseResult<List<CourseResponse>>
 
@@ -40,7 +47,9 @@ interface CoursesApi {
 
     suspend fun unarchive(courseId: UUID): EmptyResponseResult
 
-    suspend fun search(query: String): ResponseResult<List<CourseResponse>> = getList(query = query)
+    suspend fun search(query: String): ResponseResult<List<CourseResponse>> {
+        return getList(query = query, archived = null)
+    }
 
     suspend fun delete(courseId: UUID): EmptyResponseResult
 
@@ -60,15 +69,17 @@ class CourseApiImpl(private val client: HttpClient) : CoursesApi {
     }
 
     override suspend fun getList(
-        memberId: UUIDWrapper,
+        memberId: UUIDWrapper?,
         studyGroupId: UUID?,
         subjectId: UUID?,
+        archived: Boolean?,
         query: String?,
     ): ResponseResult<List<CourseResponse>> {
         return client.get("/courses") {
-            parameter("member_id", memberId.value)
+            parameter("member_id", memberId?.value)
             parameter("study_group_id", studyGroupId)
             parameter("subject_id", subjectId)
+            parameter("archived", archived)
             parameter("q", query)
         }.toResult()
     }

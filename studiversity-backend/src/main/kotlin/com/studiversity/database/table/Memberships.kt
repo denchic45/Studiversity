@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.innerJoin
 import java.util.*
 
 object Memberships : UUIDTable("membership", "membership_id") {
-    val scopeId = uuid("scope_id").references(Scopes.id)
+    val scopeId = reference("scope_id", Scopes.id)
     val active = bool("active")
     val type = varcharMax("type")
 }
