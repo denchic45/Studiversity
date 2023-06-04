@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -19,62 +20,69 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.ui.ExpandableDropdownMenu
 import com.denchic45.kts.ui.layout.AdaptiveMasterSidebarLayout
-import com.denchic45.kts.ui.model.UserItem
-import com.denchic45.kts.ui.profile.ProfileScreen
 import com.denchic45.kts.ui.search.SearchScreen
-import com.denchic45.kts.ui.search.UserListItem
-import com.denchic45.kts.ui.usereditor.UserEditorScreen
+import com.denchic45.kts.ui.search.StudyGroupListItem
+import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorScreen
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 
 @Composable
-fun UsersAdminScreen(component: UsersAdminComponent) {
-    val childOverlay by component.childOverlay.subscribeAsState()
+fun StudyGroupsAdminScreen(component: StudyGroupsAdminComponent) {
+    val childSidebar by component.childSidebar.subscribeAsState()
 
     AdaptiveMasterSidebarLayout(
-        masterContent = { UsersAdminMainScreen(component) },
-        detailContent = childOverlay.overlay?.let {
-            { UsersAdminDetailScreen(it.instance) }
+        masterContent = { StudyGroupsAdminMainScreen(component) },
+        detailContent = childSidebar.overlay?.let {
+            { StudyGroupsAdminDetailScreen(it.instance) }
         }
     )
 }
 
 @Composable
-private fun UsersAdminDetailScreen(child: UsersAdminComponent.Child) {
+private fun StudyGroupsAdminDetailScreen(child: StudyGroupsAdminComponent.Child) {
     when (child) {
-        is UsersAdminComponent.Child.Profile -> {
-            ProfileScreen(child.component)
-        }
-
-        is UsersAdminComponent.Child.UserEditor -> {
-            UserEditorScreen(child.component)
+        is StudyGroupsAdminComponent.Child.StudyGroupEditor -> {
+            StudyGroupEditorScreen(child.component)
         }
     }
 }
 
 @Composable
-private fun UsersAdminMainScreen(component: UsersAdminComponent) {
+private fun StudyGroupsAdminMainScreen(component: StudyGroupsAdminComponent) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = component::onAddClick) {
-                Icon(Icons.Default.Add, "add course")
+                Icon(Icons.Default.Add, "add study group")
             }
         }) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             SearchScreen(
                 component = component.chooserComponent,
-                keyItem = UserItem::id
+                keyItem = StudyGroupResponse::id
             ) { item ->
-                UserListItem(item, trailingContent = {
+                StudyGroupListItem(item = item, trailingContent = {
                     var expanded by remember { mutableStateOf(false) }
                     ExpandableDropdownMenu(
                         expanded = expanded,
                         onExpandedChange = { expanded = it }) {
-
+                        DropdownMenuItem(
+                            text = { Text(text = "Редактировать") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Edit,
+                                    contentDescription = "edit study group"
+                                )
+                            },
+                            onClick = {
+                                expanded = false
+                                component.onEditClick(item.id)
+                            }
+                        )
                         DropdownMenuItem(
                             text = { Text(text = "Удалить") },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Outlined.Delete,
-                                    contentDescription = "delete user"
+                                    contentDescription = "delete study group"
                                 )
                             },
                             onClick = {

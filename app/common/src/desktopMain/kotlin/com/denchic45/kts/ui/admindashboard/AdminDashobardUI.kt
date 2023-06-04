@@ -8,15 +8,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddBox
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,12 +42,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.onLoading
-import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.ResourceContent
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
-import com.denchic45.kts.ui.chooser.SearchableComponent
+import com.denchic45.kts.ui.search.SearchState
+import com.denchic45.kts.ui.search.SearchableComponent
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.theme.toDrawablePath
 import com.denchic45.kts.ui.uiTextOf
@@ -161,6 +162,9 @@ fun AdminListItem(
 fun <T> AdminSearchScreen(
     component: SearchableAdminComponent<T>,
     keyItem: (T) -> Any,
+    emptyQueryContent: (@Composable () -> Unit)? = { StartSearch() },
+    emptyResultContent: (@Composable () -> Unit)? = { EmptySearch() },
+    placeholder: String = "Поиск",
     itemContent: @Composable (T) -> Unit,
 ) {
     Box(
@@ -171,6 +175,9 @@ fun <T> AdminSearchScreen(
             component.chooserComponent,
             keyItem,
             Modifier.width(500.dp),
+            emptyQueryContent,
+            emptyResultContent,
+            placeholder,
             component::onAddClick,
             itemContent
         )
@@ -183,6 +190,9 @@ private fun <T> SearchContent(
     component: SearchableComponent<T>,
     keyItem: (T) -> Any,
     modifier: Modifier,
+    emptyQueryContent: @Composable (() -> Unit)?,
+    emptyResultContent: @Composable (() -> Unit)?,
+    placeholder: String,
     onAddClick: () -> Unit,
     itemContent: @Composable (T) -> Unit,
 ) {
@@ -208,36 +218,89 @@ private fun <T> SearchContent(
             }
         }
 
-        SearchedItemsContent(keyItem, component, itemContent)
+        SearchedItemsContent(component, keyItem, emptyQueryContent, emptyResultContent, itemContent)
     }
 }
 
 @Composable
 fun <T> SearchedItemsContent(
-    keyItem: (T) -> Any,
     component: SearchableComponent<T>,
+    keyItem: (T) -> Any,
+    emptyQueryContent: @Composable (() -> Unit)?,
+    emptyResultContent: (@Composable () -> Unit)?,
     itemContent: @Composable (T) -> Unit,
 ) {
-    val itemsResource: Resource<List<T>> by component.foundItems.collectAsState()
-    itemsResource.onSuccess {
-        LazyColumn(
-            contentPadding = PaddingValues(
-                top = 64.dp,
-                bottom = MaterialTheme.spacing.medium
-            )
-        ) {
-            items(it, key = keyItem) {
-                Box(modifier = Modifier.clickable { component.onItemClick(it) }) {
-                    itemContent(it)
+    val searchState by component.searchState.collectAsState()
+
+    when (val state = searchState) {
+        SearchState.EmptyQuery -> if (emptyQueryContent != null) {
+            emptyQueryContent()
+        }
+
+        is SearchState.Result -> {
+            ResourceContent(resource = state.items) { items ->
+                if (items.isNotEmpty()) {
+                    LazyColumn(
+                        contentPadding = PaddingValues(
+                            top = 64.dp,
+                            bottom = MaterialTheme.spacing.medium
+                        )
+                    ) {
+                        items(items, key = keyItem) {
+                            Box(modifier = Modifier.clickable { component.onItemClick(it) }) {
+                                itemContent(it)
+                            }
+                        }
+                    }
+                } else {
+                    emptyResultContent?.let { emptyResultContent() }
                 }
             }
         }
-    }.onLoading {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
+    }
+}
+
+
+@Composable
+fun StartSearch() {
+    IconTitle(icon = {
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = "search",
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(78.dp)
+        )
+    }, title = {
+        Text(text = "Начните искать")
+    })
+
+}
+
+@Composable
+fun EmptySearch() {
+    IconTitle(
+        icon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "not found",
+                tint = MaterialTheme.colorScheme.surfaceVariant,
+                modifier = Modifier.size(78.dp)
+            )
+        }, title = { Text(text = "Ничего не найдено") }
+    )
+}
+
+@Composable
+fun IconTitle(
+    icon: @Composable () -> Unit,
+    title: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            icon()
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+            title()
         }
     }
 }

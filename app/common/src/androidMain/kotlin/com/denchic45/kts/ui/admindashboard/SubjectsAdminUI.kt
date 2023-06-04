@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -18,63 +19,66 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.ui.ExpandableDropdownMenu
-import com.denchic45.kts.ui.layout.AdaptiveMasterSidebarLayout
-import com.denchic45.kts.ui.model.UserItem
-import com.denchic45.kts.ui.profile.ProfileScreen
+import com.denchic45.kts.ui.SubjectEditorDialog
 import com.denchic45.kts.ui.search.SearchScreen
-import com.denchic45.kts.ui.search.UserListItem
-import com.denchic45.kts.ui.usereditor.UserEditorScreen
+import com.denchic45.kts.ui.search.SubjectListItem
+import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 
 @Composable
-fun UsersAdminScreen(component: UsersAdminComponent) {
+fun SubjectsAdminScreen(component: SubjectsAdminComponent) {
     val childOverlay by component.childOverlay.subscribeAsState()
-
-    AdaptiveMasterSidebarLayout(
-        masterContent = { UsersAdminMainScreen(component) },
-        detailContent = childOverlay.overlay?.let {
-            { UsersAdminDetailScreen(it.instance) }
-        }
-    )
+    SubjectsAdminMainScreen(component)
+    childOverlay.overlay?.let {
+        SubjectsAdminDetailScreen(it.instance)
+    }
 }
 
 @Composable
-private fun UsersAdminDetailScreen(child: UsersAdminComponent.Child) {
+private fun SubjectsAdminDetailScreen(child: SubjectsAdminComponent.Child) {
     when (child) {
-        is UsersAdminComponent.Child.Profile -> {
-            ProfileScreen(child.component)
-        }
-
-        is UsersAdminComponent.Child.UserEditor -> {
-            UserEditorScreen(child.component)
+        is SubjectsAdminComponent.Child.SubjectEditor -> {
+            SubjectEditorDialog(child.component)
         }
     }
 }
 
 @Composable
-private fun UsersAdminMainScreen(component: UsersAdminComponent) {
+private fun SubjectsAdminMainScreen(component: SubjectsAdminComponent) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = component::onAddClick) {
-                Icon(Icons.Default.Add, "add course")
+                Icon(Icons.Default.Add, "add subject")
             }
         }) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             SearchScreen(
                 component = component.chooserComponent,
-                keyItem = UserItem::id
+                keyItem = SubjectResponse::id
             ) { item ->
-                UserListItem(item, trailingContent = {
+                SubjectListItem(item = item, trailingContent = {
                     var expanded by remember { mutableStateOf(false) }
                     ExpandableDropdownMenu(
                         expanded = expanded,
                         onExpandedChange = { expanded = it }) {
-
+                        DropdownMenuItem(
+                            text = { Text(text = "Редактировать") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Edit,
+                                    contentDescription = "edit subject"
+                                )
+                            },
+                            onClick = {
+                                expanded = false
+                                component.onEditClick(item.id)
+                            }
+                        )
                         DropdownMenuItem(
                             text = { Text(text = "Удалить") },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Outlined.Delete,
-                                    contentDescription = "delete user"
+                                    contentDescription = "delete subject"
                                 )
                             },
                             onClick = {

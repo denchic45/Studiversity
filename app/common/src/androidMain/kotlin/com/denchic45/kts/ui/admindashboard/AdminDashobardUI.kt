@@ -24,6 +24,8 @@ import com.denchic45.kts.R
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.theme.spacing
+import com.denchic45.kts.ui.timetableLoader.TimetableLoaderScreen
+import com.denchic45.kts.ui.timetablefinder.TimetableFinderScreen
 import com.denchic45.kts.ui.uiTextOf
 
 @Composable
@@ -36,7 +38,9 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
         when (val child = it.instance) {
             AdminDashboardComponent.Child.None -> {
                 LaunchedEffect(Unit) {
-                    appBarState.content = AppBarContent(title = uiTextOf("Панель управления"))
+                    appBarState.update {
+                        content = AppBarContent(title = uiTextOf("Панель управления"))
+                    }
                 }
                 Column {
                     AdminListItem(
@@ -48,8 +52,8 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
                     )
 
                     AdminListItem(
-                        title = "Создать расписание",
-                        subtitle = "С нуля или из документа",
+                        title = "Новое расписание",
+                        subtitle = "Создать с нуля или загрузить из документа",
                         painter = rememberVectorPainter(Icons.Outlined.AddBox),
                         contentDescription = "timetables",
                         onClick = component::onTimetableLoaderClick
@@ -92,13 +96,13 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
                 }
             }
 
-            is AdminDashboardComponent.Child.TimetableFinder -> TODO()
-            is AdminDashboardComponent.Child.TimetableLoader -> TODO()
+            is AdminDashboardComponent.Child.TimetableFinder -> TimetableFinderScreen(child.component)
+            is AdminDashboardComponent.Child.TimetableLoader -> TimetableLoaderScreen(child.component)
             is AdminDashboardComponent.Child.Courses -> CoursesAdminScreen(child.component)
             is AdminDashboardComponent.Child.Users -> UsersAdminScreen(child.component)
-            is AdminDashboardComponent.Child.StudyGroups -> TODO()
-            is AdminDashboardComponent.Child.Subjects -> TODO()
-            is AdminDashboardComponent.Child.Specialties -> TODO()
+            is AdminDashboardComponent.Child.StudyGroups -> StudyGroupsAdminScreen(child.component)
+            is AdminDashboardComponent.Child.Subjects -> SubjectsAdminScreen(child.component)
+            is AdminDashboardComponent.Child.Specialties -> SpecialtiesAdminScreen(child.component)
 
         }
     }

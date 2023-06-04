@@ -1,15 +1,17 @@
 package com.denchic45.kts.ui.admindashboard
 
-import com.denchic45.kts.ui.chooser.ChooserComponent
+import com.denchic45.kts.ui.search.ChooserComponent
 import java.util.UUID
 
 interface SearchableAdminComponent<T> {
 
     val chooserComponent: ChooserComponent<T>
 
-    fun onSelect(item:T)
+    fun onSelect(item: T)
 
     fun onAddClick()
 
     fun onEditClick(id: UUID)
+
+    fun onRemoveClick(id: UUID)
 }

@@ -9,17 +9,25 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.kts.ui.chooser.UserChooserComponent
+import com.denchic45.kts.domain.usecase.RemoveUserUseCase
+import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
+import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.navigator.RootConfig
 import com.denchic45.kts.ui.profile.ProfileComponent
+import com.denchic45.kts.ui.search.UserChooserComponent
+import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.ui.usereditor.UserEditorComponent
+import com.denchic45.kts.util.componentScope
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
 class UsersAdminComponent(
+    private val confirmDialogInteractor: ConfirmDialogInteractor,
+    private val removeUserUseCase: RemoveUserUseCase,
     userChooserComponent: (onSelect: (UserItem) -> Unit, ComponentContext) -> UserChooserComponent,
     userEditorComponent: (onFinish: () -> Unit, ComponentContext) -> UserEditorComponent,
     profileComponent: (
@@ -31,6 +39,7 @@ class UsersAdminComponent(
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, SearchableAdminComponent<UserItem> {
+    private val componentScope = componentScope()
     private val sidebarNavigation = OverlayNavigation<Config>()
     val childOverlay = childOverlay(source = sidebarNavigation,
         handleBackButton = true,
@@ -61,6 +70,20 @@ class UsersAdminComponent(
 
     override fun onEditClick(id: UUID) {
         sidebarNavigation.activate(Config.UserEditor(id))
+    }
+
+    override fun onRemoveClick(id: UUID) {
+        componentScope.launch {
+            val confirm = confirmDialogInteractor.confirmRequest(
+                ConfirmState(
+                    uiTextOf("Удалить пользователя?"),
+                    uiTextOf("Удалятся все данные, связанные с данным пользователем. Восстановить пользователя будет невозможно.")
+                )
+            )
+            if (confirm) {
+                removeUserUseCase(id)
+            }
+        }
     }
 
     override fun onAddClick() {

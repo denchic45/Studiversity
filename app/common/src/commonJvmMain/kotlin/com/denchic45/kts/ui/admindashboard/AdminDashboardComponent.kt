@@ -31,6 +31,14 @@ class AdminDashboardComponent(
         rootNavigation: StackNavigation<RootConfig>,
         ComponentContext
     ) -> StudyGroupsAdminComponent,
+    subjectsAdminComponent: (
+        rootNavigation: StackNavigation<RootConfig>,
+        ComponentContext
+    ) -> SubjectsAdminComponent,
+    specialtiesAdminComponent: (
+        rootNavigation: StackNavigation<RootConfig>,
+        ComponentContext
+    ) -> SpecialtiesAdminComponent,
     profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
     @Assisted
     rootNavigation: StackNavigation<RootConfig>,
@@ -61,11 +69,11 @@ class AdminDashboardComponent(
                 )
 
                 Config.Subjects -> Child.Subjects(
-                    TODO()
+                    subjectsAdminComponent(rootNavigation, context)
                 )
 
                 Config.Specialties -> Child.Specialties(
-                    TODO()
+                    specialtiesAdminComponent(rootNavigation, context)
                 )
 
             }
@@ -137,8 +145,8 @@ class AdminDashboardComponent(
         class Courses(val component: CoursesAdminComponent) : Child
         class Users(val component: UsersAdminComponent) : Child
         class StudyGroups(val component: StudyGroupsAdminComponent) : Child
-        class Subjects(val component: ComponentContext) : Child
-        class Specialties(val component: ComponentContext) : Child
+        class Subjects(val component: SubjectsAdminComponent) : Child
+        class Specialties(val component: SpecialtiesAdminComponent) : Child
 
     }
 
