@@ -66,7 +66,7 @@ class UserMembershipRepository(
         }
         removeUsersRolesWhoNotExistInAnyMembershipByScopeId(
             listOf(member.userId),
-            MembershipDao.findById(member.membershipId)!!.scopeId
+            MembershipDao.findById(member.membershipId)!!.scopeId.value
         )
     }
 
@@ -340,7 +340,10 @@ class UserMembershipRepository(
         UsersMemberships.deleteWhere {
             memberId inList memberIds and (UsersMemberships.membershipId eq membershipId)
         }
-        removeUsersRolesWhoNotExistInAnyMembershipByScopeId(memberIds, MembershipDao.findById(membershipId)!!.scopeId)
+        removeUsersRolesWhoNotExistInAnyMembershipByScopeId(
+            memberIds,
+            MembershipDao.findById(membershipId)!!.scopeId.value
+        )
     }
 
     private fun getMembershipsByScope(scopeId: UUID): Query {

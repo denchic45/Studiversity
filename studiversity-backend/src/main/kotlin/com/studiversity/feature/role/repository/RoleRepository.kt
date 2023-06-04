@@ -7,6 +7,7 @@ import com.studiversity.feature.role.combinedPermission
 import com.studiversity.feature.role.mapper.toUserRolesResponse
 import com.studiversity.feature.role.mapper.toUsersWithRoles
 import com.denchic45.stuiversity.api.role.model.*
+import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.and
@@ -62,7 +63,8 @@ class RoleRepository {
     }
 
     fun hasCapability(userId: UUID, capability: Capability, scopeId: UUID): Boolean {
-        val path = ScopeDao.findById(scopeId)!!.path
+        val scope = ScopeDao.findById(scopeId) ?: throw NotFoundException("SCOPE_NOT_FOUND")
+        val path = scope.path
         var has = false
         for (nextScopeId in path) {
             when (findCapabilityPermissionOfUserInScope(userId, nextScopeId, capability.toString())) {

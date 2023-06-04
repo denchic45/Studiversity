@@ -29,8 +29,40 @@ class CourseRepository(private val bucket: BucketApi) {
         return CourseDao.findById(id)?.toResponse()
     }
 
-    fun find(q: String?, memberId: UUID?,subjectId:UUID?): List<CourseResponse> {
+    fun find(
+        memberId: UUID?,
+        studyGroupId: UUID?,
+        subjectId: UUID?,
+        archived: Boolean?,
+        q: String?
+    ): List<CourseResponse> {
         val query = Courses.selectAll()
+
+        if (memberId != null || studyGroupId != null) {
+            query.adjustColumnSet {
+                innerJoin(MembershipsInnerUserMemberships,
+                    { Courses.id },
+                    { Memberships.scopeId })
+            }
+        }
+
+        memberId?.let {
+            query.andWhere { UsersMemberships.memberId eq memberId }
+        }
+        studyGroupId?.let {
+            query.adjustColumnSet {
+                innerJoin(ExternalStudyGroupsMemberships,
+                    { Memberships.id },
+                    { membershipId },
+                    { Memberships.type eq "by_group" })
+            }.andWhere { ExternalStudyGroupsMemberships.studyGroupId eq studyGroupId }
+        }
+        subjectId?.let {
+            query.andWhere { Courses.subjectId eq subjectId }
+        }
+        archived?.let {
+            query.andWhere { Courses.archived eq archived }
+        }
         q?.let {
             query.adjustColumnSet { leftJoin(Subjects, { Courses.subjectId }, { Subjects.id }) }
                 .adjustSlice { slice(fields + Subjects.id) }
@@ -39,16 +71,6 @@ class CourseRepository(private val bucket: BucketApi) {
                             (Subjects.name.lowerCase() like "%$q%") or
                             (Subjects.shortname.lowerCase() like "%$q%")
                 }
-        }
-        memberId?.let {
-            query.adjustColumnSet {
-                innerJoin(MembershipsInnerUserMemberships,
-                    { Courses.id },
-                    { Memberships.scopeId })
-            }.andWhere { UsersMemberships.memberId eq memberId }
-        }
-        subjectId?.let {
-            query.andWhere { Courses.subjectId eq subjectId }
         }
         return CourseDao.wrapRows(query).map(CourseDao::toResponse)
     }

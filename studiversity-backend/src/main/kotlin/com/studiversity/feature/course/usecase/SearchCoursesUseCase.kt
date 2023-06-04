@@ -9,7 +9,7 @@ class SearchCoursesUseCase(
     private val transactionWorker: TransactionWorker,
     private val courseRepository: CourseRepository
 ) {
-    operator fun invoke(q: String?, memberId: UUID?, subjectId: UUID?) = transactionWorker {
-        courseRepository.find(q?.searchable(), memberId, subjectId)
+    operator fun invoke( memberId: UUID?, studyGroupId:UUID?,subjectId: UUID?,archived:Boolean?,q: String?) = transactionWorker {
+        courseRepository.find(memberId, studyGroupId, subjectId, archived, q?.searchable())
     }
 }
