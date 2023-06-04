@@ -99,7 +99,7 @@ class CourseEditorComponent(
     private val editingState = EditingCourse()
 
     val isNew: Boolean = courseId == null
-    val saveEnabled = MutableStateFlow(false)
+    val allowSave = MutableStateFlow(false)
 
     @Stable
     class EditingCourse {
@@ -216,7 +216,7 @@ class CourseEditorComponent(
     }
 
     private fun updateEnableSave() {
-        saveEnabled.update { fieldEditor.hasChanges() }
+        allowSave.update { fieldEditor.hasChanges() }
     }
 
     private fun onDeleteClick() {
