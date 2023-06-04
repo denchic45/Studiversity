@@ -11,7 +11,7 @@ import me.tatarka.inject.annotations.Inject
 class SubjectIconsComponent(
     findSubjectIconsUseCase: FindSubjectIconsUseCase,
     @Assisted
-    private val onSelect: (iconUrl: String) -> Unit,
+    private val onSelect: (iconUrl: String?) -> Unit,
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
@@ -20,5 +20,9 @@ class SubjectIconsComponent(
 
     fun onSelectImage(url: String) {
         onSelect(url)
+    }
+
+    fun onDismiss() {
+        onSelect(null)
     }
 }

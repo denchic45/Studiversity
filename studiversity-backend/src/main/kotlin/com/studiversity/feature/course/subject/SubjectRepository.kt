@@ -41,7 +41,7 @@ class SubjectRepository(private val bucket: BucketApi) {
     fun update(id: UUID, request: UpdateSubjectRequest) = transaction {
         SubjectDao.findById(id)?.apply {
             request.name.ifPresent { name = it }
-            request.shortname.ifPresent { name = it }
+            request.shortname.ifPresent { shortname = it }
             request.iconUrl.ifPresent { iconUrl = it }
         }.run { this?.toResponse() }
     }
