@@ -5,7 +5,7 @@ import com.denchic45.stuiversity.api.role.model.Capability
 import com.studiversity.config
 import com.studiversity.feature.auth.usecase.SignUpUserManuallyUseCase
 import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
-import com.studiversity.feature.user.account.usecase.RemoveAvatarUseCase
+import com.studiversity.feature.user.account.usecase.ResetAvatarUseCase
 import com.studiversity.feature.user.account.usecase.UpdateAvatarUseCase
 import com.studiversity.feature.user.usecase.FindUserByIdUseCase
 import com.studiversity.feature.user.usecase.RemoveUserUseCase
@@ -84,7 +84,7 @@ private fun Route.userByIdRoute() {
         }
         route("/avatar") {
             val updateAvatar: UpdateAvatarUseCase by inject()
-            val removeAvatar: RemoveAvatarUseCase by inject()
+            val removeAvatar: ResetAvatarUseCase by inject()
 
             put {
                 val photoRequest = call.receiveMultipart().readPart()?.let { part ->

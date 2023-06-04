@@ -16,7 +16,7 @@ private val useCaseModule = module {
     single { UpdatePasswordUseCase(get(), get()) }
     single { SearchUsersUseCase(get(), get()) }
     single { UpdateAvatarUseCase(get(), get()) }
-    single { RemoveAvatarUseCase(get(), get()) }
+    single { ResetAvatarUseCase(get(), get()) }
 }
 
 private val repositoryModule = module {

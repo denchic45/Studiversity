@@ -22,7 +22,6 @@ import io.github.jan.supabase.storage.BucketApi
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.http.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -41,19 +40,26 @@ class UserRepository(
 ) : AddScopeRepoExt {
 
 
-    fun add(signupRequest: SignupRequest) {
+    suspend fun add(signupRequest: SignupRequest) {
         val hashed: String = BCrypt.hashpw(signupRequest.password, BCrypt.gensalt())
         add(signupRequest.toCreateUser(), hashed)
     }
 
-    fun add(user: CreateUserRequest, password: String): UserResponse = UserDao.new {
-        firstName = user.firstName
-        surname = user.surname
-        patronymic = user.patronymic
-        email = user.email
-        this.password = password
-    }.toUserResponse().apply {
-        addScope(id, ScopeType.User, organizationId)
+    suspend fun add(user: CreateUserRequest, password: String): UserResponse {
+        return UserDao.new {
+            firstName = user.firstName
+            surname = user.surname
+            patronymic = user.patronymic
+            email = user.email
+            this.password = password
+            avatarUrl = ""
+            generatedAvatar = false
+            gender = user.gender
+        }.apply {
+            avatarUrl = generateAvatar(id.value)
+        }.toUserResponse().apply {
+            addScope(id, ScopeType.User, organizationId)
+        }
     }
 
     fun findById(id: UUID): UserResponse? {
@@ -78,9 +84,7 @@ class UserRepository(
         }
     }
 
-    suspend fun updateAvatar(userId: UUID, request: CreateFileRequest, generated: Boolean): String {
-        val name = bucket.list(prefix = "avatars") { search = userId.toString() }.single().name
-        bucket.delete("avatars/$name")
+    private suspend fun setAvatar(userId: UUID, request: CreateFileRequest, generated: Boolean): String {
         val newPath = "avatars/$userId.${File(request.name).extension}"
         bucket.upload(newPath, request.bytes)
         return bucket.publicUrl(newPath).also {
@@ -91,7 +95,22 @@ class UserRepository(
         }
     }
 
-    suspend fun deleteAvatar(userId: UUID): String {
+    suspend fun updateAvatar(userId: UUID, request: CreateFileRequest) {
+        deleteAvatar(userId)
+        setAvatar(userId, request, false)
+    }
+
+    suspend fun resetAvatar(userId: UUID) {
+        deleteAvatar(userId)
+        generateAvatar(userId)
+    }
+
+    private suspend fun deleteAvatar(userId: UUID) {
+        val name = bucket.list(prefix = "avatars") { search = userId.toString() }.single().name
+        bucket.delete("avatars/$name")
+    }
+
+    private suspend fun generateAvatar(userId: UUID): String {
         val newImageBytes = client.get("https://ui-avatars.com/api") {
             parameter("name", UserDao.findById(userId)!!.firstName[0])
             parameter("background", "random")
@@ -99,7 +118,7 @@ class UserRepository(
             parameter("size", 128)
         }.readBytes()
 
-        return updateAvatar(userId, CreateFileRequest("avatar.png", newImageBytes), true)
+        return setAvatar(userId, CreateFileRequest("avatar.png", newImageBytes), true)
     }
 
     fun update(userId: UUID, updatePasswordRequest: UpdatePasswordRequest) {
