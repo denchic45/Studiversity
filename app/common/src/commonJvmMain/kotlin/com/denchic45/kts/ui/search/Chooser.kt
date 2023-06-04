@@ -36,7 +36,7 @@ abstract class ChooserComponent<T>(componentContext: ComponentContext) :
     @OptIn(ExperimentalCoroutinesApi::class)
     val foundItems: StateFlow<Resource<List<T>>> = query
         .flatMapLatest {
-            if (it.isNotEmpty()) search(it)
+            if (it.isNotEmpty()) search(it.trim())
             else flowOf(resourceOf(emptyList()))
         }
         .stateIn(coroutineScope, SharingStarted.Lazily, Resource.Success(emptyList()))

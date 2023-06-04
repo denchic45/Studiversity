@@ -72,7 +72,7 @@ fun SubjectIconsContent(iconUrls: List<String>, onIconClick: (String) -> Unit) {
                     .clip(MaterialTheme.shapes.medium)
                     .clickable { onIconClick(url) }
                     .padding(MaterialTheme.spacing.normal),
-                loading = { CircularProgressIndicator() },
+                loading = { CircularProgressIndicator(Modifier.padding(MaterialTheme.spacing.normal)) },
             )
         }
     }
