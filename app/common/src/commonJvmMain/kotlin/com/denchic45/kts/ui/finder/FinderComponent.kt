@@ -7,11 +7,11 @@ import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.kts.ui.chooser.StudyGroupChooserComponent
-import com.denchic45.kts.ui.chooser.UserChooserComponent
 import com.denchic45.kts.ui.course.CourseComponent
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.profile.ProfileComponent
+import com.denchic45.kts.ui.search.StudyGroupChooserComponent
+import com.denchic45.kts.ui.search.UserChooserComponent
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse

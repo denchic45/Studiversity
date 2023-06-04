@@ -9,6 +9,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.navigate
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -33,6 +34,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
@@ -139,9 +141,17 @@ class MainComponent(
         }
     }
 
+    private val hasStudyGroupsFlow = interactor.observeHasStudyGroups().onEach { hasStudyGroups ->
+        if (!hasStudyGroups)
+        /* remove StudyGroup config if exists */
+            navigation.navigate { stack ->
+                stack.firstOrNull { it is Config.StudyGroup }?.let { stack - it } ?: stack
+            }
+    }
+
     // TODO listen root role of current user to show works screen
     val availableScreens = combine(
-        interactor.observeHasGroup(),
+        hasStudyGroupsFlow,
         flowOf(true), // is teacher
         flowOf(true), // is student
         flowOf(true) // is moderator

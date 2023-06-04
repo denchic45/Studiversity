@@ -20,4 +20,9 @@ class ConfirmDialogInteractor(
     suspend fun receiveConfirm(): Boolean {
         return confirmation.receive()
     }
+
+    suspend fun confirmRequest(state: ConfirmState): Boolean {
+        set(state)
+        return receiveConfirm()
+    }
 }

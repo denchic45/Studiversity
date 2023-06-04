@@ -7,14 +7,12 @@ import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.data.pref.AppPreferences
-import com.denchic45.kts.domain.flatMapResourceFlow
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.kts.ui.navigation.ChildrenContainer
-import com.denchic45.kts.ui.navigation.isActiveFlow
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.kts.util.asFlow
@@ -78,27 +76,27 @@ class YourStudyGroupsComponent(
 
     val studyGroups = findYourStudyGroupsUseCase().stateInResource(componentScope)
 
+    private val selectedStudyGroupId = appPreferences.selectedStudyGroupIdFlow.filterNotNull()
+        .shareIn(componentScope, SharingStarted.Lazily)
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    val selectedStudyGroup = appPreferences.selectedStudyGroupIdFlow
-        .flatMapLatest { id ->
+    val selectedStudyGroup = selectedStudyGroupId
+        .flatMapLatest { selectedStudyGroupId ->
             studyGroups.mapResource { groups ->
-                id?.apply {
-                    appPreferences.selectedStudyGroupId = groups.first().id.toString()
-                }?.let { id ->
-                    groups.first { it.id == id.toUUID() }
-                } ?: groups.first()
+                groups.first { it.id == selectedStudyGroupId.toUUID() }
             }
         }.onEach { resource ->
-            resource.onSuccess {
+            resource.onSuccess { selectedStudyGroup ->
                 withContext(Dispatchers.Main) {
-                    studyGroupNavigation.activate(StudyGroupConfig(it.id))
+                    studyGroupNavigation.activate(StudyGroupConfig(selectedStudyGroup.id))
                 }
             }
         }.stateInResource(componentScope)
 
-    val allowEditSelected = selectedStudyGroup.flatMapResourceFlow { response ->
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val allowEditSelected = selectedStudyGroupId.flatMapLatest { id ->
         checkUserCapabilitiesInScopeUseCase(
-            scopeId = response.id,
+            scopeId = id.toUUID(),
             capabilities = listOf(Capability.WriteStudyGroup)
         )
     }.mapResource { it.hasCapability(Capability.WriteStudyGroup) }
@@ -139,7 +137,8 @@ class YourStudyGroupsComponent(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun hasChildrenFlow(): Flow<Boolean> {
-        return childStudyGroup.asFlow().flatMapLatest { it.overlay?.instance?.hasChildrenFlow() ?: flowOf(false) }
+        return childStudyGroup.asFlow()
+            .flatMapLatest { it.overlay?.instance?.hasChildrenFlow() ?: flowOf(false) }
     }
 
 }

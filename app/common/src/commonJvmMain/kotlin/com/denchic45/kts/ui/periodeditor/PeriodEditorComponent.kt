@@ -16,10 +16,10 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindRoomByContainsNameUseCase
-import com.denchic45.kts.ui.chooser.CourseChooserComponent
-import com.denchic45.kts.ui.chooser.UserChooserComponent
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.model.toPeriodMember
+import com.denchic45.kts.ui.search.CourseChooserComponent
+import com.denchic45.kts.ui.search.UserChooserComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.room.model.RoomResponse

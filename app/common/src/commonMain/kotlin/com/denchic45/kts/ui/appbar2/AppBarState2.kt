@@ -23,33 +23,50 @@ import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
 class AppBarState2(
-    val scrollBehavior: TopAppBarScrollBehavior,
+    scrollBehavior: TopAppBarScrollBehavior,
     appBarContent: AppBarContent,
     private val snapAnimationSpec: AnimationSpec<Float>,
     private val flingAnimationSpec: DecayAnimationSpec<Float>,
 ) {
-    private var _content by mutableStateOf(appBarContent)
+    var content by mutableStateOf(appBarContent)
 
-    var content: AppBarContent
-        get() = _content
-        set(value) {
-            _content = value
-            expand()
-        }
+    var scrollBehavior: TopAppBarScrollBehavior by mutableStateOf(scrollBehavior)
+
+    private val isExpanded
+        get() = scrollBehavior.state.heightOffset == 0f
+
+
+    fun update(block: AppBarState2.() -> Unit) {
+        block()
+        expand()
+    }
+
+    suspend fun animateUpdate(block: AppBarState2.() -> Unit) {
+        block()
+        animateExpand()
+    }
 
     var navigationIcon by mutableStateOf(NavigationIcon.TOGGLE)
 
     fun expand() {
-        scrollBehavior.state.heightOffset = 0f
+        if (!isExpanded)
+            scrollBehavior.state.heightOffset = 0f
     }
 
     fun hide() {
-        scrollBehavior.state.heightOffset = -Float.MAX_VALUE
+        if (isExpanded)
+            scrollBehavior.state.heightOffset = -Float.MAX_VALUE
     }
 
-    suspend fun animateExpand() = animateScroll(0f)
+    suspend fun animateExpand() {
+        if (!isExpanded)
+            animateScroll(0f)
+    }
 
-    suspend fun animateHide() = animateScroll(scrollBehavior.state.heightOffsetLimit)
+    suspend fun animateHide() {
+        if (isExpanded)
+            animateScroll(scrollBehavior.state.heightOffsetLimit)
+    }
 
     private suspend fun animateScroll(targetValue: Float) {
         val velocity = 300f
@@ -128,7 +145,7 @@ enum class NavigationIcon { TOGGLE, BACK }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun rememberAppBarState(
-    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     appBarContent: AppBarContent = AppBarContent(),
     snapAnimationSpec: AnimationSpec<Float> = spring(stiffness = Spring.StiffnessMediumLow),
     flingAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay(),

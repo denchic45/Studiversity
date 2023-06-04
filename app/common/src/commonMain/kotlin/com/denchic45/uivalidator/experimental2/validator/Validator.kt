@@ -26,7 +26,7 @@ class CompositeValidator<T>(
 
     override fun validate(): Boolean = validators.validate(operator)
 
-    fun onValid(block: () -> Unit) {
+    inline fun onValid(block: () -> Unit) {
         if (validate()) block()
     }
 }

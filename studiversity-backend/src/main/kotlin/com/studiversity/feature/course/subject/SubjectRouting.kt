@@ -1,17 +1,17 @@
 package com.studiversity.feature.course.subject
 
-import com.studiversity.config
-import com.studiversity.feature.course.subject.usecase.*
-import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
-import com.studiversity.ktor.claimId
-import com.studiversity.ktor.jwtPrincipal
-import com.studiversity.util.onlyDigits
-import com.studiversity.validation.buildValidationResult
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
+import com.studiversity.config
+import com.studiversity.feature.course.subject.usecase.*
+import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.studiversity.ktor.CommonErrors
+import com.studiversity.ktor.claimId
+import com.studiversity.ktor.jwtPrincipal
+import com.studiversity.util.onlyDigits
+import com.studiversity.validation.buildValidationResult
 import com.studiversity.validation.require
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -25,6 +25,8 @@ import org.koin.ktor.ext.inject
 fun Application.subjectRoutes() {
     routing {
         authenticate("auth-jwt") {
+            val findSubjectsIcons: FindSubjectsIconsUseCase by inject()
+
             route("/subjects") {
                 install(RequestValidation) {
                     validate<CreateSubjectRequest> { request ->
@@ -63,7 +65,7 @@ fun Application.subjectRoutes() {
                 subjectByIdRoute()
             }
             get("/subjects-icons") {
-
+                call.respond(findSubjectsIcons())
             }
         }
     }

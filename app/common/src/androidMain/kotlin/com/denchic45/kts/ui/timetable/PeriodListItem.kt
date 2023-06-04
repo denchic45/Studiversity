@@ -36,8 +36,8 @@ import com.denchic45.kts.R
 import com.denchic45.kts.domain.model.StudyGroupNameItem
 import com.denchic45.kts.domain.timetable.model.PeriodDetails
 import com.denchic45.kts.domain.timetable.model.PeriodItem
-import com.denchic45.kts.ui.chooser.UserListItem
 import com.denchic45.kts.ui.model.UserItem
+import com.denchic45.kts.ui.search.UserListItem
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import java.util.UUID

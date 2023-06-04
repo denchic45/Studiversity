@@ -222,7 +222,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) { interactor.startListeners() }
 
         viewModelScope.launch {
-            interactor.observeHasGroup().collect { hasGroup: Boolean ->
+            interactor.observeHasStudyGroups().collect { hasGroup: Boolean ->
                 menuBtnVisibility.emit(R.id.menu_group to hasGroup)
             }
         }
