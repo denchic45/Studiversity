@@ -30,7 +30,7 @@ class TimetableLoaderFragment(
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             AppTheme {
-                TimetableLoaderScreen(timetableLoaderComponent,appBarInteractor)
+                TimetableLoaderScreen(timetableLoaderComponent)
             }
         }
     }

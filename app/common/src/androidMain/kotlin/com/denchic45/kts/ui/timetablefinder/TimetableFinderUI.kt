@@ -27,8 +27,8 @@ import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar2.ActionMenuItem2
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
-import com.denchic45.kts.ui.chooser.StudyGroupListItem
 import com.denchic45.kts.ui.periodeditor.PeriodEditorScreen
+import com.denchic45.kts.ui.search.StudyGroupListItem
 import com.denchic45.kts.ui.timetable.DayTimetableContent
 import com.denchic45.kts.ui.timetable.getMonthTitle
 import com.denchic45.kts.ui.timetable.state.TimetableState
@@ -199,7 +199,7 @@ fun TimetableFinderContent(
                 LazyColumn {
                     items(items = groups, key = { it.id }) {
                         StudyGroupListItem(
-                            response = it,
+                            item = it,
                             modifier = Modifier.clickable {
                                 active = false
                                 onGroupSelect(it)

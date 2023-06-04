@@ -13,7 +13,6 @@ import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +28,7 @@ interface TimetableOwnerComponent {
     val selectedWeekOfYear: StateFlow<String>
     val mondayDate: StateFlow<LocalDate>
 
-    val componentScope:CoroutineScope
+    val componentScope: CoroutineScope
 
     fun onDateSelect(date: LocalDate) {
         selectedDate.value = date
@@ -66,7 +65,8 @@ interface TimetableOwnerComponent {
     ): StateFlow<Resource<TimetableState>> {
         return getTimetableStateOfLists(
             bellSchedule,
-            timetableResource.mapResource { it.days })
+            timetableResource.mapResource { it.days }
+        )
     }
 
 }

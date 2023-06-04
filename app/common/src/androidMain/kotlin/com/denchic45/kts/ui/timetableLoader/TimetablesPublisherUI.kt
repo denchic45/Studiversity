@@ -42,11 +42,10 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.domain.resourceOf
-import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
-import com.denchic45.kts.ui.chooser.StudyGroupChooserScreen
 import com.denchic45.kts.ui.periodeditor.PeriodEditorScreen
+import com.denchic45.kts.ui.search.StudyGroupChooserScreen
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.DayTimetableContent
 import com.denchic45.kts.ui.timetable.state.TimetableState

@@ -3,12 +3,10 @@ package com.denchic45.kts.ui.coursetimetable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.denchic45.kts.data.repository.MetaRepository
-import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.TimetableOwner
 import com.denchic45.kts.ui.timetable.TimetableComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerComponent
 import com.denchic45.kts.ui.timetable.TimetableOwnerDelegate
-import com.denchic45.kts.util.componentScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -35,11 +33,11 @@ class CourseTimetableComponent(
     private val timetableComponent = _timetableComponent(
         selectedWeekOfYear,
         flowOf(TimetableOwner.Course(courseId)),
-        componentContext.childContext("Timetable")
+        componentContext.childContext("timetable")
     )
 
     val timetable = getTimetableState(
-        bellSchedule = metaRepository.observeBellSchedule.shareIn(
+        metaRepository.observeBellSchedule.shareIn(
             componentScope,
             SharingStarted.Lazily
         ),

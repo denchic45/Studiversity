@@ -29,7 +29,7 @@ import me.tatarka.inject.annotations.Inject
 class YourTimetablesComponent(
     metaRepository: MetaRepository,
     private val appPreferences: AppPreferences,
-    private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
+    findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
     _TimetableComponent: (
         StateFlow<String>,
         Flow<TimetableOwner>,
