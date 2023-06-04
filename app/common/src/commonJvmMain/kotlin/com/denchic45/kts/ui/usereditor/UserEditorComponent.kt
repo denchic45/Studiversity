@@ -13,6 +13,7 @@ import com.denchic45.kts.domain.usecase.AddUserUseCase
 import com.denchic45.kts.ui.model.MenuAction
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
+import com.denchic45.stuiversity.api.user.model.Gender
 import com.denchic45.uivalidator.experimental2.Operator
 import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.condition.observable
@@ -20,7 +21,11 @@ import com.denchic45.uivalidator.experimental2.getIfNot
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
 import com.denchic45.uivalidator.isEmail
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
@@ -35,6 +40,8 @@ class UserEditorComponent(
 
     private val componentScope = componentScope()
 
+    val allowSave = MutableStateFlow(false)
+
     @Stable
     class CreatableUserState(val genders: List<GenderAction>) {
         var firstName by mutableStateOf("")
@@ -45,10 +52,11 @@ class UserEditorComponent(
 
         var firstNameMessage: String? by mutableStateOf(null)
         var surnameMessage: String? by mutableStateOf(null)
+        var genderMessage: String? by mutableStateOf(null)
         var emailMessage: String? by mutableStateOf(null)
     }
 
-    val genders: List<GenderAction> = listOf(
+    private val genders: List<GenderAction> = listOf(
         GenderAction.Male,
         GenderAction.Female,
         GenderAction.Undefined
@@ -65,38 +73,6 @@ class UserEditorComponent(
         )
     )
 
-//    private val uiEditor: UIEditor<UserResponse> = UIEditor(userId == null) {
-//        UserResponse(
-//            this.userId ?: UUID.randomUUID(),
-//            firstNameField.value,
-//            surnameField.value,
-//            patronymicField.value,
-//            Account(emailField.value),
-//            avatarUrl.value,
-//            false,
-//            when (genderField.value) {
-//                GenderAction.Undefined -> Gender.UNKNOWN
-//                GenderAction.Female -> Gender.FEMALE
-//                GenderAction.Male -> Gender.MALE
-//            },
-//        )
-//    }
-
-//    val firstNameField: MutableStateFlow<String> = MutableStateFlow("")
-
-//    val surnameField: MutableStateFlow<String> = MutableStateFlow("")
-
-//    val patronymicField: MutableStateFlow<String> = MutableStateFlow("")
-
-//    val emailField: MutableStateFlow<String> = MutableStateFlow("")
-
-//    val genderField: MutableStateFlow<GenderAction> =
-//        MutableStateFlow(GenderAction.Undefined)
-
-//    val avatarUrl: MutableStateFlow<String> = MutableStateFlow("")
-
-//    val accountFieldsVisibility: StateFlow<Boolean> = MutableStateFlow(uiEditor.isNew)
-
     private val emailValidator = ValueValidator(
         value = state::email,
         conditions = listOf(
@@ -110,7 +86,7 @@ class UserEditorComponent(
         operator = Operator.all()
     )
 
-    private val validator: CompositeValidator<String> = CompositeValidator(
+    private val validator = CompositeValidator(
         listOf(
             ValueValidator(
                 value = state::firstName,
@@ -118,18 +94,18 @@ class UserEditorComponent(
                     Condition(String::isNotEmpty)
                         .observable { isValid ->
                             state.firstNameMessage = getIfNot(isValid) { "Имя обязательно" }
-//                            errorState.update {
-//                                it.copy(firstNameMessage = if (isValid) null else "Имя обязательно")
-//                            }
                         })
             ),
             ValueValidator(
                 value = state::surname,
                 conditions = listOf(Condition(String::isNotEmpty).observable { isValid ->
                     state.surnameMessage = getIfNot(isValid) { "Фамилия обязательно" }
-//                    errorState.update {
-//                        it.copy(surnameMessage = if (isValid) null else "Фамилия обязательна")
-//                    }
+                })
+            ),
+            ValueValidator(
+                value = state::gender,
+                conditions = listOf(Condition<GenderAction> { it != GenderAction.Undefined }.observable { isValid ->
+                    state.genderMessage = getIfNot(isValid) { "Пол обязателен" }
                 })
             ),
             emailValidator
@@ -141,47 +117,14 @@ class UserEditorComponent(
         saveChanges()
     }
 
-//    init {
-//        when (uiEditor.isNew) {
-//            false -> {
-//                componentScope.launch {
-//                    observeUserUseCase(this@UserEditorComponent.userId!!).collect { resource ->
-//                        when (resource) {
-//                            is Resource.Error -> TODO()
-//                            is Resource.Loading -> TODO()
-//                            is Resource.Success -> {
-//                                resource.value.let { user ->
-//                                    uiEditor.oldItem = user
-//                                    firstNameField.value = user.firstName
-//                                    surnameField.value = user.surname
-//                                    patronymicField.value = user.patronymic ?: ""
-//                                    genderField.value = when (user.gender) {
-//                                        Gender.UNKNOWN -> GenderAction.Undefined
-//                                        Gender.FEMALE -> GenderAction.Female
-//                                        Gender.MALE -> GenderAction.Male
-//                                        else -> throw IllegalArgumentException("Not correct gender")
-//                                    }
-//                                    emailField.value = user.account.email
-//                                    avatarUrl.value = user.avatarUrl
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//            true -> {
-//
-//            }
-//        }
-//    }
-
     fun onFirstNameType(firstName: String) {
         state.firstName = firstName
+        updateAllowSave()
     }
 
     fun onSurnameType(surname: String) {
         state.surname = surname
+        updateAllowSave()
     }
 
     fun onPatronymicType(patronymic: String) {
@@ -190,50 +133,46 @@ class UserEditorComponent(
 
     fun onEmailType(email: String) {
         state.email = email
+        updateAllowSave()
     }
 
     fun onGenderSelect(gender: GenderAction) {
         state.gender = gender
+        updateAllowSave()
     }
 
-//    fun onRemoveClick() {
-//        confirmInteractor.set(ConfirmState(uiTextOf("Удалить пользователя")))
-//        componentScope.launch {
-//            if (confirmInteractor.receiveConfirm())
-//                removeUserUseCase(userId!!)
-//        }
-//    }
+    private fun updateAllowSave() {
+        allowSave.update { fieldEditor.hasChanges() }
+    }
 
     private fun saveChanges() {
         componentScope.launch {
-            addUserUseCase(
-                CreateUserRequest(
-                    state.firstName,
-                    state.surname,
-                    state.patronymic,
-                    state.email
-                )
-            ).onSuccess { onFinish() }
-                .onFailure { TODO("Уведомление о подключении к интернету") }
+            validator.onValid {
+                addUserUseCase(
+                    CreateUserRequest(
+                        state.firstName,
+                        state.surname,
+                        state.patronymic,
+                        state.email,
+                        when (state.gender) {
+                            GenderAction.Undefined -> Gender.UNKNOWN
+                            GenderAction.Male -> Gender.MALE
+                            GenderAction.Female -> Gender.FEMALE
+                        }
+                    )
+                ).onSuccess {
+                    withContext(Dispatchers.Main.immediate) {
+                        onFinish()
+                    }
+                }
+                    .onFailure { }
+            }
         }
     }
 
-//    init {
-//        lifecycle.doOnStart {
-//            appBarInteractor.update {
-//                it.copy(
-//                    title = uiTextOf(
-//                        if (uiEditor.isNew) "Новый пользователь"
-//                        else "Редактировать пользователя"
-//                    )
-//                )
-//            }
-//        }
-//    }
-
     enum class GenderAction(override val title: String, override val iconName: String? = null) :
         MenuAction {
-        Undefined(""),
+        Undefined("Не выбран"),
         Male("Мужской"),
         Female("Женский")
     }

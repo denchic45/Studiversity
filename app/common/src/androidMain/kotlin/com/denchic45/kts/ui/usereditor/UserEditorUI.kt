@@ -1,8 +1,14 @@
 package com.denchic45.kts.ui.usereditor
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -10,17 +16,26 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.R
 import com.denchic45.kts.ui.Sidebar
+import com.denchic45.kts.ui.appbar2.ActionMenuItem2
+import com.denchic45.kts.ui.appbar2.AppBarContent
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.component.HeaderItemUI
+import com.denchic45.kts.ui.uiIconOf
+import com.denchic45.kts.ui.uiTextOf
 
 
 @Composable
@@ -30,17 +45,37 @@ fun UserEditorSidebar(component: UserEditorComponent) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserEditorScreen(component: UserEditorComponent) {
     val state = remember { component.state }
+    val allowSave by component.allowSave.collectAsState()
+    val appBarState = LocalAppBarState.current
 
+    LaunchedEffect(allowSave) {
+        appBarState.animateUpdate {
+            content = AppBarContent(
+                title = uiTextOf("Новый пользователь"),
+                actionItems = listOf(
+                    ActionMenuItem2(
+                        icon = uiIconOf(Icons.Default.Done),
+                        enabled = allowSave,
+                        onClick = component::onSaveClick
+                    )
+                )
+            )
+        }
+    }
+
+    val scrollState = rememberScrollState()
     UserEditorContent(
         state = state,
         onFirstNameType = component::onFirstNameType,
         onSurnameType = component::onSurnameType,
         onPatronymicType = component::onPatronymicType,
         onGenderSelect = component::onGenderSelect,
-        onEmailType = component::onEmailType
+        onEmailType = component::onEmailType,
+        modifier = Modifier.verticalScroll(scrollState)
     )
 }
 
@@ -53,8 +88,12 @@ fun UserEditorContent(
     onPatronymicType: (String) -> Unit,
     onGenderSelect: (UserEditorComponent.GenderAction) -> Unit,
     onEmailType: (String) -> Unit,
+    modifier: Modifier
 ) {
-    Column(Modifier.padding(horizontal = 16.dp)) {
+
+    Column(
+        modifier.padding(horizontal = 16.dp)
+    ) {
         HeaderItemUI("Личные данные")
         OutlinedTextField(
             value = state.firstName,
@@ -74,7 +113,7 @@ fun UserEditorContent(
             label = { Text("Фамилия") },
             singleLine = true,
             isError = state.surnameMessage != null,
-            supportingText = { state.surnameMessage ?: "" }
+            supportingText = { Text(text = state.surnameMessage ?: "") }
         )
         OutlinedTextField(
             value = state.patronymic,
@@ -83,6 +122,7 @@ fun UserEditorContent(
                 .padding(top = 4.dp)
                 .fillMaxWidth(),
             label = { Text("Отчество") },
+            supportingText = { Text(text = "") },
             placeholder = { Text("Отчество (необязательно)") },
             singleLine = true
         )
@@ -90,8 +130,7 @@ fun UserEditorContent(
 
         ExposedDropdownMenuBox(
             expanded = expandedGenders,
-            onExpandedChange = { expandedGenders = !expandedGenders },
-            modifier = Modifier.padding(bottom = 20.dp)
+            onExpandedChange = { expandedGenders = !expandedGenders }
         ) {
             OutlinedTextField(
                 value = state.gender.title,
@@ -105,6 +144,8 @@ fun UserEditorContent(
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedGenders)
                 },
                 singleLine = true,
+                isError = state.genderMessage != null,
+                supportingText = { Text(text = state.genderMessage ?: "") },
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
 
