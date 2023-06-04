@@ -10,11 +10,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
@@ -40,6 +45,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
@@ -98,23 +104,30 @@ fun DayTimetableContent(
                 dayContent = { day ->
                     Box(
                         modifier = Modifier
-                            .aspectRatio(1f)
-                            .padding(MaterialTheme.spacing.extraSmall)
-                            .clip(CircleShape)
-                            .then(
-                                if (selectedDate == day.date)
-                                    Modifier.background(MaterialTheme.colorScheme.tertiaryContainer)
-                                else Modifier
-                            )
-                            .clickable(
-                                onClick = { onDateSelect(day.date) }
-                            ),
+                            .fillMaxWidth()
+                            .height(56.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = day.date.dayOfMonth.toString(),
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                        Box(
+                            modifier = Modifier
+                                .aspectRatio(1f)
+                                .padding(MaterialTheme.spacing.extraSmall)
+                                .clip(CircleShape)
+                                .then(
+                                    if (selectedDate == day.date)
+                                        Modifier.background(MaterialTheme.colorScheme.tertiaryContainer)
+                                    else Modifier
+                                )
+                                .clickable(
+                                    onClick = { onDateSelect(day.date) }
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = day.date.dayOfMonth.toString(),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
                     }
                 }
             )
@@ -122,7 +135,6 @@ fun DayTimetableContent(
             timetableResource.onSuccess { timetableState ->
                 val selectedDayOfWeek = selectedDate.dayOfWeek
                 if (timetableState.contains(selectedDate)) {
-
                     Periods(
                         timetable = timetableState,
                         selectedDayOfWeek = selectedDayOfWeek,
@@ -162,7 +174,10 @@ private fun Periods(
     onRemovePeriodSwipe: ((Int) -> Unit)?,
     onAddPeriodClick: (() -> Unit)?,
 ) {
-    Crossfade(targetState = selectedDayOfWeek) { dayOfWeek ->
+    val scrollState = rememberScrollState()
+    Crossfade(
+        targetState = selectedDayOfWeek,
+    ) { dayOfWeek ->
         if (dayOfWeek.value == 7) {
             IconTitle(
                 icon = {
@@ -171,7 +186,10 @@ private fun Periods(
                         contentDescription = "day off"
                     )
                 },
-                title = { Text(text = "Выходной день") }
+                title = { Text(text = "Выходной день") },
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .verticalScroll(scrollState)
             )
         } else {
             val items = timetable.getDay(selectedDayOfWeek)
@@ -183,7 +201,11 @@ private fun Periods(
                             contentDescription = "empty lessons"
                         )
                     },
-                    title = { Text(text = "Пусто") })
+                    title = { Text(text = "Пусто") },
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .verticalScroll(scrollState)
+                )
             } else {
                 LazyColumn {
                     itemsIndexed(

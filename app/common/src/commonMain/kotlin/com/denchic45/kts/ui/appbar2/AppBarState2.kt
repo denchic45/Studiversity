@@ -140,7 +140,7 @@ suspend fun settleAppBar(
     }
 }
 
-enum class NavigationIcon { TOGGLE, BACK }
+enum class NavigationIcon { NOTHING, TOGGLE, BACK }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

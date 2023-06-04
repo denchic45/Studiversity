@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -41,6 +43,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -189,11 +192,32 @@ fun MediumMainScreen(
         }
     ) {
         val stack by component.stack.subscribeAsState()
+
+        val appBarState = LocalAppBarState.current
+        appBarState.navigationIcon = when (val child = stack.active.instance) {
+            is MainComponent.PrimaryChild -> {
+                val hasChildren by child.component.hasChildrenFlow().collectAsState(initial = false)
+                if (hasChildren) NavigationIcon.BACK
+                else NavigationIcon.NOTHING
+            }
+
+            else -> NavigationIcon.BACK
+        }
+
         Row {
             val instance = stack.active.instance
             if (instance is MainComponent.PrimaryChild) {
                 val availableScreens by component.availableScreens.collectAsState()
-                NavigationRail {
+                NavigationRail(header = {
+                    Spacer(modifier = Modifier.height(1.dp))
+                    IconButton(
+                        onClick = { coroutineScope.launch { drawerState.open() } }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Menu,
+                            contentDescription = "menu"
+                        )
+                    }
+                }, containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)) {
                     NavigationRailItem(selected = instance is MainComponent.Child.YourTimetables,
                         onClick = component::onTimetableClick,
                         icon = {
@@ -234,14 +258,17 @@ private fun DrawerContent(
     coroutineScope: CoroutineScope,
     drawerState: DrawerState,
 ) {
-
     fun closeDrawer() = coroutineScope.launch { drawerState.close() }
 
     val availableScreens by component.availableScreens.collectAsState()
     val stack by component.stack.subscribeAsState()
-
     ModalDrawerSheet(Modifier.requiredWidth(300.dp)) {
-        Column(Modifier.padding(horizontal = 8.dp)) {
+        val scrollState = rememberScrollState()
+        Column(
+            Modifier
+                .padding(horizontal = 8.dp)
+                .verticalScroll(scrollState)
+        ) {
             val userInfo by component.userInfo.collectAsState()
             Row(
                 Modifier
@@ -330,8 +357,6 @@ private fun DrawerContent(
                             style = MaterialTheme.typography.titleSmall
                         )
                     }
-
-//                    Column {
                     courses.forEach { course ->
                         NavigationDrawerItem(
                             label = {
@@ -364,7 +389,6 @@ private fun DrawerContent(
                     }
                 }
                 Divider(Modifier.padding(vertical = 4.dp))
-//                }
             }
             if (availableScreens.adminDashboard) {
                 NavigationDrawerItem(
@@ -395,9 +419,7 @@ private fun DrawerContent(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState) {
     val appBarState = LocalAppBarState.current
-    println("TITLE: ${appBarState.content.title.get(LocalContext.current)} $appBarState")
     val coroutineScope = rememberCoroutineScope()
-//    if (state.visible) {
     TopAppBar(
         title = { Text(appBarState.content.title.get(LocalContext.current)) },
         navigationIcon = {
@@ -417,6 +439,8 @@ private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState)
                         contentDescription = "back"
                     )
                 }
+
+                NavigationIcon.NOTHING -> {}
             }
         },
         actions = {
@@ -450,17 +474,14 @@ private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState)
                             onClick = {
                                 menuExpanded = false
                                 item.onClick()
-//                                    state.onDropdownMenuItemClick(item)
                             },
                         )
                     }
                 }
             }
-//                state.actionsUI?.invoke(this)
         },
         scrollBehavior = appBarState.scrollBehavior,
     )
-//    }
 }
 
 @Composable

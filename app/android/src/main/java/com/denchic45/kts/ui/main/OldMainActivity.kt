@@ -180,6 +180,8 @@ class OldMainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(R.layou
                                         contentDescription = "back"
                                     )
                                 }
+
+                                NavigationIcon.NOTHING -> {}
                             }
                         },
                         actions = {

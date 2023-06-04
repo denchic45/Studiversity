@@ -194,7 +194,12 @@ fun IconTitle(
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(MaterialTheme.spacing.small),
+        contentAlignment = Alignment.Center
+    ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             icon()
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
