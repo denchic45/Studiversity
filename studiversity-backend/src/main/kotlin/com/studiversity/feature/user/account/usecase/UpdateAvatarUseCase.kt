@@ -13,6 +13,6 @@ class UpdateAvatarUseCase(
         userId: UUID,
         request: CreateFileRequest
     ) = transactionWorker.suspendInvoke {
-        userRepository.updateAvatar(userId, request, false)
+        userRepository.updateAvatar(userId, request)
     }
 }

@@ -4,13 +4,13 @@ import com.studiversity.feature.user.UserRepository
 import com.studiversity.transaction.SuspendTransactionWorker
 import java.util.*
 
-class RemoveAvatarUseCase(
+class ResetAvatarUseCase(
     private val transactionWorker: SuspendTransactionWorker,
     private val userRepository: UserRepository
 ) {
     suspend operator fun invoke(
         userId: UUID
     ) = transactionWorker.suspendInvoke {
-        userRepository.deleteAvatar(userId)
+        userRepository.resetAvatar(userId)
     }
 }
