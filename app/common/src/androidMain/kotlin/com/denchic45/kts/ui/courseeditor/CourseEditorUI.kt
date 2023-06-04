@@ -37,11 +37,10 @@ import com.denchic45.kts.R
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.resourceOf
-import com.denchic45.kts.ui.appbar.AppBarState
 import com.denchic45.kts.ui.appbar2.ActionMenuItem2
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
-import com.denchic45.kts.ui.chooser.SubjectChooserScreen
+import com.denchic45.kts.ui.search.SubjectChooserScreen
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.ui.uiTextOf

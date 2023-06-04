@@ -21,10 +21,10 @@ import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.AddCourseUseCase
 import com.denchic45.kts.domain.usecase.FindCourseByIdUseCase
 import com.denchic45.kts.domain.usecase.UpdateCourseUseCase
-import com.denchic45.kts.ui.chooser.SubjectChooserComponent
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.navigation.OverlayChildrenContainer
+import com.denchic45.kts.ui.search.SubjectChooserComponent
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.updateOldValues
 import com.denchic45.kts.util.componentScope
@@ -224,8 +224,8 @@ class CourseEditorComponent(
             if (fieldEditor.hasChanges() || courseId != null) {
                 confirmDialogInteractor.set(
                     ConfirmState(
-                        uiTextOf("Удаление курса"),
-                        uiTextOf("Удаленный курс нельзя будет восстановить")
+                        uiTextOf("Архивировать курс?"),
+                        uiTextOf("Курс ")
                     )
                 )
                 if (confirmDialogInteractor.receiveConfirm()) {
