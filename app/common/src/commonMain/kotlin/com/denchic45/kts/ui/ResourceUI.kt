@@ -13,7 +13,7 @@ import com.denchic45.kts.domain.Resource
 @Composable
 fun <T> ResourceContent(
     resource: Resource<T>,
-    onLoading: @Composable () -> Unit = { CircularLoadingBox() },
+    onLoading: @Composable () -> Unit = { CircularLoadingBox(Modifier.fillMaxSize()) },
     onError: @Composable (Failure) -> Unit = {},
     onSuccess: @Composable (T) -> Unit,
 ) {
@@ -25,15 +25,15 @@ fun <T> ResourceContent(
 }
 
 @Composable
-fun CircularLoadingBox() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+fun CircularLoadingBox(modifier: Modifier = Modifier) {
+    Box(modifier, contentAlignment = Alignment.Center) {
         CircularProgressIndicator()
     }
 }
 
 @Composable
-fun LinearLoadingBox() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+fun LinearLoadingBox(modifier: Modifier = Modifier) {
+    Box(modifier, contentAlignment = Alignment.Center) {
         LinearProgressIndicator()
     }
 }

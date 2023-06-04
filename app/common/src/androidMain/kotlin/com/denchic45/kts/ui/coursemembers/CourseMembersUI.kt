@@ -17,8 +17,8 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.CourseMembersComponent
-import com.denchic45.kts.ui.chooser.UserListItem
 import com.denchic45.kts.ui.model.UserItem
+import com.denchic45.kts.ui.search.UserListItem
 import com.denchic45.kts.ui.theme.spacing
 import java.util.UUID
 

@@ -21,15 +21,15 @@ fun RootStackScreen(
     val appBarState = LocalAppBarState.current
     Children(stack = component.childStack) {
         when (val child = it.instance) {
-            is RootChild.YourTimetables -> YourTimetablesScreen(component = child.component)
-            is RootChild.YourStudyGroups -> YourStudyGroupsScreen(component = child.component)
-            is RootChild.AdminDashboard -> AdminDashboardScreen(component = child.component)
-            is RootChild.Course -> CourseScreen(component = child.component)
-            is RootChild.StudyGroup -> StudyGroupScreen(component = child.component)
+            is RootChild.YourTimetables -> YourTimetablesScreen(child.component)
+            is RootChild.YourStudyGroups -> YourStudyGroupsScreen(child.component)
+            is RootChild.AdminDashboard -> AdminDashboardScreen(child.component)
+            is RootChild.Course -> CourseScreen(child.component)
+            is RootChild.StudyGroup -> StudyGroupScreen(child.component)
             is RootChild.Works -> TODO()
-            is RootChild.CourseEditor -> CourseEditorScreen(component = child.component)
-            is RootChild.CourseWork -> CourseWorkScreen(component = child.component)
-            is RootChild.CourseWorkEditor -> CourseWorkEditorScreen(component = child.component)
+            is RootChild.CourseEditor -> CourseEditorScreen(child.component)
+            is RootChild.CourseWork -> CourseWorkScreen(child.component)
+            is RootChild.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
         }
     }
 }

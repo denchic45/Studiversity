@@ -100,6 +100,10 @@ fun MainScreen(
         WindowWidthSizeClass.Medium -> {
             MediumMainScreen(component = component, activity = activity)
         }
+
+        WindowWidthSizeClass.Expanded -> {
+            MediumMainScreen(component = component, activity = activity)
+        }
     }
     ConfirmDialog(confirmDialogInteractor)
 }

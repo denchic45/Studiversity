@@ -27,11 +27,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.denchic45.kts.ui.chooser.SearchedItemsContent
-import com.denchic45.kts.ui.chooser.StudyGroupListItem
-import com.denchic45.kts.ui.chooser.UserListItem
 import com.denchic45.kts.ui.component.TabIndicator
 import com.denchic45.kts.ui.model.UserItem
+import com.denchic45.kts.ui.search.SearchedItemsContent
+import com.denchic45.kts.ui.search.StudyGroupListItem
+import com.denchic45.kts.ui.search.UserListItem
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.launch
@@ -119,16 +119,18 @@ fun FinderContent(
             Box(modifier = Modifier.fillMaxHeight()) {
                 when (activeChild) {
                     is FinderComponent.TabChild.Users -> SearchedItemsContent(
-                        keyItem = UserItem::id,
                         component = activeChild.component,
-                        itemContent = { UserListItem(it) }
-                    )
+                        keyItem = UserItem::id,
+                        null,
+                        null,
+                    ) { UserListItem(it) }
 
                     is FinderComponent.TabChild.StudyGroups -> SearchedItemsContent(
-                        keyItem = StudyGroupResponse::id,
                         component = activeChild.component,
-                        itemContent = { StudyGroupListItem(it) }
-                    )
+                        keyItem = StudyGroupResponse::id,
+                        null,
+                        null,
+                    ) { StudyGroupListItem(it) }
                 }
             }
         }

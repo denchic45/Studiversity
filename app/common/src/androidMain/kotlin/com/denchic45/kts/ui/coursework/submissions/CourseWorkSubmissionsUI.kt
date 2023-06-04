@@ -13,8 +13,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.chooser.UserAvatarImage
 import com.denchic45.kts.ui.coursework.submissiondetails.SubmissionDetailsScreen
+import com.denchic45.kts.ui.search.UserAvatarImage
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.util.toString

@@ -58,7 +58,7 @@ import com.denchic45.kts.ui.ResourceContent
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.DropdownMenuItem2
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
-import com.denchic45.kts.ui.chooser.StudyGroupListItem
+import com.denchic45.kts.ui.search.StudyGroupListItem
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.util.toast
@@ -70,7 +70,9 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(component: ProfileComponent) {
-    LocalAppBarState.current.hide()
+    LocalAppBarState.current.update {
+        content = AppBarContent()
+    }
 
     val viewStateResource by component.viewState.collectAsState()
     val childOverlay by component.childOverlay.subscribeAsState()
@@ -301,7 +303,7 @@ private fun ProfileStudyGroups(
             AlertDialog(onDismissRequest = { showStudyGroups = false }) {
                 studyGroups.forEach {
                     StudyGroupListItem(
-                        response = it,
+                        item = it,
                         modifier = Modifier.clickable { onStudyGroupClick(it.id) }
                     )
                 }

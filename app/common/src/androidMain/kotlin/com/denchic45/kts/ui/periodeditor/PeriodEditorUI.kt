@@ -43,8 +43,8 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
-import com.denchic45.kts.ui.chooser.CourseChooserScreen
-import com.denchic45.kts.ui.chooser.UserChooserScreen
+import com.denchic45.kts.ui.search.CourseChooserScreen
+import com.denchic45.kts.ui.search.UserChooserScreen
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.model.CourseResponse

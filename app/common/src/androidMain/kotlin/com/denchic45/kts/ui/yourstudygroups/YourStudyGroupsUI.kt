@@ -1,6 +1,5 @@
 package com.denchic45.kts.ui.yourstudygroups
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.domain.Resource
+import com.denchic45.kts.domain.ifSuccess
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.takeIfSuccess
 import com.denchic45.kts.ui.appbar2.ActionMenuItem2
@@ -33,6 +33,7 @@ import com.denchic45.kts.ui.studygroup.StudyGroupContent
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorScreen
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiIconOf
+import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 
 
@@ -40,19 +41,20 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
     val groups by component.studyGroups.collectAsState()
     val selectedStudyGroup by component.selectedStudyGroup.collectAsState()
-
+    val allowEditSelectedRes by component.allowEditSelected.collectAsState()
     val appBarState = LocalAppBarState.current
 
-//        val actions: @Composable RowScope.() -> Unit = @Composable {
-//            val allow = when (val resource = allowEditSelected) {
-//                is Resource.Success -> resource.value
-//                else -> false
-//            }
-//            if (allow)
-//                IconButton(onClick = component::onEditStudyGroupClick) {
-//                    Icon(Icons.Outlined.Edit, null)
-//                }
-//        }
+    val title = uiTextOf(selectedStudyGroup.ifSuccess { it.name } ?: "")
+    val actions = if (allowEditSelectedRes.takeIfSuccess() == true) {
+        listOf(
+            ActionMenuItem2(
+                icon = uiIconOf(Icons.Outlined.Edit),
+                onClick = component::onEditStudyGroupClick
+            )
+        )
+    } else emptyList()
+
+    appBarState.content = AppBarContent(title = title, actionItems = actions)
 
     Column {
         var showSpinner by remember { mutableStateOf(true) }
@@ -130,20 +132,20 @@ private fun StudyGroupSpinner(
 
 @Composable
 fun YourStudyGroupScreen(component: StudyGroupComponent) {
-    val appBarState = LocalAppBarState.current
+//    val appBarState = LocalAppBarState.current
     val allowEditSelectedRes by component.allowEdit.collectAsState()
 
-    Log.d("lol", "YourStudyGroupScreen: ${appBarState.content.title}")
-    appBarState.content = AppBarContent(
-        actionItems = if (allowEditSelectedRes.takeIfSuccess() == true) {
-            listOf(
-                ActionMenuItem2(
-                    icon = uiIconOf(Icons.Outlined.Edit),
-                    onClick = component::onEditClick
-                )
-            )
-        } else emptyList()
-    )
+//    Log.d("lol", "YourStudyGroupScreen: ${appBarState.content.title}")
+//    appBarState.content = AppBarContent(
+//        actionItems = if (allowEditSelectedRes.takeIfSuccess() == true) {
+//            listOf(
+//                ActionMenuItem2(
+//                    icon = uiIconOf(Icons.Outlined.Edit),
+//                    onClick = component::onEditClick
+//                )
+//            )
+//        } else emptyList()
+//    )
 
 
     val selectedTab by component.selectedTab.collectAsState()

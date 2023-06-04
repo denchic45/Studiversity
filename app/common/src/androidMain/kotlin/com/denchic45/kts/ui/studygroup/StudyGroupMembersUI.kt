@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.denchic45.kts.domain.model.GroupMembers
 import com.denchic45.kts.ui.ResourceContent
-import com.denchic45.kts.ui.chooser.UserListItem
+import com.denchic45.kts.ui.search.UserListItem
 import com.denchic45.kts.ui.studygroup.members.StudyGroupMembersComponent
 import java.util.UUID
 
