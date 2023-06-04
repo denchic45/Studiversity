@@ -49,15 +49,18 @@ class StudyGroupEditorComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
+    val isNew = studyGroupId == null
+
     private val editingState = EditingStudyGroup()
     val allowSave = MutableStateFlow(false)
     val inputState = InputState()
 
-    private val fieldEditor = FieldEditor(mapOf(
-        "name" to Field("") { editingState.name },
-        "startAcademicYear" to Field(0) { editingState.startAcademicYear },
-        "endAcademicYear" to Field(0) { editingState.endAcademicYear },
-        "specialtyId" to Field(null) { editingState.specialty?.id }
+    private val fieldEditor = FieldEditor(
+        mapOf(
+            "name" to Field("") { editingState.name },
+            "startAcademicYear" to Field(0) { editingState.startAcademicYear },
+            "endAcademicYear" to Field(0) { editingState.endAcademicYear },
+            "specialtyId" to Field(null) { editingState.specialty?.id }
     ))
 
     private val validator = CompositeValidator(
@@ -179,7 +182,7 @@ class StudyGroupEditorComponent(
     }
 
     private fun updateAllowSave() {
-        allowSave.update { fieldEditor.hasChanges() && validator.validate() }
+        allowSave.update { fieldEditor.hasChanges() }
     }
 
     @Stable

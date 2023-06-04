@@ -6,8 +6,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 
@@ -15,7 +13,7 @@ import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudyGroupEditorContent(
-    viewState: Resource<EditingStudyGroup>,
+    state: EditingStudyGroup,
     inputState: StudyGroupEditorComponent.InputState,
     searchedSpecialties: List<SpecialtyResponse>,
     onNameType: (String) -> Unit,
@@ -23,7 +21,6 @@ fun StudyGroupEditorContent(
     onEndAcademicYear: (Int) -> Unit,
     specialties: @Composable (List<SpecialtyResponse>) -> Unit,
 ) {
-    viewState.onSuccess { group ->
         Column(
             Modifier.padding(
                 horizontal = MaterialTheme.spacing.medium,
@@ -31,7 +28,7 @@ fun StudyGroupEditorContent(
             )
         ) {
             OutlinedTextField(
-                value = group.name,
+                value = state.name,
                 onValueChange = onNameType,
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Название") },
@@ -45,7 +42,7 @@ fun StudyGroupEditorContent(
 
             Row {
                 OutlinedTextField(
-                    value = group.startAcademicYear.takeIf { it != 0 }?.toString() ?: "",
+                    value = state.startAcademicYear.takeIf { it != 0 }?.toString() ?: "",
                     onValueChange = {
                         if (it.matches(pattern) && it.length < 5 || it.isEmpty())
                             onStartAcademicYear(it.takeIf(String::isNotEmpty)?.toInt() ?: 0)
@@ -59,7 +56,7 @@ fun StudyGroupEditorContent(
                 )
                 Spacer(Modifier.width(MaterialTheme.spacing.normal))
                 OutlinedTextField(
-                    value = group.endAcademicYear.takeIf { it != 0 }?.toString() ?: "",
+                    value = state.endAcademicYear.takeIf { it != 0 }?.toString() ?: "",
                     onValueChange = {
                         if (it.matches(pattern) && it.length < 5 || it.isEmpty())
                             onEndAcademicYear(it.takeIf(String::isNotEmpty)?.toInt() ?: 0)
@@ -73,5 +70,4 @@ fun StudyGroupEditorContent(
                 )
             }
         }
-    }
 }

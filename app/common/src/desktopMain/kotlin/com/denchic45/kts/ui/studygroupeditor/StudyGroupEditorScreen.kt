@@ -3,7 +3,12 @@ package com.denchic45.kts.ui.studygroupeditor
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 @Composable
 fun StudyGroupEditorScreen(component: StudyGroupEditorComponent) {
@@ -14,7 +19,7 @@ fun StudyGroupEditorScreen(component: StudyGroupEditorComponent) {
     var expanded by remember { mutableStateOf(false) }
 
     StudyGroupEditorContent(
-        viewState = viewState,
+        state = viewState,
         searchedSpecialties = searchedSpecialties,
         onNameType = component::onNameType,
         onStartAcademicYear = component::onStartYearType,
