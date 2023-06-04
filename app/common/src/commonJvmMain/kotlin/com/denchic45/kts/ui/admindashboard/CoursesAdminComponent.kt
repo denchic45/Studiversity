@@ -7,6 +7,7 @@ import com.arkivanov.decompose.router.stack.push
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.usecase.ArchiveCourseUseCase
 import com.denchic45.kts.domain.usecase.RemoveCourseUseCase
+import com.denchic45.kts.domain.usecase.UnarchiveCourseUseCase
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.confirm.ConfirmState
 import com.denchic45.kts.ui.courseeditor.CourseEditorComponent
@@ -24,6 +25,7 @@ import java.util.UUID
 class CoursesAdminComponent(
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val archiveCourseUseCase: ArchiveCourseUseCase,
+    private val unarchiveCourseUseCase: UnarchiveCourseUseCase,
     private val removeCourseUseCase: RemoveCourseUseCase,
     courseChooserComponent: (onSelect: (CourseResponse) -> Unit, ComponentContext) -> CourseChooserComponent,
     courseEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> CourseEditorComponent,
@@ -74,13 +76,29 @@ class CoursesAdminComponent(
         }
     }
 
+    fun onUnarchiveClick(id: UUID) {
+        componentScope.launch {
+            chooserComponent.foundItems.value.onSuccess { courses ->
+                val confirm = confirmDialogInteractor.confirmRequest(
+                    ConfirmState(
+                        uiTextOf("Восстановить курс \"${courses.find { it.id == id }?.name}\"?"),
+                        uiTextOf("Курс вновь будет доступен для преподавателей и учащихся, также будет отображаться в меню приложения.")
+                    )
+                )
+                if (confirm) {
+                    unarchiveCourseUseCase(id)
+                }
+            }
+        }
+    }
+
     override fun onRemoveClick(id: UUID) {
         componentScope.launch {
             chooserComponent.foundItems.value.onSuccess { courses ->
                 val confirm = confirmDialogInteractor.confirmRequest(
                     ConfirmState(
                         uiTextOf("Удалить курс \"${courses.find { it.id == id }?.name}\"?"),
-                        uiTextOf("Вы лишитесь доступа ко всем элементам этого курса. Это действие нельзя отменить")
+                        uiTextOf("Вы лишитесь доступа ко всем элементам этого курса. Это действие нельзя отменить.")
                     )
                 )
                 if (confirm) {

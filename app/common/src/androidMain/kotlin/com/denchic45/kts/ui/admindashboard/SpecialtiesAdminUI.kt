@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -38,14 +40,17 @@ private fun SpecialtiesAdminDetailScreen(child: SpecialtiesAdminComponent.Child)
 private fun SpecialtiesAdminMainScreen(component: SpecialtiesAdminComponent) {
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = component::onAddClick) {
-                Icon(Icons.Default.Add, "add subject")
-            }
+            ExtendedFloatingActionButton(
+                onClick = component::onAddClick,
+                text = { Text(text = "Создать специальность") },
+                icon = { Icon(Icons.Default.Add, "add specialty") }
+            )
         }) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             SearchScreen(
                 component = component.chooserComponent,
-                keyItem = SpecialtyResponse::id
+                keyItem = SpecialtyResponse::id,
+                placeholder = "Поиск специальностей"
             ) { item -> SpecialtyListItem(item) }
         }
     }

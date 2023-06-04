@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -54,14 +55,17 @@ private fun UsersAdminDetailScreen(child: UsersAdminComponent.Child) {
 private fun UsersAdminMainScreen(component: UsersAdminComponent) {
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = component::onAddClick) {
-                Icon(Icons.Default.Add, "add course")
-            }
+            ExtendedFloatingActionButton(
+                onClick = component::onAddClick,
+                text = { Text(text = "Создать пользователя") },
+                icon = { Icon(Icons.Default.Add, "add user") }
+            )
         }) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             SearchScreen(
                 component = component.chooserComponent,
-                keyItem = UserItem::id
+                keyItem = UserItem::id,
+                placeholder = "Поиск пользователей"
             ) { item ->
                 UserListItem(item, trailingContent = {
                     var expanded by remember { mutableStateOf(false) }

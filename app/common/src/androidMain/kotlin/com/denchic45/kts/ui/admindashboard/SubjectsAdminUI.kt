@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -46,14 +47,17 @@ private fun SubjectsAdminDetailScreen(child: SubjectsAdminComponent.Child) {
 private fun SubjectsAdminMainScreen(component: SubjectsAdminComponent) {
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = component::onAddClick) {
-                Icon(Icons.Default.Add, "add subject")
-            }
+            ExtendedFloatingActionButton(
+                onClick = component::onAddClick,
+                text = { Text(text = "Создать предмет") },
+                icon = { Icon(Icons.Default.Add, "add subject") }
+            )
         }) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             SearchScreen(
                 component = component.chooserComponent,
-                keyItem = SubjectResponse::id
+                keyItem = SubjectResponse::id,
+                placeholder = "Поиск предметов"
             ) { item ->
                 SubjectListItem(item = item, trailingContent = {
                     var expanded by remember { mutableStateOf(false) }

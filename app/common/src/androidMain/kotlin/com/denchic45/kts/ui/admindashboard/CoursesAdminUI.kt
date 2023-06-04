@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,12 +30,14 @@ fun CoursesAdminScreen(component: CoursesAdminComponent) {
             ExtendedFloatingActionButton(
                 onClick = component::onAddClick,
                 text = { Text(text = "Создать курс") },
-                icon = { Icon(Icons.Default.Add, "add course") })
+                icon = { Icon(Icons.Default.Add, "add course") }
+            )
         }) {
         Box(Modifier.padding(it)) {
             SearchScreen(
                 component = component.chooserComponent,
-                keyItem = CourseResponse::id
+                keyItem = CourseResponse::id,
+                placeholder = "Поиск курсов"
             ) { item ->
                 CourseListItem(item = item, trailingContent = {
                     var expanded by remember { mutableStateOf(false) }
@@ -55,6 +58,19 @@ fun CoursesAdminScreen(component: CoursesAdminComponent) {
                             }
                         )
                         if (item.archived) {
+                            DropdownMenuItem(
+                                text = { Text(text = "Восстановить") },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Unarchive,
+                                        contentDescription = "unarchive course"
+                                    )
+                                },
+                                onClick = {
+                                    expanded = false
+                                    component.onUnarchiveClick(item.id)
+                                }
+                            )
                             DropdownMenuItem(
                                 text = { Text(text = "Удалить") },
                                 leadingIcon = {
