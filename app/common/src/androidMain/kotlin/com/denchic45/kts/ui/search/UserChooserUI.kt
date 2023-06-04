@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.chooser
+package com.denchic45.kts.ui.search
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size

@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.chooser
+package com.denchic45.kts.ui.search
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Group
@@ -7,7 +7,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 
 @Composable
@@ -23,12 +22,17 @@ fun StudyGroupChooserScreen(
 }
 
 @Composable
-fun StudyGroupListItem(response: StudyGroupResponse, modifier: Modifier = Modifier) {
+fun StudyGroupListItem(
+    item: StudyGroupResponse,
+    modifier: Modifier = Modifier,
+    trailingContent: (@Composable () -> Unit)? = null
+) {
     ListItem(
-        headlineContent = { Text(response.name) },
+        headlineContent = { Text(item.name) },
         leadingContent = {
             Icon(imageVector = Icons.Outlined.Group, contentDescription = "group icon")
         },
-        modifier = modifier
+        trailingContent = trailingContent,
+        modifier = modifier,
     )
 }

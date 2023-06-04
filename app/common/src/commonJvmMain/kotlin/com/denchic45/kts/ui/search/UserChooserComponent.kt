@@ -1,4 +1,4 @@
-package com.denchic45.kts.ui.chooser
+package com.denchic45.kts.ui.search
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.kts.domain.Resource
