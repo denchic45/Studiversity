@@ -50,7 +50,7 @@ import com.denchic45.kts.R
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
-import com.denchic45.kts.ui.search.IconTitle
+import com.denchic45.kts.ui.search.IconTitleBox
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.state.TimetableState
 import com.kizitonwose.calendar.compose.WeekCalendar
@@ -146,6 +146,9 @@ fun DayTimetableContent(
 
             }.onLoading {
                 TimetableLoading()
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Gray))
             }
         }
     }
@@ -179,7 +182,7 @@ private fun Periods(
         targetState = selectedDayOfWeek,
     ) { dayOfWeek ->
         if (dayOfWeek.value == 7) {
-            IconTitle(
+            IconTitleBox(
                 icon = {
                     Image(
                         painter = painterResource(id = R.drawable.ill_day_off),
@@ -194,7 +197,7 @@ private fun Periods(
         } else {
             val items = timetable.getDay(selectedDayOfWeek)
             if (items.isEmpty()) {
-                IconTitle(
+                IconTitleBox(
                     icon = {
                         Image(
                             painter = painterResource(id = R.drawable.ill_empty_lessons),

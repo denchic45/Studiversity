@@ -160,7 +160,7 @@ fun <T> SearchedItemsContent(
 
 @Composable
 fun StartSearch() {
-    IconTitle(icon = {
+    IconTitleBox(icon = {
         Icon(
             imageVector = Icons.Default.Search,
             contentDescription = "search",
@@ -175,7 +175,7 @@ fun StartSearch() {
 
 @Composable
 fun EmptySearch() {
-    IconTitle(
+    IconTitleBox(
         icon = {
             Icon(
                 imageVector = Icons.Default.Search,
@@ -189,7 +189,7 @@ fun EmptySearch() {
 
 
 @Composable
-fun IconTitle(
+fun IconTitleBox(
     icon: @Composable () -> Unit,
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier
@@ -200,10 +200,18 @@ fun IconTitle(
             .padding(MaterialTheme.spacing.small),
         contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            icon()
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-            title()
-        }
+        IconTitle(icon, title)
+    }
+}
+
+@Composable
+private fun IconTitle(
+    icon: @Composable () -> Unit,
+    title: @Composable () -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        icon()
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+        title()
     }
 }
