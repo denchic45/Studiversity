@@ -1,11 +1,10 @@
 package com.denchic45.kts.ui.usereditor
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -16,7 +15,6 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,8 +23,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.R
 import com.denchic45.kts.ui.Sidebar
@@ -101,6 +99,7 @@ fun UserEditorContent(
             Modifier.fillMaxWidth(),
             label = { Text("Имя") },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             isError = state.firstNameMessage != null,
             supportingText = { Text(state.firstNameMessage ?: "") }
         )
@@ -112,6 +111,7 @@ fun UserEditorContent(
                 .fillMaxWidth(),
             label = { Text("Фамилия") },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             isError = state.surnameMessage != null,
             supportingText = { Text(text = state.surnameMessage ?: "") }
         )
@@ -122,6 +122,7 @@ fun UserEditorContent(
                 .padding(top = 4.dp)
                 .fillMaxWidth(),
             label = { Text("Отчество") },
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             supportingText = { Text(text = "") },
             placeholder = { Text("Отчество (необязательно)") },
             singleLine = true

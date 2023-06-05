@@ -2,11 +2,13 @@ package com.denchic45.kts.ui.periodeditor
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardCapitalization
 
 @Composable
 fun EventDetailsEditorScreen(component: EventDetailsEditorComponent) {
@@ -27,6 +29,7 @@ fun EventDetailsEditorContent(
             value = details.name,
             onValueChange = onNameType,
             label = { Text(text = "Название") },
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
