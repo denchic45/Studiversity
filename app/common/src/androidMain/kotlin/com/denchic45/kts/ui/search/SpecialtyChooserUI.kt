@@ -22,7 +22,7 @@ fun SpecialtyChooserScreen(component: SpecialtyChooserComponent) {
 }
 
 @Composable
-fun SpecialtyListItem(item: SpecialtyResponse) {
+fun SpecialtyListItem(item: SpecialtyResponse, trailingContent: (@Composable () -> Unit)? = null) {
     ListItem(
         headlineContent = { Text(item.name) },
         leadingContent = {
@@ -32,6 +32,7 @@ fun SpecialtyListItem(item: SpecialtyResponse) {
                 modifier = Modifier.size(40.dp),
                 tint = MaterialTheme.colorScheme.secondary
             )
-        }
+        },
+        trailingContent = trailingContent,
     )
 }

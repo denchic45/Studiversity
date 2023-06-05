@@ -17,8 +17,6 @@ import com.denchic45.kts.domain.usecase.RemoveSpecialtyUseCase
 import com.denchic45.kts.domain.usecase.UpdateSpecialtyUseCase
 import com.denchic45.kts.getOptProperty
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
-import com.denchic45.kts.ui.confirm.ConfirmState
-import com.denchic45.kts.ui.uiTextOf
 import com.denchic45.kts.updateOldValues
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
@@ -26,8 +24,10 @@ import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
 import com.denchic45.uivalidator.experimental2.condition.Condition
 import com.denchic45.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.uivalidator.experimental2.validator.ValueValidator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -80,21 +80,21 @@ class SpecialtyEditorComponent(
         )
     )
 
-    fun onDeleteClick() {
-        componentScope.launch {
-            confirmDialogInteractor.set(
-                ConfirmState(
-                    uiTextOf("Удалить несколько предметов группы"),
-                    uiTextOf("Вы уверены?")
-                )
-            )
-            if (confirmDialogInteractor.receiveConfirm()) {
-                removeSpecialtyUseCase(specialtyId!!).onSuccess {
-                    onFinish()
-                }
-            }
-        }
-    }
+//    fun onDeleteClick() {
+//        componentScope.launch {
+//            confirmDialogInteractor.set(
+//                ConfirmState(
+//                    uiTextOf("Удалить несколько предметов группы"),
+//                    uiTextOf("Вы уверены?")
+//                )
+//            )
+//            if (confirmDialogInteractor.receiveConfirm()) {
+//                removeSpecialtyUseCase(specialtyId!!).onSuccess {
+//                    onFinish()
+//                }
+//            }
+//        }
+//    }
 
     fun onNameType(typedName: String) {
         editingState.apply {
@@ -104,7 +104,7 @@ class SpecialtyEditorComponent(
     }
 
     private fun updateSaveEnabled() {
-        editingState.saveEnabled = validator.validate() && fieldEditor.hasChanges()
+        editingState.allowSave = validator.validate() && fieldEditor.hasChanges()
     }
 
     fun onShortnameType(typedName: String) {
@@ -119,8 +119,10 @@ class SpecialtyEditorComponent(
     }
 
     fun onSaveClick() {
-        componentScope.launch {
-            saveChanges()
+        validator.onValid {
+            componentScope.launch {
+                saveChanges()
+            }
         }
     }
 
@@ -138,14 +140,16 @@ class SpecialtyEditorComponent(
                 )
             )
         }
-        result.onSuccess { onFinish() }
+        withContext(Dispatchers.Main.immediate) {
+            result.onSuccess { onFinish() }
+        }
     }
 
     @Stable
     class EditingSpecialty(isNew: Boolean) {
         var name by mutableStateOf("")
         var shortname by mutableStateOf("")
-        var saveEnabled by mutableStateOf(false)
+        var allowSave by mutableStateOf(false)
         var isNew by mutableStateOf(isNew)
     }
 }
