@@ -58,7 +58,7 @@ class NetworkModule {
     @Provides
     fun guestClient(appPreferences: AppPreferences) = HttpClient(Android) {
         defaultRequest {
-            url("http://192.168.0.103:8080/")
+            url("http://192.168.0.102:8080/")
         }
         installContentNegotiation()
     }

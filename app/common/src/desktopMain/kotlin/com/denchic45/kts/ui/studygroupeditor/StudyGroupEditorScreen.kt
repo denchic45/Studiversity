@@ -9,34 +9,37 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.denchic45.kts.ui.ResourceContent
 
 @Composable
 fun StudyGroupEditorScreen(component: StudyGroupEditorComponent) {
-    val viewState by component.viewState.collectAsState()
+    val resource by component.viewState.collectAsState()
     val inputState = component.inputState
     val searchedSpecialties by component.searchedSpecialties.collectAsState(emptyList())
 
     var expanded by remember { mutableStateOf(false) }
 
-    StudyGroupEditorContent(
-        state = viewState,
-        searchedSpecialties = searchedSpecialties,
-        onNameType = component::onNameType,
-        onStartAcademicYear = component::onStartYearType,
-        onEndAcademicYear = component::onEndYearType,
-        inputState = inputState
-    ) {
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
+    ResourceContent(resource) {
+        StudyGroupEditorContent(
+            state = it,
+            searchedSpecialties = searchedSpecialties,
+            onNameType = component::onNameType,
+            onStartAcademicYear = component::onStartYearType,
+            onEndAcademicYear = component::onEndYearType,
+            inputState = inputState
         ) {
-            searchedSpecialties.forEach { response ->
-                DropdownMenuItem(
-                    text = { Text(response.name) },
-                    onClick = {
-                        expanded = false
-                        component.onSpecialtySelect(response)
-                    })
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                searchedSpecialties.forEach { response ->
+                    DropdownMenuItem(
+                        text = { Text(response.name) },
+                        onClick = {
+                            expanded = false
+                            component.onSpecialtySelect(response)
+                        })
+                }
             }
         }
     }

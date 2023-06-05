@@ -5,6 +5,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
@@ -33,6 +34,7 @@ fun StudyGroupEditorContent(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Название") },
                 isError = inputState.nameMessage != null,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 supportingText = { Text(inputState.nameMessage ?: "") }
             )
 
