@@ -3,6 +3,7 @@ package com.denchic45.kts.ui.timetablefinder
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -11,7 +12,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,13 +24,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.denchic45.kts.R
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar2.ActionMenuItem2
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
 import com.denchic45.kts.ui.periodeditor.PeriodEditorScreen
+import com.denchic45.kts.ui.search.IconTitleBox
 import com.denchic45.kts.ui.search.StudyGroupListItem
 import com.denchic45.kts.ui.timetable.DayTimetableContent
 import com.denchic45.kts.ui.timetable.getMonthTitle
@@ -47,74 +54,13 @@ fun TimetableFinderScreen(
     val timetableResource by component.timetable.collectAsState()
 
     val appBarState = LocalAppBarState.current
-//    component.timetable.collectWithLifecycle {
-//        appBarInteractor.update {
-//            it.copy(
-//                actions = if ((timetableResource as? Resource.Success)?.value?.isEdit == true) {
-//                    listOf(
-//                        ActionMenuItem(
-//                            id = "save",
-//                            icon = uiIconOf(Icons.Default.Done),
-//                            onClick = component::onSaveChangesClick
-//                        )
-//                    )
-//                } else {
-//                    listOf(
-//                        ActionMenuItem(
-//                            id = "edit",
-//                            icon = uiIconOf(Icons.Outlined.Edit),
-//                            onClick = component::onEditClick
-//                        )
-//                    )
-//                }
-//            )
-//        }
-//    }
-
-//    LocalLifecycleOwner.current.lifecycle.currentState
 
     val overlay by component.childOverlay.subscribeAsState()
 
-
-//    LaunchedEffect(key1 = Unit ) {
-//        snapshotFlow(state::selectedStudyGroup).collectWithLifecycle() {
-//            appBarInteractor.set(
-//                if (it == null) {
-//                    EmptyAppBar
-//                } else {
-//                    AppBarState(
-//                        title = uiTextOf( getMonthTitle (selectedYearWeek)),
-//                        actions = if ((timetableResource as? Resource.Success)?.value?.isEdit == true) {
-//                            listOf(
-//                                ActionMenuItem(
-//                                    id = "save",
-//                                    icon = uiIconOf(Icons.Default.Done),
-//                                    onClick = component::onSaveChangesClick
-//                                )
-//                            )
-//                        } else {
-//                            listOf(
-//                                ActionMenuItem(
-//                                    id = "edit",
-//                                    icon = uiIconOf(Icons.Outlined.Edit),
-//                                    onClick = component::onEditClick
-//                                )
-//                            )
-//                        }
-//                    )
-//                }
-//            )
-//        }
-//    }
-
-//    component.lifecycle.doOnStart {
-//        appBarInteractor.update { it.copy(visible = true) }
-//    }
-
     when (val child = overlay.overlay?.instance) {
-        is TimetableFinderComponent.OverlayChild.PeriodEditor -> PeriodEditorScreen(
-            component = child.component,
-        )
+        is TimetableFinderComponent.OverlayChild.PeriodEditor -> {
+            PeriodEditorScreen(child.component)
+        }
 
         null -> {
             LaunchedEffect(
@@ -179,6 +125,7 @@ fun TimetableFinderContent(
     onRemovePeriodSwipe: (Int) -> Unit,
 ) {
     Column(Modifier.fillMaxSize()) {
+
         var active by remember { mutableStateOf(false) }
         SearchBar(
             query = if (state.selectedStudyGroup != null && active) state.selectedStudyGroup!!.name
@@ -186,6 +133,7 @@ fun TimetableFinderContent(
             onQueryChange = onQueryType,
             onSearch = {},
             active = active,
+            placeholder = { Text("Поиск группы") },
             onActiveChange = { active = it },
             leadingIcon = {
                 Icon(
@@ -209,6 +157,7 @@ fun TimetableFinderContent(
                 }
             }
         }
+
         val scrollableWeeks = when (timetableResource) {
             Resource.Loading, is Resource.Error -> true
             is Resource.Success -> !timetableResource.value.isEdit
@@ -223,6 +172,17 @@ fun TimetableFinderContent(
                 onRemovePeriodSwipe = onRemovePeriodSwipe,
                 scrollableWeeks = scrollableWeeks
             )
-        }
+        } ?: IconTitleBox(icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_study_group),
+                contentDescription = "search study group",
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.size(78.dp)
+            )
+        }, title = {
+            Text(
+                text = "Выберите группу"
+            )
+        })
     }
 }

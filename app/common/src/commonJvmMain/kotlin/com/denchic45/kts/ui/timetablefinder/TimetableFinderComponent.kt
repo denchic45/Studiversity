@@ -49,7 +49,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
@@ -138,7 +137,7 @@ class TimetableFinderComponent(
     @OptIn(ExperimentalCoroutinesApi::class)
     val timetable = bellSchedule.flatMapLatest { schedule ->
         selectedWeekOfYear.flatMapLatest { selectedWeek ->
-            weekTimetableFlow().stateIn(componentScope).flatMapLatest { timetableResource ->
+            weekTimetableFlow().stateInResource(componentScope).flatMapLatest { timetableResource ->
                 isShowEditorFlow.mapLatest { isEdit ->
                     timetableResource.map {
                         it.toTimetableState(selectedWeek, schedule, isEdit)

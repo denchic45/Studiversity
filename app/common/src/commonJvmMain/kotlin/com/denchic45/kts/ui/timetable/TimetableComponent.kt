@@ -1,7 +1,6 @@
 package com.denchic45.kts.ui.timetable
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.stateInResource
 import com.denchic45.kts.domain.usecase.FindTimetableOfWeekUseCase
 import com.denchic45.kts.domain.usecase.TimetableOwner
@@ -33,11 +32,13 @@ class TimetableComponent(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _weekTimetable = owner.flatMapLatest { owner ->
-        selectedWeekOfYear.flatMapLatest { weekOfYear ->
-            flow {
-                emit(Resource.Loading)
-                emit(findTimetableOfWeekUseCase(weekOfYear, owner))
-            }
+        selectedWeekOfYear.map { weekOfYear ->
+//            flow {
+//                emit(Resource.Loading)
+//                emit(
+            findTimetableOfWeekUseCase(weekOfYear, owner)
+//                )
+//            }
         }
     }
 
