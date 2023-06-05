@@ -2,6 +2,7 @@ package com.denchic45.kts.ui.usereditor
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.ui.LocalAppBarMediator
 import com.denchic45.kts.ui.component.HeaderItemUI
@@ -112,6 +114,7 @@ private fun UserEditorContent(
             Modifier.fillMaxWidth(),
             label = { Text("Имя") },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             isError = state.firstNameMessage != null,
             supportingText = { Text(state.firstNameMessage ?: "") }
         )
@@ -122,6 +125,7 @@ private fun UserEditorContent(
             Modifier.padding(top = 4.dp).fillMaxWidth(),
             label = { Text("Фамилия") },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             isError = state.surnameMessage != null,
             supportingText = { Text(state.surnameMessage ?: "") }
         )
@@ -131,6 +135,7 @@ private fun UserEditorContent(
             onValueChange = onPatronymicType,
             Modifier.padding(top = 4.dp).fillMaxWidth(),
             label = { Text("Отчество") },
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             placeholder = { Text("Отчество (необязательно)") },
             singleLine = true
         )

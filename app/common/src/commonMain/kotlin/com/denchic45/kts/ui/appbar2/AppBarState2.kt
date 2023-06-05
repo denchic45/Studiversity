@@ -14,11 +14,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,4 +151,4 @@ fun rememberAppBarState(
     flingAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay(),
 ) = remember { AppBarState2(scrollBehavior, appBarContent, snapAnimationSpec, flingAnimationSpec) }
 
-val LocalAppBarState = staticCompositionLocalOf<AppBarState2> { error("Nothing AppBarState") }
+val LocalAppBarState = compositionLocalOf<AppBarState2> { error("Nothing AppBarState") }
