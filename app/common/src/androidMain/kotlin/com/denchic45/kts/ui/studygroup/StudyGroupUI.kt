@@ -1,6 +1,11 @@
 package com.denchic45.kts.ui.studygroup
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Divider
@@ -11,32 +16,44 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.arkivanov.essenty.lifecycle.doOnStart
+import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.domain.ifSuccess
 import com.denchic45.kts.ui.appbar2.ActionMenuItem2
 import com.denchic45.kts.ui.appbar2.AppBarContent
-import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.updateAppBarState
 import com.denchic45.kts.ui.component.TabIndicator
+import com.denchic45.kts.ui.profile.ProfileScreen
+import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorScreen
 import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.ui.uiTextOf
+import kotlinx.coroutines.launch
 
 @Composable
 fun StudyGroupScreen(component: StudyGroupComponent) {
-    val selectedTab by component.selectedTab.collectAsState()
+    val childSidebar by component.childSidebar.subscribeAsState()
     val studyGroup by component.studyGroup.collectAsState()
     val allowEditResource by component.allowEdit.collectAsState()
-
-    val appBarState = LocalAppBarState.current
 
     val studyGroupName = studyGroup.ifSuccess { it.name } ?: ""
     val allowEdit = allowEditResource.ifSuccess { it } ?: false
 
 
 
-    component.lifecycle.doOnStart {
-        appBarState.content = AppBarContent(
+    StudyGroupContent(
+        children = component.childTabs,
+        onTabSelect = component::onTabSelect
+    )
+
+    childSidebar.overlay?.let {
+        when (val child = it.instance) {
+            is StudyGroupComponent.OverlayChild.Member -> ProfileScreen(child.component)
+            is StudyGroupComponent.OverlayChild.StudyGroupEditor -> StudyGroupEditorScreen(child.component)
+        }
+    } ?: updateAppBarState(
+        studyGroupName, allowEdit, AppBarContent(
             title = uiTextOf(studyGroupName),
             actionItems = if (allowEdit) listOf(
                 ActionMenuItem2(
@@ -45,59 +62,50 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
                 )
             ) else emptyList()
         )
-//        studyGroup.onSuccess { studyGroup ->
-//            .set(
-//                when (val resource = allowEditResource) {
-//                    is Resource.Success -> AppBarState(
-//                        title = uiTextOf(studyGroup.name),
-//                        actionsUI = {
-//                            if (resource.value) {
-//                                IconButton(onClick = component::onEditClick) {
-//                                    Icon(Icons.Outlined.Edit, null)
-//                                }
-//                            }
-//                        }
-//                    )
-//
-//                    is Resource.Error, Resource.Loading -> AppBarState(
-//                        title = uiTextOf(studyGroup.name)
-//                    )
-//                }
-//            )
-//        }
-    }
-
-    StudyGroupContent(
-        selectedTab = selectedTab,
-        children = component.childTabs,
-        onTabSelect = component::onTabSelect
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StudyGroupContent(
-    selectedTab: Int,
     children: List<StudyGroupComponent.TabChild>,
     onTabSelect: (Int) -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val pagerState = rememberPagerState()
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TabRow(
-            selectedTabIndex = selectedTab,
-            indicator = { tabPositions -> TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab])) },
+            selectedTabIndex = pagerState.currentPage,
+            indicator = { tabPositions ->
+                TabIndicator(Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]))
+            },
             divider = {}) {
             children.forEachIndexed { index, item ->
                 Tab(
-                    selected = selectedTab == index,
-                    onClick = { onTabSelect(index) },
-                    text = { Text(item.title) }
+                    text = { Text(item.title) },
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(index)
+                            onTabSelect(index)
+                        }
+                    },
                 )
             }
         }
         Divider()
-        when (val child = children[selectedTab]) {
-            is StudyGroupComponent.TabChild.Members -> StudyGroupMembersScreen(child.component)
-            is StudyGroupComponent.TabChild.Courses -> StudyGroupCoursesScreen(child.component)
-            is StudyGroupComponent.TabChild.Timetable -> StudyGroupTimetableScreen(child.component)
+        HorizontalPager(
+            state = pagerState,
+            pageCount = children.size,
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                when (val child = children[it]) {
+                    is StudyGroupComponent.TabChild.Members -> StudyGroupMembersScreen(child.component)
+                    is StudyGroupComponent.TabChild.Courses -> StudyGroupCoursesScreen(child.component)
+                    is StudyGroupComponent.TabChild.Timetable -> StudyGroupTimetableScreen(child.component)
+                }
+            }
         }
     }
 }

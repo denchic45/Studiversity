@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.ui.ExpandableDropdownMenu
+import com.denchic45.kts.ui.appbar2.hideAppBar
 import com.denchic45.kts.ui.layout.AdaptiveMasterSidebarLayout
 import com.denchic45.kts.ui.search.SearchScreen
 import com.denchic45.kts.ui.search.StudyGroupListItem
@@ -28,6 +29,7 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 
 @Composable
 fun StudyGroupsAdminScreen(component: StudyGroupsAdminComponent) {
+
     val childSidebar by component.childSidebar.subscribeAsState()
 
     AdaptiveMasterSidebarLayout(
@@ -49,6 +51,7 @@ private fun StudyGroupsAdminDetailScreen(child: StudyGroupsAdminComponent.Child)
 
 @Composable
 private fun StudyGroupsAdminMainScreen(component: StudyGroupsAdminComponent) {
+    hideAppBar()
     Scaffold(
         floatingActionButton = {
             ExtendedFloatingActionButton(

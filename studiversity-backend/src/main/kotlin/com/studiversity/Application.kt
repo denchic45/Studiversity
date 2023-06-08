@@ -23,8 +23,11 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.partialcontent.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import org.koin.ktor.ext.inject
+import java.util.*
 
 fun main() {
     startServer()
@@ -33,7 +36,7 @@ fun main() {
 private lateinit var engine: ApplicationEngine
 
 private fun startServer() {
-    engine = embeddedServer(factory = Netty, port = 8080, host = "192.168.0.102", module = Application::module)
+    engine = embeddedServer(factory = Netty, port = 8080, host = "192.168.0.104", module = Application::module)
         .start(wait = true)
 }
 
@@ -50,6 +53,7 @@ fun Application.module() = runBlocking {
     configureSerialization()
     configureStatusPages()
     if (config.organization.initialized) {
+        configurePing()
         configureDatabase()
         configureSupabase()
         configureAuth()
@@ -67,6 +71,25 @@ fun Application.module() = runBlocking {
         configureRouting()
     }
 }
+
+fun Application.configurePing() {
+    routing {
+        get("/ping") {
+            val organization = config.organization
+            call.respond(
+                Pong(
+                    organization = OrganizationResponse(
+                        id = organization.id,
+                        name = organization.name,
+                        allowRegistration = organization.selfRegister
+                    )
+                )
+            )
+        }
+    }
+}
+
+
 
 private fun Application.configureDatabase() {
     val databaseFactory: DatabaseFactory by inject()

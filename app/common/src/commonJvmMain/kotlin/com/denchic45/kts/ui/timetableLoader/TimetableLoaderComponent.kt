@@ -15,17 +15,22 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class TimetableLoaderComponent(
     private val timetablesCreatorComponent: (
-        onCreate: (TimetableParserResult) -> Unit,
-        ComponentContext
+        onResult: (TimetableParserResult) -> Unit,
+        ComponentContext,
     ) -> TimetableCreatorComponent,
     private val timetablesPublisherComponent: (
         String,
         List<Pair<StudyGroupResponse, TimetableResponse>>,
-        ComponentContext
+        ComponentContext,
     ) -> TimetablesPublisherComponent,
+    @Assisted
+    private val onClose: () -> Unit,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
+    fun onDismissRequest() {
+       onClose()
+    }
 
     private val navigation = StackNavigation<TimetableLoaderConfig>()
     val childStack = childStack(
@@ -35,14 +40,17 @@ class TimetableLoaderComponent(
         childFactory = { config, componentContext ->
             when (config) {
                 is TimetableLoaderConfig.Creator -> TimetableLoaderChild.Creator(
-                    timetablesCreatorComponent({ result ->
-                        navigation.replaceCurrent(
-                            TimetableLoaderConfig.Publisher(
-                                result.weekOfYear,
-                                result.timetables
-                            )
-                        )
-                    }, componentContext)
+                    timetablesCreatorComponent(
+                        { result ->
+                                navigation.replaceCurrent(
+                                    TimetableLoaderConfig.Publisher(
+                                        result.weekOfYear,
+                                        result.timetables
+                                    )
+                                )
+                        },
+                        componentContext
+                    )
                 )
 
                 is TimetableLoaderConfig.Publisher -> TimetableLoaderChild.Publisher(
@@ -67,7 +75,7 @@ class TimetableLoaderComponent(
         @Parcelize
         class Publisher(
             val weekOfYear: String,
-            val studyGroupTimetables:  List<Pair<StudyGroupResponse, TimetableResponse>>,
+            val studyGroupTimetables: List<Pair<StudyGroupResponse, TimetableResponse>>,
         ) : TimetableLoaderConfig() {
             @Suppress("unused")
             private fun readResolve(): Any = Publisher(weekOfYear, studyGroupTimetables)

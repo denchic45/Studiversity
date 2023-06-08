@@ -167,7 +167,7 @@ fun SubmissionDetailsContent(
     onAttachmentRemove: ((attachmentId: UUID) -> Unit)? = null,
 ) {
     Column {
-        HeaderItemUI(name = "Прикрепленные файлы",Modifier.padding(horizontal = MaterialTheme.spacing.normal))
+        HeaderItemUI(name = "Прикрепленные файлы")
         if (uiState.attachments.isNotEmpty()) {
             LazyRow(Modifier) {
                 items(uiState.attachments, key = { it.attachmentId?.toString() ?: "" }) { item ->

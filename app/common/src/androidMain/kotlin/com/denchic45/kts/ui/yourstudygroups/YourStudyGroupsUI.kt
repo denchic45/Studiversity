@@ -73,7 +73,6 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
                     StudyGroupEditorScreen(child.component)
                 }
 
-                is StudyGroupComponent.OverlayChild.UserEditor -> {}
                 null -> {
                     YourStudyGroupScreen(component = it)
                 }
@@ -132,25 +131,7 @@ private fun StudyGroupSpinner(
 
 @Composable
 fun YourStudyGroupScreen(component: StudyGroupComponent) {
-//    val appBarState = LocalAppBarState.current
-    val allowEditSelectedRes by component.allowEdit.collectAsState()
-
-//    Log.d("lol", "YourStudyGroupScreen: ${appBarState.content.title}")
-//    appBarState.content = AppBarContent(
-//        actionItems = if (allowEditSelectedRes.takeIfSuccess() == true) {
-//            listOf(
-//                ActionMenuItem2(
-//                    icon = uiIconOf(Icons.Outlined.Edit),
-//                    onClick = component::onEditClick
-//                )
-//            )
-//        } else emptyList()
-//    )
-
-
-    val selectedTab by component.selectedTab.collectAsState()
     StudyGroupContent(
-        selectedTab = selectedTab,
         children = component.childTabs,
         onTabSelect = component::onTabSelect
     )

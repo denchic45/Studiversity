@@ -1,6 +1,5 @@
 package com.denchic45.kts.ui.periodeditor
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -67,20 +68,17 @@ fun LessonDetailsEditorContent(
                 ListItem(
                     headlineContent = { Text(text = it.subject?.name ?: it.name) },
                     leadingContent = {
-                        it.subject?.let {
-                            Image(
-                                painter = rememberAsyncImagePainter(
+                        Icon(
+                            painter = it.subject?.let {
+                                rememberAsyncImagePainter(
                                     ImageRequest.Builder(LocalContext.current)
                                         .decoderFactory(SvgDecoder.Factory())
                                         .data(it.iconUrl)
                                         .build()
-                                ),
-                                contentDescription = "subject icon",
-                                modifier = Modifier.size(40.dp)
-                            )
-                        } ?: Icon(
-                            imageVector = Icons.Outlined.School,
-                            contentDescription = ""
+                                )
+                            } ?: rememberVectorPainter(Icons.Outlined.School),
+                            contentDescription = "subject icon",
+                            modifier = Modifier.size(40.dp)
                         )
                     },
                 )
@@ -95,6 +93,7 @@ fun LessonDetailsEditorContent(
                 leadingContent = {
                     Icon(
                         imageVector = Icons.Outlined.School,
+                        tint = MaterialTheme.colorScheme.secondary,
                         contentDescription = ""
                     )
                 }

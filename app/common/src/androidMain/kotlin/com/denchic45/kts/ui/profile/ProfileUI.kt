@@ -34,6 +34,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,6 +59,7 @@ import com.denchic45.kts.ui.ResourceContent
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.DropdownMenuItem2
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.updateAppBarState
 import com.denchic45.kts.ui.search.StudyGroupListItem
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiTextOf
@@ -70,52 +72,53 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(component: ProfileComponent) {
-    LocalAppBarState.current.update {
-        content = AppBarContent()
-    }
+
+    updateAppBarState(AppBarContent())
 
     val viewStateResource by component.viewState.collectAsState()
     val childOverlay by component.childOverlay.subscribeAsState()
 
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        ProfileContent(viewStateResource, component::onAvatarClick, component::onStudyGroupClick)
+    Surface {
+        Box(modifier = Modifier.fillMaxSize()) {
+            ProfileContent(viewStateResource, component::onAvatarClick, component::onStudyGroupClick)
 
-        viewStateResource.onSuccess { viewState ->
-            childOverlay.overlay?.let {
-                when (it.instance) {
-                    ProfileComponent.OverlayChild.AvatarDialog -> {
-                        AlertDialog(onDismissRequest = component::onDialogClose) {
-                            Column {
-                                ListItem(
-                                    modifier = Modifier.clickable(onClick = component::onOpenAvatarClick),
-                                    headlineContent = { Text("Открыть фото") },
-                                    leadingContent = {
-                                        Icon(Icons.Outlined.AccountCircle, "view photo")
-                                    }
-                                )
-                                ListItem(
-                                    modifier = Modifier.clickable(onClick = component::onUpdateAvatarClick),
-                                    headlineContent = { Text("Изменить фото") },
-                                    leadingContent = { Icon(Icons.Outlined.Edit, "update photo") }
-                                )
-                                ListItem(
-                                    modifier = Modifier.clickable(onClick = component::onRemoveAvatarClick),
-                                    headlineContent = { Text("Удалить фото") },
-                                    leadingContent = { Icon(Icons.Outlined.Delete, "delete photo") }
-                                )
+            viewStateResource.onSuccess { viewState ->
+                childOverlay.overlay?.let {
+                    when (it.instance) {
+                        ProfileComponent.OverlayChild.AvatarDialog -> {
+                            AlertDialog(onDismissRequest = component::onDialogClose) {
+                                Column {
+                                    ListItem(
+                                        modifier = Modifier.clickable(onClick = component::onOpenAvatarClick),
+                                        headlineContent = { Text("Открыть фото") },
+                                        leadingContent = {
+                                            Icon(Icons.Outlined.AccountCircle, "view photo")
+                                        }
+                                    )
+                                    ListItem(
+                                        modifier = Modifier.clickable(onClick = component::onUpdateAvatarClick),
+                                        headlineContent = { Text("Изменить фото") },
+                                        leadingContent = { Icon(Icons.Outlined.Edit, "update photo") }
+                                    )
+                                    ListItem(
+                                        modifier = Modifier.clickable(onClick = component::onRemoveAvatarClick),
+                                        headlineContent = { Text("Удалить фото") },
+                                        leadingContent = { Icon(Icons.Outlined.Delete, "delete photo") }
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    ProfileComponent.OverlayChild.FullAvatar -> FullAvatarScreen(
-                        url = viewState.avatarUrl,
-                        allowUpdateAvatar = viewState.allowUpdateAvatar,
-                        onDeleteClick = {}
-                    )
+                        ProfileComponent.OverlayChild.FullAvatar -> FullAvatarScreen(
+                            url = viewState.avatarUrl,
+                            allowUpdateAvatar = viewState.allowUpdateAvatar,
+                            onDeleteClick = {}
+                        )
 
-                    ProfileComponent.OverlayChild.AvatarChooser -> {
-                        AvatarChooser(component::onNewAvatarSelect, component::onDialogClose)
+                        ProfileComponent.OverlayChild.AvatarChooser -> {
+                            AvatarChooser(component::onNewAvatarSelect, component::onDialogClose)
+                        }
                     }
                 }
             }

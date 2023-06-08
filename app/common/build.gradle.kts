@@ -148,6 +148,9 @@ kotlin {
                 api("androidx.compose.foundation:foundation:$composeVersion")
                 // Material Design
                 api("androidx.compose.material3:material3:1.1.0")
+
+                implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+
                 // Lifecycle
                 api("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 

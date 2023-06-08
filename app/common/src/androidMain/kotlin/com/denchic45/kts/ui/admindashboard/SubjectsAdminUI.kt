@@ -21,12 +21,14 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.ui.ExpandableDropdownMenu
 import com.denchic45.kts.ui.SubjectEditorDialog
+import com.denchic45.kts.ui.appbar2.hideAppBar
 import com.denchic45.kts.ui.search.SearchScreen
 import com.denchic45.kts.ui.search.SubjectListItem
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 
 @Composable
 fun SubjectsAdminScreen(component: SubjectsAdminComponent) {
+
     val childOverlay by component.childOverlay.subscribeAsState()
     SubjectsAdminMainScreen(component)
     childOverlay.overlay?.let {
@@ -45,7 +47,8 @@ private fun SubjectsAdminDetailScreen(child: SubjectsAdminComponent.Child) {
 
 @Composable
 private fun SubjectsAdminMainScreen(component: SubjectsAdminComponent) {
-    Scaffold(
+    hideAppBar()
+        Scaffold(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = component::onAddClick,

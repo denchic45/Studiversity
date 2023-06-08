@@ -20,7 +20,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -38,6 +37,7 @@ import com.denchic45.kts.ui.ResourceContent
 import com.denchic45.kts.ui.appbar2.ActionMenuItem2
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.updateAnimatedAppBarState
 import com.denchic45.kts.ui.search.SubjectChooserScreen
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.uiIconOf
@@ -59,20 +59,33 @@ fun CourseEditorScreen(component: CourseEditorComponent) {
         }
 
         null -> {
-            LaunchedEffect(allowSave) {
-                appBarState.animateUpdate {
-                    content = AppBarContent(
-                        title = uiTextOf(if (component.isNew) "Новый курс" else "Редактировать курс"),
-                        actionItems = listOf(
-                            ActionMenuItem2(
-                                icon = uiIconOf(Icons.Default.Done),
-                                enabled = allowSave,
-                                onClick = component::onSaveClick
-                            )
+            updateAnimatedAppBarState(
+                allowSave,
+                AppBarContent(
+                    title = uiTextOf(if (component.isNew) "Новый курс" else "Редактировать курс"),
+                    actionItems = listOf(
+                        ActionMenuItem2(
+                            icon = uiIconOf(Icons.Default.Done),
+                            enabled = allowSave,
+                            onClick = component::onSaveClick
                         )
                     )
-                }
-            }
+                )
+            )
+//            LaunchedEffect(allowSave) {
+//                appBarState.animateUpdate {
+//                    content = AppBarContent(
+//                        title = uiTextOf(if (component.isNew) "Новый курс" else "Редактировать курс"),
+//                        actionItems = listOf(
+//                            ActionMenuItem2(
+//                                icon = uiIconOf(Icons.Default.Done),
+//                                enabled = allowSave,
+//                                onClick = component::onSaveClick
+//                            )
+//                        )
+//                    )
+//                }
+//            }
             ResourceContent(resource = resource) { state ->
                 CourseEditorContent(
                     state = state,

@@ -35,10 +35,6 @@ import java.util.UUID
 class StudyGroupComponent(
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
-    private val userEditorComponent: (
-        onFinish: () -> Unit,
-        ComponentContext,
-    ) -> UserEditorComponent,
     private val studyGroupEditorComponent: (
         onFinish: () -> Unit,
         UUID?,
@@ -111,13 +107,10 @@ class StudyGroupComponent(
                 }
 
                 is OverlayConfig.Member -> {
-                    OverlayChild.Member(profileComponent(onStudyGroupOpen,config.memberId, componentContext))
-                }
-
-                is OverlayConfig.UserEditor -> {
-                    OverlayChild.UserEditor(
-                        userEditorComponent(
-                            sidebarNavigation::dismiss,
+                    OverlayChild.Member(
+                        profileComponent(
+                            onStudyGroupOpen,
+                            config.memberId,
                             componentContext
                         )
                     )
@@ -193,8 +186,6 @@ class StudyGroupComponent(
         data class StudyGroupEditor(val studyGroupId: UUID) : OverlayConfig()
 
         data class Member(val memberId: UUID) : OverlayConfig()
-
-        data class UserEditor(val userId: UUID) : OverlayConfig()
     }
 
     sealed class OverlayChild {
@@ -202,8 +193,6 @@ class StudyGroupComponent(
         class StudyGroupEditor(val component: StudyGroupEditorComponent) : OverlayChild()
 
         class Member(val component: ProfileComponent) : OverlayChild()
-
-        class UserEditor(val component: UserEditorComponent) : OverlayChild()
     }
 
     sealed class TabChild(val title: String) {
@@ -213,6 +202,6 @@ class StudyGroupComponent(
     }
 
     override fun hasChildrenFlow(): Flow<Boolean> {
-       return childSidebar.isActiveFlow()
+        return childSidebar.isActiveFlow()
     }
 }

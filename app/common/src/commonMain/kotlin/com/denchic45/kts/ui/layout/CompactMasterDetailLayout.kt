@@ -16,7 +16,7 @@ fun AdaptiveMasterSidebarLayout(
     AdaptiveContent(
         compactContent = { CompactMasterDetailLayout(masterContent, detailContent) },
         mediumDrawContent = { MediumMasterDetailLayout(masterContent, detailContent) },
-        expandedDrawContent = {}
+        expandedDrawContent = { MediumMasterDetailLayout(masterContent, detailContent) }
     )
 }
 

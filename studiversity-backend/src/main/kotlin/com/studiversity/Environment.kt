@@ -5,7 +5,7 @@ import com.sksamuel.hoplite.ConfigLoaderBuilder
 import com.sksamuel.hoplite.addResourceSource
 import java.util.*
 
-data class OrganizationConf(val id: UUID, val selfRegister: Boolean, val initialized: Boolean)
+data class OrganizationConf(val id: UUID, val name:String,val selfRegister: Boolean, val initialized: Boolean)
 
 data class JwtConf(val audience: String, val secret: String)
 

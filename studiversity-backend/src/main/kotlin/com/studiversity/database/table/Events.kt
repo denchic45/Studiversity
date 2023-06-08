@@ -14,7 +14,7 @@ object Events : IdTable<Long>("event") {
     override val primaryKey = PrimaryKey(id)
     val name = varcharMax("event_name")
     val color = varcharMax("color")
-    val icon = varcharMax("icon")
+    val icon = varcharMax("icon_url")
 }
 
 class EventDao(id: EntityID<Long>) : LongEntity(id) {

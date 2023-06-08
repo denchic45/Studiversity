@@ -43,6 +43,7 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.hideAppBar
 import com.denchic45.kts.ui.search.CourseChooserScreen
 import com.denchic45.kts.ui.search.UserChooserScreen
 import com.denchic45.kts.ui.theme.AppTheme
@@ -57,13 +58,8 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PeriodEditorScreen(component: PeriodEditorComponent) {
-    val appBarState = LocalAppBarState.current
-    component.lifecycle.doOnStart {
-        appBarState.hide()
-    }
-    component.lifecycle.doOnDestroy {
-        appBarState.expand()
-    }
+    hideAppBar()
+
     val childOverlay by component.childOverlay.subscribeAsState()
 
     Surface {

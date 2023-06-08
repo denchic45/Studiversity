@@ -235,7 +235,8 @@ class TimetableParser(
                 room = null,
                 studyGroup = StudyGroupName(currentStudyGroup.id, currentStudyGroup.name),
                 members = findTeacherByContent(content),
-                details = EventDetails(subjectName, "blue", "")
+                // TODO: remove hardcoded url
+                details = EventDetails(subjectName, "blue", "https://twmjqqkhwizjfmbebbxj.supabase.co/storage/v1/object/public/main/icons/event.svg?t=2023-06-05T12%3A44%3A56.243Z")
             ).apply { cachedEventsOfMissedSubjects.add(details.name) }
         }
     }

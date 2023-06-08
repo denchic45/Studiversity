@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.ui.navigation.StackChildrenContainer
@@ -18,26 +19,26 @@ import java.util.UUID
 @Inject
 class AdminDashboardComponent(
     timetableFinderComponent: (ComponentContext) -> TimetableFinderComponent,
-    timetableLoaderComponent: (ComponentContext) -> TimetableLoaderComponent,
+    timetableLoaderComponent: (onClose: () -> Unit, ComponentContext) -> TimetableLoaderComponent,
     coursesAdminComponent: (
         rootNavigation: StackNavigation<RootConfig>,
         ComponentContext,
     ) -> CoursesAdminComponent,
     usersAdminComponent: (
         rootNavigation: StackNavigation<RootConfig>,
-        ComponentContext
+        ComponentContext,
     ) -> UsersAdminComponent,
     studyGroupsAdminComponent: (
         rootNavigation: StackNavigation<RootConfig>,
-        ComponentContext
+        ComponentContext,
     ) -> StudyGroupsAdminComponent,
     subjectsAdminComponent: (
         rootNavigation: StackNavigation<RootConfig>,
-        ComponentContext
+        ComponentContext,
     ) -> SubjectsAdminComponent,
     specialtiesAdminComponent: (
         rootNavigation: StackNavigation<RootConfig>,
-        ComponentContext
+        ComponentContext,
     ) -> SpecialtiesAdminComponent,
     profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
     @Assisted
@@ -58,7 +59,9 @@ class AdminDashboardComponent(
                 Config.None -> Child.None
 
                 Config.TimetableFinder -> Child.TimetableFinder(timetableFinderComponent(context))
-                Config.TimetableLoader -> Child.TimetableLoader(timetableLoaderComponent(context))
+                Config.TimetableLoader -> Child.TimetableLoader(
+                    timetableLoaderComponent(navigation::pop, context)
+                )
 
                 Config.Courses -> Child.Courses(coursesAdminComponent(rootNavigation, context))
 

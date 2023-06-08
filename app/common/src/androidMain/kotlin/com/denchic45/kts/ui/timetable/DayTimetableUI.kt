@@ -48,8 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.R
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.onLoading
-import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.ResourceContent
 import com.denchic45.kts.ui.search.IconTitleBox
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.state.TimetableState
@@ -132,55 +131,33 @@ fun DayTimetableContent(
                 }
             )
 
-            timetableResource.onSuccess { timetableState ->
+            ResourceContent(resource = timetableResource) { timetableState ->
                 val selectedDayOfWeek = selectedDate.dayOfWeek
                 if (timetableState.contains(selectedDate)) {
                     Periods(
-                        timetable = timetableState,
+                        timetableState = timetableState,
                         selectedDayOfWeek = selectedDayOfWeek,
                         onEditPeriodClick = onEditPeriodClick,
                         onRemovePeriodSwipe = onRemovePeriodSwipe,
                         onAddPeriodClick = onAddPeriodClick
                     )
                 }
-
-            }.onLoading {
-                TimetableLoading()
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Gray))
             }
         }
-    }
-}
-
-private fun getWeek(selectedDate: LocalDate): Int {
-    return selectedDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())
-}
-
-@Composable
-private fun TimetableLoading() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
     }
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun Periods(
-    timetable: TimetableState,
+    timetableState: TimetableState,
     selectedDayOfWeek: DayOfWeek,
     onEditPeriodClick: ((Int) -> Unit)?,
     onRemovePeriodSwipe: ((Int) -> Unit)?,
     onAddPeriodClick: (() -> Unit)?,
 ) {
     val scrollState = rememberScrollState()
-    Crossfade(
-        targetState = selectedDayOfWeek,
-    ) { dayOfWeek ->
+    Crossfade(targetState = selectedDayOfWeek) { dayOfWeek ->
         if (dayOfWeek.value == 7) {
             IconTitleBox(
                 icon = {
@@ -195,8 +172,8 @@ private fun Periods(
                     .verticalScroll(scrollState)
             )
         } else {
-            val items = timetable.getDay(selectedDayOfWeek)
-            if (items.isEmpty()) {
+            val items = timetableState.getDay(dayOfWeek)
+            if (items.isEmpty() && !timetableState.isEdit) {
                 IconTitleBox(
                     icon = {
                         Image(
@@ -217,14 +194,14 @@ private fun Periods(
                     ) { index, item ->
                         val periodItemUI = @Composable {
                             PeriodListItem(
-                                order = timetable.orders[index].order,
+                                order = timetableState.orders[index].order,
                                 item = item,
-                                time = timetable.orders[index].time,
-                                isEdit = timetable.isEdit,
+                                time = timetableState.orders[index].time,
+                                isEdit = timetableState.isEdit,
                                 onEditClick = { onEditPeriodClick?.invoke(index) }
                             )
                         }
-                        if (timetable.isEdit) {
+                        if (timetableState.isEdit) {
                             val currentIndex by rememberUpdatedState(index)
                             val dismissState = rememberDismissState(confirmValueChange = {
                                 when (it) {
@@ -247,7 +224,7 @@ private fun Periods(
                             periodItemUI()
                         }
                     }
-                    if (timetable.isEdit) {
+                    if (timetableState.isEdit) {
                         item {
                             ListItem(
                                 modifier = Modifier.clickable { onAddPeriodClick?.invoke() },

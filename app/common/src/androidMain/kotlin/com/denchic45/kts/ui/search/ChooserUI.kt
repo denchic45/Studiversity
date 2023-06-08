@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -48,17 +49,17 @@ fun <T> SearchScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val appBarState = LocalAppBarState.current
-//    LaunchedEffect(Unit) {
-    appBarState.hide()
-//    }
-    SearchContent(
-        component = component,
-        keyItem = keyItem,
-        emptyQueryContent = emptyQueryContent,
-        emptyResultContent = emptyResultContent,
-        placeholder = placeholder,
-        itemContent = itemContent
-    )
+
+    Surface() {
+        SearchContent(
+            component = component,
+            keyItem = keyItem,
+            emptyQueryContent = emptyQueryContent,
+            emptyResultContent = emptyResultContent,
+            placeholder = placeholder,
+            itemContent = itemContent
+        )
+    }
 }
 
 @Composable

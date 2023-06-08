@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,6 +32,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -48,6 +50,8 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -80,8 +84,10 @@ import com.denchic45.kts.ui.get
 import com.denchic45.kts.ui.getPainter
 import com.denchic45.kts.ui.root.RootStackScreen
 import com.denchic45.kts.ui.studygroup.StudyGroupScreen
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.seiko.imageloader.rememberAsyncImagePainter
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -91,6 +97,30 @@ fun MainScreen(
     activity: ComponentActivity,
     confirmDialogInteractor: ConfirmDialogInteractor,
 ) {
+
+    val systemUiController = rememberSystemUiController()
+    val useDarkIcons = !isSystemInDarkTheme()
+    val colorScheme = MaterialTheme.colorScheme
+
+    val absoluteElevation = LocalAbsoluteTonalElevation.current
+    CompositionLocalProvider(
+        LocalAbsoluteTonalElevation provides absoluteElevation
+    ) {
+        LaunchedEffect(systemUiController, useDarkIcons) {
+            // Update all of the system bar colors to be transparent, and use
+            // dark icons if we're in light theme
+            systemUiController.setStatusBarColor(
+                color = colorScheme.surface,
+                darkIcons = useDarkIcons
+            )
+
+            systemUiController.setNavigationBarColor(
+                color = Color.Transparent,
+                darkIcons = useDarkIcons
+            )
+        }
+    }
+
     val sizeClass = calculateWindowSizeClass(activity)
     when (sizeClass.widthSizeClass) {
         WindowWidthSizeClass.Compact -> {
@@ -258,7 +288,10 @@ private fun DrawerContent(
     coroutineScope: CoroutineScope,
     drawerState: DrawerState,
 ) {
-    fun closeDrawer() = coroutineScope.launch { drawerState.close() }
+    fun closeDrawer() = coroutineScope.launch {
+        delay(200)
+        drawerState.close()
+    }
 
     val availableScreens by component.availableScreens.collectAsState()
     val stack by component.stack.subscribeAsState()
@@ -315,8 +348,8 @@ private fun DrawerContent(
                     },
                     selected = stack.active.instance is MainComponent.Child.AdminDashboard,
                     onClick = {
-                        closeDrawer()
                         component.onAdminDashboardClick()
+                        closeDrawer()
                     }
                 )
             }
@@ -336,8 +369,8 @@ private fun DrawerContent(
                 },
                 selected = stack.active.instance is MainComponent.Child.AdminDashboard,
                 onClick = {
-                    closeDrawer()
                     component.onAdminDashboardClick()
+                    closeDrawer()
                 }
             )
 
@@ -383,8 +416,8 @@ private fun DrawerContent(
                             },
                             selected = false,
                             onClick = {
-                                closeDrawer()
                                 component.onCourseClick(course.id)
+                                closeDrawer()
                             })
                     }
                 }
@@ -406,8 +439,8 @@ private fun DrawerContent(
                     },
                     selected = stack.active.instance is MainComponent.Child.AdminDashboard,
                     onClick = {
-                        closeDrawer()
                         component.onAdminDashboardClick()
+                        closeDrawer()
                     }
                 )
             }

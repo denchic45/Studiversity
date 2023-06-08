@@ -2,23 +2,25 @@ package com.denchic45.kts.ui.timetableLoader
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.FileOpen
+import androidx.compose.material.icons.outlined.ViewWeek
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,7 +49,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
+fun TimetableCreatorDialog(component: TimetableCreatorComponent, onDismissRequest:()->Unit) {
     val context = LocalContext.current
     val pickFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -57,97 +59,116 @@ fun TimetableCreatorScreen(component: TimetableCreatorComponent) {
 
     val screenState by component.uiState.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(onClick = component::onCreateEmpty) {
-                Text("Создать с нуля")
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = "Отмена")
             }
-            Spacer(Modifier.height(MaterialTheme.spacing.small))
-            Button(onClick = component::onLoadFromFile) {
-                Text("Загрузить из документа")
-            }
-        }
-
-        var selectedDate by remember {
-            mutableStateOf(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
-        }
-
-        val showWeekPicker by component.showWeekPicker.collectAsState()
-        val datePickerState = rememberDatePickerState()
-        if (showWeekPicker)
-            DatePickerDialog(
-                onDismissRequest = { component.onCancelWeekPicker() },
-                dismissButton = {
-                    TextButton(onClick = { component.onCancelWeekPicker() }) {
-                        Text(text = "Отмена")
-                    }
-                },
-                confirmButton = {
-                    TextButton(enabled = datePickerState.selectedDateMillis != null, onClick = {
-                        component.onWeekSelect(
-                            selectedDate.toString(DateTimePatterns.YYYY_ww)
+        },
+        title = { Text(text = "Создать расписание") },
+        text = {
+            Column {
+                ListItem(
+                    headlineContent = { Text(text = "С нуля") },
+                    leadingContent = {
+                        Icon(
+                            Icons.Outlined.ViewWeek,
+                            contentDescription = "create empty"
                         )
-                    }) {
-                        Text(text = "ОК")
-                    }
-
-                }) {
-                DatePicker(state = datePickerState,
-                    dateValidator = {
-                        it.toToLocalDateTime().dayOfWeek == WeekFields.of(Locale.getDefault()).firstDayOfWeek
-                    }
+                    },
+                    modifier = Modifier.clickable(onClick = component::onCreateEmpty)
                 )
-                datePickerState.selectedDateMillis?.let {
-                    selectedDate = it.toToLocalDateTime().toLocalDate()
-                }
+                ListItem(
+                    headlineContent = { Text(text = "Извлечь из документа") },
+                    leadingContent = {
+                        Icon(
+                            Icons.Outlined.FileOpen,
+                            contentDescription = "parse doc"
+                        )
+                    },
+                    modifier = Modifier.clickable(onClick = component::onParseDoc)
+                )
             }
+        }
+    )
 
-        val showFilePicker by component.showFilePicker.collectAsState()
-        if (showFilePicker) {
-            pickFileLauncher.launch(
-                arrayOf(
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    "application/msword"
-                )
+    var selectedDate by remember {
+        mutableStateOf(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
+    }
+
+    val showWeekPicker by component.showWeekPicker.collectAsState()
+    val datePickerState = rememberDatePickerState()
+    if (showWeekPicker)
+        DatePickerDialog(
+            onDismissRequest = component::onCancelWeekPicker,
+            dismissButton = {
+                TextButton(onClick = component::onCancelWeekPicker) {
+                    Text(text = "Отмена")
+                }
+            },
+            confirmButton = {
+                TextButton(enabled = datePickerState.selectedDateMillis != null, onClick = {
+                    component.onWeekSelect(
+                        selectedDate.toString(DateTimePatterns.YYYY_ww)
+                    )
+                }) {
+                    Text(text = "ОК")
+                }
+
+            }) {
+            DatePicker(state = datePickerState,
+                dateValidator = {
+                    it.toToLocalDateTime().dayOfWeek == WeekFields.of(Locale.getDefault()).firstDayOfWeek
+                }
+            )
+            datePickerState.selectedDateMillis?.let {
+                selectedDate = it.toToLocalDateTime().toLocalDate()
+            }
+        }
+
+    val showFilePicker by component.showFilePicker.collectAsState()
+    if (showFilePicker) {
+        pickFileLauncher.launch(
+            arrayOf(
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "application/msword"
+            )
+        )
+    }
+
+    when (val state = screenState) {
+        is TimetableCreatorComponent.UiState.Error -> {
+            AlertDialog(onDismissRequest = component::onErrorClose,
+                title = { Text(text = "Произошла ошибка") },
+                text = { Text(state.message) },
+                confirmButton = {
+                    Button(onClick = component::onErrorClose) { Text("ОК") }
+                }
             )
         }
 
-        when (val state = screenState) {
-            is TimetableCreatorComponent.UiState.Error -> {
-                AlertDialog(onDismissRequest = component::onErrorClose,
-                    title = { Text(text = "Произошла ошибка") },
-                    text = { Text(state.message) },
-                    confirmButton = {
-                        Button(onClick = component::onErrorClose) { Text("ОК") }
-                    }
-                )
-            }
-
-            is TimetableCreatorComponent.UiState.Loading -> {
-                AlertDialog(onDismissRequest = {}) {
-                    Surface(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        shape = MaterialTheme.shapes.large
+        is TimetableCreatorComponent.UiState.Loading -> {
+            AlertDialog(onDismissRequest = {}) {
+                Surface(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .wrapContentHeight(),
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Row(
+                        modifier = Modifier.padding(24.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier.padding(24.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CircularProgressIndicator()
-                            Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
-                            Text(state.message)
-                        }
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
+                        Text(state.message)
                     }
                 }
             }
-
-            TimetableCreatorComponent.UiState.None -> {}
         }
+
+        TimetableCreatorComponent.UiState.None -> {}
     }
 }

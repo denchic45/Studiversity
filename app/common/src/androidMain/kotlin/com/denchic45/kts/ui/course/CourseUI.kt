@@ -43,11 +43,11 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.arkivanov.essenty.lifecycle.doOnStart
 import com.arkivanov.essenty.lifecycle.doOnStop
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.hideAppBar
 import com.denchic45.kts.ui.courseeditor.CourseEditorScreen
 import com.denchic45.kts.ui.courseelements.CourseElementsScreen
 import com.denchic45.kts.ui.coursemembers.CourseMembersScreen
@@ -92,9 +92,7 @@ fun CourseScreen(component: CourseComponent) {
             )
 
             CourseComponent.Child.None -> {
-                component.lifecycle.doOnStart {
-                    appBarState.hide()
-                }
+                hideAppBar()
                 CourseContent(
                     course = course,
                     allowEdit = allowEdit,

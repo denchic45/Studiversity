@@ -14,11 +14,16 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,10 +46,10 @@ class AppBarState2(
         expand()
     }
 
-    suspend fun animateUpdate(block: AppBarState2.() -> Unit) {
-        block()
-        animateExpand()
-    }
+//    suspend fun animateUpdate(block: AppBarState2.() -> Unit) {
+//        block()
+//        animateExpand()
+//    }
 
     var navigationIcon by mutableStateOf(NavigationIcon.TOGGLE)
 
@@ -152,3 +157,110 @@ fun rememberAppBarState(
 ) = remember { AppBarState2(scrollBehavior, appBarContent, snapAnimationSpec, flingAnimationSpec) }
 
 val LocalAppBarState = compositionLocalOf<AppBarState2> { error("Nothing AppBarState") }
+
+@Composable
+fun hideAppBar() {
+    LocalAppBarState.current.let { appBarState ->
+        remember(Unit) {
+            appBarState.hide()
+        }
+    }
+}
+
+@Composable
+fun animateHideAppBar() {
+    LocalAppBarState.current.let { appBarState ->
+        LaunchedEffect(Unit) {
+            appBarState.animateHide()
+        }
+    }
+}
+
+@Composable
+fun updateAppBarState(content: AppBarContent) {
+    updateAppBarState(Unit, content = content)
+}
+
+@Composable
+fun updateAppBarState(key1: Any?, content: AppBarContent) {
+    val appBarState = LocalAppBarState.current
+    remember(key1) {
+        updateState(content, appBarState)
+    }
+}
+
+@Composable
+fun updateAppBarState(key1: Any?, key2: Any?, content: AppBarContent) {
+    val appBarState = LocalAppBarState.current
+    remember(key1, key2) {
+        updateState(content, appBarState)
+    }
+}
+
+@Composable
+fun updateAppBarState(key1: Any?, key2: Any?, key3: Any?, content: AppBarContent) {
+    val appBarState = LocalAppBarState.current
+    remember(key1, key2, key3) {
+        updateState(content, appBarState)
+    }
+}
+
+@Composable
+fun updateAppBarState(vararg keys: Any?, content: AppBarContent) {
+    val appBarState = LocalAppBarState.current
+    remember(*keys) {
+        updateState(content, appBarState)
+    }
+}
+
+private fun updateState(
+    content: AppBarContent,
+    appBarState: AppBarState2,
+) {
+    println("appBarState: $content")
+    appBarState.content = content
+    appBarState.expand()
+}
+
+@Composable
+fun updateAnimatedAppBarState(content: AppBarContent) {
+    updateAnimatedAppBarState(Unit, content = content)
+}
+
+@Composable
+fun updateAnimatedAppBarState(key1: Any?, content: AppBarContent) {
+    val appBarState = LocalAppBarState.current
+    val coroutineScope = rememberCoroutineScope()
+    remember(key1) {
+        updateAnimatedState(appBarState, content, coroutineScope)
+    }
+}
+
+@Composable
+fun updateAnimatedAppBarState(key1: Any?, key2: Any?, content: AppBarContent) {
+    val appBarState = LocalAppBarState.current
+    val coroutineScope = rememberCoroutineScope()
+    remember(key1, key2) {
+        updateAnimatedState(appBarState, content, coroutineScope)
+    }
+}
+
+@Composable
+fun updateAnimatedAppBarState(vararg keys: Any?, content: AppBarContent) {
+    val appBarState = LocalAppBarState.current
+    val coroutineScope = rememberCoroutineScope()
+    remember(*keys) {
+        updateAnimatedState(appBarState, content, coroutineScope)
+    }
+}
+
+private fun updateAnimatedState(
+    appBarState: AppBarState2,
+    content: AppBarContent,
+    coroutineScope: CoroutineScope,
+): Job {
+    appBarState.content = content
+    return coroutineScope.launch {
+        appBarState.animateExpand()
+    }
+}

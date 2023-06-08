@@ -72,4 +72,4 @@ fun StudyGroupEditorContent(
                 )
             }
         }
-}
+    }

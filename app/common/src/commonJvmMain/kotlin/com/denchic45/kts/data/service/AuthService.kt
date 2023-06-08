@@ -2,6 +2,7 @@ package com.denchic45.kts.data.service
 
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.pref.UserPreferences
+import com.denchic45.kts.di.GuestHttpClient
 import com.denchic45.kts.domain.EmptyResource
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.toEmptyResource
@@ -13,6 +14,9 @@ import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.github.michaelbull.result.flatMap
 import com.github.michaelbull.result.onSuccess
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.appendPathSegments
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -26,6 +30,7 @@ class AuthService @javax.inject.Inject constructor(
     private val userApi: UserApi,
     private val appPreferences: AppPreferences,
     private val userPreferences: UserPreferences,
+    private val guestHttpClient: GuestHttpClient
 ) {
     val isAuthenticated: Boolean
         get() = appPreferences.token.isNotEmpty()
@@ -70,6 +75,14 @@ class AuthService @javax.inject.Inject constructor(
             avatarUrl = userResponse.avatarUrl
             isGeneratedAvatar = userResponse.generatedAvatar
             email = userResponse.account.email
+        }
+    }
+
+    suspend fun checkDomain(url:String): HttpResponse {
+      return guestHttpClient.get(url) {
+            url {
+                appendPathSegments("ping")
+            }
         }
     }
 

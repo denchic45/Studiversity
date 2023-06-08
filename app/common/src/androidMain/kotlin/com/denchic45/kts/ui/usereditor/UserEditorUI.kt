@@ -14,6 +14,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +32,8 @@ import com.denchic45.kts.ui.Sidebar
 import com.denchic45.kts.ui.appbar2.ActionMenuItem2
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.updateAnimatedAppBarState
+import com.denchic45.kts.ui.appbar2.updateAppBarState
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.uiIconOf
 import com.denchic45.kts.ui.uiTextOf
@@ -48,24 +51,35 @@ fun UserEditorSidebar(component: UserEditorComponent) {
 fun UserEditorScreen(component: UserEditorComponent) {
     val state = remember { component.state }
     val allowSave by component.allowSave.collectAsState()
-    val appBarState = LocalAppBarState.current
+//    val appBarState = LocalAppBarState.current
 
-    LaunchedEffect(allowSave) {
-        appBarState.animateUpdate {
-            content = AppBarContent(
-                title = uiTextOf("Новый пользователь"),
-                actionItems = listOf(
-                    ActionMenuItem2(
-                        icon = uiIconOf(Icons.Default.Done),
-                        enabled = allowSave,
-                        onClick = component::onSaveClick
-                    )
-                )
+    updateAnimatedAppBarState(allowSave,AppBarContent(
+        title = uiTextOf("Новый пользователь"),
+        actionItems = listOf(
+            ActionMenuItem2(
+                icon = uiIconOf(Icons.Default.Done),
+                enabled = allowSave,
+                onClick = component::onSaveClick
             )
-        }
-    }
+        ) ))
+
+//    LaunchedEffect(allowSave) {
+//        appBarState.animateUpdate {
+//            content = AppBarContent(
+//                title = uiTextOf("Новый пользователь"),
+//                actionItems = listOf(
+//                    ActionMenuItem2(
+//                        icon = uiIconOf(Icons.Default.Done),
+//                        enabled = allowSave,
+//                        onClick = component::onSaveClick
+//                    )
+//                )
+//            )
+//        }
+//    }
 
     val scrollState = rememberScrollState()
+    Surface {
     UserEditorContent(
         state = state,
         onFirstNameType = component::onFirstNameType,
@@ -75,7 +89,7 @@ fun UserEditorScreen(component: UserEditorComponent) {
         onEmailType = component::onEmailType,
         modifier = Modifier.verticalScroll(scrollState)
     )
-}
+}}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,7 +102,6 @@ fun UserEditorContent(
     onEmailType: (String) -> Unit,
     modifier: Modifier
 ) {
-
     Column(
         modifier.padding(horizontal = 16.dp)
     ) {

@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -44,6 +45,8 @@ import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.domain.resourceOf
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.hideAppBar
+import com.denchic45.kts.ui.appbar2.updateAppBarState
 import com.denchic45.kts.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.kts.ui.search.StudyGroupChooserScreen
 import com.denchic45.kts.ui.theme.spacing
@@ -58,10 +61,7 @@ import java.time.LocalDate
 fun TimetablesPublisherScreen(
     component: TimetablesPublisherComponent
 ) {
-val appBarState = LocalAppBarState.current
-    component.lifecycle.doOnStart {
-        appBarState.content = AppBarContent()
-    }
+    updateAppBarState( AppBarContent())
 
     val publishState by component.publishState.collectAsState()
     val viewStates by component.timetablesViewStates.collectAsState()
@@ -87,6 +87,7 @@ val appBarState = LocalAppBarState.current
     overlay.overlay?.let {
         when (val child = it.instance) {
             is TimetablesPublisherComponent.OverlayChild.GroupChooser -> {
+                hideAppBar()
                 StudyGroupChooserScreen(
                     component = child.component
                 )
@@ -96,8 +97,7 @@ val appBarState = LocalAppBarState.current
                 component = child.component
             )
         }
-    } ?: run {
-        TimetablePublisherContent(
+    } ?: TimetablePublisherContent(
             publishState = publishState,
             isEdit = isEdit,
             studyGroups = studyGroups,
@@ -114,7 +114,7 @@ val appBarState = LocalAppBarState.current
             onEditPeriodClick = component::onEditPeriodClick,
             onRemovePeriodSwipe = component::onRemovePeriodSwipe
         )
-    }
+
 }
 
 @Composable
@@ -136,134 +136,136 @@ private fun TimetablePublisherContent(
     onEditPeriodClick: (Int) -> Unit,
     onRemovePeriodSwipe: (Int) -> Unit,
 ) {
-    Column {
-        if (studyGroups.isNotEmpty()) {
-            ListItem(
-                headlineContent = {
-                    Text(
-                        when (publishState) {
-                            TimetablesPublisherComponent.PublishState.PREPARATION -> "Опубликовать"
-                            TimetablesPublisherComponent.PublishState.SENDING -> "Публикация"
-                            TimetablesPublisherComponent.PublishState.DONE -> "Опубликовано"
-                            TimetablesPublisherComponent.PublishState.FAILED -> "Неудалось опубликовать"
-                        }
-                    )
-                },
-                trailingContent = {
-                    when (publishState) {
-                        TimetablesPublisherComponent.PublishState.PREPARATION -> {
-                            Icon(
-                                imageVector = Icons.Outlined.Send,
-                                contentDescription = "publish"
-                            )
-                        }
-
-                        TimetablesPublisherComponent.PublishState.SENDING -> {
-                            Box(modifier = Modifier.size(24.dp)) {
-                                CircularProgressIndicator()
-                            }
-                        }
-
-                        TimetablesPublisherComponent.PublishState.DONE -> {
-                            Icon(
-                                imageVector = Icons.Outlined.Done,
-                                contentDescription = "done"
-                            )
-                        }
-
-                        TimetablesPublisherComponent.PublishState.FAILED -> {
-                            Icon(
-                                imageVector = Icons.Outlined.Refresh,
-                                contentDescription = "retry"
-                            )
-                        }
-                    }
-                },
-                modifier = Modifier.clickable(
-                    enabled = publishState == TimetablesPublisherComponent.PublishState.PREPARATION,
-                    onClick = onPublishClick
-                )
-            )
-
-            if (publishState == TimetablesPublisherComponent.PublishState.PREPARATION)
+    Surface {
+        Column {
+            if (studyGroups.isNotEmpty()) {
                 ListItem(
-                    headlineContent = { Text("Режим редактирования") },
-                    trailingContent = {
-                        Switch(
-                            checked = isEdit,
-                            onCheckedChange = onEditEnableClick
+                    headlineContent = {
+                        Text(
+                            when (publishState) {
+                                TimetablesPublisherComponent.PublishState.PREPARATION -> "Опубликовать"
+                                TimetablesPublisherComponent.PublishState.SENDING -> "Публикация"
+                                TimetablesPublisherComponent.PublishState.DONE -> "Опубликовано"
+                                TimetablesPublisherComponent.PublishState.FAILED -> "Неудалось опубликовать"
+                            }
                         )
                     },
-                    modifier = Modifier.clickable { onEditEnableClick(!isEdit) }
-                )
-        }
+                    trailingContent = {
+                        when (publishState) {
+                            TimetablesPublisherComponent.PublishState.PREPARATION -> {
+                                Icon(
+                                    imageVector = Icons.Outlined.Send,
+                                    contentDescription = "publish"
+                                )
+                            }
 
-        if (studyGroups.isEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(MaterialTheme.spacing.medium),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(text = "Нет расписаний", style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
-                Text(
-                    text = "Не выбрано ни одной группы для загрузки расписания",
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
-                Button(onClick = { onStudyGroupChoose() }) {
-                    Text(text = "Добавить группу")
-                }
-            }
-        } else {
-            ScrollableTabRow(
-                selectedTabIndex = pagerState.currentPage,
-                modifier = Modifier,
-                divider = {}
-            ) {
-                // Add tabs for all of our pages
-                studyGroups.forEachIndexed { index, group ->
-                    Tab(
-                        selected = pagerState.currentPage == index,
-                        text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(group.name)
-                                IconButton(onClick = { onRemoveStudyGroupClick(index) }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = "remove group"
-                                    )
+                            TimetablesPublisherComponent.PublishState.SENDING -> {
+                                Box(modifier = Modifier.size(24.dp)) {
+                                    CircularProgressIndicator()
                                 }
                             }
+
+                            TimetablesPublisherComponent.PublishState.DONE -> {
+                                Icon(
+                                    imageVector = Icons.Outlined.Done,
+                                    contentDescription = "done"
+                                )
+                            }
+
+                            TimetablesPublisherComponent.PublishState.FAILED -> {
+                                Icon(
+                                    imageVector = Icons.Outlined.Refresh,
+                                    contentDescription = "retry"
+                                )
+                            }
+                        }
+                    },
+                    modifier = Modifier.clickable(
+                        enabled = publishState == TimetablesPublisherComponent.PublishState.PREPARATION,
+                        onClick = onPublishClick
+                    )
+                )
+
+                if (publishState == TimetablesPublisherComponent.PublishState.PREPARATION)
+                    ListItem(
+                        headlineContent = { Text("Режим редактирования") },
+                        trailingContent = {
+                            Switch(
+                                checked = isEdit,
+                                onCheckedChange = onEditEnableClick
+                            )
                         },
-                        onClick = {
-                            onStudyGroupSelect(index)
-                        },
+                        modifier = Modifier.clickable { onEditEnableClick(!isEdit) }
+                    )
+            }
+
+            if (studyGroups.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(MaterialTheme.spacing.medium),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "Нет расписаний", style = MaterialTheme.typography.titleLarge)
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+                    Text(
+                        text = "Не выбрано ни одной группы для загрузки расписания",
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
+                    Button(onClick = { onStudyGroupChoose() }) {
+                        Text(text = "Добавить группу")
+                    }
+                }
+            } else {
+                ScrollableTabRow(
+                    selectedTabIndex = pagerState.currentPage,
+                    modifier = Modifier,
+                    divider = {}
+                ) {
+                    // Add tabs for all of our pages
+                    studyGroups.forEachIndexed { index, group ->
+                        Tab(
+                            selected = pagerState.currentPage == index,
+                            text = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(group.name)
+                                    IconButton(onClick = { onRemoveStudyGroupClick(index) }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = "remove group"
+                                        )
+                                    }
+                                }
+                            },
+                            onClick = {
+                                onStudyGroupSelect(index)
+                            },
+                        )
+                    }
+                    Tab(
+                        selected = false,
+                        text = { Text("Добавить") },
+                        onClick = onStudyGroupChoose
                     )
                 }
-                Tab(
-                    selected = false,
-                    text = { Text("Добавить") },
-                    onClick = onStudyGroupChoose
-                )
-            }
-            Divider()
-            HorizontalPager(
-                pageCount = viewStates.size,
-                state = pagerState
-            ) { position ->
-                val viewState by viewStates[position].collectAsState()
-                DayTimetableContent(
-                    selectedDate = selectedDate,
-                    timetableResource = resourceOf(viewState),
-                    scrollableWeeks = false,
-                    onDateSelect = onDateSelect,
-                    onAddPeriodClick = onAddPeriodClick,
-                    onEditPeriodClick = onEditPeriodClick,
-                    onRemovePeriodSwipe = onRemovePeriodSwipe
-                )
+                Divider()
+                HorizontalPager(
+                    pageCount = viewStates.size,
+                    state = pagerState
+                ) { position ->
+                    val viewState by viewStates[position].collectAsState()
+                    DayTimetableContent(
+                        selectedDate = selectedDate,
+                        timetableResource = resourceOf(viewState),
+                        scrollableWeeks = false,
+                        onDateSelect = onDateSelect,
+                        onAddPeriodClick = onAddPeriodClick,
+                        onEditPeriodClick = onEditPeriodClick,
+                        onRemovePeriodSwipe = onRemovePeriodSwipe
+                    )
+                }
             }
         }
     }

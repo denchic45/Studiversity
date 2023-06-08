@@ -21,8 +21,10 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.R
+import com.denchic45.kts.ui.SyncedEffect
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.updateAppBarState
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetableLoader.TimetableLoaderScreen
 import com.denchic45.kts.ui.timetablefinder.TimetableFinderScreen
@@ -33,67 +35,63 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
     val appBarState = LocalAppBarState.current
 
     val childStack by component.childStack.subscribeAsState()
+    Column {
+        AdminListItem(
+            title = "Расписания",
+            subtitle = "Просмотр и редактирование",
+            painter = painterResource(id = R.drawable.ic_timetable),
+            contentDescription = "timetables",
+            onClick = component::onTimetableFinderClick
+        )
 
+        AdminListItem(
+            title = "Новое расписание",
+            subtitle = "Создать с нуля или загрузить из документа",
+            painter = rememberVectorPainter(Icons.Outlined.AddBox),
+            contentDescription = "timetables",
+            onClick = component::onTimetableLoaderClick
+        )
+
+        AdminListItem(
+            title = "Курсы",
+            painter = painterResource(id = R.drawable.ic_course),
+            contentDescription = "courses",
+            onClick = component::onCoursesClick
+        )
+
+        AdminListItem(
+            title = "Пользователи",
+            painter = painterResource(id = R.drawable.ic_user),
+            contentDescription = "users",
+            onClick = component::onUsersClick
+        )
+
+        AdminListItem(
+            title = "Учебные группы",
+            painter = painterResource(id = R.drawable.ic_study_group),
+            contentDescription = "study groups",
+            onClick = component::onStudyGroupsClick
+        )
+
+        AdminListItem(
+            title = "Предметы",
+            painter = painterResource(id = R.drawable.ic_subject),
+            contentDescription = "subjects",
+            onClick = component::onSubjectsClick
+        )
+
+        AdminListItem(
+            title = "Специальности",
+            painter = painterResource(id = R.drawable.ic_specialty),
+            contentDescription = "specialties",
+            onClick = component::onSpecialtiesClick
+        )
+    }
     Children(component.childStack) {
         when (val child = it.instance) {
             AdminDashboardComponent.Child.None -> {
-                LaunchedEffect(Unit) {
-                    appBarState.update {
-                        content = AppBarContent(title = uiTextOf("Панель управления"))
-                    }
-                }
-                Column {
-                    AdminListItem(
-                        title = "Расписания",
-                        subtitle = "Просмотр и редактирование",
-                        painter = painterResource(id = R.drawable.ic_timetable),
-                        contentDescription = "timetables",
-                        onClick = component::onTimetableFinderClick
-                    )
+                updateAppBarState( AppBarContent(title = uiTextOf("Панель управления")))
 
-                    AdminListItem(
-                        title = "Новое расписание",
-                        subtitle = "Создать с нуля или загрузить из документа",
-                        painter = rememberVectorPainter(Icons.Outlined.AddBox),
-                        contentDescription = "timetables",
-                        onClick = component::onTimetableLoaderClick
-                    )
-
-                    AdminListItem(
-                        title = "Курсы",
-                        painter = painterResource(id = R.drawable.ic_course),
-                        contentDescription = "courses",
-                        onClick = component::onCoursesClick
-                    )
-
-                    AdminListItem(
-                        title = "Пользователи",
-                        painter = painterResource(id = R.drawable.ic_user),
-                        contentDescription = "users",
-                        onClick = component::onUsersClick
-                    )
-
-                    AdminListItem(
-                        title = "Учебные группы",
-                        painter = painterResource(id = R.drawable.ic_study_group),
-                        contentDescription = "study groups",
-                        onClick = component::onStudyGroupsClick
-                    )
-
-                    AdminListItem(
-                        title = "Предметы",
-                        painter = painterResource(id = R.drawable.ic_subject),
-                        contentDescription = "subjects",
-                        onClick = component::onSubjectsClick
-                    )
-
-                    AdminListItem(
-                        title = "Специальности",
-                        painter = painterResource(id = R.drawable.ic_specialty),
-                        contentDescription = "specialties",
-                        onClick = component::onSpecialtiesClick
-                    )
-                }
             }
 
             is AdminDashboardComponent.Child.TimetableFinder -> TimetableFinderScreen(child.component)

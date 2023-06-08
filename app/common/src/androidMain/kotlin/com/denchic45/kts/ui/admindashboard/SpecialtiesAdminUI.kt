@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.ui.ExpandableDropdownMenu
+import com.denchic45.kts.ui.appbar2.hideAppBar
 import com.denchic45.kts.ui.search.SearchScreen
 import com.denchic45.kts.ui.search.SpecialtyListItem
 import com.denchic45.kts.ui.specialtyeditor.SpecialtyEditorDialog
@@ -26,6 +27,7 @@ import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 
 @Composable
 fun SpecialtiesAdminScreen(component: SpecialtiesAdminComponent) {
+
     val childOverlay by component.childOverlay.subscribeAsState()
 
     SpecialtiesAdminMainScreen(component)
@@ -46,6 +48,7 @@ private fun SpecialtiesAdminDetailScreen(child: SpecialtiesAdminComponent.Child)
 
 @Composable
 private fun SpecialtiesAdminMainScreen(component: SpecialtiesAdminComponent) {
+    hideAppBar()
     Scaffold(
         floatingActionButton = {
             ExtendedFloatingActionButton(

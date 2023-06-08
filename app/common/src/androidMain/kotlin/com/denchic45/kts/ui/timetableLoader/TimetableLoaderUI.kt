@@ -8,16 +8,12 @@ import com.denchic45.kts.ui.appbar2.LocalAppBarState
 
 @Composable
 fun TimetableLoaderScreen(
-    component: TimetableLoaderComponent
+    component: TimetableLoaderComponent,
 ) {
-    val appBarState = LocalAppBarState.current
-    component.lifecycle.doOnStart {
-        appBarState.content = AppBarContent()
-    }
     Children(stack = component.childStack) {
         when (val instance = it.instance) {
             is TimetableLoaderComponent.TimetableLoaderChild.Creator -> {
-                TimetableCreatorScreen(instance.component)
+                TimetableCreatorDialog(instance.component, component::onDismissRequest)
             }
 
             is TimetableLoaderComponent.TimetableLoaderChild.Publisher -> {

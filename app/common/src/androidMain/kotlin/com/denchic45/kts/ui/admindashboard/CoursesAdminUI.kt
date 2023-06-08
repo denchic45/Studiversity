@@ -19,12 +19,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.denchic45.kts.ui.ExpandableDropdownMenu
+import com.denchic45.kts.ui.appbar2.hideAppBar
 import com.denchic45.kts.ui.search.CourseListItem
 import com.denchic45.kts.ui.search.SearchScreen
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 
 @Composable
 fun CoursesAdminScreen(component: CoursesAdminComponent) {
+    hideAppBar()
     Scaffold(
         floatingActionButton = {
             ExtendedFloatingActionButton(

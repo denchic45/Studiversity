@@ -13,6 +13,10 @@ data class GroupMembers(
     fun isHeadman(member: GroupMember): Boolean {
         return headmanId == member.id
     }
+
+    fun isEmpty(): Boolean {
+        return students.isEmpty() && curator == null
+    }
 }
 
 interface GroupMember : DomainModel {

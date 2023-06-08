@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.updateAppBarState
 import com.denchic45.kts.ui.theme.spacing
 import com.denchic45.kts.ui.timetable.DayTimetableContent
 import com.denchic45.kts.ui.timetable.getMonthTitle
@@ -37,11 +38,13 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
     val selectedDate by component.selectedDate.collectAsState()
 
-    LaunchedEffect(selectedYearWeek) {
-        appBarState.update {
-            content = AppBarContent(uiTextOf(getMonthTitle(selectedYearWeek)))
-        }
-    }
+    updateAppBarState(selectedYearWeek, AppBarContent(uiTextOf(getMonthTitle(selectedYearWeek))))
+
+//    LaunchedEffect(selectedYearWeek) {
+//        appBarState.update {
+//            content = AppBarContent(uiTextOf(getMonthTitle(selectedYearWeek)))
+//        }
+//    }
 
     Surface {
         Column {

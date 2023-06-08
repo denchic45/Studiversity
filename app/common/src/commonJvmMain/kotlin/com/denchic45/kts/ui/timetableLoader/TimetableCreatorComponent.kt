@@ -17,7 +17,7 @@ import okio.Path
 class TimetableCreatorComponent(
     private val parseTimetableUseCase: ParseTimetableUseCase,
     @Assisted
-    private val onCreate: (TimetableParserResult) -> Unit,
+    private val onResult: (TimetableParserResult) -> Unit,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -32,12 +32,12 @@ class TimetableCreatorComponent(
         showWeekPicker.value = true
     }
 
-    fun onLoadFromFile() {
+    fun onParseDoc() {
         showFilePicker.value = true
     }
 
     fun onWeekSelect(weekOfYear: String) {
-        onCreate(TimetableParserResult(weekOfYear, listOf()))
+        onResult(TimetableParserResult(weekOfYear, listOf()))
         showWeekPicker.value = false
     }
 
@@ -54,7 +54,7 @@ class TimetableCreatorComponent(
                     val result = parseTimetableUseCase(file)
                     uiState.value = UiState.None
                     withContext(Dispatchers.Main) {
-                        onCreate(result)
+                        onResult(result)
                     }
                 } catch (throwable: Exception) {
                     throwable.printStackTrace()

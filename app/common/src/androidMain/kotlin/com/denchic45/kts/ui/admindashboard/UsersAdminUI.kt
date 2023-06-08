@@ -7,7 +7,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,6 +18,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.kts.ui.ExpandableDropdownMenu
+import com.denchic45.kts.ui.SyncedEffect
+import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.hideAppBar
 import com.denchic45.kts.ui.layout.AdaptiveMasterSidebarLayout
 import com.denchic45.kts.ui.model.UserItem
 import com.denchic45.kts.ui.profile.ProfileScreen
@@ -28,6 +30,8 @@ import com.denchic45.kts.ui.usereditor.UserEditorScreen
 
 @Composable
 fun UsersAdminScreen(component: UsersAdminComponent) {
+
+
     val childOverlay by component.childOverlay.subscribeAsState()
 
     AdaptiveMasterSidebarLayout(
@@ -53,6 +57,7 @@ private fun UsersAdminDetailScreen(child: UsersAdminComponent.Child) {
 
 @Composable
 private fun UsersAdminMainScreen(component: UsersAdminComponent) {
+    hideAppBar()
     Scaffold(
         floatingActionButton = {
             ExtendedFloatingActionButton(

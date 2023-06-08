@@ -7,20 +7,17 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.defaultComponentContext
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.theme.AppTheme
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class TimetableLoaderFragment(
-   private val appBarInteractor: AppBarInteractor,
-    _timetableLoaderComponent: (ComponentContext) -> TimetableLoaderComponent,
+//   private val appBarInteractor: AppBarInteractor,
+//    _timetableLoaderComponent: (ComponentContext) -> TimetableLoaderComponent,
 ) : Fragment() {
-    private val timetableLoaderComponent by lazy {
-        _timetableLoaderComponent(defaultComponentContext(requireActivity().onBackPressedDispatcher))
-    }
+//    private val timetableLoaderComponent by lazy {
+//        _timetableLoaderComponent(defaultComponentContext(requireActivity().onBackPressedDispatcher))
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +27,7 @@ class TimetableLoaderFragment(
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             AppTheme {
-                TimetableLoaderScreen(timetableLoaderComponent)
+//                TimetableLoaderScreen(timetableLoaderComponent)
             }
         }
     }
