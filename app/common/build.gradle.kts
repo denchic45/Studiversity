@@ -151,6 +151,10 @@ kotlin {
 
                 implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 
+                implementation("com.airbnb.android:lottie-compose:6.0.0")
+
+                api("androidx.core:core-splashscreen:1.0.1")
+
                 // Lifecycle
                 api("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 

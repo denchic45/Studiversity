@@ -7,6 +7,8 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class ResetPasswordComponent(
     @Assisted
+    private val onSuccess: () -> Unit,
+    @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 

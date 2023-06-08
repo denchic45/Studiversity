@@ -5,6 +5,8 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.DefaultComponentContext
+import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.storage.AttachmentStorage
 import com.denchic45.kts.data.storage.FileProvider
@@ -14,6 +16,7 @@ import com.denchic45.kts.ui.MainComponent
 import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.fab.FabInteractor
+import com.denchic45.kts.ui.root.RootComponent
 import com.denchic45.kts.util.SystemDirs
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +46,7 @@ abstract class AndroidApplicationComponent(
     @Provides
     fun applicationScope() = CoroutineScope(SupervisorJob())
 
+
     protected abstract val appPreferences: AppPreferences
 
     @AppScope
@@ -60,6 +64,11 @@ abstract class AndroidApplicationComponent(
             DownloadWorker(context, params, storage)
         }
     }
+
+    private val rootComponentContext = DefaultComponentContext(LifecycleRegistry())
+
+    abstract val rootComponent: (ComponentContext) -> RootComponent
+
 
     abstract val mainComponent: (ComponentContext) -> MainComponent
 

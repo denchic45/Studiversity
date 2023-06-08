@@ -21,7 +21,8 @@ class AuthComponent(
     private val loginComponent: (
         onForgotPassword: () -> Unit,
         onRegister: () -> Unit,
-        onSuccess: () -> Unit, ComponentContext,
+        onSuccess: () -> Unit,
+        ComponentContext,
     ) -> LoginComponent,
     private val resetPasswordComponent: (
         onSuccess: () -> Unit,

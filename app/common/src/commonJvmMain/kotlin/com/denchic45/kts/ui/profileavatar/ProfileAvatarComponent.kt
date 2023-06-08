@@ -11,6 +11,7 @@ class ProfileAvatarComponent(
     private val avatarUrl:UUID,
     @Assisted
     private val isOwned: Boolean,
+    @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
 
