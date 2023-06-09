@@ -1,12 +1,10 @@
 package com.denchic45.kts.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.material3.Typography
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -114,8 +112,7 @@ private val DarkColors = darkColorScheme(
 @Composable
 fun CommonAppTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
-    typography: Typography,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colors = if (!useDarkTheme) {
         LightColors
@@ -124,6 +121,6 @@ fun CommonAppTheme(
     }
 
     CompositionLocalProvider(LocalSpacing provides Spacing()) {
-        MaterialTheme(colorScheme = colors, typography = typography, content = content)
+        MaterialTheme(colorScheme = colors, typography = Typography, content = content)
     }
 }

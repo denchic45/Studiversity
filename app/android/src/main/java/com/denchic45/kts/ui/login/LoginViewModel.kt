@@ -16,7 +16,7 @@ import java.util.*
 import javax.inject.Inject
 
 class LoginViewModel @Inject constructor(
-    private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
+//    private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
 ) : BaseViewModel() {
 
     val backToFragment = MutableSharedFlow<Unit>()
@@ -87,7 +87,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 Log.d("lol", "A try authByEmail: ")
-                signInWithEmailAndPasswordUseCase(mail, password)
+//                signInWithEmailAndPasswordUseCase(mail, password)
                 Log.d("lol", "A onSuccessfulLogin: ")
                 onSuccessfulLogin()
             } catch (t: Throwable) {

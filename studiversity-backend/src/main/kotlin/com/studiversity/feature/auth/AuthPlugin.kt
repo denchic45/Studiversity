@@ -21,9 +21,11 @@ fun Application.configureAuth() {
 
     val jwtJWTSecret = config.jwt.secret
     val jwtJWTAudience = config.jwt.audience
+    val jwtRealm = config.jwt.audience
 
     authentication {
         jwt("auth-jwt") {
+            realm = jwtRealm
             verifier(
                 JWT
                     .require(Algorithm.HMAC256(jwtJWTSecret))

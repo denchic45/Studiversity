@@ -1,58 +1,85 @@
 package com.denchic45.kts.data.service
 
+import com.denchic45.kts.data.db.local.DbHelper
 import com.denchic45.kts.data.pref.AppPreferences
-import com.denchic45.kts.data.pref.UserPreferences
 import com.denchic45.kts.di.GuestHttpClient
-import com.denchic45.kts.domain.EmptyResource
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.toEmptyResource
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.toResource
-import com.denchic45.stuiversity.api.auth.AuthApi
+import com.denchic45.kts.util.SystemDirs
+import com.denchic45.kts.util.databasePath
 import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest
 import com.denchic45.stuiversity.api.auth.model.SignInResponse
-import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.UserResponse
-import com.github.michaelbull.result.flatMap
-import com.github.michaelbull.result.onSuccess
+import com.denchic45.stuiversity.api.common.toResult
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
 import io.ktor.http.appendPathSegments
+import io.ktor.http.contentType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import okio.FileSystem
 
 @Inject
-class AuthService @javax.inject.Inject constructor(
-    private val authApi: AuthApi,
-    private val userApi: UserApi,
+class AuthService(
+    private val coroutineScope: CoroutineScope,
+    private val dbHelper: DbHelper,
+    private val systemDirs: SystemDirs,
+//    authApiLazy: Lazy<AuthApi>,
     private val appPreferences: AppPreferences,
-    private val userPreferences: UserPreferences,
-    private val guestHttpClient: GuestHttpClient
+    private val guestHttpClient: GuestHttpClient,
 ) {
-    val isAuthenticated: Boolean
-        get() = appPreferences.token.isNotEmpty()
+
+//    private val authApi by authApiLazy
+//    val isAuthenticated: Boolean
+//        get() = appPreferences.token.isNotEmpty()
 
     val observeIsAuthenticated: Flow<Boolean>
-        get() = appPreferences.observeToken.map(String::isNotEmpty)
+        get() = appPreferences.observeToken
+            .map(String::isNotEmpty)
+            .onEach { isAuth ->
+                if (!isAuth)
+                    clearAllDataIfExist()
+            }
 
-    val observeCurrentUser: Flow<Resource<UserResponse>> = userPreferences.observeId
-        .filter(String::isNotEmpty)
-        .map { userApi.getById(UUID.fromString(it)) }
-        .onEach { it.onSuccess(::saveUserPreference) }
-        .map { value -> value.toResource() }
+    private fun clearAllDataIfExist() {
+        dbHelper.driver.close()
+        val fileSystem = FileSystem.SYSTEM
+
+        if (fileSystem.exists(systemDirs.databasePath))
+            systemDirs.databasePath.toFile().delete()
+
+        if (fileSystem.exists(systemDirs.prefsDir))
+            fileSystem.list(systemDirs.prefsDir).forEach { fileSystem.delete(it) }
+    }
 
     suspend fun signInByEmailPassword(
         email: String,
         password: String,
-    ): EmptyResource {
-        return authApi.signInByEmailPassword(SignInByEmailPasswordRequest(email, password))
-            .onSuccess(::saveTokens)
-            .flatMap { userApi.getMe() }
-            .onSuccess(::saveUserPreference)
-            .toEmptyResource()
+    ): Resource<SignInResponse> {
+        return guestHttpClient.post(appPreferences.url) {
+            url {
+                appendPathSegments("auth", "token")
+            }
+            contentType(ContentType.Application.Json)
+            setBody(SignInByEmailPasswordRequest(email, password))
+            parameter("grant_type", "password")
+        }.toResult<SignInResponse>()
+            .toResource()
+            .onSuccess {
+                coroutineScope.launch {
+                    delay(1000)
+                    saveTokens(it)
+                }
+            }
     }
 
     private fun saveTokens(response: SignInResponse) {
@@ -60,26 +87,13 @@ class AuthService @javax.inject.Inject constructor(
             token = response.token
             refreshToken = response.refreshToken
             organizationId = response.organizationId.toString()
-            println("TOKENS: $token $refreshToken")
+            println("SAVED TOKENS: $token $refreshToken")
         }
     }
 
-    private fun saveUserPreference(userResponse: UserResponse) {
-        println("A save user data")
-        userPreferences.apply {
-            id = userResponse.id.toString()
-            firstName = userResponse.firstName
-            surname = userResponse.surname
-            patronymic = userResponse.patronymic ?: ""
-            gender = userResponse.gender.name
-            avatarUrl = userResponse.avatarUrl
-            isGeneratedAvatar = userResponse.generatedAvatar
-            email = userResponse.account.email
-        }
-    }
 
-    suspend fun checkDomain(url:String): HttpResponse {
-      return guestHttpClient.get(url) {
+    suspend fun checkDomain(url: String): HttpResponse {
+        return guestHttpClient.get(url) {
             url {
                 appendPathSegments("ping")
             }

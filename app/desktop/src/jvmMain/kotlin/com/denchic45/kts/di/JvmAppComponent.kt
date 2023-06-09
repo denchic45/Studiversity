@@ -9,6 +9,7 @@ import com.denchic45.kts.data.service.FakeAppVersionService
 import com.denchic45.kts.ui.MainComponent
 import com.denchic45.kts.ui.login.LoginComponent
 import com.denchic45.kts.ui.navigation.OverlayConfig
+import com.denchic45.kts.ui.root.RootComponent
 import com.denchic45.kts.ui.splash.SplashComponent
 import com.denchic45.kts.util.SystemDirs
 import io.ktor.client.engine.cio.CIO
@@ -60,10 +61,12 @@ abstract class JvmAppComponent(
 
     abstract val appPreferences: AppPreferences
 
-    abstract val splashComponent: SplashComponent
+    abstract val rootComponent: (ComponentContext) -> RootComponent
+
+//    abstract val splashComponent: SplashComponent
 
     abstract val mainComponent: (ComponentContext) -> MainComponent
 
-    abstract val loginComponent: (ComponentContext) -> LoginComponent
+//    abstract val loginComponent: (ComponentContext) -> LoginComponent
 }
 

@@ -69,7 +69,6 @@ abstract class AndroidApplicationComponent(
 
     abstract val rootComponent: (ComponentContext) -> RootComponent
 
-
     abstract val mainComponent: (ComponentContext) -> MainComponent
 
     abstract val authedClient: HttpClient

@@ -1,9 +1,11 @@
 package com.denchic45.kts
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -11,17 +13,19 @@ import androidx.compose.ui.window.*
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleController
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.kts.di.*
 import com.denchic45.kts.ui.AppBarMediator
 import com.denchic45.kts.ui.LocalAppBarMediator
-import com.denchic45.kts.ui.MainContent
-import com.denchic45.kts.ui.login.LoginScreen
+import com.denchic45.kts.ui.MainScreen
+import com.denchic45.kts.ui.auth.AuthScreen
+import com.denchic45.kts.ui.root.RootComponent
 import com.denchic45.kts.ui.theme.DesktopApp
 import java.awt.Toolkit
 
-val splashComponent = appComponent.splashComponent
+//val splashComponent = appComponent.splashComponent
 
 fun main() = mainApp()
 
@@ -33,16 +37,32 @@ private fun mainApp() {
         lifecycle = lifecycle,
         backHandler = backDispatcher
     )
+    val rootComponent = appComponent.rootComponent(componentContext)
     application {
-        val isAuth by splashComponent.isAuth.collectAsState(null)
 
-        isAuth?.let {
-            if (it) {
+        val active by rootComponent.childActive.subscribeAsState()
+
+        when (val child = active.overlay!!.instance) {
+            is RootComponent.Child.Auth -> {
+                val state = rememberWindowState()
+                DesktopApp(
+                    title = "Studiversity - Авторизация",
+                    onCloseRequest = ::exitApplication,
+                    state = state
+                ) {
+                    AuthScreen(child.component)
+                }
+            }
+
+            is RootComponent.Child.Main -> {
                 val size = Toolkit.getDefaultToolkit().screenSize.run {
                     DpSize((width - 124).dp, (height - 124).dp)
                 }
                 val state =
-                    rememberWindowState(size = size, position = WindowPosition(Alignment.Center))
+                    rememberWindowState(
+                        size = size,
+                        position = WindowPosition(Alignment.Center)
+                    )
                 LifecycleController(lifecycle, state)
 
                 DesktopApp(
@@ -51,20 +71,30 @@ private fun mainApp() {
                     state = state
                 ) {
                     CompositionLocalProvider(LocalAppBarMediator provides AppBarMediator()) {
-                        MainContent(appComponent.mainComponent(componentContext))
+                        MainScreen(appComponent.mainComponent(componentContext))
                     }
                 }
+            }
 
-            } else {
-                DesktopApp(
-                    title = "Studiversity - Авторизация",
-                    onCloseRequest = ::exitApplication,
-                    state = rememberWindowState(size = DpSize(Dp.Unspecified, Dp.Unspecified))
-                ) {
-                    LoginScreen(appComponent.loginComponent(componentContext))
+            RootComponent.Child.Splash -> DesktopApp(
+                title = "Studiversity",
+                onCloseRequest = ::exitApplication
+            ) {
+                CompositionLocalProvider(LocalAppBarMediator provides AppBarMediator()) {
+                    Box(Modifier.size(200.dp))
                 }
             }
         }
+
+//        val isAuth by splashComponent.isAuth.collectAsState(null)
+//
+//        isAuth?.let {
+//            if (it) {
+//
+//            } else {
+//
+//            }
+//        }
     }
 }
 

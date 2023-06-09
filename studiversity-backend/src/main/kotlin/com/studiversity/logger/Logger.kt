@@ -1,5 +1,6 @@
 package com.studiversity.logger
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
+
 
 val logger = KotlinLogging.logger {}

@@ -49,13 +49,13 @@ class UserRepository @Inject constructor(
 
     suspend fun updateAvatar(userId: UUID, request: CreateFileRequest): Resource<String> {
         return fetchResource { userApi.updateAvatar(userId, request) }.onSuccess {
-            userLocalDataSource.updateAvatar(userId.toString(), it, true)
+            userLocalDataSource.updateAvatar(userId.toString(), it, false)
         }
     }
 
     suspend fun removeAvatar(userId: UUID): Resource<String> {
         return fetchResource { userApi.deleteAvatar(userId) }.onSuccess {
-            userLocalDataSource.updateAvatar(userId.toString(), it, false)
+            userLocalDataSource.updateAvatar(userId.toString(), it, true)
         }
     }
 

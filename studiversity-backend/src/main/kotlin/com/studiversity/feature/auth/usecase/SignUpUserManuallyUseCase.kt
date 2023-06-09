@@ -15,9 +15,7 @@ class SignUpUserManuallyUseCase(
 ) {
     suspend operator fun invoke(createUserRequest: CreateUserRequest) = transactionWorker.suspendInvoke {
         val password = PasswordGenerator().generate()
-        logger.info { "generated password for user: ${createUserRequest.email}, password: $password    @Assisted\n" +
-                "    componentContext: ComponentContext\n" +
-                "):ComponentContext by componentContext {" }
+        logger.info { "generated password for user: ${createUserRequest.email}, password: $password" }
         val user = userRepository.add(createUserRequest, BCrypt.hashpw(password, BCrypt.gensalt()))
         emailSender.sendSimpleEmail(
             createUserRequest.email,

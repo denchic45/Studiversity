@@ -13,7 +13,11 @@ class CheckDomainUseCase(
     private val authService: AuthService,
 ) {
     suspend operator fun invoke(url: String): Resource<Pong> {
-        val response = authService.checkDomain(url)
+        val response = try {
+            authService.checkDomain(url)
+        } catch (e: Exception) {
+            return resourceOf(Cause(e))
+        }
         return try {
             val pong = response.body<Pong>()
             resourceOf(pong)

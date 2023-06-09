@@ -1,9 +1,9 @@
 package com.denchic45.kts.util
 
-import java.io.File
+import okio.Path
 
 expect class SystemDirs() {
-    val appDir: File
-    val fileDir:File
-    val prefsDir: File
+    val appDir: Path
+    val fileDir: Path
+    val prefsDir: Path
 }

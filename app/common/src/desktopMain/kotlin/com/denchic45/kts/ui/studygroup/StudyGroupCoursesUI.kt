@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.ResourceContent
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.model.StudyGroupCourseItem
 import com.denchic45.kts.ui.studygroup.courses.StudyGroupCoursesComponent
@@ -37,19 +38,19 @@ import java.util.UUID
 
 @Composable
 fun StudyGroupCoursesScreen(studyGroupCoursesComponent: StudyGroupCoursesComponent) {
-    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         val courses by studyGroupCoursesComponent.courses.collectAsState()
-        courses.onSuccess {
-            StudyGroupCourseList(it)
+        ResourceContent(courses) {
+            StudyGroupCourses(it)
         }
     }
 }
 
 @Composable
-fun StudyGroupCourseList(list: List<StudyGroupCourseItem>) {
+fun StudyGroupCourses(list: List<StudyGroupCourseItem>) {
     Column {
         Spacer(Modifier.height(8.dp))
-        HeaderItemUI("${list.size} курсов")
+        HeaderItemUI("${list.size} курс(ов)")
         Spacer(Modifier.height(8.dp))
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -67,7 +68,7 @@ fun StudyGroupCourseList(list: List<StudyGroupCourseItem>) {
 @Composable
 fun StudyGroupCourseListItem(
     item: StudyGroupCourseItem,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),

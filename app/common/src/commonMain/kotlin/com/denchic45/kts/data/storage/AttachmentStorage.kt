@@ -18,7 +18,7 @@ class AttachmentStorage @javax.inject.Inject constructor(
     private val attachmentApi: AttachmentApi,
 ) {
 
-    val path: Path = systemDirs.fileDir.toOkioPath() / "attachments"
+    val path: Path = systemDirs.fileDir / "attachments"
 
     private val fileSystem = FileSystem.SYSTEM
 

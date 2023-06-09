@@ -68,7 +68,10 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun authedClient(application: AndroidApp): HttpClient = application.appComponent.authedClient
+    fun authedClient(application: AndroidApp): HttpClient {
+        return TODO()
+//        return application.appComponent.authedClient
+    }
 
 //  
 //    @Provides

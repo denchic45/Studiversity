@@ -1,7 +1,6 @@
 package com.denchic45.kts.util
 
-import java.io.File
+import okio.Path
 
-val SystemDirs.databaseFile: File
-    get() = File(File.separator + "databases" + File.separator + "database.db")
-        .relativeTo(appDir)
+ val SystemDirs.databasePath: Path
+    get() = appDir / "databases" / "database.db"

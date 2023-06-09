@@ -3,7 +3,7 @@
 
     <style name="Theme.Studiversity.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#000000</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/launch_screen</item>
 
     </style>
 </resources>

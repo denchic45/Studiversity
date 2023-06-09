@@ -10,6 +10,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.navigate
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -57,6 +58,7 @@ class MainComponent(
         ComponentContext,
     ) -> StudyGroupComponent,
     courseComponent: (
+        onFinish: () -> Unit,
         onStudyGroupOpen: (UUID) -> Unit,
         UUID,
         ComponentContext,
@@ -98,6 +100,7 @@ class MainComponent(
 
                 is Config.Course -> Child.Course(
                     courseComponent(
+                        navigation::pop,
                         { navigation.bringToFront(Config.StudyGroup(it)) },
                         config.courseId,
                         context
@@ -106,6 +109,7 @@ class MainComponent(
 
                 is Config.YourCourse -> Child.YourCourse(
                     courseComponent(
+                        navigation::pop,
                         { navigation.bringToFront(Config.StudyGroup(it)) },
                         config.courseId,
                         context
@@ -122,7 +126,8 @@ class MainComponent(
 
     val childOverlay = childOverlay(
         source = overlayNavigation,
-        handleBackButton = true
+        handleBackButton = true,
+        key = "MainChildOverlay"
     ) { config, context ->
         when (config) {
             is OverlayConfig.Confirm -> OverlayChild.Confirm(config)
@@ -174,10 +179,12 @@ class MainComponent(
     }
 
     fun onTimetableClick() {
+        onOverlayDismiss()
         navigation.bringToFront(Config.YourTimetables)
     }
 
     fun onStudyGroupsClick() {
+        onOverlayDismiss()
         navigation.bringToFront(Config.YourStudyGroups)
     }
 
@@ -190,6 +197,7 @@ class MainComponent(
     }
 
     fun onCourseClick(courseId: UUID) {
+        onOverlayDismiss()
         navigation.bringToFront(Config.Course(courseId))
     }
 

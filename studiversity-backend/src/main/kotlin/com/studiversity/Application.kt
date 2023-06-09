@@ -1,5 +1,7 @@
 package com.studiversity
 
+import com.denchic45.stuiversity.api.OrganizationResponse
+import com.denchic45.stuiversity.api.Pong
 import com.studiversity.database.DatabaseFactory
 import com.studiversity.di.configureDI
 import com.studiversity.feature.attachment.configureAttachments
@@ -27,10 +29,14 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import org.koin.ktor.ext.inject
-import java.util.*
 
 fun main() {
     startServer()
+//    Kweb(port = 16097) {
+//        doc.body {
+//            h1().text("Hello World!")
+//        }
+//    }
 }
 
 private lateinit var engine: ApplicationEngine
@@ -88,7 +94,6 @@ fun Application.configurePing() {
         }
     }
 }
-
 
 
 private fun Application.configureDatabase() {

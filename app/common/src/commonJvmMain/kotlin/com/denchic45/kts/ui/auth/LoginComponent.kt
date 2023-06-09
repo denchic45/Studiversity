@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.kts.PlatformMain
 import com.denchic45.kts.domain.EmptyResource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.resourceOf
@@ -53,7 +54,7 @@ class LoginComponent(
         componentScope.launch {
             state.result = resourceOf()
             val result = signInWithEmailAndPasswordUseCase(state.email, state.password)
-            withContext(Dispatchers.Main.immediate) {
+            withContext(Dispatchers.PlatformMain) {
                 state.result = result
                 result.onSuccess {
                     onSuccess()

@@ -7,11 +7,14 @@ import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.overlay
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.kts.PlatformMain
 import com.denchic45.kts.domain.usecase.ObserveAuthStateUseCase
 import com.denchic45.kts.ui.MainComponent
 import com.denchic45.kts.ui.auth.AuthComponent
 import com.denchic45.kts.util.componentScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
@@ -40,15 +43,18 @@ class RootComponent(
         }
     )
 
-    val isReady = childActive.overlay?.instance !is Child.Splash
+    val isReady
+        get() = childActive.overlay?.instance !is Child.Splash
 
     init {
         componentScope.launch {
             observeAuthStateUseCase().collect {
-                if (it) {
-                    navigation.activate(Config.Main)
-                } else {
-                    navigation.activate(Config.Auth)
+                withContext(Dispatchers.PlatformMain) {
+                    if (it) {
+                        navigation.activate(Config.Main)
+                    } else {
+                        navigation.activate(Config.Auth)
+                    }
                 }
             }
         }

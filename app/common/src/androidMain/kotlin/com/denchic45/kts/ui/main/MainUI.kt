@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.SpaceDashboard
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -82,6 +83,8 @@ import com.denchic45.kts.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.kts.ui.course.CourseScreen
 import com.denchic45.kts.ui.get
 import com.denchic45.kts.ui.getPainter
+import com.denchic45.kts.ui.navigation.OverlayChild
+import com.denchic45.kts.ui.profile.ProfileScreen
 import com.denchic45.kts.ui.root.RootStackScreen
 import com.denchic45.kts.ui.studygroup.StudyGroupScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -203,6 +206,25 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
             }
         ) { paddingValues ->
             ScreenContainer(paddingValues, stack)
+            Box(Modifier.padding(paddingValues)) {
+                val overlay by component.childOverlay.subscribeAsState()
+                overlay.overlay?.let {
+                    when (val child = it.instance) {
+                        is OverlayChild.Confirm -> with(child.config) {
+                            TODO()
+//                        ConfirmDialog(
+//                            title = title,
+//                            text = text,
+//                            onConfirm = {},
+//                            onDismiss = component::onOverlayDismiss
+//                        )
+                        }
+
+                        is OverlayChild.YourProfile -> ProfileScreen(component = child.component)
+                        is OverlayChild.Settings -> TODO()
+                    }
+                }
+            }
         }
     }
 }
@@ -433,7 +455,7 @@ private fun DrawerContent(
                     },
                     icon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_control_panel),
+                            imageVector = Icons.Outlined.SpaceDashboard,
                             contentDescription = "admin dashboard"
                         )
                     },

@@ -30,7 +30,7 @@ fun Application.studyGroupRoutes() {
                 install(RequestValidation) {
                     validate<CreateStudyGroupRequest> { request ->
                         buildList {
-                            if (request.name.isEmpty() || request.name.onlyDigits())
+                            if (request.name.isEmpty())
                                 add(StudyGroupErrors.INVALID_GROUP_NAME)
 
                             if (request.academicYear.run { start > end })
@@ -45,7 +45,7 @@ fun Application.studyGroupRoutes() {
                     validate<UpdateStudyGroupRequest> { request ->
                         buildValidationResult {
                             request.name.ifPresent {
-                                condition(it.isNotEmpty() && !it.onlyDigits(), StudyGroupErrors.INVALID_GROUP_NAME)
+                                condition(it.isNotEmpty(), StudyGroupErrors.INVALID_GROUP_NAME)
                             }
                             request.academicYear.ifPresent {
                                 condition(it.run { start <= end }, StudyGroupErrors.INVALID_ACADEMIC_YEAR)

@@ -9,7 +9,7 @@ import javax.inject.Inject
 class ContentAttachmentLocalStorage @Inject constructor(systemDirs: SystemDirs) {
 
     private val internalDir = systemDirs.appDir
-    private val contentPDir = File("${internalDir.path}/contents")
+    private val contentPDir = File("${internalDir.toFile().path}/contents")
 
     fun delete(contentId: String) {
         val contentDir =

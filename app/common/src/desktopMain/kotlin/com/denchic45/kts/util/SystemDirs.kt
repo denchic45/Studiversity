@@ -1,18 +1,18 @@
 package com.denchic45.kts.util
 
 import net.harawata.appdirs.AppDirsFactory
-import okio.Path.Companion.toOkioPath
-import java.io.File
+import okio.Path
+import okio.Path.Companion.toPath
 
 actual class SystemDirs actual constructor() {
-    actual val appDir: File
-        get() = File(appPath)
+    actual val appDir: Path
+        get() = appPath.toPath()
 
-    actual val fileDir:File
-        get() = (appDir.toOkioPath() / "files").toFile()
+    actual val fileDir: Path
+        get() = appDir / "files"
 
-    actual val prefsDir: File
-        get() = File("preferences").relativeTo(appDir)
+    actual val prefsDir: Path
+        get() = appDir / "preferences"
 
     companion object {
         val appPath: String = AppDirsFactory

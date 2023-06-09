@@ -8,14 +8,13 @@ import com.denchic45.kts.R
 import com.denchic45.kts.di.viewmodel.ViewModelFactory
 import com.denchic45.kts.ui.login.LoginActivity
 import com.denchic45.kts.ui.main.MainActivity
-import com.denchic45.kts.ui.main.OldMainActivity
 import com.denchic45.kts.ui.splash.SplashViewModel.NextActivity
 import dagger.android.AndroidInjection
 import javax.inject.Inject
 
 class SplashActivity : AppCompatActivity() {
 
-    @Inject
+
     lateinit var viewModelFactory: ViewModelFactory<SplashViewModel>
     private val viewModel: SplashViewModel by viewModels { viewModelFactory }
 

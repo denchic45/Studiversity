@@ -19,7 +19,7 @@ kotlin {
     }
 
     sourceSets {
-        val ktorVersion = "2.0.3"
+        val ktorVersion = "2.3.1"
         val koinVersion = "3.2.0"
         val decomposeVersion = "1.0.0"
         val daggerVersion = "2.44"
@@ -72,6 +72,8 @@ kotlin {
                 // kotlin-result
                 api("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
                 api("com.michael-bull.kotlin-result:kotlin-result-coroutines:1.1.17")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
             }
         }
         val commonTest by getting {
@@ -218,6 +220,10 @@ kotlin {
 
                 // Decompose
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.4")
+
+                implementation ("com.github.Dansoftowner:jSystemThemeDetector:3.6")
 
                 dependsOn(commonJvmMain)
             }

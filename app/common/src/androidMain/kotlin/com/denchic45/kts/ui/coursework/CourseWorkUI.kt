@@ -56,13 +56,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.data.domain.model.FileState
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.DropdownMenuItem2
-import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.updateAppBarState
 import com.denchic45.kts.ui.coursework.details.CourseWorkDetailsScreen
 import com.denchic45.kts.ui.coursework.submissiondetails.SubmissionDetailsContent
 import com.denchic45.kts.ui.coursework.submissions.CourseWorkSubmissionsScreen
@@ -108,20 +107,33 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     }
 
     val allowEdit by component.allowEditWork.collectAsState(initial = false)
-    val appBarState = LocalAppBarState.current
-    component.lifecycle.doOnStart {
-        appBarState.content = AppBarContent(dropdownItems = if (allowEdit)
-            listOf(
-                DropdownMenuItem2(
-                    title = uiTextOf("Изменить"),
-                    onClick = { component.onEditClick() }
-                ),
-                DropdownMenuItem2(
-                    title = uiTextOf("Удалить"),
-                    onClick = { component.onRemoveClick() }
-                )
-            ) else emptyList())
-    }
+//    val appBarState = LocalAppBarState.current
+
+    updateAppBarState(allowEdit, AppBarContent(dropdownItems = if (allowEdit)
+        listOf(
+            DropdownMenuItem2(
+                title = uiTextOf("Изменить"),
+                onClick = component::onEditClick
+            ),
+            DropdownMenuItem2(
+                title = uiTextOf("Удалить"),
+                onClick = component::onRemoveClick
+            )
+        ) else emptyList()))
+
+//    component.lifecycle.doOnStart {
+//        appBarState.content = AppBarContent(dropdownItems = if (allowEdit)
+//            listOf(
+//                DropdownMenuItem2(
+//                    title = uiTextOf("Изменить"),
+//                    onClick = { component.onEditClick() }
+//                ),
+//                DropdownMenuItem2(
+//                    title = uiTextOf("Удалить"),
+//                    onClick = { component.onRemoveClick() }
+//                )
+//            ) else emptyList())
+//    }
 
     component.openAttachment.collectWithLifecycle {
         attachmentViewer.openAttachment(it)

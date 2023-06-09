@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.kts.PlatformMain
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.domain.mapResource
 import com.denchic45.kts.domain.onSuccess
@@ -87,7 +88,7 @@ class YourStudyGroupsComponent(
             }
         }.onEach { resource ->
             resource.onSuccess { selectedStudyGroup ->
-                withContext(Dispatchers.Main) {
+                withContext(Dispatchers.Main.immediate) {
                     studyGroupNavigation.activate(StudyGroupConfig(selectedStudyGroup.id))
                 }
             }

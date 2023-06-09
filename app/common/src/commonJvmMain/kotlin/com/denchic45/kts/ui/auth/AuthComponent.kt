@@ -2,6 +2,7 @@ package com.denchic45.kts.ui.auth
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
@@ -41,6 +42,7 @@ class AuthComponent(
     val childStack = childStack(
         source = navigation,
         initialConfiguration = Config.Welcome,
+        handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
                 Config.Welcome -> Child.Welcome(
@@ -51,7 +53,9 @@ class AuthComponent(
                     loginComponent(
                         ::onResetPassword,
                         ::onRegister,
-                        { progress.update { 1f } },
+                        {
+//                            progress.update { 1f }
+                        },
                         context
                     )
                 )
@@ -67,21 +71,21 @@ class AuthComponent(
         })
 
 
-    val progress = MutableStateFlow(0f)
+//    val progress = MutableStateFlow(0f)
 
     private fun onResetPassword() {
-        progress.update { 0.25f }
+//        progress.update { 0.25f }
         navigation.push(Config.ResetPassword)
     }
 
     private fun onRegister() {
-        progress.update { 0.25f }
+//        progress.update { 0.25f }
         navigation.push(Config.Registration)
     }
 
     private fun onLogin() {
-        navigation.pop()
-        progress.update { 0.5f }
+        navigation.bringToFront(Config.Login)
+//        progress.update { 0.5f }
     }
 
     @Parcelize

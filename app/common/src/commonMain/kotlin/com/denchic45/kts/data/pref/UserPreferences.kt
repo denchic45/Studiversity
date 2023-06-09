@@ -20,5 +20,6 @@ class UserPreferences(val settings: ObservableSettings) : Settings by settings {
     var email: String by string(defaultValue = "")
     var isAdmin: Boolean by boolean(defaultValue = true)
 
-    val observeId = settings.getStringFlow("id",defaultValue = "")
+    @OptIn(ExperimentalSettingsApi::class)
+    val observeId = settings.getStringFlow("id",defaultValue = id)
 }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -61,12 +62,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CourseScreen(component: CourseComponent) {
-    val appBarState = LocalAppBarState.current
-    component.lifecycle.apply {
-        doOnStop {
-            appBarState.expand()
-        }
-    }
+//    val appBarState = LocalAppBarState.current
+//    component.lifecycle.apply {
+//        doOnStop {
+//            appBarState.expand()
+//        }
+//    }
+
 
     val course by component.course.collectAsState()
     val allowEdit by component.allowEdit.collectAsState(false)
@@ -97,6 +99,7 @@ fun CourseScreen(component: CourseComponent) {
                     course = course,
                     allowEdit = allowEdit,
                     children = children,
+                    onBackClick = component::onCloseClick,
                     onCourseEditClick = component::onCourseEditClick,
                     onTopicsEditClick = component::onOpenTopicsClick,
                     onAddWorkClick = component::onAddWorkClick
@@ -115,6 +118,7 @@ fun CourseContent(
     course: Resource<CourseResponse>,
     allowEdit: Boolean,
     children: List<CourseComponent.TabChild>,
+    onBackClick:()->Unit,
     onCourseEditClick: () -> Unit,
     onTopicsEditClick: () -> Unit,
     onAddWorkClick: () -> Unit,
@@ -164,6 +168,9 @@ fun CourseContent(
                         }
                     }
                 },
+                navigationIcon = { IconButton(onClick = onBackClick) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "back")
+                }},
                 scrollBehavior = scrollBehavior
             )
         },

@@ -128,9 +128,12 @@ dependencies {
 
     implementation("org.postgresql:postgresql:42.5.1")
 
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
+//    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
+    implementation ("io.github.oshai:kotlin-logging-jvm:4.0.0-beta-29")
 
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.16")
+
+//    implementation("org.slf4j:slf4j-simple:2.0.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")

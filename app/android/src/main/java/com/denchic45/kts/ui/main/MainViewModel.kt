@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(
+class MainViewModel constructor(
     private val interactor: MainInteractor,
 //    private val appVersionService: GoogleAppVersionService,
     private val findYourCoursesUseCase: FindYourCoursesUseCase,

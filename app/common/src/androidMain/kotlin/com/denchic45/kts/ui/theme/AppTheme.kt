@@ -15,7 +15,7 @@ fun AppTheme(
     content: @Composable () -> Unit
 ) {
     val rememberedAppBarState = rememberAppBarState()
-    CommonAppTheme(useDarkTheme, AndroidTypography) {
+    CommonAppTheme(useDarkTheme) {
         CompositionLocalProvider(LocalAppBarState provides rememberedAppBarState) {
             Surface {
                 content()

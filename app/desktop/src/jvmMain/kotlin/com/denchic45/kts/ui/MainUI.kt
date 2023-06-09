@@ -7,14 +7,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
@@ -23,31 +25,44 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import com.denchic45.kts.ui.MainComponent.Child
+import com.denchic45.kts.domain.onLoading
+import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.confirm.ConfirmDialog
+import com.denchic45.kts.ui.course.CourseScreen
 import com.denchic45.kts.ui.navigation.OverlayChild
 import com.denchic45.kts.ui.root.RootScreen
+import com.denchic45.kts.ui.studygroup.StudyGroupScreen
 import com.denchic45.kts.ui.theme.toDrawablePath
+import com.seiko.imageloader.rememberAsyncImagePainter
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainContent(mainComponent: MainComponent) {
+fun MainScreen(component: MainComponent) {
     Surface(tonalElevation = 1.dp) {
-        val childStack by mainComponent.stack.subscribeAsState()
-        val activeComponent = childStack.active.instance
+        val childStack by component.stack.subscribeAsState()
+        val activeChild = childStack.active.instance
+        val availableScreens by component.availableScreens.collectAsState()
+        val userInfo by component.userInfo.collectAsState()
+
         Row {
             NavigationRail(
                 header = {
                     Spacer(Modifier.height(56.dp))
+
                     IconButton(onClick = {}) {
-                        Image(
-                            painter = rememberVectorPainter(Icons.Outlined.AccountCircle),
-                            contentDescription = "Avatar",
-                            modifier = Modifier.size(40.dp)
-                                .clip(CircleShape)
-                                .background(Color.LightGray),
-                        )
+                        userInfo.onSuccess {
+                            Image(
+                                painter = rememberAsyncImagePainter(it.avatarUrl),
+                                contentDescription = "Avatar",
+                                modifier = Modifier.size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.LightGray),
+                            )
+                        }.onLoading {
+                            CircularProgressIndicator(Modifier.size(24.dp))
+                        }
+
                     }
                     IconButton(onClick = {}) {
                         Icon(
@@ -61,12 +76,65 @@ fun MainContent(mainComponent: MainComponent) {
                 NavigationRailItem(icon = {
                     Icon(painterResource("ic_timetable".toDrawablePath()), null)
                 },
-                    selected = activeComponent is Child.YourTimetables,
-                    onClick = { mainComponent.onTimetableClick() })
+                    selected = activeChild is MainComponent.Child.YourTimetables,
+                    onClick = { component.onTimetableClick() })
                 NavigationRailItem(
                     icon = { Icon(painterResource("ic_study_group".toDrawablePath()), null) },
-                    selected = activeComponent is Child.YourStudyGroups,
-                    onClick = { mainComponent.onStudyGroupsClick() })
+                    selected = activeChild is MainComponent.Child.YourStudyGroups,
+                    onClick = { component.onStudyGroupsClick() })
+
+                if (availableScreens.yourWorks) {
+                    NavigationRailItem(
+                        icon = {
+                            Icon(
+                                painter = painterResource("ic_works".toDrawablePath()),
+                                contentDescription = "works"
+                            )
+                        },
+                        selected = activeChild is MainComponent.Child.AdminDashboard,
+                        onClick = {
+                            component.onAdminDashboardClick()
+                        }
+                    )
+                }
+
+                Divider(Modifier.width(48.dp).align(Alignment.CenterHorizontally))
+
+                NavigationRailItem(
+                    icon = {
+                        Icon(
+                            painter = painterResource("ic_time".toDrawablePath()),
+                            contentDescription = "schedule"
+                        )
+                    },
+                    selected = activeChild is MainComponent.Child.AdminDashboard,
+                    onClick = {
+                        component.onAdminDashboardClick()
+                    }
+                )
+                if (availableScreens.adminDashboard) {
+                    NavigationRailItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Widgets,
+                                contentDescription = "admin dashboard"
+                            )
+                        },
+                        selected = activeChild is MainComponent.Child.AdminDashboard,
+                        onClick = component::onAdminDashboardClick
+                    )
+                }
+
+                NavigationRailItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = "settings"
+                        )
+                    },
+                    selected = activeChild is MainComponent.Child.AdminDashboard,
+                    onClick = component::onSettingsClick
+                )
 //                Spacer(Modifier.weight(1f))
             }
 
@@ -109,20 +177,20 @@ fun MainContent(mainComponent: MainComponent) {
                     color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
                 ) {
                     when (val child = childStack.active.instance) {
-                        is Child.YourTimetables -> RootScreen(child.component)
-                        is Child.YourStudyGroups -> {
+                        is MainComponent.Child.YourTimetables -> RootScreen(child.component)
+                        is MainComponent.Child.YourStudyGroups -> {
                             RootScreen(child.component)
                         }
 
-                        is Child.Works -> TODO()
-                        is Child.StudyGroup -> TODO()
-                        is Child.Course -> TODO()
-                        is Child.AdminDashboard -> TODO()
-                        is Child.YourCourse -> TODO()
+                        is MainComponent.Child.Works -> TODO()
+                        is MainComponent.Child.StudyGroup -> StudyGroupScreen(child.component)
+                        is MainComponent.Child.Course -> CourseScreen(child.component)
+                        is MainComponent.Child.AdminDashboard -> TODO()
+                        is MainComponent.Child.YourCourse -> CourseScreen(child.component)
                     }
                 }
 
-                val overlay by mainComponent.childOverlay.subscribeAsState()
+                val overlay by component.childOverlay.subscribeAsState()
                 overlay.overlay?.let {
                     when (val instance = it.instance) {
                         is OverlayChild.Confirm -> with(instance.config) {
@@ -130,7 +198,7 @@ fun MainContent(mainComponent: MainComponent) {
                                 title = title,
                                 text = text,
                                 onConfirm = {},
-                                onDismiss = mainComponent::onOverlayDismiss
+                                onDismiss = component::onOverlayDismiss
                             )
                         }
 

@@ -40,8 +40,6 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
     val studyGroupName = studyGroup.ifSuccess { it.name } ?: ""
     val allowEdit = allowEditResource.ifSuccess { it } ?: false
 
-
-
     StudyGroupContent(
         children = component.childTabs,
         onTabSelect = component::onTabSelect

@@ -1,38 +1,55 @@
 package com.denchic45.kts.ui.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Password
+import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.AutofillNode
+import androidx.compose.ui.autofill.AutofillType
+import androidx.compose.ui.composed
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalAutofill
+import androidx.compose.ui.platform.LocalAutofillTree
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
 import com.denchic45.kts.WindowWidthSizeClass
 import com.denchic45.kts.ui.theme.calculateWindowSizeClass
+import com.denchic45.kts.ui.theme.spacing
 
 
 @Composable
@@ -56,62 +73,81 @@ fun LoginContent(
     onEmailType: (String) -> Unit,
     onPasswordType: (String) -> Unit,
     onSignInClick: () -> Unit,
-    onSignUpClick: () -> Unit
+    onSignUpClick: () -> Unit,
 ) {
-    Column {
+    Column(Modifier.fillMaxWidth()) {
         LoginTextFields(onEmailType, onPasswordType)
+//        Spacer(Modifier.height(MaterialTheme.spacing.normal))
         val register: @Composable () -> Unit = {
-            Text("или ")
-            ClickableText(
-                text = AnnotatedString("зарегистрируйтесь"),
-                onClick = { onSignUpClick() },
-                style = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.primary),
-            )
-
+            Row(Modifier, verticalAlignment = Alignment.CenterVertically) {
+                Text("В первый раз? ")
+                ClickableText(
+                    text = AnnotatedString("Зарегистрируйтесь!"),
+                    onClick = { onSignUpClick() },
+                    style = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.primary),
+                )
+            }
         }
         if (calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact) {
-            Column {
+            Column(Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.medium), horizontalAlignment = Alignment.CenterHorizontally) {
                 Button(onSignInClick) { Text("Войти") }
+                Spacer(Modifier.height(MaterialTheme.spacing.normal))
                 register()
             }
         } else {
-            Row {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Button(onSignInClick) { Text("Войти") }
+                Spacer(Modifier.width(MaterialTheme.spacing.normal))
                 register()
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun LoginTextFields(
     onEmailType: (String) -> Unit,
-    onPasswordType: (String) -> Unit
+    onPasswordType: (String) -> Unit,
 ) {
     var email by remember { mutableStateOf("") }
-    TextField(
+    OutlinedTextField(
         value = email,
         onValueChange = {
             email = it
             onEmailType(it)
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().autofill(
+            autofillTypes = listOf(AutofillType.EmailAddress),
+            onFill = {
+                email = it
+                onEmailType(it)
+            },
+        ),
+        leadingIcon = { Icon(Icons.Outlined.Email, null) },
         placeholder = { Text("Почта") },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         singleLine = true
     )
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(MaterialTheme.spacing.normal))
 
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    TextField(
+    OutlinedTextField(
         value = password,
         onValueChange = {
             password = it
             onPasswordType(it)
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().autofill(
+            autofillTypes = listOf(AutofillType.Password),
+            onFill = {
+                password = it
+                onPasswordType(it)
+            },
+        ),
+        leadingIcon = { Icon(Icons.Outlined.Lock, null) },
         placeholder = { Text("Пароль") },
         singleLine = true,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -128,4 +164,26 @@ fun LoginTextFields(
             }
         }
     )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+fun Modifier.autofill(
+    autofillTypes: List<AutofillType>,
+    onFill: ((String) -> Unit),
+) = composed {
+    val autofill = LocalAutofill.current
+    val autofillNode = AutofillNode(onFill = onFill, autofillTypes = autofillTypes)
+    LocalAutofillTree.current += autofillNode
+
+    this.onGloballyPositioned {
+        autofillNode.boundingBox = it.boundsInWindow()
+    }.onFocusChanged { focusState ->
+        autofill?.run {
+            if (focusState.isFocused) {
+                requestAutofillForNode(autofillNode)
+            } else {
+                cancelAutofillForNode(autofillNode)
+            }
+        }
+    }
 }

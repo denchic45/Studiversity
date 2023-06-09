@@ -1,5 +1,14 @@
 package com.denchic45.kts.ui.timetable
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.with
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -117,6 +126,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, component: YourTimetablesCom
 //    }
 //}
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TimetableContent(
     selectedDate: LocalDate,
@@ -139,6 +149,7 @@ fun TimetableContent(
                 if (maxWidth < 1000.dp)
                     Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
                 else Modifier
+
             Column(Modifier.fillMaxWidth()) {
                 TimetableBar(
                     onTodayClick = onTodayClick,
@@ -146,20 +157,45 @@ fun TimetableContent(
                     onNextWeekClick = onNextWeekClick,
                     selectedDate = selectedDate
                 )
-                Row {
-                    Box(Modifier.size(78.dp, 124.dp), contentAlignment = Alignment.BottomEnd) {
-                        Divider(Modifier.width(1.dp).height(24.dp))
+                val state = selectedDate to timetableResource
+                AnimatedContent(
+                    targetState = state,
+                    transitionSpec = {
+                        when {
+                            initialState.first > targetState.first -> {
+                                slideInHorizontally { -it / 6 } + fadeIn() with
+                                        slideOutHorizontally { it / 6 } + fadeOut()
+                            }
+
+                            initialState.first < targetState.first -> {
+                                slideInHorizontally { it / 6 } + fadeIn() with
+                                        slideOutHorizontally { -it / 6 } + fadeOut()
+                            }
+
+                            else -> EnterTransition.None with ExitTransition.None
+                        }
                     }
-                    DaysOfWeekHeader(modifierHorScroll, selectedDate)
-                }
-                Divider()
-                Row {
-                    timetableResource.onSuccess { state ->
-                        LessonOrders(verticalScroll, state.orders)
-                        LessonCells(modifierHorScroll, verticalScroll, state)
-                    }.onLoading {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            LinearProgressIndicator()
+                ) { timetableState ->
+                    Column {
+                        Row {
+                            Box(
+                                Modifier.size(78.dp, 124.dp),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+                                Divider(Modifier.width(1.dp).height(24.dp))
+                            }
+                            DaysOfWeekHeader(modifierHorScroll, selectedDate)
+                        }
+                        Divider()
+                        Row {
+                            timetableState.second.onSuccess { state ->
+                                LessonOrders(verticalScroll, state.orders)
+                                LessonCells(modifierHorScroll, verticalScroll, state)
+                            }.onLoading {
+                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    LinearProgressIndicator()
+                                }
+                            }
                         }
                     }
                 }
@@ -309,7 +345,7 @@ fun LessonCell(item: PeriodItem?) {
         item?.let {
             when (val details = item.details) {
                 is PeriodDetails.Lesson -> {
-                    Box(Modifier.size(32.dp)) {
+                    Box(Modifier.size(36.dp)) {
                         details.subjectIconUrl?.let {
                             Icon(
                                 painter = rememberAsyncImagePainter(it),
@@ -319,14 +355,14 @@ fun LessonCell(item: PeriodItem?) {
                             )
                         }
                     }
+                    Spacer(Modifier.weight(1f))
                     Text(
                         details.subjectName ?: "null",
-                        Modifier.padding(top = 8.dp),
+                        Modifier.padding(top = MaterialTheme.spacing.extraSmall),
                         style = MaterialTheme.typography.titleLarge
                     )
                     Text(
                         "2-й корпус",
-                        Modifier.padding(top = 4.dp),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

@@ -1,8 +1,8 @@
 package com.denchic45.kts.util
 
 import android.content.Context
+import okio.Path
 import okio.Path.Companion.toOkioPath
-import java.io.File
 
 actual class SystemDirs actual constructor() {
     lateinit var context: Context
@@ -13,14 +13,14 @@ actual class SystemDirs actual constructor() {
         this.context = context
     }
 
-    actual val appDir: File
+    actual val appDir: Path
         get() {
-            return context.filesDir!!.parentFile!!
+            return context.filesDir!!.parentFile!!.toOkioPath()
         }
 
-    actual val fileDir: File
-        get()  = context.filesDir!!
+    actual val fileDir: Path
+        get() = context.filesDir!!.toOkioPath()
 
-    actual val prefsDir: File
-        get() = (appDir.toOkioPath() / "shared_prefs").toFile()
+    actual val prefsDir: Path
+        get() = appDir / "shared_prefs"
 }

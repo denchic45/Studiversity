@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ResetPasswordViewModel @Inject constructor(
-    private val authService: AuthService,
+//    private val authService: AuthService,
 ) : BaseViewModel() {
 
     val showErrorFieldEmail = SingleLiveData<Boolean>()
@@ -21,7 +21,7 @@ class ResetPasswordViewModel @Inject constructor(
         showErrorFieldEmail.value = false
         viewModelScope.launch {
             try {
-                authService.resetPassword(email)
+//                authService.resetPassword(email)
                 showSnackBar("Письмо успешно отправлено на почту")
                 finish()
             } catch (t: Throwable) {

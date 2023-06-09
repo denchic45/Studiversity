@@ -19,7 +19,6 @@ import com.denchic45.kts.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.kts.ui.studygroup.members.StudyGroupMembersComponent
 import com.denchic45.kts.ui.studygroup.timetable.StudyGroupTimetableComponent
 import com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorComponent
-import com.denchic45.kts.ui.usereditor.UserEditorComponent
 import com.denchic45.kts.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.flow.Flow

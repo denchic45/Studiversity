@@ -49,7 +49,11 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.http.Url
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Component
@@ -62,40 +66,52 @@ abstract class NetworkComponent(
 ) {
     @LayerScope
     @Provides
-    fun guestClient(appPreferences: AppPreferences): GuestHttpClient = HttpClient(engine) {
-        defaultRequest {
-            url("http://192.168.0.104:8080/")
-        }
+    fun guestClient(): GuestHttpClient = HttpClient(engine) {
         installContentNegotiation()
     }
 
     @LayerScope
     @Provides
-    fun authApi(client: GuestHttpClient): AuthApi = AuthApiImpl(client)
+    fun authApi(client: HttpClient): AuthApi = AuthApiImpl(client)
 
     @LayerScope
     @Provides
     fun authedClient(appPreferences: AppPreferences): HttpClient = HttpClient(engine) {
         println("TOKENS: authedClient")
         defaultRequest {
-            url("http://192.168.0.104:8080/")
+            println("URL REQUEST: ${appPreferences.url} $this")
+            url(appPreferences.url)
         }
         installContentNegotiation()
+        install(Logging) {
+            logger = object : Logger {
+                override fun log(message: String) {
+                    println("HTTP Client: $message")
+                }
+            }
+            level = LogLevel.ALL
+        }
         install(WebSockets)
         install(Auth) {
             bearer {
+                sendWithoutRequest { request ->
+                    val b = request.url.host == Url(appPreferences.url).host
+                    println("sendWithoutRequest:$b")
+                    b
+                }
                 loadTokens {
                     println("TOKENS: appPreferences.token ${appPreferences.token}")
                     println("TOKENS: appPreferences.refreshToken ${appPreferences.refreshToken}")
                     BearerTokens(appPreferences.token, appPreferences.refreshToken)
                 }
                 refreshTokens {
-
+                    println("refresh tokens... ${this.oldTokens?.refreshToken}")
                     val result = AuthApiImpl(client)
                         .refreshToken(RefreshTokenRequest(appPreferences.refreshToken))
                     result.onSuccess {
                         appPreferences.token = it.token
                         appPreferences.refreshToken = it.refreshToken
+                        println("SUCCESS refresh tokens: ${appPreferences.token}")
                     }.onFailure {
                         println("FAILURE refresh tokens: ${it.error}")
                         appPreferences.token = ""

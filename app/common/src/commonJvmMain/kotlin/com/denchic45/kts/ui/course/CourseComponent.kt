@@ -84,6 +84,8 @@ class CourseComponent(
         ComponentContext,
     ) -> ProfileComponent,
     @Assisted
+    private val onFinish: () -> Unit,
+    @Assisted
     private val onStudyGroupOpen: (studyGroupId: UUID) -> Unit,
     @Assisted
     private val courseId: UUID,
@@ -259,5 +261,9 @@ class CourseComponent(
 
     override fun hasChildrenFlow(): Flow<Boolean> {
         return childSidebar.isActiveFlow()
+    }
+
+    fun onCloseClick() {
+     onFinish()
     }
 }

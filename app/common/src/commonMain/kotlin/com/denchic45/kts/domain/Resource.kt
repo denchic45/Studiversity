@@ -42,7 +42,7 @@ fun <T> ResponseResult<T>.toResource(): Resource<T> = mapBoth(
         Resource.Error(it.toFailure()).apply {
             when (val failure = failure) {
                 is Cause -> failure.throwable.printStackTrace()
-                is ClientError -> println(failure.response.error)
+                is ClientError -> println("Client error: ${failure.response.code} ${failure.response.error}")
                 Forbidden -> println("Forbidden")
                 NoConnection -> println("NoConnection")
                 NotFound -> println("NotFound")
@@ -94,7 +94,7 @@ inline fun <T, V> Resource<T>.map(transform: (T) -> V): Resource<V> {
     }
 }
 
-fun <T, V> Resource<T>.mapResource(function: (T) -> Resource<V>): Resource<V> {
+inline fun <T, V> Resource<T>.mapResource(function: (T) -> Resource<V>): Resource<V> {
     return when (this) {
         is Resource.Error -> this
         is Resource.Loading -> this

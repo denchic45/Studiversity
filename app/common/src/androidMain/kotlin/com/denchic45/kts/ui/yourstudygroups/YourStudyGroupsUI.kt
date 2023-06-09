@@ -1,6 +1,7 @@
 package com.denchic45.kts.ui.yourstudygroups
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.ifSuccess
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.domain.takeIfSuccess
+import com.denchic45.kts.ui.CircularLoadingBox
 import com.denchic45.kts.ui.appbar2.ActionMenuItem2
 import com.denchic45.kts.ui.appbar2.AppBarContent
 import com.denchic45.kts.ui.appbar2.LocalAppBarState
@@ -77,7 +79,7 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
                     YourStudyGroupScreen(component = it)
                 }
             }
-        }
+        } ?: CircularLoadingBox(Modifier.fillMaxSize())
     }
 }
 

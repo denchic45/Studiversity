@@ -9,6 +9,7 @@ import com.denchic45.kts.ui.navigation.RootStackChildrenContainer
 import com.denchic45.kts.ui.navigator.RootChild
 import com.denchic45.kts.ui.studygroup.StudyGroupScreen
 import com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsScreen
+import com.denchic45.kts.ui.yourtimetables.YourTimetablesScreen
 
 @Composable
 fun RootScreen(component: RootStackChildrenContainer) {
@@ -16,15 +17,12 @@ fun RootScreen(component: RootStackChildrenContainer) {
 
     Children(childStack) {
         when (val child = it.instance) {
+            is RootChild.YourTimetables -> YourTimetablesScreen(child.component)
             is RootChild.YourStudyGroups -> YourStudyGroupsScreen(child.component)
-
             is RootChild.StudyGroup -> StudyGroupScreen(child.component)
-
             is RootChild.Course -> CourseScreen(child.component)
-
             is RootChild.AdminDashboard -> TODO()
             is RootChild.Works -> TODO()
-            is RootChild.YourTimetables -> TODO()
             is RootChild.CourseEditor -> TODO()
             is RootChild.CourseWork -> TODO()
             is RootChild.CourseWorkEditor -> TODO()

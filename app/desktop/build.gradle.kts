@@ -17,6 +17,10 @@ kotlin {
                 jvmTarget = "17"
             }
         }
+        configurations.all {
+            // some dependencies contains it, this causes an exception to initialize the Main dispatcher in desktop
+            exclude("org.jetbrains.kotlinx", "kotlinx-coroutines-android")
+        }
         withJava()
         kapt {
             correctErrorTypes = true

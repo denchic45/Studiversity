@@ -43,7 +43,7 @@ class ProfileComponent(
     @Assisted
     private val onStudyGroupOpen: (UUID) -> Unit,
     @Assisted
-    userId: UUID,
+  val  userId: UUID,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -97,9 +97,9 @@ class ProfileComponent(
                 overlayNavigation.activate(
                     if (profile.allowUpdateAvatar) {
                         if (user.generatedAvatar)
-                            OverlayConfig.AvatarDialog
-                        else
                             OverlayConfig.ImageChooser
+                        else
+                            OverlayConfig.AvatarDialog
                     } else {
                         OverlayConfig.FullAvatar
                     }

@@ -7,6 +7,9 @@ import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
+import io.ktor.client.plugins.plugin
 import io.ktor.client.request.delete
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
@@ -50,10 +53,15 @@ class UserApiImpl(private val client: HttpClient) : UserApi {
     }
 
     override suspend fun getMe(): ResponseResult<UserResponse> {
-        return client.get("/users/me").toResult()
+        return client.get("/users/me").apply {
+            client.plugin(Auth).providers
+                .filterIsInstance<BearerAuthProvider>()
+                .first()
+        }.toResult()
     }
 
     override suspend fun getById(userId: UUID): ResponseResult<UserResponse> {
+        println("REQUEST: GET USER BY ID: $userId")
         return client.get("/users/$userId").toResult()
     }
 
@@ -71,7 +79,7 @@ class UserApiImpl(private val client: HttpClient) : UserApi {
 
     override suspend fun updateAvatar(
         userId: UUID,
-        request: CreateFileRequest
+        request: CreateFileRequest,
     ): ResponseResult<String> {
         return client.put("/users/$userId/avatar") {
             contentType(ContentType.MultiPart.FormData)

@@ -2,8 +2,11 @@ package com.denchic45.kts.ui.studygroup
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
@@ -18,12 +21,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.model.GroupMembers
-import com.denchic45.kts.domain.onSuccess
+import com.denchic45.kts.ui.ResourceContent
 import com.denchic45.kts.ui.component.HeaderItemUI
 import com.denchic45.kts.ui.components.UserListItem
 import com.denchic45.kts.ui.model.UserItem
@@ -33,32 +37,43 @@ import java.util.UUID
 
 
 @Composable
-fun SelectableStudyGroupMembersScreen(component: StudyGroupMembersComponent) {
-    val selectedItemId by remember { mutableStateOf<UUID?>(null) }
-    StudyGroupMemberScreen(component, selectedItemId)
+fun SelectableStudyGroupMembersScreen(
+    component: StudyGroupMembersComponent,
+    selectedItemId: UUID?,
+) {
+    StudyGroupMemberScreen(component, selectedItemId, onMemberSelect = {
+        component.onMemberSelect(it)
+    })
 }
 
 @Composable
-private fun StudyGroupMemberScreen(component: StudyGroupMembersComponent, selectedItemId: UUID?) {
+private fun StudyGroupMemberScreen(
+    component: StudyGroupMembersComponent,
+    selectedItemId: UUID?,
+    onMemberSelect: (UUID) -> Unit,
+) {
     val members by component.members.collectAsState()
-    StudyGroupMemberContent(members, component, selectedItemId)
+    StudyGroupMemberContent(members, onMemberSelect = {
+        onMemberSelect(it)
+    }, component, selectedItemId)
 }
 
 @Composable
 private fun StudyGroupMemberContent(
     members: Resource<GroupMembers>,
+    onMemberSelect: (UUID) -> Unit,
     component: StudyGroupMembersComponent,
     selectedItemId: UUID?,
 ) {
-    members.let {
-        val options by component.memberAction.collectAsState()
-        it.onSuccess {
+    ResourceContent(members) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            val options by component.memberAction.collectAsState()
             MemberList(
                 curator = it.curator,
                 students = it.students,
                 selectedItemId = selectedItemId,
                 actions = options,
-                onClick = component::onMemberSelect,
+                onClick = { onMemberSelect(it) },
                 onExpandActions = component::onExpandMemberAction,
                 onClickAction = component::onClickMemberAction,
                 onDismissAction = component::onDismissAction
@@ -133,7 +148,7 @@ fun MemberList(
     actions: Pair<List<StudyGroupMembersComponent.StudentAction>, UUID>?,
 ) {
     LazyColumn(
-        modifier,
+        modifier.widthIn(max = 960.dp),
         contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp, start = 24.dp, end = 24.dp)
     ) {
 

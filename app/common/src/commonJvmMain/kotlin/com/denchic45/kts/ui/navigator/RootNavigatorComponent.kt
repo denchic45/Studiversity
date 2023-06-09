@@ -34,6 +34,7 @@ class RootNavigatorComponent(
         onStudyGroupOpen: (UUID) -> Unit, ComponentContext,
     ) -> YourStudyGroupsComponent,
     courseComponent: (
+        onFinish: () -> Unit,
         onStudyGroupOpen: (UUID) -> Unit,
         UUID,
         ComponentContext,
@@ -84,6 +85,7 @@ class RootNavigatorComponent(
 
                 is RootConfig.Course -> RootChild.Course(
                     courseComponent(
+                        navigation::pop,
                         { navigation.bringToFront(RootConfig.StudyGroup(it)) },
                         config.courseId,
                         context

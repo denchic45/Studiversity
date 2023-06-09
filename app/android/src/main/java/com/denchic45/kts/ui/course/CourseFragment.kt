@@ -14,7 +14,6 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.defaultComponentContext
 import com.denchic45.kts.databinding.FragmentCourseBinding
-import com.denchic45.kts.ui.appbar.AppBarInteractor
 import com.denchic45.kts.ui.base.HasNavArgs
 import com.denchic45.kts.ui.theme.AppTheme
 import com.denchic45.stuiversity.util.toUUID
@@ -24,9 +23,10 @@ import java.util.*
 @Inject
 class CourseFragment(
     component: (
+        onFinish: () -> Unit,
         onStudyGroupOpen: (UUID) -> Unit,
         UUID,
-        ComponentContext
+        ComponentContext,
     ) -> CourseComponent,
 ) : Fragment(), HasNavArgs<CourseFragmentArgs> {
 
@@ -34,7 +34,14 @@ class CourseFragment(
 
     val component: CourseComponent by lazy {
         component(
-            {findNavController().navigate(CourseFragmentDirections.actionGlobalStudyGroupFragment(it.toString()))},
+            findNavController()::popBackStack,
+            {
+                findNavController().navigate(
+                    CourseFragmentDirections.actionGlobalStudyGroupFragment(
+                        it.toString()
+                    )
+                )
+            },
             navArgs.courseId.toUUID(),
             defaultComponentContext(requireActivity().onBackPressedDispatcher)
         )

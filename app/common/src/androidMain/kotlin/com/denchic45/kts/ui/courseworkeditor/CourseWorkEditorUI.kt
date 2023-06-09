@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -56,14 +58,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.kts.domain.Resource
 import com.denchic45.kts.domain.onLoading
 import com.denchic45.kts.domain.onSuccess
 import com.denchic45.kts.ui.DropdownMenuItem
 import com.denchic45.kts.ui.appbar2.ActionMenuItem2
 import com.denchic45.kts.ui.appbar2.AppBarContent
-import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.updateAppBarState
 import com.denchic45.kts.ui.asString
 import com.denchic45.kts.ui.attachment.AttachmentListItem
 import com.denchic45.kts.ui.component.HeaderItemUI
@@ -85,7 +86,7 @@ import java.time.ZoneId
 
 @Composable
 fun CourseWorkEditorScreen(
-    component: CourseWorkEditorComponent
+    component: CourseWorkEditorComponent,
 ) {
 
     val context = LocalContext.current
@@ -110,10 +111,8 @@ fun CourseWorkEditorScreen(
     val attachments by component.attachmentItems.collectAsState()
     val allowSave by component.allowSave.collectAsState()
 
-    val appBarState = LocalAppBarState.current
-
-    component.lifecycle.doOnStart {
-        appBarState.content = AppBarContent(
+    updateAppBarState(
+        allowSave, AppBarContent(
             actionItems = listOf(
                 ActionMenuItem2(
                     icon = uiIconOf(Icons.Default.Done),
@@ -122,7 +121,7 @@ fun CourseWorkEditorScreen(
                 )
             )
         )
-    }
+    )
 
     CourseWorkEditorContent(
         stateResource = state,
@@ -154,10 +153,15 @@ fun CourseWorkEditorContent(
     onDueDateTimeSelect: (LocalDate, LocalTime) -> Unit,
     onDueDateTimeClear: () -> Unit,
 ) {
-    Surface {
+    val scrollState = rememberScrollState()
+    Surface(
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+    ) {
         stateResource.onSuccess { state ->
             Column(
-                Modifier.fillMaxSize()
+
             ) {
                 var showDatePicker by remember { mutableStateOf(false) }
                 var showTimePicker by remember { mutableStateOf(false) }

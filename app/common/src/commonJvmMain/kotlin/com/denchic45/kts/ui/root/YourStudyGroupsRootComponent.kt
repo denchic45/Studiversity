@@ -33,11 +33,11 @@ class YourStudyGroupsRootComponent(
         UUID,
         ComponentContext,
     ) -> StudyGroupComponent,
-    courseComponent: (
-        onStudyGroupOpen: (UUID) -> Unit,
-        UUID,
-        ComponentContext,
-    ) -> CourseComponent,
+//    courseComponent: (
+//        onStudyGroupOpen: (UUID) -> Unit,
+//        UUID,
+//        ComponentContext,
+//    ) -> CourseComponent,
     courseEditorComponent: (
         onFinish: () -> Unit,
         UUID?,
