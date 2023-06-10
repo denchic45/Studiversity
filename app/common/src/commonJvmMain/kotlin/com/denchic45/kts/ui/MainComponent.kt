@@ -17,6 +17,8 @@ import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.kts.domain.MainInteractor
 import com.denchic45.kts.domain.ifSuccess
 import com.denchic45.kts.domain.stateInResource
+import com.denchic45.kts.domain.takeIfSuccess
+import com.denchic45.kts.domain.usecase.FindAssignedUserRolesInScopeUseCase
 import com.denchic45.kts.domain.usecase.FindYourCoursesUseCase
 import com.denchic45.kts.ui.admindashboard.AdminDashboardRootComponent
 import com.denchic45.kts.ui.course.CourseComponent
@@ -30,11 +32,13 @@ import com.denchic45.kts.ui.root.YourTimetablesRootComponent
 import com.denchic45.kts.ui.settings.SettingsComponent
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.util.componentScope
+import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -44,9 +48,10 @@ import java.util.UUID
 
 @Inject
 class MainComponent(
+    findYourCoursesUseCase: FindYourCoursesUseCase,
+    findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootComponent,
     yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootComponent,
-    findYourCoursesUseCase: FindYourCoursesUseCase,
     profileComponent: (
         onStudyGroupOpen: (UUID) -> Unit,
         UUID, ComponentContext,
@@ -146,6 +151,9 @@ class MainComponent(
         }
     }
 
+    private val assignedRolesInOrganization = findAssignedUserRolesInScopeUseCase()
+        .stateInResource(componentScope)
+
     private val hasStudyGroupsFlow = interactor.observeHasStudyGroups().onEach { hasStudyGroups ->
         if (!hasStudyGroups)
         /* remove StudyGroup config if exists */
@@ -157,9 +165,9 @@ class MainComponent(
     // TODO listen root role of current user to show works screen
     val availableScreens = combine(
         hasStudyGroupsFlow,
-        flowOf(true), // is teacher
-        flowOf(true), // is student
-        flowOf(true) // is moderator
+        assignedRolesInOrganization.map { it.takeIfSuccess()?.roles?.contains(Role.TeacherPerson)?: false }, // is teacher
+        assignedRolesInOrganization.map { it.takeIfSuccess()?.roles?.contains(Role.StudentPerson)?: false }, // is student
+        assignedRolesInOrganization.map { it.takeIfSuccess()?.roles?.contains(Role.Moderator)?: false },// is moderator
     ) { hasStudyGroups, isTeacher, isStudent, isModerator ->
         AvailableScreens(
             yourStudyGroups = hasStudyGroups,

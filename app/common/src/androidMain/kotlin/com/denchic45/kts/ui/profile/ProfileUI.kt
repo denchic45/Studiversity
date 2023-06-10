@@ -73,16 +73,17 @@ import java.util.UUID
 @Composable
 fun ProfileScreen(component: ProfileComponent) {
 
-    updateAppBarState(AppBarContent())
-
     val viewStateResource by component.viewState.collectAsState()
     val childOverlay by component.childOverlay.subscribeAsState()
 
-
     Surface {
         Box(modifier = Modifier.fillMaxSize()) {
-            ProfileContent(viewStateResource, component::onAvatarClick, component::onStudyGroupClick)
-
+            updateAppBarState(AppBarContent())
+            ProfileContent(
+                viewStateResource,
+                component::onAvatarClick,
+                component::onStudyGroupClick
+            )
             viewStateResource.onSuccess { viewState ->
                 childOverlay.overlay?.let {
                     when (it.instance) {
@@ -99,12 +100,22 @@ fun ProfileScreen(component: ProfileComponent) {
                                     ListItem(
                                         modifier = Modifier.clickable(onClick = component::onUpdateAvatarClick),
                                         headlineContent = { Text("Изменить фото") },
-                                        leadingContent = { Icon(Icons.Outlined.Edit, "update photo") }
+                                        leadingContent = {
+                                            Icon(
+                                                Icons.Outlined.Edit,
+                                                "update photo"
+                                            )
+                                        }
                                     )
                                     ListItem(
                                         modifier = Modifier.clickable(onClick = component::onRemoveAvatarClick),
                                         headlineContent = { Text("Удалить фото") },
-                                        leadingContent = { Icon(Icons.Outlined.Delete, "delete photo") }
+                                        leadingContent = {
+                                            Icon(
+                                                Icons.Outlined.Delete,
+                                                "delete photo"
+                                            )
+                                        }
                                     )
                                 }
                             }
@@ -303,14 +314,15 @@ private fun ProfileStudyGroups(
                 }
             }
 
-            AlertDialog(onDismissRequest = { showStudyGroups = false }) {
-                studyGroups.forEach {
-                    StudyGroupListItem(
-                        item = it,
-                        modifier = Modifier.clickable { onStudyGroupClick(it.id) }
-                    )
+            if (showStudyGroups)
+                AlertDialog(onDismissRequest = { showStudyGroups = false }) {
+                    studyGroups.forEach {
+                        StudyGroupListItem(
+                            item = it,
+                            modifier = Modifier.clickable { onStudyGroupClick(it.id) }
+                        )
+                    }
                 }
-            }
         }
     }
 }

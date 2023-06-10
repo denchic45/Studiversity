@@ -9,10 +9,7 @@ import com.studiversity.feature.membership.usecase.FindMembershipByScopeUseCase
 import com.studiversity.feature.membership.usecase.RemoveMemberFromScopeUseCase
 import com.studiversity.feature.membership.usecase.RemoveSelfMemberFromScopeUseCase
 import com.studiversity.feature.role.RoleErrors
-import com.studiversity.feature.role.usecase.FindMembersInScopeUseCase
-import com.studiversity.feature.role.usecase.RequireAvailableRolesInScopeUseCase
-import com.studiversity.feature.role.usecase.RequireCapabilityUseCase
-import com.studiversity.feature.role.usecase.RequirePermissionToAssignRolesUseCase
+import com.studiversity.feature.role.usecase.*
 import com.studiversity.ktor.ForbiddenException
 import com.studiversity.ktor.claimId
 import com.studiversity.ktor.currentUserId
@@ -22,7 +19,6 @@ import com.studiversity.validation.buildValidationResult
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.*
 import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
@@ -72,13 +68,16 @@ fun Route.membersRoute() {
         val requireAvailableRolesInScope: RequireAvailableRolesInScopeUseCase by inject()
         val requirePermissionToAssignRoles: RequirePermissionToAssignRolesUseCase by inject()
         val findMembersInScope: FindMembersInScopeUseCase by inject()
+        val existMemberInScopeUseCase: ExistMemberInScopeUseCase by inject()
         val membershipService: MembershipService by inject()
 
         get {
             val scopeId = call.parameters["scopeId"]!!.toUUID()
-            val currentUserId = call.principal<JWTPrincipal>()!!.payload.getClaim("sub").asString().toUUID()
+            val currentUserId = call.currentUserId()
 
-            requireCapability(currentUserId, Capability.ReadMembers, scopeId)
+
+            if (!existMemberInScopeUseCase(currentUserId, scopeId))
+                requireCapability(currentUserId, Capability.ReadMembers, scopeId)
 
             findMembersInScope(scopeId).apply {
                 call.respond(HttpStatusCode.OK, this)

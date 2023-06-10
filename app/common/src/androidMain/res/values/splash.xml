@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="Theme.Studiversity.Splash" parent="Theme.SplashScreen">
+
+        <!-- added in API 27 -->
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <!-- required to contrast the dark buttons -->
+        <item name="android:navigationBarColor">@android:color/white</item>
+
         <item name="windowSplashScreenBackground">#FFFFFF</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/launch_screen</item>
         <item name="android:statusBarColor">@android:color/transparent</item>

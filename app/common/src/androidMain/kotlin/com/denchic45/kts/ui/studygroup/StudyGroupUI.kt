@@ -45,22 +45,25 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
         onTabSelect = component::onTabSelect
     )
 
-    childSidebar.overlay?.let {
-        when (val child = it.instance) {
+    childSidebar.overlay.let {
+        when (val child = it?.instance) {
             is StudyGroupComponent.OverlayChild.Member -> ProfileScreen(child.component)
             is StudyGroupComponent.OverlayChild.StudyGroupEditor -> StudyGroupEditorScreen(child.component)
-        }
-    } ?: updateAppBarState(
-        studyGroupName, allowEdit, AppBarContent(
-            title = uiTextOf(studyGroupName),
-            actionItems = if (allowEdit) listOf(
-                ActionMenuItem2(
-                    icon = uiIconOf(Icons.Outlined.Edit),
-                    onClick = component::onEditClick
+            null -> {
+                updateAppBarState(
+                    studyGroupName, allowEdit, AppBarContent(
+                        title = uiTextOf(studyGroupName),
+                        actionItems = if (allowEdit) listOf(
+                            ActionMenuItem2(
+                                icon = uiIconOf(Icons.Outlined.Edit),
+                                onClick = component::onEditClick
+                            )
+                        ) else emptyList()
+                    )
                 )
-            ) else emptyList()
-        )
-    )
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)

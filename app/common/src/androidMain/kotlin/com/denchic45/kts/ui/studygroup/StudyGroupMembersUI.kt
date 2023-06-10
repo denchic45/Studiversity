@@ -50,7 +50,7 @@ fun StudyGroupMemberContent(
     LazyColumn {
         members.curator?.let {
             item() { HeaderItemUI(name = "Куратор") }
-            item(key = { members.curator.id }) {
+            item(key = members.curator.id) {
                 UserListItem(
                     item = members.curator,
                     modifier = Modifier.clickable { onMemberClick(it.id) }

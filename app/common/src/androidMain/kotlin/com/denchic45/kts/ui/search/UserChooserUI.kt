@@ -35,7 +35,7 @@ fun UserListItem(
         leadingContent = {
             UserAvatarImage(item.avatarUrl)
         },
-        modifier = modifier.padding(vertical = MaterialTheme.spacing.small),
+        modifier = modifier,
         trailingContent = trailingContent
     )
 }

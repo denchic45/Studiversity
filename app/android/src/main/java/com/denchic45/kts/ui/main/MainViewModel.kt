@@ -49,9 +49,7 @@ class MainViewModel constructor(
         capabilities = emptyList()
     ).stateInResource(viewModelScope)
 
-    private val userRoles = flow {
-        emit(findAssignedUserRolesInScopeUseCase())
-    }.stateInResource(viewModelScope)
+    private val userRoles = findAssignedUserRolesInScopeUseCase().stateInResource(viewModelScope)
 
     val updateBannerState = MutableStateFlow<UpdateBannerState>(UpdateBannerState.Hidden)
 

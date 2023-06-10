@@ -40,14 +40,14 @@ class CourseRepository(private val bucket: BucketApi) {
 
         if (memberId != null || studyGroupId != null) {
             query.adjustColumnSet {
-                innerJoin(MembershipsInnerUserMemberships,
-                    { Courses.id },
-                    { Memberships.scopeId })
+                innerJoin(Memberships, { Courses.id }, { scopeId })
             }
         }
 
         memberId?.let {
-            query.andWhere { UsersMemberships.memberId eq memberId }
+            query
+                .adjustColumnSet { innerJoin(UsersMemberships, { Memberships.id }, { membershipId }) }
+                .andWhere { UsersMemberships.memberId eq memberId }
         }
         studyGroupId?.let {
             query.adjustColumnSet {

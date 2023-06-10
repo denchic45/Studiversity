@@ -28,7 +28,7 @@ import com.denchic45.kts.domain.takeIfSuccess
 import com.denchic45.kts.ui.CircularLoadingBox
 import com.denchic45.kts.ui.appbar2.ActionMenuItem2
 import com.denchic45.kts.ui.appbar2.AppBarContent
-import com.denchic45.kts.ui.appbar2.LocalAppBarState
+import com.denchic45.kts.ui.appbar2.updateAppBarState
 import com.denchic45.kts.ui.profile.ProfileScreen
 import com.denchic45.kts.ui.studygroup.StudyGroupComponent
 import com.denchic45.kts.ui.studygroup.StudyGroupContent
@@ -44,19 +44,8 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
     val groups by component.studyGroups.collectAsState()
     val selectedStudyGroup by component.selectedStudyGroup.collectAsState()
     val allowEditSelectedRes by component.allowEditSelected.collectAsState()
-    val appBarState = LocalAppBarState.current
+//    val appBarState = LocalAppBarState.current
 
-    val title = uiTextOf(selectedStudyGroup.ifSuccess { it.name } ?: "")
-    val actions = if (allowEditSelectedRes.takeIfSuccess() == true) {
-        listOf(
-            ActionMenuItem2(
-                icon = uiIconOf(Icons.Outlined.Edit),
-                onClick = component::onEditStudyGroupClick
-            )
-        )
-    } else emptyList()
-
-    appBarState.content = AppBarContent(title = title, actionItems = actions)
 
     Column {
         var showSpinner by remember { mutableStateOf(true) }
@@ -76,10 +65,27 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
                 }
 
                 null -> {
+                    val title = uiTextOf(selectedStudyGroup.ifSuccess { it.name } ?: "")
+                    val actions = if (allowEditSelectedRes.takeIfSuccess() == true) {
+                        listOf(
+                            ActionMenuItem2(
+                                icon = uiIconOf(Icons.Outlined.Edit),
+                                onClick = component::onEditStudyGroupClick
+                            )
+                        )
+                    } else emptyList()
+                    updateAppBarState(
+                        title,
+                        actions,
+                        AppBarContent(title = title, actionItems = actions)
+                    )
                     YourStudyGroupScreen(component = it)
                 }
             }
-        } ?: CircularLoadingBox(Modifier.fillMaxSize())
+        } ?: run {
+            updateAppBarState(AppBarContent())
+            CircularLoadingBox(Modifier.fillMaxSize())
+        }
     }
 }
 
@@ -99,7 +105,7 @@ private fun StudyGroupSpinner(
                 expanded = showList,
                 onExpandedChange = { expanded = it }) {
                 OutlinedTextField(
-                    value = selected.name,
+                    value = "Группа ${selected.name}",
                     readOnly = true,
                     onValueChange = {},
                     trailingIcon = {

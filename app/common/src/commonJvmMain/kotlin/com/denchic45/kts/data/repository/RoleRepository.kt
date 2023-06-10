@@ -5,7 +5,6 @@ import com.denchic45.kts.data.fetchResourceFlow
 import com.denchic45.kts.data.pref.AppPreferences
 import com.denchic45.kts.data.service.NetworkService
 import com.denchic45.kts.domain.Resource
-import com.denchic45.kts.domain.toResource
 import com.denchic45.stuiversity.api.role.CapabilityApi
 import com.denchic45.stuiversity.api.role.RoleApi
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -13,10 +12,9 @@ import com.denchic45.stuiversity.api.role.model.CheckCapabilitiesResponse
 import com.denchic45.stuiversity.api.role.model.UserRolesResponse
 import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.util.uuidOrMe
-import com.github.michaelbull.result.unwrapError
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class RoleRepository @javax.inject.Inject constructor(
@@ -42,13 +40,13 @@ class RoleRepository @javax.inject.Inject constructor(
         capabilityApi.check(userId, scopeId ?: appPreferences.organizationId.toUUID(), capabilities)
     }
 
-    suspend fun findRolesByUserAndScope(
+    fun findRolesByUserAndScope(
         userId: UUID?,
-        scopeId: UUID?
-    ): Resource<UserRolesResponse> {
-        return roleApi.getUserRolesInScope(
+        scopeId: UUID?,
+    ): Flow<Resource<UserRolesResponse>> = fetchResourceFlow {
+        roleApi.getUserRolesInScope(
             uuidOrMe(userId),
             scopeId ?: appPreferences.organizationId.toUUID()
-        ).toResource()
+        )
     }
 }

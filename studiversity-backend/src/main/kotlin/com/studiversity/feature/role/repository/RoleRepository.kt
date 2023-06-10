@@ -1,12 +1,13 @@
 package com.studiversity.feature.role.repository
 
+import com.denchic45.stuiversity.api.role.model.*
+import com.studiversity.config
 import com.studiversity.database.exists
 import com.studiversity.database.table.*
 import com.studiversity.feature.role.Permission
 import com.studiversity.feature.role.combinedPermission
 import com.studiversity.feature.role.mapper.toUserRolesResponse
 import com.studiversity.feature.role.mapper.toUsersWithRoles
-import com.denchic45.stuiversity.api.role.model.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
@@ -144,10 +145,16 @@ class RoleRepository {
     }
 
     fun findUserRolesByScopeId(userId: UUID, scopeId: UUID): UserRolesResponse {
-        return UserRoleScopeDao.find(
+        val result = UserRoleScopeDao.find(
             UsersRolesScopes.userId eq userId
                     and (UsersRolesScopes.scopeId eq scopeId)
-        ).toUserRolesResponse(userId)
+        )
+
+        return if (scopeId == config.organization.id && result.empty()) {
+            UserRolesResponse(userId, listOf(Role.User))
+        } else {
+            result.toUserRolesResponse(userId)
+        }
     }
 
     fun findUsersByScopeId(scopeId: UUID): List<UserWithRolesResponse> = transaction {

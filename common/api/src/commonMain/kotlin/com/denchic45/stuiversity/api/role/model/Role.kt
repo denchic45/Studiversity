@@ -15,5 +15,8 @@ data class Role(val id: Long, val resource: String) {
         val Moderator: Role = Role(5, "moderator")
         val Headman: Role = Role(6, "headman")
         val Curator: Role = Role(7, "curator")
+
+        val StudentPerson: Role = Role(11, "student_person")
+        val TeacherPerson: Role = Role(12, "teacher_person")
     }
 }

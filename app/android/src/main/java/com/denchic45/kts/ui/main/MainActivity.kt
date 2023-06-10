@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        actionBar?.hide()
         val rootComponent = appComponent.rootComponent(defaultComponentContext())
 //        val defaultComponentContext = defaultComponentContext()
 
