@@ -32,11 +32,6 @@ import org.koin.ktor.ext.inject
 
 fun main() {
     startServer()
-//    Kweb(port = 16097) {
-//        doc.body {
-//            h1().text("Hello World!")
-//        }
-//    }
 }
 
 private lateinit var engine: ApplicationEngine
