@@ -28,7 +28,7 @@
         android:maxLines="2"
         android:text="Добавить файл"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.Kts.Subtitle2"
+        android:textAppearance="@style/TextAppearance.Studiversity.Subtitle2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

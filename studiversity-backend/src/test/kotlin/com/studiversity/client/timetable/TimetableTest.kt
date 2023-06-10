@@ -15,9 +15,9 @@ import com.denchic45.stuiversity.api.timetable.model.*
 import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.util.uuidOf
 import com.github.michaelbull.result.unwrap
-import com.studiversity.KtorClientTest
-import com.studiversity.util.UNKNOWN_LONG_ID
-import com.studiversity.util.assertResultIsOk
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.util.UNKNOWN_LONG_ID
+import com.denchic45.studiversity.util.assertResultIsOk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*

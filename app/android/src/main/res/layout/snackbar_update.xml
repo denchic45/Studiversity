@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Доступна новая версия"
-                android:textAppearance="@style/TextAppearance.Kts.Subtitle1"
+                android:textAppearance="@style/TextAppearance.Studiversity.Subtitle1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Рекомендуем вам обновить приложение, в противном случае некоторый функционал может быть не доступен"
-                android:textAppearance="@style/TextAppearance.Kts.Body2"
+                android:textAppearance="@style/TextAppearance.Studiversity.Body2"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_remember_header" />
 
@@ -50,7 +50,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="Напомнить позже"
-                android:textAppearance="@style/TextAppearance.Kts.Subtitle1"
+                android:textAppearance="@style/TextAppearance.Studiversity.Subtitle1"
                 android:textColor="?colorControlNormal"
                 app:cornerRadius="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -65,7 +65,7 @@
                 android:layout_marginTop="16dp"
                 android:paddingHorizontal="16dp"
                 android:text="Загрузить"
-                android:textAppearance="@style/TextAppearance.Kts.Subtitle1"
+                android:textAppearance="@style/TextAppearance.Studiversity.Subtitle1"
                 app:cornerRadius="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -83,7 +83,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Скачивание обновления"
-                android:textAppearance="@style/TextAppearance.Kts.Subtitle1"
+                android:textAppearance="@style/TextAppearance.Studiversity.Subtitle1"
                 app:layout_constraintEnd_toStartOf="@id/tv_progress"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:text="Обновление загружено"
                 android:layout_marginEnd="8dp"
-                android:textAppearance="@style/TextAppearance.Kts.Subtitle1"
+                android:textAppearance="@style/TextAppearance.Studiversity.Subtitle1"
                 app:layout_constraintEnd_toStartOf="@id/btn_install"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -133,7 +133,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/btn_install"
                 android:text="Дело за малым!"
-                android:textAppearance="@style/TextAppearance.Kts.Body2"
+                android:textAppearance="@style/TextAppearance.Studiversity.Body2"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_install_header" />
 
@@ -144,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="16dp"
                 android:text="Установить"
-                android:textAppearance="@style/TextAppearance.Kts.Subtitle1"
+                android:textAppearance="@style/TextAppearance.Studiversity.Subtitle1"
                 app:cornerRadius="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

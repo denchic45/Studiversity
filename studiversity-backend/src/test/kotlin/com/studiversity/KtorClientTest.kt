@@ -1,8 +1,8 @@
 package com.studiversity
 
 import com.github.michaelbull.result.onSuccess
-import com.studiversity.client.di.apiModule
-import com.studiversity.util.unwrapAsserted
+import com.denchic45.studiversity.client.di.apiModule
+import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.stuiversity.api.auth.AuthApi
 import com.denchic45.stuiversity.api.auth.model.RefreshTokenRequest
 import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest

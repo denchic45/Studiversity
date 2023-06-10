@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16sp"
         android:layout_marginTop="12dp"
-        android:textAppearance="@style/TextAppearance.Kts.Headline6"
+        android:textAppearance="@style/TextAppearance.Studiversity.Headline6"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16sp"
         android:layout_marginTop="4dp"
-        android:textAppearance="@style/TextAppearance.Kts.Body2"
+        android:textAppearance="@style/TextAppearance.Studiversity.Body2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_expand_state"
         tools:text="Проверено вчера, 18:34" />
@@ -46,7 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16sp"
-        android:textAppearance="@style/TextAppearance.Kts.Body1"
+        android:textAppearance="@style/TextAppearance.Studiversity.Body1"
         app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
         app:layout_constraintStart_toEndOf="@+id/iv_avatar"
         app:layout_constraintTop_toTopOf="@id/iv_avatar"
@@ -76,7 +76,7 @@
         android:layout_marginTop="16sp"
         android:gravity="center_vertical"
         android:text="Прикрепленные файлы"
-        android:textAppearance="@style/TextAppearance.Kts.SubHeader"
+        android:textAppearance="@style/TextAppearance.Studiversity.SubHeader"
         app:layout_constraintTop_toBottomOf="@id/tv_expand_description" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -100,7 +100,7 @@
         android:layout_marginTop="16sp"
         android:gravity="center_vertical"
         android:text="Личные комментарии"
-        android:textAppearance="@style/TextAppearance.Kts.SubHeader"
+        android:textAppearance="@style/TextAppearance.Studiversity.SubHeader"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rv_submission_attachments" />
 
@@ -112,7 +112,7 @@
         android:layout_marginTop="16sp"
         android:gravity="center_vertical"
         android:text="Написать"
-        android:textAppearance="@style/TextAppearance.Kts.SubHeader"
+        android:textAppearance="@style/TextAppearance.Studiversity.SubHeader"
         android:textColor="@color/blue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rv_submission_attachments" />

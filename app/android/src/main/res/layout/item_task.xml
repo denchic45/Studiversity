@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12sp"
         android:text="Title"
-        android:textAppearance="@style/TextAppearance.Kts.Subtitle1"
+        android:textAppearance="@style/TextAppearance.Studiversity.Subtitle1"
         app:layout_constraintBottom_toTopOf="@id/tv_subtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_icon"

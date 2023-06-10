@@ -1,10 +1,10 @@
 package com.studiversity.client.subject
 
 import com.github.michaelbull.result.unwrap
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertResultIsOk
-import com.studiversity.util.assertedResultIsOk
-import com.studiversity.util.unwrapAsserted
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.util.assertResultIsOk
+import com.denchic45.studiversity.util.assertedResultIsOk
+import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse

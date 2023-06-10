@@ -40,7 +40,7 @@
         android:lineSpacingExtra="3dp"
         android:maxLines="2"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.Kts.Body1"
+        android:textAppearance="@style/TextAppearance.Studiversity.Body1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/iv_file_remove"
         app:layout_constraintStart_toStartOf="parent"

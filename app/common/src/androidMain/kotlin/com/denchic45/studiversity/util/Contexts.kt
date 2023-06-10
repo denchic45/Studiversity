@@ -1,0 +1,13 @@
+package com.denchic45.studiversity.util
+
+import android.content.Context
+import android.net.Uri
+import android.widget.Toast
+
+fun Context.path(uri: Uri): String = FilesAndroid.getPath(this, uri)
+
+fun Context.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) =
+    Toast.makeText(this, message, duration).show()
+
+fun Context.toast(messageRes: Int, duration: Int = Toast.LENGTH_SHORT) =
+    Toast.makeText(this, getString(messageRes), duration).show()

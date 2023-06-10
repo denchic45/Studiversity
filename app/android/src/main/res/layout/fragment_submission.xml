@@ -56,7 +56,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16sp"
                         android:text="Петр Петрович"
-                        android:textAppearance="@style/TextAppearance.Kts.Body1"
+                        android:textAppearance="@style/TextAppearance.Studiversity.Body1"
                         app:layout_constraintBottom_toTopOf="@id/tv_status"
                         app:layout_constraintStart_toEndOf="@+id/iv_avatar"
                         app:layout_constraintTop_toTopOf="@id/iv_avatar" />
@@ -67,7 +67,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16sp"
                         android:text="Оценено: 5/5"
-                        android:textAppearance="@style/TextAppearance.Kts.Body2"
+                        android:textAppearance="@style/TextAppearance.Studiversity.Body2"
                         app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
                         app:layout_constraintStart_toEndOf="@+id/iv_avatar"
                         app:layout_constraintTop_toBottomOf="@id/tv_name" />
@@ -95,7 +95,7 @@
                         android:layout_marginTop="16dp"
                         android:gravity="center_vertical"
                         android:text="Личные комментарии"
-                        android:textAppearance="@style/TextAppearance.Kts.SubHeader"
+                        android:textAppearance="@style/TextAppearance.Studiversity.SubHeader"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/rv_attachments" />
 
@@ -106,7 +106,7 @@
                         android:layout_marginHorizontal="16dp"
                         android:gravity="center_vertical"
                         android:text="Написать"
-                        android:textAppearance="@style/TextAppearance.Kts.SubHeader"
+                        android:textAppearance="@style/TextAppearance.Studiversity.SubHeader"
                         android:textColor="@color/blue"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/rv_attachments"
@@ -215,7 +215,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:text="Отклонить работу"
-                    android:textAppearance="@style/TextAppearance.Kts.Headline6"
+                    android:textAppearance="@style/TextAppearance.Studiversity.Headline6"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -225,7 +225,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Укажите причину"
-                    android:textAppearance="@style/TextAppearance.Kts.Subtitle2"
+                    android:textAppearance="@style/TextAppearance.Studiversity.Subtitle2"
                     app:layout_constraintTop_toBottomOf="@id/tv_reject_header" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -251,7 +251,7 @@
                     app:layout_constraintTop_toTopOf="@id/btn_reject"
                     android:layout_marginBottom="16sp"
                     android:text="Отмена"
-                    android:textAppearance="@style/TextAppearance.Kts.Chip"
+                    android:textAppearance="@style/TextAppearance.Studiversity.Chip"
                     android:textColor="?colorControlNormal"
                     app:cornerRadius="18dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -268,7 +268,7 @@
                     android:backgroundTint="@color/red"
                     android:text="Подтвредить"
                     android:layout_marginTop="16dp"
-                    android:textAppearance="@style/TextAppearance.Kts.Chip"
+                    android:textAppearance="@style/TextAppearance.Studiversity.Chip"
                     app:cornerRadius="18dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

@@ -1,8 +1,8 @@
 package com.studiversity.client.user
 
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertedResultIsOk
-import com.studiversity.util.unwrapAsserted
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.util.assertedResultIsOk
+import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.stuiversity.api.account.AccountApi
 import com.denchic45.stuiversity.api.account.model.UpdateAccountPersonalRequest
 import com.denchic45.stuiversity.api.auth.model.SignupRequest

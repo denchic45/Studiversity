@@ -1,8 +1,8 @@
 package com.studiversity.client.specialty
 
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertResultIsOk
-import com.studiversity.util.unwrapAsserted
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.util.assertResultIsOk
+import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.stuiversity.api.specialty.SpecialtyApi
 import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
 import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest

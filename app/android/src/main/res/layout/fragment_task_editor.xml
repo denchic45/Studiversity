@@ -154,7 +154,7 @@
                 android:layout_marginStart="16sp"
                 android:maxLines="1"
                 android:text="Запретить сдачу после срока сдачи"
-                android:textAppearance="@style/TextAppearance.Kts.Subtitle2"
+                android:textAppearance="@style/TextAppearance.Studiversity.Subtitle2"
                 android:textSize="16sp" />
         </LinearLayout>
 
@@ -175,7 +175,7 @@
                 android:layout_weight="1"
                 android:maxLines="1"
                 android:text="Макс. количество файлов"
-                android:textAppearance="@style/TextAppearance.Kts.Subtitle2"
+                android:textAppearance="@style/TextAppearance.Studiversity.Subtitle2"
                 android:textColor="@color/text_selector"
                 android:textSize="16sp" />
 
@@ -211,7 +211,7 @@
                 android:layout_weight="1"
                 android:maxLines="1"
                 android:text="Макс. размер файлов"
-                android:textAppearance="@style/TextAppearance.Kts.Subtitle2"
+                android:textAppearance="@style/TextAppearance.Studiversity.Subtitle2"
                 android:textColor="@color/text_selector"
                 android:textSize="16sp" />
 
@@ -268,7 +268,7 @@
                 android:layout_marginStart="16sp"
                 android:maxLines="1"
                 android:text="Комментарии включены"
-                android:textAppearance="@style/TextAppearance.Kts.Subtitle2"
+                android:textAppearance="@style/TextAppearance.Studiversity.Subtitle2"
 
                 android:textSize="16sp" />
         </LinearLayout>

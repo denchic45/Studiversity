@@ -50,7 +50,7 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.denchic45.kts.MainKt"
+        mainClass = "com.denchic45.studiversity.MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             modules("java.sql")

@@ -1,7 +1,7 @@
 <resources>
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
-    <string name="app_name" translatable="false">КТС</string>
+    <string name="app_name" translatable="false">Studiversity</string>
     <string name="menu_title_home">Home</string>
     <string name="menu_title_timetable">Timetable</string>
     <string name="menu_title_group">Group</string>

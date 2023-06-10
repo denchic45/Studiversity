@@ -30,7 +30,7 @@
             android:text="@string/group_courses" />
     </com.google.android.material.tabs.TabLayout>
 
-    <com.denchic45.kts.ui.NestedScrollableHost
+    <com.denchic45.studiversity.ui.NestedScrollableHost
         android:id="@+id/nsh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -40,5 +40,5 @@
             android:id="@+id/vp"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </com.denchic45.kts.ui.NestedScrollableHost>
+    </com.denchic45.studiversity.ui.NestedScrollableHost>
 </LinearLayout>

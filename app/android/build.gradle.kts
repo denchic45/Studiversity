@@ -11,12 +11,12 @@ plugins {
 
 apply(plugin = "androidx.navigation.safeargs.kotlin")
 
-group = "com.denchic45.kts"
+group = "com.denchic45.studiversity"
 version = "1.0"
 
 android {
 
-    namespace = "com.denchic45.kts"
+    namespace = "com.denchic45.studiversity"
 
     packaging {
         resources.excludes.apply {
@@ -39,7 +39,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.denchic45.kts"
+        applicationId = "com.denchic45.studiversity"
         minSdk = 24
         targetSdk = 33
         versionCode = 83
@@ -73,7 +73,7 @@ android {
         compose = true
     }
 
-    namespace = "com.denchic45.kts"
+    namespace = "com.denchic45.studiversity"
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.6"
@@ -93,7 +93,6 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("androidx.preference:preference-ktx:1.2.0")
 
-    implementation(project(":appbarcontroller"))
     implementation("com.github.denchic45:SearchBar:1.1")
 
     implementation("androidx.test:core-ktx:1.5.0")

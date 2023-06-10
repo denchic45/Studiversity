@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16sp"
         android:layout_weight="1"
-        android:textAppearance="@style/TextAppearance.Kts.Body1"
+        android:textAppearance="@style/TextAppearance.Studiversity.Body1"
         app:layout_constraintStart_toEndOf="@+id/iv_avatar"
         app:layout_constraintTop_toTopOf="@id/iv_avatar"
         tools:text="Имя Фамилия пользователя" />
@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16sp"
-        android:textAppearance="@style/TextAppearance.Kts.Subtitle1"
+        android:textAppearance="@style/TextAppearance.Studiversity.Subtitle1"
         app:layout_constraintStart_toEndOf="@+id/iv_avatar"
         app:layout_constraintTop_toTopOf="@id/iv_avatar"
         tools:text="Не сдано" />

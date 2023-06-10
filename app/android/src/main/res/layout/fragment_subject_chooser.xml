@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.denchic45.widget.ListStateLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.denchic45.studiversity.widget.ListStateLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/listStateLayout"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,4 +14,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</com.denchic45.widget.ListStateLayout>
+</com.denchic45.studiversity.widget.ListStateLayout>

@@ -1,3 +1,0 @@
-package com.studiversity.feature.studygroup.repository
-
-class StudyGroupMemberRepository

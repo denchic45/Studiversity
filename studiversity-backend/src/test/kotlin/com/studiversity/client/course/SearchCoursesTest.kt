@@ -1,8 +1,8 @@
 package com.studiversity.client.course
 
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertedResultIsOk
-import com.studiversity.util.unwrapAsserted
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.util.assertedResultIsOk
+import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest

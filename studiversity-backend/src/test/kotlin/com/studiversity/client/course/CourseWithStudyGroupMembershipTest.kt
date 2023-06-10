@@ -9,7 +9,7 @@ import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.util.toUUID
-import com.studiversity.KtorClientTest
+import com.denchic45.studiversity.KtorClientTest
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*

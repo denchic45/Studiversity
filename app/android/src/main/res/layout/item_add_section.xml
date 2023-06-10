@@ -38,7 +38,7 @@
         android:gravity="center_vertical"
         android:inputType="textNoSuggestions"
         android:paddingStart="16dp"
-        android:textAppearance="@style/TextAppearance.Kts.Body1"
+        android:textAppearance="@style/TextAppearance.Studiversity.Body1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/iv_done"
         app:layout_constraintStart_toEndOf="@id/vs"

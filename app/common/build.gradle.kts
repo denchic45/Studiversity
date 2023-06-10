@@ -245,7 +245,7 @@ dependencies {
 
 android {
 
-    namespace = "com.denchic45.kts"
+    namespace = "com.denchic45.studiversity"
 
     compileSdk = 33
     sourceSets["main"].apply {
@@ -284,7 +284,7 @@ android {
 sqldelight {
     databases {
         create("AppDatabase") {
-            packageName.set("com.denchic45.kts")
+            packageName.set("com.denchic45.studiversity")
             sourceFolders.set(listOf("sqldelight"))
             dialect("app.cash.sqldelight:sqlite-3-38-dialect:$sqlDelightVersion")
         }

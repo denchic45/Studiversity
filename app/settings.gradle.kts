@@ -15,7 +15,6 @@ pluginManagement {
 rootProject.name = "Studiversity"
 
 include(":android")
-include(":appbarcontroller")
 include(":common")
 include(":desktop")
 

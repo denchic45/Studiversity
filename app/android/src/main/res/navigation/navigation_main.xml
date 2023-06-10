@@ -7,18 +7,18 @@
 
     <fragment
         android:id="@+id/menu_timetable"
-        android:name="com.denchic45.kts.ui.yourtimetables.YourTimetablesFragment"
+        android:name="com.denchic45.studiversity.ui.yourtimetables.YourTimetablesFragment"
         android:label="@string/menu_title_timetable" />
 
     <fragment
         android:id="@+id/menu_home"
-        android:name="com.denchic45.kts.ui.home.DashboardFragment"
+        android:name="com.denchic45.studiversity.ui.home.DashboardFragment"
         android:label="@string/menu_title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/studyGroupFragment"
-        android:name="com.denchic45.kts.ui.studygroup.StudyGroupFragment"
+        android:name="com.denchic45.studiversity.ui.studygroup.StudyGroupFragment"
         android:label="@string/menu_title_group"
         tools:layout="@layout/fragment_group">
         <argument
@@ -28,12 +28,12 @@
 
     <fragment
         android:id="@+id/menu_group"
-        android:name="com.denchic45.kts.ui.yourstudygroups.YourStudyGroupsFragment"
+        android:name="com.denchic45.studiversity.ui.yourstudygroups.YourStudyGroupsFragment"
         android:label="YourStudyGroupsFragment" />
 
     <fragment
         android:id="@+id/menu_admin_panel"
-        android:name="com.denchic45.kts.ui.adminPanel.AdminPanelFragment"
+        android:name="com.denchic45.studiversity.ui.adminPanel.AdminPanelFragment"
         android:label="@string/menu_title_control_panel"
         tools:layout="@layout/item_popup_icon_content">
         <action
@@ -48,20 +48,20 @@
     </fragment>
     <fragment
         android:id="@+id/finderFragment"
-        android:name="com.denchic45.kts.ui.adminPanel.finder.FinderFragment"
+        android:name="com.denchic45.studiversity.ui.adminPanel.finder.FinderFragment"
         android:label="fragment_finder"
         tools:layout="@layout/fragment_finder" />
     <fragment
         android:id="@+id/menu_settings"
-        android:name="com.denchic45.kts.ui.settings.SettingsFragment"
+        android:name="com.denchic45.studiversity.ui.settings.SettingsFragment"
         android:label="SettingsFragment" />
     <fragment
         android:id="@+id/GroupChooserFragment"
-        android:name="com.denchic45.kts.ui.login.groupChooser.GroupChooserFragment"
+        android:name="com.denchic45.studiversity.ui.login.groupChooser.GroupChooserFragment"
         android:label="ChoiceOfGroupFragment" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.denchic45.kts.ui.profile.ProfileFragment"
+        android:name="com.denchic45.studiversity.ui.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile">
         <argument
@@ -82,7 +82,7 @@
         app:destination="@id/menu_admin_panel" />
     <fragment
         android:id="@+id/courseFragment"
-        android:name="com.denchic45.kts.ui.course.CourseFragment"
+        android:name="com.denchic45.studiversity.ui.course.CourseFragment"
         android:label="fragment_course"
         tools:layout="@layout/fragment_course">
         <action
@@ -104,7 +104,7 @@
 
     <fragment
         android:id="@+id/courseEditorFragment"
-        android:name="com.denchic45.kts.ui.courseEditor.CourseEditorFragment"
+        android:name="com.denchic45.studiversity.ui.courseEditor.CourseEditorFragment"
         android:label="CourseEditorFragment" >
         <argument
             android:name="courseId"
@@ -113,7 +113,7 @@
     </fragment>
     <fragment
         android:id="@+id/courseWorkEditorFragment"
-        android:name="com.denchic45.kts.ui.course.workEditor.CourseWorkEditorFragment"
+        android:name="com.denchic45.studiversity.ui.course.workEditor.CourseWorkEditorFragment"
         android:label="fragment_course_work_editor" >
         <argument
             android:name="courseId"
@@ -135,7 +135,7 @@
         app:destination="@id/courseWorkEditorFragment" />
     <fragment
         android:id="@+id/courseWorkFragment"
-        android:name="com.denchic45.kts.ui.coursework.CourseWorkFragment"
+        android:name="com.denchic45.studiversity.ui.coursework.CourseWorkFragment"
         android:label="CourseWorkFragment">
         <argument
             android:name="courseId"
@@ -146,7 +146,7 @@
     </fragment>
     <dialog
         android:id="@+id/submissionFragment"
-        android:name="com.denchic45.kts.ui.course.submission.SubmissionDialog"
+        android:name="com.denchic45.studiversity.ui.course.submission.SubmissionDialog"
         android:label="fragment_submission"
         tools:layout="@layout/fragment_submission" />
     <action
@@ -154,7 +154,7 @@
         app:destination="@id/submissionFragment" />
     <fragment
         android:id="@+id/courseSectionsFragment"
-        android:name="com.denchic45.kts.ui.course.sections.CourseTopicsFragment"
+        android:name="com.denchic45.studiversity.ui.course.sections.CourseTopicsFragment"
         android:label="fragment_course_sections"
         tools:layout="@layout/fragment_course_topics" >
         <argument
@@ -163,7 +163,7 @@
     </fragment>
     <fragment
         android:id="@+id/tasksFragment"
-        android:name="com.denchic45.kts.ui.tasks.TasksFragment"
+        android:name="com.denchic45.studiversity.ui.tasks.TasksFragment"
         android:label="TasksFragment" />
     <action
         android:id="@+id/action_global_tasksFragment"
@@ -173,14 +173,14 @@
         app:destination="@id/teacherChooserFragment" />
     <dialog
         android:id="@+id/confirmDialog"
-        android:name="com.denchic45.kts.ui.confirm.ConfirmDialog"
+        android:name="com.denchic45.studiversity.ui.confirm.ConfirmDialog"
         android:label="ConfirmDialog" />
     <action
         android:id="@+id/action_global_confirmDialog"
         app:destination="@id/confirmDialog" />
     <fragment
         android:id="@+id/studyGroupEditorFragment"
-        android:name="com.denchic45.kts.ui.studygroupeditor.StudyGroupEditorFragment"
+        android:name="com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorFragment"
         android:label="StudyGroupEditorFragment" >
         <argument
             android:name="studyGroupId"
@@ -192,7 +192,7 @@
         app:destination="@id/studyGroupEditorFragment" />
     <dialog
         android:id="@+id/subjectEditorDialog"
-        android:name="com.denchic45.kts.ui.subjectEditor.SubjectEditorDialog"
+        android:name="com.denchic45.studiversity.ui.subjectEditor.SubjectEditorDialog"
         android:label="dialog_subject_editor"
         tools:layout="@layout/dialog_subject_editor" />
     <action
@@ -200,7 +200,7 @@
         app:destination="@id/subjectEditorDialog" />
     <fragment
         android:id="@+id/userEditorFragment"
-        android:name="com.denchic45.kts.ui.usereditor.UserEditorFragment"
+        android:name="com.denchic45.studiversity.ui.usereditor.UserEditorFragment"
         android:label="fragment_user_editor"
         tools:layout="@layout/fragment_user_editor" >
         <argument
@@ -216,10 +216,10 @@
         app:destination="@id/studyGroupFragment" />
     <fragment
         android:id="@+id/TimetableLoaderFragment"
-        android:name="com.denchic45.kts.ui.timetableLoader.TimetableLoaderFragment"
+        android:name="com.denchic45.studiversity.ui.timetableLoader.TimetableLoaderFragment"
         android:label="TimetableLoaderFragment" />
     <fragment
         android:id="@+id/timetableFinderFragment"
-        android:name="com.denchic45.kts.ui.timetablefinder.TimetableFinderFragment"
+        android:name="com.denchic45.studiversity.ui.timetablefinder.TimetableFinderFragment"
         android:label="TimetableFinderFragment" />
 </navigation>

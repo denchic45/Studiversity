@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:textAppearance="@style/TextAppearance.Kts.Headline5"
+            android:textAppearance="@style/TextAppearance.Studiversity.Headline5"
             android:textColor="@color/black"
             android:textSize="22sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:textAppearance="@style/TextAppearance.Kts.Body1"
+                android:textAppearance="@style/TextAppearance.Studiversity.Body1"
                 android:textColor="@color/dark"
                 tools:text="8 комментариев" />
         </LinearLayout>
@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:textAppearance="@style/TextAppearance.Kts.Chip"
+            android:textAppearance="@style/TextAppearance.Studiversity.Chip"
             android:textColor="@color/dark_blue"
             app:chipBackgroundColor="@color/alpha_blue_10"
             app:chipEndPadding="8dp"
@@ -88,7 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="16dp"
-            android:textAppearance="@style/TextAppearance.Kts.Chip"
+            android:textAppearance="@style/TextAppearance.Studiversity.Chip"
             android:textColor="@color/dark"
             app:layout_constraintBottom_toBottomOf="@id/chp_date"
             app:layout_constraintEnd_toEndOf="parent"
@@ -102,7 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="16dp"
-            android:textAppearance="@style/TextAppearance.Kts.Body1"
+            android:textAppearance="@style/TextAppearance.Studiversity.Body1"
             android:textColor="@color/dark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -127,12 +127,12 @@
             android:layout_marginTop="16sp"
             android:gravity="center_vertical"
             android:text="Прикрепленные файлы"
-            android:textAppearance="@style/TextAppearance.Kts.SubHeader"
+            android:textAppearance="@style/TextAppearance.Studiversity.SubHeader"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_description" />
 
-        <com.denchic45.kts.ui.NestedScrollableHost
+        <com.denchic45.studiversity.ui.NestedScrollableHost
             android:id="@+id/nsh_attachments"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -148,7 +148,7 @@
                 android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_attachment" />
-        </com.denchic45.kts.ui.NestedScrollableHost>
+        </com.denchic45.studiversity.ui.NestedScrollableHost>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

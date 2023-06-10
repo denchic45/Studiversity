@@ -1,10 +1,10 @@
 package com.studiversity.client.auth
 
-import com.studiversity.KtorClientTest
-import com.studiversity.database.table.RefreshTokens
-import com.studiversity.util.assertedResultIsError
-import com.studiversity.util.assertedResultIsOk
-import com.studiversity.util.unwrapAsserted
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.database.table.RefreshTokens
+import com.denchic45.studiversity.util.assertedResultIsError
+import com.denchic45.studiversity.util.assertedResultIsOk
+import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.stuiversity.api.auth.model.SignupRequest
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.UserResponse

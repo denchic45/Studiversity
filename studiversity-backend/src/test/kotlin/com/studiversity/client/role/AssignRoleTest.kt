@@ -1,10 +1,10 @@
 package com.studiversity.client.role
 
-import com.studiversity.KtorClientTest
-import com.studiversity.config
-import com.studiversity.util.assertedResultIsError
-import com.studiversity.util.assertedResultIsOk
-import com.studiversity.util.unwrapAsserted
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.config
+import com.denchic45.studiversity.util.assertedResultIsError
+import com.denchic45.studiversity.util.assertedResultIsOk
+import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.role.RoleApi
 import com.denchic45.stuiversity.api.role.model.Role

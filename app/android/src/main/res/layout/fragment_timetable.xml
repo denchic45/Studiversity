@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.denchic45.kts.ui.widget.calendar.WeekCalendarView
+    <com.denchic45.studiversity.ui.widget.calendar.WeekCalendarView
         android:id="@+id/wcv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <com.denchic45.widget.ListStateLayout
+    <com.denchic45.studiversity.widget.ListStateLayout
         android:id="@+id/listStateLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,5 +27,5 @@
             android:paddingBottom="96dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_lesson" />
-    </com.denchic45.widget.ListStateLayout>
+    </com.denchic45.studiversity.widget.ListStateLayout>
 </LinearLayout>

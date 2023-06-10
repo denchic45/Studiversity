@@ -1,9 +1,9 @@
 package com.studiversity.client.auth
 
 import com.github.michaelbull.result.unwrap
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertResultIsError
-import com.studiversity.util.assertResultIsOk
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.util.assertResultIsError
+import com.denchic45.studiversity.util.assertResultIsOk
 import com.denchic45.stuiversity.api.auth.model.SignupRequest
 import com.denchic45.stuiversity.api.user.UserApi
 import kotlinx.coroutines.runBlocking

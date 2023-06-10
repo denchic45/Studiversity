@@ -46,7 +46,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
-            android:textAppearance="@style/TextAppearance.Kts.Body1"
+            android:textAppearance="@style/TextAppearance.Studiversity.Body1"
             tools:text="Course section" />
 
         <com.google.android.material.textfield.TextInputEditText
@@ -56,7 +56,7 @@
             android:background="@null"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
-            android:textAppearance="@style/TextAppearance.Kts.Body1"
+            android:textAppearance="@style/TextAppearance.Studiversity.Body1"
             tools:text="Course section" />
     </ViewSwitcher>
 

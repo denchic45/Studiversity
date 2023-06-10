@@ -1,10 +1,10 @@
 package com.studiversity.client.user
 
 import com.github.michaelbull.result.unwrap
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertResultIsOk
-import com.studiversity.util.assertedResultIsOk
-import com.studiversity.util.unwrapAsserted
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.util.assertResultIsOk
+import com.denchic45.studiversity.util.assertedResultIsOk
+import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.UserResponse

@@ -14,9 +14,9 @@ import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.util.toUUID
 import com.github.michaelbull.result.*
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertResultIsOk
-import com.studiversity.util.unwrapAsserted
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.util.assertResultIsOk
+import com.denchic45.studiversity.util.unwrapAsserted
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions

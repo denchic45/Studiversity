@@ -6,5 +6,5 @@
     android:layout_height="48dp"
     android:gravity="center_vertical"
     android:paddingHorizontal="16dp"
-    android:textAppearance="@style/TextAppearance.Kts.SubHeader"
+    android:textAppearance="@style/TextAppearance.Studiversity.SubHeader"
     tools:text="Раздел" />

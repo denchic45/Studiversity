@@ -17,8 +17,8 @@ import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.submission.SubmissionsApi
 import com.denchic45.stuiversity.util.toUUID
 import com.github.michaelbull.result.*
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertResultIsOk
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.util.assertResultIsOk
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach

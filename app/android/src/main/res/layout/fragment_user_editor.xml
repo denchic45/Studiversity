@@ -39,7 +39,7 @@
                 android:layout_height="48dp"
                 android:gravity="center_vertical"
                 android:text="Личные данные"
-                android:textAppearance="@style/TextAppearance.Kts.SubHeader" />
+                android:textAppearance="@style/TextAppearance.Studiversity.SubHeader" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_firstName"
@@ -122,7 +122,7 @@
                     android:layout_height="48dp"
                     android:gravity="center_vertical"
                     android:text="Вход в аккаунт"
-                    android:textAppearance="@style/TextAppearance.Kts.SubHeader" />
+                    android:textAppearance="@style/TextAppearance.Studiversity.SubHeader" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_email"

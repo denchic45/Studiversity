@@ -22,7 +22,7 @@ buildscript {
     }
 }
 
-group = "com.denchic45.kts"
+group = "com.denchic45.studiversity"
 version = "1.0"
 
 allprojects {

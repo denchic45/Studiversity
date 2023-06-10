@@ -1,8 +1,8 @@
 package com.studiversity.client.room
 
 import com.github.michaelbull.result.unwrap
-import com.studiversity.KtorClientTest
-import com.studiversity.util.assertResultIsOk
+import com.denchic45.studiversity.KtorClientTest
+import com.denchic45.studiversity.util.assertResultIsOk
 import com.denchic45.stuiversity.api.room.RoomApi
 import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
 import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
