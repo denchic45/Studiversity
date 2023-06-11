@@ -12,7 +12,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "Studiversity"
+rootProject.name = "app"
 
 include(":android")
 include(":common")
