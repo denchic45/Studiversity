@@ -54,7 +54,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             modules("java.sql")
-            packageName = "jvm"
+            packageName = "Studiversity"
             packageVersion = "1.0.0"
         }
     }

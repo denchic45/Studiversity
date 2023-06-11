@@ -57,6 +57,8 @@ import com.denchic45.studiversity.domain.onLoading
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
+import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
+import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.ui.AppBarMediator
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.state.CellOrder
@@ -340,43 +342,46 @@ fun LessonCells(
 
 @Composable
 @Preview
-fun LessonCell(item: PeriodItem?) {
+fun LessonCell(item: PeriodSlot) {
     Column(Modifier.widthIn(min = 196.dp).height(128.dp).padding(MaterialTheme.spacing.normal)) {
-        item?.let {
-            when (val details = item.details) {
-                is PeriodDetails.Lesson -> {
-                    Box(Modifier.size(36.dp)) {
-                        details.subjectIconUrl?.let {
-                            Icon(
-                                painter = rememberAsyncImagePainter(it),
-                                modifier = Modifier.fillMaxSize(),
-                                tint = MaterialTheme.colorScheme.secondary,
-                                contentDescription = null
-                            )
+        when(item) {
+            is PeriodItem -> {
+                when (val details = item.details) {
+                    is PeriodDetails.Lesson -> {
+                        Box(Modifier.size(36.dp)) {
+                            details.subjectIconUrl?.let {
+                                Icon(
+                                    painter = rememberAsyncImagePainter(it),
+                                    modifier = Modifier.fillMaxSize(),
+                                    tint = MaterialTheme.colorScheme.secondary,
+                                    contentDescription = null
+                                )
+                            }
                         }
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            details.subjectName ?: "null",
+                            Modifier.padding(top = MaterialTheme.spacing.extraSmall),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            "2-й корпус",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        details.subjectName ?: "null",
-                        Modifier.padding(top = MaterialTheme.spacing.extraSmall),
+
+                    is PeriodDetails.Event -> Text(
+                        "Пусто",
+                        fontSize = TextUnit(18F, TextUnitType.Sp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.titleLarge
                     )
-                    Text(
-                        "2-й корпус",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
-
-                is PeriodDetails.Event -> Text(
-                    "Пусто",
-                    fontSize = TextUnit(18F, TextUnitType.Sp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.titleLarge
-                )
             }
-        } ?: run {
+            is Window -> {
 
+            }
         }
     }
 }

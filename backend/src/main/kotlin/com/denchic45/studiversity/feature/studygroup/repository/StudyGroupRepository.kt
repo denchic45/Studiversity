@@ -50,9 +50,9 @@ class StudyGroupRepository {
     ): List<StudyGroupResponse> {
         val query = StudyGroups.leftJoin(Specialties, { this.specialtyId }, { Specialties.id })
             .leftJoin(
-                MembershipsInnerUserMembershipsInnerUsersRolesScopes,
+                Memberships,
                 { StudyGroups.id },
-                { Memberships.scopeId })
+                { scopeId })
             .selectAll()
         q?.let {
             query.andWhere {
@@ -62,7 +62,8 @@ class StudyGroupRepository {
             }
         }
         memberId?.let {
-            query.andWhere { UsersMemberships.memberId eq memberId }
+            query.adjustColumnSet { innerJoin(UsersMemberships, { Memberships.id }, { membershipId }) }
+                .andWhere { UsersMemberships.memberId eq memberId }
         }
         roleId?.let {
             query.andWhere { UsersRolesScopes.roleId eq it }

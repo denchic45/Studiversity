@@ -23,7 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
 import androidx.compose.material3.DismissValue
@@ -58,9 +57,7 @@ import com.kizitonwose.calendar.core.daysOfWeek
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.TextStyle
-import java.time.temporal.WeekFields
 import java.util.Locale
-import kotlin.random.Random
 
 @Composable
 fun DayTimetableContent(
@@ -190,7 +187,7 @@ private fun Periods(
                 LazyColumn {
                     itemsIndexed(
                         items = items,
-                        key = { _, item -> item?.id ?: Random.nextLong(0, 1000) }
+                        key = { _, item -> item.id }
                     ) { index, item ->
                         val periodItemUI = @Composable {
                             PeriodListItem(

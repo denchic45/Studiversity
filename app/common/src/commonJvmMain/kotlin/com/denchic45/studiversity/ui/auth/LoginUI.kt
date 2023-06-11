@@ -95,7 +95,7 @@ fun LoginContent(
                 register()
             }
         } else {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.normal), verticalAlignment = Alignment.CenterVertically) {
                 Button(onSignInClick) { Text("Войти") }
                 Spacer(Modifier.width(MaterialTheme.spacing.normal))
                 register()

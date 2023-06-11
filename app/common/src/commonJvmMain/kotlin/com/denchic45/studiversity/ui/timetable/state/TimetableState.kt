@@ -2,7 +2,8 @@ package com.denchic45.studiversity.ui.timetable.state
 
 import androidx.compose.runtime.Immutable
 import com.denchic45.studiversity.data.service.model.BellSchedule
-import com.denchic45.studiversity.domain.timetable.model.PeriodItem
+import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
+import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -14,7 +15,7 @@ import kotlin.math.max
 @Immutable
 data class TimetableState(
     val firstWeekDate: LocalDate,
-    private val periods: List<List<PeriodItem?>>,
+    private val periods: List<List<PeriodSlot>>,
     val orders: List<CellOrder>,
     val maxWeekEventsOrder: Int,
     val isEdit: Boolean = false,
@@ -24,9 +25,9 @@ data class TimetableState(
 
     val timetable = periods
 
-    fun getDay(dayOfWeek: DayOfWeek): List<PeriodItem?> {
+    fun getDay(dayOfWeek: DayOfWeek): List<PeriodSlot> {
         return if (dayOfWeek.value == 7) emptyList()
-        else periods[dayOfWeek.ordinal].dropLastWhile { it == null }
+        else periods[dayOfWeek.ordinal].dropLastWhile { it is Window }
     }
 
     private val lastWeekDate = firstWeekDate.plusDays(6)
@@ -42,7 +43,7 @@ fun List<List<PeriodResponse>>.toTimetableState(
     bellSchedule: BellSchedule,
     isEdit: Boolean = false,
 ): TimetableState {
-    val latestEventOrder = max(maxOf { it.size }, 6)
+    val latestEventOrder = max(maxOf { it.lastOrNull()?.order ?: 0 }, 6)
     return TimetableState(
         firstWeekDate = LocalDate.parse(
             yearWeek, DateTimeFormatterBuilder()
@@ -57,11 +58,11 @@ fun List<List<PeriodResponse>>.toTimetableState(
     )
 }
 
-private fun List<List<PeriodResponse>>.toItems(latestPeriodOrder: Int): List<List<PeriodItem?>> =
+private fun List<List<PeriodResponse>>.toItems(latestPeriodOrder: Int): List<List<PeriodSlot>> =
     buildList {
         this@toItems.forEach { periods ->
             add(periods.toPeriodItems().let {
-                it + List(latestPeriodOrder - periods.size) { null }
+                it + List(latestPeriodOrder - periods.size) { Window() }
             })
         }
     }

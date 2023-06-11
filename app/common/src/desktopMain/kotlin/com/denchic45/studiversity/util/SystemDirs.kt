@@ -3,6 +3,7 @@ package com.denchic45.studiversity.util
 import net.harawata.appdirs.AppDirsFactory
 import okio.Path
 import okio.Path.Companion.toPath
+import java.io.File
 
 actual class SystemDirs actual constructor() {
     actual val appDir: Path
@@ -18,5 +19,6 @@ actual class SystemDirs actual constructor() {
         val appPath: String = AppDirsFactory
             .getInstance()
             .getUserDataDir("Studiversity", null, null, true)
+            .also { File(it).mkdirs() }
     }
 }

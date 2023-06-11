@@ -68,7 +68,8 @@ class UserRepository @Inject constructor(
             .distinctUntilChanged()
             .map { it?.toUserResponse() },
         fetch = { userApi.getById(userId) },
-        saveFetch = { userLocalDataSource.upsert(it.toEntity()) }
+        saveFetch = {
+            userLocalDataSource.upsert(it.toEntity()) }
     )
 
     suspend fun remove(userId: UUID): EmptyResource {

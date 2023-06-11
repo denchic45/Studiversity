@@ -36,6 +36,8 @@ import com.denchic45.studiversity.R
 import com.denchic45.studiversity.domain.model.StudyGroupNameItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
+import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
+import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.theme.AppTheme
@@ -44,7 +46,7 @@ import java.util.UUID
 
 @Composable
 fun PeriodListItem(
-    item: PeriodItem?,
+    item: PeriodSlot,
     order: Int,
     time: String,
     groupShowing: Boolean = false,
@@ -68,83 +70,94 @@ fun PeriodListItem(
                         .width(24.dp)
                         .wrapContentHeight(align = Alignment.CenterVertically)
                 )
-                if (item != null) {
-                    val painter = rememberAsyncImagePainter(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .decoderFactory(SvgDecoder.Factory())
-                            .data(
-                                when (val details = item.details) {
-                                    is PeriodDetails.Event -> details.iconUrl
-                                    is PeriodDetails.Lesson -> details.subjectIconUrl
-                                }
-                            )
-                            .build()
-                    )
-                    Icon(
-                        painter = painter,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier
-                            .padding(horizontal = MaterialTheme.spacing.normal)
-                            .size(32.dp)
+                when(item) {
+                    is PeriodItem -> {
+                        val painter = rememberAsyncImagePainter(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .decoderFactory(SvgDecoder.Factory())
+                                .data(
+                                    when (val details = item.details) {
+                                        is PeriodDetails.Event -> details.iconUrl
+                                        is PeriodDetails.Lesson -> details.subjectIconUrl
+                                    }
+                                )
+                                .build()
+                        )
+                        Icon(
+                            painter = painter,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier
+                                .padding(horizontal = MaterialTheme.spacing.normal)
+                                .size(32.dp)
 
-                    )
-                    Column(Modifier.weight(1f)) {
-                        when (val details = item.details) {
-                            is PeriodDetails.Lesson -> {
-                                details.subjectName?.let {
-                                    Text(
-                                        text = details.subjectName,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
+                        )
+                        Column(Modifier.weight(1f)) {
+                            when (val details = item.details) {
+                                is PeriodDetails.Lesson -> {
+                                    details.subjectName?.let {
+                                        Text(
+                                            text = details.subjectName,
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                    }
+                                }
+
+                                is PeriodDetails.Event -> Text(
+                                    text = details.name,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                            }
+                            Text(
+                                text = time,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        if (groupShowing)
+                            Row {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_study_group),
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                Text(item.studyGroup.name)
+                            }
+                        item.room?.let {
+                            Text(
+                                text = it,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.widthIn(max = 48.dp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        AnimatedVisibility(visible = expanded) {
+                            item.let {
+                                it.members.forEach { item ->
+                                    UserListItem(item)
                                 }
                             }
-
-                            is PeriodDetails.Event -> Text(
-                                text = details.name,
-                                style = MaterialTheme.typography.titleMedium
+                        }
+                    }
+                   is Window -> {
+                        Column(
+                            Modifier
+                                .weight(1f)
+                                .padding(start = MaterialTheme.spacing.normal)
+                        ) {
+                            Text(
+                                text = "Пусто",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.Gray
+                            )
+                            Text(
+                                text = time,
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
-                        Text(
-                            text = time,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                    if (groupShowing)
-                        Row {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_study_group),
-                                contentDescription = null,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                            Text(item.studyGroup.name)
-                        }
-                    item.room?.let {
-                        Text(
-                            text = it,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.widthIn(max = 48.dp),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                } else {
-                    Column(
-                        Modifier
-                            .weight(1f)
-                            .padding(start = MaterialTheme.spacing.normal)
-                    ) {
-                        Text(
-                            text = "Пусто",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.Gray
-                        )
-                        Text(
-                            text = time,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
                     }
                 }
+
 
                 if (isEdit) {
                     IconButton(onClick = { onEditClick() }) {
@@ -153,13 +166,7 @@ fun PeriodListItem(
                 }
             }
 
-            AnimatedVisibility(visible = expanded) {
-                item?.let {
-                    it.members.forEach { item ->
-                        UserListItem(item)
-                    }
-                }
-            }
+
         }
     }
 }
@@ -200,7 +207,7 @@ fun EmptyPeriodItemPreview() {
     AppTheme {
         PeriodListItem(
             order = 1,
-            item = null,
+            item = Window(),
             time = "8:30 - 9:20"
         )
     }

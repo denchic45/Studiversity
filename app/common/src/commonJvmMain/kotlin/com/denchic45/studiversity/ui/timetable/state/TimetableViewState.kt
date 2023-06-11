@@ -4,6 +4,7 @@ import com.denchic45.studiversity.data.service.model.BellSchedule
 import com.denchic45.studiversity.domain.model.StudyGroupNameItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
+import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.util.capitalized
 import com.denchic45.stuiversity.api.room.model.RoomResponse
@@ -85,7 +86,7 @@ fun List<PeriodResponse>.toPeriodItems() = buildList {
         val diffOrders = period.order - index - offset - 1
         offset += diffOrders
         if (diffOrders > 0) {
-            repeat(diffOrders) { add(null) }
+            repeat(diffOrders) { add(Window()) }
         }
             add(period.toItem())
     }

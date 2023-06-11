@@ -52,6 +52,7 @@ class TimetableParser(
     private var groupRow = 0
     private lateinit var table: XWPFTable
     private var currentRow = 0
+    private var studyGroupColumn = 1
     private var currentDayOfWeek = 0
     private lateinit var currentStudyGroup: StudyGroupResponse
 
@@ -71,13 +72,17 @@ class TimetableParser(
             val wordDoc = XWPFDocument(inputStream)
             table = wordDoc.tables[0]
 
-            val monday = table.getRow(3).getCell(0)
+            val studyGroupsExtraRow = table.getRow(2).tableCells.size > 1
+
+            val mondayRow = if (studyGroupsExtraRow) 3 else 2
+
+            val monday = table.getRow(mondayRow).getCell(0)
                 .text.split(" ")[1]
                 .toLocalDate(DateTimePatterns.DD_MM_yy)
 
             val groupsCells: MutableList<XWPFTableCell> = ArrayList()
             groupsCells.addAll(table.getRow(1).tableCells.filter { it.text.isNotEmpty() })
-            groupsCells.addAll(table.getRow(2).tableCells.filter { it.text.isNotEmpty() })
+            if (studyGroupsExtraRow) groupsCells.addAll(table.getRow(2).tableCells.filter { it.text.isNotEmpty() })
 
             val groupsCount = groupsCells.size
             val timetables: MutableList<Pair<StudyGroupResponse, TimetableResponse>> =
@@ -85,15 +90,21 @@ class TimetableParser(
             for (i in 0 until groupsCount) {
                 val studyGroupName = groupsCells[i].text
                 studyGroupApi.getList(query = studyGroupName)
-                    .unwrap().firstOrNull { it.name == studyGroupName }?.let {
-                        currentStudyGroup = it
+                    .unwrap().firstOrNull { it.name == studyGroupName }?.let { studyGroup ->
+                        currentStudyGroup = studyGroup
                         groupRow = getCellByGroupName(groupsCells, currentStudyGroup.name)?.tableRow
-                            ?.let { table.rows.indexOf(it) + 1 } ?: -1
+                            ?.let {
+                                val indexOfRow = table.rows.indexOf(it)
+                                if (studyGroupsExtraRow) indexOfRow + 1
+                                else indexOfRow
+                            } ?: -1
 
                         if (groupRow == -1) return@let
                         groupRow = if (groupRow > groupsCount)
                             groupRow - groupsCount
                         else groupRow
+                        studyGroupColumn = i + 1
+                        currentRow = if (studyGroupsExtraRow) 3 else 2
                         timetables.add(currentStudyGroup to createTimetable())
                     }
             }
@@ -126,10 +137,11 @@ class TimetableParser(
 
     private suspend fun createTimetable(): TimetableResponse {
         val weekLessons = mutableListOf<List<PeriodResponse>>()
-        currentRow = 3
+//        currentRow = 3
         currentDayOfWeek = 0
 //        while (!table.getRow(currentRow).getCell(0).text.contains("ПОНЕДЕЛЬНИК")) currentRow++ todo возможно не нужно
-        val weekOfYear = table.getRow(currentRow).getCell(0).text
+        val weekOfYear = table.getRow(currentRow)
+            .getCell(0).text
             .split(" ")[1]
             .toLocalDate(DateTimePatterns.DD_MM_yy)
             .format(DateTimeFormatter.ofPattern("YYYY_ww"))
@@ -161,7 +173,6 @@ class TimetableParser(
         val periods = mutableListOf<PeriodResponse>()
         if (currentRow == table.rows.size) return emptyList()
 
-
         while (hasRowsOfCurrentDate()) {
             val cells = table.getRow(currentRow).tableCells
             val orderText = cells[0].text
@@ -170,10 +181,10 @@ class TimetableParser(
                 continue // Skip dinner
             }
             val cellContent: List<String> =
-                cells[groupRow].paragraphs.map { it.paragraphText }
+                cells[studyGroupColumn].paragraphs.map { it.paragraphText }
 //                .replace("\\(.*\\)".toRegex(), "")
 //                .trim { it <= ' ' }
-            currentRow++
+
 //            if (currentRow < table.rows.size) {
 //                cells = table.getRow(currentRow).tableCells
 //            }
@@ -193,6 +204,7 @@ class TimetableParser(
     """.trimIndent()
                 )
             }
+            currentRow++
         }
         return periods
     }
@@ -236,7 +248,11 @@ class TimetableParser(
                 studyGroup = StudyGroupName(currentStudyGroup.id, currentStudyGroup.name),
                 members = findTeacherByContent(content),
                 // TODO: remove hardcoded url
-                details = EventDetails(subjectName, "blue", "https://twmjqqkhwizjfmbebbxj.supabase.co/storage/v1/object/public/main/icons/event.svg?t=2023-06-05T12%3A44%3A56.243Z")
+                details = EventDetails(
+                    subjectName,
+                    "blue",
+                    "https://twmjqqkhwizjfmbebbxj.supabase.co/storage/v1/object/public/main/icons/event.svg?t=2023-06-05T12%3A44%3A56.243Z"
+                )
             ).apply { cachedEventsOfMissedSubjects.add(details.name) }
         }
     }

@@ -5,20 +5,9 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.Transacter
 import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.AttachmentEntity
-import com.denchic45.studiversity.CourseContentEntity
-import com.denchic45.studiversity.EventEntity
-import com.denchic45.studiversity.SectionEntity
-import com.denchic45.studiversity.StudyGroupEntity
-import com.denchic45.studiversity.SubmissionEntity
-import com.denchic45.studiversity.UserEntity
+import com.denchic45.studiversity.*
 import com.denchic45.studiversity.data.mapper.ListMapper
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -43,50 +32,32 @@ class LocalDateColumnAdapter : ColumnAdapter<LocalDate, String> {
 }
 
 class DbHelper(val driver: SqlDriver) {
-    val database by lazy {
-//        val currentVer = version
-
-//        if (currentVer == 0) {
-//            AppDatabase.Schema.create(driver)
-//            version = 1
-//            println("init: created tables, setVersion to 1")
-//        } else {
-//            val schemaVer: Int = AppDatabase.Schema.version
-//            if (schemaVer > currentVer) {
-//                AppDatabase.Schema.migrate(driver, currentVer, schemaVer)
-//                version = schemaVer
-//                println("init: migrated from $currentVer to $schemaVer")
-//            } else {
-//                //println("init")
-//            }
-//        }
-        AppDatabase(
-            driver,
-            courseContentEntityAdapter = CourseContentEntity.Adapter(
-                attachmentsAdapter = ListColumnAdapter()
-            ),
-            submissionEntityAdapter = SubmissionEntity.Adapter(
-                attachmentsAdapter = ListColumnAdapter()
-            ),
-            eventEntityAdapter = EventEntity.Adapter(
-                teacher_idsAdapter = ListColumnAdapter(),
-                positionAdapter = IntColumnAdapter
-            ),
-            userEntityAdapter = UserEntity.Adapter(
-                EnumColumnAdapter()
-            ),
-            studyGroupEntityAdapter = StudyGroupEntity.Adapter(
-                LocalDateColumnAdapter(),
-                LocalDateColumnAdapter()
-            ),
-            attachmentEntityAdapter = AttachmentEntity.Adapter(
-                EnumColumnAdapter()
-            ),
-            sectionEntityAdapter = SectionEntity.Adapter(
-                orderAdapter = IntColumnAdapter
-            )
+    val database = AppDatabase(
+        driver = driver,
+        courseContentEntityAdapter = CourseContentEntity.Adapter(
+            attachmentsAdapter = ListColumnAdapter()
+        ),
+        submissionEntityAdapter = SubmissionEntity.Adapter(
+            attachmentsAdapter = ListColumnAdapter()
+        ),
+        eventEntityAdapter = EventEntity.Adapter(
+            teacher_idsAdapter = ListColumnAdapter(),
+            positionAdapter = IntColumnAdapter
+        ),
+        userEntityAdapter = UserEntity.Adapter(
+            EnumColumnAdapter()
+        ),
+        studyGroupEntityAdapter = StudyGroupEntity.Adapter(
+            LocalDateColumnAdapter(),
+            LocalDateColumnAdapter()
+        ),
+        attachmentEntityAdapter = AttachmentEntity.Adapter(
+            EnumColumnAdapter()
+        ),
+        sectionEntityAdapter = SectionEntity.Adapter(
+            orderAdapter = IntColumnAdapter
         )
-    }
+    )
 
     private var version: Int
         get() {
