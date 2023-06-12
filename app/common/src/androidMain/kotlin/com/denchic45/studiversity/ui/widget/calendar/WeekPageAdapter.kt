@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.GridView
 import androidx.recyclerview.widget.RecyclerView
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.ui.widget.calendar.WeekPageAdapter.WeekHolder
 import com.denchic45.studiversity.ui.widget.calendar.model.WeekItem
 import java.time.LocalDate

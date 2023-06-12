@@ -6,8 +6,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.denchic45.studiversity.databinding.ItemContentSwitchBinding
+import com.denchic45.studiversity.databinding.ItemHeaderBinding
+import com.denchic45.studiversity.databinding.ItemIconContent2Binding
+import com.denchic45.studiversity.databinding.ItemIconContentBinding
+import com.denchic45.studiversity.databinding.ItemPopupIconContentBinding
 import com.denchic45.studiversity.data.model.domain.ListItem
-import com.denchic45.studiversity.databinding.*
 import com.denchic45.studiversity.ui.onVector
 import com.denchic45.studiversity.util.viewBinding
 
@@ -25,19 +29,24 @@ class ItemAdapter : ListAdapter<ListItem, BaseViewHolder<ListItem, *>>(DIFF_CALL
                 parent.viewBinding(ItemIconContentBinding::inflate),
                 itemClickListener
             )
+
             TYPE_VIEW_2 -> return IconItemHolder2(
                 parent.viewBinding(ItemPopupIconContentBinding::inflate),
                 itemClickListener
             )
+
             TYPE_HEADER -> return HeaderHolder(
                 parent.viewBinding(ItemHeaderBinding::inflate)
             )
+
             TYPE_PROGRESS -> return ProgressItemHolder(
                 parent.viewBinding(ItemIconContent2Binding::inflate), itemClickListener
             )
+
             TYPE_SWITCH -> return SwitchItemHolder(
                 parent.viewBinding(ItemContentSwitchBinding::inflate), itemCheckListener
             )
+
             else -> throw IllegalStateException()
         }
     }
@@ -49,7 +58,7 @@ class ItemAdapter : ListAdapter<ListItem, BaseViewHolder<ListItem, *>>(DIFF_CALL
     override fun onBindViewHolder(
         holder: BaseViewHolder<ListItem, *>,
         position: Int,
-        payloads: List<Any>
+        payloads: List<Any>,
     ) {
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
@@ -60,9 +69,11 @@ class ItemAdapter : ListAdapter<ListItem, BaseViewHolder<ListItem, *>>(DIFF_CALL
                         payload === PAYLOAD.SHOW_LOADING -> {
                             holder.showLoading()
                         }
+
                         payload === PAYLOAD.SHOW_IMAGE -> {
                             holder.showImage()
                         }
+
                         payload === PAYLOAD.CHANGE_TITLE -> {
                             holder.binding.tvName.text = (getItem(position)!!.title)
                         }
@@ -78,7 +89,7 @@ class ItemAdapter : ListAdapter<ListItem, BaseViewHolder<ListItem, *>>(DIFF_CALL
 
     class IconItemHolder(
         itemIconContentBinding: ItemIconContentBinding,
-        listener: OnItemClickListener
+        listener: OnItemClickListener,
     ) :
         BaseViewHolder<ListItem, ItemIconContentBinding>(itemIconContentBinding, listener) {
         override fun onBind(item: ListItem) {
@@ -103,7 +114,7 @@ class ItemAdapter : ListAdapter<ListItem, BaseViewHolder<ListItem, *>>(DIFF_CALL
 
     class IconItemHolder2(
         itemPopupIconContentBinding: ItemPopupIconContentBinding,
-        listener: OnItemClickListener
+        listener: OnItemClickListener,
     ) :
         BaseViewHolder<ListItem, ItemPopupIconContentBinding>(
             itemPopupIconContentBinding,
@@ -129,7 +140,7 @@ class ItemAdapter : ListAdapter<ListItem, BaseViewHolder<ListItem, *>>(DIFF_CALL
 
     class ProgressItemHolder(
         itemIconContent2Binding: ItemIconContent2Binding,
-        listener: OnItemClickListener
+        listener: OnItemClickListener,
     ) :
         BaseViewHolder<ListItem, ItemIconContent2Binding>(itemIconContent2Binding, listener) {
         override fun onBind(item: ListItem) {
@@ -172,7 +183,7 @@ class ItemAdapter : ListAdapter<ListItem, BaseViewHolder<ListItem, *>>(DIFF_CALL
 
     class SwitchItemHolder(
         itemContentSwitchBinding: ItemContentSwitchBinding,
-        private val listener: OnItemCheckListener
+        private val listener: OnItemCheckListener,
     ) : BaseViewHolder<ListItem, ItemContentSwitchBinding>(itemContentSwitchBinding) {
         override fun onBind(item: ListItem) {
             with(binding) {

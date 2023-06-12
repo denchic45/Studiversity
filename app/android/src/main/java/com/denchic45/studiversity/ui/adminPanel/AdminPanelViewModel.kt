@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.ui.adminPanel
 
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.SingleLiveData
 import com.denchic45.studiversity.data.model.domain.ListItem
 import com.denchic45.studiversity.ui.UiColor

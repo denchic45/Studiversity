@@ -2,6 +2,7 @@ package com.denchic45.studiversity.ui.coursework
 
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.stuiversity.api.course.work.grade.GradeResponse
+import com.denchic45.stuiversity.api.course.work.submission.model.Author
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import java.time.LocalDateTime
@@ -9,6 +10,7 @@ import java.util.UUID
 
 data class SubmissionUiState(
     val id: UUID,
+    val author: Author,
     val attachments: List<AttachmentItem>,
     val grade: GradeResponse?,
     val state: SubmissionState,
@@ -18,6 +20,7 @@ data class SubmissionUiState(
 fun SubmissionResponse.toUiState(attachmentItems: List<AttachmentItem>): SubmissionUiState {
     return SubmissionUiState(
         id = id,
+        author = author,
         attachments = attachmentItems,
         grade = grade,
         state = state,

@@ -45,7 +45,7 @@ fun CourseWorkSubmissionsScreen(component: CourseWorkSubmissionsComponent) {
                         val updatedAt = submission.updatedAt?.toString("dd MMM")
                         Text(
                             submission.grade?.let {
-                                "Оценено: $it"
+                                "Оценено: ${it.value}"
                             } ?: when (submission.state) {
                                 SubmissionState.NEW,
                                 SubmissionState.CREATED,

@@ -7,7 +7,7 @@
 //import androidx.recyclerview.widget.DiffUtil
 //import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 //import com.denchic45.studiversity.SvgColorListener
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.data.domain.model.DomainModel
 //import com.denchic45.studiversity.data.model.domain.ListItem
 //import com.denchic45.studiversity.domain.model.Subject

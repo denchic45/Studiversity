@@ -12,7 +12,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.ui.widget.calendar.WeekCalendarListener.OnLoadListener
 import com.denchic45.studiversity.ui.widget.calendar.model.WeekItem
 import java.time.DayOfWeek

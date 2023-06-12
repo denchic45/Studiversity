@@ -29,7 +29,7 @@ import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.ui.subjecteditor.SubjectEditorComponent
 import com.denchic45.studiversity.ui.subjecticons.SubjectIconsDialog
 import com.denchic45.studiversity.ui.theme.spacing

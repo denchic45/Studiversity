@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.stuiversity.util.toString
 import java.time.LocalDate
 

@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.ui.Sidebar
 import com.denchic45.studiversity.ui.appbar2.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar2.AppBarContent

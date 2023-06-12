@@ -10,8 +10,8 @@ package com.denchic45.studiversity.ui.adminPanel.timetableEditor
 //import androidx.fragment.app.FragmentManager
 //import androidx.fragment.app.FragmentPagerAdapter
 //import by.kirich1409.viewbindingdelegate.viewBinding
-//import com.denchic45.studiversity.R
-//import com.denchic45.studiversity.app
+//import com.denchic45.studiversity.common.R
+//import com.denchic45.studiversity.getApp
 //import com.denchic45.studiversity.databinding.FragmentTimetableEditorBinding
 //import com.denchic45.studiversity.ui.adminPanel.timetableEditor.finder.TimetableFinderFragment
 //import com.denchic45.studiversity.ui.adminPanel.timetableEditor.loader.TimetableLoaderFragment

@@ -1,19 +1,14 @@
 package com.denchic45.studiversity.ui.adapter
 
-import android.graphics.drawable.PictureDrawable
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.denchic45.studiversity.R
-import com.denchic45.studiversity.SvgColorListener
 import com.denchic45.studiversity.databinding.ItemIconContentBinding
-import com.denchic45.studiversity.glideSvg.GlideApp
 import com.denchic45.studiversity.util.viewBinding
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.studiversity.widget.extendedAdapter.ListItemAdapterDelegate
+import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 
 class SpecialtyAdapterDelegate :
     ListItemAdapterDelegate<SpecialtyResponse, SpecialtyAdapterDelegate.SpecialtyHolder>() {
@@ -31,10 +26,10 @@ class SpecialtyAdapterDelegate :
     }
 
     class SpecialtyHolder(
-        itemIconContentBinding: ItemIconContentBinding
+        itemIconContentBinding: ItemIconContentBinding,
     ) : BaseViewHolder<SpecialtyResponse, ItemIconContentBinding>(
-            itemIconContentBinding
-        ) {
+        itemIconContentBinding
+    ) {
         private val tvName: TextView = itemView.findViewById(R.id.tv_name)
         private val ivIcon: ImageView = itemView.findViewById(R.id.iv_icon)
         override fun onBind(item: SpecialtyResponse) {

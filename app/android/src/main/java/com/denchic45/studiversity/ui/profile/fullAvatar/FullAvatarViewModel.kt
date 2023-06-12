@@ -2,7 +2,6 @@ package com.denchic45.studiversity.ui.profile.fullAvatar
 
 import androidx.lifecycle.viewModelScope
 import com.denchic45.studiversity.R
-import com.denchic45.studiversity.domain.model.User
 import com.denchic45.studiversity.ui.avatar.FullImageActivity
 import com.denchic45.studiversity.ui.base.BaseViewModel
 import com.denchic45.studiversity.util.NetworkException

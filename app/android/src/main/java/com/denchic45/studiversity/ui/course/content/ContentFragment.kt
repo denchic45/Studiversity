@@ -10,7 +10,7 @@
 //import androidx.navigation.fragment.navArgs
 //import androidx.viewpager2.adapter.FragmentStateAdapter
 //import by.kirich1409.viewbindingdelegate.viewBinding
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.databinding.FragmentContentBinding
 //import com.denchic45.studiversity.ui.base.BaseFragment
 //import com.denchic45.studiversity.ui.base.HasNavArgs

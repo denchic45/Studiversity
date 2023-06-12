@@ -2,9 +2,11 @@ package com.denchic45.studiversity.ui.coursework.submissiondetails
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -16,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Attachment
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -46,6 +49,8 @@ import com.denchic45.studiversity.ui.component.HeaderItemUI
 import com.denchic45.studiversity.ui.coursework.SubmissionHeaderContent
 import com.denchic45.studiversity.ui.coursework.SubmissionUiState
 import com.denchic45.studiversity.ui.model.AttachmentItem
+import com.denchic45.studiversity.ui.model.UserItem
+import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.util.AttachmentViewer
 import com.denchic45.studiversity.util.collectWithLifecycle
@@ -89,6 +94,9 @@ fun SubmissionDetailsScreen(
             val imeState by rememberImeState()
             Column(Modifier.let { if (imeState) it.padding(bottom = 220.dp) else it }) {
                 SubmissionHeaderContent(uiState.first)
+                UserListItem(item = with(uiState.first.author) {
+                    UserItem(id, firstName, surname, avatarUrl)
+                }, modifier = Modifier.padding(vertical = MaterialTheme.spacing.normal))
                 SubmissionDetailsContent(uiState.first, component::onAttachmentClick)
                 Spacer(Modifier.height(MaterialTheme.spacing.normal))
                 if (uiState.second)
@@ -130,12 +138,12 @@ private fun SubmissionGradeContent(
         verticalAlignment = Alignment.CenterVertically
     ) {
         uiState.first.grade?.let {
-            Text(
-                text = it.value.toString(),
-                modifier = Modifier.weight(1f),
-            )
-            TextButton(onClick = onCancel) {
-                Text("Отменить")
+//            Text(
+//                text = it.value.toString(),
+//                modifier = Modifier.weight(1f),
+//            )
+            Button(onClick = onCancel) {
+                Text("Отменить оценку")
             }
         } ?: run {
             var typedGrade by remember { mutableStateOf("") }
@@ -170,22 +178,31 @@ fun SubmissionDetailsContent(
         HeaderItemUI(name = "Прикрепленные файлы")
         if (uiState.attachments.isNotEmpty()) {
             LazyRow(Modifier) {
-                items(uiState.attachments, key = { it.attachmentId?.toString() ?: "" }) { item ->
+                items(uiState.attachments, key = { it.attachmentId.toString() }) { item ->
                     Spacer(Modifier.width(MaterialTheme.spacing.normal))
                     AttachmentListItem(
                         item = item,
                         onClick = { onAttachmentClick(item) },
-                        onRemove = onAttachmentRemove?.let { { it(item.attachmentId!!) } })
+                        onRemove = onAttachmentRemove?.let { { it(item.attachmentId) } })
                 }
             }
         } else {
-            Column(Modifier.height(96.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(
-                    painter = rememberVectorPainter(image = Icons.Outlined.Attachment),
-                    contentDescription = "empty attachments"
-                )
-                Spacer(Modifier.height(MaterialTheme.spacing.normal))
-                Text("Нет прикрепленных файлов")
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(96.dp), contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    Modifier.padding(MaterialTheme.spacing.normal),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = rememberVectorPainter(image = Icons.Outlined.Attachment),
+                        contentDescription = "empty attachments"
+                    )
+                    Spacer(Modifier.height(MaterialTheme.spacing.normal))
+                    Text("Нет прикрепленных файлов")
+                }
             }
         }
     }

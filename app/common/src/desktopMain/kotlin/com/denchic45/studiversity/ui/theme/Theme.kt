@@ -1,10 +1,9 @@
 package com.denchic45.studiversity.ui.theme
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
@@ -15,7 +14,7 @@ fun DesktopApp(
     visible: Boolean = true,
     onCloseRequest: () -> Unit,
     title: String = "Untitled",
-    icon: Painter? = null,
+    icon: Painter? = painterResource("app_logo.png"),
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {

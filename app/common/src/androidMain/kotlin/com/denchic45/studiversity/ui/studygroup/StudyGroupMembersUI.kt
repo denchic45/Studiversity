@@ -13,7 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.model.GroupMembers
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.HeaderItemUI

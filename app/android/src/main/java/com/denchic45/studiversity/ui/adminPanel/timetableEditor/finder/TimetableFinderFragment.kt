@@ -10,7 +10,7 @@ package com.denchic45.studiversity.ui.adminPanel.timetableEditor.finder
 //import androidx.recyclerview.widget.ItemTouchHelper
 //import androidx.recyclerview.widget.RecyclerView
 //import by.kirich1409.viewbindingdelegate.viewBinding
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.customPopup.ListPopupWindowAdapter
 //import com.denchic45.studiversity.data.model.domain.ListItem
 //import com.denchic45.studiversity.databinding.FragmentTimetableFinderBinding

@@ -9,7 +9,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 
 @Composable
 actual fun AnimatedLogo() {

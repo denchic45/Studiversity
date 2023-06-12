@@ -2,6 +2,7 @@ package com.denchic45.studiversity.feature.course.work.submission
 
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
+import com.denchic45.stuiversity.api.course.work.grade.GradeResponse
 import com.denchic45.stuiversity.api.course.work.grade.SubmissionGradeRequest
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.submission.model.*
@@ -69,28 +70,38 @@ class SubmissionRepository {
                 { CourseWorks.id },
                 { Submissions.courseWorkId },
                 { Submissions.authorId eq UsersMemberships.memberId })
+            .leftJoin(Grades,{Submissions.id},{ submissionId })
             .innerJoin(Users, { UsersMemberships.memberId }, { Users.id })
             .select(Memberships.scopeId eq courseId and (UsersMemberships.memberId inList studentIds))
-            .map {
-                it.getOrNull(Submissions.id)?.let { submissionId ->
+            .map { row ->
+                row.getOrNull(Submissions.id)?.let { submissionId ->
                     WorkSubmissionResponse(
                         id = submissionId.value,
                         author = Author(
-                            id = it[Users.id].value,
-                            firstName = it[Users.firstName],
-                            surname = it[Users.surname],
-                            avatarUrl = it[Users.avatarUrl]
+                            id = row[Users.id].value,
+                            firstName = row[Users.firstName],
+                            surname = row[Users.surname],
+                            avatarUrl = row[Users.avatarUrl]
                         ),
-                        state = it[Submissions.state],
+                        state = row[Submissions.state],
                         courseWorkId = courseWorkId,
                         content = when (CourseWorkDao.findById(courseWorkId)!!.type) {
                             CourseWorkType.ASSIGNMENT -> {
-                                it[Submissions.content]?.let(Json.Default::decodeFromString)
+                                row[Submissions.content]?.let(Json.Default::decodeFromString)
                             }
                         } ?: WorkSubmissionContent(emptyList()),
-                        updatedAt = it[Submissions.updatedAt]
+                        updatedAt = row[Submissions.updatedAt],
+                        grade =  row.getOrNull(Grades.value)?.let {
+                            GradeResponse(
+                                value = row[Grades.value],
+                                courseId = row[Grades.courseId].value,
+                                studentId = row[Grades.studentId].value,
+                                gradedBy = row[Grades.gradedBy]?.value,
+                                submissionId = row[Grades.submissionId]?.value
+                            )
+                        }
                     )
-                } ?: addNewSubmissionByStudentId(courseWorkId, it[UsersMemberships.memberId].value)
+                } ?: addNewSubmissionByStudentId(courseWorkId, row[UsersMemberships.memberId].value)
             }
     }
 

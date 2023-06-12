@@ -12,7 +12,6 @@ import com.denchic45.studiversity.R
 import com.denchic45.studiversity.SvgColorListener
 import com.denchic45.studiversity.databinding.DialogSubjectEditorBinding
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.glideSvg.GlideApp
 import com.denchic45.studiversity.rx.EditTextTransformer
 import com.denchic45.studiversity.ui.adapter.ColorPickerAdapter
 import com.denchic45.studiversity.ui.base.BaseDialogFragment

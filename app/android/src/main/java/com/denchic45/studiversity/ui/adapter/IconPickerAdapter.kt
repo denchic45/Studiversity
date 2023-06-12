@@ -2,16 +2,14 @@ package com.denchic45.studiversity.ui.adapter
 
 import android.content.Context
 import android.graphics.drawable.PictureDrawable
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.denchic45.studiversity.R
 import com.denchic45.studiversity.SvgColorListener
-import com.denchic45.studiversity.glideSvg.GlideApp
+import com.denchic45.studiversity.R
 
 class IconPickerAdapter(context: Context) : ArrayAdapter<String>(context, R.layout.item_icon) {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {

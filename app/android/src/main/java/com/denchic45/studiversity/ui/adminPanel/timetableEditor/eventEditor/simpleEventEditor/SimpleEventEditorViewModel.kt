@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.ui.adminPanel.timetableEditor.eventEditor.simpleEventEditor
 
 //import androidx.lifecycle.MutableLiveData
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.SingleLiveData
 //import com.denchic45.studiversity.data.domain.model.EventType
 //import com.denchic45.studiversity.data.model.domain.ListItem

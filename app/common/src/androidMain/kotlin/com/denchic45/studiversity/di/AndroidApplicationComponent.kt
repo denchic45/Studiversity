@@ -81,5 +81,5 @@ abstract class AndroidApplicationComponent(
 
     abstract val confirmDialogInteractor: ConfirmDialogInteractor
 
-    abstract val injectFragmentFactory: InjectFragmentFactory
+//    abstract val injectFragmentFactory: InjectFragmentFactory
 }

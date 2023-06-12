@@ -13,13 +13,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.util.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.flow.debounce
-import javax.inject.Inject
 
 interface HasComponent<C : AndroidUiComponent> {
     val component: C
@@ -27,14 +26,14 @@ interface HasComponent<C : AndroidUiComponent> {
 
 abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
     layoutId: Int,
-    private val menuResId: Int = 0
+    private val menuResId: Int = 0,
 ) : Fragment(layoutId), HasComponent<C> {
 
     abstract val binding: VB
 
     open val navController: NavController by lazy { findNavController() }
 
-     lateinit var menu: Menu
+    lateinit var menu: Menu
         private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +57,7 @@ abstract class BaseFragment2<C : AndroidUiComponent, VB : ViewBinding>(
                 NavigationCommand.Back -> navController.popBackStack()
                 is NavigationCommand.BackTo ->
                     navController.popBackStack(command.destinationId, false)
+
                 NavigationCommand.ToRoot ->
                     navController.popBackStack(navController.graph.startDestinationId, false)
             }

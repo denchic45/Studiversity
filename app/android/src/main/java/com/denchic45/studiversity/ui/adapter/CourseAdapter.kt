@@ -14,7 +14,7 @@
 //import com.bumptech.glide.Glide
 //import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 //import com.denchic45.studiversity.SvgColorListener
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.domain.model.CourseHeader
 //import com.denchic45.studiversity.domain.model.Subject
 //import com.denchic45.studiversity.domain.model.User

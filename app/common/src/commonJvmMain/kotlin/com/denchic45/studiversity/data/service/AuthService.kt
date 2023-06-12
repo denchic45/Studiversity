@@ -105,6 +105,9 @@ class AuthService(
     suspend fun resetPassword(email: String) {}
 
     fun signOut() {
-        // TODO: Remove tokens and other data
+        appPreferences.apply {
+            token = ""
+            refreshToken = ""
+        }
     }
 }

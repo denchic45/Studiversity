@@ -8,7 +8,6 @@ import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.denchic45.studiversity.R
 import com.denchic45.studiversity.databinding.FragmentSpecialtyEditorBinding
-import com.denchic45.studiversity.rx.EditTextTransformer
 import com.denchic45.studiversity.ui.base.BaseDialogFragment
 import com.denchic45.studiversity.ui.specialtyeditor.SpecialtyEditorComponent
 import com.denchic45.studiversity.util.collectWhenStarted

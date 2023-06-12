@@ -21,7 +21,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.denchic45.studiversity.SvgColorListener
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.model.User
 import com.denchic45.studiversity.databinding.FragmentLessonEditorBinding
 import com.denchic45.studiversity.glideSvg.GlideApp

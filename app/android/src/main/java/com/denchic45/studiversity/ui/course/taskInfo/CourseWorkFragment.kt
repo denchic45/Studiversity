@@ -13,7 +13,7 @@ package com.denchic45.studiversity.ui.course.taskInfo
 //import androidx.lifecycle.lifecycleScope
 //import by.kirich1409.viewbindingdelegate.viewBinding
 //import com.bumptech.glide.Glide
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.data.domain.model.Attachment2
 //import com.denchic45.studiversity.databinding.FragmentTaskInfoBinding
 //import com.denchic45.studiversity.domain.onSuccess

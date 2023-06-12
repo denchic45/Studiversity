@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 
 @Composable

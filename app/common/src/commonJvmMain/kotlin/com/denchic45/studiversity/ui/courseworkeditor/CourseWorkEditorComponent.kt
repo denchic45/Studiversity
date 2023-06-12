@@ -12,6 +12,7 @@ import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.filterSuccess
 import com.denchic45.studiversity.domain.map
 import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resourceOf
 import com.denchic45.studiversity.domain.stateInResource
 import com.denchic45.studiversity.domain.usecase.AddCourseWorkUseCase
 import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
@@ -94,7 +95,7 @@ class CourseWorkEditorComponent(
 
     private val _attachmentItems = workId?.let {
         findCourseWorkAttachmentsUseCase(courseId, workId)
-    } ?: emptyFlow()
+    } ?: flowOf(resourceOf(emptyList()))
     private val _addedAttachmentItems = MutableStateFlow<List<AttachmentItem>>(emptyList())
     private val removedAttachmentIds = MutableStateFlow(emptyList<UUID>())
 
@@ -211,7 +212,7 @@ class CourseWorkEditorComponent(
             it + selectedFiles.map { path ->
                 AttachmentItem.FileAttachmentItem(
                     path.name,
-                    null, null,
+                    null, UUID.randomUUID(),
                     FileState.Downloaded,
                     path
                 )

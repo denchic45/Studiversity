@@ -11,7 +11,7 @@ package com.denchic45.studiversity.ui.course.submissions
 //import androidx.navigation.fragment.findNavController
 //import by.kirich1409.viewbindingdelegate.viewBinding
 //import com.bumptech.glide.Glide
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.databinding.FragmentSubmissionsBinding
 //import com.denchic45.studiversity.databinding.ItemSubmissionBinding
 //import com.denchic45.studiversity.domain.model.Task

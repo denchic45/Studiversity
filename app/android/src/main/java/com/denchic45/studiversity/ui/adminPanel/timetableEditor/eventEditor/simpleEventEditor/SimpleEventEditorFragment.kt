@@ -13,7 +13,7 @@ package com.denchic45.studiversity.ui.adminPanel.timetableEditor.eventEditor.sim
 //import by.kirich1409.viewbindingdelegate.viewBinding
 //import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 //import com.denchic45.studiversity.SvgColorListener
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.customPopup.ListPopupWindowAdapter
 //import com.denchic45.studiversity.data.model.domain.ListItem
 //import com.denchic45.studiversity.databinding.FragmentSimpleEventBinding

@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.ui.course.content
 
 import androidx.lifecycle.viewModelScope
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.SingleLiveData
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess

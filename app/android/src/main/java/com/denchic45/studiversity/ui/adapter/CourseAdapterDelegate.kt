@@ -8,12 +8,11 @@ import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.denchic45.studiversity.R
 import com.denchic45.studiversity.databinding.ItemCourseBinding
-import com.denchic45.studiversity.glideSvg.GlideApp
+import com.denchic45.studiversity.R
 import com.denchic45.studiversity.util.viewBinding
-import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.studiversity.widget.extendedAdapter.ListItemAdapterDelegate
+import com.denchic45.stuiversity.api.course.model.CourseResponse
 
 class CourseAdapterDelegate :
     ListItemAdapterDelegate<CourseResponse, CourseAdapterDelegate.CourseHolder>() {

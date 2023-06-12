@@ -2,7 +2,7 @@ package com.denchic45.studiversity.ui.course.taskInfo
 
 //import androidx.lifecycle.MutableLiveData
 //import androidx.lifecycle.viewModelScope
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.SingleLiveData
 //import com.denchic45.studiversity.data.domain.model.Attachment2
 //import com.denchic45.studiversity.data.domain.model.FileAttachment2

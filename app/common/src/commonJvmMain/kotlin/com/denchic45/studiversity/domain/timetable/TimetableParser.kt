@@ -7,15 +7,7 @@ import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.timetable.model.EventDetails
-import com.denchic45.stuiversity.api.timetable.model.EventResponse
-import com.denchic45.stuiversity.api.timetable.model.LessonDetails
-import com.denchic45.stuiversity.api.timetable.model.LessonResponse
-import com.denchic45.stuiversity.api.timetable.model.PeriodMember
-import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
-import com.denchic45.stuiversity.api.timetable.model.StudyGroupName
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
-import com.denchic45.stuiversity.api.timetable.model.toPeriodMember
+import com.denchic45.stuiversity.api.timetable.model.*
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.DateTimePatterns
@@ -30,8 +22,7 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell
 import java.io.InputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 import kotlin.random.Random
 
 @Inject
@@ -115,16 +106,6 @@ class TimetableParser(
         }
     }
 
-//    private val groupsCount:Int
-//        get() {
-//            return table.getRow(2).tableCells.size - 1
-//        }
-
-    private fun findCourseNumber(): Int {
-        val text = table.getRow(0).getCell(0).text
-        return text.replace(Regex("[^0-9]+"), "").toInt()
-    }
-
     private fun getCellByGroupName(
         tableCells: List<XWPFTableCell>,
         groupName: String,
@@ -137,9 +118,7 @@ class TimetableParser(
 
     private suspend fun createTimetable(): TimetableResponse {
         val weekLessons = mutableListOf<List<PeriodResponse>>()
-//        currentRow = 3
         currentDayOfWeek = 0
-//        while (!table.getRow(currentRow).getCell(0).text.contains("ПОНЕДЕЛЬНИК")) currentRow++ todo возможно не нужно
         val weekOfYear = table.getRow(currentRow)
             .getCell(0).text
             .split(" ")[1]
@@ -180,14 +159,7 @@ class TimetableParser(
                 currentRow++
                 continue // Skip dinner
             }
-            val cellContent: List<String> =
-                cells[studyGroupColumn].paragraphs.map { it.paragraphText }
-//                .replace("\\(.*\\)".toRegex(), "")
-//                .trim { it <= ' ' }
-
-//            if (currentRow < table.rows.size) {
-//                cells = table.getRow(currentRow).tableCells
-//            }
+            val cellContent: List<String> = cells[studyGroupColumn].paragraphs.map { it.paragraphText }
             val hasOrder = orderText.isNotEmpty()
             if (hasOrder) {
                 if (orderText == "0" && cellContent.isEmpty()) {
@@ -309,27 +281,12 @@ class TimetableParser(
             }?.also(cachedSubjects::add)
     }
 
-//    private fun createEventDetails(eventName: String): EventDetails {
-//        return when (eventName.lowercase(Locale.getDefault())) {
-//            "обед" -> dinner()
-//            "практика" -> practice()
-//            else -> SimpleEventDetails(eventName)
-//        }
-//    }
-
-//    private fun findTeachersBySubject(subject: SubjectResponse): List<UserResponse> {
-//        return currentStudyGroup.courses
-//            .filter { it.subject == subject }
-//            .map { it.teacher }
-//    }
-
     private fun String.resetFormatting(): String {
         return replace(" ", "")
             .replace("-", "")
             .replace("–", "")
             .lowercase(Locale.getDefault())
     }
-
 
     open class TimetableParserException(message: String?) : Exception(message)
     class TimetableInvalidDateException(message: String?) : TimetableParserException(message)

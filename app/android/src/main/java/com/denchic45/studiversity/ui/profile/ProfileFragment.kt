@@ -16,7 +16,7 @@ package com.denchic45.studiversity.ui.profile
 //import com.arkivanov.decompose.defaultComponentContext
 //import com.bumptech.glide.Glide
 //import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.databinding.FragmentProfileBinding
 //import com.denchic45.studiversity.domain.onSuccess
 //import com.denchic45.studiversity.ui.BaseFragment2

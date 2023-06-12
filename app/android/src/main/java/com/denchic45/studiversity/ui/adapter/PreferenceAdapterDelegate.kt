@@ -3,9 +3,9 @@ package com.denchic45.studiversity.ui.adapter
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import com.bumptech.glide.Glide
-import com.denchic45.studiversity.data.domain.model.DomainModel
 import com.denchic45.studiversity.databinding.ItemContentSwitchBinding
 import com.denchic45.studiversity.databinding.ItemIconContent2Binding
+import com.denchic45.studiversity.data.domain.model.DomainModel
 import com.denchic45.studiversity.util.viewBinding
 import com.denchic45.studiversity.widget.extendedAdapter.DelegationAdapterDsl
 import com.denchic45.studiversity.widget.extendedAdapter.DelegationAdapterExtended

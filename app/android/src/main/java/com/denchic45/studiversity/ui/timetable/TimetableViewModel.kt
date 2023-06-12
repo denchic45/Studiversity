@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.ui.timetable
 
 //import androidx.lifecycle.viewModelScope
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.domain.mapResource
 //import com.denchic45.studiversity.domain.model.Event
 //import com.denchic45.studiversity.domain.model.User

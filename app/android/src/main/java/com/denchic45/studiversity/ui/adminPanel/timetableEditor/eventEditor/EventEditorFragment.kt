@@ -16,9 +16,9 @@ package com.denchic45.studiversity.ui.adminPanel.timetableEditor.eventEditor
 //import androidx.navigation.NavController
 //import androidx.navigation.Navigation.findNavController
 //import by.kirich1409.viewbindingdelegate.viewBinding
-//import com.denchic45.studiversity.R
+//import com.denchic45.studiversity.common.R
 //import com.denchic45.studiversity.databinding.FragmentEventEditorBinding
-//import com.denchic45.studiversity.rx.EditTextTransformer
+//import com.denchic45.studiversity.common.Rx.EditTextTransformer
 //import com.denchic45.studiversity.ui.base.BaseFragment
 //import com.denchic45.studiversity.util.Dimensions
 //import com.denchic45.studiversity.util.collectWhenResumed

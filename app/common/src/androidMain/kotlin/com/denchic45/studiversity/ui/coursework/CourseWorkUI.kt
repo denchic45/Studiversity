@@ -74,6 +74,7 @@ import com.denchic45.studiversity.util.OpenMultipleAnyDocuments
 import com.denchic45.studiversity.util.collectWithLifecycle
 import com.denchic45.studiversity.util.findActivity
 import com.denchic45.studiversity.util.getFile
+import com.denchic45.stuiversity.api.course.work.submission.model.Author
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.launch
@@ -109,17 +110,21 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     val allowEdit by component.allowEditWork.collectAsState(initial = false)
 //    val appBarState = LocalAppBarState.current
 
-    updateAppBarState(allowEdit, AppBarContent(dropdownItems = if (allowEdit)
-        listOf(
-            DropdownMenuItem2(
-                title = uiTextOf("Изменить"),
-                onClick = component::onEditClick
-            ),
-            DropdownMenuItem2(
-                title = uiTextOf("Удалить"),
-                onClick = component::onRemoveClick
-            )
-        ) else emptyList()))
+    updateAppBarState(
+        allowEdit, AppBarContent(
+            dropdownItems = if (allowEdit)
+                listOf(
+                    DropdownMenuItem2(
+                        title = uiTextOf("Изменить"),
+                        onClick = component::onEditClick
+                    ),
+                    DropdownMenuItem2(
+                        title = uiTextOf("Удалить"),
+                        onClick = component::onRemoveClick
+                    )
+                ) else emptyList()
+        )
+    )
 
 //    component.lifecycle.doOnStart {
 //        appBarState.content = AppBarContent(dropdownItems = if (allowEdit)
@@ -320,23 +325,25 @@ private fun CourseWorkBody(
 
     childrenResource.onSuccess { children ->
         Column {
-            TabRow(
-                selectedTabIndex = pagerState.currentPage
-            ) {
-                // Add tabs for all of our pages
-                children.forEachIndexed { index, child ->
-                    Tab(
-                        text = { Text(child.title) },
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                        },
-                    )
+            if (children.size != 1) {
+                TabRow(
+                    selectedTabIndex = pagerState.currentPage
+                ) {
+                    // Add tabs for all of our pages
+                    children.forEachIndexed { index, child ->
+                        Tab(
+                            text = { Text(child.title) },
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            },
+                        )
+                    }
                 }
-            }
 
+            }
             HorizontalPager(state = pagerState, pageCount = children.size) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     when (val child = children[it]) {
@@ -560,12 +567,13 @@ fun CourseWorkContentPreview() {
                 childrenResource = Resource.Loading, submissionResource = Resource.Success(
                     SubmissionUiState(
                         id = UUID.randomUUID(),
+                        author = Author(UUID.randomUUID(),"","",""),
                         state = SubmissionState.CREATED,
                         attachments = listOf(
                             AttachmentItem.FileAttachmentItem(
                                 "file",
                                 null,
-                                null,
+                                UUID.randomUUID(),
                                 FileState.Preview,
                                 "".toPath()
                             )

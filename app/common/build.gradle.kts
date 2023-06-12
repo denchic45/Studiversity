@@ -18,6 +18,7 @@ kotlin {
         }
     }
 
+
     sourceSets {
         val ktorVersion = "2.3.1"
         val koinVersion = "3.2.0"
@@ -118,7 +119,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 dependsOn(commonJvmMain)
-                kotlin.srcDir("build/generated/ksp/android/androidDebug")
+//                kotlin.srcDir("build/generated/ksp/android/androidRelease")
 
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.10.1")
@@ -245,7 +246,7 @@ dependencies {
 
 android {
 
-    namespace = "com.denchic45.studiversity"
+    namespace = "com.denchic45.studiversity.common"
 
     compileSdk = 33
     sourceSets["main"].apply {

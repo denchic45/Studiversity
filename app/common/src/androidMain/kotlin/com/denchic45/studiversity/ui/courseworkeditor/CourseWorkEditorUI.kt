@@ -245,7 +245,7 @@ fun CourseWorkEditorContent(
                         LazyRow {
                             itemsIndexed(
                                 items = attachmentItems,
-                                key = { _, item -> item.attachmentId ?: "" }) { index, item ->
+                                key = { _, item -> item.attachmentId }) { index, item ->
                                 AttachmentListItem(
                                     item = item,
                                     onClick = { onAttachmentClick(item) },

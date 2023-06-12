@@ -37,7 +37,7 @@ import java.util.UUID
 
 @Inject
 class SubmissionDetailsComponent(
-    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
+    checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val downloadFileUseCase: DownloadFileUseCase,
     private val findSubmissionByIdUseCase: FindSubmissionByIdUseCase,
     findSubmissionAttachmentsUseCase: FindSubmissionAttachmentsUseCase,

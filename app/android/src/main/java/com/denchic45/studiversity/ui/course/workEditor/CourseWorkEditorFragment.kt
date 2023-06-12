@@ -13,7 +13,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.defaultComponentContext
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.data.domain.model.Attachment
 import com.denchic45.studiversity.data.domain.model.AttachmentFile
 import com.denchic45.studiversity.data.domain.model.AttachmentLink

@@ -15,9 +15,7 @@ group = "com.denchic45.studiversity"
 version = "1.0"
 
 android {
-
     namespace = "com.denchic45.studiversity"
-
     packaging {
         resources.excludes.apply {
             add("META-INF/LICENSE")
@@ -72,8 +70,6 @@ android {
         viewBinding = true
         compose = true
     }
-
-    namespace = "com.denchic45.studiversity"
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.6"

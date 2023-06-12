@@ -16,12 +16,12 @@ import java.util.UUID
 sealed interface AttachmentItem {
     val name: String
     val previewUrl: String?
-    val attachmentId: UUID?
+    val attachmentId: UUID
 
     data class FileAttachmentItem(
         override val name: String,
         override val previewUrl: String?,
-        override val attachmentId: UUID?,
+        override val attachmentId: UUID,
         val state: FileState,
         val path: Path
     ) : AttachmentItem {
@@ -32,7 +32,7 @@ sealed interface AttachmentItem {
     data class LinkAttachmentItem(
         override val name: String,
         override val previewUrl: String?,
-        override val attachmentId: UUID?,
+        override val attachmentId: UUID,
         val url: String
     ) : AttachmentItem
 }

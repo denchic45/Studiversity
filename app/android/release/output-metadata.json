@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.denchic45.studiversity",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 83,
+      "versionName": "1.0.7",
+      "outputFile": "android-release.apk"
+    }
+  ],
+  "elementType": "File"
+}

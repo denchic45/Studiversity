@@ -14,8 +14,6 @@ import com.denchic45.studiversity.ui.confirm.ConfirmInteractor
 import com.denchic45.studiversity.ui.iconPicker.IconPickerInteractor
 import com.denchic45.studiversity.uieditor.UIEditor
 import com.denchic45.studiversity.uivalidator.Rule
-import com.denchic45.studiversity.uivalidator.UIValidator
-import com.denchic45.studiversity.uivalidator.Validation
 import com.denchic45.studiversity.util.Colors
 import com.denchic45.studiversity.util.NetworkException
 import com.denchic45.studiversity.util.SameSubjectIconException
@@ -59,11 +57,11 @@ class SubjectEditorViewModel @Inject constructor(
     val openIconPicker = SingleLiveData<Void>()
 
     val showColors = MutableLiveData<Pair<List<Int>, Int>>()
-    private val uiValidator: UIValidator = UIValidator.of(
-        Validation(Rule { uiEditor.hasBeenChanged() }),
-        Validation(Rule(_successUiStateValue.name::isNotEmpty, "Нет названия")),
-        Validation(Rule(_successUiStateValue.iconUrl::isNotEmpty, "Нет иконки"))
-    )
+//    private val uiValidator: UIValidator = UIValidator.of(
+//        Validation(Rule { uiEditor.hasBeenChanged() }),
+//        Validation(Rule(_successUiStateValue.name::isNotEmpty, "Нет названия")),
+//        Validation(Rule(_successUiStateValue.iconUrl::isNotEmpty, "Нет иконки"))
+//    )
 
     private val uiEditor: UIEditor<Resource<EditableSubjectState>> = UIEditor(_subjectId == null) {
         uiState.value
@@ -77,7 +75,7 @@ class SubjectEditorViewModel @Inject constructor(
         val colorId = Colors.ids[position]
         colorName = Colors.colorNameOfId[colorId]!!
 //        colorIcon.value = colorId
-        enablePositiveBtn.postValue(uiValidator.runValidates())
+//        enablePositiveBtn.postValue(uiValidator.runValidates())
     }
 
     private suspend fun saveChanges() {
@@ -168,13 +166,13 @@ class SubjectEditorViewModel @Inject constructor(
 
     fun onNameType(name: String) {
         uiState.updateResource { it.copy(name = name) }
-        enablePositiveBtn.postValue(uiValidator.runValidates())
+//        enablePositiveBtn.postValue(uiValidator.runValidates())
     }
 
     fun onPositiveClick() {
-        uiValidator.runValidates {
-            viewModelScope.launch { saveChanges() }
-        }
+//        uiValidator.runValidates {
+//            viewModelScope.launch { saveChanges() }
+//        }
     }
 
     fun onDeleteClick() {
@@ -201,7 +199,7 @@ class SubjectEditorViewModel @Inject constructor(
             openIconPicker.call()
             iconPickerInteractor.observeSelectedIcon().apply {
                 uiState.updateResource { it.copy(iconUrl = this) }
-                enablePositiveBtn.postValue(uiValidator.runValidates())
+//                enablePositiveBtn.postValue(uiValidator.runValidates())
             }
         }
     }

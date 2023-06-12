@@ -56,6 +56,16 @@ compose.desktop {
             modules("java.sql")
             packageName = "Studiversity"
             packageVersion = "1.0.0"
+
+            macOS {
+                iconFile.set(project.file("app_logo.icns"))
+            }
+            windows {
+                iconFile.set(project.file("app_logo.ico"))
+            }
+            linux {
+                iconFile.set(project.file("app_logo.png"))
+            }
         }
     }
 }

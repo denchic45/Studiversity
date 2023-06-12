@@ -26,10 +26,10 @@ import com.denchic45.studiversity.util.ValueFilter
 import com.denchic45.studiversity.util.closeKeyboard
 import com.denchic45.studiversity.util.collectWhenStarted
 import com.denchic45.studiversity.util.windowHeight
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
-import com.denchic45.stuiversity.api.course.work.submission.model.WorkSubmissionContent
 import com.denchic45.studiversity.widget.extendedAdapter.ItemAdapterDelegate
 import com.denchic45.studiversity.widget.extendedAdapter.adapter
+import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import com.denchic45.stuiversity.api.course.work.submission.model.WorkSubmissionContent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -167,7 +167,9 @@ class SubmissionDialog : BottomSheetDialogFragment() {
                         "Оценено: ${response.grade}/5"
                     } else when (response.state) {
                         SubmissionState.NEW,
-                        SubmissionState.CREATED -> "Не сдано"
+                        SubmissionState.CREATED,
+                        -> "Не сдано"
+
                         SubmissionState.SUBMITTED -> "Сдано" // TODO: добавить дату и время отправки
                         SubmissionState.CANCELED_BY_AUTHOR -> "Отклонено автором"
                     }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Widgets
@@ -19,17 +18,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.platform.Font
-import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.onLoading
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.ui.LocalAppBarMediator
-import com.denchic45.studiversity.ui.MainComponent
 import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.course.CourseScreen
 import com.denchic45.studiversity.ui.navigation.OverlayChild
@@ -139,7 +133,6 @@ fun MainScreen(component: MainComponent) {
                     selected = activeChild is MainComponent.Child.AdminDashboard,
                     onClick = component::onSettingsClick
                 )
-//                Spacer(Modifier.weight(1f))
             }
 
             Column {
@@ -161,20 +154,6 @@ fun MainScreen(component: MainComponent) {
                         .padding(top = 36.dp, bottom = 8.dp, end = 24.dp),
                     actions = {
                         Spacer(Modifier.width(4.dp))
-//                        IconButton(onClick = {}) {
-//                            Icon(
-//                                imageVector = Icons.Outlined.Notifications,
-//                                tint = Color.DarkGray,
-//                                contentDescription = "Notifications"
-//                            )
-//                        }
-//                        IconButton(onClick = {}) {
-//                            Icon(
-//                                imageVector = Icons.Outlined.AccountCircle,
-//                                tint = Color.DarkGray,
-//                                contentDescription = "Avatar"
-//                            )
-//                        }
                     })
                 Surface(
                     tonalElevation = (-1).dp,
@@ -212,44 +191,6 @@ fun MainScreen(component: MainComponent) {
                     }
                 }
             }
-        }
-    }
-}
-
-
-@OptIn(ExperimentalUnitApi::class)
-@Composable
-private fun MainAppBar(
-    title: String,
-    content: @Composable () -> Unit,
-) {
-    Row(
-        Modifier.padding(top = 40.dp, bottom = 24.dp, end = 24.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            title,
-            Modifier,
-            fontFamily = FontFamily(Font(resource = "fonts/Gilroy-Medium.ttf")),
-            fontSize = TextUnit(32F, TextUnitType.Sp)
-        )
-
-        Box(Modifier.weight(1f)) { content() }
-
-        IconButton(onClick = {}, modifier = Modifier.size(32.dp)) {
-            Icon(
-                imageVector = Icons.Outlined.Notifications,
-                tint = Color.DarkGray,
-                contentDescription = "previous week arrow icon"
-            )
-        }
-        Spacer(Modifier.width(24.dp))
-        IconButton(onClick = {}, modifier = Modifier.size(32.dp)) {
-            Icon(
-                imageVector = Icons.Outlined.AccountCircle,
-                tint = Color.DarkGray,
-                contentDescription = "previous week arrow icon"
-            )
         }
     }
 }

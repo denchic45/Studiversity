@@ -36,9 +36,11 @@
 <!--                    app:layout_scrollFlags="scroll|enterAlways|snap" />-->
             </com.google.android.material.appbar.AppBarLayout>
 
+<!--            android:name="com.denchic45.studiversity.ui.MyNavHostFragment"-->
+
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/nav_host_fragment"
-                android:name="com.denchic45.studiversity.ui.MyNavHostFragment"
+
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:defaultNavHost="true"

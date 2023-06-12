@@ -3,7 +3,7 @@ package com.denchic45.studiversity.ui.theme
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 
 actual val RobotoFamily = FontFamily(
     Font(R.font.roboto_thin, FontWeight.Thin),

@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.util
 
-import com.denchic45.studiversity.R
+import com.denchic45.studiversity.common.R
 
 //val colors: List<ListItem> = listOf(
 //    ListItem(id = "", title = "blue", color = UiText.IdText(R.color.blue)),
