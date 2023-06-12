@@ -1,13 +1,12 @@
 package com.denchic45.studiversity.ui.auth
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -15,8 +14,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Password
-import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,7 +34,6 @@ import androidx.compose.ui.autofill.AutofillNode
 import androidx.compose.ui.autofill.AutofillType
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -61,9 +57,8 @@ fun LoginScreen(component: LoginComponent) {
             LoginContent(
                 component::onEmailType,
                 component::onPasswordType,
-                component::onLoginClick,
-                component::onRegisterClick
-            )
+                { component.onLoginClick() }
+            ) { component.onRegisterClick() }
         }
     )
 }
@@ -78,7 +73,9 @@ fun LoginContent(
     Column(Modifier.fillMaxWidth()) {
         LoginTextFields(onEmailType, onPasswordType)
 //        Spacer(Modifier.height(MaterialTheme.spacing.normal))
-        val register: @Composable () -> Unit = {
+        val loginOrRegister: @Composable () -> Unit = {
+            Button(onSignInClick) { Text("Войти") }
+            Spacer(Modifier.size(MaterialTheme.spacing.normal))
             Row(Modifier, verticalAlignment = Alignment.CenterVertically) {
                 Text("В первый раз? ")
                 ClickableText(
@@ -89,16 +86,18 @@ fun LoginContent(
             }
         }
         if (calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact) {
-            Column(Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.medium), horizontalAlignment = Alignment.CenterHorizontally) {
-                Button(onSignInClick) { Text("Войти") }
-                Spacer(Modifier.height(MaterialTheme.spacing.normal))
-                register()
+            Column(
+                Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.medium),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                loginOrRegister()
             }
         } else {
-            Row(Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.normal), verticalAlignment = Alignment.CenterVertically) {
-                Button(onSignInClick) { Text("Войти") }
-                Spacer(Modifier.width(MaterialTheme.spacing.normal))
-                register()
+            Row(
+                Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.normal),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                loginOrRegister()
             }
         }
     }
@@ -174,12 +173,11 @@ fun Modifier.autofill(
     val autofill = LocalAutofill.current
     val autofillNode = AutofillNode(onFill = onFill, autofillTypes = autofillTypes)
     LocalAutofillTree.current += autofillNode
-
     this.onGloballyPositioned {
         autofillNode.boundingBox = it.boundsInWindow()
     }.onFocusChanged { focusState ->
         autofill?.run {
-            if (focusState.isFocused) {
+            if (focusState.isFocused && autofillNode.boundingBox != null) {
                 requestAutofillForNode(autofillNode)
             } else {
                 cancelAutofillForNode(autofillNode)

@@ -60,7 +60,16 @@ class EventRepository @Inject constructor(
         roomIds: List<UUID>? = null,
         sorting: List<PeriodsSorting> = emptyList(),
     ) = fetchResource {
-        timetableApi.getTimetable(weekOfYear, studyGroupIds, courseIds, memberIds, roomIds, sorting)
+        val timetable = timetableApi.getTimetable(
+            weekOfYear,
+            studyGroupIds,
+            courseIds,
+            memberIds,
+            roomIds,
+            sorting
+        )
+        println("Result timetable: $timetable")
+        timetable
     }
 
 //    fun findEventsOfDayByGroupIdAndDate(groupId: String, date: LocalDate): Flow<EventsOfDay> {

@@ -46,7 +46,7 @@ tasks.withType<Test> {
 tasks {
     val shadowJarTask = named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
         // explicitly configure the filename of the resulting UberJar
-        val uberJarFileName = "com.denchic45.studiversity-backend-0.0.1.jar"
+        val uberJarFileName = "studiversity-backend.jar"
         archiveFileName.set(uberJarFileName)
 
         // Appends entries in META-INF/services resources into a single resource. For example, if there are several

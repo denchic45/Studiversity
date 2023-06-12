@@ -12,7 +12,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +56,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
                         expanded = showList,
                         onExpandedChange = { expanded = it }) {
                         OutlinedTextField(
-                            value = if (selectedTimetable == -1) "Мое расписание" else groups[selectedTimetable].name,
+                            value = if (selectedTimetable == -1) "Мое расписание" else "Группа " + groups[selectedTimetable].name,
                             readOnly = true,
                             onValueChange = {},
                             trailingIcon = {
@@ -84,7 +83,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
                             )
                             groups.forEachIndexed { index, group ->
                                 DropdownMenuItem(
-                                    text = { Text(group.name) },
+                                    text = { Text("Группа " + group.name) },
                                     onClick = {
                                         component.onTimetableSelect(index)
                                         expanded = false

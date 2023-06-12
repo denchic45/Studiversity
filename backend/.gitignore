@@ -32,3 +32,5 @@ out/
 /dist/
 /nbdist/
 /.nb-gradle/
+
+application.conf

@@ -56,8 +56,9 @@ fun AuthScreen(component: AuthComponent) {
                 when (val child = it.instance) {
                     is AuthComponent.Child.Welcome -> WelcomeScreen(child.component)
                     is AuthComponent.Child.Login -> LoginScreen(child.component)
-                    is AuthComponent.Child.Registration -> TODO()
-                    is AuthComponent.Child.ResetPassword -> TODO()
+                    is AuthComponent.Child.Registration -> RegistrationScreen(child.component)
+                    is AuthComponent.Child.ResetPassword -> {
+                        Text("Восстановить пароль")}
                 }
             }
         }

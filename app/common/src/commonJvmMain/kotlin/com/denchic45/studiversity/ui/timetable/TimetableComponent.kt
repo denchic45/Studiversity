@@ -35,7 +35,9 @@ class TimetableComponent(
     private val _weekTimetable = owner.flatMapLatest { owner ->
         selectedWeekOfYear.flatMapLatest { weekOfYear ->
             flow {
+                println("Loading timetable")
                 emit(resourceOf())
+                println("Find timetable weekOfYear: $weekOfYear owner $owner")
                 emit(findTimetableOfWeekUseCase(weekOfYear, owner))
             }
         }

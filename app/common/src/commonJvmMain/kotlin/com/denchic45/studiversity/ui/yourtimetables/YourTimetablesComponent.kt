@@ -30,7 +30,7 @@ class YourTimetablesComponent(
     metaRepository: MetaRepository,
     private val appPreferences: AppPreferences,
     findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
-    _TimetableComponent: (
+    timetableComponent: (
         StateFlow<String>,
         Flow<TimetableOwner>,
         ComponentContext,
@@ -77,7 +77,7 @@ class YourTimetablesComponent(
         .shareIn(componentScope, SharingStarted.Lazily)
 
 
-    private val timetableComponent = _TimetableComponent(
+    private val timetableComponent = timetableComponent(
         selectedWeekOfYear,
         selectedOwner,
         componentContext.childContext("DayTimetable")
@@ -85,6 +85,6 @@ class YourTimetablesComponent(
 
     val timetableState = getTimetableState(
         bellSchedule,
-        timetableComponent.weekTimetable
+        this.timetableComponent.weekTimetable
     )
 }

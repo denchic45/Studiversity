@@ -14,6 +14,7 @@ import com.denchic45.studiversity.feature.studygroup.configureStudyGroups
 import com.denchic45.studiversity.feature.teacher.configureTeachers
 import com.denchic45.studiversity.feature.timetable.configureTimetable
 import com.denchic45.studiversity.feature.user.configureUsers
+import com.denchic45.studiversity.logger.logger
 import com.denchic45.studiversity.plugin.configureRouting
 import com.denchic45.studiversity.plugin.configureSerialization
 import com.denchic45.studiversity.plugin.configureStatusPages
@@ -37,7 +38,8 @@ fun main() {
 private lateinit var engine: ApplicationEngine
 
 private fun startServer() {
-    engine = embeddedServer(factory = Netty, port = 8080, host = "0.0.0.0", module = Application::module)
+    logger.info { "starting server..."}
+    engine = embeddedServer(factory = Netty, port = 8080, host = "192.168.0.104", module = Application::module)
         .start(wait = true)
 }
 
@@ -48,16 +50,23 @@ fun restartServer() {
 
 @Suppress("unused")
 fun Application.module() = runBlocking {
+    logger.info { "starting started..."}
     install(PartialContent)
     install(AutoHeadResponse)
     configureDI()
     configureSerialization()
     configureStatusPages()
+    logger.info { "initialized: ${config.organization.initialized}"}
     if (config.organization.initialized) {
         configurePing()
+        logger.info { "configure database..."}
         configureDatabase()
+        logger.info { "database configured"}
+        logger.info { "configure supabase..."}
         configureSupabase()
+        logger.info { "database configured"}
         configureAuth()
+        logger.info { "auth configured"}
         configureUsers()
         configureRoles()
         configureMembership()
@@ -70,6 +79,7 @@ fun Application.module() = runBlocking {
         configureSchedule()
         configureRooms()
         configureRouting()
+        logger.info { "configuration success"}
     }
 }
 

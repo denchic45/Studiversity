@@ -1,6 +1,7 @@
 package com.denchic45.studiversity.ui.auth
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,19 +37,33 @@ fun AuthLayout(
     val windowSize = calculateWindowSizeClass()
 
     when (windowSize.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> Column(Modifier.padding(MaterialTheme.spacing.normal)) {
-            Column(Modifier.weight(0.8f), horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(Modifier.weight(1f))
-                HeaderContent(imageContent, title, description)
-            }
-            Spacer(Modifier.height(MaterialTheme.spacing.normal))
-            Column(
-                Modifier.weight(1f).fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(Modifier.widthIn(max = 360.dp)) {
-                    content()
-                }
+        WindowWidthSizeClass.Compact -> {
+            val state = rememberScrollState()
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val maxHeight = this.maxHeight
+                    Column(
+                        Modifier.fillMaxSize().verticalScroll(state)
+                            .padding(MaterialTheme.spacing.normal)
+                    ) {
+                        val fl = (maxHeight / 2.3.dp).dp
+                        Column(
+                            Modifier.height(fl),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Spacer(Modifier.weight(1f))
+                            HeaderContent(imageContent, title, description)
+                        }
+                        Spacer(Modifier.height(MaterialTheme.spacing.normal))
+
+                        Column(
+                            Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Box(Modifier.widthIn(max = 360.dp)) {
+                                content()
+                            }
+                        }
+                    }
             }
         }
 
