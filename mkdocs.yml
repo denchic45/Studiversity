@@ -1,4 +1,6 @@
 site_name: Studiversity
+repo_url: https://github.com/denchic45/Studiversity
+repo_name: denchic45/Studiversity
 theme:
   name: material
   features:
@@ -9,6 +11,7 @@ theme:
 
 nav:
   - Начало: index.md
+  - Руководство пользователя: user-guide/user-guide.yaml
   - Документация API: rest/rest-api.md
 
 
