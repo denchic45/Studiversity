@@ -1,6 +1,16 @@
 site_name: Studiversity
 theme:
   name: material
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+
+nav:
+  - Начало: index.md
+  - Документация API: rest-api.md
+
 
 markdown_extensions:
   - pymdownx.highlight:
