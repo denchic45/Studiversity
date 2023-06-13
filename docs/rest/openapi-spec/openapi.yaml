@@ -1,0 +1,93 @@
+openapi: 3.1.0
+info:
+  title: Studiversity
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/
+    description: local server
+paths:
+  /auth/token:
+    post:
+      tags:
+        - Authorization
+      parameters:
+        - name: grant_type
+          in: query
+          description: Grand type
+          required: true
+          schema:
+            type: string
+            enum: [password, refresh_token]
+      responses:
+        '200':
+          description: Получение токена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignInResponse"
+  /signup:
+    post:
+      tags:
+        - Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '200':
+          description: Successfully registration
+  /users:
+    get:
+      tags:
+        - Users
+      security:
+        - bearerAuth:
+            - read:users
+            - public
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+      description: 'note: non-oauth scopes are not defined at the securityScheme level'
+
+  schemas:
+    SignInResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwic3ViIjoiY2ExZmRmNWQtMmNiOC00NzU1LWI5YjctYTFiNWE3NzJiMTFjIiwiZXhwIjoxNjg2NjcxOTUxfQ.Lq1Sqp5bbP2-31FaoPqzy9XK0eQSHX2_3pnOA6MRjYE
+        refreshToken:
+          type: string
+          example: 77bdd9c0-21d6-4400-bdbe-be0ac4d28720
+        organizationId:
+          type: string
+          example: b3e226b3-2d90-4197-bb65-976ab7595f31
+    SignupRequest:
+      type: object
+      required:
+         - firstName
+         - surname
+      properties:
+        firstName:
+          type: string
+          example: Andrew
+        surname:
+          type: string
+          example: Ivanov
+        patronymic:
+          type: string
+          example: Ivanovich
+        gender:
+          type: string
+          enum: [MALE, FEMALE]
+        email:
+          type: string
+          example: ivan@mail.ru
+        password:
+          type: string
+          example: hbfFVDNdsf.*)3M83f4

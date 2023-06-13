@@ -9,7 +9,7 @@ theme:
 
 nav:
   - Начало: index.md
-  - Документация API: rest-api.md
+  - Документация API: rest/rest-api.md
 
 
 markdown_extensions:
@@ -28,3 +28,6 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+
+plugins:
+   - swagger-ui-tag
