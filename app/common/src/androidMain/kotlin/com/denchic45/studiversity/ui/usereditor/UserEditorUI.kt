@@ -17,7 +17,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,9 +30,7 @@ import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.ui.Sidebar
 import com.denchic45.studiversity.ui.appbar2.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar2.updateAnimatedAppBarState
-import com.denchic45.studiversity.ui.appbar2.updateAppBarState
 import com.denchic45.studiversity.ui.component.HeaderItemUI
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
@@ -53,15 +50,18 @@ fun UserEditorScreen(component: UserEditorComponent) {
     val allowSave by component.allowSave.collectAsState()
 //    val appBarState = LocalAppBarState.current
 
-    updateAnimatedAppBarState(allowSave,AppBarContent(
-        title = uiTextOf("Новый пользователь"),
-        actionItems = listOf(
-            ActionMenuItem2(
-                icon = uiIconOf(Icons.Default.Done),
-                enabled = allowSave,
-                onClick = component::onSaveClick
+    updateAnimatedAppBarState(
+        allowSave, AppBarContent(
+            title = uiTextOf("Новый пользователь"),
+            actionItems = listOf(
+                ActionMenuItem2(
+                    icon = uiIconOf(Icons.Default.Done),
+                    enabled = allowSave,
+                    onClick = component::onSaveClick
+                )
             )
-        ) ))
+        )
+    )
 
 //    LaunchedEffect(allowSave) {
 //        appBarState.animateUpdate {
@@ -80,16 +80,18 @@ fun UserEditorScreen(component: UserEditorComponent) {
 
     val scrollState = rememberScrollState()
     Surface {
-    UserEditorContent(
-        state = state,
-        onFirstNameType = component::onFirstNameType,
-        onSurnameType = component::onSurnameType,
-        onPatronymicType = component::onPatronymicType,
-        onGenderSelect = component::onGenderSelect,
-        onEmailType = component::onEmailType,
-        modifier = Modifier.verticalScroll(scrollState)
-    )
-}}
+        UserEditorContent(
+            state = state,
+            onFirstNameType = component::onFirstNameType,
+            onSurnameType = component::onSurnameType,
+            onPatronymicType = component::onPatronymicType,
+            onGenderSelect = component::onGenderSelect,
+            onRoleSelect = component::onRoleSelect,
+            onEmailType = component::onEmailType,
+            modifier = Modifier.verticalScroll(scrollState)
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,6 +101,7 @@ fun UserEditorContent(
     onSurnameType: (String) -> Unit,
     onPatronymicType: (String) -> Unit,
     onGenderSelect: (UserEditorComponent.GenderAction) -> Unit,
+    onRoleSelect: (UserEditorComponent.RoleAction) -> Unit,
     onEmailType: (String) -> Unit,
     modifier: Modifier
 ) {
@@ -140,6 +143,7 @@ fun UserEditorContent(
             placeholder = { Text("Отчество (необязательно)") },
             singleLine = true
         )
+
         var expandedGenders by remember { mutableStateOf(false) }
 
         ExposedDropdownMenuBox(
@@ -170,8 +174,8 @@ fun UserEditorContent(
                     DropdownMenuItem(
                         text = { Text(it.title) },
                         onClick = {
-                            onGenderSelect(it)
                             expandedGenders = false
+                            onGenderSelect(it)
                         }
                     )
                 }
@@ -189,5 +193,48 @@ fun UserEditorContent(
             isError = state.emailMessage != null,
             supportingText = { Text(text = state.emailMessage ?: "") }
         )
+
+        var expandedRoles by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = expandedRoles,
+            onExpandedChange = { expandedRoles = !expandedRoles }
+        ) {
+            OutlinedTextField(
+                value = state.assignedRoles.let { assigned ->
+                    when {
+                        assigned.isEmpty() -> "Пользователь"
+                        assigned.size == 1 -> state.getRoleNameOf(assigned.single())
+                        else -> assigned.joinToString(transform = state::getRoleNameOf)
+                    }
+                },
+                onValueChange = { },
+                readOnly = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                label = { Text("Роли") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedRoles)
+                },
+                singleLine = true,
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+            )
+
+            ExposedDropdownMenu(
+                expanded = expandedRoles,
+                onDismissRequest = { expandedRoles = false }) {
+                state.roles.forEach {
+                    DropdownMenuItem(
+                        text = { Text(it.title) },
+                        trailingIcon = {
+                            if (it.role in state.assignedRoles)
+                                Icon(Icons.Default.Done, contentDescription = "role selected")
+                        },
+                        onClick = { onRoleSelect(it) }
+                    )
+                }
+            }
+        }
+
     }
 }

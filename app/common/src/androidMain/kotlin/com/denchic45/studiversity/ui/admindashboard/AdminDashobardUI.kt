@@ -11,7 +11,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -21,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.common.R
-import com.denchic45.studiversity.ui.SyncedEffect
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
 import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
@@ -36,7 +34,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
 
     val childStack by component.childStack.subscribeAsState()
     Column {
-        AdminListItem(
+        CustomListItem(
             title = "Расписания",
             subtitle = "Просмотр и редактирование",
             painter = painterResource(id = R.drawable.ic_timetable),
@@ -44,7 +42,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
             onClick = component::onTimetableFinderClick
         )
 
-        AdminListItem(
+        CustomListItem(
             title = "Новое расписание",
             subtitle = "Создать с нуля или загрузить из документа",
             painter = rememberVectorPainter(Icons.Outlined.AddBox),
@@ -52,35 +50,35 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
             onClick = component::onTimetableLoaderClick
         )
 
-        AdminListItem(
+        CustomListItem(
             title = "Курсы",
             painter = painterResource(id = R.drawable.ic_course),
             contentDescription = "courses",
             onClick = component::onCoursesClick
         )
 
-        AdminListItem(
+        CustomListItem(
             title = "Пользователи",
             painter = painterResource(id = R.drawable.ic_user),
             contentDescription = "users",
             onClick = component::onUsersClick
         )
 
-        AdminListItem(
+        CustomListItem(
             title = "Учебные группы",
             painter = painterResource(id = R.drawable.ic_study_group),
             contentDescription = "study groups",
             onClick = component::onStudyGroupsClick
         )
 
-        AdminListItem(
+        CustomListItem(
             title = "Предметы",
             painter = painterResource(id = R.drawable.ic_subject),
             contentDescription = "subjects",
             onClick = component::onSubjectsClick
         )
 
-        AdminListItem(
+        CustomListItem(
             title = "Специальности",
             painter = painterResource(id = R.drawable.ic_specialty),
             contentDescription = "specialties",
@@ -107,7 +105,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
 }
 
 @Composable
-fun AdminListItem(
+fun CustomListItem(
     title: String,
     subtitle: String? = null,
     painter: Painter,
@@ -133,6 +131,6 @@ fun AdminListItem(
         },
         modifier = Modifier
             .clickable(onClick = onClick)
-            .padding(vertical = MaterialTheme.spacing.extraSmall)
+            .padding(vertical = MaterialTheme.spacing.extraSmall),
     )
 }

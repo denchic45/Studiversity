@@ -35,6 +35,7 @@ class SearchUsersTest : KtorClientTest() {
                 expectedPatronymic,
                 email,
                 Gender.MALE,
+                emptyList()
             )
         )
             .unwrapAsserted()

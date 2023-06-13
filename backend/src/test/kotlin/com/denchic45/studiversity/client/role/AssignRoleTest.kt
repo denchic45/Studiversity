@@ -33,7 +33,7 @@ class AssignRoleTest : KtorClientTest() {
     @BeforeEach
     fun init(): Unit = runBlocking {
         user = userApi.create(
-            CreateUserRequest("Anton", "Ermolin", null, "anton@mail.ru", Gender.MALE)
+            CreateUserRequest("Anton", "Ermolin", null, "anton@mail.ru", Gender.MALE, emptyList())
         ).unwrapAsserted()
     }
 

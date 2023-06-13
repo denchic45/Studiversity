@@ -168,6 +168,15 @@ fun hideAppBar() {
 }
 
 @Composable
+fun expandAppBar() {
+    LocalAppBarState.current.let { appBarState ->
+        remember(Unit) {
+            appBarState.expand()
+        }
+    }
+}
+
+@Composable
 fun animateHideAppBar() {
     LocalAppBarState.current.let { appBarState ->
         LaunchedEffect(Unit) {

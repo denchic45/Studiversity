@@ -11,9 +11,6 @@ import com.denchic45.studiversity.domain.onFailure
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.usecase.AddUserUseCase
 import com.denchic45.studiversity.ui.model.MenuAction
-import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.user.model.CreateUserRequest
-import com.denchic45.stuiversity.api.user.model.Gender
 import com.denchic45.studiversity.uivalidator.experimental2.Operator
 import com.denchic45.studiversity.uivalidator.experimental2.condition.Condition
 import com.denchic45.studiversity.uivalidator.experimental2.condition.observable
@@ -21,6 +18,10 @@ import com.denchic45.studiversity.uivalidator.experimental2.getIfNot
 import com.denchic45.studiversity.uivalidator.experimental2.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.experimental2.validator.ValueValidator
 import com.denchic45.studiversity.uivalidator.isEmail
+import com.denchic45.studiversity.util.componentScope
+import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.stuiversity.api.user.model.CreateUserRequest
+import com.denchic45.stuiversity.api.user.model.Gender
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -43,17 +44,24 @@ class UserEditorComponent(
     val allowSave = MutableStateFlow(false)
 
     @Stable
-    class CreatableUserState(val genders: List<GenderAction>) {
+    class CreatableUserState(val genders: List<GenderAction>, val roles: List<RoleAction>) {
+
         var firstName by mutableStateOf("")
         var surname by mutableStateOf("")
         var patronymic by mutableStateOf("")
         var gender by mutableStateOf(GenderAction.Undefined)
         var email by mutableStateOf("")
+        var assignedRoles: List<Role> by mutableStateOf(emptyList())
+
+        fun getRoleNameOf(role: Role): String {
+            return roles.first { it.role == role }.title
+        }
 
         var firstNameMessage: String? by mutableStateOf(null)
         var surnameMessage: String? by mutableStateOf(null)
         var genderMessage: String? by mutableStateOf(null)
         var emailMessage: String? by mutableStateOf(null)
+
     }
 
     private val genders: List<GenderAction> = listOf(
@@ -61,7 +69,10 @@ class UserEditorComponent(
         GenderAction.Female,
         GenderAction.Undefined
     )
-    val state = CreatableUserState(genders)
+    val state = CreatableUserState(
+        genders,
+        listOf(RoleAction.TeacherPerson, RoleAction.StudentPerson, RoleAction.Moderator)
+    )
 
     private val fieldEditor = FieldEditor(
         mapOf(
@@ -108,6 +119,12 @@ class UserEditorComponent(
                     state.genderMessage = getIfNot(isValid) { "Пол обязателен" }
                 })
             ),
+//            ValueValidator(
+//                value = state::assignedRoles,
+//                conditions = listOf(Condition<List<Role>> {it.isNotEmpty()}.observable {isValid->
+//                    state.rolesMessage = getIfNot(isValid) { "Выберите хотя бы одну роль" }
+//                })
+//            )
             emailValidator
         )
     )
@@ -141,6 +158,15 @@ class UserEditorComponent(
         updateAllowSave()
     }
 
+    fun onRoleSelect(action: RoleAction) {
+        val assigned = state.assignedRoles
+        state.assignedRoles = if (action.role in assigned) {
+            assigned - action.role
+        } else {
+            assigned + action.role
+        }
+    }
+
     private fun updateAllowSave() {
         allowSave.update { fieldEditor.hasChanges() }
     }
@@ -158,7 +184,8 @@ class UserEditorComponent(
                             GenderAction.Undefined -> Gender.UNKNOWN
                             GenderAction.Male -> Gender.MALE
                             GenderAction.Female -> Gender.FEMALE
-                        }
+                        },
+                        state.assignedRoles.map(Role::id)
                     )
                 ).onSuccess {
                     withContext(Dispatchers.Main.immediate) {
@@ -175,5 +202,12 @@ class UserEditorComponent(
         Undefined("Не выбран"),
         Male("Мужской"),
         Female("Женский")
+    }
+
+    enum class RoleAction(val title: String, val role: Role) {
+        //        User("Пользователь", Role.User),
+        TeacherPerson("Преподаватель", Role.TeacherPerson),
+        StudentPerson("Учащийся", Role.StudentPerson),
+        Moderator("Модератор", Role.Moderator)
     }
 }

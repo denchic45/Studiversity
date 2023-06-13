@@ -38,7 +38,7 @@ class CapabilitiesTest : KtorClientTest() {
     @BeforeEach
     fun init(): Unit = runBlocking {
         user = userApi.create(
-            CreateUserRequest("Anton", "Ermolin", null, "anton@mail.ru", Gender.MALE,)
+            CreateUserRequest("Anton", "Ermolin", null, "anton@mail.ru", Gender.MALE, emptyList())
         ).unwrapAsserted()
         studyGroup = studyGroupApi.create(
             CreateStudyGroupRequest("Test group", AcademicYear(2023, 2027), null, null)

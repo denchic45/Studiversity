@@ -57,8 +57,9 @@ fun LoginScreen(component: LoginComponent) {
             LoginContent(
                 component::onEmailType,
                 component::onPasswordType,
-                { component.onLoginClick() }
-            ) { component.onRegisterClick() }
+                component::onLoginClick,
+                component::onRegisterClick
+            )
         }
     )
 }

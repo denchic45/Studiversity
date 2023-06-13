@@ -25,7 +25,7 @@ class CreateUserTest : KtorClientTest() {
     @Test
     fun test(): Unit = runBlocking {
         val user: UserResponse = userApi.create(CreateUserRequest(expectedFirstName, expectedSurname, null, email,
-            Gender.MALE,))
+            Gender.MALE, emptyList()))
             .unwrapAsserted()
 
         userApiOfModerator.getById(user.id).also(::assertResultIsOk).unwrap().apply {

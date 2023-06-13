@@ -25,9 +25,7 @@ class MainInteractor (
     private val userService: UserService,
     private val userRepository: UserRepository,
     private val appPreferences: AppPreferences,
-
     ) {
-
     val listenAuthState: Flow<Boolean> = authService.observeIsAuthenticated
 
     fun observeThisUser(): Flow<Resource<UserResponse>> = userService.observeCurrentUser

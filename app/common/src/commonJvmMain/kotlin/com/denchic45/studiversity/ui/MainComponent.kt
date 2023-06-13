@@ -34,6 +34,7 @@ import com.denchic45.studiversity.ui.settings.SettingsComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Role
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -42,6 +43,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -159,9 +161,11 @@ class MainComponent(
     private val hasStudyGroupsFlow = interactor.observeHasStudyGroups().onEach { hasStudyGroups ->
         if (!hasStudyGroups)
         /* remove StudyGroup config if exists */
-            navigation.navigate { stack ->
-                stack.firstOrNull { it is Config.StudyGroup }?.let { stack - it } ?: stack
-            }
+         withContext(Dispatchers.Main) {
+             navigation.navigate { stack ->
+                 stack.firstOrNull { it is Config.StudyGroup }?.let { stack - it } ?: stack
+             }
+         }
     }
 
     // TODO listen root role of current user to show works screen

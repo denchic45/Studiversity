@@ -11,7 +11,8 @@ fun SignupRequest.toCreateUser() = CreateUserRequest(
     surname = surname,
     patronymic = patronymic,
     email = email,
-    gender = gender
+    gender = gender,
+    listOf()
 )
 
 fun UserDao.toUserResponse() = UserResponse(

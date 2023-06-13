@@ -8,5 +8,6 @@ data class CreateUserRequest(
     val surname: String,
     val patronymic: String? = null,
     val email: String,
-    val gender: Gender
+    val gender: Gender,
+    val roleIds: List<Long>
 )

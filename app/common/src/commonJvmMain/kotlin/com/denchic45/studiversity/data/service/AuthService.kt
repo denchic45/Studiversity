@@ -11,6 +11,10 @@ import com.denchic45.studiversity.util.databasePath
 import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest
 import com.denchic45.stuiversity.api.auth.model.SignInResponse
 import com.denchic45.stuiversity.api.common.toResult
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
+import io.ktor.client.plugins.plugin
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -38,6 +42,7 @@ class AuthService(
 //    authApiLazy: Lazy<AuthApi>,
     private val appPreferences: AppPreferences,
     private val guestHttpClient: GuestHttpClient,
+    private val client: HttpClient
 ) {
 
 //    private val authApi by authApiLazy
@@ -61,6 +66,9 @@ class AuthService(
 
         if (fileSystem.exists(systemDirs.prefsDir))
             fileSystem.list(systemDirs.prefsDir).forEach { fileSystem.delete(it) }
+
+        val provider = client.plugin(Auth).providers.filterIsInstance<BearerAuthProvider>().first()
+        provider.clearToken()
     }
 
     suspend fun signInByEmailPassword(

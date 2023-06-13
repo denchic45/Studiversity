@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.ui.main
 
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -79,6 +80,7 @@ import com.denchic45.studiversity.ui.MainComponent
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar2.NavigationIcon
+import com.denchic45.studiversity.ui.appbar2.expandAppBar
 import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.course.CourseScreen
@@ -87,6 +89,7 @@ import com.denchic45.studiversity.ui.getPainter
 import com.denchic45.studiversity.ui.navigation.OverlayChild
 import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.root.RootStackScreen
+import com.denchic45.studiversity.ui.settings.SettingsScreen
 import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.seiko.imageloader.rememberAsyncImagePainter
@@ -149,6 +152,7 @@ fun MainScreen(
 private fun CompactMainScreen(component: MainComponent, activity: ComponentActivity) {
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val availableScreens by component.availableScreens.collectAsState()
 
     BackHandler(drawerState.isOpen) {
         coroutineScope.launch {
@@ -182,27 +186,34 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
                 val instance = stack.active.instance
                 if (instance is MainComponent.ExtraChild) return@Scaffold
 
-                NavigationBar {
-                    NavigationBarItem(selected = instance is MainComponent.Child.YourTimetables,
-                        onClick = component::onTimetableClick,
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_timetable),
-                                contentDescription = "your timetables menu"
+                val moreNavItemThanOne = availableScreens.yourStudyGroups
+
+                if (moreNavItemThanOne) {
+                    NavigationBar {
+                        NavigationBarItem(selected = instance is MainComponent.Child.YourTimetables,
+                            onClick = component::onTimetableClick,
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_timetable),
+                                    contentDescription = "your timetables menu"
+                                )
+                            },
+                            label = { Text("Расписание") }
+                        )
+
+                        if (availableScreens.yourStudyGroups) {
+                            NavigationBarItem(selected = instance is MainComponent.Child.YourStudyGroups,
+                                onClick = component::onStudyGroupsClick,
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_study_group),
+                                        contentDescription = "your groups menu"
+                                    )
+                                },
+                                label = { Text("Группы") }
                             )
-                        },
-                        label = { Text("Расписание") }
-                    )
-                    NavigationBarItem(selected = instance is MainComponent.Child.YourStudyGroups,
-                        onClick = component::onStudyGroupsClick,
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_study_group),
-                                contentDescription = "your groups menu"
-                            )
-                        },
-                        label = { Text("Группы") }
-                    )
+                        }
+                    }
                 }
             }
         ) { paddingValues ->
@@ -222,10 +233,12 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
                         }
 
                         is OverlayChild.YourProfile -> ProfileScreen(component = child.component)
-                        is OverlayChild.Settings -> TODO()
-                        is OverlayChild.Schedule -> TODO()
+                        is OverlayChild.Settings -> SettingsScreen(component = child.component)
+                        is OverlayChild.Schedule -> {
+
+                        }
                     }
-                }
+                } ?: expandAppBar()
             }
         }
     }
@@ -377,7 +390,7 @@ private fun DrawerContent(
                     }
                 )
             }
-
+            val context = LocalContext.current
             val overlay by component.childOverlay.subscribeAsState()
             NavigationDrawerItem(
                 label = {
@@ -394,7 +407,9 @@ private fun DrawerContent(
                 },
                 selected = overlay.overlay?.instance is OverlayChild.Schedule,
                 onClick = {
-                    component.onScheduleClick()
+                    Toast.makeText(context, "В разработке...", Toast.LENGTH_SHORT)
+                        .show()
+//                    component.onScheduleClick()
                     closeDrawer()
                 }
             )
@@ -471,6 +486,26 @@ private fun DrawerContent(
                     }
                 )
             }
+
+            NavigationDrawerItem(
+                label = {
+                    Text(
+                        "Настройки",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_settings),
+                        contentDescription = "settings"
+                    )
+                },
+                selected = overlay.overlay?.instance is OverlayChild.Settings,
+                onClick = {
+                    component.onSettingsClick()
+                    closeDrawer()
+                }
+            )
         }
     }
 }

@@ -56,9 +56,7 @@ class LoginComponent(
             val result = signInWithEmailAndPasswordUseCase(state.email, state.password)
             withContext(Dispatchers.PlatformMain) {
                 state.result = result
-                result.onSuccess {
-                    onSuccess()
-                }
+                result.onSuccess { onSuccess() }
             }
         }
     }
