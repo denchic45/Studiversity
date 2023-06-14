@@ -1,28 +1,10 @@
 package com.denchic45.studiversity.ui.studygroup
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.animation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -140,11 +122,13 @@ fun StudyGroupContent(
 //            Spacer(Modifier.width(MaterialTheme.spacing.small))
             Card(
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxHeight().weight(1f).padding(end = 24.dp, bottom = 24.dp),
+                modifier = Modifier.fillMaxHeight()
+                    .width(360.dp)
+                    .padding(end = 24.dp, bottom = 24.dp),
                 colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(0.dp)
             ) {
-                Box(Modifier.weight(1f)) {
+                Box(Modifier.fillMaxWidth(1f)) {
                     when (val child = it) {
                         is StudyGroupComponent.OverlayChild.Member -> ProfileSideBar(
                             Modifier,
