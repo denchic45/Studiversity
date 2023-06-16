@@ -17,7 +17,7 @@ import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.MainInteractor
 import com.denchic45.studiversity.domain.ifSuccess
 import com.denchic45.studiversity.domain.stateInResource
-import com.denchic45.studiversity.domain.takeIfSuccess
+import com.denchic45.studiversity.domain.takeValueIfSuccess
 import com.denchic45.studiversity.domain.usecase.FindAssignedUserRolesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindYourCoursesUseCase
 import com.denchic45.studiversity.ui.admindashboard.AdminDashboardRootComponent
@@ -172,13 +172,13 @@ class MainComponent(
     val availableScreens = combine(
         hasStudyGroupsFlow,
         assignedRolesInOrganization.map {
-            it.takeIfSuccess()?.roles?.contains(Role.TeacherPerson) ?: false
+            it.takeValueIfSuccess()?.roles?.contains(Role.TeacherPerson) ?: false
         }, // is teacher
         assignedRolesInOrganization.map {
-            it.takeIfSuccess()?.roles?.contains(Role.StudentPerson) ?: false
+            it.takeValueIfSuccess()?.roles?.contains(Role.StudentPerson) ?: false
         }, // is student
         assignedRolesInOrganization.map {
-            it.takeIfSuccess()?.roles?.contains(Role.Moderator) ?: false
+            it.takeValueIfSuccess()?.roles?.contains(Role.Moderator) ?: false
         },// is moderator
     ) { hasStudyGroups, isTeacher, isStudent, isModerator ->
         AvailableScreens(

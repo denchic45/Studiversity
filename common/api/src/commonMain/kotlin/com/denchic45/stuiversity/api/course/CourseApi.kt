@@ -6,6 +6,7 @@ import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.util.UUIDWrapper
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
@@ -37,7 +38,7 @@ interface CoursesApi {
         updateCourseRequest: UpdateCourseRequest,
     ): ResponseResult<CourseResponse>
 
-    suspend fun getStudyGroupIds(courseId: UUID): ResponseResult<List<UUID>>
+    suspend fun getStudyGroups(courseId: UUID): ResponseResult<List<StudyGroupResponse>>
 
     suspend fun putStudyGroup(courseId: UUID, studyGroupId: UUID): EmptyResponseResult
 
@@ -94,7 +95,7 @@ class CourseApiImpl(private val client: HttpClient) : CoursesApi {
         }.toResult()
     }
 
-    override suspend fun getStudyGroupIds(courseId: UUID): ResponseResult<List<UUID>> {
+    override suspend fun getStudyGroups(courseId: UUID): ResponseResult<List<StudyGroupResponse>> {
         return client.get("/courses/$courseId/studygroups").toResult()
     }
 

@@ -135,7 +135,7 @@ fun TimetableFinderContent(
             .zIndex(1f)
             .fillMaxWidth()) {
             SearchBar(
-                query = if (state.selectedStudyGroup != null && active) state.selectedStudyGroup!!.name
+                query = if (state.selectedStudyGroup != null && !active) state.selectedStudyGroup!!.name
                 else state.query,
                 onQueryChange = onQueryType,
                 onSearch = {},

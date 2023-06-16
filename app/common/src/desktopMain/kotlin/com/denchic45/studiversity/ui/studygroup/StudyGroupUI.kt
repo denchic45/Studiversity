@@ -137,6 +137,7 @@ fun StudyGroupContent(
                         )
 
                         is StudyGroupComponent.OverlayChild.StudyGroupEditor -> TODO()
+                        is StudyGroupComponent.OverlayChild.ScopeMemberEditor -> TODO()
                     }
                 }
             }

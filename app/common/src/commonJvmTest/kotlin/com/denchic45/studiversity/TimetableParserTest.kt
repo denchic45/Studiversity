@@ -24,7 +24,6 @@ import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.UUIDWrapper
 import com.github.michaelbull.result.Ok
 import kotlinx.coroutines.runBlocking
-import org.sk.PrettyTable
 import java.io.File
 import java.net.URISyntaxException
 import java.net.URL
@@ -176,7 +175,7 @@ class TimetableParserTest {
             TODO("Not yet implemented")
         }
 
-        override suspend fun getStudyGroupIds(courseId: UUID): ResponseResult<List<UUID>> {
+        override suspend fun getStudyGroups(courseId: UUID): ResponseResult<List<StudyGroupResponse>> {
             TODO("Not yet implemented")
         }
 

@@ -12,6 +12,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.requestvalidation.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
@@ -41,12 +42,27 @@ private fun Route.userAssignedRolesRoute() {
         val requirePermissionToAssignRoles: RequirePermissionToAssignRolesUseCase by inject()
         val findAssignedUserRolesInScope: FindAssignedUserRolesInScopeUseCase by inject()
         val putRoleToUserInScope: PutRoleToUserInScopeUseCase by inject()
+        val putRolesToUserInScope: PutRolesToUserInScopeUseCase by inject()
         val removeRoleFromUserInScope: RemoveRoleFromUserInScopeUseCase by inject()
 
         get {
             val userId = call.getUserUuidByParameterOrMe("id")
             val scopeId = call.parameters.getUuidOrFail("scopeId")
             call.respond(HttpStatusCode.OK, findAssignedUserRolesInScope(userId, scopeId))
+        }
+
+        put {
+            val userId = call.getUserUuidByParameterOrMe("id")
+            val scopeId = call.parameters.getUuidOrFail("scopeId")
+            val currentUserId = call.currentUserId()
+            val roleIds = call.receive<List<Long>>()
+
+            requireCapability(currentUserId, Capability.WriteAssignRoles, scopeId)
+            requireAvailableRolesInScope(roleIds, scopeId)
+            requirePermissionToAssignRoles(currentUserId, roleIds, scopeId)
+
+            putRolesToUserInScope(userId, roleIds, scopeId)
+            call.respond(HttpStatusCode.OK)
         }
 
         route("/{roleId}") {

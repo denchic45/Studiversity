@@ -40,22 +40,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.arkivanov.essenty.lifecycle.doOnStop
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
+import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
 import com.denchic45.studiversity.ui.appbar2.hideAppBar
 import com.denchic45.studiversity.ui.courseeditor.CourseEditorScreen
 import com.denchic45.studiversity.ui.courseelements.CourseElementsScreen
 import com.denchic45.studiversity.ui.coursemembers.CourseMembersScreen
+import com.denchic45.studiversity.ui.coursestudygroups.CourseStudyGroupsScreen
 import com.denchic45.studiversity.ui.coursetimetable.CourseTimetableScreen
 import com.denchic45.studiversity.ui.coursetopics.CourseTopicsScreen
 import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
+import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import kotlinx.coroutines.launch
 
@@ -75,6 +74,8 @@ fun CourseScreen(component: CourseComponent) {
     val children = component.children
 
     val childStack by component.childStack.subscribeAsState()
+    val childSidebar by component.childSidebar.subscribeAsState()
+
     Children(stack = component.childStack) {
         when (val child = childStack.active.instance) {
             is CourseComponent.Child.Topics -> CourseTopicsScreen(
@@ -93,6 +94,8 @@ fun CourseScreen(component: CourseComponent) {
                 component = child.component,
             )
 
+            is CourseComponent.Child.CourseStudyGroupsEditor -> CourseStudyGroupsScreen(child.component)
+
             CourseComponent.Child.None -> {
                 hideAppBar()
                 CourseContent(
@@ -101,12 +104,23 @@ fun CourseScreen(component: CourseComponent) {
                     children = children,
                     onBackClick = component::onCloseClick,
                     onCourseEditClick = component::onCourseEditClick,
+                    onStudyGroupsEditClick = component::onStudyGroupsEditClick,
                     onTopicsEditClick = component::onOpenTopicsClick,
+                    onAddMemberClick = component::onAddMemberClick,
                     onAddWorkClick = component::onAddWorkClick
                 )
             }
+
+
         }
     }
+
+    childSidebar.overlay?.let {
+        when (val child = it.instance) {
+            is CourseComponent.SidebarChild.Profile -> ProfileScreen(child.component)
+            is CourseComponent.SidebarChild.ScopeMemberEditor -> ScopeMemberEditorScreen(child.component)
+        }
+    } ?: hideAppBar()
 }
 
 @OptIn(
@@ -118,9 +132,11 @@ fun CourseContent(
     course: Resource<CourseResponse>,
     allowEdit: Boolean,
     children: List<CourseComponent.TabChild>,
-    onBackClick:()->Unit,
+    onBackClick: () -> Unit,
     onCourseEditClick: () -> Unit,
+    onStudyGroupsEditClick: () -> Unit,
     onTopicsEditClick: () -> Unit,
+    onAddMemberClick: () -> Unit,
     onAddWorkClick: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -144,33 +160,44 @@ fun CourseContent(
                         }
                         DropdownMenu(
                             expanded = menuExpanded,
-                            offset = DpOffset(x = (-84).dp, y = 0.dp),
                             onDismissRequest = { menuExpanded = false },
                         ) {
                             DropdownMenuItem(
-                                text = {
-                                    Text("Изменить курс")
-                                },
+                                text = { Text("Изменить курс") },
                                 onClick = {
                                     menuExpanded = false
                                     onCourseEditClick()
                                 },
                             )
                             DropdownMenuItem(
-                                text = {
-                                    Text("Изменить темы")
-                                },
+                                text = { Text("Изменить темы") },
                                 onClick = {
                                     menuExpanded = false
                                     onTopicsEditClick()
                                 },
                             )
+                            DropdownMenuItem(
+                                text = { Text("Управлять группами") },
+                                onClick = {
+                                    menuExpanded = false
+                                    onStudyGroupsEditClick()
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(text = "Добавить участника") },
+                                onClick = {
+                                    menuExpanded = false
+                                    onAddMemberClick()
+                                }
+                            )
                         }
                     }
                 },
-                navigationIcon = { IconButton(onClick = onBackClick) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "back")
-                }},
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "back")
+                    }
+                },
                 scrollBehavior = scrollBehavior
             )
         },

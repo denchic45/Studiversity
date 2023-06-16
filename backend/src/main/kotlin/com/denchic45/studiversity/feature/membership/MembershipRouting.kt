@@ -124,6 +124,13 @@ private fun Route.memberByIdRoute() {
         val removeMemberFromScope: RemoveMemberFromScopeUseCase by inject()
         val removeSelfMemberFromScope: RemoveSelfMemberFromScopeUseCase by inject()
 
+        get {
+            val currentUserId = call.currentUserId()
+            val scopeId = call.parameters.getOrFail("scopeId").toUUID()
+            val memberId = call.parameters.getOrFail("memberId").toUUID()
+            // TODO get one member by scope id and member id
+        }
+
         delete {
             val currentUserId = call.currentUserId()
             val scopeId = call.parameters.getOrFail("scopeId").toUUID()

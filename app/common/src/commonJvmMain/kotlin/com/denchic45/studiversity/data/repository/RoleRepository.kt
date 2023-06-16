@@ -28,6 +28,10 @@ class RoleRepository @javax.inject.Inject constructor(
         roleApi.assignRoleToUserInScope(userId, scopeId, roleId)
     }
 
+    suspend fun addUserRoles(userId: UUID, roleIds: List<Long>, scopeId: UUID) = fetchResource {
+        roleApi.assignRolesToUserInScope(userId, scopeId, roleIds)
+    }
+
     suspend fun removeUserRole(userId: UUID, roleId: Long, scopeId: UUID) = fetchResource {
         roleApi.deleteRoleFromUserInScope(userId, scopeId, roleId)
     }

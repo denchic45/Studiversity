@@ -37,8 +37,5 @@ class StudyGroupTimetableComponent(
         componentContext.childContext("Timetable")
     )
 
-    val timetableState: StateFlow<Resource<TimetableState>> = getTimetableState(
-        bellSchedule = metaRepository.observeBellSchedule,
-        timetableResource = timetableComponent.weekTimetable
-    )
+    val timetableState = timetableComponent.timetableStateResource
 }

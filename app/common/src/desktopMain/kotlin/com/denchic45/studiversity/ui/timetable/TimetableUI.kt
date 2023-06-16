@@ -1,48 +1,17 @@
 package com.denchic45.studiversity.ui.timetable
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
+import androidx.compose.animation.*
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -128,6 +97,14 @@ fun TimetableScreen(appBarMediator: AppBarMediator, component: YourTimetablesCom
 //    }
 //}
 
+
+fun <T> getTween(): TweenSpec<T> {
+  return  tween(
+        durationMillis = 1000,
+        easing = LinearEasing
+    )
+}
+
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TimetableContent(
@@ -139,6 +116,7 @@ fun TimetableContent(
 ) {
     val verticalScroll: ScrollState = rememberScrollState()
     val horizontalScroll: ScrollState = rememberScrollState()
+
 
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -159,22 +137,16 @@ fun TimetableContent(
                     onNextWeekClick = onNextWeekClick,
                     selectedDate = selectedDate
                 )
-                val state = selectedDate to timetableResource
+
                 AnimatedContent(
-                    targetState = state,
+                    targetState = selectedDate,
                     transitionSpec = {
-                        when {
-                            initialState.first > targetState.first -> {
-                                slideInHorizontally { -it / 6 } + fadeIn() with
-                                        slideOutHorizontally { it / 6 } + fadeOut()
-                            }
-
-                            initialState.first < targetState.first -> {
-                                slideInHorizontally { it / 6 } + fadeIn() with
-                                        slideOutHorizontally { -it / 6 } + fadeOut()
-                            }
-
-                            else -> EnterTransition.None with ExitTransition.None
+                        if (initialState > targetState) {
+                            slideInHorizontally() { -it / 6 } + fadeIn() with
+                                    slideOutHorizontally() { it / 6 } + fadeOut()
+                        } else {
+                            slideInHorizontally() { it / 6 } + fadeIn() with
+                                    slideOutHorizontally() { -it / 6 } + fadeOut()
                         }
                     }
                 ) { timetableState ->
@@ -186,21 +158,29 @@ fun TimetableContent(
                             ) {
                                 Divider(Modifier.width(1.dp).height(24.dp))
                             }
-                            DaysOfWeekHeader(modifierHorScroll, selectedDate)
+                            DaysOfWeekHeader(modifierHorScroll, timetableState)
                         }
-                        Divider()
-                        Row {
-                            timetableState.second.onSuccess { state ->
-                                LessonOrders(verticalScroll, state.orders)
-                                LessonCells(modifierHorScroll, verticalScroll, state)
-                            }.onLoading {
-                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    LinearProgressIndicator()
+                        AnimatedContent(
+                            targetState = timetableResource,
+                            transitionSpec = {
+                                fadeIn() with fadeOut()
+                            }
+                        ) { timetableState ->
+                            Divider()
+                            Row {
+                                timetableState.onSuccess { state ->
+                                    LessonOrders(verticalScroll, state.orders)
+                                    LessonCells(modifierHorScroll, verticalScroll, state)
+                                }.onLoading {
+                                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                        LinearProgressIndicator()
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
             }
         }
     }
@@ -344,7 +324,7 @@ fun LessonCells(
 @Preview
 fun LessonCell(item: PeriodSlot) {
     Column(Modifier.widthIn(min = 196.dp).height(128.dp).padding(MaterialTheme.spacing.normal)) {
-        when(item) {
+        when (item) {
             is PeriodItem -> {
                 when (val details = item.details) {
                     is PeriodDetails.Lesson -> {
@@ -379,6 +359,7 @@ fun LessonCell(item: PeriodSlot) {
                     )
                 }
             }
+
             is Window -> {
 
             }

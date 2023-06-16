@@ -8,10 +8,8 @@ import com.denchic45.studiversity.ui.timetable.TimetableComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerDelegate
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.shareIn
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -36,11 +34,5 @@ class CourseTimetableComponent(
         componentContext.childContext("timetable")
     )
 
-    val timetable = getTimetableState(
-        metaRepository.observeBellSchedule.shareIn(
-            componentScope,
-            SharingStarted.Lazily
-        ),
-        timetableComponent.weekTimetable
-    )
+    val timetableState = timetableComponent.timetableStateResource
 }

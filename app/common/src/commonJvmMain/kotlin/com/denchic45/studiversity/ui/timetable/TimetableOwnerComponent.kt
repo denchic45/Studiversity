@@ -44,30 +44,22 @@ interface TimetableOwnerComponent {
         selectedDate.update { it.minusWeeks(1) }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun getTimetableStateOfLists(
-        bellSchedule: Flow<BellSchedule>,
-        timetableResource: Flow<Resource<List<List<PeriodResponse>>>>,
-    ): StateFlow<Resource<TimetableState>> {
-        return bellSchedule.flatMapLatest { schedule ->
-            selectedWeekOfYear.flatMapLatest { selectedWeek ->
-                timetableResource.mapResource {
-                    it.toTimetableState(selectedWeek, schedule)
-                }
-            }
-        }.stateInResource(componentScope)
-    }
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    fun getTimetableStateOfLists(
+//        bellSchedule: Flow<BellSchedule>,
+//        timetableResource: Flow<Resource<List<List<PeriodResponse>>>>,
+//    ): StateFlow<Resource<TimetableState>> {
+//        return bellSchedule.flatMapLatest { schedule ->
+//            selectedWeekOfYear.flatMapLatest { selectedWeek ->
+//                timetableResource.mapResource {
+//                    it.toTimetableState(selectedWeek, schedule)
+//                }
+//            }
+//        }.stateInResource(componentScope)
+//    }
 
 
-    fun getTimetableState(
-        bellSchedule: Flow<BellSchedule>,
-        timetableResource: Flow<Resource<TimetableResponse>>,
-    ): StateFlow<Resource<TimetableState>> {
-        return getTimetableStateOfLists(
-            bellSchedule,
-            timetableResource.mapResource { it.days }
-        )
-    }
+
 
 }
 

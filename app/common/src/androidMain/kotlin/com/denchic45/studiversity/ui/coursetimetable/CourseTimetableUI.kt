@@ -8,7 +8,7 @@ import com.denchic45.studiversity.ui.timetable.DayTimetableContent
 @Composable
 fun CourseTimetableScreen(component: CourseTimetableComponent) {
     val selectedDate by component.selectedDate.collectAsState()
-    val timetableResource by component.timetable.collectAsState()
+    val timetableResource by component.timetableState.collectAsState()
 
     DayTimetableContent(
         selectedDate = selectedDate,

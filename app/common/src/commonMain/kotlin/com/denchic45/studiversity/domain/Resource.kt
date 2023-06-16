@@ -75,7 +75,7 @@ inline infix fun <T> Resource<T>.onLoading(action: () -> Unit): Resource<T> = ap
     }
 }
 
-fun <T> Resource<T>.takeIfSuccess(): T? = run {
+fun <T> Resource<T>.takeValueIfSuccess(): T? = run {
     if (this is Resource.Success) value else null
 }
 

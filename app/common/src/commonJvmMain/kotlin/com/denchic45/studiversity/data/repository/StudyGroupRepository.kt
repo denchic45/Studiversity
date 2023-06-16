@@ -15,9 +15,8 @@ import com.denchic45.studiversity.data.pref.UserPreferences
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
+import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.member.MembersApi
-import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.RoleApi
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
@@ -31,7 +30,6 @@ import com.denchic45.stuiversity.util.uuidOfMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.UUID
@@ -51,8 +49,7 @@ class StudyGroupRepository @Inject constructor(
     override val sectionLocalDataSource: SectionLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val studyGroupApi: StudyGroupApi,
-    private val courseTopicApi: CourseTopicApi,
-    private val membershipApi: MembershipApi,
+    private val courseApi: CoursesApi,
     private val membersApi: MembersApi,
     private val roleApi: RoleApi,
 ) : NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
@@ -135,7 +132,7 @@ class StudyGroupRepository @Inject constructor(
         academicYear: Int? = null,
         query: String? = null,
     ): Flow<Resource<List<StudyGroupResponse>>> = fetchResourceFlow {
-        studyGroupApi.getList(memberId, roleId, specialtyId, academicYear, query)
+        studyGroupApi.getList(memberId, roleId, specialtyId, academicYear, query = query)
     }
 
 //    suspend fun findBySpecialtyId(specialtyId: String): List<GroupHeader> {
@@ -242,5 +239,17 @@ class StudyGroupRepository @Inject constructor(
                 }
             }
 
+    }
+
+    fun findByCourseId(courseId: UUID) = fetchResourceFlow {
+        courseApi.getStudyGroups(courseId)
+    }
+
+    fun addToCourse(courseId: UUID, studyGroupId: UUID) = fetchResourceFlow {
+        courseApi.putStudyGroup(courseId, studyGroupId)
+    }
+
+    fun removeFromCourse(studyGroupId:UUID, courseId:UUID) = fetchResourceFlow {
+        courseApi.deleteStudyGroup(courseId, studyGroupId)
     }
 }

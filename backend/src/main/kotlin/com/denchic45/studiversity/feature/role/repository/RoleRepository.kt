@@ -177,18 +177,25 @@ class RoleRepository {
         }.all { it }
     }
 
+    fun setByUserAndScope(userId: UUID, roleId: Long, scopeId: UUID) = UsersRolesScopes.insert {
+        it[UsersRolesScopes.userId] = userId
+        it[UsersRolesScopes.roleId] = roleId
+        it[UsersRolesScopes.scopeId] = scopeId
+    }.insertedCount > 0
+
+    fun setByUserAndScope(userId: UUID, roleIds: List<Long>, scopeId: UUID) {
+        removeUserRolesFromScope(userId, scopeId)
+        roleIds.forEach { roleId->
+            setByUserAndScope(userId, roleId, scopeId)
+        }
+    }
+
     fun removeUserRolesFromScope(userId: UUID, scopeId: UUID) = transaction {
         UsersRolesScopes.deleteWhere {
             UsersRolesScopes.scopeId eq scopeId and
                     (UsersRolesScopes.userId eq userId)
         }
     } > 0
-
-    fun setByUserAndScope(userId: UUID, roleId: Long, scopeId: UUID) = UsersRolesScopes.insert {
-        it[UsersRolesScopes.userId] = userId
-        it[UsersRolesScopes.roleId] = roleId
-        it[UsersRolesScopes.scopeId] = scopeId
-    }.insertedCount > 0
 
 
     fun removeByUserAndScope(userId: UUID, roleId: Long, scopeId: UUID) {

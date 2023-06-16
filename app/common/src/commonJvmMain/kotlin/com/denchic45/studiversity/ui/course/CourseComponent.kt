@@ -5,6 +5,7 @@ import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
+import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
@@ -18,6 +19,7 @@ import com.denchic45.studiversity.domain.usecase.FindCourseByIdUseCase
 import com.denchic45.studiversity.ui.CourseMembersComponent
 import com.denchic45.studiversity.ui.courseeditor.CourseEditorComponent
 import com.denchic45.studiversity.ui.courseelements.CourseElementsComponent
+import com.denchic45.studiversity.ui.coursestudygroups.CourseStudyGroupsComponent
 import com.denchic45.studiversity.ui.coursetimetable.CourseTimetableComponent
 import com.denchic45.studiversity.ui.coursetopics.CourseTopicsComponent
 import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
@@ -25,8 +27,10 @@ import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.studiversity.ui.navigation.ChildrenContainer
 import com.denchic45.studiversity.ui.navigation.isActiveFlow
 import com.denchic45.studiversity.ui.profile.ProfileComponent
+import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
@@ -57,13 +61,14 @@ class CourseComponent(
         elementId: UUID,
         ComponentContext,
     ) -> CourseWorkComponent,
-    _courseWorkEditorComponent: (
+    courseWorkEditorComponent: (
         onFinish: () -> Unit,
         courseId: UUID,
         workId: UUID?,
         topicId: UUID?,
         ComponentContext,
     ) -> CourseWorkEditorComponent,
+    courseStudyGroupsComponent: (UUID, ComponentContext) -> CourseStudyGroupsComponent,
     _courseElementsComponent: (
         courseId: UUID,
         onElementOpen: (courseId: UUID, elementId: UUID) -> Unit,
@@ -72,6 +77,7 @@ class CourseComponent(
     _courseMembersComponent: (
         courseId: UUID,
         onMemberOpen: (memberId: UUID) -> Unit,
+        onMemberEdit: (memberId: UUID) -> Unit,
         ComponentContext,
     ) -> CourseMembersComponent,
     _courseTimetableComponent: (
@@ -83,6 +89,13 @@ class CourseComponent(
         UUID,
         ComponentContext,
     ) -> ProfileComponent,
+    scopeMemberEditorComponent: (
+        availableRoles: List<Role>,
+        scopeId: UUID,
+        memberId: UUID?,
+        onFinish: () -> Unit,
+        ComponentContext
+    ) -> ScopeMemberEditorComponent,
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
@@ -96,12 +109,12 @@ class CourseComponent(
 
     val course = flow { emit(findCourseByIdUseCase(courseId)) }.stateInResource(componentScope)
 
-    private val capabilitiesFlow = checkUserCapabilitiesInScopeUseCase(
+    private val checkCapabilities = checkUserCapabilitiesInScopeUseCase(
         scopeId = courseId,
         capabilities = listOf(Capability.WriteCourse)
     ).stateInResource(componentScope)
 
-    val allowEdit = capabilitiesFlow.map {
+    val allowEdit = checkCapabilities.map {
         when (val resource = it) {
             Resource.Loading,
             is Resource.Error,
@@ -126,6 +139,7 @@ class CourseComponent(
     private val courseMembersComponent = _courseMembersComponent(
         courseId,
         { sidebarNavigation.activate(SidebarConfig.Profile(it)) },
+        { sidebarNavigation.activate(SidebarConfig.ScopeMemberEditor(it)) },
         componentContext.childContext("Members")
     )
 
@@ -157,6 +171,16 @@ class CourseComponent(
                 is SidebarConfig.Profile -> SidebarChild.Profile(
                     _profileComponent(onStudyGroupOpen, config.userId, context)
                 )
+
+                is SidebarConfig.ScopeMemberEditor -> SidebarChild.ScopeMemberEditor(
+                    scopeMemberEditorComponent(
+                        listOf(Role.Student, Role.Teacher),
+                        courseId,
+                        config.memberId,
+                        sidebarNavigation::dismiss,
+                        context
+                    )
+                )
             }
         }
     )
@@ -176,8 +200,12 @@ class CourseComponent(
                     _courseEditorComponent(stackNavigation::pop, courseId, context)
                 )
 
+                Config.CourseStudyGroupsEditor -> Child.CourseStudyGroupsEditor(
+                    courseStudyGroupsComponent(courseId, context)
+                )
+
                 is Config.CourseWorkEditor -> Child.CourseWorkEditor(
-                    _courseWorkEditorComponent(
+                    courseWorkEditorComponent(
                         stackNavigation::pop,
                         courseId,
                         config.workId,
@@ -200,12 +228,20 @@ class CourseComponent(
         }
     )
 
+    fun onAddMemberClick() {
+        sidebarNavigation.activate(SidebarConfig.ScopeMemberEditor(null))
+    }
+
     fun onAddWorkClick() {
         stackNavigation.push(Config.CourseWorkEditor(null))
     }
 
     fun onCourseEditClick() {
         stackNavigation.push(Config.CourseEditor)
+    }
+
+    fun onStudyGroupsEditClick() {
+        stackNavigation.push(Config.CourseStudyGroupsEditor)
     }
 
     fun onOpenTopicsClick() {
@@ -230,6 +266,8 @@ class CourseComponent(
 
         object Topics : Config()
 
+        object CourseStudyGroupsEditor : Config()
+
         data class CourseWork(val workId: UUID) : Config()
 
         data class CourseWorkEditor(val workId: UUID?) : Config()
@@ -240,6 +278,8 @@ class CourseComponent(
         class CourseEditor(val component: CourseEditorComponent) : Child()
 
         class Topics(val component: CourseTopicsComponent) : Child()
+
+        class CourseStudyGroupsEditor(val component: CourseStudyGroupsComponent) : Child()
 
         data class CourseWork(val component: CourseWorkComponent) : Child()
 
@@ -252,11 +292,15 @@ class CourseComponent(
     sealed class SidebarConfig : Parcelable {
 
         data class Profile(val userId: UUID) : SidebarConfig()
+
+        data class ScopeMemberEditor(val memberId: UUID?) : SidebarConfig()
     }
 
     sealed class SidebarChild {
 
         class Profile(val component: ProfileComponent) : SidebarChild()
+
+        class ScopeMemberEditor(val component: ScopeMemberEditorComponent) : SidebarChild()
     }
 
     override fun hasChildrenFlow(): Flow<Boolean> {
@@ -264,6 +308,6 @@ class CourseComponent(
     }
 
     fun onCloseClick() {
-     onFinish()
+        onFinish()
     }
 }

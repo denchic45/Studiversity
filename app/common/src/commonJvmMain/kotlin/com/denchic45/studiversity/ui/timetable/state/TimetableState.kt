@@ -19,6 +19,7 @@ data class TimetableState(
     val orders: List<CellOrder>,
     val maxWeekEventsOrder: Int,
     val isEdit: Boolean = false,
+    val showStudyGroups: Boolean = false
 ) {
 
 //    val title = getMonthTitle(firstWeekDate)
@@ -42,6 +43,7 @@ fun List<List<PeriodResponse>>.toTimetableState(
     yearWeek: String,
     bellSchedule: BellSchedule,
     isEdit: Boolean = false,
+    showStudyGroups: Boolean = false
 ): TimetableState {
     val latestEventOrder = max(maxOf { it.lastOrNull()?.order ?: 0 }, 6)
     return TimetableState(

@@ -7,10 +7,14 @@ import com.denchic45.stuiversity.api.role.model.UserRolesResponse
 import com.denchic45.stuiversity.util.UUIDWrapper
 import io.ktor.client.*
 import io.ktor.client.request.*
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import java.util.*
 
 interface RoleApi {
     suspend fun assignRoleToUserInScope(userId: UUID, scopeId: UUID, roleId: Long): EmptyResponseResult
+
+    suspend fun assignRolesToUserInScope(userId: UUID, scopeId: UUID, roleIds: List<Long>): EmptyResponseResult
 
     suspend fun deleteRoleFromUserInScope(userId: UUID, scopeId: UUID, roleId: Long): EmptyResponseResult
 
@@ -20,6 +24,17 @@ interface RoleApi {
 class RoleApiImpl(private val client: HttpClient) : RoleApi {
     override suspend fun assignRoleToUserInScope(userId: UUID, scopeId: UUID, roleId: Long): EmptyResponseResult {
         return client.put("/users/$userId/scopes/$scopeId/roles/$roleId").toResult()
+    }
+
+    override suspend fun assignRolesToUserInScope(
+        userId: UUID,
+        scopeId: UUID,
+        roleIds: List<Long>
+    ): EmptyResponseResult {
+        return client.put("/users/$userId/scopes/$scopeId/roles") {
+            contentType(ContentType.Application.Json)
+            setBody(roleIds)
+        }.toResult()
     }
 
     override suspend fun deleteRoleFromUserInScope(userId: UUID, scopeId: UUID, roleId: Long): EmptyResponseResult {

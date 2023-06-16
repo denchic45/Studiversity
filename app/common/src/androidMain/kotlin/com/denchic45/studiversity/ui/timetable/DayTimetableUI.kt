@@ -194,6 +194,7 @@ private fun Periods(
                                 order = timetableState.orders[index].order,
                                 item = item,
                                 time = timetableState.orders[index].time,
+                                showStudyGroup = timetableState.showStudyGroups,
                                 isEdit = timetableState.isEdit,
                                 onEditClick = { onEditPeriodClick?.invoke(index) }
                             )

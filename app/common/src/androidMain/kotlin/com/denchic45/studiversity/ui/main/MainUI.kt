@@ -560,7 +560,6 @@ private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState)
                 }
                 DropdownMenu(
                     expanded = menuExpanded,
-                    offset = DpOffset(x = (-84).dp, y = 0.dp),
                     onDismissRequest = { menuExpanded = false },
                 ) {
                     appBarState.content.dropdownItems.forEach { item ->

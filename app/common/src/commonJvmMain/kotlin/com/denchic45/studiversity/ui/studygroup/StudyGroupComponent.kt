@@ -15,12 +15,14 @@ import com.denchic45.studiversity.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.studiversity.ui.navigation.ChildrenContainer
 import com.denchic45.studiversity.ui.navigation.isActiveFlow
 import com.denchic45.studiversity.ui.profile.ProfileComponent
+import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.studiversity.ui.studygroup.members.StudyGroupMembersComponent
 import com.denchic45.studiversity.ui.studygroup.timetable.StudyGroupTimetableComponent
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -34,13 +36,21 @@ import java.util.UUID
 class StudyGroupComponent(
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
+    scopeMemberEditorComponent: (
+        availableRoles: List<Role>,
+        scopeId: UUID,
+        memberId: UUID?,
+        onFinish: () -> Unit,
+        ComponentContext
+    ) -> ScopeMemberEditorComponent,
     private val studyGroupEditorComponent: (
         onFinish: () -> Unit,
         UUID?,
         ComponentContext,
     ) -> StudyGroupEditorComponent,
     studyGroupMembersComponent: (
-        onCourseOpen: (UUID) -> Unit,
+        onMemberOpen: (UUID) -> Unit,
+        onMemberEdit: (UUID) -> Unit,
         UUID,
         ComponentContext,
     ) -> StudyGroupMembersComponent,
@@ -93,14 +103,14 @@ class StudyGroupComponent(
     val childSidebar = childOverlay(
         source = sidebarNavigation,
         handleBackButton = true,
-        childFactory = { config, componentContext ->
+        childFactory = { config, context ->
             when (config) {
                 is OverlayConfig.StudyGroupEditor -> {
                     OverlayChild.StudyGroupEditor(
                         studyGroupEditorComponent(
                             sidebarNavigation::dismiss,
                             config.studyGroupId,
-                            componentContext
+                            context
                         )
                     )
                 }
@@ -110,7 +120,19 @@ class StudyGroupComponent(
                         profileComponent(
                             onStudyGroupOpen,
                             config.memberId,
-                            componentContext
+                            context
+                        )
+                    )
+                }
+
+                is OverlayConfig.ScopeMemberEditor -> {
+                    OverlayChild.ScopeMemberEditor(
+                        scopeMemberEditorComponent(
+                            listOf(Role.Curator, Role.Student, Role.Headman),
+                            studyGroupId,
+                            config.memberId,
+                            { sidebarNavigation.dismiss() },
+                            context
                         )
                     )
                 }
@@ -122,6 +144,7 @@ class StudyGroupComponent(
         TabChild.Members(
             studyGroupMembersComponent(
                 { sidebarNavigation.activate(OverlayConfig.Member(it)) },
+                { sidebarNavigation.activate(OverlayConfig.ScopeMemberEditor(it)) },
                 studyGroupId,
                 componentContext.childContext("Members")
             )
@@ -176,6 +199,10 @@ class StudyGroupComponent(
         sidebarNavigation.activate(OverlayConfig.StudyGroupEditor(studyGroupId))
     }
 
+    fun onAddMemberClick() {
+        sidebarNavigation.activate(OverlayConfig.ScopeMemberEditor(null))
+    }
+
     fun onSidebarClose() {
         sidebarNavigation.dismiss()
     }
@@ -185,6 +212,8 @@ class StudyGroupComponent(
         data class StudyGroupEditor(val studyGroupId: UUID) : OverlayConfig()
 
         data class Member(val memberId: UUID) : OverlayConfig()
+
+        data class ScopeMemberEditor(val memberId: UUID?) : OverlayConfig()
     }
 
     sealed class OverlayChild {
@@ -192,6 +221,8 @@ class StudyGroupComponent(
         class StudyGroupEditor(val component: StudyGroupEditorComponent) : OverlayChild()
 
         class Member(val component: ProfileComponent) : OverlayChild()
+
+        class ScopeMemberEditor(val component: ScopeMemberEditorComponent) : OverlayChild()
     }
 
     sealed class TabChild(val title: String) {

@@ -13,7 +13,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -67,16 +66,20 @@ private fun StudyGroupMemberContent(
 ) {
     ResourceContent(members) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-            val options by component.memberAction.collectAsState()
+            val actions by component.memberActions.collectAsState()
             MemberList(
                 curator = it.curator,
                 students = it.students,
                 selectedItemId = selectedItemId,
-                actions = options,
+                actions = actions,
                 onClick = { onMemberSelect(it) },
-                onExpandActions = component::onExpandMemberAction,
-                onClickAction = component::onClickMemberAction,
-                onDismissAction = component::onDismissAction
+                onExpandActions = component::onMemberActionsExpand,
+                onMemberClick = component::onMemberSelect,
+                onMemberEditClick = component::onMemberEditClick,
+                onMemberRemoveClick = component::onMemberRemoveClick,
+                onMemberSetHeadmanClick = component::onMemberSetHeadmanClick,
+                onMemberRemoveHeadmanClick = component::onMemberRemoveHeadmanClick,
+                onDismissActions = component::onDismissActions
             )
         }
     }
@@ -88,9 +91,13 @@ private fun StudentListItem(
     selected: Boolean,
     onClick: (id: UUID) -> Unit,
     onExpandActions: (memberId: UUID) -> Unit,
-    onClickAction: (StudyGroupMembersComponent.StudentAction) -> Unit,
-    onDismissAction: () -> Unit,
-    actions: Pair<List<StudyGroupMembersComponent.StudentAction>, UUID>?,
+    actions: Pair<List<StudyGroupMembersComponent.MemberAction>, UUID>?,
+    onMemberClick: (UUID) -> Unit,
+    onMemberEditClick: (UUID) -> Unit,
+    onMemberRemoveClick: (UUID) -> Unit,
+    onMemberSetHeadmanClick: (UUID) -> Unit,
+    onMemberRemoveHeadmanClick: (UUID) -> Unit,
+    onDismissActions: () -> Unit,
 ) {
     val interactionSource = remember(::MutableInteractionSource)
 
@@ -115,21 +122,39 @@ private fun StudentListItem(
             modifier = Modifier.width(240.dp),
             onDismissRequest = {
                 expanded = false
-                onDismissAction()
+                onDismissActions()
             }) {
 
             actions?.first?.forEach { action ->
-                DropdownMenuItem(
-                    onClick = {
-                        expanded = false
-                        onClickAction(action)
-                    },
-                    text = {
-                        Text(
-                            text = action.title,
-                            style = MaterialTheme.typography.bodyMedium
+                when (action) {
+                    StudyGroupMembersComponent.MemberAction.EDIT -> {
+                        DropdownMenuItem(
+                            text = { Text("Изменить") },
+                            onClick = { onMemberEditClick(userItem.id) }
                         )
-                    })
+                    }
+
+                    StudyGroupMembersComponent.MemberAction.REMOVE -> {
+                        DropdownMenuItem(
+                            text = { Text("Удалить") },
+                            onClick = { onMemberRemoveClick(userItem.id) }
+                        )
+                    }
+
+                    StudyGroupMembersComponent.MemberAction.SET_HEADMAN -> {
+                        DropdownMenuItem(
+                            text = { Text("Назначить старостой") },
+                            onClick = { onMemberSetHeadmanClick(userItem.id) }
+                        )
+                    }
+
+                    StudyGroupMembersComponent.MemberAction.REMOVE_HEADMAN -> {
+                        DropdownMenuItem(
+                            text = { Text("Лишить прав старосты") },
+                            onClick = { onMemberRemoveHeadmanClick(userItem.id) }
+                        )
+                    }
+                }
             }
         }
     }
@@ -143,9 +168,13 @@ fun MemberList(
     selectedItemId: UUID?,
     onClick: (UUID) -> Unit,
     onExpandActions: (memberId: UUID) -> Unit,
-    onClickAction: (StudyGroupMembersComponent.StudentAction) -> Unit,
-    onDismissAction: () -> Unit,
-    actions: Pair<List<StudyGroupMembersComponent.StudentAction>, UUID>?,
+    actions: Pair<List<StudyGroupMembersComponent.MemberAction>, UUID>?,
+    onMemberClick: (UUID) -> Unit,
+    onMemberEditClick: (UUID) -> Unit,
+    onMemberRemoveClick: (UUID) -> Unit,
+    onMemberSetHeadmanClick: (UUID) -> Unit,
+    onMemberRemoveHeadmanClick: (UUID) -> Unit,
+    onDismissActions: () -> Unit,
 ) {
     LazyColumn(
         modifier.widthIn(max = 960.dp),
@@ -173,9 +202,13 @@ fun MemberList(
                 selected = it.id == selectedItemId,
                 onClick = onClick,
                 onExpandActions = onExpandActions,
-                onClickAction = onClickAction,
-                onDismissAction = onDismissAction,
-                actions = actions
+                actions = actions,
+                onMemberClick = onMemberClick,
+                onMemberEditClick = onMemberEditClick,
+                onMemberRemoveClick = onMemberRemoveClick,
+                onMemberSetHeadmanClick = onMemberSetHeadmanClick,
+                onMemberRemoveHeadmanClick = onMemberRemoveHeadmanClick,
+                onDismissActions = onDismissActions
             )
         }
     }

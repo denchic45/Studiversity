@@ -3,10 +3,12 @@ package com.denchic45.studiversity.feature.course.repository
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.course.toResponse
+import com.denchic45.studiversity.feature.studygroup.mapper.toResponse
 import com.denchic45.studiversity.supabase.deleteRecursive
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import io.github.jan.supabase.storage.BucketApi
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -93,12 +95,13 @@ class CourseRepository(private val bucket: BucketApi) {
             .exists { Memberships.scopeId eq courseId and (ExternalStudyGroupsMemberships.studyGroupId eq studyGroupId) }
     }
 
-    fun findStudyGroupsByCourse(courseId: UUID): List<UUID> {
-        return ExternalStudyGroupsMemberships
-            .innerJoin(Memberships, { membershipId }, { Memberships.id })
-            .slice(ExternalStudyGroupsMemberships.studyGroupId)
-            .select(Memberships.scopeId eq courseId)
-            .map { it[ExternalStudyGroupsMemberships.studyGroupId].value }
+    fun findStudyGroupsByCourse(courseId: UUID): List<StudyGroupResponse> {
+        return StudyGroupDao.wrapRows(
+            ExternalStudyGroupsMemberships
+                .innerJoin(Memberships, { membershipId }, { Memberships.id })
+                .innerJoin(StudyGroups, { ExternalStudyGroupsMemberships.studyGroupId }, { StudyGroups.id })
+                .select(Memberships.scopeId eq courseId)
+        ).map(StudyGroupDao::toResponse)
     }
 
     fun addCourseStudyGroup(courseId: UUID, studyGroupId: UUID) {

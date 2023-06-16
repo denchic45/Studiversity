@@ -6,7 +6,6 @@ import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.studiversity.PlatformMain
 import com.denchic45.studiversity.data.pref.AppPreferences
 import com.denchic45.studiversity.domain.mapResource
 import com.denchic45.studiversity.domain.onSuccess
@@ -14,6 +13,7 @@ import com.denchic45.studiversity.domain.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.studiversity.ui.navigation.ChildrenContainer
+import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.studiversity.util.asFlow
@@ -31,6 +31,7 @@ import java.util.*
 
 @Inject
 class YourStudyGroupsComponent(
+
     private val appPreferences: AppPreferences,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
@@ -71,6 +72,18 @@ class YourStudyGroupsComponent(
         },
         key = "StudyGroup"
     )
+
+//    val overlayNavigation = OverlayNavigation<OverlayConfig>()
+//    val childOverlay = childOverlay(
+//        source = overlayNavigation,
+//        childFactory = { config, context ->
+//            when (config) {
+//                is OverlayConfig.ScopeMemberEditor -> {
+//                    OverlayChild.ScopeMemberEditor()
+//                }
+//            }
+//        }
+//    )
 
     @Parcelize
     data class StudyGroupConfig(val studyGroupId: UUID) : Parcelable
@@ -136,10 +149,24 @@ class YourStudyGroupsComponent(
         childStudyGroup.value.overlay?.instance?.onEditClick()
     }
 
+    fun onAddMemberClick() {
+        childStudyGroup.value.overlay?.instance?.onAddMemberClick()
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun hasChildrenFlow(): Flow<Boolean> {
         return childStudyGroup.asFlow()
             .flatMapLatest { it.overlay?.instance?.hasChildrenFlow() ?: flowOf(false) }
+    }
+
+    @Parcelize
+    sealed interface OverlayConfig : Parcelable {
+        data class ScopeMemberEditor(val memberId: UUID) : OverlayConfig
+
+    }
+
+    sealed interface OverlayChild {
+        class ScopeMemberEditor(val component: ScopeMemberEditorComponent) : OverlayChild
     }
 
 }

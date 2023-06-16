@@ -5,11 +5,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,9 +51,9 @@ fun PeriodListItem(
     item: PeriodSlot,
     order: Int,
     time: String,
-    groupShowing: Boolean = false,
+    showStudyGroup: Boolean = true,
     isEdit: Boolean = false,
-    onEditClick: () -> Unit = {},
+    onEditClick: () -> Unit = {}
 ) {
     Surface {
         Column {
@@ -70,7 +72,7 @@ fun PeriodListItem(
                         .width(24.dp)
                         .wrapContentHeight(align = Alignment.CenterVertically)
                 )
-                when(item) {
+                when (item) {
                     is PeriodItem -> {
                         val painter = rememberAsyncImagePainter(
                             model = ImageRequest.Builder(LocalContext.current)
@@ -113,15 +115,20 @@ fun PeriodListItem(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
-                        if (groupShowing)
-                            Row {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_study_group),
-                                    contentDescription = null,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                                Text(item.studyGroup.name)
-                            }
+                        if (showStudyGroup) {
+                            AssistChip(
+                                onClick = { },
+                                label = { Text(item.studyGroup.name) },
+                                leadingIcon = {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_study_group),
+                                        contentDescription = null,
+                                        modifier = Modifier.padding(8.dp)
+                                    )
+                                })
+
+                            Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
+                        }
                         item.room?.let {
                             Text(
                                 text = it,
@@ -139,7 +146,8 @@ fun PeriodListItem(
                             }
                         }
                     }
-                   is Window -> {
+
+                    is Window -> {
                         Column(
                             Modifier
                                 .weight(1f)

@@ -24,7 +24,6 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import java.util.*
 
 fun Application.courseRoutes() {
     routing {
@@ -170,8 +169,8 @@ private fun Route.courseStudyGroups() {
 
             requireCapability(currentUserId, Capability.WriteCourseStudyGroups, courseId)
 
-            val studyGroupIds = findCourseStudyGroups(courseId).map(UUID::toString)
-            call.respond(HttpStatusCode.OK, studyGroupIds)
+            val studyGroups = findCourseStudyGroups(courseId)
+            call.respond(HttpStatusCode.OK, studyGroups)
         }
 
         route("/{studyGroupId}") {

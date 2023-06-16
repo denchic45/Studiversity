@@ -1,10 +1,8 @@
 package com.denchic45.studiversity.ui.search
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,7 +11,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.denchic45.studiversity.ui.model.UserItem
-import com.denchic45.studiversity.ui.theme.spacing
 
 @Composable
 fun UserChooserScreen(component: UserChooserComponent) {
@@ -31,9 +28,12 @@ fun UserListItem(
     trailingContent: (@Composable () -> Unit)? = null,
 ) {
     ListItem(
-        headlineContent = { Text(item.title,) },
+        headlineContent = { Text(item.title) },
         leadingContent = {
             UserAvatarImage(item.avatarUrl)
+        },
+        supportingContent = item.subtitle?.let {
+            { Text(it) }
         },
         modifier = modifier,
         trailingContent = trailingContent

@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.common.R
@@ -64,32 +65,32 @@ fun CourseElementsContent(
     elementsResource: Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>>,
     onElementClick: (elementId: UUID) -> Unit,
 ) {
-        elementsResource.onSuccess {
-            LazyColumn(contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)) {
-                it.forEach { (topic, elements) ->
-                    topic?.let {
-                        item(key = { it.id }) { }
-                    }
+    elementsResource.onSuccess {
+        LazyColumn(contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)) {
+            it.forEach { (topic, elements) ->
+                topic?.let {
+                    item(key = { it.id }) { }
+                }
 
-                    items(elements, key = { it.id }) {
-                        CourseElementUI(
-                            response = it,
-                            onClick = { onElementClick(it.id) })
-                    }
+                items(elements, key = { it.id }) {
+                    CourseElementListItem(
+                        response = it,
+                        onClick = { onElementClick(it.id) })
                 }
             }
-        }.onLoading {
-            Box(
-                modifier = Modifier.fillMaxHeight(),
-                contentAlignment = Alignment.Center
-            ) {
+        }
+    }.onLoading {
+        Box(
+            modifier = Modifier.fillMaxHeight(),
+            contentAlignment = Alignment.Center
+        ) {
             CircularProgressIndicator()
         }
     }
 }
 
 @Composable
-fun CourseElementUI(response: CourseElementResponse, onClick: () -> Unit) {
+fun CourseElementListItem(response: CourseElementResponse, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -116,7 +117,12 @@ fun CourseElementUI(response: CourseElementResponse, onClick: () -> Unit) {
         }
         Spacer(Modifier.width(12.dp))
         Column {
-            Text(response.name, style = MaterialTheme.typography.titleMedium)
+            Text(
+                response.name,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleMedium
+            )
             when (val details = response.details) {
                 is CourseMaterial -> TODO()
                 is CourseWork -> details.dueDate?.let {
@@ -131,7 +137,7 @@ fun CourseElementUI(response: CourseElementResponse, onClick: () -> Unit) {
 @Composable
 fun CourseElementPreview() {
     AppTheme {
-        CourseElementUI(
+        CourseElementListItem(
             CourseElementResponse(
                 id = UUID.randomUUID(),
                 courseId = UUID.randomUUID(),

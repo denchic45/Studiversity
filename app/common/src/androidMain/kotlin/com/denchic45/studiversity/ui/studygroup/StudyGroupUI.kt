@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -21,13 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.ifSuccess
-import com.denchic45.studiversity.ui.appbar2.ActionMenuItem2
+import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
+import com.denchic45.studiversity.ui.appbar2.DropdownMenuItem2
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorScreen
-import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
 import kotlinx.coroutines.launch
 
@@ -49,14 +47,21 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
         when (val child = it?.instance) {
             is StudyGroupComponent.OverlayChild.Member -> ProfileScreen(child.component)
             is StudyGroupComponent.OverlayChild.StudyGroupEditor -> StudyGroupEditorScreen(child.component)
+            is StudyGroupComponent.OverlayChild.ScopeMemberEditor -> {
+                ScopeMemberEditorScreen(child.component)
+            }
             null -> {
                 updateAppBarState(
                     studyGroupName, allowEdit, AppBarContent(
                         title = uiTextOf(studyGroupName),
-                        actionItems = if (allowEdit) listOf(
-                            ActionMenuItem2(
-                                icon = uiIconOf(Icons.Outlined.Edit),
+                        dropdownItems = if (allowEdit) listOf(
+                            DropdownMenuItem2(
+                                title = uiTextOf("Изменить"),
                                 onClick = component::onEditClick
+                            ),
+                            DropdownMenuItem2(
+                                title = uiTextOf("Добавить участника"),
+                                onClick = component::onAddMemberClick
                             )
                         ) else emptyList()
                     )

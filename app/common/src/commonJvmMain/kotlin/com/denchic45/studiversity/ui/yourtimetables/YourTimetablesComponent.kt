@@ -3,7 +3,6 @@ package com.denchic45.studiversity.ui.yourtimetables
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.denchic45.studiversity.data.pref.AppPreferences
-import com.denchic45.studiversity.data.repository.MetaRepository
 import com.denchic45.studiversity.domain.map
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.resourceOf
@@ -16,25 +15,18 @@ import com.denchic45.studiversity.ui.timetable.TimetableOwnerComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerDelegate
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
 
 @Inject
 class YourTimetablesComponent(
-    metaRepository: MetaRepository,
     private val appPreferences: AppPreferences,
     findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
-    timetableComponent: (
-        StateFlow<String>,
-        Flow<TimetableOwner>,
-        ComponentContext,
-    ) -> TimetableComponent,
+    _timetableComponent: (StateFlow<String>, Flow<TimetableOwner>, ComponentContext) -> TimetableComponent,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
@@ -73,18 +65,15 @@ class YourTimetablesComponent(
 
 //        MutableStateFlow<TimetableOwner>(TimetableOwner.Member(null))
 
-    private val bellSchedule = metaRepository.observeBellSchedule
-        .shareIn(componentScope, SharingStarted.Lazily)
+//    private val bellSchedule = metaRepository.observeBellSchedule
+//        .shareIn(componentScope, SharingStarted.Lazily)
 
 
-    private val timetableComponent = timetableComponent(
+    private val timetableComponent = _timetableComponent(
         selectedWeekOfYear,
         selectedOwner,
         componentContext.childContext("DayTimetable")
     )
 
-    val timetableState = getTimetableState(
-        bellSchedule,
-        this.timetableComponent.weekTimetable
-    )
+    val timetableState = timetableComponent.timetableStateResource
 }
