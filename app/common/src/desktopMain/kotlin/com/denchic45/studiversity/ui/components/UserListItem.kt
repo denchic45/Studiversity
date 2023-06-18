@@ -1,6 +1,7 @@
 package com.denchic45.studiversity.ui.components
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -16,11 +17,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.ui.model.UserItem
+import com.seiko.imageloader.rememberAsyncImagePainter
 import java.util.*
 
 @Composable
@@ -46,14 +47,12 @@ fun UserListItem(
                 indication = rememberRipple(color = MaterialTheme.colorScheme.secondary)
             ).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                load = { loadImageBitmap(avatarUrl) },
-                painterFor = { BitmapPainter(it) },
-                avatarUrl,
+            Image(
+                painter = rememberAsyncImagePainter(avatarUrl),
                 null,
                 Modifier.size(40.dp).clip(CircleShape),
                 contentScale = ContentScale.Crop
-            ) { Box(Modifier.size(40.dp)) }
+            )
             Column(Modifier.padding(start = 16.dp)) {
                 Text(title, style = MaterialTheme.typography.bodyLarge)
                 subtitle?.let { Text(it, style = MaterialTheme.typography.labelMedium) }

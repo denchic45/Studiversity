@@ -1,15 +1,8 @@
 package com.denchic45.studiversity.ui.profile
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,14 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.ui.components.AsyncImage
-import com.denchic45.studiversity.ui.components.loadImageBitmap
 import com.denchic45.studiversity.ui.theme.toDrawablePath
+import com.seiko.imageloader.rememberAsyncImagePainter
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,16 +79,12 @@ fun ProfileHeader(photoUrl: String, title: String) {
         modifier = Modifier.height(100.dp).padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage(
-            load = { loadImageBitmap(photoUrl) },
-            painterFor = { BitmapPainter(it) },
-            photoUrl,
+        Image(
+            painter = rememberAsyncImagePainter(photoUrl),
             null,
             Modifier.size(68.dp).clip(CircleShape),
             contentScale = ContentScale.Crop
-        ) {
-            Box(Modifier.size(68.dp).background(Color.LightGray))
-        }
+        )
         Column(Modifier.padding(start = 16.dp)) {
             Text(title, style = MaterialTheme.typography.titleLarge)
         }
