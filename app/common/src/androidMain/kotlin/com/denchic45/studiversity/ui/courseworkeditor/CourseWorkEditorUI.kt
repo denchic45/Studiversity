@@ -331,7 +331,11 @@ fun CourseWorkEditorContent(
                                 }
                             }
                         }) {
-                        val timePickerState = rememberTimePickerState(is24Hour = true)
+                        val timePickerState = rememberTimePickerState(
+                            is24Hour = true,
+                            initialHour = 22,
+                            initialMinute = 59
+                        )
                         TimePicker(state = timePickerState)
                         timePickerState.apply {
                             selectedTime = LocalTime.of(hour, minute, 0)

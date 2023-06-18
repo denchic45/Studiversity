@@ -1,7 +1,6 @@
 package com.denchic45.studiversity.ui.timetable
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,14 +52,16 @@ fun PeriodListItem(
     time: String,
     showStudyGroup: Boolean = true,
     isEdit: Boolean = false,
-    onEditClick: () -> Unit = {}
+    onEditClick: () -> Unit = {},
+    onStudyGroupClick: ((studyGroupId: UUID) -> Unit)? = null
 ) {
     Surface {
-        Column {
-            var expanded by remember { mutableStateOf(false) }
+        var expanded by remember { mutableStateOf(false) }
+        Column(
+            modifier = Modifier
+                .clickable { expanded = !expanded },
+        ) {
             Row(
-                modifier = Modifier
-                    .clickable { expanded = !expanded },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -117,13 +118,13 @@ fun PeriodListItem(
                         }
                         if (showStudyGroup) {
                             AssistChip(
-                                onClick = { },
+                                onClick = { onStudyGroupClick?.let { it(item.studyGroup.id) } },
                                 label = { Text(item.studyGroup.name) },
                                 leadingIcon = {
-                                    Image(
+                                    Icon(
                                         painter = painterResource(id = R.drawable.ic_study_group),
                                         contentDescription = null,
-                                        modifier = Modifier.padding(8.dp)
+                                        tint = MaterialTheme.colorScheme.secondary
                                     )
                                 })
 
@@ -137,13 +138,6 @@ fun PeriodListItem(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-                        }
-                        AnimatedVisibility(visible = expanded) {
-                            item.let {
-                                it.members.forEach { item ->
-                                    UserListItem(item)
-                                }
-                            }
                         }
                     }
 
@@ -174,7 +168,19 @@ fun PeriodListItem(
                 }
             }
 
+            when (val details = item) {
+                is PeriodItem -> {
+                    AnimatedVisibility(visible = expanded) {
+                        item.let {
+                            details.members.forEach { item ->
+                                UserListItem(item)
+                            }
+                        }
+                    }
+                }
 
+                is Window -> {}
+            }
         }
     }
 }

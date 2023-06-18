@@ -41,6 +41,6 @@ data class CourseWorkResponse(
 ) {
     val late: Boolean
         get() = dueDate?.let {
-            it.atTime(dueTime ?: LocalTime.MAX) > LocalDateTime.now()
+            it.atTime(dueTime ?: LocalTime.MAX) < LocalDateTime.now()
         } ?: false
 }

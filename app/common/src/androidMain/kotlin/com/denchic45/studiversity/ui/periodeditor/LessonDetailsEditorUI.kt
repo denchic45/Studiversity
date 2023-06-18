@@ -78,6 +78,7 @@ fun LessonDetailsEditorContent(
                                 )
                             } ?: rememberVectorPainter(Icons.Outlined.School),
                             contentDescription = "subject icon",
+                            tint = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.size(40.dp)
                         )
                     },

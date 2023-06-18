@@ -15,15 +15,15 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class YourTimetablesFragment(
-    private val appBarInteractor: AppBarInteractor,
-    private val component: (ComponentContext) -> YourTimetablesComponent
+//    private val appBarInteractor: AppBarInteractor,
+//    private val component: (ComponentContext) -> YourTimetablesComponent
 ) :
     Fragment() {
 
 
-    private val yourTimetablesComponent by lazy {
-        component(defaultComponentContext(requireActivity().onBackPressedDispatcher))
-    }
+//    private val yourTimetablesComponent by lazy {
+//        component(defaultComponentContext(requireActivity().onBackPressedDispatcher))
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,7 +33,7 @@ class YourTimetablesFragment(
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             AppTheme {
-                YourTimetablesScreen(yourTimetablesComponent)
+//                YourTimetablesScreen(yourTimetablesComponent)
             }
         }
     }

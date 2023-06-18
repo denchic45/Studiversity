@@ -100,7 +100,8 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
             DayTimetableContent(
                 selectedDate = selectedDate,
                 timetableResource = viewState,
-                onDateSelect = component::onDateSelect
+                onDateSelect = component::onDateSelect,
+                onStudyGroupClick = component::onStudyGroupClick
             )
         }
     }

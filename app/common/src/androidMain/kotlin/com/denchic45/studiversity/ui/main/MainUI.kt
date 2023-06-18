@@ -3,6 +3,9 @@ package com.denchic45.studiversity.ui.main
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -69,9 +72,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
+import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.denchic45.studiversity.common.R
@@ -91,6 +95,7 @@ import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.root.RootStackScreen
 import com.denchic45.studiversity.ui.settings.SettingsScreen
 import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
+import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.yourworks.YourWorksScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.seiko.imageloader.rememberAsyncImagePainter
@@ -507,6 +512,7 @@ private fun DrawerContent(
                     closeDrawer()
                 }
             )
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraLarge))
         }
     }
 }
@@ -579,20 +585,26 @@ private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState)
     )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ScreenContainer(
     paddingValues: PaddingValues,
     stack: ChildStack<MainComponent.Config, MainComponent.Child>,
 ) {
-    Children(modifier = Modifier.padding(paddingValues), stack = stack) {
-        when (val child = it.instance) {
-            is MainComponent.Child.YourStudyGroups -> RootStackScreen(component = child.component)
-            is MainComponent.Child.YourTimetables -> RootStackScreen(component = child.component)
-            is MainComponent.Child.AdminDashboard -> RootStackScreen(component = child.component)
-            is MainComponent.Child.YourCourse -> CourseScreen(component = child.component)
-            is MainComponent.Child.Course -> CourseScreen(component = child.component)
-            is MainComponent.Child.StudyGroup -> StudyGroupScreen(component = child.component)
-            is MainComponent.Child.Works -> YourWorksScreen(component = child.component)
+//    Children(
+//        modifier = Modifier.padding(paddingValues), stack = stack,
+//    ) {
+        Crossfade( modifier= Modifier.padding(paddingValues),targetState = stack.active) {
+            println("children: ${it.instance}")
+            when (val child = it.instance) {
+                is MainComponent.Child.YourStudyGroups -> RootStackScreen(component = child.component)
+                is MainComponent.Child.YourTimetables -> RootStackScreen(component = child.component)
+                is MainComponent.Child.AdminDashboard -> RootStackScreen(component = child.component)
+                is MainComponent.Child.YourCourse -> CourseScreen(component = child.component)
+                is MainComponent.Child.Course -> CourseScreen(component = child.component)
+                is MainComponent.Child.StudyGroup -> StudyGroupScreen(component = child.component)
+                is MainComponent.Child.Works -> YourWorksScreen(component = child.component)
+            }
         }
-    }
+//    }
 }

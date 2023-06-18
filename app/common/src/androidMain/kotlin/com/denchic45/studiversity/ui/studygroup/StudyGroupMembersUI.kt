@@ -1,6 +1,7 @@
 package com.denchic45.studiversity.ui.studygroup
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,6 +27,7 @@ import com.denchic45.studiversity.ui.component.HeaderItemUI
 import com.denchic45.studiversity.ui.search.IconTitleBox
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.studygroup.members.StudyGroupMembersComponent
+import com.denchic45.studiversity.ui.theme.spacing
 import java.util.UUID
 
 @Composable
@@ -114,7 +116,7 @@ fun StudyGroupMemberContent(
             }
         }
 
-    LazyColumn {
+    LazyColumn(contentPadding = PaddingValues(bottom = MaterialTheme.spacing.medium)) {
         members.curator?.let { userItem ->
             item() { HeaderItemUI(name = "Куратор") }
             item(key = members.curator.id) {

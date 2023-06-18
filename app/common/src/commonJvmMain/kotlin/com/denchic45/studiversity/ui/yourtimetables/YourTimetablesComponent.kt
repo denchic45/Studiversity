@@ -2,6 +2,10 @@ package com.denchic45.studiversity.ui.yourtimetables
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.arkivanov.decompose.router.overlay.OverlayNavigation
+import com.arkivanov.decompose.router.overlay.childOverlay
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.pref.AppPreferences
 import com.denchic45.studiversity.domain.map
 import com.denchic45.studiversity.domain.onSuccess
@@ -10,6 +14,7 @@ import com.denchic45.studiversity.domain.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.studiversity.domain.usecase.TimetableOwner
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
+import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.ui.timetable.TimetableComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerDelegate
@@ -20,6 +25,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
 
 @Inject
@@ -28,10 +34,24 @@ class YourTimetablesComponent(
     findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
     _timetableComponent: (StateFlow<String>, Flow<TimetableOwner>, ComponentContext) -> TimetableComponent,
     @Assisted
+ private val  onStudyGroupOpen:(UUID)->Unit,
+    @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
     EmptyChildrenContainer,
     TimetableOwnerComponent by TimetableOwnerDelegate(componentContext) {
+
+//    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
+
+//    val childOverlay = childOverlay(
+//        source = overlayNavigation,
+//        handleBackButton = true,
+//        childFactory = { config, context ->
+//            when (config) {
+//                is OverlayConfig.StudyGroup -> OverlayChild.StudyGroup()
+//            }
+//        }
+//    )
 
     fun onTimetableSelect(position: Int) {
 //        selectedTimetable.value = position
@@ -39,6 +59,10 @@ class YourTimetablesComponent(
             appPreferences.selectedStudyGroupTimetableId = if (position == -1) null
             else groups[position].id.toString()
         }
+    }
+
+    fun onStudyGroupClick(studyGroupId: UUID) {
+        onStudyGroupOpen(studyGroupId)
     }
 
 
@@ -76,4 +100,13 @@ class YourTimetablesComponent(
     )
 
     val timetableState = timetableComponent.timetableStateResource
+
+//    @Parcelize
+//    sealed interface OverlayConfig : Parcelable {
+//        data class StudyGroup(val studyGroupId: UUID) : OverlayConfig
+//    }
+//
+//    sealed interface OverlayChild {
+//        class StudyGroup(val component: StudyGroupComponent) : OverlayChild
+//    }
 }

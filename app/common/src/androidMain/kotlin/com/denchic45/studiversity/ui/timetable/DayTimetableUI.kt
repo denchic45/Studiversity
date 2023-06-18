@@ -58,6 +58,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
+import java.util.UUID
 
 @Composable
 fun DayTimetableContent(
@@ -66,6 +67,7 @@ fun DayTimetableContent(
     onDateSelect: (date: LocalDate) -> Unit,
     onAddPeriodClick: (() -> Unit)? = null,
     onEditPeriodClick: ((Int) -> Unit)? = null,
+    onStudyGroupClick: ((studyGroupId: UUID) -> Unit)? = null,
     onRemovePeriodSwipe: ((Int) -> Unit)? = null,
     startDate: LocalDate = selectedDate.minusWeeks(1),
     endDate: LocalDate = selectedDate.plusMonths(1),
@@ -135,6 +137,7 @@ fun DayTimetableContent(
                         timetableState = timetableState,
                         selectedDayOfWeek = selectedDayOfWeek,
                         onEditPeriodClick = onEditPeriodClick,
+                        onStudyGroupClClick = onStudyGroupClick,
                         onRemovePeriodSwipe = onRemovePeriodSwipe,
                         onAddPeriodClick = onAddPeriodClick
                     )
@@ -150,6 +153,7 @@ private fun Periods(
     timetableState: TimetableState,
     selectedDayOfWeek: DayOfWeek,
     onEditPeriodClick: ((Int) -> Unit)?,
+    onStudyGroupClClick: ((UUID) -> Unit)?,
     onRemovePeriodSwipe: ((Int) -> Unit)?,
     onAddPeriodClick: (() -> Unit)?,
 ) {
@@ -196,7 +200,8 @@ private fun Periods(
                                 time = timetableState.orders[index].time,
                                 showStudyGroup = timetableState.showStudyGroups,
                                 isEdit = timetableState.isEdit,
-                                onEditClick = { onEditPeriodClick?.invoke(index) }
+                                onEditClick = { onEditPeriodClick?.invoke(index) },
+                                onStudyGroupClick = onStudyGroupClClick
                             )
                         }
                         if (timetableState.isEdit) {

@@ -56,7 +56,8 @@ fun List<List<PeriodResponse>>.toTimetableState(
         periods = toItems(latestEventOrder),
         orders = bellSchedule.toItemOrders(latestEventOrder),
         maxWeekEventsOrder = latestEventOrder,
-        isEdit = isEdit
+        isEdit = isEdit,
+        showStudyGroups = showStudyGroups
     )
 }
 

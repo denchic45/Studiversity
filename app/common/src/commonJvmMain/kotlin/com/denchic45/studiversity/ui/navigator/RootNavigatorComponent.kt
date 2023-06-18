@@ -28,7 +28,7 @@ import java.util.UUID
 
 @Inject
 class RootNavigatorComponent(
-    yourTimetablesComponent: (ComponentContext) -> YourTimetablesComponent,
+    yourTimetablesComponent: (onStudyGroupOpen: (UUID) -> Unit, ComponentContext) -> YourTimetablesComponent,
     yourStudyGroupsComponent: (
         onCourseOpen: (UUID) -> Unit,
         onStudyGroupOpen: (UUID) -> Unit, ComponentContext,
@@ -72,7 +72,10 @@ class RootNavigatorComponent(
         childFactory = { config, context ->
             when (config) {
                 RootConfig.YourTimetables -> RootChild.YourTimetables(
-                    yourTimetablesComponent(context)
+                    yourTimetablesComponent(
+                        { navigation.bringToFront(RootConfig.StudyGroup(it)) },
+                        context
+                    )
                 )
 
                 RootConfig.YourStudyGroups -> RootChild.YourStudyGroups(

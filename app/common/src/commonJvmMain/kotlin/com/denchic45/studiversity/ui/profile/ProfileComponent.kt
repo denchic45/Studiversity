@@ -67,6 +67,7 @@ class ProfileComponent(
 
     val childOverlay = childOverlay(
         source = overlayNavigation,
+        handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
                 OverlayConfig.AvatarDialog -> OverlayChild.AvatarDialog

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.School
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -22,8 +24,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.compose.SubcomposeAsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.model.StudyGroupCourseItem
 import com.denchic45.studiversity.ui.studygroup.courses.StudyGroupCoursesComponent
@@ -70,15 +78,19 @@ fun StudyGroupCourseListItem(
             modifier = Modifier.padding(MaterialTheme.spacing.normal),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val painter = item.iconUrl?.let {
-                rememberAsyncImagePainter(url = it)
-            } ?: rememberVectorPainter(image = Icons.Outlined.School)
 
-            Icon(
-                painter = painter,
+
+
+            SubcomposeAsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(    item.iconUrl ?:  Icons.Outlined.School)
+                    .crossfade(true)
+                    .decoderFactory(SvgDecoder.Factory())
+                    .build(),
                 contentDescription = "course icon",
-                tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.size(48.dp)
+                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.secondary),
+                modifier = Modifier.size(48.dp),
+                loading = { CircularProgressIndicator(Modifier.padding(MaterialTheme.spacing.normal)) },
             )
 
             Column(Modifier.padding(start = 24.dp)) {

@@ -20,6 +20,10 @@ import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.model.toPeriodMember
 import com.denchic45.studiversity.ui.search.CourseChooserComponent
 import com.denchic45.studiversity.ui.search.UserChooserComponent
+import com.denchic45.studiversity.uivalidator.experimental2.condition.Condition
+import com.denchic45.studiversity.uivalidator.experimental2.validator.CompositeValidator
+import com.denchic45.studiversity.uivalidator.experimental2.validator.ValueValidator
+import com.denchic45.studiversity.uivalidator.experimental2.validator.observable
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.room.model.RoomResponse
@@ -30,10 +34,6 @@ import com.denchic45.stuiversity.api.timetable.model.LessonResponse
 import com.denchic45.stuiversity.api.timetable.model.PeriodMember
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.StudyGroupName
-import com.denchic45.studiversity.uivalidator.experimental2.condition.Condition
-import com.denchic45.studiversity.uivalidator.experimental2.validator.CompositeValidator
-import com.denchic45.studiversity.uivalidator.experimental2.validator.ValueValidator
-import com.denchic45.studiversity.uivalidator.experimental2.validator.observable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
@@ -230,7 +230,7 @@ class PeriodEditorComponent(
                 )
 
                 is EditingPeriodDetails.Lesson -> LessonResponse(
-                    id = -1,
+                    id = Random.nextLong(0, 1000),
                     date = state.date,
                     order = state.order,
                     room = state.room,

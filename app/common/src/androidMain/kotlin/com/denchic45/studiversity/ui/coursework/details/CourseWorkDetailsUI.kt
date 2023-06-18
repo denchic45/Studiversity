@@ -13,8 +13,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AlarmAdd
 import androidx.compose.material.icons.outlined.Comment
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -96,20 +97,25 @@ private fun CourseWorkDetailsContent(
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
             work.dueDate?.let { dueDate ->
                 Row {
-                    AssistChip(onClick = { /*TODO*/ }, label = {
-                        Text(dueDate.let { date ->
-                            val pattern = DateTimeFormatter.ofPattern("dd MMM")
-                            date.format(pattern)
-                        } + " " + work.dueTime?.let { time ->
-                            val pattern = DateTimeFormatter.ofPattern("HH:mm")
-                            time.format(pattern)
+                    AssistChip(
+                        onClick = { /*TODO*/ },
+                        label = {
+                            Text(dueDate.let { date ->
+                                val pattern = DateTimeFormatter.ofPattern("dd MMM")
+                                date.format(pattern)
+                            } + " " + work.dueTime?.let { time ->
+                                val pattern = DateTimeFormatter.ofPattern("HH:mm")
+                                time.format(pattern)
+                            },
+                                color = if (work.late) MaterialTheme.colorScheme.error else Color.Unspecified
+                            )
+                        }, leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Schedule,
+                                contentDescription = "deadline",
+                                tint = if (work.late) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                            )
                         })
-                    }, leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Outlined.AlarmAdd,
-                            contentDescription = "alarm"
-                        )
-                    })
                 }
             }
             work.description?.let {

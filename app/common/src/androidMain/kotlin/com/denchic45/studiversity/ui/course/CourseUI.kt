@@ -15,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Error
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +24,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -42,8 +45,10 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.denchic45.studiversity.data.domain.Forbidden
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
 import com.denchic45.studiversity.ui.appbar2.hideAppBar
 import com.denchic45.studiversity.ui.courseeditor.CourseEditorScreen
@@ -55,6 +60,7 @@ import com.denchic45.studiversity.ui.coursetopics.CourseTopicsScreen
 import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.studiversity.ui.profile.ProfileScreen
+import com.denchic45.studiversity.ui.search.IconTitleBox
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import kotlinx.coroutines.launch
 
@@ -216,45 +222,71 @@ fun CourseContent(
             }
         }
     ) { paddingValues ->
-        Column(Modifier.padding(paddingValues)) {
-            val coroutineScope = rememberCoroutineScope()
-            val pagerState = rememberPagerState()
-
-            TabRow(selectedTabIndex = pagerState.currentPage,
-                indicator = { positions ->
-                    TabRowDefaults.Indicator(
-                        Modifier.tabIndicatorOffset(positions[pagerState.currentPage])
-                    )
-                }) {
-                children.forEachIndexed { index, child ->
-                    Tab(
-                        text = { Text(child.title) },
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
+        ResourceContent(resource = course, onError = {
+            when (it) {
+                Forbidden -> {
+                    IconTitleBox(
+                        icon = {
+                            Icon(
+                                Icons.Outlined.Lock,
+                                "forbidden",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
                         },
+                        title = { Text("У вас нет доступа") }
+                    )
+                }
+
+                else -> {
+                    IconTitleBox(
+                        icon = { Icon(Icons.Outlined.Error, "forbidden") },
+                        title = {
+                            Text("Неизвестная ошибка")
+                        }
                     )
                 }
             }
-            HorizontalPager(
-                state = pagerState,
-                pageCount = children.size,
-            ) {
-                Box(modifier = Modifier.fillMaxHeight()) {
-                    when (val child = children[it]) {
-                        is CourseComponent.TabChild.Elements -> CourseElementsScreen(
-                            component = child.component
-                        )
+        }) {
+            Column(Modifier.padding(paddingValues)) {
+                val coroutineScope = rememberCoroutineScope()
+                val pagerState = rememberPagerState()
 
-                        is CourseComponent.TabChild.Members -> CourseMembersScreen(
-                            component = child.component
+                TabRow(selectedTabIndex = pagerState.currentPage,
+                    indicator = { positions ->
+                        TabRowDefaults.Indicator(
+                            Modifier.tabIndicatorOffset(positions[pagerState.currentPage])
                         )
+                    }) {
+                    children.forEachIndexed { index, child ->
+                        Tab(
+                            text = { Text(child.title) },
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            },
+                        )
+                    }
+                }
+                HorizontalPager(
+                    state = pagerState,
+                    pageCount = children.size,
+                ) {
+                    Box(modifier = Modifier.fillMaxHeight()) {
+                        when (val child = children[it]) {
+                            is CourseComponent.TabChild.Elements -> CourseElementsScreen(
+                                component = child.component
+                            )
 
-                        is CourseComponent.TabChild.Timetable -> CourseTimetableScreen(
-                            component = child.component
-                        )
+                            is CourseComponent.TabChild.Members -> CourseMembersScreen(
+                                component = child.component
+                            )
+
+                            is CourseComponent.TabChild.Timetable -> CourseTimetableScreen(
+                                component = child.component
+                            )
+                        }
                     }
                 }
             }

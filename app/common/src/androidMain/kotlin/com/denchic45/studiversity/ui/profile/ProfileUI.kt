@@ -316,12 +316,14 @@ private fun ProfileStudyGroups(
 
             if (showStudyGroups)
                 AlertDialog(onDismissRequest = { showStudyGroups = false }) {
-                    studyGroups.forEach {
-                        StudyGroupListItem(
-                            item = it,
-                            modifier = Modifier.clickable { onStudyGroupClick(it.id) }
-                        )
-                    }
+                   Column {
+                       studyGroups.forEach {
+                           StudyGroupListItem(
+                               item = it,
+                               modifier = Modifier.clickable { onStudyGroupClick(it.id) }
+                           )
+                       }
+                   }
                 }
         }
     }
