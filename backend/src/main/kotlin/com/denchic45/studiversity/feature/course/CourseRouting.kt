@@ -5,6 +5,7 @@ import com.denchic45.studiversity.feature.course.element.courseElementRoutes
 import com.denchic45.studiversity.feature.course.topic.courseTopicsRoutes
 import com.denchic45.studiversity.feature.course.usecase.*
 import com.denchic45.studiversity.feature.course.work.courseWorksRoutes
+import com.denchic45.studiversity.feature.course.work.courseWorksRoutes2
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.ktor.*
 import com.denchic45.studiversity.util.onlyDigits
@@ -74,6 +75,7 @@ fun Application.courseRoutes() {
                 }
             }
             studentWorksRoute()
+            courseWorksRoutes2()
         }
     }
 }
@@ -84,7 +86,7 @@ fun Route.studentWorksRoute() {
         val overdue = call.request.queryParameters["overdue"]?.toBoolean()
         val statuses = call.request.queryParameters.getAll("status")?.map { SubmissionState.valueOf(it) }
 
-        // TODO: complete
+        // TODO: complete (maybe not)
     }
 }
 

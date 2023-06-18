@@ -29,7 +29,7 @@ class OverdueTasksFragment :
             }
             rv.adapter = adapter
             viewModel.works.collectWhenStarted(viewLifecycleOwner) {
-                it.onSuccess(adapter::submit)
+//                it.onSuccess(adapter::submit)
             }
         }
     }

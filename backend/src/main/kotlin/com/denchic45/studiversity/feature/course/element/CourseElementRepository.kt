@@ -10,12 +10,11 @@ import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
 import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
+import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.innerJoin
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.javatime.CurrentDate
 import java.util.*
 
 class CourseElementRepository {
@@ -121,6 +120,31 @@ class CourseElementRepository {
             it.toCourseElementResponse(
                 getElementDetailsByIdAndType(it[CourseElements.id].value, it[CourseElements.type])
             )
+        }
+    }
+
+    fun findByAuthor(authorId: UUID, late: Boolean?, submitted: Boolean?): List<CourseWorkResponse> {
+        val query = CourseWorks.innerJoin(Submissions, { CourseWorks.id }, { courseWorkId })
+            .select(Submissions.authorId eq authorId).orderBy(CourseWorks.dueDate)
+
+        late?.let {
+            query.andWhere {
+                if (late)
+                    CourseWorks.dueDate less CurrentDate
+                else
+                    CourseWorks.dueDate greater CurrentDate or (CourseWorks.dueDate eq null)
+            }
+        }
+        submitted?.let {
+            query.andWhere {
+                if (submitted)
+                    Submissions.state notInList SubmissionState.notSubmitted()
+                else
+                    Submissions.state inList SubmissionState.notSubmitted()
+            }
+        }
+        return CourseWorkDao.wrapRows(query).map { workDao ->
+            CourseElementDao.findById(workDao.id.value)!!.toWorkResponse(workDao)
         }
     }
 }

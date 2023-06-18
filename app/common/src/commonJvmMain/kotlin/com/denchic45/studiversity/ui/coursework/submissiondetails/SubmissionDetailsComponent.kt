@@ -99,7 +99,7 @@ class SubmissionDetailsComponent(
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
                 FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
                 FileState.Preview, FileState.FailDownload -> componentScope.launch {
-                    downloadFileUseCase(item.attachmentId!!)
+                    downloadFileUseCase(item.attachmentId)
                 }
 
                 else -> {}

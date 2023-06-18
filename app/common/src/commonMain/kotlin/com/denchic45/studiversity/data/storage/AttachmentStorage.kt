@@ -9,7 +9,6 @@ import com.github.michaelbull.result.onSuccess
 import me.tatarka.inject.annotations.Inject
 import okio.FileSystem
 import okio.Path
-import okio.Path.Companion.toOkioPath
 import java.util.UUID
 
 @Inject
@@ -37,14 +36,23 @@ class AttachmentStorage @javax.inject.Inject constructor(
     suspend fun downloadAndSave(attachmentId: UUID): ResponseResult<FileAttachmentResponse?> {
         return download(attachmentId).onSuccess { fileAttachment ->
             fileAttachment?.let {
-                fileSystem.write(getFilePath(it.id)) { write(it.bytes) }
+                fileSystem.createDirectory(getFilePathById(fileAttachment.id))
+                fileSystem.write(
+                    getFilePathByIdAndName(
+                        it.id,
+                        fileAttachment.name
+                    )
+                ) { write(it.bytes) }
             }
         }
     }
 
-    fun getFilePath(attachmentId: UUID) = path / attachmentId.toString()
+    private fun getFilePathById(attachmentId: UUID) = path / attachmentId.toString()
+
+    fun getFilePathByIdAndName(attachmentId: UUID, name: String) =
+        path / attachmentId.toString() / name
 
     fun delete(attachmentId: UUID) {
-        fileSystem.delete(getFilePath(attachmentId))
+        fileSystem.deleteRecursively(getFilePathById(attachmentId))
     }
 }

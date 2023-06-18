@@ -6,10 +6,7 @@ import com.denchic45.studiversity.feature.membership.usecase.RemoveMemberFromSco
 import com.denchic45.studiversity.feature.membership.usecase.RemoveSelfMemberFromScopeUseCase
 import com.denchic45.studiversity.feature.role.RoleErrors
 import com.denchic45.studiversity.feature.role.usecase.*
-import com.denchic45.studiversity.ktor.ForbiddenException
-import com.denchic45.studiversity.ktor.claimId
-import com.denchic45.studiversity.ktor.currentUserId
-import com.denchic45.studiversity.ktor.jwtPrincipal
+import com.denchic45.studiversity.ktor.*
 import com.denchic45.studiversity.util.hasNotDuplicates
 import com.denchic45.studiversity.validation.buildValidationResult
 import com.denchic45.stuiversity.api.membership.model.ManualJoinMemberRequest
@@ -72,7 +69,7 @@ fun Route.membersRoute() {
         val membershipService: MembershipService by inject()
 
         get {
-            val scopeId = call.parameters["scopeId"]!!.toUUID()
+            val scopeId = call.parameters.getUuidOrFail("scopeId")
             val currentUserId = call.currentUserId()
 
 

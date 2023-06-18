@@ -91,6 +91,7 @@ import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.root.RootStackScreen
 import com.denchic45.studiversity.ui.settings.SettingsScreen
 import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
+import com.denchic45.studiversity.ui.yourworks.YourWorksScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.seiko.imageloader.rememberAsyncImagePainter
 import kotlinx.coroutines.CoroutineScope
@@ -591,7 +592,7 @@ private fun ScreenContainer(
             is MainComponent.Child.YourCourse -> CourseScreen(component = child.component)
             is MainComponent.Child.Course -> CourseScreen(component = child.component)
             is MainComponent.Child.StudyGroup -> StudyGroupScreen(component = child.component)
-            is MainComponent.Child.Works -> {}
+            is MainComponent.Child.Works -> YourWorksScreen(component = child.component)
         }
     }
 }

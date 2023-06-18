@@ -45,9 +45,10 @@ class CourseWorkDetailsComponent(
     fun onAttachmentClick(item: AttachmentItem) {
         when (item) {
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
+
                 FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
-                FileState.Preview -> componentScope.launch {
-                    downloadFileUseCase(item.attachmentId!!)
+                FileState.FailDownload,  FileState.Preview -> componentScope.launch {
+                    downloadFileUseCase(item.attachmentId)
                     // TODO: Возможно использовать в будущем: открывать файл сразу после его загрузки
 //                            .collect {
 //                            if (it == FileState.Downloaded)

@@ -29,7 +29,7 @@ class CompletedTasksFragment :
             }
             rv.adapter = adapter
             viewModel.tasks.collectWhenStarted(viewLifecycleOwner) {
-                it.onSuccess(adapter::submit)
+//                it.onSuccess(adapter::submit)
             }
 
         }

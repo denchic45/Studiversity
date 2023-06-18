@@ -6,6 +6,7 @@ import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.flatMapResourceFlow
 import com.denchic45.studiversity.domain.map
 import com.denchic45.studiversity.domain.mapResource
+import com.denchic45.studiversity.domain.onFailure
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.stateInResource
 import com.denchic45.studiversity.domain.usecase.CancelSubmissionUseCase
@@ -58,9 +59,9 @@ class YourSubmissionComponent(
     private val componentScope = componentScope()
 
     private val capabilities = checkUserCapabilitiesInScopeUseCase(
-                scopeId = courseId,
-                capabilities = listOf(Capability.ReadSubmissions, Capability.SubmitSubmission)
-            ).stateInResource(componentScope)
+        scopeId = courseId,
+        capabilities = listOf(Capability.ReadSubmissions, Capability.SubmitSubmission)
+    ).stateInResource(componentScope)
 
     private val _observeYourSubmission: Flow<Resource<SubmissionResponse>> =
         capabilities.flatMapResourceFlow {
@@ -77,11 +78,11 @@ class YourSubmissionComponent(
         findSubmissionAttachmentsUseCase(courseId, workId, it.id)
     }.shareIn(componentScope, SharingStarted.Lazily)
 
-    val uiState = MutableStateFlow<Resource<SubmissionUiState>>(Resource.Loading)
+    val submission = MutableStateFlow<Resource<SubmissionUiState>>(Resource.Loading)
 
     val sheetExpanded = MutableStateFlow(false)
 
-    private val backCallback = BackCallback { sheetExpanded.update { false }}
+    private val backCallback = BackCallback { sheetExpanded.update { false } }
 
     init {
         backHandler.register(backCallback)
@@ -92,7 +93,7 @@ class YourSubmissionComponent(
         }
 
         componentScope.launch {
-            uiState.emitAll(
+            submission.emitAll(
                 combine(
                     merge(_observeYourSubmission, _updatedYourSubmission),
                     _attachments
@@ -108,7 +109,7 @@ class YourSubmissionComponent(
     }
 
     fun onFilesSelect(paths: List<Path>) {
-        uiState.value.onSuccess { state ->
+        submission.value.onSuccess { state ->
             componentScope.launch {
                 paths.map { path ->
                     uploadAttachmentToSubmissionUseCase(
@@ -116,14 +117,18 @@ class YourSubmissionComponent(
                         workId = workId,
                         submissionId = state.id,
                         attachmentRequest = CreateFileRequest(path.toFile())
-                    )
+                    ).onSuccess {
+                        println("success load: $it")
+                    }.onFailure {
+                        println("failed load: $it")
+                    }
                 }
             }
         }
     }
 
     fun onAttachmentRemove(attachmentId: UUID) {
-        uiState.value.onSuccess {
+        submission.value.onSuccess {
             componentScope.launch {
                 removeAttachmentFromSubmissionUseCase(attachmentId, courseId, workId, it.id)
             }
@@ -131,7 +136,7 @@ class YourSubmissionComponent(
     }
 
     fun onSubmit() {
-        uiState.value.onSuccess {
+        submission.value.onSuccess {
             componentScope.launch {
                 _updatedYourSubmission.emit(
                     submitSubmissionUseCase(courseId, workId, it.id)
@@ -141,7 +146,7 @@ class YourSubmissionComponent(
     }
 
     fun onCancel() {
-        uiState.value.onSuccess {
+        submission.value.onSuccess {
             componentScope.launch {
                 _updatedYourSubmission.emit(
                     cancelSubmissionUseCase(courseId, workId, it.id)

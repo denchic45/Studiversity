@@ -39,8 +39,7 @@ fun Application.configureAttachments() {
                                     ContentDisposition.Attachment.withParameter(
                                         ContentDisposition.Parameters.FileName,
                                         response.name
-                                    )
-                                        .toString()
+                                    ).toString()
                                 )
                                 call.response.header("id", response.id.toString())
                                 call.respondBytes(response.bytes)

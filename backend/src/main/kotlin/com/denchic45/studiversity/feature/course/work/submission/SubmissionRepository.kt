@@ -60,19 +60,15 @@ class SubmissionRepository {
         courseWorkId: UUID,
         studentIds: List<UUID>
     ): List<SubmissionResponse> {
-        return Memberships.innerJoin(UsersMemberships, { Memberships.id }, { membershipId })
-            .join(
-                CourseWorks,
-                JoinType.INNER,
-                additionalConstraint = { CourseWorks.id eq courseWorkId })
-            .leftJoin(
+        return CourseWorks.leftJoin(
                 Submissions,
                 { CourseWorks.id },
-                { Submissions.courseWorkId },
-                { Submissions.authorId eq UsersMemberships.memberId })
+                { Submissions.courseWorkId })
             .leftJoin(Grades,{Submissions.id},{ submissionId })
-            .innerJoin(Users, { UsersMemberships.memberId }, { Users.id })
-            .select(Memberships.scopeId eq courseId and (UsersMemberships.memberId inList studentIds))
+            .innerJoin(Users, { Submissions.authorId }, { Users.id })
+            .select(CourseWorks.id eq courseWorkId
+                    and (Submissions.authorId inList studentIds)
+            )
             .map { row ->
                 row.getOrNull(Submissions.id)?.let { submissionId ->
                     WorkSubmissionResponse(
@@ -101,7 +97,7 @@ class SubmissionRepository {
                             )
                         }
                     )
-                } ?: addNewSubmissionByStudentId(courseWorkId, row[UsersMemberships.memberId].value)
+                } ?: addNewSubmissionByStudentId(courseWorkId, row[Submissions.authorId].value)
             }
     }
 

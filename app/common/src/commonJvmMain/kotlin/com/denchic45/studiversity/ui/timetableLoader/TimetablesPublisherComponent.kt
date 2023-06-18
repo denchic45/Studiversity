@@ -144,7 +144,7 @@ class TimetablesPublisherComponent(
             timetable,
             groupId,
             selectedDate,
-            componentContext.childContext("DayTimetable $groupId")
+            componentContext.childContext("DayTimetable $groupId ${System.currentTimeMillis()}") // Make random name because context never destroy after deleting component
         )
     }
 
@@ -210,7 +210,7 @@ class TimetablesPublisherComponent(
                     selectedGroup.update { it - 1 }
                 }
                 studyGroups.update { it - it[position] }
-                editorComponents.update { it - it[position] }
+                editorComponents.update { it - it[position].apply { onDestroy() } }
                 timetablesViewStates.update { it - it[position] }
             }
         }

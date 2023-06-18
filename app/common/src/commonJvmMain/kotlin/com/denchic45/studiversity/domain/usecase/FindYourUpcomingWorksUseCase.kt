@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @me.tatarka.inject.annotations.Inject
-class FindYourSubmittedCourseWorksUseCase @Inject constructor(
-    private val courseElementRepository: CourseElementRepository
+class FindYourUpcomingWorksUseCase @Inject constructor(
+    private val courseElementRepository: CourseElementRepository,
 ) {
 
     operator fun invoke(): Flow<Resource<List<CourseWorkResponse>>> {
-        return courseElementRepository.findSubmittedByYourAuthor()
+        return courseElementRepository.findUpcomingByYourAuthor()
     }
 }

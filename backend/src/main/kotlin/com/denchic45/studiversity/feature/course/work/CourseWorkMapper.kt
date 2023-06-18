@@ -13,6 +13,7 @@ fun CourseElementDao.toWorkResponse(courseWorkDao: CourseWorkDao): CourseWorkRes
         dueTime = courseWorkDao.dueTime,
         workType = courseWorkDao.type,
         maxGrade = courseWorkDao.maxGrade,
+        courseId = CourseElementDao.findById(id.value)!!.course.id.value,
         topicId = topic?.id?.value,
         submitAfterDueDate = courseWorkDao.submitAfterDueDate,
         createdAt = createdAt,

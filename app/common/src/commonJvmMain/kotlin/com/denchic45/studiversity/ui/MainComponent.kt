@@ -32,6 +32,7 @@ import com.denchic45.studiversity.ui.root.YourTimetablesRootComponent
 import com.denchic45.studiversity.ui.schedule.ScheduleComponent
 import com.denchic45.studiversity.ui.settings.SettingsComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
+import com.denchic45.studiversity.ui.yourworks.YourWorksComponent
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.Dispatchers
@@ -72,6 +73,7 @@ class MainComponent(
         ComponentContext,
     ) -> CourseComponent,
     adminDashboardRootComponent: (ComponentContext) -> AdminDashboardRootComponent,
+    yourWorksComponent: (ComponentContext) -> YourWorksComponent,
     settingsComponent: (ComponentContext) -> SettingsComponent,
     interactor: MainInteractor,
     @Assisted
@@ -96,7 +98,7 @@ class MainComponent(
                     yourStudyGroupsRootComponent(context)
                 )
 
-                Config.Works -> TODO()
+                Config.Works -> Child.Works(yourWorksComponent(context))
                 is Config.StudyGroup -> Child.StudyGroup(
                     studyGroupComponent(
                         { navigation.bringToFront(Config.Course(it)) },
@@ -161,11 +163,11 @@ class MainComponent(
     private val hasStudyGroupsFlow = interactor.observeHasStudyGroups().onEach { hasStudyGroups ->
         if (!hasStudyGroups)
         /* remove StudyGroup config if exists */
-         withContext(Dispatchers.Main) {
-             navigation.navigate { stack ->
-                 stack.firstOrNull { it is Config.StudyGroup }?.let { stack - it } ?: stack
-             }
-         }
+            withContext(Dispatchers.Main) {
+                navigation.navigate { stack ->
+                    stack.firstOrNull { it is Config.StudyGroup }?.let { stack - it } ?: stack
+                }
+            }
     }
 
     // TODO listen root role of current user to show works screen
@@ -279,8 +281,8 @@ class MainComponent(
         ) : Child, ChildrenContainerChild, PrimaryChild
 
         class Works(
-            override val component: RootStackChildrenContainer,
-        ) : Child, ChildrenContainerChild, ExtraChild
+            val component: YourWorksComponent,
+        ) : Child, ExtraChild
 
 
         class StudyGroup(

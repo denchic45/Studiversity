@@ -144,7 +144,7 @@ class CourseWorkComponent(
         when (item) {
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
                 FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
-                FileState.Preview -> componentScope.launch {
+                FileState.Preview,FileState.FailDownload -> componentScope.launch {
                     downloadFileUseCase(item.attachmentId!!)
                 }
 

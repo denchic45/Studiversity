@@ -28,7 +28,7 @@ class UpcomingTasksFragment :
             }
             rv.adapter = adapter
 
-            viewModel.tasks.collectWhenStarted(viewLifecycleOwner) { it.onSuccess(adapter::submit) }
+//            viewModel.tasks.collectWhenStarted(viewLifecycleOwner) { it.onSuccess(adapter::submit) }
 
         }
     }

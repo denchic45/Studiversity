@@ -2,25 +2,27 @@ package com.denchic45.studiversity.data.repository
 
 import com.denchic45.studiversity.data.db.local.source.AttachmentLocalDataSource
 import com.denchic45.studiversity.data.fetchResource
+import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.data.storage.FileProvider
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
-import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
+import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import com.denchic45.stuiversity.util.uuidOfMe
 import com.eygraber.uri.Uri
 import com.github.michaelbull.result.coroutines.binding.binding
 import com.github.michaelbull.result.map
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
@@ -122,12 +124,19 @@ class CourseElementRepository @javax.inject.Inject constructor(
         courseWorkApi.update(courseId, workId, updateCourseWorkRequest)
     }
 
-    fun findByStudent(
-        studentId: UUID? = null,
-        late: Boolean? = null,
-        statuses: List<SubmissionState>? = null,
-    ): Resource<List<CourseElementResponse>> {
-        TODO("Not yet implemented")
+    fun findUpcomingByYourAuthor(
+    ): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
+        courseWorkApi.getByAuthor(authorId = uuidOfMe(), late = false, submitted = false)
+    }
+
+    fun findOverdueByYourAuthor(
+    ): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
+        courseWorkApi.getByAuthor(authorId = uuidOfMe(), late = true, submitted = false)
+    }
+
+    fun findSubmittedByYourAuthor(
+    ): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
+        courseWorkApi.getByAuthor(authorId = uuidOfMe(), submitted = true)
     }
 
 //    fun findAttachments(courseId: UUID, workId: UUID) = observeResource(

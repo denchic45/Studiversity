@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.Dp
 import com.denchic45.studiversity.data.domain.model.FileState
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
 import com.denchic45.studiversity.ui.appbar2.DropdownMenuItem2
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
@@ -86,7 +87,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     val childrenResource by component.children.collectAsState()
 
     val yourSubmissionComponent = component.yourSubmissionComponent
-    val submissionResource by yourSubmissionComponent.uiState.collectAsState(null)
+    val submissionResource by yourSubmissionComponent.submission.collectAsState(null)
     val submissionExpanded by yourSubmissionComponent.sheetExpanded.collectAsState()
 
     val context = LocalContext.current
@@ -323,7 +324,7 @@ private fun CourseWorkBody(
         }
     }
 
-    childrenResource.onSuccess { children ->
+    ResourceContent(resource = childrenResource) { children ->
         Column {
             if (children.size != 1) {
                 TabRow(
@@ -567,7 +568,7 @@ fun CourseWorkContentPreview() {
                 childrenResource = Resource.Loading, submissionResource = Resource.Success(
                     SubmissionUiState(
                         id = UUID.randomUUID(),
-                        author = Author(UUID.randomUUID(),"","",""),
+                        author = Author(UUID.randomUUID(), "", "", ""),
                         state = SubmissionState.CREATED,
                         attachments = listOf(
                             AttachmentItem.FileAttachmentItem(

@@ -112,7 +112,8 @@ class AttachmentRepository @javax.inject.Inject constructor(
                         url = null,
                         thumbnail_url = null,
                         type = AttachmentType.FILE,
-                        path = attachmentStorage.getFilePath(attachment.id).toString(),
+                        path = attachmentStorage.getFilePathByIdAndName(attachment.id, fileName)
+                            .toString(),
                         owner_id = null,
                         sync = false
                     )

@@ -146,6 +146,9 @@ class DayTimetableEditorComponent(
         is LessonResponse -> copy(order = order)
     }
 
+    fun onDestroy() {
+    }
+
 
     val request: PutTimetableRequest
         get() = editingWeekTimetable.value.map {

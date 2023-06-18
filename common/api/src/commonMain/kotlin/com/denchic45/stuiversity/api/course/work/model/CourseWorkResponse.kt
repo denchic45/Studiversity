@@ -30,6 +30,8 @@ data class CourseWorkResponse(
 //    val workDetails: CourseWorkDetails? = null,
     val maxGrade: Short,
     @Serializable(UUIDSerializer::class)
+    val courseId: UUID,
+    @Serializable(UUIDSerializer::class)
     val topicId: UUID?,
     val submitAfterDueDate: Boolean?,
     @Serializable(LocalDateTimeSerializer::class)

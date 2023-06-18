@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.feature.membership.repository
 
+import com.denchic45.studiversity.database.distinctOn
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.role.mapper.toRole
@@ -96,8 +97,9 @@ class UserMembershipRepository(
         }
 
     fun findMemberIdsByScopeAndRole(scopeId: UUID, roleId: Long) = MembershipsInnerUserMembershipsInnerUsersRolesScopes
+        .slice(UsersMemberships.memberId.distinctOn())
         .select(Memberships.scopeId eq scopeId and (UsersRolesScopes.roleId eq roleId))
-        .map { it[UsersMemberships.memberId].value }
+        .map { it[UsersMemberships.memberId.distinctOn()].value }
 
     fun findMemberByScope(userId: UUID, scopeId: UUID) = Memberships
         .innerJoin(UsersMemberships, { Memberships.id }, { membershipId })

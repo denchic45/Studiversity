@@ -3,15 +3,31 @@ package com.denchic45.stuiversity.api.course.work
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
-import com.denchic45.stuiversity.api.course.element.model.*
+import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
+import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
+import com.denchic45.stuiversity.api.course.element.model.FileAttachmentHeader
+import com.denchic45.stuiversity.api.course.element.model.LinkAttachmentHeader
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
-import java.util.*
+import com.denchic45.stuiversity.util.UUIDWrapper
+import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.append
+import io.ktor.http.contentType
+import io.ktor.http.defaultForFilePath
+import java.util.UUID
 
 interface CourseWorkApi {
     suspend fun create(
@@ -21,11 +37,20 @@ interface CourseWorkApi {
 
     suspend fun update(
         courseId: UUID,
-        workId:UUID,
+        workId: UUID,
         updateCourseWorkRequest: UpdateCourseWorkRequest
     ): ResponseResult<CourseWorkResponse>
 
-    suspend fun getById(courseId: UUID, workId: UUID): ResponseResult<CourseWorkResponse> // TODO: fix result in backend
+    suspend fun getById(
+        courseId: UUID,
+        workId: UUID
+    ): ResponseResult<CourseWorkResponse> // TODO: fix result in backend
+
+    suspend fun getByAuthor(
+        authorId: UUIDWrapper,
+        late: Boolean? = null,
+        submitted: Boolean? = null
+    ): ResponseResult<List<CourseWorkResponse>>
 
     suspend fun getAttachments(
         courseId: UUID,
@@ -83,6 +108,18 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
         return client.get("/courses/$courseId/works/$workId").toResult()
     }
 
+    override suspend fun getByAuthor(
+        authorId: UUIDWrapper,
+        late: Boolean?,
+        submitted: Boolean?
+    ): ResponseResult<List<CourseWorkResponse>> {
+        return client.get("/course-works") {
+            parameter("late", late)
+            parameter("author_id", authorId.value)
+            parameter("submitted", submitted)
+        }.toResult()
+    }
+
     override suspend fun getAttachments(
         courseId: UUID,
         courseWorkId: UUID
@@ -111,8 +148,14 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
                 MultiPartFormDataContent(
                     formData {
                         append("file", createFileRequest.bytes, Headers.build {
-                            append(HttpHeaders.ContentType, ContentType.defaultForFilePath(createFileRequest.name))
-                            append(HttpHeaders.ContentDisposition, "filename=${createFileRequest.name}")
+                            append(
+                                HttpHeaders.ContentType,
+                                ContentType.defaultForFilePath(createFileRequest.name)
+                            )
+                            append(
+                                HttpHeaders.ContentDisposition,
+                                "filename=${createFileRequest.name}"
+                            )
                         })
                     }
                 )

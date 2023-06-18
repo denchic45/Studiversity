@@ -175,6 +175,7 @@ fun CourseWorkDetailsPreview() {
                         dueTime = LocalTime.now().plusHours(2).plusMinutes(30),
                         workType = CourseWorkType.ASSIGNMENT,
                         maxGrade = 5,
+                        UUID.randomUUID(),
                         null,
                         false,
                         createdAt = LocalDateTime.now(),

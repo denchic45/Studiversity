@@ -7,6 +7,7 @@ import com.denchic45.studiversity.feature.course.element.usecase.UpdateCourseEle
 import com.denchic45.studiversity.feature.course.work.CourseWorkRepository
 import com.denchic45.studiversity.feature.course.work.usecase.AddCourseWorkUseCase
 import com.denchic45.studiversity.feature.course.work.usecase.FindCourseWorkUseCase
+import com.denchic45.studiversity.feature.course.work.usecase.FindCourseWorksUseCase
 import com.denchic45.studiversity.feature.course.work.usecase.UpdateCourseWorkUseCase
 import org.koin.dsl.module
 
@@ -21,6 +22,7 @@ private val useCaseModule = module {
     single { FindCourseElementsByCourseIdUseCase(get(), get()) }
     single { UpdateCourseElementUseCase(get(), get()) }
     single { UpdateCourseWorkUseCase(get(), get()) }
+    single { FindCourseWorksUseCase(get(), get()) }
 //    single { RemoveAttachmentOfCourseElementUseCase(get(), get()) }
 }
 
