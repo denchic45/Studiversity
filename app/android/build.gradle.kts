@@ -40,13 +40,13 @@ android {
         applicationId = "com.denchic45.studiversity"
         minSdk = 24
         targetSdk = 33
-        versionCode = 83
-        versionName = "1.0.7"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        versionCode = 84
+        versionName = "1.0.8"
     }
 
     buildTypes {
