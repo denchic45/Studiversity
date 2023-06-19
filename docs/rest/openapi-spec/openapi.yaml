@@ -17,7 +17,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: [password, refresh_token]
+            enum: [ password, refresh_token ]
       responses:
         '200':
           description: Получение токена
@@ -40,12 +40,113 @@ paths:
           description: Successfully registration
   /users:
     get:
+      summary: Query users
+      tags:
+        - Users
+      parameters:
+        - name: q
+          in: query
+          description: Query text
+          required: true
+          schema:
+            type: string
+            example: ivan ivanov
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+      security:
+        - bearerAuth: [ ]
+    post:
+      summary: Create a user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      security:
+        - bearerAuth: [ ]
+  /users/{userId}:
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The user ID
+    get:
+      summary: Get a user by ID
       tags:
         - Users
       security:
-        - bearerAuth:
-            - read:users
-            - public
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      summary: Delete a user by ID
+      tags:
+        - Users
+      security:
+        - bearerAuth: [ ]
+  /studygroups:
+    get:
+      summary: Query study groups
+      tags:
+        - Study Groups
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: q
+          in: query
+          description: Query text
+          schema:
+            type: string
+            example: PCS-6132
+        - name: member_id
+          in: query
+          description: The member ID
+          schema:
+            type: string
+            format: uuid
+        - name: role_id
+          in: query
+          description: The role ID
+          schema:
+            type: integer
+            format: int64
+        - name: specialty_id
+          in: query
+          description: The specialty ID
+          schema:
+            type: string
+            format: uuid
+        - name: academic_year
+          in: query
+          description: The academic year
+          schema:
+            type: integer
+    post:
+      summary: Create study sroup
+      tags:
+        - Study Groups
+      security:
+        - bearerAuth: [ ]
+
+
 components:
   securitySchemes:
     bearerAuth:
@@ -70,8 +171,8 @@ components:
     SignupRequest:
       type: object
       required:
-         - firstName
-         - surname
+        - firstName
+        - surname
       properties:
         firstName:
           type: string
@@ -84,10 +185,99 @@ components:
           example: Ivanovich
         gender:
           type: string
-          enum: [MALE, FEMALE]
+          enum: [ MALE, FEMALE ]
         email:
           type: string
           example: ivan@mail.ru
         password:
           type: string
           example: hbfFVDNdsf.*)3M83f4
+    CreateUserRequest:
+      type: object
+      required:
+        - firstName
+        - surname
+        - patronymic
+        - email
+        - gender
+      properties:
+        firstName:
+          type: string
+          example: Andrew
+        surname:
+          type: string
+          example: Ivanov
+        patronymic:
+          type: string
+          example: Ivanovich
+        email:
+          type: string
+          example: ivan@mail.ru
+        gender:
+          type: string
+          enum: [ MALE, FEMALE ]
+        roleIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          example: [ 2, 3 ]
+    User:
+      type: object
+      required:
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+          example: Andrew
+        surname:
+          type: string
+          example: Ivanov
+        patronymic:
+          type: string
+          example: Ivanovich
+        gender:
+          type: string
+          enum: [ MALE, FEMALE ]
+        account:
+          type: object
+          properties:
+            email:
+              type: string
+              example: ivan@mail.ru
+        avatarUrl:
+          type: string
+        generatedAvatar:
+          type: boolean
+    StudyGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        academicYear:
+          type: object
+          properties:
+            start:
+              type: integer
+              format: int64
+            end:
+              type: integer
+              format: int64
+        specialty:
+          $ref: '#/components/schemas/Specialty'
+    Specialty:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        shortname:
+          type: string
+
