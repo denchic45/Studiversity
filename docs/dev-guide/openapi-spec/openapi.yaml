@@ -446,6 +446,13 @@ paths:
           type: string
           format: uuid
         description: The course ID
+      - in: path
+        name: elementId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The course element ID
     get:
       summary: Get course element by ID
       tags:
@@ -458,9 +465,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CourseElement'
+                $ref: '#/components/schemas/CourseElement'
   /timetables{weekOfYear}:
     parameters:
       - in: path
@@ -820,7 +825,7 @@ components:
         - $ref: '#/components/schemas/EventDetails'
       discriminator: periodType
       required:
-      - periodType
+        - periodType
 
     LessonDetails:
       type: object
