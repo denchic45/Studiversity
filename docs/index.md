@@ -1,22 +1,16 @@
-# Welcome to MkDocs
+# Добро пожаловать
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Это руководство содержит исчерпывающую информацию о работе с Studiversity. Узнайте о функциях и возможностях платформы в
+руководстве пользователя. Нужно развернуть и запустить сервер? Хотите расширить функционал системы? Вся необходимая информация есть
+в руководстве программиста
 
-## Commands
+## О Studiversity
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+Studiversity - это платформа, позволяющая работать с учебными курсами и группами.
+Studiversity распространяется бесплатно в качестве программного обеспечения с открытым кодом.
 
-## Project layout
+## Где скачать приложение?
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
-
-:fontawesome-brands-twitter:{ .twitter }
-
-:material-account-circle:
-:material-restart-off:
+Android-приложение доступно в Google Play и RuStore <br>
+[:material-download: Google Play](https://play.google.com/store/apps/details?id=com.denchic45.studiversity){ .md-button }
+[:material-download: RuStore](https://apps.rustore.ru/app/com.denchic45.studiversity){ .md-button }

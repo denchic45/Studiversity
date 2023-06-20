@@ -2,8 +2,10 @@ site_name: Studiversity
 repo_url: https://github.com/denchic45/Studiversity
 repo_name: denchic45/Studiversity
 theme:
-  language: ru
   name: material
+  language: ru
+  logo: media/logo-white.svg
+  favicon: media/logo.png
   features:
     - navigation.tabs
     - navigation.tabs.sticky
