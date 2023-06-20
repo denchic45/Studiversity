@@ -17,7 +17,9 @@ nav:
         - Для преподавателей: 'user-guide/teacher.md'
         - Для студентов: 'user-guide/student.md'
         - Для модераторов: 'user-guide/moderator.md'
-    - Документация API: 'rest/rest-api.md'
+    - Руководство разработчика:
+        - Развертывание сервера: 'dev-guide/deploy.md'
+        - API документация: 'dev-guide/api.md'
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -32,9 +34,11 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.mark
   - attr_list
+  - md_in_html
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
 
 plugins:
    - swagger-ui-tag
+   - glightbox
