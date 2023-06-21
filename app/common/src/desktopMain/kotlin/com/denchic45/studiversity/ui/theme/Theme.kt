@@ -7,6 +7,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
+import com.arkivanov.essenty.backhandler.BackDispatcher
 
 @Composable
 fun DesktopApp(
@@ -15,10 +16,11 @@ fun DesktopApp(
     onCloseRequest: () -> Unit,
     title: String = "Untitled",
     icon: Painter? = painterResource("app_logo.png"),
+    backDispatcher: BackDispatcher,
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    CompositionLocalProvider(LocalWindowState provides state) {
+    CompositionLocalProvider(LocalWindowState provides state, LocalBackDispatcher provides backDispatcher) {
         Window(
             visible = visible,
             title = title,

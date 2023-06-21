@@ -9,10 +9,11 @@ import java.util.*
 
 object Rooms : UUIDTable("room", "room_id") {
     val name = varcharMax("room_name")
+    val shortname = varcharMax("shortname")
 }
 
 class RoomDao(id: EntityID<UUID>) : UUIDEntity(id) {
     companion object : UUIDEntityClass<RoomDao>(Rooms)
-
     var name by Rooms.name
+    var shortname by Rooms.shortname
 }

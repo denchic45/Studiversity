@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
+import com.denchic45.studiversity.ui.appbar2.hideAppBar
 import com.denchic45.studiversity.ui.theme.spacing
 
 @Composable
@@ -44,10 +45,8 @@ fun <T> SearchScreen(
     placeholder: String = "Поиск",
     itemContent: @Composable (T) -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val appBarState = LocalAppBarState.current
-
-    Surface() {
+    hideAppBar()
+    Surface {
         SearchContent(
             component = component,
             keyItem = keyItem,

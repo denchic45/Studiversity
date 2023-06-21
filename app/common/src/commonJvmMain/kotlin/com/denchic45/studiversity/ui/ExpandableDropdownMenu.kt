@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.ui
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -14,13 +15,15 @@ fun ExpandableDropdownMenu(
     onExpandedChange: (Boolean) -> Unit,
     itemsContent: @Composable ColumnScope.() -> Unit
 ) {
-    IconButton(onClick = { onExpandedChange(true) }) {
-        Icon(Icons.Filled.MoreVert, "menu expand button")
-    }
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { onExpandedChange(false) },
-    ) {
-        itemsContent()
-    }
+   Column {
+       IconButton(onClick = { onExpandedChange(true) }) {
+           Icon(Icons.Filled.MoreVert, "menu expand button")
+       }
+       DropdownMenu(
+           expanded = expanded,
+           onDismissRequest = { onExpandedChange(false) },
+       ) {
+           itemsContent()
+       }
+   }
 }

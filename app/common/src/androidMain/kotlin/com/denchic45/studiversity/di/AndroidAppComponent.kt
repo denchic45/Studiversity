@@ -26,14 +26,13 @@ import me.tatarka.inject.annotations.IntoMap
 import me.tatarka.inject.annotations.Provides
 
 
-@AppScope
 @Component
-abstract class AndroidApplicationComponent(
+abstract class AndroidAppComponent(
     @get:Provides protected val application: Application,
     @Component protected val preferencesComponent: PreferencesComponent,
     @Component protected val databaseComponent: DatabaseComponent,
     @Component protected val networkComponent: NetworkComponent,
-) {
+) : CommonApplicationComponent() {
 
     @Provides
     fun context(): Context = application
@@ -46,13 +45,10 @@ abstract class AndroidApplicationComponent(
     @Provides
     fun applicationScope() = CoroutineScope(SupervisorJob())
 
-
-    protected abstract val appPreferences: AppPreferences
-
     @AppScope
     @Provides
     fun fileProvider(context: Context) = FileProvider(context.contentResolver)
-
+    abstract val appPreferences: AppPreferences
     abstract val allWorkers: Map<Class<out ListenableWorker>, (Context, WorkerParameters) -> ListenableWorker>
 
     @IntoMap
@@ -65,12 +61,6 @@ abstract class AndroidApplicationComponent(
         }
     }
 
-    private val rootComponentContext = DefaultComponentContext(LifecycleRegistry())
-
-    abstract val rootComponent: (ComponentContext) -> RootComponent
-
-    abstract val mainComponent: (ComponentContext) -> MainComponent
-
     abstract val authedClient: HttpClient
 
     abstract val workFactory: AppWorkerFactory
@@ -80,6 +70,4 @@ abstract class AndroidApplicationComponent(
     abstract val fabInteractor: FabInteractor
 
     abstract val confirmDialogInteractor: ConfirmDialogInteractor
-
-//    abstract val injectFragmentFactory: InjectFragmentFactory
 }

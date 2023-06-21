@@ -1,22 +1,11 @@
 package com.denchic45.studiversity.di
 
-import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.denchic45.studiversity.data.db.local.DriverFactory
 import com.denchic45.studiversity.data.pref.AppPreferences
 import com.denchic45.studiversity.data.service.AppVersionService
 import com.denchic45.studiversity.data.service.FakeAppVersionService
-import com.denchic45.studiversity.di.AppScope
-import com.denchic45.studiversity.di.DatabaseComponent
-import com.denchic45.studiversity.di.NetworkComponent
-import com.denchic45.studiversity.di.PreferencesComponent
-import com.denchic45.studiversity.di.SettingsFactory
-import com.denchic45.studiversity.di.create
-import com.denchic45.studiversity.ui.MainComponent
-import com.denchic45.studiversity.ui.login.LoginComponent
 import com.denchic45.studiversity.ui.navigation.OverlayConfig
-import com.denchic45.studiversity.ui.root.RootComponent
-import com.denchic45.studiversity.ui.splash.SplashComponent
 import com.denchic45.studiversity.util.SystemDirs
 import io.ktor.client.engine.cio.CIO
 import kotlinx.coroutines.CoroutineScope
@@ -30,13 +19,13 @@ val appComponent = JvmAppComponent::class.create(
     NetworkComponent::class.create(CIO)
 )
 
-@AppScope
+
 @Component
 abstract class JvmAppComponent(
     @Component val preferencesComponent: PreferencesComponent,
     @Component val databaseComponent: DatabaseComponent,
     @Component val networkComponent: NetworkComponent
-) {
+) : CommonApplicationComponent() {
 
 //    lateinit var componentContext: ComponentContext
 
@@ -53,6 +42,8 @@ abstract class JvmAppComponent(
     @Provides
     fun provideApplicationScope() = CoroutineScope(SupervisorJob())
 
+    abstract val appPreferences: AppPreferences
+
     @AppScope
     @Provides
     fun provideOverlayNavigator(): OverlayNavigation<OverlayConfig> {
@@ -64,15 +55,4 @@ abstract class JvmAppComponent(
     fun provideAppVersionService(coroutineScope: CoroutineScope): AppVersionService {
         return FakeAppVersionService(coroutineScope)
     }
-
-    abstract val appPreferences: AppPreferences
-
-    abstract val rootComponent: (ComponentContext) -> RootComponent
-
-//    abstract val splashComponent: SplashComponent
-
-    abstract val mainComponent: (ComponentContext) -> MainComponent
-
-//    abstract val loginComponent: (ComponentContext) -> LoginComponent
 }
-

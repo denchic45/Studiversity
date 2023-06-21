@@ -67,7 +67,7 @@ class RoomsAdminComponent(
             val confirm = confirmDialogInteractor.confirmRequest(
                 ConfirmState(
                     uiTextOf("Удалить аудиторию?"),
-                    uiTextOf("аудитории с данной аудиторией по-прежнему будут доступны. Восстановить аудиторию будет невозможно.")
+                    uiTextOf("Занятия с данной аудиторией по-прежнему будут доступны. Восстановить аудиторию будет невозможно.")
                 )
             )
             if (confirm) {

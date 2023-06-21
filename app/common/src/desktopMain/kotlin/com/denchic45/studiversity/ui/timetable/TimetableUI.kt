@@ -29,6 +29,7 @@ import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
 import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.ui.AppBarMediator
+import com.denchic45.studiversity.ui.CustomAppBar
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.state.CellOrder
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
@@ -41,12 +42,12 @@ import java.time.format.DateTimeFormatter
 
 @Preview
 @Composable
-fun TimetableScreen(appBarMediator: AppBarMediator, component: YourTimetablesComponent) {
+fun TimetableScreen(component: YourTimetablesComponent) {
     val timetable by component.timetableState.collectAsState()
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
     val mondayDate by component.mondayDate.collectAsState()
 
-
+Column {
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
@@ -60,6 +61,7 @@ fun TimetableScreen(appBarMediator: AppBarMediator, component: YourTimetablesCom
             onNextWeekClick = component::onNextWeekClick
         )
     }
+}
 }
 
 //@Composable
@@ -116,7 +118,6 @@ fun TimetableContent(
 ) {
     val verticalScroll: ScrollState = rememberScrollState()
     val horizontalScroll: ScrollState = rememberScrollState()
-
 
     Card(
         shape = RoundedCornerShape(16.dp),

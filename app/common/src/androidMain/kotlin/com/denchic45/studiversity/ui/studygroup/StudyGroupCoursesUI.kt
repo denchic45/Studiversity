@@ -79,8 +79,6 @@ fun StudyGroupCourseListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-
-
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(    item.iconUrl ?:  Icons.Outlined.School)
@@ -90,7 +88,7 @@ fun StudyGroupCourseListItem(
                 contentDescription = "course icon",
                 colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.secondary),
                 modifier = Modifier.size(48.dp),
-                loading = { CircularProgressIndicator(Modifier.padding(MaterialTheme.spacing.normal)) },
+                loading = { CircularProgressIndicator(Modifier.padding(MaterialTheme.spacing.small)) },
             )
 
             Column(Modifier.padding(start = 24.dp)) {

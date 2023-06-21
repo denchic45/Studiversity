@@ -5,14 +5,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.component.TabIndicator
+import com.denchic45.studiversity.ui.theme.LocalBackDispatcher
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.launch
@@ -43,6 +50,8 @@ import java.time.LocalDateTime
 @Composable
 fun CourseWorkScreen(component: CourseWorkComponent) {
     val childrenResource by component.children.collectAsState()
+
+    val backDispatcher = LocalBackDispatcher.current
 
     val yourSubmissionComponent = component.yourSubmissionComponent
     val submissionResource by yourSubmissionComponent.submission.collectAsState(null)
@@ -74,7 +83,8 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
         submissionResource = submissionResource,
         allowEdit = allowEdit,
         onEditClick = component::onEditClick,
-        onDeleteClick = component::onDeleteClick
+        onDeleteClick = component::onDeleteClick,
+        onClose = backDispatcher::back
 //        onAttachmentAdd = {
 //            chooseMultipleFiles("Выбрать файлы") {
 //                yourSubmissionComponent.onFilesSelect(it.map(File::toOkioPath))
@@ -142,23 +152,19 @@ private fun CourseWorkContent(
     submissionResource: Resource<SubmissionUiState>?,
     allowEdit: Boolean,
     onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    onClose: () -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
-    Column(
-        Modifier.fillMaxHeight()
-    ) {
-        var selectedTab by remember { mutableStateOf(0) }
-        CourseWorkBody(
-            childrenResource = childrenResource,
-            allowEdit = allowEdit,
-            selectedTab = selectedTab,
-            onPageSelect = { selectedTab = it },
-            onEditClick = onEditClick,
-            onDeleteClick = onDeleteClick
-        )
-    }
+    var selectedTab by remember { mutableStateOf(0) }
+    CourseWorkBody(
+        childrenResource = childrenResource,
+        allowEdit = allowEdit,
+        selectedTab = selectedTab,
+        onPageSelect = { selectedTab = it },
+        onEditClick = onEditClick,
+        onDeleteClick = onDeleteClick,
+        onClose = onClose
+    )
 
 //    BottomSheetScaffold(
 //        sheetPeekHeight = topHeight.pxToDp(),
@@ -222,7 +228,8 @@ private fun CourseWorkBody(
     selectedTab: Int,
     onPageSelect: (Int) -> Unit,
     onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    onClose: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
@@ -235,27 +242,39 @@ private fun CourseWorkBody(
     }
 
     ResourceContent(resource = childrenResource) { children ->
-        Column {
-            if (children.size != 1) {
-                TabRow(
-                    selectedTabIndex = selectedTab
-                ) {
-                    // Add tabs for all of our pages
-                    children.forEachIndexed { index, child ->
-                        Tab(
-                            text = { Text(child.title) },
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                        )
+        Column(Modifier.fillMaxSize()) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onClose) {
+                    Icon(Icons.Default.ArrowBack, "pop")
+                }
+                if (children.size != 1) {
+                    TabRow(
+                        selectedTabIndex = selectedTab,
+                        indicator = { tabPositions ->
+                            TabIndicator(
+                                Modifier.tabIndicatorOffset(
+                                    tabPositions[selectedTab]
+                                )
+                            )
+                        },
+                        divider = {}
+                    ) {
+                        // Add tabs for all of our pages
+                        children.forEachIndexed { index, child ->
+                            Tab(
+                                text = { Text(child.title) },
+                                selected = pagerState.currentPage == index,
+                                onClick = {
+                                    coroutineScope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
+                                },
+                            )
+                        }
                     }
                 }
-
+                Divider()
             }
-
 
             Box(modifier = Modifier.fillMaxSize()) {
                 when (val child = children[selectedTab]) {
@@ -271,7 +290,6 @@ private fun CourseWorkBody(
                     }
                 }
             }
-
         }
     }
 }

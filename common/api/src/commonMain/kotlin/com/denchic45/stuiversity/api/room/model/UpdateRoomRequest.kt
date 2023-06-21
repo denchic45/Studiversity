@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UpdateRoomRequest(
     @Serializable(OptionalPropertySerializer::class)
-    val name: OptionalProperty<String>,
+    val name: OptionalProperty<String> = OptionalProperty.NotPresent,
     @Serializable(OptionalPropertySerializer::class)
-    val shortname: OptionalProperty<String>
+    val shortname: OptionalProperty<String> = OptionalProperty.NotPresent
 )

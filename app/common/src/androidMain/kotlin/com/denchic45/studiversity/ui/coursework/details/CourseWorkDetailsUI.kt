@@ -142,7 +142,6 @@ fun CourseWorkHeader(name: String, commentsCount: Int = 0) {
     Column {
         Text(text = name, style = MaterialTheme.typography.titleLarge)
         Row(
-            Modifier.height(56.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

@@ -21,48 +21,49 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.ui.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.appbar2.hideAppBar
 import com.denchic45.studiversity.ui.search.SearchScreen
-import com.denchic45.studiversity.ui.search.SpecialtyListItem
-import com.denchic45.studiversity.ui.specialtyeditor.SpecialtyEditorDialog
-import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.studiversity.ui.roomeditor.RoomEditorDialog
+import com.denchic45.studiversity.ui.search.RoomListItem
+import com.denchic45.stuiversity.api.room.model.RoomResponse
 
 @Composable
-fun SpecialtiesAdminScreen(component: SpecialtiesAdminComponent) {
+fun RoomsAdminScreen(component: RoomsAdminComponent) {
+
     val childOverlay by component.childOverlay.subscribeAsState()
 
-    SpecialtiesAdminMainScreen(component)
+    RoomsAdminMainScreen(component)
 
     childOverlay.overlay?.let {
-        SpecialtiesAdminDetailScreen(it.instance)
+        RoomsAdminDetailScreen(it.instance)
     }
 }
 
 @Composable
-private fun SpecialtiesAdminDetailScreen(child: SpecialtiesAdminComponent.Child) {
+private fun RoomsAdminDetailScreen(child: RoomsAdminComponent.Child) {
     when (child) {
-        is SpecialtiesAdminComponent.Child.SpecialtyEditor -> {
-            SpecialtyEditorDialog(child.component)
+        is RoomsAdminComponent.Child.RoomEditor -> {
+            RoomEditorDialog(child.component)
         }
     }
 }
 
 @Composable
-private fun SpecialtiesAdminMainScreen(component: SpecialtiesAdminComponent) {
+private fun RoomsAdminMainScreen(component: RoomsAdminComponent) {
     hideAppBar()
     Scaffold(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = component::onAddClick,
-                text = { Text(text = "Создать специальность") },
-                icon = { Icon(Icons.Default.Add, "add specialty") }
+                text = { Text(text = "Создать аудиторию") },
+                icon = { Icon(Icons.Default.Add, "add room") }
             )
         }) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             SearchScreen(
                 component = component.chooserComponent,
-                keyItem = SpecialtyResponse::id,
-                placeholder = "Поиск специальностей"
+                keyItem = RoomResponse::id,
+                placeholder = "Поиск аудиторий"
             ) { item ->
-                SpecialtyListItem(item, trailingContent = {
+                RoomListItem(item, trailingContent = {
                     var expanded by remember { mutableStateOf(false) }
                     ExpandableDropdownMenu(
                         expanded = expanded,
@@ -72,7 +73,7 @@ private fun SpecialtiesAdminMainScreen(component: SpecialtiesAdminComponent) {
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Outlined.Edit,
-                                    contentDescription = "edit specialty"
+                                    contentDescription = "edit Room"
                                 )
                             },
                             onClick = {
@@ -85,7 +86,7 @@ private fun SpecialtiesAdminMainScreen(component: SpecialtiesAdminComponent) {
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Outlined.Delete,
-                                    contentDescription = "delete specialty"
+                                    contentDescription = "delete Room"
                                 )
                             },
                             onClick = {

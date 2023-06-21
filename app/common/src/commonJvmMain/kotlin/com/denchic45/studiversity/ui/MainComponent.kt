@@ -11,6 +11,7 @@ import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.navigate
 import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -22,6 +23,8 @@ import com.denchic45.studiversity.domain.usecase.FindAssignedUserRolesInScopeUse
 import com.denchic45.studiversity.domain.usecase.FindYourCoursesUseCase
 import com.denchic45.studiversity.ui.admindashboard.AdminDashboardRootComponent
 import com.denchic45.studiversity.ui.course.CourseComponent
+import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
+import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.studiversity.ui.navigation.ChildrenContainerChild
 import com.denchic45.studiversity.ui.navigation.OverlayChild
 import com.denchic45.studiversity.ui.navigation.OverlayConfig
@@ -73,16 +76,29 @@ class MainComponent(
         ComponentContext,
     ) -> CourseComponent,
     adminDashboardRootComponent: (ComponentContext) -> AdminDashboardRootComponent,
+    courseWorkComponent: (
+        onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
+        onFinish: () -> Unit,
+        courseId: UUID,
+        elementId: UUID,
+        ComponentContext,
+    ) -> CourseWorkComponent,
+    courseWorkEditorComponent: (
+        onFinish: () -> Unit,
+        courseId: UUID,
+        workId: UUID?,
+        topicId: UUID?,
+        ComponentContext,
+    ) -> CourseWorkEditorComponent,
     yourWorksComponent: (ComponentContext) -> YourWorksComponent,
     settingsComponent: (ComponentContext) -> SettingsComponent,
     interactor: MainInteractor,
+    private val navigation: AppNavigation,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
-
-    private val navigation = StackNavigation<Config>()
 
     val stack: Value<ChildStack<Config, Child>> = childStack(
         source = navigation,
@@ -98,7 +114,7 @@ class MainComponent(
                     yourStudyGroupsRootComponent(context)
                 )
 
-                Config.Works -> Child.Works(yourWorksComponent(context))
+                Config.YourWorks -> Child.YourWorks(yourWorksComponent(context))
                 is Config.StudyGroup -> Child.StudyGroup(
                     studyGroupComponent(
                         { navigation.bringToFront(Config.Course(it)) },
@@ -124,6 +140,21 @@ class MainComponent(
                         config.courseId,
                         context
                     )
+                )
+
+                is Config.CourseWork -> Child.CourseWork(
+                    courseWorkComponent({ courseId, workId ->
+                        navigation.push(
+                            Config.CourseWorkEditor(
+                                courseId,
+                                workId
+                            )
+                        )
+                    }, {}, config.courseId, config.workId, context)
+                )
+
+                is Config.CourseWorkEditor -> Child.CourseWorkEditor(
+                    courseWorkEditorComponent({}, config.courseId, config.workId, null, context)
                 )
 
                 Config.AdminDashboard -> Child.AdminDashboard(
@@ -224,7 +255,7 @@ class MainComponent(
 
     fun onWorksClick() {
         onOverlayDismiss()
-        navigation.bringToFront(Config.Works)
+        navigation.bringToFront(Config.YourWorks)
     }
 
     fun onCourseClick(courseId: UUID) {
@@ -253,13 +284,17 @@ class MainComponent(
 
         object YourStudyGroups : Config
 
-        object Works : Config
+        object YourWorks : Config
 
         data class StudyGroup(val studyGroupId: UUID) : Config
 
         data class Course(val courseId: UUID) : Config
 
         data class YourCourse(val courseId: UUID) : Config
+
+        data class CourseWork(val courseId: UUID, val workId: UUID) : Config
+
+        data class CourseWorkEditor(val courseId: UUID, val workId: UUID?) : Config
 
         object AdminDashboard : Config
     }
@@ -280,10 +315,9 @@ class MainComponent(
             override val component: YourStudyGroupsRootComponent,
         ) : Child, ChildrenContainerChild, PrimaryChild
 
-        class Works(
+        class YourWorks(
             val component: YourWorksComponent,
         ) : Child, ExtraChild
-
 
         class StudyGroup(
             override val component: StudyGroupComponent,
@@ -297,8 +331,18 @@ class MainComponent(
             override val component: CourseComponent,
         ) : Child, ChildrenContainerChild, ExtraChild
 
+        class CourseWork(
+            val component: CourseWorkComponent
+        ) : Child, ExtraChild
+
+        class CourseWorkEditor(
+            val component: CourseWorkEditorComponent
+        ) : Child, ExtraChild
+
         class AdminDashboard(
             val component: AdminDashboardRootComponent,
         ) : Child, ExtraChild
     }
 }
+
+typealias AppNavigation = StackNavigation<MainComponent.Config>

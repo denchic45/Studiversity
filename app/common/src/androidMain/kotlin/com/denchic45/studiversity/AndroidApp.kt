@@ -3,14 +3,12 @@ package com.denchic45.studiversity
 import android.app.Application
 import androidx.work.Configuration
 import com.denchic45.studiversity.data.db.local.DriverFactory
-import com.denchic45.studiversity.di.AndroidApplicationComponent
+import com.denchic45.studiversity.di.AndroidAppComponent
 import com.denchic45.studiversity.di.DatabaseComponent
 import com.denchic45.studiversity.di.NetworkComponent
 import com.denchic45.studiversity.di.PreferencesComponent
 import com.denchic45.studiversity.di.SettingsFactory
 import com.denchic45.studiversity.di.create
-import dagger.android.AndroidInjector
-import dagger.android.DaggerApplication
 import io.ktor.client.engine.android.Android
 import kotlin.properties.Delegates
 
@@ -24,8 +22,8 @@ class AndroidApp : Application(), Configuration.Provider {
 //            .preferencesModule(PreferencesModule(SettingsFactory(this)))
 //            .create(this)
 
-    val appComponent: AndroidApplicationComponent by lazy {
-        AndroidApplicationComponent::class.create(
+    val appComponent: AndroidAppComponent by lazy {
+        AndroidAppComponent::class.create(
             this,
             PreferencesComponent::class.create(SettingsFactory(applicationContext)),
             DatabaseComponent::class.create(DriverFactory(applicationContext)),

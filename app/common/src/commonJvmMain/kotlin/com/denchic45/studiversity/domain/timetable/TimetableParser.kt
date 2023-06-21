@@ -64,7 +64,7 @@ class TimetableParser(
     private val cachedCoursesByStudyGroup = mutableMapOf<Pair<String, UUID>, CourseResponse>()
     private val cachedSubjects = mutableListOf<SubjectResponse>()
     private val cachedEventsOfMissedSubjects = mutableSetOf<String>()
-    private val cachedUsers = mutableMapOf<String, UserResponse>()
+    private val cachedUsers = mutableMapOf<String, UserResponse?>()
     private val cachedRooms = mutableListOf<RoomResponse>()
 
 //    val users = mutableMapOf<String, UserResponse>()
@@ -244,13 +244,13 @@ class TimetableParser(
     private suspend fun findTeacherByContent(separatedContent: List<String>): List<PeriodMember> {
         return if (separatedContent.size == 1) {
             emptyList()
-        } else separatedContent.subList(1, separatedContent.size).map { line ->
-            findUserBySurname(line.split(" ")[0]).toPeriodMember()
+        } else separatedContent.subList(1, separatedContent.size).mapNotNull { line ->
+            findUserBySurname(line.split(" ")[0])?.toPeriodMember()
         }
     }
 
-    private suspend fun findUserBySurname(surname: String): UserResponse {
-        return cachedUsers.getOrPut(surname) { userApi.getList(surname).unwrap().first() }
+    private suspend fun findUserBySurname(surname: String): UserResponse? {
+        return cachedUsers.getOrPut(surname) { userApi.getList(surname).unwrap().firstOrNull() }
     }
 
     private suspend fun findCourseBySubjectAndStudyGroupId(

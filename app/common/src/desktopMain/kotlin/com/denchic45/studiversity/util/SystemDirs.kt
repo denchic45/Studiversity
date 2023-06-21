@@ -10,7 +10,7 @@ actual class SystemDirs actual constructor() {
         get() = appPath.toPath()
 
     actual val fileDir: Path
-        get() = appDir / "files"
+        get() = (appDir / "files").also { it.toFile().mkdirs() }
 
     actual val prefsDir: Path
         get() = appDir / "preferences"

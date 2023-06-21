@@ -2,10 +2,7 @@ package com.denchic45.studiversity.feature.room
 
 import com.denchic45.studiversity.config
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
-import com.denchic45.studiversity.feature.room.usecase.AddRoomUseCase
-import com.denchic45.studiversity.feature.room.usecase.FindRoomByIdUseCase
-import com.denchic45.studiversity.feature.room.usecase.RemoveRoomUseCase
-import com.denchic45.studiversity.feature.room.usecase.UpdateRoomUseCase
+import com.denchic45.studiversity.feature.room.usecase.*
 import com.denchic45.studiversity.ktor.currentUserId
 import com.denchic45.studiversity.ktor.getUuidOrFail
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -15,6 +12,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
 
 fun Application.configureRooms() {
@@ -23,11 +21,18 @@ fun Application.configureRooms() {
             route("/rooms") {
                 val requireCapability: RequireCapabilityUseCase by inject()
                 val addRoom: AddRoomUseCase by inject()
+                val searchRooms: SearchRoomsUseCase by inject()
 
                 post {
                     requireCapability(call.currentUserId(), Capability.WriteRoom, config.organization.id)
                     call.respond(HttpStatusCode.Created, addRoom(call.receive()))
                 }
+
+                get {
+                    val q: String = call.request.queryParameters.getOrFail("q")
+                    call.respond(HttpStatusCode.OK, searchRooms(q))
+                }
+
                 route("/{roomId}") {
                     val findRoomById: FindRoomByIdUseCase by inject()
                     val updateRoom: UpdateRoomUseCase by inject()

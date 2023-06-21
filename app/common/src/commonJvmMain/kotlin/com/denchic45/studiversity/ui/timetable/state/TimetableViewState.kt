@@ -8,6 +8,7 @@ import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.util.capitalized
 import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.stuiversity.api.room.model.displayName
 import com.denchic45.stuiversity.api.timetable.model.EventDetails
 import com.denchic45.stuiversity.api.timetable.model.LessonDetails
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
@@ -95,7 +96,7 @@ fun List<PeriodResponse>.toPeriodItems() = buildList {
 private fun PeriodResponse.toItem() = PeriodItem(
     id = id,
     studyGroup = StudyGroupNameItem(studyGroup.id, studyGroup.name),
-    room = room?.name,
+    room = room?.displayName,
     members = members.map { it.toUserItem() },
     details = when (val details = details) {
         is EventDetails -> with(details) {

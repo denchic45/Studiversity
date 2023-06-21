@@ -3,7 +3,6 @@ package com.denchic45.studiversity.ui.main
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -73,9 +72,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.fade
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.denchic45.studiversity.common.R
@@ -88,6 +84,8 @@ import com.denchic45.studiversity.ui.appbar2.expandAppBar
 import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.course.CourseScreen
+import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
+import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.studiversity.ui.get
 import com.denchic45.studiversity.ui.getPainter
 import com.denchic45.studiversity.ui.navigation.OverlayChild
@@ -389,7 +387,7 @@ private fun DrawerContent(
                             contentDescription = "works"
                         )
                     },
-                    selected = stack.active.instance is MainComponent.Child.Works,
+                    selected = stack.active.instance is MainComponent.Child.YourWorks,
                     onClick = {
                         component.onWorksClick()
                         closeDrawer()
@@ -585,7 +583,6 @@ private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState)
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ScreenContainer(
     paddingValues: PaddingValues,
@@ -603,7 +600,9 @@ private fun ScreenContainer(
                 is MainComponent.Child.YourCourse -> CourseScreen(component = child.component)
                 is MainComponent.Child.Course -> CourseScreen(component = child.component)
                 is MainComponent.Child.StudyGroup -> StudyGroupScreen(component = child.component)
-                is MainComponent.Child.Works -> YourWorksScreen(component = child.component)
+                is MainComponent.Child.YourWorks -> YourWorksScreen(component = child.component)
+                is MainComponent.Child.CourseWork -> CourseWorkScreen(child.component)
+                is MainComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
             }
         }
 //    }

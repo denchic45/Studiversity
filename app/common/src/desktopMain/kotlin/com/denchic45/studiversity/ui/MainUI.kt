@@ -18,22 +18,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.onLoading
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.course.CourseScreen
+import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
+import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.studiversity.ui.navigation.OverlayChild
 import com.denchic45.studiversity.ui.root.RootScreen
 import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
 import com.denchic45.studiversity.ui.theme.toDrawablePath
+import com.denchic45.studiversity.ui.yourworks.YourWorksScreen
 import com.seiko.imageloader.rememberAsyncImagePainter
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(component: MainComponent) {
     Surface(tonalElevation = 1.dp) {
@@ -91,7 +91,7 @@ fun MainScreen(component: MainComponent) {
                         },
                         selected = activeChild is MainComponent.Child.AdminDashboard,
                         onClick = {
-                            component.onAdminDashboardClick()
+                            component.onWorksClick()
                         }
                     )
                 }
@@ -134,64 +134,60 @@ fun MainScreen(component: MainComponent) {
                     onClick = component::onSettingsClick
                 )
             }
+            when (val child = childStack.active.instance) {
+                is MainComponent.Child.YourTimetables -> RootScreen(child.component)
+                is MainComponent.Child.YourStudyGroups -> RootScreen(child.component)
+                is MainComponent.Child.YourWorks -> YourWorksScreen(child.component)
+                is MainComponent.Child.StudyGroup -> StudyGroupScreen(child.component)
+                is MainComponent.Child.Course -> CourseScreen(child.component)
+                is MainComponent.Child.AdminDashboard -> RootScreen(child.component)
+                is MainComponent.Child.YourCourse -> CourseScreen(child.component)
+                is MainComponent.Child.CourseWork -> CourseWorkScreen(child.component)
+                is MainComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
+            }
 
-            Column {
-                val appBarMediator = LocalAppBarMediator.current
-                TopAppBar(
-                    title = {
-                        Row {
-                            Text(
-                                text = appBarMediator.title,
-                                fontSize = TextUnit(32F, TextUnitType.Sp),
-                                style = MaterialTheme.typography.headlineLarge
-                            )
-                            appBarMediator.content?.let {
-                                it(this)
-                            }
-                        }
-                    },
-                    modifier = Modifier.height(96.dp)
-                        .padding(top = 36.dp, bottom = 8.dp, end = 24.dp),
-                    actions = {
-                        Spacer(Modifier.width(4.dp))
-                    })
-                Surface(
-                    tonalElevation = (-1).dp,
-                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
-                ) {
-                    when (val child = childStack.active.instance) {
-                        is MainComponent.Child.YourTimetables -> RootScreen(child.component)
-                        is MainComponent.Child.YourStudyGroups -> {
-                            RootScreen(child.component)
-                        }
-
-                        is MainComponent.Child.Works -> TODO()
-                        is MainComponent.Child.StudyGroup -> StudyGroupScreen(child.component)
-                        is MainComponent.Child.Course -> CourseScreen(child.component)
-                        is MainComponent.Child.AdminDashboard -> TODO()
-                        is MainComponent.Child.YourCourse -> CourseScreen(child.component)
+            val overlay by component.childOverlay.subscribeAsState()
+            overlay.overlay?.let {
+                when (val instance = it.instance) {
+                    is OverlayChild.Confirm -> with(instance.config) {
+                        ConfirmDialog(
+                            title = title,
+                            text = text,
+                            onConfirm = {},
+                            onDismiss = component::onOverlayDismiss
+                        )
                     }
-                }
 
-                val overlay by component.childOverlay.subscribeAsState()
-                overlay.overlay?.let {
-                    when (val instance = it.instance) {
-                        is OverlayChild.Confirm -> with(instance.config) {
-                            ConfirmDialog(
-                                title = title,
-                                text = text,
-                                onConfirm = {},
-                                onDismiss = component::onOverlayDismiss
-                            )
-                        }
-
-                        is OverlayChild.YourProfile -> TODO("Open profile dialog")
-                        is OverlayChild.Settings -> TODO()
-                        is OverlayChild.Schedule -> TODO()
-                    }
+                    is OverlayChild.YourProfile -> TODO("Open profile dialog")
+                    is OverlayChild.Settings -> TODO()
+                    is OverlayChild.Schedule -> TODO()
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomAppBar(
+    title: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    navigationIcon: @Composable () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    TopAppBar(
+        title = title,
+        modifier = modifier.height(96.dp).padding(top = 36.dp, bottom = 8.dp, end = 24.dp),
+        actions = actions
+    )
+}
+
+@Composable
+fun AppBarTitle(text: String) {
+    Row {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.headlineLarge
+        )
+    }
+}

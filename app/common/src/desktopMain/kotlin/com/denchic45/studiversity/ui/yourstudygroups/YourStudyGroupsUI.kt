@@ -1,6 +1,7 @@
 package com.denchic45.studiversity.ui.yourstudygroups
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -19,7 +20,9 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.ui.LocalAppBarMediator
+import com.denchic45.studiversity.ui.AppBarTitle
+import com.denchic45.studiversity.ui.CustomAppBar
+import com.denchic45.studiversity.ui.Scaffold
 import com.denchic45.studiversity.ui.components.ExposedDropdownMenuDefaults
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupContent
@@ -32,31 +35,41 @@ import java.util.UUID
 fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
     val selectedStudyGroup by component.selectedStudyGroup.collectAsState()
     val studyGroups by component.studyGroups.collectAsState()
+    val childStudyGroup by component.childStudyGroup.subscribeAsState()
 
-    val appBarMediator = LocalAppBarMediator.current
-
-    appBarMediator.title = when (val selected = selectedStudyGroup) {
-        is Resource.Success -> "Группа ${selected.value.name}"
-        else -> "Группа"
-    }
-    appBarMediator.content = {
-        studyGroups.onSuccess { groups ->
-            Spacer(Modifier.width(MaterialTheme.spacing.normal))
-            StudyGroupSpinner(groups, selectedStudyGroup, component::onGroupSelect)
-//            Spacer(Modifier.weight(1f))
-//            IconButton(onClick = {}) {
-//                Icon(
-//                    painter = painterResource("ic_settings".toDrawablePath()),
-//                    tint = Color.DarkGray,
-//                    contentDescription = ""
-//                )
-//            }
+    Scaffold(
+        topBar = {
+            CustomAppBar(
+                title = {
+                    Row {
+                        AppBarTitle(
+                            text = when (val selected = selectedStudyGroup) {
+                                is Resource.Success -> "Группа ${selected.value.name}"
+                                else -> "Группа"
+                            }
+                        )
+                        Spacer(Modifier.width(MaterialTheme.spacing.normal))
+                        StudyGroupsSpinner(studyGroups, selectedStudyGroup, component)
+                    }
+                },
+            )
+        }
+    ) {
+        childStudyGroup.overlay?.instance?.let {
+            YourStudyGroupScreen(it)
         }
     }
+}
 
-    val childStudyGroup by component.childStudyGroup.subscribeAsState()
-    childStudyGroup.overlay?.instance?.let {
-        YourStudyGroupScreen(it)
+@Composable
+private fun StudyGroupsSpinner(
+    studyGroups: Resource<List<StudyGroupResponse>>,
+    selectedStudyGroup: Resource<StudyGroupResponse>,
+    component: YourStudyGroupsComponent
+) {
+    studyGroups.onSuccess { groups ->
+        Spacer(Modifier.width(MaterialTheme.spacing.normal))
+        StudyGroupSpinner(groups, selectedStudyGroup, component::onGroupSelect)
     }
 }
 

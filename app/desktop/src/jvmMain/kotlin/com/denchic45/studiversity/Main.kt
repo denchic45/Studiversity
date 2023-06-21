@@ -49,7 +49,8 @@ private fun mainApp() {
                 DesktopApp(
                     title = "Studiversity - Авторизация",
                     onCloseRequest = ::exitApplication,
-                    state = state
+                    state = state,
+                    backDispatcher = backDispatcher
                 ) {
                     AuthScreen(child.component)
                 }
@@ -69,7 +70,8 @@ private fun mainApp() {
                 DesktopApp(
                     title = "Studiversity",
                     onCloseRequest = ::exitApplication,
-                    state = state
+                    state = state,
+                    backDispatcher = backDispatcher
                 ) {
                     CompositionLocalProvider(LocalAppBarMediator provides AppBarMediator()) {
                         MainScreen(appComponent.mainComponent(componentContext))
@@ -79,7 +81,8 @@ private fun mainApp() {
 
             RootComponent.Child.Splash -> DesktopApp(
                 title = "Studiversity",
-                onCloseRequest = ::exitApplication
+                onCloseRequest = ::exitApplication,
+                backDispatcher = backDispatcher
             ) {
                 CompositionLocalProvider(LocalAppBarMediator provides AppBarMediator()) {
                     Box(Modifier.size(200.dp))

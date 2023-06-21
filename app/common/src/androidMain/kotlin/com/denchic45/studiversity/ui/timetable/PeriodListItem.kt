@@ -134,9 +134,9 @@ fun PeriodListItem(
                             Text(
                                 text = it,
                                 textAlign = TextAlign.End,
-                                modifier = Modifier.widthIn(max = 48.dp),
+                                modifier = Modifier.widthIn(max = 48.dp).padding(horizontal = MaterialTheme.spacing.small),
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
                     }

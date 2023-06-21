@@ -89,14 +89,13 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
             title = "Аудитории",
             painter = painterResource(id = R.drawable.ic_room),
             contentDescription = "rooms",
-            onClick = component::onSpecialtiesClick
+            onClick = component::onRoomsClick
         )
     }
     Children(component.childStack) {
         when (val child = it.instance) {
             AdminDashboardComponent.Child.None -> {
                 updateAppBarState( AppBarContent(title = uiTextOf("Панель управления")))
-
             }
 
             is AdminDashboardComponent.Child.TimetableFinder -> TimetableFinderScreen(child.component)
@@ -106,7 +105,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
             is AdminDashboardComponent.Child.StudyGroups -> StudyGroupsAdminScreen(child.component)
             is AdminDashboardComponent.Child.Subjects -> SubjectsAdminScreen(child.component)
             is AdminDashboardComponent.Child.Specialties -> SpecialtiesAdminScreen(child.component)
-
+            is AdminDashboardComponent.Child.Rooms -> RoomsAdminScreen(child.component)
         }
     }
 }

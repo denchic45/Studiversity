@@ -48,6 +48,7 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.data.domain.Forbidden
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
 import com.denchic45.studiversity.ui.appbar2.hideAppBar
@@ -60,7 +61,6 @@ import com.denchic45.studiversity.ui.coursetopics.CourseTopicsScreen
 import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.studiversity.ui.profile.ProfileScreen
-import com.denchic45.studiversity.ui.search.IconTitleBox
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import kotlinx.coroutines.launch
 

@@ -11,3 +11,6 @@ data class RoomResponse(
     val name: String,
     val shortname: String
 )
+
+val RoomResponse.displayName
+    get() = shortname.takeIf(String::isNotBlank) ?: name

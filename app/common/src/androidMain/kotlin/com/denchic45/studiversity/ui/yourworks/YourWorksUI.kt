@@ -25,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,13 +39,13 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
-import com.denchic45.studiversity.ui.search.IconTitleBox
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.util.toString
@@ -57,7 +56,7 @@ import java.util.UUID
 @Composable
 fun YourWorksScreen(component: YourWorksComponent) {
     val children = component.tabChildren
-    val childOverlay by component.childOverlay.subscribeAsState()
+//    val childOverlay by component.childOverlay.subscribeAsState()
     val coroutineScope = rememberCoroutineScope()
 
     Surface {
@@ -93,17 +92,17 @@ fun YourWorksScreen(component: YourWorksComponent) {
             }
         }
 
-        childOverlay.overlay?.let {
-            when (val child = it.instance) {
-                is YourWorksComponent.OverlayChild.CourseWork -> {
-                    CourseWorkScreen(component = child.component)
-                }
-
-                is YourWorksComponent.OverlayChild.CourseWorkEditor -> {
-                    CourseWorkEditorScreen(component = child.component)
-                }
-            }
-        } ?:    updateAppBarState(AppBarContent(uiTextOf("Мои задания")))
+//        childOverlay.overlay?.let {
+//            when (val child = it.instance) {
+//                is YourWorksComponent.OverlayChild.CourseWork -> {
+//                    CourseWorkScreen(component = child.component)
+//                }
+//
+//                is YourWorksComponent.OverlayChild.CourseWorkEditor -> {
+//                    CourseWorkEditorScreen(component = child.component)
+//                }
+//            }
+//        } ?: updateAppBarState(AppBarContent(uiTextOf("Мои задания")))
     }
 }
 

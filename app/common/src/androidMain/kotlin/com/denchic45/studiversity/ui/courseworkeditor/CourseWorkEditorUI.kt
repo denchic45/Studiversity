@@ -85,9 +85,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 
 @Composable
-fun CourseWorkEditorScreen(
-    component: CourseWorkEditorComponent,
-) {
+fun CourseWorkEditorScreen(component: CourseWorkEditorComponent) {
 
     val context = LocalContext.current
     val attachmentViewer by lazy {

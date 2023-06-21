@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,6 +22,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -44,7 +46,6 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.ifSuccess
 import com.denchic45.studiversity.domain.resourceOf
-import com.denchic45.studiversity.ui.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.hideAppBar
 import com.denchic45.studiversity.ui.search.CourseChooserScreen
@@ -167,6 +168,7 @@ fun PeriodEditorScreen(component: PeriodEditorComponent) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PeriodEditorContent(
     state: EditingPeriod,
@@ -198,19 +200,59 @@ fun PeriodEditorContent(
                     }
                 }
             )
-            var roomText by remember { mutableStateOf("") }
+            var roomText by remember { mutableStateOf(state.room?.name ?: "") }
             var roomsExpanded by remember { mutableStateOf(false) }
+            val expanded = roomsExpanded && foundRooms.ifSuccess { it.isNotEmpty() } ?: false
             ListItem(
                 headlineContent = {
-                    TransparentTextField(
-                        value = state.room?.name ?: roomText,
-                        onValueChange = {
-                            roomText = it
-                            roomsExpanded = true
-                            onRoomType(it)
-                        },
-                        placeholder = "Аудитория"
-                    )
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { roomsExpanded = it },
+                    ) {
+                        TransparentTextField(
+                            value = roomText,
+                            onValueChange = {
+                                roomText = it
+                                roomsExpanded = true
+                                onRoomType(it)
+                            },
+                            placeholder = "Аудитория",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(),
+                        )
+//                        OutlinedTextField(
+//                            value = state.topicQueryText.takeIf(String::isNotEmpty)
+//                                ?: state.selectedTopic?.title?.asString() ?: "",
+//                            onValueChange = { onTopicNameType(it) },
+//
+//                            label = { Text("Раздел") },
+//                            trailingIcon = {
+//                                ExposedDropdownMenuDefaults.TrailingIcon(
+//                                    expanded = showList
+//                                )
+//                            },
+//                            singleLine = true,
+//                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+//                        )
+
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { roomsExpanded = false }) {
+                            ResourceContent(resource = foundRooms, onLoading = {}) { rooms ->
+                                rooms.forEach {
+                                    DropdownMenuItem(
+                                        text = { Text(it.name) },
+                                        onClick = {
+                                            roomText = it.name
+                                            roomsExpanded = false
+                                            onRoomSelect(it)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
                 },
                 leadingContent = {
                     Icon(
@@ -219,28 +261,18 @@ fun PeriodEditorContent(
                     )
                 },
                 trailingContent = {
-                    IconButton(onClick = onRoomRemove) {
-                        Icon(Icons.Default.Close, "remove room")
+                    Box(modifier = Modifier.size(40.dp)) {
+                        state.room?.let {
+                            IconButton(onClick = {
+                                onRoomRemove()
+                                roomText = ""
+                            }) {
+                                Icon(Icons.Default.Close, "remove room")
+                            }
+                        }
                     }
                 }
             )
-
-            ExpandableDropdownMenu(
-                expanded = roomsExpanded || foundRooms.ifSuccess { it.isNotEmpty() } ?: false,
-                onExpandedChange = { roomsExpanded = it }
-            ) {
-                ResourceContent(resource = foundRooms, onLoading = {}) { rooms ->
-                    rooms.forEach {
-                        DropdownMenuItem(
-                            text = { Text(it.name) },
-                            onClick = {
-                                roomText = it.name
-                                onRoomSelect(it)
-                            }
-                        )
-                    }
-                }
-            }
         }
     }
 }
@@ -248,16 +280,19 @@ fun PeriodEditorContent(
 @Composable
 fun TransparentTextField(
     value: String,
+    modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
+    readOnly: Boolean = false,
     singleLine: Boolean = true,
     placeholder: String? = null,
 ) {
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
+        readOnly = readOnly,
         singleLine = singleLine,
         decorationBox = { innerTextField ->
-            Box(modifier = Modifier) {
+            Box(modifier = Modifier.fillMaxWidth()) {
                 if (value.isEmpty() && placeholder != null) {
                     Text(
                         text = placeholder,
@@ -266,7 +301,8 @@ fun TransparentTextField(
                 }
                 innerTextField()
             }
-        }
+        },
+        modifier = modifier
     )
 }
 

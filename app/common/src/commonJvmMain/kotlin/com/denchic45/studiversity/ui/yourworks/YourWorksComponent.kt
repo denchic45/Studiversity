@@ -2,12 +2,13 @@ package com.denchic45.studiversity.ui.yourworks
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.ui.AppNavigation
+import com.denchic45.studiversity.ui.MainComponent
 import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
 import me.tatarka.inject.annotations.Assisted
@@ -33,44 +34,45 @@ class YourWorksComponent(
         topicId: UUID?,
         ComponentContext,
     ) -> CourseWorkEditorComponent,
+    private val appNavigation: AppNavigation,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
-    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
-
-    val childOverlay = childOverlay(
-        source = overlayNavigation,
-        handleBackButton = true,
-        childFactory = { config, context ->
-            when (config) {
-                is OverlayConfig.CourseWork -> OverlayChild.CourseWork(
-                    createCourseWorkComponent(
-                        config.courseId,
-                        config.workId,
-                        context
-                    )
-                )
-
-                is OverlayConfig.CourseWorkEditor -> OverlayChild.CourseWorkEditor(
-                    courseWorkEditorComponent(
-                        { overlayNavigation.dismiss() },
-                        config.courseId,
-                        config.workId,
-                        null,
-                        context
-                    )
-                )
-            }
-        }
-    )
+//    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
+//
+//    val childOverlay = childOverlay(
+//        source = overlayNavigation,
+//        handleBackButton = true,
+//        childFactory = { config, context ->
+//            when (config) {
+//                is OverlayConfig.CourseWork -> OverlayChild.CourseWork(
+//                    createCourseWorkComponent(
+//                        config.courseId,
+//                        config.workId,
+//                        context
+//                    )
+//                )
+//
+//                is OverlayConfig.CourseWorkEditor -> OverlayChild.CourseWorkEditor(
+//                    courseWorkEditorComponent(
+//                        { overlayNavigation.dismiss() },
+//                        config.courseId,
+//                        config.workId,
+//                        null,
+//                        context
+//                    )
+//                )
+//            }
+//        }
+//    )
 
     private fun createCourseWorkComponent(courseId: UUID, workId: UUID, context: ComponentContext) =
         _courseWorkComponent(
             { courseId, workId ->
-                overlayNavigation.activate(OverlayConfig.CourseWorkEditor(courseId, workId))
+                appNavigation.push(MainComponent.Config.CourseWorkEditor(courseId, workId))
             },
-            overlayNavigation::dismiss,
+            appNavigation::pop,
             courseId,
             workId,
             context
@@ -98,12 +100,7 @@ class YourWorksComponent(
     )
 
     private fun onWorkOpen(courseId: UUID, workId: UUID) {
-        overlayNavigation.activate(
-            OverlayConfig.CourseWork(
-                courseId,
-                workId
-            )
-        )
+        appNavigation.bringToFront(MainComponent.Config.CourseWork(courseId, workId))
     }
 
     sealed class TabChild(val title: String) {

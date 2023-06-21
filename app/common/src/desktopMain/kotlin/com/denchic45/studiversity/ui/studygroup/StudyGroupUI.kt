@@ -70,7 +70,8 @@ fun StudyGroupContent(
                             )
                         )
                     },
-                    divider = {}) {
+                    divider = {}
+                ) {
                     children.forEachIndexed { index, item ->
                         val selected = selectedTab == index
                         Tab(
