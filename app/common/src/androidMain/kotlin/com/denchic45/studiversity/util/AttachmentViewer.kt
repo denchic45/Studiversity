@@ -10,7 +10,6 @@ import com.denchic45.studiversity.ui.model.AttachmentItem
 import java.io.File
 
 class AttachmentViewer(private val activity: Activity, private val onNotFoundActivity: () -> Unit) {
-
     private fun openFile(file: File) {
         // Get URI and MIME type of file
         // Open file with user selected app
@@ -30,19 +29,17 @@ class AttachmentViewer(private val activity: Activity, private val onNotFoundAct
         open(intent)
     }
 
-    fun openAttachment(item:AttachmentItem) {
-        when(item) {
+    fun openAttachment(item: AttachmentItem) {
+        when (item) {
             is AttachmentItem.FileAttachmentItem -> openFile(item.path.toFile())
             is AttachmentItem.LinkAttachmentItem -> openLink(Uri.parse(item.url))
         }
     }
 
-    fun openLink(uri: Uri) {
+    private fun openLink(uri: Uri) {
         // Get URI and MIME type of file
         // Open file with user selected app
-        val intent = Intent().apply {
-            action = Intent.ACTION_VIEW
-        }
+        val intent = Intent(Intent.ACTION_VIEW, uri)
         open(intent)
     }
 

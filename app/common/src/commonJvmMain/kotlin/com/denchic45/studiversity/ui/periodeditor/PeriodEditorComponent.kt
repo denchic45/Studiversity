@@ -203,8 +203,16 @@ class PeriodEditorComponent(
     fun onAddMemberClick() {
         overlayNavigation.activate(OverlayConfig.UserChooser {
             overlayNavigation.dismiss()
-            it?.let(::onTeacherSelect)
+            it.let(::onTeacherSelect)
         })
+    }
+
+    fun onRoomSelect(room: RoomResponse) {
+        state.room = room
+    }
+
+    fun onRoomRemove() {
+        state.room = null
     }
 
     fun onRemoveMemberClick(member: PeriodMember) {

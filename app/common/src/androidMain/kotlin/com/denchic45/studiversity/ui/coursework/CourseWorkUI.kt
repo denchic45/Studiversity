@@ -121,7 +121,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
                     ),
                     DropdownMenuItem2(
                         title = uiTextOf("Удалить"),
-                        onClick = component::onRemoveClick
+                        onClick = component::onDeleteClick
                     )
                 ) else emptyList()
         )

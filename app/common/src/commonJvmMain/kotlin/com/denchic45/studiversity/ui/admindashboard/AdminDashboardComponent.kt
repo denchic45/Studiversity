@@ -40,6 +40,9 @@ class AdminDashboardComponent(
         rootNavigation: StackNavigation<RootConfig>,
         ComponentContext,
     ) -> SpecialtiesAdminComponent,
+    roomsAdminComponent: (
+        ComponentContext,
+    ) -> RoomsAdminComponent,
     profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
     @Assisted
     rootNavigation: StackNavigation<RootConfig>,
@@ -79,6 +82,7 @@ class AdminDashboardComponent(
                     specialtiesAdminComponent(rootNavigation, context)
                 )
 
+                Config.Rooms -> Child.Rooms(roomsAdminComponent(context))
             }
         }
     )
@@ -127,6 +131,10 @@ class AdminDashboardComponent(
         navigation.bringToFront(Config.Specialties)
     }
 
+    fun onRoomsClick() {
+        navigation.bringToFront(Config.Rooms)
+    }
+
 
     @Parcelize
     sealed interface Config : Parcelable {
@@ -138,6 +146,7 @@ class AdminDashboardComponent(
         object StudyGroups : Config
         object Subjects : Config
         object Specialties : Config
+        object Rooms : Config
 
     }
 
@@ -150,7 +159,7 @@ class AdminDashboardComponent(
         class StudyGroups(val component: StudyGroupsAdminComponent) : Child
         class Subjects(val component: SubjectsAdminComponent) : Child
         class Specialties(val component: SpecialtiesAdminComponent) : Child
-
+        class Rooms(val component: RoomsAdminComponent) : Child
     }
 
     @Parcelize

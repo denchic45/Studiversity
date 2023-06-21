@@ -136,7 +136,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
             is AdminDashboardComponent.Child.StudyGroups -> TODO()
             is AdminDashboardComponent.Child.Subjects -> TODO()
             is AdminDashboardComponent.Child.Specialties -> TODO()
-
+            is AdminDashboardComponent.Child.Rooms -> TODO()
         }
     }
 }

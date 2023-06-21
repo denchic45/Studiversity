@@ -8,5 +8,6 @@ import java.util.*
 data class RoomResponse(
     @Serializable(UUIDSerializer::class)
     val id: UUID,
-    val name: String
+    val name: String,
+    val shortname: String
 )

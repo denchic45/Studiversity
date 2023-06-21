@@ -29,6 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,9 +41,11 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.arkivanov.essenty.lifecycle.doOnDestroy
-import com.arkivanov.essenty.lifecycle.doOnStart
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
+import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.ifSuccess
+import com.denchic45.studiversity.domain.resourceOf
+import com.denchic45.studiversity.ui.ExpandableDropdownMenu
+import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.hideAppBar
 import com.denchic45.studiversity.ui.search.CourseChooserScreen
 import com.denchic45.studiversity.ui.search.UserChooserScreen
@@ -50,6 +53,7 @@ import com.denchic45.studiversity.ui.theme.AppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.stuiversity.api.room.model.RoomResponse
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import java.time.LocalDate
@@ -61,20 +65,17 @@ fun PeriodEditorScreen(component: PeriodEditorComponent) {
     hideAppBar()
 
     val childOverlay by component.childOverlay.subscribeAsState()
+    val foundRooms by component.foundRooms.collectAsState()
 
     Surface {
         Column {
             when (val overlayChild = childOverlay.overlay?.instance) {
                 is PeriodEditorComponent.OverlayChild.CourseChooser -> {
-                    CourseChooserScreen(
-                        component = overlayChild.component
-                    )
+                    CourseChooserScreen(component = overlayChild.component)
                 }
 
                 is PeriodEditorComponent.OverlayChild.UserChooser -> {
-                    UserChooserScreen(
-                        component = overlayChild.component
-                    )
+                    UserChooserScreen(component = overlayChild.component)
                 }
 
                 null -> {
@@ -153,7 +154,13 @@ fun PeriodEditorScreen(component: PeriodEditorComponent) {
                             }
                         }
                     }
-                    PeriodEditorContent(state = component.state)
+                    PeriodEditorContent(
+                        state = component.state,
+                        foundRooms = foundRooms,
+                        onRoomType = component::onRoomType,
+                        onRoomSelect = component::onRoomSelect,
+                        onRoomRemove = component::onRoomRemove
+                    )
                 }
             }
         }
@@ -161,7 +168,13 @@ fun PeriodEditorScreen(component: PeriodEditorComponent) {
 }
 
 @Composable
-fun PeriodEditorContent(state: EditingPeriod) {
+fun PeriodEditorContent(
+    state: EditingPeriod,
+    foundRooms: Resource<List<RoomResponse>>,
+    onRoomType: (String) -> Unit,
+    onRoomSelect: (RoomResponse) -> Unit,
+    onRoomRemove: () -> Unit
+) {
     Surface {
         Column(Modifier.fillMaxSize()) {
             Divider(Modifier.padding(vertical = MaterialTheme.spacing.small))
@@ -185,11 +198,17 @@ fun PeriodEditorContent(state: EditingPeriod) {
                     }
                 }
             )
+            var roomText by remember { mutableStateOf("") }
+            var roomsExpanded by remember { mutableStateOf(false) }
             ListItem(
                 headlineContent = {
                     TransparentTextField(
-                        value = state.room?.name ?: "",
-                        onValueChange = {},
+                        value = state.room?.name ?: roomText,
+                        onValueChange = {
+                            roomText = it
+                            roomsExpanded = true
+                            onRoomType(it)
+                        },
                         placeholder = "Аудитория"
                     )
                 },
@@ -198,8 +217,30 @@ fun PeriodEditorContent(state: EditingPeriod) {
                         imageVector = Icons.Outlined.DoorFront,
                         contentDescription = "date"
                     )
+                },
+                trailingContent = {
+                    IconButton(onClick = onRoomRemove) {
+                        Icon(Icons.Default.Close, "remove room")
+                    }
                 }
             )
+
+            ExpandableDropdownMenu(
+                expanded = roomsExpanded || foundRooms.ifSuccess { it.isNotEmpty() } ?: false,
+                onExpandedChange = { roomsExpanded = it }
+            ) {
+                ResourceContent(resource = foundRooms, onLoading = {}) { rooms ->
+                    rooms.forEach {
+                        DropdownMenuItem(
+                            text = { Text(it.name) },
+                            onClick = {
+                                roomText = it.name
+                                onRoomSelect(it)
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -247,7 +288,11 @@ fun PeriodEditorPreview() {
                     ),
                     archived = false
                 )
-            }
+            },
+            foundRooms = resourceOf(),
+            onRoomType = {},
+            onRoomSelect = {},
+            onRoomRemove = {}
         )
     }
 }

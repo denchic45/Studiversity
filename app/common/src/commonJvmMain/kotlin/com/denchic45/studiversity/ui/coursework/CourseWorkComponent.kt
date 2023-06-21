@@ -121,7 +121,7 @@ class CourseWorkComponent(
         onEditorOpen(courseId, elementId)
     }
 
-    fun onRemoveClick() {
+    fun onDeleteClick() {
         confirmDialogInteractor.set(
             ConfirmState(
                 title = uiTextOf("Удалить задание?"),

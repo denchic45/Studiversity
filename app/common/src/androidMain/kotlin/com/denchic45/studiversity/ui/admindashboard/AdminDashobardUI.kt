@@ -84,6 +84,13 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
             contentDescription = "specialties",
             onClick = component::onSpecialtiesClick
         )
+
+        CustomListItem(
+            title = "Аудитории",
+            painter = painterResource(id = R.drawable.ic_room),
+            contentDescription = "rooms",
+            onClick = component::onSpecialtiesClick
+        )
     }
     Children(component.childStack) {
         when (val child = it.instance) {

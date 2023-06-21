@@ -70,6 +70,11 @@ kotlin {
 
                 api("me.tatarka.inject:kotlin-inject-runtime:0.6.1")
 
+                api("com.darkrockstudios:mpfilepicker:1.1.0")
+
+                // cache4k
+                implementation("io.github.reactivecircus.cache4k:cache4k:0.11.0")
+
                 // kotlin-result
                 api("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
                 api("com.michael-bull.kotlin-result:kotlin-result-coroutines:1.1.17")
@@ -193,8 +198,8 @@ kotlin {
                 api("io.coil-kt:coil-compose:2.2.2")
                 api("io.coil-kt:coil-svg:2.3.0")
 
-//                api("com.google.android.play:core:1.10.3")
-//                api("com.google.android.play:core-ktx:1.8.1")
+                api("com.google.android.play:core:1.10.3")
+                api("com.google.android.play:core-ktx:1.8.1")
 
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
                 // Flow layout

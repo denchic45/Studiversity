@@ -5,9 +5,19 @@ import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.stuiversity.api.room.RoomApi
+import com.denchic45.stuiversity.api.room.model.RoomResponse
 import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.timetable.model.*
+import com.denchic45.stuiversity.api.timetable.model.EventDetails
+import com.denchic45.stuiversity.api.timetable.model.EventResponse
+import com.denchic45.stuiversity.api.timetable.model.LessonDetails
+import com.denchic45.stuiversity.api.timetable.model.LessonResponse
+import com.denchic45.stuiversity.api.timetable.model.PeriodMember
+import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
+import com.denchic45.stuiversity.api.timetable.model.StudyGroupName
+import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import com.denchic45.stuiversity.api.timetable.model.toPeriodMember
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.DateTimePatterns
@@ -22,7 +32,8 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell
 import java.io.InputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Locale
+import java.util.UUID
 import kotlin.random.Random
 
 @Inject
@@ -31,6 +42,7 @@ class TimetableParser(
     private val userApi: UserApi,
     private val courseApi: CoursesApi,
     private val subjectApi: SubjectApi,
+    private val roomApi: RoomApi
 ) {
     private val days = listOf(
         "ПОНЕДЕЛЬНИК ",
@@ -40,6 +52,7 @@ class TimetableParser(
         "ПЯТНИЦА",
         "СУББОТА"
     )
+
     private var groupRow = 0
     private lateinit var table: XWPFTable
     private var currentRow = 0
@@ -52,11 +65,12 @@ class TimetableParser(
     private val cachedSubjects = mutableListOf<SubjectResponse>()
     private val cachedEventsOfMissedSubjects = mutableSetOf<String>()
     private val cachedUsers = mutableMapOf<String, UserResponse>()
+    private val cachedRooms = mutableListOf<RoomResponse>()
 
-    private suspend fun findUserBySurname(surname: String): UserResponse? {
-        return cachedUsers[surname] ?: userApi.getList(surname).unwrap().firstOrNull()
-            ?.apply { cachedUsers[surname] = this }
-    }
+//    val users = mutableMapOf<String, UserResponse>()
+//    val courses = Cache.Builder<String, UserResponse>().build()
+//    val subjects = Cache.Builder<String, UserResponse>().build()
+//    val eventsOfMissedSubjects = Cache.Builder<String, UserResponse>().build()
 
     suspend fun parseDoc(inputStream: InputStream): TimetableParserResult {
         return try {
@@ -64,20 +78,19 @@ class TimetableParser(
             table = wordDoc.tables[0]
 
             val studyGroupsExtraRow = table.getRow(2).tableCells.size > 1
-
             val mondayRow = if (studyGroupsExtraRow) 3 else 2
-
             val monday = table.getRow(mondayRow).getCell(0)
                 .text.split(" ")[1]
                 .toLocalDate(DateTimePatterns.DD_MM_yy)
 
             val groupsCells: MutableList<XWPFTableCell> = ArrayList()
             groupsCells.addAll(table.getRow(1).tableCells.filter { it.text.isNotEmpty() })
-            if (studyGroupsExtraRow) groupsCells.addAll(table.getRow(2).tableCells.filter { it.text.isNotEmpty() })
+            if (studyGroupsExtraRow) groupsCells.addAll(
+                table.getRow(2).tableCells.filter { it.text.isNotEmpty() }
+            )
 
             val groupsCount = groupsCells.size
-            val timetables: MutableList<Pair<StudyGroupResponse, TimetableResponse>> =
-                mutableListOf()
+            val timetables = mutableListOf<Pair<StudyGroupResponse, TimetableResponse>>()
             for (i in 0 until groupsCount) {
                 val studyGroupName = groupsCells[i].text
                 studyGroupApi.getList(query = studyGroupName)
@@ -109,11 +122,9 @@ class TimetableParser(
     private fun getCellByGroupName(
         tableCells: List<XWPFTableCell>,
         groupName: String,
-    ): XWPFTableCell? {
-        return tableCells.find { cell: XWPFTableCell ->
-            val text = cell.text
-            text.resetFormatting().contains(groupName.resetFormatting())
-        }
+    ): XWPFTableCell? = tableCells.find { cell ->
+        val text = cell.text
+        text.resetFormatting().contains(groupName.resetFormatting())
     }
 
     private suspend fun createTimetable(): TimetableResponse {
@@ -159,7 +170,8 @@ class TimetableParser(
                 currentRow++
                 continue // Skip dinner
             }
-            val cellContent: List<String> = cells[studyGroupColumn].paragraphs.map { it.paragraphText }
+            val cellContent: List<String> =
+                cells[studyGroupColumn].paragraphs.map { it.paragraphText }
             val hasOrder = orderText.isNotEmpty()
             if (hasOrder) {
                 if (orderText == "0" && cellContent.isEmpty()) {
@@ -206,7 +218,7 @@ class TimetableParser(
                 id = Random.nextLong(0, 1000),
                 date = date,
                 order = order,
-                room = null,
+                room = findRoomByName(roomName),
                 studyGroup = StudyGroupName(currentStudyGroup.id, currentStudyGroup.name),
                 members = findTeacherByContent(content),
                 details = LessonDetails(course)
@@ -232,9 +244,13 @@ class TimetableParser(
     private suspend fun findTeacherByContent(separatedContent: List<String>): List<PeriodMember> {
         return if (separatedContent.size == 1) {
             emptyList()
-        } else separatedContent.subList(1, separatedContent.size).mapNotNull { line ->
-            findUserBySurname(line.split(" ")[0])?.toPeriodMember()
+        } else separatedContent.subList(1, separatedContent.size).map { line ->
+            findUserBySurname(line.split(" ")[0]).toPeriodMember()
         }
+    }
+
+    private suspend fun findUserBySurname(surname: String): UserResponse {
+        return cachedUsers.getOrPut(surname) { userApi.getList(surname).unwrap().first() }
     }
 
     private suspend fun findCourseBySubjectAndStudyGroupId(
@@ -243,7 +259,7 @@ class TimetableParser(
     ): CourseResponse? {
         val subjectName = subject.name
 
-        // try to get cached course by group
+        // try to get cached course by subject name and study group
         val cachedByGroup = cachedCoursesByStudyGroup[subjectName to studyGroupId]
         if (cachedByGroup != null) {
             return cachedByGroup
@@ -276,9 +292,14 @@ class TimetableParser(
 
     private suspend fun findSubjectByName(subjectName: String): SubjectResponse? {
         return cachedSubjects.find { it.name.resetFormatting() == subjectName.resetFormatting() }
-            ?: run {
-                subjectApi.getList(name = subjectName).unwrap().firstOrNull()
-            }?.also(cachedSubjects::add)
+            ?: subjectApi.getList(name = subjectName).unwrap()
+                .firstOrNull()?.also(cachedSubjects::add)
+    }
+
+    private suspend fun findRoomByName(roomName: String): RoomResponse? {
+        return cachedRooms.find { it.name.resetFormatting() == roomName.resetFormatting() }
+            ?: roomApi.getList(query = roomName).unwrap()
+                .firstOrNull()?.also(cachedRooms::add)
     }
 
     private fun String.resetFormatting(): String {

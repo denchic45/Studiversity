@@ -22,7 +22,7 @@ class LessonDetailsEditorComponent(
 
     fun onCourseChoose() {
         overlayNavigation.activate(PeriodEditorComponent.OverlayConfig.CourseChooser {
-            it?.let { details.course = it }
+            it.let { details.course = it }
         })
     }
 }
