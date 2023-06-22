@@ -6,18 +6,18 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class RemoveAttachmentFromCourseWorkUseCase @javax.inject.Inject constructor(
+class RemoveAttachmentFromCourseMaterialUseCase @javax.inject.Inject constructor(
     private val attachmentRepository: AttachmentRepository
 ) {
     suspend operator fun invoke(
         courseId: UUID,
-        workId: UUID,
+        materialId: UUID,
         attachmentId: UUID
     ): EmptyResource {
-        return attachmentRepository.removeFromCourseWork(
+        return attachmentRepository.removeFromCourseMaterial(
             attachmentId = attachmentId,
             courseId = courseId,
-            workId = workId
+            materialId = materialId
         )
     }
 }

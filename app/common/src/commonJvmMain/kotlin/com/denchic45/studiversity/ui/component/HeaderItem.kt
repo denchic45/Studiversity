@@ -14,7 +14,9 @@ import com.denchic45.studiversity.ui.theme.spacing
 @Composable
 fun HeaderItemUI(name: String, modifier: Modifier = Modifier) {
     Row(
-        modifier = modifier.height(56.dp).padding(horizontal = MaterialTheme.spacing.normal),
+        modifier = modifier.height(56.dp)
+//            .padding(horizontal = MaterialTheme.spacing.normal)
+        ,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(name, style = MaterialTheme.typography.titleMedium)

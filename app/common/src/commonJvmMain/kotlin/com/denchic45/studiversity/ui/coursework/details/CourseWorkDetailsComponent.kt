@@ -30,8 +30,6 @@ class CourseWorkDetailsComponent(
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
-
-
     private val componentScope = componentScope()
 
     val courseWork = flow { emit(findCourseWorkUseCase(courseId, elementId)) }
@@ -45,15 +43,9 @@ class CourseWorkDetailsComponent(
     fun onAttachmentClick(item: AttachmentItem) {
         when (item) {
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
-
                 FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
                 FileState.FailDownload,  FileState.Preview -> componentScope.launch {
                     downloadFileUseCase(item.attachmentId)
-                    // TODO: Возможно использовать в будущем: открывать файл сразу после его загрузки
-//                            .collect {
-//                            if (it == FileState.Downloaded)
-//                                openAttachment.postValue(item.path.toFile())
-//                        }
                 }
 
                 else -> {}

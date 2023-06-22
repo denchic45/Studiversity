@@ -7,6 +7,7 @@ import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 @Serializable
@@ -22,7 +23,12 @@ data class CourseWork @OptIn(ExperimentalSerializationApi::class) constructor(
     val maxGrade: Short,
     @EncodeDefault
     val workDetails: CourseWorkDetails? = null
-) : CourseElementDetails()
+) : CourseElementDetails() {
+    val late: Boolean
+        get() = dueDate?.let {
+            it.atTime(dueTime ?: LocalTime.MAX) < LocalDateTime.now()
+        } ?: false
+}
 
 @Serializable
 object CourseMaterial : CourseElementDetails()

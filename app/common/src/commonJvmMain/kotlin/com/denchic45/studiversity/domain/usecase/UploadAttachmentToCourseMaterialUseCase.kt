@@ -1,24 +1,21 @@
 package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.AttachmentRepository
-import com.denchic45.studiversity.data.repository.CourseElementRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
-import com.eygraber.uri.Uri
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class UploadAttachmentToCourseWorkUseCase @javax.inject.Inject constructor(
-    private val courseElementRepository: CourseElementRepository,
+class UploadAttachmentToCourseMaterialUseCase @javax.inject.Inject constructor(
     private val attachmentRepository: AttachmentRepository
 ) {
     suspend operator fun invoke(
         courseId: UUID,
-        workId: UUID,
+        materialId: UUID,
         request: AttachmentRequest
     ): Resource<AttachmentHeader> {
-        return courseElementRepository.addAttachmentToWork(courseId, workId, request)
+        return attachmentRepository.addAttachmentToMaterial(courseId, materialId, request)
     }
 }

@@ -17,7 +17,6 @@ sealed class SubmissionResponse {
     abstract val author: Author
     abstract val state: SubmissionState
     abstract val courseWorkId: UUID
-    abstract val type: CourseElementType
     abstract val content: SubmissionContent
     abstract val updatedAt: LocalDateTime?
     abstract val grade: GradeResponse?
@@ -35,11 +34,7 @@ data class WorkSubmissionResponse(
     @Serializable(LocalDateTimeSerializer::class)
     override val updatedAt: LocalDateTime?,
     override val grade: GradeResponse? = null,
-) : SubmissionResponse() {
-    @OptIn(ExperimentalSerializationApi::class)
-    @EncodeDefault
-    override val type: CourseElementType = CourseElementType.WORK
-}
+) : SubmissionResponse()
 
 @Serializable(SubmissionContentSerializer::class)
 sealed interface SubmissionContent {

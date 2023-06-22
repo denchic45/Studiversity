@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AssignmentTurnedIn
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -29,17 +32,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onLoading
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.ui.theme.AppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
+import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import com.denchic45.stuiversity.api.course.element.model.CourseMaterial
 import com.denchic45.stuiversity.api.course.element.model.CourseWork
 import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
@@ -63,7 +66,7 @@ fun CourseElementsScreen(component: CourseElementsComponent) {
 @Composable
 fun CourseElementsContent(
     elementsResource: Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>>,
-    onElementClick: (elementId: UUID) -> Unit,
+    onElementClick: (elementId: UUID, type: CourseElementType) -> Unit,
 ) {
     elementsResource.onSuccess {
         LazyColumn(contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)) {
@@ -75,7 +78,14 @@ fun CourseElementsContent(
                 items(elements, key = { it.id }) {
                     CourseElementListItem(
                         response = it,
-                        onClick = { onElementClick(it.id) })
+                        onClick = {
+                            onElementClick(
+                                it.id, when (it.details) {
+                                    is CourseWork -> CourseElementType.WORK
+                                    CourseMaterial -> CourseElementType.MATERIAL
+                                } // todo использовать напрямую CourseElementType, а не details
+                            )
+                        })
                 }
             }
         }
@@ -110,7 +120,10 @@ fun CourseElementListItem(response: CourseElementResponse, onClick: () -> Unit) 
                 .padding(8.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_assignment),
+                imageVector = when (response.details) {
+                    is CourseWork -> Icons.Outlined.AssignmentTurnedIn
+                    CourseMaterial -> Icons.Outlined.Description
+                },
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = null,
             )
@@ -124,10 +137,14 @@ fun CourseElementListItem(response: CourseElementResponse, onClick: () -> Unit) 
                 style = MaterialTheme.typography.titleMedium
             )
             when (val details = response.details) {
-                is CourseMaterial -> TODO()
                 is CourseWork -> details.dueDate?.let {
-                    Text(text = it.toString("dd MMM"), style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        text = it.toString("dd MMM"), style = MaterialTheme.typography.bodySmall,
+                        color = if (details.late) MaterialTheme.colorScheme.error else Color.Unspecified
+                    )
                 }
+
+                is CourseMaterial -> {}
             }
         }
     }

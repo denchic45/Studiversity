@@ -1,14 +1,11 @@
 package com.denchic45.studiversity.ui.courseelements
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.stateInResource
-import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
-import com.denchic45.studiversity.domain.usecase.FindCourseByIdUseCase
 import com.denchic45.studiversity.domain.usecase.FindCourseElementsUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveCourseElementUseCase
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import kotlinx.coroutines.flow.flow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -18,11 +15,10 @@ import java.util.UUID
 class CourseElementsComponent(
     private val removeCourseElementUseCase: RemoveCourseElementUseCase,
     private val findCourseElementsUseCase: FindCourseElementsUseCase,
-
     @Assisted
     private val courseId: UUID,
     @Assisted
-    private val onElementOpen: (courseId: UUID, elementId: UUID) -> Unit,
+    private val onElementOpen: (courseId: UUID, elementId: UUID, type: CourseElementType) -> Unit,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -34,10 +30,8 @@ class CourseElementsComponent(
         .stateInResource(componentScope)
 
 
-
-
-    fun onItemClick(elementId: UUID) {
-        onElementOpen(courseId, elementId)
+    fun onItemClick(elementId: UUID, type: CourseElementType) {
+        onElementOpen(courseId, elementId, type)
     }
 
     fun onItemLongClick(position: Int) {}

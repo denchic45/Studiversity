@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.courseworkeditor
+package com.denchic45.studiversity.ui.coursematerialeditor
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -19,30 +19,21 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.Attachment
-import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
@@ -77,15 +67,9 @@ import com.denchic45.studiversity.util.OpenMultipleAnyDocuments
 import com.denchic45.studiversity.util.collectWithLifecycle
 import com.denchic45.studiversity.util.findActivity
 import com.denchic45.studiversity.util.getFile
-import com.denchic45.stuiversity.util.Dates
-import com.denchic45.stuiversity.util.toString
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
 
 @Composable
-fun CourseWorkEditorScreen(component: CourseWorkEditorComponent) {
+fun CourseMaterialEditorScreen(component: CourseMaterialEditorComponent) {
 
     val context = LocalContext.current
     val attachmentViewer by lazy {
@@ -121,7 +105,7 @@ fun CourseWorkEditorScreen(component: CourseWorkEditorComponent) {
         )
     )
 
-    CourseWorkEditorContent(
+    CourseMaterialEditorContent(
         stateResource = state,
         attachmentsResource = attachments,
         onNameType = component::onNameType,
@@ -130,16 +114,14 @@ fun CourseWorkEditorScreen(component: CourseWorkEditorComponent) {
         onTopicSelect = component::onTopicSelect,
         onAttachmentAdd = { pickFileLauncher.launch(Unit) },
         onAttachmentClick = component::onAttachmentClick,
-        onAttachmentRemove = component::onAttachmentRemove,
-        onDueDateTimeSelect = component::onDueDateTimeSelect,
-        onDueDateTimeClear = component::onDueDateTimeClear
+        onAttachmentRemove = component::onAttachmentRemove
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CourseWorkEditorContent(
-    stateResource: Resource<CourseWorkEditorComponent.EditingWork>,
+fun CourseMaterialEditorContent(
+    stateResource: Resource<CourseMaterialEditorComponent.EditingMaterial>,
     attachmentsResource: Resource<List<AttachmentItem>>,
     onNameType: (String) -> Unit,
     onDescriptionType: (String) -> Unit,
@@ -147,9 +129,7 @@ fun CourseWorkEditorContent(
     onTopicSelect: (DropdownMenuItem) -> Unit,
     onAttachmentAdd: () -> Unit,
     onAttachmentClick: (item: AttachmentItem) -> Unit,
-    onAttachmentRemove: (position: Int) -> Unit,
-    onDueDateTimeSelect: (LocalDate, LocalTime) -> Unit,
-    onDueDateTimeClear: () -> Unit,
+    onAttachmentRemove: (position: Int) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Surface(
@@ -237,14 +217,6 @@ fun CourseWorkEditorContent(
                     }
                 )
 
-                DueDateTimeChooser(
-                    showDatePicker,
-                    state,
-                    onDueDateTimeClear,
-                    showTimePicker,
-                    onDueDateTimeSelect
-                )
-
                 attachmentsResource.onSuccess { attachmentItems ->
                     if (attachmentItems.isNotEmpty()) {
                         HeaderItemUI(name = "Прикрепленные файлы")
@@ -267,105 +239,6 @@ fun CourseWorkEditorContent(
             }
         }
     }
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun DueDateTimeChooser(
-    showDatePicker: Boolean,
-    state: CourseWorkEditorComponent.EditingWork,
-    onDueDateTimeClear: () -> Unit,
-    showTimePicker: Boolean,
-    onDueDateTimeSelect: (LocalDate, LocalTime) -> Unit
-) {
-    var showDatePicker1 = showDatePicker
-    var showTimePicker1 = showTimePicker
-    ListItem(
-        modifier = Modifier.clickable {
-            showDatePicker1 = true
-        },
-        headlineContent = {
-            Text(
-                text = buildString {
-                    state.dueDate?.let { date ->
-                        append(Dates.toStringDayMonthHidingCurrentYear(date))
-                        state.dueTime?.let { time ->
-                            append(", ${time.toString("HH:mm")}")
-                        }
-                    } ?: append("Без срока сдачи")
-                },
-                modifier = Modifier.alpha(state.dueDate?.let { 1f }
-                    ?: ContentAlpha.disabled))
-        },
-        leadingContent = {
-            Icon(
-                imageVector = Icons.Outlined.CalendarToday,
-                contentDescription = "due date and time"
-            )
-        },
-        trailingContent = state.dueDate?.let {
-            {
-                IconButton(onClick = { onDueDateTimeClear() }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Close,
-                        contentDescription = "remove due date time"
-                    )
-                }
-            }
-        }
-    )
-
-    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
-
-    var selectedTime by remember { mutableStateOf<LocalTime?>(null) }
-
-    if (showDatePicker1)
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker1 = false },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker1 = false }) {
-                    Text(text = "Отмена")
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDatePicker1 = false
-                    showTimePicker1 = true
-                }) {
-                    Text(text = "ОК")
-                }
-
-            }) {
-            val datePickerState = rememberDatePickerState()
-            DatePicker(state = datePickerState)
-            datePickerState.selectedDateMillis?.let {
-                selectedDate =
-                    Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
-                        .toLocalDate()
-            }
-        }
-
-    if (showTimePicker1)
-        TimePickerDialog(
-            onCancel = { showTimePicker1 = false },
-            onConfirm = {
-                showTimePicker1 = false
-                selectedDate?.let { date ->
-                    selectedTime?.let { time ->
-                        onDueDateTimeSelect(date, time)
-                    }
-                }
-            }) {
-            val timePickerState = rememberTimePickerState(
-                is24Hour = true,
-                initialHour = 22,
-                initialMinute = 59
-            )
-            TimePicker(state = timePickerState)
-            timePickerState.apply {
-                selectedTime = LocalTime.of(hour, minute, 0)
-            }
-        }
 }
 
 @Composable
@@ -424,13 +297,11 @@ fun TimePickerDialog(
 
 @Preview
 @Composable
-fun CourseWorkEditorPreview() {
+fun CourseMaterialEditorPreview() {
     AppTheme {
-        CourseWorkEditorContent(
-            stateResource = Resource.Success(CourseWorkEditorComponent.EditingWork().apply {
+        CourseMaterialEditorContent(
+            stateResource = Resource.Success(CourseMaterialEditorComponent.EditingMaterial().apply {
                 name = "Контрольная работа"
-                dueDate = LocalDate.now()
-                dueTime = LocalTime.now()
             }),
             attachmentsResource = Resource.Success(emptyList()),
             onNameType = {},
@@ -439,9 +310,7 @@ fun CourseWorkEditorPreview() {
             onTopicSelect = {},
             onAttachmentAdd = {},
             onAttachmentClick = {},
-            onAttachmentRemove = {},
-            onDueDateTimeSelect = { _, _ -> },
-            onDueDateTimeClear = {}
+            onAttachmentRemove = {}
         )
     }
 }

@@ -1,4 +1,4 @@
-package com.denchic45.stuiversity.api.course.work
+package com.denchic45.stuiversity.api.course.material
 
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
@@ -8,9 +8,9 @@ import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import com.denchic45.stuiversity.api.course.element.model.FileAttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.LinkAttachmentHeader
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
-import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
+import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
+import com.denchic45.stuiversity.api.course.material.model.CreateCourseMaterialRequest
+import com.denchic45.stuiversity.api.course.material.model.UpdateCourseMaterialRequest
 import com.denchic45.stuiversity.util.UUIDWrapper
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
@@ -29,96 +29,95 @@ import io.ktor.http.contentType
 import io.ktor.http.defaultForFilePath
 import java.util.UUID
 
-interface CourseWorkApi {
+interface CourseMaterialApi {
     suspend fun create(
         courseId: UUID,
-        createCourseWorkRequest: CreateCourseWorkRequest
-    ): ResponseResult<CourseWorkResponse>
+        request: CreateCourseMaterialRequest
+    ): ResponseResult<CourseMaterialResponse>
 
     suspend fun update(
         courseId: UUID,
-        workId: UUID,
-        updateCourseWorkRequest: UpdateCourseWorkRequest
-    ): ResponseResult<CourseWorkResponse>
+        materialId: UUID,
+        request: UpdateCourseMaterialRequest
+    ): ResponseResult<CourseMaterialResponse>
 
     suspend fun getById(
         courseId: UUID,
-        workId: UUID
-    ): ResponseResult<CourseWorkResponse> // TODO: fix result in backend
+        materialId: UUID
+    ): ResponseResult<CourseMaterialResponse> // TODO: fix result in backend
 
     suspend fun getByAuthor(
         authorId: UUIDWrapper,
         late: Boolean? = null,
         submitted: Boolean? = null
-    ): ResponseResult<List<CourseWorkResponse>>
+    ): ResponseResult<List<CourseMaterialResponse>>
 
     suspend fun getAttachments(
         courseId: UUID,
-        courseWorkId: UUID
+        materialId: UUID
     ): ResponseResult<List<AttachmentHeader>>
 
 //    suspend fun getAttachment(
 //        courseId: UUID,
-//        courseWorkId: UUID,
+//       materialId: UUID,
 //        attachmentId: UUID
 //    ): ResponseResult<AttachmentResponse>
 
-    suspend fun uploadFileToWork(
+    suspend fun uploadFile(
         courseId: UUID,
-        courseWorkId: UUID,
-        createFileRequest: CreateFileRequest
+        materialId: UUID,
+        request: CreateFileRequest
     ): ResponseResult<FileAttachmentHeader>
 
-    suspend fun addLinkToWork(
+    suspend fun addLink(
         courseId: UUID,
-        courseWorkId: UUID,
-        createLinkRequest: CreateLinkRequest
+        materialId: UUID,
+        request: CreateLinkRequest
     ): ResponseResult<LinkAttachmentHeader>
 
     suspend fun deleteAttachment(
         courseId: UUID,
-        courseWorkId: UUID,
+        materialId: UUID,
         attachmentId: UUID
     ): EmptyResponseResult
 
-//    suspend fun deleteAttachmentFromWork(
-//        courseId: UUID,
-//        workId: UUID,
-//        attachmentId: UUID
-//    ): EmptyResponseResult
+
 }
 
-class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
+class CourseMaterialApiImpl(private val client: HttpClient) : CourseMaterialApi {
     override suspend fun create(
         courseId: UUID,
-        createCourseWorkRequest: CreateCourseWorkRequest
-    ): ResponseResult<CourseWorkResponse> {
-        return client.post("/courses/$courseId/works") {
+        request: CreateCourseMaterialRequest
+    ): ResponseResult<CourseMaterialResponse> {
+        return client.post("/courses/$courseId/materials") {
             contentType(ContentType.Application.Json)
-            setBody(createCourseWorkRequest)
+            setBody(request)
         }.toResult()
     }
 
     override suspend fun update(
         courseId: UUID,
-        workId: UUID,
-        updateCourseWorkRequest: UpdateCourseWorkRequest,
-    ): ResponseResult<CourseWorkResponse> {
-        return client.patch("/courses/$courseId/works/$workId") {
+        materialId: UUID,
+        request: UpdateCourseMaterialRequest,
+    ): ResponseResult<CourseMaterialResponse> {
+        return client.patch("/courses/$courseId/materials/$materialId") {
             contentType(ContentType.Application.Json)
-            setBody(updateCourseWorkRequest)
+            setBody(request)
         }.toResult()
     }
 
-    override suspend fun getById(courseId: UUID, workId: UUID): ResponseResult<CourseWorkResponse> {
-        return client.get("/courses/$courseId/works/$workId").toResult()
+    override suspend fun getById(
+        courseId: UUID,
+        materialId: UUID
+    ): ResponseResult<CourseMaterialResponse> {
+        return client.get("/courses/$courseId/materials/$materialId").toResult()
     }
 
     override suspend fun getByAuthor(
         authorId: UUIDWrapper,
         late: Boolean?,
         submitted: Boolean?
-    ): ResponseResult<List<CourseWorkResponse>> {
+    ): ResponseResult<List<CourseMaterialResponse>> {
         return client.get("/course-works") {
             parameter("late", late)
             parameter("author_id", authorId.value)
@@ -128,39 +127,39 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
 
     override suspend fun getAttachments(
         courseId: UUID,
-        courseWorkId: UUID
+        materialId: UUID
     ): ResponseResult<List<AttachmentHeader>> {
-        return client.get("/courses/${courseId}/works/${courseWorkId}/attachments")
+        return client.get("/courses/${courseId}/works/${materialId}/attachments")
             .toResult()
     }
 
 //    override suspend fun getAttachment(
 //        courseId: UUID,
-//        courseWorkId: UUID,
+//       materialId: UUID,
 //        attachmentId: UUID
 //    ): ResponseResult<AttachmentResponse> {
 //        return client.get("/courses/$courseId/works/$courseWorkId/attachments/$attachmentId").toAttachmentResult()
 //    }
 
-    override suspend fun uploadFileToWork(
+    override suspend fun uploadFile(
         courseId: UUID,
-        courseWorkId: UUID,
-        createFileRequest: CreateFileRequest
+        materialId: UUID,
+        request: CreateFileRequest
     ): ResponseResult<FileAttachmentHeader> =
-        client.post("/courses/$courseId/works/$courseWorkId/attachments") {
+        client.post("/courses/$courseId/works/$materialId/attachments") {
             parameter("upload", "file")
             contentType(ContentType.MultiPart.FormData)
             setBody(
                 MultiPartFormDataContent(
                     formData {
-                        append("file", createFileRequest.bytes, Headers.build {
+                        append("file", request.bytes, Headers.build {
                             append(
                                 HttpHeaders.ContentType,
-                                ContentType.defaultForFilePath(createFileRequest.name)
+                                ContentType.defaultForFilePath(request.name)
                             )
                             append(
                                 HttpHeaders.ContentDisposition,
-                                "filename=${createFileRequest.name}"
+                                "filename=${request.name}"
                             )
                         })
                     }
@@ -168,23 +167,23 @@ class CourseWorkApiImpl(private val client: HttpClient) : CourseWorkApi {
             )
         }.toResult()
 
-    override suspend fun addLinkToWork(
+    override suspend fun addLink(
         courseId: UUID,
-        courseWorkId: UUID,
-        createLinkRequest: CreateLinkRequest
+        materialId: UUID,
+        request: CreateLinkRequest
     ): ResponseResult<LinkAttachmentHeader> =
-        client.post("/courses/$courseId/works/$courseWorkId/attachments") {
+        client.post("/courses/$courseId/works/$materialId/attachments") {
             parameter("upload", "link")
             contentType(ContentType.Application.Json)
-            setBody(createLinkRequest)
+            setBody(request)
         }.toResult()
 
     override suspend fun deleteAttachment(
         courseId: UUID,
-        courseWorkId: UUID,
+        materialId: UUID,
         attachmentId: UUID
     ): EmptyResponseResult {
-        return client.delete("/courses/$courseId/works/$courseWorkId/attachments/$attachmentId")
+        return client.delete("/courses/$courseId/materials/$materialId/attachments/$attachmentId")
             .toResult()
     }
 }

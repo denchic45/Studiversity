@@ -10,6 +10,8 @@ import com.denchic45.stuiversity.api.course.CourseApiImpl
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.CourseElementsApiImpl
+import com.denchic45.stuiversity.api.course.material.CourseMaterialApi
+import com.denchic45.stuiversity.api.course.material.CourseMaterialApiImpl
 import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.SubjectApiImpl
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
@@ -202,6 +204,10 @@ abstract class NetworkComponent(
     @LayerScope
     @Provides
     fun courseWorkApi(client: HttpClient): CourseWorkApi = CourseWorkApiImpl(client)
+
+    @LayerScope
+    @Provides
+    fun courseMaterialApi(client: HttpClient): CourseMaterialApi = CourseMaterialApiImpl(client)
 
     @LayerScope
     @Provides

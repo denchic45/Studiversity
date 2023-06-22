@@ -64,32 +64,32 @@ interface SubmissionsApi {
         submissionId: UUID
     ): ResponseResult<List<AttachmentHeader>>
 
-    suspend fun uploadFileToSubmission(
+    suspend fun uploadFile(
         courseId: UUID,
         courseWorkId: UUID,
         submissionId: UUID,
         request: CreateFileRequest
     ): ResponseResult<FileAttachmentHeader>
 
-    suspend fun addLinkToSubmission(
+    suspend fun addLink(
         courseId: UUID,
         courseWorkId: UUID,
         submissionId: UUID,
         link: CreateLinkRequest
     ): ResponseResult<LinkAttachmentHeader>
 
-    suspend fun deleteAttachmentOfSubmission(
-        courseId: UUID,
-        courseWorkId: UUID,
-        submissionId: UUID,
-        attachmentId: UUID
-    ): EmptyResponseResult
-
     suspend fun submitSubmission(
         courseId: UUID,
         courseWorkId: UUID,
         submissionId: UUID
     ): ResponseResult<SubmissionResponse>
+
+    suspend fun deleteAttachment(
+        courseId: UUID,
+        courseWorkId: UUID,
+        submissionId: UUID,
+        attachmentId: UUID
+    ): EmptyResponseResult
 
     suspend fun cancelSubmission(
         courseId: UUID,
@@ -155,7 +155,7 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
             .toResult()
     }
 
-    override suspend fun uploadFileToSubmission(
+    override suspend fun uploadFile(
         courseId: UUID,
         courseWorkId: UUID,
         submissionId: UUID,
@@ -179,7 +179,7 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
             )
         }.toResult()
 
-    override suspend fun addLinkToSubmission(
+    override suspend fun addLink(
         courseId: UUID,
         courseWorkId: UUID,
         submissionId: UUID,
@@ -191,7 +191,7 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
             setBody(link)
         }.toResult()
 
-    override suspend fun deleteAttachmentOfSubmission(
+    override suspend fun deleteAttachment(
         courseId: UUID,
         courseWorkId: UUID,
         submissionId: UUID,

@@ -6,18 +6,21 @@ import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.data.storage.FileProvider
 import com.denchic45.studiversity.domain.Resource
+import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
+import com.denchic45.stuiversity.api.course.material.CourseMaterialApi
+import com.denchic45.stuiversity.api.course.material.model.CreateCourseMaterialRequest
+import com.denchic45.stuiversity.api.course.material.model.UpdateCourseMaterialRequest
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.util.uuidOfMe
-import com.eygraber.uri.Uri
 import com.github.michaelbull.result.coroutines.binding.binding
 import com.github.michaelbull.result.map
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +37,8 @@ class CourseElementRepository @javax.inject.Inject constructor(
     private val courseTopicApi: CourseTopicApi,
     private val courseElementsApi: CourseElementsApi,
     private val courseWorkApi: CourseWorkApi,
+    private val courseMaterialApi: CourseMaterialApi,
+    private val attachmentApi: AttachmentApi,
     private val fileProvider: FileProvider
 ) : NetworkServiceOwner {
     suspend fun findElementsByCourse(courseId: UUID) = fetchResource {
@@ -55,6 +60,10 @@ class CourseElementRepository @javax.inject.Inject constructor(
         courseWorkApi.getById(courseId, workId)
     }
 
+    suspend fun findMaterialById(courseId: UUID, materialId: UUID) = fetchResource {
+        courseMaterialApi.getById(courseId, materialId)
+    }
+
     suspend fun addCourseWork(
         courseId: UUID,
         createCourseWorkRequest: CreateCourseWorkRequest,
@@ -62,32 +71,39 @@ class CourseElementRepository @javax.inject.Inject constructor(
         courseWorkApi.create(courseId, createCourseWorkRequest)
     }
 
-    suspend fun addLinkToWork(
+    suspend fun addCourseMaterial(
         courseId: UUID,
-        workId: UUID,
-        linkUrl: String
+        request: CreateCourseMaterialRequest,
     ) = fetchResource {
-        courseWorkApi.addLinkToWork(
-            courseId = courseId,
-            courseWorkId = workId,
-            createLinkRequest = CreateLinkRequest(linkUrl)
-        )
+        courseMaterialApi.create(courseId, request)
     }
 
-    suspend fun addFileToWork(
-        courseId: UUID,
-        workId: UUID,
-        uri: Uri
-    ) = fetchResource {
-        courseWorkApi.uploadFileToWork(
-            courseId = courseId,
-            courseWorkId = workId,
-            createFileRequest = CreateFileRequest(
-                fileProvider.getName(uri),
-                fileProvider.getBytes(uri)
-            )
-        )
-    }
+//    suspend fun addLinkToWork(
+//        courseId: UUID,
+//        workId: UUID,
+//        linkUrl: String
+//    ) = fetchResource {
+//        courseWorkApi.addLinkToWork(
+//            courseId = courseId,
+//            courseWorkId = workId,
+//            createLinkRequest = CreateLinkRequest(linkUrl)
+//        )
+//    }
+
+//    suspend fun addFileToWork(
+//        courseId: UUID,
+//        workId: UUID,
+//        uri: Uri
+//    ) = fetchResource {
+//        courseWorkApi.uploadFileToWork(
+//            courseId = courseId,
+//            courseWorkId = workId,
+//            createFileRequest = CreateFileRequest(
+//                fileProvider.getName(uri),
+//                fileProvider.getBytes(uri)
+//            )
+//        )
+//    }
 
     suspend fun addAttachmentToWork(
         courseId: UUID,
@@ -109,19 +125,20 @@ class CourseElementRepository @javax.inject.Inject constructor(
         }
     }
 
-    suspend fun removeAttachmentFromWork(
-        courseId: UUID,
-        workId: UUID, attachmentId: UUID,
-    ) = fetchResource {
-        courseWorkApi.deleteAttachmentFromWork(courseId, workId, attachmentId)
-    }
-
-    suspend fun updateWork(
+    suspend fun updateCourseWork(
         courseId: UUID,
         workId: UUID,
         updateCourseWorkRequest: UpdateCourseWorkRequest,
     ) = fetchResource {
         courseWorkApi.update(courseId, workId, updateCourseWorkRequest)
+    }
+
+    suspend fun updateCourseMaterial(
+        courseId: UUID,
+        materialId: UUID,
+        request: UpdateCourseMaterialRequest,
+    ) = fetchResource {
+        courseMaterialApi.update(courseId, materialId, request)
     }
 
     fun findUpcomingByYourAuthor(

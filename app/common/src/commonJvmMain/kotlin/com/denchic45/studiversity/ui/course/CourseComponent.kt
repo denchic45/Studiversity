@@ -7,6 +7,7 @@ import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
@@ -19,6 +20,8 @@ import com.denchic45.studiversity.domain.usecase.FindCourseByIdUseCase
 import com.denchic45.studiversity.ui.CourseMembersComponent
 import com.denchic45.studiversity.ui.courseeditor.CourseEditorComponent
 import com.denchic45.studiversity.ui.courseelements.CourseElementsComponent
+import com.denchic45.studiversity.ui.coursematerial.CourseMaterialComponent
+import com.denchic45.studiversity.ui.coursematerialeditor.CourseMaterialEditorComponent
 import com.denchic45.studiversity.ui.coursestudygroups.CourseStudyGroupsComponent
 import com.denchic45.studiversity.ui.coursetimetable.CourseTimetableComponent
 import com.denchic45.studiversity.ui.coursetopics.CourseTopicsComponent
@@ -29,6 +32,7 @@ import com.denchic45.studiversity.ui.navigation.isActiveFlow
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.util.componentScope
+import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.flow.Flow
@@ -68,10 +72,24 @@ class CourseComponent(
         topicId: UUID?,
         ComponentContext,
     ) -> CourseWorkEditorComponent,
+    _courseMaterialComponent: (
+        onFinish: () -> Unit,
+        onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
+        courseId: UUID,
+        materialId: UUID,
+        ComponentContext,
+    ) -> CourseMaterialComponent,
+    courseMaterialEditorComponent: (
+        onFinish: () -> Unit,
+        courseId: UUID,
+        materialId: UUID?,
+        topicId: UUID?,
+        ComponentContext,
+    ) -> CourseMaterialEditorComponent,
     courseStudyGroupsComponent: (UUID, ComponentContext) -> CourseStudyGroupsComponent,
     _courseElementsComponent: (
         courseId: UUID,
-        onElementOpen: (courseId: UUID, elementId: UUID) -> Unit,
+        onElementOpen: (courseId: UUID, elementId: UUID, type: CourseElementType) -> Unit,
         ComponentContext,
     ) -> CourseElementsComponent,
     _courseMembersComponent: (
@@ -128,9 +146,12 @@ class CourseComponent(
 
     private val courseElementsComponent = _courseElementsComponent(
         courseId,
-        { _, workId ->
+        { _, elementId, type ->
             stackNavigation.push(
-                Config.CourseWork(workId)
+               when(type) {
+                   CourseElementType.WORK ->  Config.CourseWork(elementId)
+                   CourseElementType.MATERIAL ->  Config.CourseMaterial(elementId)
+               }
             )
         },
         componentContext.childContext("Elements")
@@ -223,6 +244,32 @@ class CourseComponent(
                     )
                 )
 
+                is Config.CourseMaterial -> Child.CourseMaterial(
+                    _courseMaterialComponent(
+                        stackNavigation::pop,
+                        { courseId, materialId ->
+                            stackNavigation.bringToFront(
+                                Config.CourseMaterialEditor(
+                                    materialId
+                                )
+                            )
+                        },
+                        courseId,
+                        config.materialId,
+                        context
+                    )
+                )
+
+                is Config.CourseMaterialEditor -> Child.CourseWorMaterialEditor(
+                    courseMaterialEditorComponent(
+                        stackNavigation::pop,
+                        courseId,
+                        config.materialId,
+                        null,
+                        context
+                    )
+                )
+
                 Config.None -> Child.None
             }
         }
@@ -234,6 +281,10 @@ class CourseComponent(
 
     fun onAddWorkClick() {
         stackNavigation.push(Config.CourseWorkEditor(null))
+    }
+
+    fun onAddMaterialClick() {
+        stackNavigation.push(Config.CourseMaterialEditor(null))
     }
 
     fun onCourseEditClick() {
@@ -271,6 +322,10 @@ class CourseComponent(
         data class CourseWork(val workId: UUID) : Config()
 
         data class CourseWorkEditor(val workId: UUID?) : Config()
+
+        data class CourseMaterial(val materialId: UUID) : Config()
+
+        data class CourseMaterialEditor(val materialId: UUID?) : Config()
     }
 
     sealed class Child {
@@ -284,6 +339,10 @@ class CourseComponent(
         data class CourseWork(val component: CourseWorkComponent) : Child()
 
         class CourseWorkEditor(val component: CourseWorkEditorComponent) : Child()
+
+        data class CourseMaterial(val component: CourseMaterialComponent) : Child()
+
+        class CourseWorMaterialEditor(val component: CourseMaterialEditorComponent) : Child()
 
         object None : Child()
     }
