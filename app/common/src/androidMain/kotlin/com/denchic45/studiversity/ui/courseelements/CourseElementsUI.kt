@@ -18,8 +18,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.AssignmentTurnedIn
 import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -114,15 +116,15 @@ fun CourseElementListItem(response: CourseElementResponse, onClick: () -> Unit) 
     ) {
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .size(40.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(8.dp)
         ) {
             Icon(
                 imageVector = when (response.details) {
-                    is CourseWork -> Icons.Outlined.AssignmentTurnedIn
-                    CourseMaterial -> Icons.Outlined.Description
+                    is CourseWork -> Icons.Outlined.Assignment
+                    CourseMaterial -> Icons.Outlined.MenuBook
                 },
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = null,

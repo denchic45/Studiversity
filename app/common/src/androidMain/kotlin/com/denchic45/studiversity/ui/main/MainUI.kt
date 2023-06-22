@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -557,25 +556,24 @@ private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState)
                     )
                 }
             }
-
+            var menuExpanded by remember { mutableStateOf(false) }
             if (appBarState.content.dropdownItems.isNotEmpty()) {
-                var menuExpanded by remember { mutableStateOf(false) }
                 IconButton(onClick = { menuExpanded = !menuExpanded }) {
                     Icon(Icons.Filled.MoreVert, "menu")
                 }
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = { menuExpanded = false },
-                ) {
-                    appBarState.content.dropdownItems.forEach { item ->
-                        DropdownMenuItem(
-                            text = { Text(item.title.get(LocalContext.current)) },
-                            onClick = {
-                                menuExpanded = false
-                                item.onClick()
-                            },
-                        )
-                    }
+            }
+            DropdownMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false },
+            ) {
+                appBarState.content.dropdownItems.forEach { item ->
+                    DropdownMenuItem(
+                        text = { Text(item.title.get(LocalContext.current)) },
+                        onClick = {
+                            menuExpanded = false
+                            item.onClick()
+                        },
+                    )
                 }
             }
         },
@@ -591,19 +589,19 @@ private fun ScreenContainer(
 //    Children(
 //        modifier = Modifier.padding(paddingValues), stack = stack,
 //    ) {
-        Crossfade( modifier= Modifier.padding(paddingValues),targetState = stack.active) {
-            println("children: ${it.instance}")
-            when (val child = it.instance) {
-                is MainComponent.Child.YourStudyGroups -> RootStackScreen(component = child.component)
-                is MainComponent.Child.YourTimetables -> RootStackScreen(component = child.component)
-                is MainComponent.Child.AdminDashboard -> RootStackScreen(component = child.component)
-                is MainComponent.Child.YourCourse -> CourseScreen(component = child.component)
-                is MainComponent.Child.Course -> CourseScreen(component = child.component)
-                is MainComponent.Child.StudyGroup -> StudyGroupScreen(component = child.component)
-                is MainComponent.Child.YourWorks -> YourWorksScreen(component = child.component)
-                is MainComponent.Child.CourseWork -> CourseWorkScreen(child.component)
-                is MainComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
-            }
+    Crossfade(modifier = Modifier.padding(paddingValues), targetState = stack.active) {
+        println("children: ${it.instance}")
+        when (val child = it.instance) {
+            is MainComponent.Child.YourStudyGroups -> RootStackScreen(component = child.component)
+            is MainComponent.Child.YourTimetables -> RootStackScreen(component = child.component)
+            is MainComponent.Child.AdminDashboard -> RootStackScreen(component = child.component)
+            is MainComponent.Child.YourCourse -> CourseScreen(component = child.component)
+            is MainComponent.Child.Course -> CourseScreen(component = child.component)
+            is MainComponent.Child.StudyGroup -> StudyGroupScreen(component = child.component)
+            is MainComponent.Child.YourWorks -> YourWorksScreen(component = child.component)
+            is MainComponent.Child.CourseWork -> CourseWorkScreen(child.component)
+            is MainComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
         }
+    }
 //    }
 }

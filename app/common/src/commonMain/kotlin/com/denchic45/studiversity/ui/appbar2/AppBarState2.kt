@@ -226,7 +226,6 @@ private fun updateState(
     content: AppBarContent,
     appBarState: AppBarState2,
 ) {
-    println("appBarState: $content")
     appBarState.content = content
     appBarState.expand()
 }

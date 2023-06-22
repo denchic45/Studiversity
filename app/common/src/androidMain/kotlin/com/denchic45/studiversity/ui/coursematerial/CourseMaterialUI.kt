@@ -2,6 +2,7 @@ package com.denchic45.studiversity.ui.coursematerial
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -91,12 +91,10 @@ private fun CourseMaterialContent(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .verticalScroll(rememberScrollState())
-                .padding(vertical = MaterialTheme.spacing.normal)
+                .padding(bottom = MaterialTheme.spacing.normal)
         ) {
             Column(Modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
                 CourseMaterialHeader(material.name)
-                Divider()
-                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
                 material.description?.let {
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
                     Text(text = it, style = MaterialTheme.typography.bodyLarge)
@@ -104,9 +102,12 @@ private fun CourseMaterialContent(
             }
             attachmentsResource.onSuccess { attachments ->
                 if (attachments.isNotEmpty()) {
-                    HeaderItemUI(name = "Прикрепленные файлы")
-                    LazyRow {
-                        items(attachments, key = { it.attachmentId ?: Unit }) {
+                    HeaderItemUI(
+                        name = "Прикрепленные файлы",
+                        Modifier.padding(horizontal = MaterialTheme.spacing.normal)
+                    )
+                    LazyRow(contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.normal)) {
+                        items(attachments, key = { it.attachmentId }) {
                             AttachmentListItem(item = it, onClick = { onAttachmentClick(it) })
                         }
                     }

@@ -34,6 +34,9 @@ import androidx.compose.material.icons.outlined.AssignmentTurnedIn
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.MenuBook
+import androidx.compose.material.icons.outlined.Note
+import androidx.compose.material.icons.outlined.Summarize
 import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -133,6 +136,7 @@ fun CourseScreen(component: CourseComponent) {
 
             CourseComponent.Child.None -> {
                 hideAppBar()
+                println("HIDE: 1")
                 CourseContent(
                     course = course,
                     allowEdit = allowEdit,
@@ -157,7 +161,9 @@ fun CourseScreen(component: CourseComponent) {
             is CourseComponent.SidebarChild.Profile -> ProfileScreen(child.component)
             is CourseComponent.SidebarChild.ScopeMemberEditor -> ScopeMemberEditorScreen(child.component)
         }
-    } ?: hideAppBar()
+    } ?: run {
+        hideAppBar()
+    }
 }
 
 @OptIn(
@@ -279,7 +285,7 @@ fun CourseContent(
                             ) {
                                 SmallFloatingActionButton(onClick = { onAddMaterialClick() }) {
                                     Icon(
-                                        painter = rememberVectorPainter(Icons.Outlined.Description),
+                                        painter = rememberVectorPainter(Icons.Outlined.MenuBook),
                                         contentDescription = "add material",
                                         modifier = Modifier
                                     )
@@ -326,7 +332,7 @@ fun CourseContent(
                             Crossfade(targetState = fabExpanded) {
                                 if (it) {
                                     Icon(
-                                        painter = rememberVectorPainter(Icons.Outlined.AssignmentTurnedIn),
+                                        painter = rememberVectorPainter(Icons.Outlined.Assignment),
                                         contentDescription = "add work",
                                         modifier = Modifier.rotate(rotation.value + 180f)
                                     )
