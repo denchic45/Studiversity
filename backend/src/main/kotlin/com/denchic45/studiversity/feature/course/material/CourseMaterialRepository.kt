@@ -23,7 +23,7 @@ class CourseMaterialRepository {
             this.topic = request.topicId?.let { CourseTopicDao.findById(it) }
             this.name = request.name
             this.description = request.description
-            this.type = CourseElementType.WORK
+            this.type = CourseElementType.MATERIAL
             this.order = generateOrderByCourseAndTopicId(courseId, request.topicId)
         }
         return elementId

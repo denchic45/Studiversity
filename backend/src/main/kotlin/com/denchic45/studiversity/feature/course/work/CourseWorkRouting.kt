@@ -106,7 +106,6 @@ private fun Route.courseWorkById() {
                 )
             }
         )
-
         workSubmissionRoutes()
     }
 }
