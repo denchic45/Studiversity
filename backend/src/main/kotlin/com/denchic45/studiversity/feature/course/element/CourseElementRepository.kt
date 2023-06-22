@@ -4,12 +4,8 @@ import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.course.work.toWorkResponse
 import com.denchic45.studiversity.util.toSqlSortOrder
-import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
-import com.denchic45.stuiversity.api.course.element.model.CourseElementType
-import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
-import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
+import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -70,38 +66,16 @@ class CourseElementRepository {
         return dao.toResponse(getElementDetailsByIdAndType(elementId, dao.type))
     }
 
-    fun update(
-        courseId: UUID,
-        workId: UUID,
-        request: UpdateCourseWorkRequest
-    ): CourseWorkResponse? {
-        val resultRow = CourseWorks.innerJoin(CourseElements, { CourseWorks.id }, { CourseElements.id })
-            .select { CourseElements.courseId eq courseId and (CourseElements.id eq workId) }.singleOrNull()
-        return resultRow?.let { row ->
-            val elementDao = CourseElementDao.wrapRow(row)
-            val workDao = CourseWorkDao.wrapRow(row)
-            request.name.ifPresent { elementDao.name = it }
-            request.description.ifPresent { elementDao.description = it }
-            request.topicId.ifPresent { elementDao.topic = it?.let { id -> CourseTopicDao.findById(id) } }
-
-            request.dueDate.ifPresent { workDao.dueDate = it }
-            request.dueTime.ifPresent { workDao.dueTime = it }
-            request.maxGrade.ifPresent { workDao.maxGrade = it }
-
-            elementDao.toWorkResponse(workDao)
-        }
-    }
-
     private fun decreaseElementOrdersByTopicIdAndGreaterElementOrder(topicId: UUID?, order: Int) {
         CourseElements.update(where = { CourseElements.topicId eq topicId and (CourseElements.order greater order) }) {
             it[CourseElements.order] = CourseElements.order - 1
         }
     }
 
-    private fun getElementDetailsByIdAndType(elementId: UUID, type: CourseElementType): CourseElementDetailsDao {
+    private fun getElementDetailsByIdAndType(elementId: UUID, type: CourseElementType): CourseElementDetails {
         return when (type) {
-            CourseElementType.WORK -> CourseWorkDao.findById(elementId)!!
-            CourseElementType.MATERIAL -> TODO()
+            CourseElementType.WORK -> CourseWorkDao.findById(elementId)!!.toElementDetails()
+            CourseElementType.MATERIAL -> CourseMaterial
         }
     }
 

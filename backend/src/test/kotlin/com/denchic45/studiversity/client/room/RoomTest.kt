@@ -19,7 +19,7 @@ class RoomTest : KtorClientTest() {
 
     @Test
     fun test(): Unit = runBlocking {
-        val createdRoom = roomApi.create(CreateRoomRequest("Room №20")).also(::assertResultIsOk).unwrap().apply {
+        val createdRoom = roomApi.create(CreateRoomRequest("Room №20","")).also(::assertResultIsOk).unwrap().apply {
             assertEquals("Room №20", name)
         }
 

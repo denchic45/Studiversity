@@ -14,14 +14,7 @@ class RemoveCourseElementUseCase(
 ) {
 
     suspend operator fun invoke(courseId: UUID, elementId: UUID) = transactionWorker.suspendInvoke {
-        when (courseElementRepository.findTypeByElementId(elementId)) {
-            CourseElementType.WORK -> {
-                attachmentRepository.removeByCourseElementId(elementId)
-                courseElementRepository.remove(courseId, elementId)
-            }
-
-            CourseElementType.MATERIAL -> TODO()
-            null -> throw NotFoundException()
-        }
+        attachmentRepository.removeByCourseElementId(elementId)
+        courseElementRepository.remove(courseId, elementId)
     }
 }

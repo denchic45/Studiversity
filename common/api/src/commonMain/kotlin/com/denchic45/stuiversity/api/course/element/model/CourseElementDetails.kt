@@ -7,7 +7,6 @@ import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 @Serializable
@@ -26,6 +25,4 @@ data class CourseWork @OptIn(ExperimentalSerializationApi::class) constructor(
 ) : CourseElementDetails()
 
 @Serializable
-data class CourseMaterial(
-    val text: String
-) : CourseElementDetails()
+object CourseMaterial : CourseElementDetails()

@@ -11,7 +11,7 @@ import java.util.*
 
 
 @Serializable
-data class CreateCourseWorkRequest constructor(
+data class CreateCourseWorkRequest(
     val name: String,
     val description: String? = null,
     @Serializable(UUIDSerializer::class)

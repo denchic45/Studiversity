@@ -103,10 +103,10 @@ class TimetableTest : KtorClientTest() {
         engCourse = courseApi.create(CreateCourseRequest("English")).also(::assertResultIsOk).unwrap()
         physicsCourse = courseApi.create(CreateCourseRequest("Physics")).also(::assertResultIsOk).unwrap()
 
-        room5 = roomApi.create(CreateRoomRequest("Room 5")).also(::assertResultIsOk).unwrap()
-        room10 = roomApi.create(CreateRoomRequest("Room 10")).also(::assertResultIsOk).unwrap()
-        room15 = roomApi.create(CreateRoomRequest("Room 15")).also(::assertResultIsOk).unwrap()
-        roomWorkshop = roomApi.create(CreateRoomRequest("Workshop")).also(::assertResultIsOk).unwrap()
+        room5 = roomApi.create(CreateRoomRequest("Room 5", "")).also(::assertResultIsOk).unwrap()
+        room10 = roomApi.create(CreateRoomRequest("Room 10", "")).also(::assertResultIsOk).unwrap()
+        room15 = roomApi.create(CreateRoomRequest("Room 15", "")).also(::assertResultIsOk).unwrap()
+        roomWorkshop = roomApi.create(CreateRoomRequest("Workshop", "")).also(::assertResultIsOk).unwrap()
     }
 
     @AfterEach

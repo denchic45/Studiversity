@@ -2,6 +2,7 @@ package com.denchic45.studiversity.feature.course.work
 
 import com.denchic45.studiversity.database.table.CourseElementDao
 import com.denchic45.studiversity.database.table.CourseWorkDao
+import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 
 fun CourseElementDao.toWorkResponse(courseWorkDao: CourseWorkDao): CourseWorkResponse {

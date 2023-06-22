@@ -9,7 +9,7 @@ import java.util.*
 
 
 @Serializable
-data class UpdateCourseWorkRequest constructor(
+data class UpdateCourseWorkRequest(
     @Serializable(OptionalPropertySerializer::class)
     val name: OptionalProperty<String> = OptionalProperty.NotPresent,
     @Serializable(OptionalPropertySerializer::class)

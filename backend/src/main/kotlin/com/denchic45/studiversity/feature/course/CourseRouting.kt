@@ -2,6 +2,7 @@ package com.denchic45.studiversity.feature.course
 
 import com.denchic45.studiversity.config
 import com.denchic45.studiversity.feature.course.element.courseElementRoutes
+import com.denchic45.studiversity.feature.course.material.courseMaterialsRoutes
 import com.denchic45.studiversity.feature.course.topic.courseTopicsRoutes
 import com.denchic45.studiversity.feature.course.usecase.*
 import com.denchic45.studiversity.feature.course.work.courseWorksRoutes
@@ -154,6 +155,7 @@ private fun Route.courseByIdRoutes() {
         courseStudyGroups()
         courseElementRoutes()
         courseWorksRoutes()
+        courseMaterialsRoutes()
         courseTopicsRoutes()
     }
 }
