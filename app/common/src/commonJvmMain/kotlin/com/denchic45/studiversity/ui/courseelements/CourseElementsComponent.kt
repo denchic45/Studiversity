@@ -1,12 +1,20 @@
 package com.denchic45.studiversity.ui.courseelements
 
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resourceOf
 import com.denchic45.studiversity.domain.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindCourseElementsUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveCourseElementUseCase
 import com.denchic45.studiversity.util.componentScope
+import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
+import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -26,9 +34,21 @@ class CourseElementsComponent(
 
 //    val appBarState = MutableStateFlow(AppBarState())
 
-    val elements = flow { emit(findCourseElementsUseCase(courseId)) }
+    val refreshing = MutableStateFlow(false)
+
+    private val _elements = flow { emit(findCourseElementsUseCase(courseId)) }
         .stateInResource(componentScope)
 
+    val elements =
+        MutableStateFlow<Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>>>(
+            resourceOf()
+        )
+
+    init {
+        componentScope.launch {
+            elements.emitAll(_elements)
+        }
+    }
 
     fun onItemClick(elementId: UUID, type: CourseElementType) {
         onElementOpen(courseId, elementId, type)
@@ -66,5 +86,13 @@ class CourseElementsComponent(
 ////            oldPosition = -1
 ////            position = -1
 ////        }
+    }
+
+    fun onRefresh() {
+        componentScope.launch {
+            refreshing.update { true }
+            elements.update { findCourseElementsUseCase(courseId) }
+            refreshing.update { false }
+        }
     }
 }

@@ -1,13 +1,12 @@
 package com.denchic45.studiversity.ui.coursework
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Divider
@@ -25,25 +24,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.takeValueIfSuccess
 import com.denchic45.studiversity.ui.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.theme.LocalBackDispatcher
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -54,8 +47,8 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     val backDispatcher = LocalBackDispatcher.current
 
     val yourSubmissionComponent = component.yourSubmissionComponent
-    val submissionResource by yourSubmissionComponent.submission.collectAsState(null)
-    val submissionExpanded by yourSubmissionComponent.sheetExpanded.collectAsState()
+    val submissionResource by yourSubmissionComponent.submission.collectAsState()
+    val hasSubmission by yourSubmissionComponent.hasSubmission.collectAsState()
 
     var showFilePicker by remember { mutableStateOf(false) }
 
@@ -78,13 +71,42 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
         }
     }
 
-    CourseWorkContent(
-        childrenResource = childrenResource,
-        submissionResource = submissionResource,
-        allowEdit = allowEdit,
-        onEditClick = component::onEditClick,
-        onDeleteClick = component::onDeleteClick,
-        onClose = backDispatcher::back
+    var selectedTab by remember { mutableStateOf(0) }
+
+    Row(Modifier.widthIn(max = 960.dp)) {
+        CourseWorkBody(
+            childrenResource = childrenResource,
+            allowEdit = allowEdit,
+            selectedTab = selectedTab,
+            onTabSelect = { selectedTab = it },
+            onEditClick = component::onEditClick,
+            onDeleteClick = component::onDeleteClick,
+            onClose = backDispatcher::back
+        )
+        if (hasSubmission.takeValueIfSuccess() == true) {
+            SubmissionPanel(
+                resource = submissionResource,
+                onAttachmentAdd = {
+                    // TODO: use desktop file chooser
+                },
+                onAttachmentClick = component::onAttachmentClick,
+                onAttachmentRemove = yourSubmissionComponent::onAttachmentRemove,
+                onSubmit = yourSubmissionComponent::onSubmit,
+                onCancel = yourSubmissionComponent::onCancel
+            )
+        }
+
+    }
+
+//    CourseWorkContent(
+//        modifier = Modifier.widthIn(max = 960.dp),
+//        childrenResource = childrenResource,
+//        submissionResource = if (hasSubmission.takeValueIfSuccess() == true) submissionResource else null,
+//        allowEdit = allowEdit,
+//        onEditClick = component::onEditClick,
+//        onDeleteClick = component::onDeleteClick,
+//        onClose = backDispatcher::back
+
 //        onAttachmentAdd = {
 //            chooseMultipleFiles("Выбрать файлы") {
 //                yourSubmissionComponent.onFilesSelect(it.map(File::toOkioPath))
@@ -96,7 +118,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
 //        onCancel = yourSubmissionComponent::onCancel,
 //        submissionExpanded = submissionExpanded,
 //        onSubmissionExpandChange = yourSubmissionComponent::onExpandChanged
-    )
+//    )
 }
 
 @Composable
@@ -148,6 +170,7 @@ fun CourseWorkHeader(
 
 @Composable
 private fun CourseWorkContent(
+    modifier: Modifier = Modifier,
     childrenResource: Resource<List<CourseWorkComponent.Child>>,
     submissionResource: Resource<SubmissionUiState>?,
     allowEdit: Boolean,
@@ -155,16 +178,7 @@ private fun CourseWorkContent(
     onDeleteClick: () -> Unit,
     onClose: () -> Unit
 ) {
-    var selectedTab by remember { mutableStateOf(0) }
-    CourseWorkBody(
-        childrenResource = childrenResource,
-        allowEdit = allowEdit,
-        selectedTab = selectedTab,
-        onPageSelect = { selectedTab = it },
-        onEditClick = onEditClick,
-        onDeleteClick = onDeleteClick,
-        onClose = onClose
-    )
+
 
 //    BottomSheetScaffold(
 //        sheetPeekHeight = topHeight.pxToDp(),
@@ -221,23 +235,20 @@ private fun CourseWorkContent(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun CourseWorkBody(
     childrenResource: Resource<List<CourseWorkComponent.Child>>,
     allowEdit: Boolean,
     selectedTab: Int,
-    onPageSelect: (Int) -> Unit,
+    onTabSelect: (Int) -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState()
 
-    LaunchedEffect(pagerState) {
+    LaunchedEffect(selectedTab) {
         // Collect from the pager state a snapshotFlow reading the currentPage
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            onPageSelect(page)
+        snapshotFlow { selectedTab }.collect { page ->
+            onTabSelect(page)
         }
     }
 
@@ -263,12 +274,8 @@ private fun CourseWorkBody(
                         children.forEachIndexed { index, child ->
                             Tab(
                                 text = { Text(child.title) },
-                                selected = pagerState.currentPage == index,
-                                onClick = {
-                                    coroutineScope.launch {
-                                        pagerState.animateScrollToPage(index)
-                                    }
-                                },
+                                selected = selectedTab == index,
+                                onClick = { onTabSelect(index) },
                             )
                         }
                     }
@@ -494,29 +501,3 @@ private fun CourseWorkBody(
 //        }
 //    }
 //}
-
-
-@Composable
-fun Dp.dpToPx() = with(LocalDensity.current) { this@dpToPx.toPx() }
-
-
-@Composable
-fun Int.pxToDp() = with(LocalDensity.current) { this@pxToDp.toDp() }
-
-@Composable
-fun Float.pxToDp() = with(LocalDensity.current) { this@pxToDp.toDp() }
-
-fun Modifier.gesturesDisabled(disabled: Boolean = true) = if (disabled) {
-    pointerInput(Unit) {
-        awaitPointerEventScope {
-            // we should wait for all new pointer events
-            while (true) {
-                awaitPointerEvent(pass = PointerEventPass.Initial)
-                    .changes
-                    .forEach(PointerInputChange::consume)
-            }
-        }
-    }
-} else {
-    this
-}

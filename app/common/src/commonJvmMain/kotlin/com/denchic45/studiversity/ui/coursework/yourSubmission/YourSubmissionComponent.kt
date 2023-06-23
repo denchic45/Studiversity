@@ -3,6 +3,7 @@ package com.denchic45.studiversity.ui.coursework.yourSubmission
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.filterNotNullValue
 import com.denchic45.studiversity.domain.flatMapResourceFlow
 import com.denchic45.studiversity.domain.map
 import com.denchic45.studiversity.domain.mapResource
@@ -63,9 +64,13 @@ class YourSubmissionComponent(
         capabilities = listOf(Capability.ReadSubmissions, Capability.SubmitSubmission)
     ).stateInResource(componentScope)
 
+     val hasSubmission = capabilities.mapResource {
+        it.hasCapability(Capability.SubmitSubmission)
+    }.stateInResource(componentScope)
+
     private val _observeYourSubmission: Flow<Resource<SubmissionResponse>> =
-        capabilities.flatMapResourceFlow {
-            if (it.hasCapability(Capability.SubmitSubmission)) {
+        hasSubmission.flatMapResourceFlow { has ->
+            if (has) {
                 flow { emit(findYourSubmissionUseCase(courseId, workId)) }
             } else {
                 emptyFlow()
@@ -74,9 +79,11 @@ class YourSubmissionComponent(
 
     private val _updatedYourSubmission = MutableSharedFlow<Resource<SubmissionResponse>>()
 
-    private val _attachments = _observeYourSubmission.flatMapResourceFlow {
-        findSubmissionAttachmentsUseCase(courseId, workId, it.id)
-    }.shareIn(componentScope, SharingStarted.Lazily)
+    private val _attachments = _observeYourSubmission
+        .filterNotNullValue()
+        .flatMapResourceFlow {
+            findSubmissionAttachmentsUseCase(courseId, workId, it.id)
+        }.shareIn(componentScope, SharingStarted.Lazily)
 
     val submission = MutableStateFlow<Resource<SubmissionUiState>>(Resource.Loading)
 

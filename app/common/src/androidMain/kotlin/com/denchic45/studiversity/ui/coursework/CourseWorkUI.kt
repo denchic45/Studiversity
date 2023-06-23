@@ -87,7 +87,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     val childrenResource by component.children.collectAsState()
 
     val yourSubmissionComponent = component.yourSubmissionComponent
-    val submissionResource by yourSubmissionComponent.submission.collectAsState(null)
+    val submissionResource by yourSubmissionComponent.submission.collectAsState()
     val submissionExpanded by yourSubmissionComponent.sheetExpanded.collectAsState()
 
     val context = LocalContext.current
@@ -149,7 +149,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
         childrenResource = childrenResource,
         submissionResource = submissionResource,
         onAttachmentAdd = { pickFileLauncher.launch(Unit) },
-        onAttachmentClick = { component.onAttachmentClick(it) },
+        onAttachmentClick = component::onAttachmentClick,
         onAttachmentRemove = yourSubmissionComponent::onAttachmentRemove,
         onSubmit = yourSubmissionComponent::onSubmit,
         onCancel = yourSubmissionComponent::onCancel,

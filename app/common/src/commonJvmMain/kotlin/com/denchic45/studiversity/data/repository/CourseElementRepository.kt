@@ -1,12 +1,9 @@
 package com.denchic45.studiversity.data.repository
 
-import com.denchic45.studiversity.data.db.local.source.AttachmentLocalDataSource
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.studiversity.data.storage.FileProvider
 import com.denchic45.studiversity.domain.Resource
-import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.course.element.CourseElementsApi
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
@@ -23,7 +20,6 @@ import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.util.uuidOfMe
 import com.github.michaelbull.result.coroutines.binding.binding
 import com.github.michaelbull.result.map
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
@@ -31,15 +27,11 @@ import java.util.UUID
 
 @Inject
 class CourseElementRepository @javax.inject.Inject constructor(
-    private val coroutineScope: CoroutineScope,
     override val networkService: NetworkService,
-    private val attachmentLocalDataSource: AttachmentLocalDataSource,
     private val courseTopicApi: CourseTopicApi,
     private val courseElementsApi: CourseElementsApi,
     private val courseWorkApi: CourseWorkApi,
-    private val courseMaterialApi: CourseMaterialApi,
-    private val attachmentApi: AttachmentApi,
-    private val fileProvider: FileProvider
+    private val courseMaterialApi: CourseMaterialApi
 ) : NetworkServiceOwner {
     suspend fun findElementsByCourse(courseId: UUID) = fetchResource {
         binding {

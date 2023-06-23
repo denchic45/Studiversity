@@ -19,14 +19,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Assignment
-import androidx.compose.material.icons.outlined.AssignmentTurnedIn
-import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pullrefresh.pullRefresh
+import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -58,6 +58,11 @@ import java.util.UUID
 @Composable
 fun CourseElementsScreen(component: CourseElementsComponent) {
     val elementsResource by component.elements.collectAsState()
+    val refreshing by component.refreshing.collectAsState()
+
+    val refreshState = rememberPullRefreshState(refreshing, component::onRefresh)
+
+    Box(modifier = Modifier.pullRefresh(refreshState))
 
     CourseElementsContent(
         elementsResource = elementsResource,

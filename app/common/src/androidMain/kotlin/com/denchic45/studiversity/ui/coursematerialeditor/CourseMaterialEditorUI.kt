@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -219,8 +220,11 @@ fun CourseMaterialEditorContent(
 
                 attachmentsResource.onSuccess { attachmentItems ->
                     if (attachmentItems.isNotEmpty()) {
-                        HeaderItemUI(name = "Прикрепленные файлы")
-                        LazyRow {
+                        HeaderItemUI(
+                            name = "Прикрепленные файлы",
+                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.normal)
+                        )
+                        LazyRow(contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.normal)) {
                             itemsIndexed(
                                 items = attachmentItems,
                                 key = { _, item -> item.attachmentId }) { index, item ->

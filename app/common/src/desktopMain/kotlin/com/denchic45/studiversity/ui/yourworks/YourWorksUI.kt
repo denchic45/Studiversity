@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +29,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +36,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.AppBarTitle
 import com.denchic45.studiversity.ui.CardContent
@@ -44,8 +43,7 @@ import com.denchic45.studiversity.ui.CustomAppBar
 import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.Scaffold
-import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
-import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
+import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.util.toString
@@ -132,7 +130,13 @@ fun YourWorksScreen(component: YourWorksComponent) {
 fun WorksListContent(works: Resource<List<CourseWorkResponse>>, onClick: (UUID, UUID) -> Unit) {
     ResourceContent(resource = works) {
         if (it.isNotEmpty())
-            LazyColumn() {
+            LazyColumn(
+               modifier = Modifier.widthIn(max = 960.dp),
+                contentPadding = PaddingValues(
+                    horizontal = MaterialTheme.spacing.normal,
+                    vertical = MaterialTheme.spacing.medium
+                )
+            ) {
                 items(it) { work ->
                     CourseWorkListItem(work) { onClick(work.courseId, work.id) }
                 }

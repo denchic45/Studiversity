@@ -1,11 +1,13 @@
 package com.denchic45.studiversity.ui.coursework
 
 import androidx.compose.runtime.Composable
+import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import java.util.UUID
 
 @Composable
 fun SubmissionPanel(
+    resource:Resource<SubmissionUiState>,
     onAttachmentAdd: () -> Unit,
     onAttachmentClick: (AttachmentItem) -> Unit,
     onAttachmentRemove: (attachmentId: UUID) -> Unit,

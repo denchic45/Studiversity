@@ -20,3 +20,9 @@ include(":desktop")
 
 include(":common:api")
 project(":common:api").projectDir = file("../common/api")
+
+includeBuild("common/libs/androidx-compose-material3-pullrefresh") {
+    dependencySubstitution {
+        substitute(module("me.omico.lux:lux-androidx-compose-material3-pullrefresh")).using(project(":library"))
+    }
+}

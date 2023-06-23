@@ -204,6 +204,8 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
                 // Flow layout
                 api("com.google.accompanist:accompanist-flowlayout:0.27.0")
+
+                implementation("me.omico.lux:lux-androidx-compose-material3-pullrefresh")
             }
         }
         val androidTest by getting {

@@ -146,6 +146,10 @@ fun <T> Flow<Resource<T>>.filterResource(
 
 fun <T> Flow<Resource<T>>.filterSuccess(): Flow<Resource.Success<T>> = filterIsInstance()
 
+fun <T> Flow<Resource<T?>>.filterNotNullValue(): Flow<Resource<T>> = filter { resource ->
+    resource.ifSuccess { it != null } ?: true
+}.map { it.notNullOrFailure() }
+
 fun <T> Flow<Resource.Success<T>>.mapToValue(): Flow<T> = map { it.value }
 
 fun <T> Flow<Resource<T>>.updateResource(onSuccess: (T) -> T): Flow<Resource<T>> = map {
