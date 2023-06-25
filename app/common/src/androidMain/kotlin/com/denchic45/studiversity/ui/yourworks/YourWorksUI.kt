@@ -17,7 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.Task
@@ -134,11 +136,14 @@ fun WorksListContent(
                         CourseWorkListItem(work) { onClick(work.courseId, work.id) }
                     }
                 }
-            else
+            else {
+                val state = rememberScrollState()
                 IconTitleBox(
                     icon = { Icon(Icons.Outlined.Task, contentDescription = "empty tasks") },
                     title = { Text(text = "Нет заданий") }
                 )
+                Box(Modifier.fillMaxSize().verticalScroll(state))
+            }
         }
         PullRefreshIndicator(refreshing, refreshState, Modifier.align(Alignment.TopCenter))
     }

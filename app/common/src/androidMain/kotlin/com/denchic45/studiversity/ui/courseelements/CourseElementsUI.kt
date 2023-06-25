@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,9 +19,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Assignment
+import androidx.compose.material.icons.outlined.Error
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,9 +40,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.denchic45.studiversity.data.domain.Forbidden
 import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onLoading
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.ui.IconTitleBox
+import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.theme.AppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
@@ -78,36 +79,77 @@ fun CourseElementsContent(
     elementsResource: Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>>,
     onElementClick: (elementId: UUID, type: CourseElementType) -> Unit,
 ) {
-    elementsResource.onSuccess {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)
-        ) {
-            it.forEach { (topic, elements) ->
-                topic?.let {
-                    item(key = { it.id }) { }
+    ResourceContent(
+        resource = elementsResource,
+        onError = {
+            when (it) {
+                Forbidden -> {
+                    IconTitleBox(
+                        icon = {
+                            Icon(
+                                Icons.Outlined.Lock,
+                                "forbidden",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        title = { Text("У вас нет доступа") }
+                    )
                 }
 
-                items(elements, key = { it.id }) {
-                    CourseElementListItem(
-                        response = it,
-                        onClick = {
-                            onElementClick(
-                                it.id, when (it.details) {
-                                    is CourseWork -> CourseElementType.WORK
-                                    CourseMaterial -> CourseElementType.MATERIAL
-                                } // todo использовать напрямую CourseElementType, а не details
+                else -> {
+                    IconTitleBox(
+                        icon = {
+                            Icon(
+                                Icons.Outlined.Error,
+                                "forbidden",
+                                modifier = Modifier.size(78.dp)
                             )
-                        })
+                        },
+                        title = {
+                            Text("Неизвестная ошибка")
+                        }
+                    )
                 }
             }
-        }
-    }.onLoading {
-        Box(
-            modifier = Modifier.fillMaxHeight(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
+        },
+    ) {
+        if (it.flatMap { topicElements -> topicElements.second }.isNotEmpty()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)
+            ) {
+                it.forEach { (topic, elements) ->
+                    topic?.let {
+                        item(key = { it.id }) { }
+                    }
+
+                    items(elements, key = { it.id }) {
+                        CourseElementListItem(
+                            response = it,
+                            onClick = {
+                                onElementClick(
+                                    it.id, when (it.details) {
+                                        is CourseWork -> CourseElementType.WORK
+                                        CourseMaterial -> CourseElementType.MATERIAL
+                                    } // todo использовать напрямую CourseElementType, а не details
+                                )
+                            })
+                    }
+                }
+            }
+        } else {
+            IconTitleBox(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Assignment,
+                        contentDescription = "empty",
+                        modifier = Modifier.size(78.dp),
+                        tint = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                },
+                title = {
+                    Text(text = "Пусто")
+                })
         }
     }
 }
