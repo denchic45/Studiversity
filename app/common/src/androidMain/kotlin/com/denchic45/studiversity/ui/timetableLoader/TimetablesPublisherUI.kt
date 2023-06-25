@@ -41,10 +41,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.studiversity.domain.resourceOf
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar2.hideAppBar
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
 import com.denchic45.studiversity.ui.periodeditor.PeriodEditorScreen
@@ -61,7 +59,7 @@ import java.time.LocalDate
 fun TimetablesPublisherScreen(
     component: TimetablesPublisherComponent
 ) {
-    updateAppBarState( AppBarContent())
+    updateAppBarState(AppBarContent())
 
     val publishState by component.publishState.collectAsState()
     val viewStates by component.timetablesViewStates.collectAsState()
@@ -74,15 +72,34 @@ fun TimetablesPublisherScreen(
 
     LaunchedEffect(Unit) {
         component.selectedGroup.collect { index ->
+            println("pager state: $index")
             pagerState.scrollToPage(index)
         }
     }
 
     LaunchedEffect(pagerState) {
-        snapshotFlow(pagerState::currentPage).collect { page ->
+        snapshotFlow { pagerState.currentPage }.collect { page ->
             component.onStudyGroupSelect(page)
         }
     }
+
+    TimetablePublisherContent(
+        publishState = publishState,
+        isEdit = isEdit,
+        studyGroups = studyGroups,
+        pagerState = pagerState,
+        viewStates = viewStates,
+        selectedDate = selectedDate,
+        onDateSelect = component::onDateSelect,
+        onEditEnableClick = component::onEditEnableClick,
+        onPublishClick = component::onPublishClick,
+        onStudyGroupChoose = component::onStudyGroupChoose,
+        onStudyGroupSelect = component::onStudyGroupSelect,
+        onRemoveStudyGroupClick = component::onRemoveStudyGroupClick,
+        onAddPeriodClick = component::onAddPeriodClick,
+        onEditPeriodClick = component::onEditPeriodClick,
+        onRemovePeriodSwipe = component::onRemovePeriodSwipe
+    )
 
     overlay.overlay?.let {
         when (val child = it.instance) {
@@ -97,24 +114,7 @@ fun TimetablesPublisherScreen(
                 component = child.component
             )
         }
-    } ?: TimetablePublisherContent(
-            publishState = publishState,
-            isEdit = isEdit,
-            studyGroups = studyGroups,
-            pagerState = pagerState,
-            viewStates = viewStates,
-            selectedDate = selectedDate,
-            onDateSelect = component::onDateSelect,
-            onEditEnableClick = component::onEditEnableClick,
-            onPublishClick = component::onPublishClick,
-            onStudyGroupChoose = component::onStudyGroupChoose,
-            onStudyGroupSelect = component::onStudyGroupSelect,
-            onRemoveStudyGroupClick = component::onRemoveStudyGroupClick,
-            onAddPeriodClick = component::onAddPeriodClick,
-            onEditPeriodClick = component::onEditPeriodClick,
-            onRemovePeriodSwipe = component::onRemovePeriodSwipe
-        )
-
+    }
 }
 
 @Composable

@@ -57,7 +57,7 @@ private fun Route.userAssignedRolesRoute() {
             val currentUserId = call.currentUserId()
             val roleIds = call.receive<List<Long>>()
 
-            requireCapability(currentUserId, Capability.WriteAssignRoles, scopeId)
+//            requireCapability(currentUserId, Capability.WriteAssignRoles, scopeId) // TODO: Вернуть потом
             requireAvailableRolesInScope(roleIds, scopeId)
             requirePermissionToAssignRoles(currentUserId, roleIds, scopeId)
 

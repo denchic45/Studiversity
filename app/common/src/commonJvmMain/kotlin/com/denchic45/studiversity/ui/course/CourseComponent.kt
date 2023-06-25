@@ -33,6 +33,7 @@ import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
+import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.flow.Flow
@@ -80,7 +81,7 @@ class CourseComponent(
         ComponentContext,
     ) -> CourseMaterialComponent,
     courseMaterialEditorComponent: (
-        onFinish: () -> Unit,
+        onFinish: (CourseMaterialResponse) -> Unit,
         courseId: UUID,
         materialId: UUID?,
         topicId: UUID?,
@@ -148,10 +149,10 @@ class CourseComponent(
         courseId,
         { _, elementId, type ->
             stackNavigation.push(
-               when(type) {
-                   CourseElementType.WORK ->  Config.CourseWork(elementId)
-                   CourseElementType.MATERIAL ->  Config.CourseMaterial(elementId)
-               }
+                when (type) {
+                    CourseElementType.WORK -> Config.CourseWork(elementId)
+                    CourseElementType.MATERIAL -> Config.CourseMaterial(elementId)
+                }
             )
         },
         componentContext.childContext("Elements")
@@ -249,9 +250,7 @@ class CourseComponent(
                         stackNavigation::pop,
                         { courseId, materialId ->
                             stackNavigation.bringToFront(
-                                Config.CourseMaterialEditor(
-                                    materialId
-                                )
+                                Config.CourseMaterialEditor(materialId)
                             )
                         },
                         courseId,
@@ -262,7 +261,7 @@ class CourseComponent(
 
                 is Config.CourseMaterialEditor -> Child.CourseWorMaterialEditor(
                     courseMaterialEditorComponent(
-                        stackNavigation::pop,
+                        { stackNavigation.pop() },
                         courseId,
                         config.materialId,
                         null,
@@ -284,7 +283,9 @@ class CourseComponent(
     }
 
     fun onAddMaterialClick() {
-        stackNavigation.push(Config.CourseMaterialEditor(null))
+        stackNavigation.push(
+            Config.CourseMaterialEditor(null)
+        )
     }
 
     fun onCourseEditClick() {
@@ -325,7 +326,9 @@ class CourseComponent(
 
         data class CourseMaterial(val materialId: UUID) : Config()
 
-        data class CourseMaterialEditor(val materialId: UUID?) : Config()
+        data class CourseMaterialEditor(
+            val materialId: UUID?
+        ) : Config()
     }
 
     sealed class Child {

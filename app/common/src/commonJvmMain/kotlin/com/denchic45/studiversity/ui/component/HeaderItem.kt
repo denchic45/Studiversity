@@ -8,15 +8,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.ui.theme.spacing
 
 @Composable
-fun HeaderItemUI(name: String, modifier: Modifier = Modifier) {
+fun HeaderItemUI(
+    name: String,
+    horizontalPadding: Dp = MaterialTheme.spacing.normal,
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = modifier.height(56.dp)
-//            .padding(horizontal = MaterialTheme.spacing.normal)
-        ,
+        modifier = modifier.height(56.dp).padding(horizontal = horizontalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(name, style = MaterialTheme.typography.titleMedium)

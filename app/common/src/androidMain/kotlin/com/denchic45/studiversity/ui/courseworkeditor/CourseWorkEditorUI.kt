@@ -158,11 +158,7 @@ fun CourseWorkEditorContent(
             .verticalScroll(scrollState)
     ) {
         stateResource.onSuccess { state ->
-            Column(
-
-            ) {
-                var showDatePicker by remember { mutableStateOf(false) }
-                var showTimePicker by remember { mutableStateOf(false) }
+            Column() {
 
                 Column(Modifier.padding(MaterialTheme.spacing.normal)) {
                     OutlinedTextField(
@@ -238,10 +234,8 @@ fun CourseWorkEditorContent(
                 )
 
                 DueDateTimeChooser(
-                    showDatePicker,
                     state,
                     onDueDateTimeClear,
-                    showTimePicker,
                     onDueDateTimeSelect
                 )
 
@@ -272,17 +266,15 @@ fun CourseWorkEditorContent(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun DueDateTimeChooser(
-    showDatePicker: Boolean,
     state: CourseWorkEditorComponent.EditingWork,
     onDueDateTimeClear: () -> Unit,
-    showTimePicker: Boolean,
     onDueDateTimeSelect: (LocalDate, LocalTime) -> Unit
 ) {
-    var showDatePicker1 = showDatePicker
-    var showTimePicker1 = showTimePicker
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
     ListItem(
         modifier = Modifier.clickable {
-            showDatePicker1 = true
+            showDatePicker = true
         },
         headlineContent = {
             Text(
@@ -319,18 +311,18 @@ private fun DueDateTimeChooser(
 
     var selectedTime by remember { mutableStateOf<LocalTime?>(null) }
 
-    if (showDatePicker1)
+    if (showDatePicker)
         DatePickerDialog(
-            onDismissRequest = { showDatePicker1 = false },
+            onDismissRequest = { showDatePicker = false },
             dismissButton = {
-                TextButton(onClick = { showDatePicker1 = false }) {
+                TextButton(onClick = { showDatePicker = false }) {
                     Text(text = "Отмена")
                 }
             },
             confirmButton = {
                 TextButton(onClick = {
-                    showDatePicker1 = false
-                    showTimePicker1 = true
+                    showDatePicker = false
+                    showTimePicker = true
                 }) {
                     Text(text = "ОК")
                 }
@@ -345,11 +337,11 @@ private fun DueDateTimeChooser(
             }
         }
 
-    if (showTimePicker1)
+    if (showTimePicker)
         TimePickerDialog(
-            onCancel = { showTimePicker1 = false },
+            onCancel = { showTimePicker = false },
             onConfirm = {
-                showTimePicker1 = false
+                showTimePicker = false
                 selectedDate?.let { date ->
                     selectedTime?.let { time ->
                         onDueDateTimeSelect(date, time)

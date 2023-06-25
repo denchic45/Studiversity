@@ -15,7 +15,9 @@ import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import com.denchic45.stuiversity.util.toDate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.text.SimpleDateFormat
@@ -38,8 +40,11 @@ class TimetableComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
+    private val updateData = MutableStateFlow(true)
+    val refreshing = MutableStateFlow(false)
+
     private val bellSchedule = metaRepository.observeBellSchedule
-        .shareIn(componentScope, SharingStarted.Lazily)
+        .shareIn(componentScope, SharingStarted.Lazily, replay = 1)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _weekTimetable = owner.flatMapLatest { owner ->
@@ -71,18 +76,33 @@ class TimetableComponent(
 //        )
 //    }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    init {
+        componentScope.launch {
+            updateData.emitAll(refreshing.drop(1))
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     fun getTimetableState(): StateFlow<Resource<TimetableState>> {
-        return bellSchedule.flatMapLatest { schedule ->
-            selectedWeekOfYear.flatMapLatest { selectedWeek ->
-                owner.flatMapLatest { owner ->
-                    getTimetableResponse(owner).mapResource {
-                        it.days.toTimetableState(selectedWeek, schedule, showStudyGroups = owner !is TimetableOwner.StudyGroup)
+        return updateData.filter { it }
+            .flatMapLatest {
+                bellSchedule.flatMapLatest { schedule ->
+                    selectedWeekOfYear.flatMapLatest { selectedWeek ->
+                        owner.flatMapLatest { owner ->
+                            getTimetableResponse(owner).mapResource {
+                                updateData.value = false
+                                refreshing.value = false
+
+                                it.days.toTimetableState(
+                                    yearWeek = selectedWeek,
+                                    bellSchedule = schedule,
+                                    showStudyGroups = owner !is TimetableOwner.StudyGroup
+                                )
+                            }
+                        }
                     }
                 }
-
-            }
-        }.stateInResource(componentScope)
+            }.stateInResource(componentScope)
     }
 }
 

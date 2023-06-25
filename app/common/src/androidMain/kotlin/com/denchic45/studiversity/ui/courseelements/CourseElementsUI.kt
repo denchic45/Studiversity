@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pullrefresh.PullRefreshIndicator
 import androidx.compose.material3.pullrefresh.pullRefresh
 import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -62,12 +64,13 @@ fun CourseElementsScreen(component: CourseElementsComponent) {
 
     val refreshState = rememberPullRefreshState(refreshing, component::onRefresh)
 
-    Box(modifier = Modifier.pullRefresh(refreshState))
-
-    CourseElementsContent(
-        elementsResource = elementsResource,
-        onElementClick = component::onItemClick,
-    )
+    Box(modifier = Modifier.pullRefresh(refreshState)) {
+        CourseElementsContent(
+            elementsResource = elementsResource,
+            onElementClick = component::onItemClick,
+        )
+        PullRefreshIndicator(refreshing, refreshState, Modifier.align(Alignment.TopCenter))
+    }
 }
 
 @Composable
@@ -76,7 +79,10 @@ fun CourseElementsContent(
     onElementClick: (elementId: UUID, type: CourseElementType) -> Unit,
 ) {
     elementsResource.onSuccess {
-        LazyColumn(contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)
+        ) {
             it.forEach { (topic, elements) ->
                 topic?.let {
                     item(key = { it.id }) { }

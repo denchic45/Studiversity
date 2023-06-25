@@ -19,6 +19,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,25 +28,27 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.pullrefresh.PullRefreshIndicator
+import androidx.compose.material3.pullrefresh.PullRefreshState
+import androidx.compose.material3.pullrefresh.pullRefresh
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
 import com.denchic45.studiversity.ui.component.TabIndicator
-import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
-import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.util.toString
@@ -59,9 +62,17 @@ fun YourWorksScreen(component: YourWorksComponent) {
 //    val childOverlay by component.childOverlay.subscribeAsState()
     val coroutineScope = rememberCoroutineScope()
 
+    updateAppBarState(AppBarContent(uiTextOf("Мои задания")))
+
     Surface {
         Column(Modifier.fillMaxSize()) {
-            val pagerState = rememberPagerState()
+            val selected by component.selectedTab.collectAsState()
+            val pagerState = rememberPagerState(selected)
+            LaunchedEffect(pagerState) {
+                snapshotFlow { pagerState.currentPage }.collect { page ->
+                    component.selectedTab.value = page
+                }
+            }
             ScrollableTabRow(
                 selectedTabIndex = pagerState.currentPage,
                 indicator = { tabPositions -> TabIndicator(Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage])) },
@@ -74,6 +85,7 @@ fun YourWorksScreen(component: YourWorksComponent) {
                         selected = pagerState.currentPage == index,
                         onClick = {
                             coroutineScope.launch {
+                                component.selectedTab.value = index
                                 pagerState.animateScrollToPage(index)
                             }
                         },
@@ -108,19 +120,27 @@ fun YourWorksScreen(component: YourWorksComponent) {
 
 
 @Composable
-fun WorksListContent(works: Resource<List<CourseWorkResponse>>, onClick: (UUID, UUID) -> Unit) {
-    ResourceContent(resource = works) {
-        if (it.isNotEmpty())
-            LazyColumn() {
-                items(it) { work ->
-                    CourseWorkListItem(work) { onClick(work.courseId, work.id) }
+fun WorksListContent(
+    works: Resource<List<CourseWorkResponse>>,
+    onClick: (UUID, UUID) -> Unit,
+    refreshing: Boolean,
+    refreshState: PullRefreshState
+) {
+    Box(modifier = Modifier.pullRefresh(refreshState)) {
+        ResourceContent(resource = works) {
+            if (it.isNotEmpty())
+                LazyColumn(Modifier.fillMaxSize()) {
+                    items(it) { work ->
+                        CourseWorkListItem(work) { onClick(work.courseId, work.id) }
+                    }
                 }
-            }
-        else
-            IconTitleBox(
-                icon = { Icon(Icons.Outlined.Task, contentDescription = "empty tasks") },
-                title = { Text(text = "Нет заданий") }
-            )
+            else
+                IconTitleBox(
+                    icon = { Icon(Icons.Outlined.Task, contentDescription = "empty tasks") },
+                    title = { Text(text = "Нет заданий") }
+                )
+        }
+        PullRefreshIndicator(refreshing, refreshState, Modifier.align(Alignment.TopCenter))
     }
 }
 
@@ -144,7 +164,7 @@ fun CourseWorkListItem(response: CourseWorkResponse, onClick: () -> Unit) {
                 .padding(8.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_assignment),
+                imageVector = Icons.Outlined.Assignment,
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = null,
             )
@@ -158,7 +178,11 @@ fun CourseWorkListItem(response: CourseWorkResponse, onClick: () -> Unit) {
                 style = MaterialTheme.typography.titleMedium
             )
             response.dueDate?.let {
-                Text(text = it.toString("dd MMM"), style = MaterialTheme.typography.bodySmall)
+                Text(
+                    text = it.toString("dd MMM"),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (response.late) MaterialTheme.colorScheme.error else Color.Unspecified
+                )
             }
         }
     }

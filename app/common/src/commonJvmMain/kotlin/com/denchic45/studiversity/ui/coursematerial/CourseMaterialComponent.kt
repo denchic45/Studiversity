@@ -5,6 +5,7 @@ import com.denchic45.studiversity.data.domain.model.FileState
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.mapResource
 import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resourceOf
 import com.denchic45.studiversity.domain.stateInResource
 import com.denchic45.studiversity.domain.takeValueIfSuccess
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
@@ -18,12 +19,16 @@ import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.model.toAttachmentItems
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
+import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
@@ -33,10 +38,10 @@ import java.util.UUID
 @Inject
 class CourseMaterialComponent(
     private val findCourseMaterialUseCase: FindCourseMaterialUseCase,
-    private val findCourseMaterialAttachmentsUseCase: FindCourseMaterialAttachmentsUseCase,
+    findCourseMaterialAttachmentsUseCase: FindCourseMaterialAttachmentsUseCase,
     private val downloadFileUseCase: DownloadFileUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
-    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
+    checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val removeCourseElementUseCase: RemoveCourseElementUseCase,
     @Assisted
     private val onFinish: () -> Unit,
@@ -48,11 +53,31 @@ class CourseMaterialComponent(
     private val elementId: UUID,
     @Assisted
     private val componentContext: ComponentContext,
-):ComponentContext by componentContext {
+) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    val courseMaterial = flow { emit(findCourseMaterialUseCase(courseId, elementId)) }
-        .stateInResource(componentScope, SharingStarted.Eagerly)
+    private val observedCourseMaterial = flow {
+        emit(findCourseMaterialUseCase(courseId, elementId))
+    }.stateInResource(componentScope, SharingStarted.Eagerly)
+
+    val courseMaterial = MutableStateFlow<Resource<CourseMaterialResponse>>(resourceOf())
+
+    val refreshing = MutableStateFlow(false)
+
+    init {
+        componentScope.launch {
+            courseMaterial.emitAll(observedCourseMaterial)
+        }
+    }
+
+    fun onRefresh() {
+        componentScope.launch {
+            refreshing.update { true }
+            courseMaterial.update { findCourseMaterialUseCase(courseId, elementId) }
+            refreshing.update { false }
+        }
+    }
+
     val attachments = findCourseMaterialAttachmentsUseCase(courseId, elementId)
         .mapResource { it.toAttachmentItems() }
         .stateInResource(componentScope, SharingStarted.Eagerly)
@@ -74,7 +99,7 @@ class CourseMaterialComponent(
         when (item) {
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
                 FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
-                FileState.FailDownload,  FileState.Preview -> componentScope.launch {
+                FileState.FailDownload, FileState.Preview -> componentScope.launch {
                     downloadFileUseCase(item.attachmentId)
                 }
 

@@ -70,7 +70,7 @@ class CourseMaterialEditorComponent(
     private val addCourseMaterialUseCase: AddCourseMaterialUseCase,
     private val updateCourseMaterialUseCase: UpdateCourseMaterialUseCase,
     @Assisted
-    private val onFinish: () -> Unit,
+    private val onFinish: (CourseMaterialResponse) -> Unit,
     @Assisted
     private val courseId: UUID,
     @Assisted
@@ -267,7 +267,7 @@ class CourseMaterialEditorComponent(
                 }
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
-                        onFinish()
+                        onFinish(it)
                     }
                 }
             }

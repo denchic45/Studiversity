@@ -7,11 +7,18 @@ import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resourceOf
 import com.denchic45.studiversity.domain.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindCourseWorkSubmissionsUseCase
 import com.denchic45.studiversity.ui.coursework.submissiondetails.SubmissionDetailsComponent
 import com.denchic45.studiversity.util.componentScope
+import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -34,9 +41,19 @@ class CourseWorkSubmissionsComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    val submissions = flow {
+ private   val observedSubmissions = flow {
         emit(findCourseWorkSubmissionsUseCase(courseId, elementId))
     }.stateInResource(componentScope)
+
+    val submissions = MutableStateFlow<Resource<List<SubmissionResponse>>>(resourceOf())
+
+    val refreshing = MutableStateFlow(false)
+
+    init {
+        componentScope.launch {
+            submissions.emitAll(observedSubmissions)
+        }
+    }
 
     private val overlayNavigation = OverlayNavigation<SubmissionConfig>()
 
@@ -52,6 +69,14 @@ class CourseWorkSubmissionsComponent(
                 componentContext
             )
         )
+    }
+
+    fun onRefresh() {
+        componentScope.launch {
+            refreshing.update { true }
+            submissions.update { findCourseWorkSubmissionsUseCase(courseId, elementId) }
+            refreshing.update { false }
+        }
     }
 
     fun onSubmissionClick(submissionId: UUID) {

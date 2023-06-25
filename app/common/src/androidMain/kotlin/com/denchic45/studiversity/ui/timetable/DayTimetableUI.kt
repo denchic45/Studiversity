@@ -33,6 +33,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.pullrefresh.PullRefreshIndicator
+import androidx.compose.material3.pullrefresh.pullRefresh
+import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -60,6 +63,7 @@ import java.time.format.TextStyle
 import java.util.Locale
 import java.util.UUID
 
+
 @Composable
 fun DayTimetableContent(
     selectedDate: LocalDate,
@@ -72,6 +76,8 @@ fun DayTimetableContent(
     startDate: LocalDate = selectedDate.minusWeeks(1),
     endDate: LocalDate = selectedDate.plusMonths(1),
     scrollableWeeks: Boolean = true,
+    refreshing: Boolean = false,
+    onRefresh: (() -> Unit)? = null
 ) {
     Surface {
         Column(
@@ -130,19 +136,36 @@ fun DayTimetableContent(
                 }
             )
 
-            ResourceContent(resource = timetableResource) { timetableState ->
-                val selectedDayOfWeek = selectedDate.dayOfWeek
-                if (timetableState.contains(selectedDate)) {
-                    Periods(
-                        timetableState = timetableState,
-                        selectedDayOfWeek = selectedDayOfWeek,
-                        onEditPeriodClick = onEditPeriodClick,
-                        onStudyGroupClClick = onStudyGroupClick,
-                        onRemovePeriodSwipe = onRemovePeriodSwipe,
-                        onAddPeriodClick = onAddPeriodClick
-                    )
+            val timetableContent: @Composable () -> Unit = {
+                ResourceContent(resource = timetableResource) { timetableState ->
+                    val selectedDayOfWeek = selectedDate.dayOfWeek
+                    if (timetableState.contains(selectedDate)) {
+                        Periods(
+                            timetableState = timetableState,
+                            selectedDayOfWeek = selectedDayOfWeek,
+                            onEditPeriodClick = onEditPeriodClick,
+                            onStudyGroupClClick = onStudyGroupClick,
+                            onRemovePeriodSwipe = onRemovePeriodSwipe,
+                            onAddPeriodClick = onAddPeriodClick
+                        )
+                    }
                 }
             }
+
+            onRefresh?.let {
+                val refreshState = rememberPullRefreshState(refreshing, onRefresh)
+                Box(
+                    modifier = Modifier
+                        .pullRefresh(refreshState)
+                ) {
+                    timetableContent()
+                    PullRefreshIndicator(
+                        refreshing,
+                        refreshState,
+                        Modifier.align(Alignment.TopCenter)
+                    )
+                }
+            } ?: timetableContent()
         }
     }
 }
@@ -188,12 +211,12 @@ private fun Periods(
                         .verticalScroll(scrollState)
                 )
             } else {
-                LazyColumn {
+                LazyColumn(Modifier.fillMaxSize()) {
                     itemsIndexed(
                         items = items,
                         key = { _, item -> item.id }
                     ) { index, item ->
-                        val periodItemUI = @Composable {
+                        val periodListItem = @Composable {
                             PeriodListItem(
                                 order = timetableState.orders[index].order,
                                 item = item,
@@ -220,11 +243,11 @@ private fun Periods(
                             SwipeToDismiss(
                                 state = dismissState,
                                 background = { SwipePeriodBackground(dismissState) },
-                                dismissContent = { periodItemUI() },
+                                dismissContent = { periodListItem() },
                                 directions = setOf(DismissDirection.EndToStart)
                             )
                         } else {
-                            periodItemUI()
+                            periodListItem()
                         }
                     }
                     if (timetableState.isEdit) {

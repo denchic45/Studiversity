@@ -32,15 +32,12 @@ class CourseElementsComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-//    val appBarState = MutableStateFlow(AppBarState())
-
     val refreshing = MutableStateFlow(false)
 
     private val _elements = flow { emit(findCourseElementsUseCase(courseId)) }
         .stateInResource(componentScope)
 
-    val elements =
-        MutableStateFlow<Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>>>(
+    val elements = MutableStateFlow<Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>>>(
             resourceOf()
         )
 

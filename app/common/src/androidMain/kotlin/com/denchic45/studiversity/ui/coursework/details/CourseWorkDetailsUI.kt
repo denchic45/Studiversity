@@ -124,7 +124,7 @@ private fun CourseWorkDetailsContent(
             }
             attachmentsResource.onSuccess { attachments ->
                 if (attachments.isNotEmpty()) {
-                    HeaderItemUI(name = "Прикрепленные файлы")
+                    HeaderItemUI(name = "Прикрепленные файлы", horizontalPadding = 0.dp)
                     LazyRow {
                         items(attachments, key = { it.attachmentId ?: Unit }) {
                             AttachmentListItem(item = it, onClick = { onAttachmentClick(it) })

@@ -11,6 +11,7 @@ import com.denchic45.studiversity.ui.AppNavigation
 import com.denchic45.studiversity.ui.MainComponent
 import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
+import kotlinx.coroutines.flow.MutableStateFlow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -78,6 +79,7 @@ class YourWorksComponent(
             context
         )
 
+    val selectedTab = MutableStateFlow(0)
     val tabChildren = listOf(
         TabChild.Upcoming(
             _yourUpcomingWorksComponent(

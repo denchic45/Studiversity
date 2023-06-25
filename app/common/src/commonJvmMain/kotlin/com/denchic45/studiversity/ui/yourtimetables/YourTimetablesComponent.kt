@@ -20,6 +20,7 @@ import com.denchic45.studiversity.ui.timetable.TimetableOwnerComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerDelegate
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -100,6 +101,8 @@ class YourTimetablesComponent(
     )
 
     val timetableState = timetableComponent.timetableStateResource
+
+    val refreshing = timetableComponent.refreshing
 
 //    @Parcelize
 //    sealed interface OverlayConfig : Parcelable {

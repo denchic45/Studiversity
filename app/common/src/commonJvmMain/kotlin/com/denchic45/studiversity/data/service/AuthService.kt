@@ -60,7 +60,6 @@ class AuthService(
     private fun clearAllDataIfExist() {
         dbHelper.driver.close()
         val fileSystem = FileSystem.SYSTEM
-
         if (fileSystem.exists(systemDirs.databasePath))
             systemDirs.databasePath.toFile().delete()
 

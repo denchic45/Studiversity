@@ -20,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.DayTimetableContent
@@ -30,20 +29,12 @@ import com.denchic45.studiversity.ui.uiTextOf
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun YourTimetablesScreen(component: YourTimetablesComponent) {
-    val appBarState = LocalAppBarState.current
-
     val selectedTimetable by component.selectedTimetablePosition.collectAsState()
     val groups by component.studyGroups.collectAsState()
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
     val selectedDate by component.selectedDate.collectAsState()
 
     updateAppBarState(selectedYearWeek, AppBarContent(uiTextOf(getMonthTitle(selectedYearWeek))))
-
-//    LaunchedEffect(selectedYearWeek) {
-//        appBarState.update {
-//            content = AppBarContent(uiTextOf(getMonthTitle(selectedYearWeek)))
-//        }
-//    }
 
     Surface {
         Column {
@@ -96,12 +87,14 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
             }
 
             val viewState by component.timetableState.collectAsState()
-
+            val refreshing by component.refreshing.collectAsState()
             DayTimetableContent(
                 selectedDate = selectedDate,
                 timetableResource = viewState,
                 onDateSelect = component::onDateSelect,
-                onStudyGroupClick = component::onStudyGroupClick
+                onStudyGroupClick = component::onStudyGroupClick,
+                refreshing = refreshing,
+                onRefresh = { component.refreshing.value = true }
             )
         }
     }
