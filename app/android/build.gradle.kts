@@ -45,8 +45,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        versionCode = 84
-        versionName = "1.0.8"
+        versionCode = 85
+        versionName = "1.0.9"
     }
 
     buildTypes {
