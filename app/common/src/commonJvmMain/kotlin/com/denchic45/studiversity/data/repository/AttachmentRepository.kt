@@ -137,7 +137,7 @@ class AttachmentRepository @javax.inject.Inject constructor(
                         attachment_name = linkAttachmentResponse.name,
                         url = linkAttachmentResponse.url,
                         thumbnail_url = linkAttachmentResponse.thumbnailUrl,
-                        type = AttachmentType.FILE,
+                        type = AttachmentType.LINK,
                         path = null,
                         owner_id = null,
                         sync = true

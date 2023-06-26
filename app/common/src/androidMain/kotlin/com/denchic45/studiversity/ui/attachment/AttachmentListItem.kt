@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Attachment
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -68,11 +69,18 @@ fun AttachmentListItem(
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
                         )
-                    } ?: Icon(
-                        imageVector = Icons.Outlined.Attachment,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        contentDescription = "attachment"
-                    )
+                    } ?: when(item) {
+                        is AttachmentItem.FileAttachmentItem -> Icon(
+                            imageVector = Icons.Outlined.Attachment,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            contentDescription = "attachment"
+                        )
+                        is AttachmentItem.LinkAttachmentItem -> Icon(
+                            imageVector = Icons.Outlined.Link,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            contentDescription = "attachment"
+                        )
+                    }
 
                     if (item is AttachmentItem.FileAttachmentItem) {
                         when (item.state) {

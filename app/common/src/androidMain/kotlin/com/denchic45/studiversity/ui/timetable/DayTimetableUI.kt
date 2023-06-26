@@ -159,11 +159,12 @@ fun DayTimetableContent(
                         .pullRefresh(refreshState)
                 ) {
                     timetableContent()
-                    PullRefreshIndicator(
-                        refreshing,
-                        refreshState,
-                        Modifier.align(Alignment.TopCenter)
-                    )
+                    if (refreshState.progress != 0f)
+                        PullRefreshIndicator(
+                            refreshing,
+                            refreshState,
+                            Modifier.align(Alignment.TopCenter)
+                        )
                 }
             } ?: timetableContent()
         }

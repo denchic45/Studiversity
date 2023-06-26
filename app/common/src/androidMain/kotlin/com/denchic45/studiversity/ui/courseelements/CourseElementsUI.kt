@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -112,15 +113,28 @@ fun CourseElementsContent(
                 }
             }
         },
-    ) {
-        if (it.flatMap { topicElements -> topicElements.second }.isNotEmpty()) {
+    ) { elementsByTopics ->
+        if (elementsByTopics.flatMap { topicElements -> topicElements.second }.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)
             ) {
-                it.forEach { (topic, elements) ->
+                elementsByTopics.forEach { (topic, elements) ->
                     topic?.let {
-                        item(key = { it.id }) { }
+                        item(key = it.id) {
+                            Column {
+                                Text(
+                                    text = it.name,
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(MaterialTheme.spacing.normal)
+                                )
+                                Divider(
+                                    modifier = Modifier.padding(end = MaterialTheme.spacing.normal),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     }
 
                     items(elements, key = { it.id }) {
