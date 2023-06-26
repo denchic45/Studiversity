@@ -30,6 +30,9 @@ fun Date.toLocalDateTime(): LocalDateTime =
 fun String.toLocalDate(pattern: String): LocalDate =
     LocalDate.parse(this, DateTimeFormatter.ofPattern(pattern))
 
+fun String.toLocalTime(pattern: String): LocalTime =
+    LocalTime.parse(this, DateTimeFormatter.ofPattern(pattern))
+
 fun Date.toLocalDate(): LocalDate =
     toInstant()
         .atZone(ZoneId.systemDefault())

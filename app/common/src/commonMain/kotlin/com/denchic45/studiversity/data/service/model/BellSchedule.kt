@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BellSchedule(
     val periods: List<BellPeriod>,
-    val launch: BellPeriod? = null,
+    val lunch: BellPeriod? = null,
 )
 
 @Serializable

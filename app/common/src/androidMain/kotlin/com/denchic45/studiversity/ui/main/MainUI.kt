@@ -1,6 +1,5 @@
 package com.denchic45.studiversity.ui.main
 
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
@@ -90,6 +89,7 @@ import com.denchic45.studiversity.ui.getPainter
 import com.denchic45.studiversity.ui.navigation.OverlayChild
 import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.root.RootStackScreen
+import com.denchic45.studiversity.ui.schedule.ScheduleScreen
 import com.denchic45.studiversity.ui.settings.SettingsScreen
 import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
 import com.denchic45.studiversity.ui.theme.spacing
@@ -135,17 +135,17 @@ fun MainScreen(
     when (sizeClass.widthSizeClass) {
         WindowWidthSizeClass.Compact -> {
             CompactMainScreen(
-                component = component,
+                component,
                 activity = activity
             )
         }
 
         WindowWidthSizeClass.Medium -> {
-            MediumMainScreen(component = component, activity = activity)
+            MediumMainScreen(component, activity = activity)
         }
 
         WindowWidthSizeClass.Expanded -> {
-            MediumMainScreen(component = component, activity = activity)
+            MediumMainScreen(component, activity = activity)
         }
     }
     ConfirmDialog(confirmDialogInteractor)
@@ -235,11 +235,9 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
 //                        )
                         }
 
-                        is OverlayChild.YourProfile -> ProfileScreen(component = child.component)
-                        is OverlayChild.Settings -> SettingsScreen(component = child.component)
-                        is OverlayChild.Schedule -> {
-
-                        }
+                        is OverlayChild.YourProfile -> ProfileScreen(child.component)
+                        is OverlayChild.Settings -> SettingsScreen(child.component)
+                        is OverlayChild.Schedule -> ScheduleScreen(child.component)
                     }
                 } ?: expandAppBar()
             }
@@ -410,9 +408,7 @@ private fun DrawerContent(
                 },
                 selected = overlay.overlay?.instance is OverlayChild.Schedule,
                 onClick = {
-                    Toast.makeText(context, "В разработке...", Toast.LENGTH_SHORT)
-                        .show()
-//                    component.onScheduleClick()
+                    component.onScheduleClick()
                     closeDrawer()
                 }
             )
@@ -592,13 +588,13 @@ private fun ScreenContainer(
     Crossfade(modifier = Modifier.padding(paddingValues), targetState = stack.active) {
         println("children: ${it.instance}")
         when (val child = it.instance) {
-            is MainComponent.Child.YourStudyGroups -> RootStackScreen(component = child.component)
-            is MainComponent.Child.YourTimetables -> RootStackScreen(component = child.component)
-            is MainComponent.Child.AdminDashboard -> RootStackScreen(component = child.component)
-            is MainComponent.Child.YourCourse -> CourseScreen(component = child.component)
-            is MainComponent.Child.Course -> CourseScreen(component = child.component)
-            is MainComponent.Child.StudyGroup -> StudyGroupScreen(component = child.component)
-            is MainComponent.Child.YourWorks -> YourWorksScreen(component = child.component)
+            is MainComponent.Child.YourStudyGroups -> RootStackScreen(child.component)
+            is MainComponent.Child.YourTimetables -> RootStackScreen(child.component)
+            is MainComponent.Child.AdminDashboard -> RootStackScreen(child.component)
+            is MainComponent.Child.YourCourse -> CourseScreen(child.component)
+            is MainComponent.Child.Course -> CourseScreen(child.component)
+            is MainComponent.Child.StudyGroup -> StudyGroupScreen(child.component)
+            is MainComponent.Child.YourWorks -> YourWorksScreen(child.component)
             is MainComponent.Child.CourseWork -> CourseWorkScreen(child.component)
             is MainComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
         }
