@@ -1,6 +1,7 @@
 package com.denchic45.studiversity.feature.user
 
 import com.denchic45.studiversity.config
+import com.denchic45.studiversity.database.table.UserDao
 import com.denchic45.studiversity.feature.auth.usecase.SignUpUserManuallyUseCase
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.feature.user.account.usecase.ResetAvatarUseCase
@@ -24,7 +25,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.ktor.ext.inject
+import org.mindrot.jbcrypt.BCrypt
 
 fun Application.userRoutes() {
     routing {
@@ -82,6 +85,19 @@ private fun Route.userByIdRoute() {
             removeUser(call.parameters.getUuidOrFail("userId"))
             call.respond(HttpStatusCode.NoContent)
         }
+
+        // TODO Удалить потом!
+        post("update-password") {
+            val userId = call.parameters.getUuidOrFail("userId")
+            val newPassword = call.request.queryParameters["p"]
+            transaction {
+                UserDao.findById(userId)!!.apply {
+                    password = BCrypt.hashpw(newPassword, BCrypt.gensalt())
+                }
+            }
+            call.respond(HttpStatusCode.OK)
+        }
+
         route("/avatar") {
             val updateAvatar: UpdateAvatarUseCase by inject()
             val removeAvatar: ResetAvatarUseCase by inject()
