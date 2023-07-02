@@ -12,13 +12,13 @@
 
 ## Скачать мобильное приложение
 
-<div style="display: flex; align-items: center;">
-  <a href="https://apps.rustore.ru/app/com.denchic45.studiversity" style="padding: 1.5rem">
- <img src="media/rustore_black.png" height="60"/>
+<div >
+  <a href="https://apps.rustore.ru/app/com.denchic45.studiversity" >
+ <img src="media/rustore_black.png" height="60" align="center" />
 </a>
 
 <a href="https://play.google.com/store/apps/details?id=com.denchic45.studiversity">
- <img src="media/google_play_badge.png" height="78"/>
+ <img src="media/google_play_badge.png" height="78" align="center"/>
 </a>
 </div>
 
@@ -66,5 +66,6 @@ https://github.com/denchic45/Studiversity/assets/80104523/f7f1bd8a-2cdd-4639-b6b
 
 ## Лицензия
 
-Studiversity распространяется на условиях лицензии Apache (версия 2.0). См. [лицензию](LICENSE) для получения дополнительной
+Studiversity распространяется на условиях лицензии Apache (версия 2.0). См. [лицензию](LICENSE) для получения
+дополнительной
 информации.
