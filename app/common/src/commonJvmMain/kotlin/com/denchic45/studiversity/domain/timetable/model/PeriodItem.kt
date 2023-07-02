@@ -19,9 +19,7 @@ data class PeriodItem(
 //    val timestamp = System.currentTimeMillis()
 }
 
-data class Window(override val id: Long = Random.nextLong(0, 1000)) : PeriodSlot {
-
-}
+data class Window(override val id: Long = Random.nextLong(0, 1000)) : PeriodSlot
 
 
 sealed interface PeriodDetails {

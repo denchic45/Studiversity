@@ -1,19 +1,19 @@
 package com.denchic45.studiversity.data.storage.local
 
+import com.denchic45.studiversity.util.SystemDirs
 import com.denchic45.studiversity.util.clearAndDelete
+import me.tatarka.inject.annotations.Inject
 import java.io.File
 import java.io.FileOutputStream
-import com.denchic45.studiversity.util.SystemDirs
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class SubmissionAttachmentLocalStorage @Inject constructor(systemDirs: SystemDirs) {
+@Inject
+class SubmissionAttachmentLocalStorage(systemDirs: SystemDirs) {
 
     private val internalDir = systemDirs.appDir
     private val submissionDir = File("${internalDir.toFile().path}/submissions")
 
     fun getByContentIdAndStudentId(contentId: String, studentId: String): List<File> {
-        val attachmentPath =  getSubmissionLocalPath(contentId, studentId)
+        val attachmentPath = getSubmissionLocalPath(contentId, studentId)
         val itContentDir = File(attachmentPath)
         return itContentDir.listFiles()?.asList() ?: emptyList()
     }
@@ -26,8 +26,8 @@ class SubmissionAttachmentLocalStorage @Inject constructor(systemDirs: SystemDir
         return submissionDir.path + '/' + contentId
     }
 
-    fun save(contentId: String, studentId: String, name:String, bytes:ByteArray): File {
-        val attachmentPath =  getSubmissionLocalPath(contentId, studentId)
+    fun save(contentId: String, studentId: String, name: String, bytes: ByteArray): File {
+        val attachmentPath = getSubmissionLocalPath(contentId, studentId)
         File(attachmentPath).mkdirs()
         val contentDir = File(attachmentPath, name)
         contentDir.createNewFile()

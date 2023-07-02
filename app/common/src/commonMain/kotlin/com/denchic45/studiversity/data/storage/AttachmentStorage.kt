@@ -12,7 +12,7 @@ import okio.Path
 import java.util.UUID
 
 @Inject
-class AttachmentStorage @javax.inject.Inject constructor(
+class AttachmentStorage(
     systemDirs: SystemDirs,
     private val attachmentApi: AttachmentApi,
 ) {

@@ -5,10 +5,10 @@ import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
-class UploadAttachmentToCourseMaterialUseCase @javax.inject.Inject constructor(
+class UploadAttachmentToCourseMaterialUseCase(
     private val attachmentRepository: AttachmentRepository
 ) {
     suspend operator fun invoke(

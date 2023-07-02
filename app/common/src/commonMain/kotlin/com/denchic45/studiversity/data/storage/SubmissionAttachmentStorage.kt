@@ -1,13 +1,10 @@
 package com.denchic45.studiversity.data.storage
 
-import com.denchic45.studiversity.data.domain.model.AttachmentFile
 import com.denchic45.studiversity.data.storage.local.SubmissionAttachmentLocalStorage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
 
-@me.tatarka.inject.annotations.Inject
-class SubmissionAttachmentStorage @Inject constructor(
+@Inject
+class SubmissionAttachmentStorage constructor(
     private val submissionAttachmentLocalStorage: SubmissionAttachmentLocalStorage,
 ) {
 

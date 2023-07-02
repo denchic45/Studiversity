@@ -2,11 +2,11 @@ package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.CourseElementRepository
 import com.denchic45.studiversity.domain.EmptyResource
-import java.util.*
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
-@me.tatarka.inject.annotations.Inject
-class RemoveCourseElementUseCase @Inject constructor(
+@Inject
+class RemoveCourseElementUseCase(
     private val courseElementRepository: CourseElementRepository,
 ) {
     suspend operator fun invoke(courseId: UUID, elementId: UUID): EmptyResource {

@@ -7,7 +7,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class SubmissionRepository @javax.inject.Inject constructor(
+class SubmissionRepository(
     override val networkService: NetworkService,
     private val submissionsApi: SubmissionsApi
 ) : NetworkServiceOwner {

@@ -3,19 +3,19 @@ package com.denchic45.studiversity.ui.studygroup.members
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.data.domain.model.UserRole
 import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.mapResource
 import com.denchic45.studiversity.domain.model.GroupMembers
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.usecase.AssignUserRoleInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindGroupMembersUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveUserRoleFromScopeUseCase
 import com.denchic45.studiversity.ui.model.MenuAction
-import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.UUID
 
 
 interface StudyGroupMembersUiLogic {
@@ -70,7 +70,7 @@ interface StudyGroupMembersUiLogic {
         }
     }
 
-    abstract fun onMemberEdit(userId: UUID, role: UserRole, groupId: UUID)
+    fun onMemberEdit(userId: UUID, role: UserRole, groupId: UUID)
 
     fun onDismissAction() {
         memberAction.value = null

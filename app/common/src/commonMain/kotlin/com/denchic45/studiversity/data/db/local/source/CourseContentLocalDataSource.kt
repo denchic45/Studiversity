@@ -1,18 +1,23 @@
 package com.denchic45.studiversity.data.db.local.source
 
-import com.denchic45.studiversity.*
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrDefault
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import com.denchic45.studiversity.AppDatabase
+import com.denchic45.studiversity.ContentCommentEntity
+import com.denchic45.studiversity.CourseContentEntity
+import com.denchic45.studiversity.CourseContentEntityQueries
+import com.denchic45.studiversity.SubmissionCommentEntity
+import com.denchic45.studiversity.SubmissionEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import java.util.*
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
+import java.util.Date
 
-@me.tatarka.inject.annotations.Inject
-class CourseContentLocalDataSource @Inject constructor(private val db: AppDatabase) {
+@Inject
+class CourseContentLocalDataSource(private val db: AppDatabase) {
 
     private val queries: CourseContentEntityQueries = db.courseContentEntityQueries
 

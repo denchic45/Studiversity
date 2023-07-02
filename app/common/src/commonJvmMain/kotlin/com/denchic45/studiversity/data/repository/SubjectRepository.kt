@@ -13,11 +13,11 @@ import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
+import me.tatarka.inject.annotations.Inject
 import java.util.UUID
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class SubjectRepository @Inject constructor(
+@Inject
+class SubjectRepository(
     override val networkService: NetworkService,
     override val userLocalDataSource: UserLocalDataSource,
     override val groupLocalDataSource: GroupLocalDataSource,

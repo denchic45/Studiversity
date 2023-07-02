@@ -2,8 +2,6 @@ package com.denchic45.studiversity.domain
 
 import com.denchic45.studiversity.data.domain.NotFound
 import com.denchic45.studiversity.data.pref.AppPreferences
-import com.denchic45.studiversity.data.repository.CourseRepository
-import com.denchic45.studiversity.data.repository.EventRepository
 import com.denchic45.studiversity.data.repository.StudyGroupRepository
 import com.denchic45.studiversity.data.repository.UserRepository
 import com.denchic45.studiversity.data.service.AuthService
@@ -16,16 +14,17 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import me.tatarka.inject.annotations.Inject
 
-@me.tatarka.inject.annotations.Inject
-class MainInteractor (
+@Inject
+class MainInteractor(
     private val coroutineScope: CoroutineScope,
     private val studyGroupRepository: StudyGroupRepository,
     private val authService: AuthService,
     private val userService: UserService,
     private val userRepository: UserRepository,
     private val appPreferences: AppPreferences,
-    ) {
+) {
     val listenAuthState: Flow<Boolean> = authService.observeIsAuthenticated
 
     fun observeThisUser(): Flow<Resource<UserResponse>> = userService.observeCurrentUser

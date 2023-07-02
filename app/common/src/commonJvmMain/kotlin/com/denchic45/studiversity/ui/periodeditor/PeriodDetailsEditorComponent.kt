@@ -17,10 +17,6 @@ abstract class PeriodDetailsEditorComponent<T : EditingPeriodDetails>(
     val details: T
         get() = period.details as T
 
-//    @Suppress("UNCHECKED_CAST")
-//    val details: T = if (period.details.type == draftDetails.type)
-//        period.details as T else draftDetails
-
     init {
         if (period.details.type == draftDetails.type) {
             draftDetails = period.details as T

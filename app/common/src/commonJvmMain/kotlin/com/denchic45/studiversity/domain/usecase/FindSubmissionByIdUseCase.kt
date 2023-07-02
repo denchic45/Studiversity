@@ -3,11 +3,11 @@ package com.denchic45.studiversity.domain.usecase
 import com.denchic45.studiversity.data.repository.SubmissionRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
+import me.tatarka.inject.annotations.Inject
 import java.util.UUID
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class FindSubmissionByIdUseCase @Inject constructor(
+@Inject
+class FindSubmissionByIdUseCase(
     private val submissionRepository: SubmissionRepository,
 ) {
     suspend operator fun invoke(

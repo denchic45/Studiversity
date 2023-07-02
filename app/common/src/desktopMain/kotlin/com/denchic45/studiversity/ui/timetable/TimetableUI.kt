@@ -28,8 +28,6 @@ import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
 import com.denchic45.studiversity.domain.timetable.model.Window
-import com.denchic45.studiversity.ui.AppBarMediator
-import com.denchic45.studiversity.ui.CustomAppBar
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.state.CellOrder
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
@@ -143,11 +141,11 @@ fun TimetableContent(
                     targetState = selectedDate,
                     transitionSpec = {
                         if (initialState > targetState) {
-                            slideInHorizontally() { -it / 6 } + fadeIn() with
-                                    slideOutHorizontally() { it / 6 } + fadeOut()
+                            slideInHorizontally { -it / 6 } + fadeIn() with
+                                    slideOutHorizontally { it / 6 } + fadeOut()
                         } else {
-                            slideInHorizontally() { it / 6 } + fadeIn() with
-                                    slideOutHorizontally() { -it / 6 } + fadeOut()
+                            slideInHorizontally { it / 6 } + fadeIn() with
+                                    slideOutHorizontally { -it / 6 } + fadeOut()
                         }
                     }
                 ) { timetableState ->

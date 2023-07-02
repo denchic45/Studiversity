@@ -6,5 +6,5 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class FindRoomByContainsNameUseCase(
-    private val roomRepository: RoomRepository,
+    roomRepository: RoomRepository,
 ) : FindByContainsNameUseCase<RoomResponse>(roomRepository)

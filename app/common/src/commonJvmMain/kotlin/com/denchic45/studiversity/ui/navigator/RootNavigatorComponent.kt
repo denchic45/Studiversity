@@ -20,7 +20,6 @@ import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.ui.yourstudygroups.YourStudyGroupsComponent
 import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesComponent
-import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
@@ -129,10 +128,6 @@ class RootNavigatorComponent(
             }
         }
     )
-
-    override fun hasChildrenFlow(): Flow<Boolean> {
-        return super.hasChildrenFlow()
-    }
 }
 
 @Parcelize

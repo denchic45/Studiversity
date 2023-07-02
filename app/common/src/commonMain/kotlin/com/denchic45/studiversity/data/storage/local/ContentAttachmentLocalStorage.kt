@@ -1,12 +1,12 @@
 package com.denchic45.studiversity.data.storage.local
 
 import com.denchic45.studiversity.util.SystemDirs
+import me.tatarka.inject.annotations.Inject
 import java.io.File
 import java.io.FileOutputStream
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class ContentAttachmentLocalStorage @Inject constructor(systemDirs: SystemDirs) {
+@Inject
+class ContentAttachmentLocalStorage(systemDirs: SystemDirs) {
 
     private val internalDir = systemDirs.appDir
     private val contentPDir = File("${internalDir.toFile().path}/contents")

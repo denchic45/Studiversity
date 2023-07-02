@@ -1,17 +1,17 @@
 package com.denchic45.studiversity.data.db.local.source
 
-import com.denchic45.studiversity.SpecialtyEntity
-import com.denchic45.studiversity.SpecialtyEntityQueries
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.denchic45.studiversity.AppDatabase
+import com.denchic45.studiversity.SpecialtyEntity
+import com.denchic45.studiversity.SpecialtyEntityQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
 
-@me.tatarka.inject.annotations.Inject
-class SpecialtyLocalDataSource @Inject constructor(db: AppDatabase) {
+@Inject
+class SpecialtyLocalDataSource(db: AppDatabase) {
 
     private val queries: SpecialtyEntityQueries = db.specialtyEntityQueries
 

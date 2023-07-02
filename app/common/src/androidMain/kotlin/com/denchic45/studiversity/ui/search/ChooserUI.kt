@@ -26,13 +26,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar2.hideAppBar
 import com.denchic45.studiversity.ui.theme.spacing
 
@@ -175,7 +175,7 @@ fun EmptySearch() {
     IconTitleBox(
         icon = {
             Icon(
-                imageVector = Icons.Default.Search,
+                painter = painterResource(id = R.drawable.ill_404),
                 contentDescription = "not found",
                 tint = MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier.size(78.dp)

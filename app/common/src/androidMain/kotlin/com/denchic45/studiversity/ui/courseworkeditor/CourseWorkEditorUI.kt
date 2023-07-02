@@ -158,7 +158,7 @@ fun CourseWorkEditorContent(
             .verticalScroll(scrollState)
     ) {
         stateResource.onSuccess { state ->
-            Column() {
+            Column {
 
                 Column(Modifier.padding(MaterialTheme.spacing.normal)) {
                     OutlinedTextField(

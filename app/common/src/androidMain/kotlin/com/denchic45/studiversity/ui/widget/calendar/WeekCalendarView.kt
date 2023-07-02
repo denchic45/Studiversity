@@ -1,7 +1,6 @@
 package com.denchic45.studiversity.ui.widget.calendar
 
 import android.content.Context
-import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -173,10 +172,6 @@ class WeekCalendarView : LinearLayout {
 
     internal class SavedState(superState: Parcelable?) : BaseSavedState(superState) {
         var weekItemList: List<WeekItem> by Delegates.notNull()
-
-        override fun writeToParcel(out: Parcel, flags: Int) {
-            super.writeToParcel(out, flags)
-        }
 
         override fun describeContents(): Int {
             return 0

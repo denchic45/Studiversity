@@ -23,13 +23,13 @@ import com.denchic45.studiversity.domain.usecase.UpdateSubjectUseCase
 import com.denchic45.studiversity.getOptProperty
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.subjecticons.SubjectIconsComponent
+import com.denchic45.studiversity.uivalidator.condition.Condition
+import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
+import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
-import com.denchic45.studiversity.uivalidator.experimental2.condition.Condition
-import com.denchic45.studiversity.uivalidator.experimental2.validator.CompositeValidator
-import com.denchic45.studiversity.uivalidator.experimental2.validator.ValueValidator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf

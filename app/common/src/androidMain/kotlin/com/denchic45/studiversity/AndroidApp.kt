@@ -16,12 +16,6 @@ var app: AndroidApp by Delegates.notNull()
     private set
 
 class AndroidApp : Application(), Configuration.Provider {
-//    private val androidAppComponent: AndroidInjector<AndroidApp> =
-//        com.denchic45.studiversity.di.component.DaggerAppComponent.builder()
-//            .appModule(AndroidAppModule(this))
-//            .preferencesModule(PreferencesModule(SettingsFactory(this)))
-//            .create(this)
-
     val appComponent: AndroidAppComponent by lazy {
         AndroidAppComponent::class.create(
             this,
@@ -33,7 +27,6 @@ class AndroidApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-
         System.setProperty(
             "org.apache.poi.javax.xml.stream.XMLInputFactory",
             "com.fasterxml.aalto.stax.InputFactoryImpl"
@@ -46,27 +39,8 @@ class AndroidApp : Application(), Configuration.Provider {
             "org.apache.poi.javax.xml.stream.XMLEventFactory",
             "com.fasterxml.aalto.stax.EventFactoryImpl"
         )
-
         app = this
-//        androidAppComponent.inject(this)
-
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLInputFactory",
-            "com.fasterxml.aalto.stax.InputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLOutputFactory",
-            "com.fasterxml.aalto.stax.OutputFactoryImpl"
-        )
-        System.setProperty(
-            "org.apache.poi.javax.xml.stream.XMLEventFactory",
-            "com.fasterxml.aalto.stax.EventFactoryImpl"
-        )
     }
-
-//    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-//        return androidAppComponent
-//    }
 
     override fun getWorkManagerConfiguration(): Configuration {
         return Configuration.Builder().setWorkerFactory(appComponent.workFactory).build()

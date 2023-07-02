@@ -13,10 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import okio.Path
 import okio.Path.Companion.toOkioPath
-import org.apache.poi.util.IOUtils
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 
 class FilePicker(
     private val fragment: Fragment,
@@ -126,6 +124,7 @@ class FilePicker(
              input.copyTo(output)
          }
      }
+     parcelFileDescriptor.close()
     return file.toOkioPath()
 }
 

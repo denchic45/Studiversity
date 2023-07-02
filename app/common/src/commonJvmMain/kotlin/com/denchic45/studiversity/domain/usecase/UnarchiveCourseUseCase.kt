@@ -1,13 +1,12 @@
 package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.CourseRepository
-import com.denchic45.studiversity.data.repository.SubjectRepository
 import com.denchic45.studiversity.domain.EmptyResource
-import java.util.*
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
-@me.tatarka.inject.annotations.Inject
-class UnarchiveCourseUseCase @Inject constructor(
+@Inject
+class UnarchiveCourseUseCase(
     private val courseRepository: CourseRepository,
 ) {
 

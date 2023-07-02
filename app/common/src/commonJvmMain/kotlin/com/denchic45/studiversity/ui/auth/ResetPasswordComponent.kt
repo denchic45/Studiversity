@@ -10,6 +10,4 @@ class ResetPasswordComponent(
     private val onSuccess: () -> Unit,
     @Assisted
     componentContext: ComponentContext,
-) : ComponentContext by componentContext {
-
-}
+) : ComponentContext by componentContext

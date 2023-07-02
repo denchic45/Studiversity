@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class AttachmentReferenceLocalDataSource @javax.inject.Inject constructor(db: AppDatabase) {
+class AttachmentReferenceLocalDataSource(db: AppDatabase) {
     private val queries: AttachmentRefEntityQueries = db.attachmentRefEntityQueries
 
     suspend fun insert(attachmentRefEntity: AttachmentRefEntity) = withContext(Dispatchers.IO) {

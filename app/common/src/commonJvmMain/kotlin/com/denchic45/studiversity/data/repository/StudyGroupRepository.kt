@@ -32,11 +32,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import me.tatarka.inject.annotations.Inject
 import java.util.UUID
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class StudyGroupRepository @Inject constructor(
+@Inject
+class StudyGroupRepository constructor(
     override val groupLocalDataSource: GroupLocalDataSource,
     override val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val appPreferences: AppPreferences,
@@ -249,7 +249,7 @@ class StudyGroupRepository @Inject constructor(
         courseApi.putStudyGroup(courseId, studyGroupId)
     }
 
-    fun removeFromCourse(studyGroupId:UUID, courseId:UUID) = fetchResourceFlow {
+    fun removeFromCourse(studyGroupId: UUID, courseId: UUID) = fetchResourceFlow {
         courseApi.deleteStudyGroup(courseId, studyGroupId)
     }
 }

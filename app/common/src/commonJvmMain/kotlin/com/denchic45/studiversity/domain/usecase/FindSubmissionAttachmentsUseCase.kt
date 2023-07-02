@@ -9,7 +9,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class FindSubmissionAttachmentsUseCase @javax.inject.Inject constructor(
+class FindSubmissionAttachmentsUseCase(
     downloadService: DownloadsService,
     private val attachmentRepository: AttachmentRepository
 ) : FindAttachmentsUseCase(downloadService) {

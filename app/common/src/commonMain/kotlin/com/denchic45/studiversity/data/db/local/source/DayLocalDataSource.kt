@@ -1,15 +1,21 @@
 package com.denchic45.studiversity.data.db.local.source
 
-import com.denchic45.studiversity.*
+import com.denchic45.studiversity.AppDatabase
+import com.denchic45.studiversity.DayEntity
+import com.denchic45.studiversity.DayEntityQueries
+import com.denchic45.studiversity.EventEntity
+import com.denchic45.studiversity.SubjectEntity
+import com.denchic45.studiversity.TeacherEventEntity
+import com.denchic45.studiversity.UserEntity
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.tatarka.inject.annotations.Inject
 import java.time.LocalDate
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class DayLocalDataSource @Inject constructor(private val db: AppDatabase) {
+@Inject
+class DayLocalDataSource(private val db: AppDatabase) {
     private val dayEntityQueries: DayEntityQueries = db.dayEntityQueries
 
     suspend fun upsert(dayEntity: DayEntity) = withContext(Dispatchers.IO) {

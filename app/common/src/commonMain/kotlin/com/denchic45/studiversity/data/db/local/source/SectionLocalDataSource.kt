@@ -1,18 +1,18 @@
 package com.denchic45.studiversity.data.db.local.source
 
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.SectionEntity
-import com.denchic45.studiversity.SectionEntityQueries
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
+import com.denchic45.studiversity.AppDatabase
+import com.denchic45.studiversity.SectionEntity
+import com.denchic45.studiversity.SectionEntityQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
 
-@me.tatarka.inject.annotations.Inject
-class SectionLocalDataSource @Inject constructor(db: AppDatabase) {
+@Inject
+class SectionLocalDataSource(db: AppDatabase) {
 
     private val queries: SectionEntityQueries = db.sectionEntityQueries
 

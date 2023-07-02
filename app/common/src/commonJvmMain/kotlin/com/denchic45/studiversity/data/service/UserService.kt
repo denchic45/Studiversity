@@ -15,10 +15,9 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
 
 @Inject
-class UserService @javax.inject.Inject constructor(
+class UserService(
     private val userPreferences: UserPreferences,
     private val appPreferences: AppPreferences,
     userApiLazy: Lazy<UserApi>,

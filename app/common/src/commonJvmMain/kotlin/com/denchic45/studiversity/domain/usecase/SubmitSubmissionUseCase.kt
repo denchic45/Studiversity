@@ -4,10 +4,10 @@ import com.denchic45.studiversity.data.repository.SubmissionRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
-class SubmitSubmissionUseCase @javax.inject.Inject constructor(private val submissionRepository: SubmissionRepository) {
+class SubmitSubmissionUseCase(private val submissionRepository: SubmissionRepository) {
     suspend operator fun invoke(courseId: UUID, workId: UUID, submissionId: UUID): Resource<SubmissionResponse> {
        return submissionRepository.submitSubmission(courseId, workId, submissionId)
     }

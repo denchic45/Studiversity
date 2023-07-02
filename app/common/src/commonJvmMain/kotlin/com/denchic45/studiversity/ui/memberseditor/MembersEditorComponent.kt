@@ -7,5 +7,4 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class MembersEditorComponent(
     @Assisted
-    componentContext: ComponentContext):ComponentContext by componentContext {
-}
+    componentContext: ComponentContext):ComponentContext by componentContext

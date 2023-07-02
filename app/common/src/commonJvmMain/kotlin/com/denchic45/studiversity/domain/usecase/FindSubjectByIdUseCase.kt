@@ -4,11 +4,11 @@ import com.denchic45.studiversity.data.repository.SubjectRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import kotlinx.coroutines.flow.Flow
+import me.tatarka.inject.annotations.Inject
 import java.util.UUID
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class FindSubjectByIdUseCase @Inject constructor(
+@Inject
+class FindSubjectByIdUseCase(
     private val subjectRepository: SubjectRepository,
 ) {
     operator fun invoke(courseId: UUID): Flow<Resource<SubjectResponse>> {

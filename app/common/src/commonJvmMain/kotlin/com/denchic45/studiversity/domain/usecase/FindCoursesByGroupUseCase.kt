@@ -4,10 +4,10 @@ import com.denchic45.studiversity.data.repository.CourseRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
-class FindCoursesByGroupUseCase @javax.inject.Inject constructor(
+class FindCoursesByGroupUseCase(
     private val courseRepository: CourseRepository,
 ) {
     suspend operator fun invoke(groupId: UUID): Resource<List<CourseResponse>> {

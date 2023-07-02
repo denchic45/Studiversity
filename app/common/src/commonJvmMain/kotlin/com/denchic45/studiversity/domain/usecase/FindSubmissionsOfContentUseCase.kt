@@ -3,11 +3,11 @@ package com.denchic45.studiversity.domain.usecase
 import com.denchic45.studiversity.data.repository.SubmissionRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
-import java.util.*
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
-@me.tatarka.inject.annotations.Inject
-class FindCourseWorkSubmissionsUseCase @Inject constructor(
+@Inject
+class FindCourseWorkSubmissionsUseCase(
     private val submissionRepository: SubmissionRepository,
 ) {
 

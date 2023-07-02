@@ -5,11 +5,11 @@ import com.denchic45.studiversity.data.repository.AttachmentRepository
 import com.denchic45.studiversity.data.service.DownloadsService
 import com.denchic45.studiversity.domain.Resource
 import kotlinx.coroutines.flow.Flow
-import java.util.*
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
-@me.tatarka.inject.annotations.Inject
-class FindCourseWorkAttachmentsUseCase @Inject constructor(
+@Inject
+class FindCourseWorkAttachmentsUseCase(
     private val attachmentRepository: AttachmentRepository,
     downloadService: DownloadsService,
 ) : FindAttachmentsUseCase(downloadService) {
@@ -17,6 +17,9 @@ class FindCourseWorkAttachmentsUseCase @Inject constructor(
         courseId: UUID,
         workId: UUID,
     ): Flow<Resource<List<Attachment2>>> {
-        return observeAttachments(attachmentRepository.observeByCourseWork(courseId, workId), workId)
+        return observeAttachments(
+            attachmentRepository.observeByCourseWork(courseId, workId),
+            workId
+        )
     }
 }

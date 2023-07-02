@@ -7,10 +7,9 @@ import com.denchic45.studiversity.util.SystemDirs
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import okio.FileSystem
-import java.io.File
 import java.util.Properties
 
-actual class DriverFactory() {
+actual class DriverFactory {
     actual val driver: SqlDriver = run {
         val dir = SystemDirs().appDir / "databases"
         val system = FileSystem.SYSTEM

@@ -20,7 +20,6 @@ actual class DownloadsService actual constructor() {
     lateinit var attachmentLocalDataSource: AttachmentLocalDataSource
 
     @Inject
-    @javax.inject.Inject
     constructor(context: Context, attachmentLocalDataSource: AttachmentLocalDataSource) : this() {
         this.context = context
         this.attachmentLocalDataSource = attachmentLocalDataSource

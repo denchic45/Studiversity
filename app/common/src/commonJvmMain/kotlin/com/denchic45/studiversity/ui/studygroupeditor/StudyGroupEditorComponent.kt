@@ -13,6 +13,10 @@ import com.denchic45.studiversity.domain.usecase.FindSpecialtyByContainsNameUseC
 import com.denchic45.studiversity.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.studiversity.domain.usecase.UpdateStudyGroupUseCase
 import com.denchic45.studiversity.getOptProperty
+import com.denchic45.studiversity.uivalidator.condition.Condition
+import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
+import com.denchic45.studiversity.uivalidator.validator.ValueValidator
+import com.denchic45.studiversity.uivalidator.validator.observable
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
@@ -21,10 +25,6 @@ import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.denchic45.stuiversity.util.OptionalProperty
 import com.denchic45.stuiversity.util.optPropertyOf
-import com.denchic45.studiversity.uivalidator.experimental2.condition.Condition
-import com.denchic45.studiversity.uivalidator.experimental2.validator.CompositeValidator
-import com.denchic45.studiversity.uivalidator.experimental2.validator.ValueValidator
-import com.denchic45.studiversity.uivalidator.experimental2.validator.observable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*

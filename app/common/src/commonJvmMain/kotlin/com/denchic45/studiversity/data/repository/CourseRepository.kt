@@ -41,11 +41,11 @@ import com.denchic45.stuiversity.util.uuidOfMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import me.tatarka.inject.annotations.Inject
 import java.util.UUID
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class CourseRepository @Inject constructor(
+@Inject
+class CourseRepository(
     private val coursePreferences: CoursePreferences,
     override val networkService: NetworkService,
     private val contentAttachmentStorage: ContentAttachmentStorage,

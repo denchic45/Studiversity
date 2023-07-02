@@ -5,10 +5,10 @@ import com.denchic45.studiversity.SubmissionCommentEntity
 import com.denchic45.studiversity.SubmissionCommentEntityQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
 
-@me.tatarka.inject.annotations.Inject
-class SubmissionCommentLocalDataSource @Inject constructor(db: AppDatabase) {
+@Inject
+class SubmissionCommentLocalDataSource(db: AppDatabase) {
 
     private val queries: SubmissionCommentEntityQueries = db.submissionCommentEntityQueries
 

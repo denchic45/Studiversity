@@ -1,11 +1,11 @@
 package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.StudyGroupRepository
-import java.util.*
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
-@me.tatarka.inject.annotations.Inject
-class RemoveStudyGroupUseCase @Inject constructor(
+@Inject
+class RemoveStudyGroupUseCase(
     private val studyGroupRepository: StudyGroupRepository,
 ) {
 

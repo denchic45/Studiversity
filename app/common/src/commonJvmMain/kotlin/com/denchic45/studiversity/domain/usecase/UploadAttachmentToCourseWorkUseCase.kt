@@ -5,12 +5,11 @@ import com.denchic45.studiversity.data.repository.CourseElementRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
-import com.eygraber.uri.Uri
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
-class UploadAttachmentToCourseWorkUseCase @javax.inject.Inject constructor(
+class UploadAttachmentToCourseWorkUseCase(
     private val courseElementRepository: CourseElementRepository,
     private val attachmentRepository: AttachmentRepository
 ) {

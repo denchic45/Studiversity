@@ -13,7 +13,4 @@ class ProfileAvatarComponent(
     private val isOwned: Boolean,
     @Assisted
     componentContext: ComponentContext
-) : ComponentContext by componentContext {
-
-
-}
+) : ComponentContext by componentContext

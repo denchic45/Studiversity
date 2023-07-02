@@ -34,7 +34,6 @@ import java.util.UUID
 fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
     val members by component.members.collectAsState()
     val allowEditMembers by component.allowEditMembers.collectAsState()
-//    val selectedMemberActions by component.memberActions.collectAsState()
 
     ResourceContent(resource = members) {
         StudyGroupMembersContent(

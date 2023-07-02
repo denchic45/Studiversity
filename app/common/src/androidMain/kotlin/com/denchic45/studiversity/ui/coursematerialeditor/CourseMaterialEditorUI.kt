@@ -139,9 +139,7 @@ fun CourseMaterialEditorContent(
             .verticalScroll(scrollState)
     ) {
         stateResource.onSuccess { state ->
-            Column(
-
-            ) {
+            Column {
                 var showDatePicker by remember { mutableStateOf(false) }
                 var showTimePicker by remember { mutableStateOf(false) }
 

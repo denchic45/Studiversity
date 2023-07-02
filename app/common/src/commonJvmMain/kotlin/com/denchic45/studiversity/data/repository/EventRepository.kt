@@ -1,35 +1,32 @@
 package com.denchic45.studiversity.data.repository
 
-import com.denchic45.studiversity.data.db.local.source.*
-import com.denchic45.studiversity.data.db.remote.model.DayMap
+import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.DayLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.EventLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.GroupLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
 import com.denchic45.studiversity.data.fetchObservingResource
 import com.denchic45.studiversity.data.fetchResource
-import com.denchic45.studiversity.data.pref.AppPreferences
 import com.denchic45.studiversity.data.pref.UserPreferences
-import com.denchic45.studiversity.data.service.AppVersionService
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.studiversity.util.NetworkException
 import com.denchic45.stuiversity.api.timetable.TimetableApi
 import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting
 import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
 import com.denchic45.stuiversity.util.UUIDWrapper
-import com.denchic45.stuiversity.util.toDateUTC
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.flow
-import java.time.DayOfWeek
+import me.tatarka.inject.annotations.Inject
 import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
-import java.util.*
-import javax.inject.Inject
+import java.util.UUID
 
-@me.tatarka.inject.annotations.Inject
-class EventRepository @Inject constructor(
+@Inject
+class EventRepository(
     override val networkService: NetworkService,
     private val eventLocalDataSource: EventLocalDataSource,
     private val courseLocalDataSource: CourseLocalDataSource,
     private val dayLocalDataSource: DayLocalDataSource,
     private val userPreferences: UserPreferences,
-    private val appPreferences: AppPreferences,
     override val userLocalDataSource: UserLocalDataSource,
     override val groupLocalDataSource: GroupLocalDataSource,
     override val specialtyLocalDataSource: SpecialtyLocalDataSource,
@@ -111,10 +108,6 @@ class EventRepository @Inject constructor(
 //        }
 //    }
 
-    suspend fun findTimetableByStudyGroup(monday: LocalDate, studyGroupId: UUID) = fetchResource {
-        timetableApi.getTimetableByStudyGroupId(monday, studyGroupId)
-    }
-
     suspend fun findEventOfDayByMeAndDate(date: LocalDate) = fetchResource {
         timetableApi.getTimetableOfDay(
             date,
@@ -172,77 +165,10 @@ class EventRepository @Inject constructor(
 //        }.collect { dayMaps -> dayMaps.forEach { saveDay(it) } }
 //    }
 
-    private val nextSaturday: Date
-        get() = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).plusWeeks(1)
-            .toDateUTC()
 
-    private val previousMonday: Date
-        get() = LocalDate.now().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)).minusWeeks(1)
-            .toDateUTC()
-
-    suspend fun putTimetables(
-        weekOfYear: String,
-        putTimetableRequests: List<PutTimetableRequest>,
-    ) {
-//        if (isNetworkNotAvailable) throw NetworkException()
-//        putTimetableRequests.map { putTimetable(weekOfYear, it) }
+    suspend fun updateTimetableOfWeek(
+        weekOfYear: String, putTimetableRequest: PutTimetableRequest
+    ) = fetchResource {
+        timetableApi.putTimetable(weekOfYear, putTimetableRequest)
     }
-
-    suspend fun putTimetable(weekOfYear: String, putTimetableRequest: PutTimetableRequest) =
-        fetchResource {
-            timetableApi.putTimetable(weekOfYear, putTimetableRequest)
-        }
-
-//    private suspend fun addGroupTimetable(groupTimetable: GroupTimetable) {
-//        val groupWeekEvents = groupTimetable.weekEvents
-//
-//        eventLocalDataSource.deleteByGroupAndDateRange(
-//            groupTimetable.groupHeader.id, groupWeekEvents[0].date, groupWeekEvents[5].date
-//        )
-//
-//        val existsDayMaps: List<DayMap> = eventRemoteDataSource.findEventsOfGroupByDateRange(
-//            groupId = groupTimetable.groupHeader.id,
-//            previousMonday = groupTimetable.weekEvents[0].date.toDateUTC(),
-//            nextSaturday = groupTimetable.weekEvents[5].date.toDateUTC()
-//        )
-//
-//        for (eventsOfTheDay in groupWeekEvents) {
-//            val maybeDayMap = findDayByDate(existsDayMaps, eventsOfTheDay.date.toDateUTC())
-//
-//            val addableEvents = eventsOfTheDay.events.map { it.domainToMap() }
-//
-//            val dayMap: DayMap = maybeDayMap?.let {
-//                it.events = addableEvents
-//                it
-//            } ?: DayMap(eventsOfTheDay.domainToMap(groupTimetable.groupHeader.id))
-//
-//            eventRemoteDataSource.setDay(dayMap)
-//
-//            dayLocalDataSource.upsert(
-//                DayEntity(
-//                    day_id = dayMap.id,
-//                    date = dayMap.date.toString(DatePatterns.yyy_MM_dd),
-//                    start_at_zero = eventsOfTheDay.startsAtZero,
-//                    group_id = groupTimetable.groupHeader.id
-//                )
-//            )
-//        }
-//    }
-
-    private fun findDayByDate(dayDocs: List<DayMap>, date: Date): DayMap? {
-        return dayDocs.firstOrNull { dayDoc -> dayDoc.date == date }
-    }
-
-//    suspend fun updateEventsOfDay(updatedEventsOfDay: EventsOfDay, groupHeader: GroupHeader) {
-//        val groupId = groupHeader.id
-//        val localDayId = dayLocalDataSource.getIdByDateAndGroupId(updatedEventsOfDay.date, groupId)
-//        if (isNetworkNotAvailable) return
-//        if (localDayId != null) {
-//            eventRemoteDataSource.updateEventsOfDay(DayMap(updatedEventsOfDay.domainToMap(groupId)))
-//        } else {
-//            val dayMap = DayMap(updatedEventsOfDay.domainToMap(groupId))
-//            eventRemoteDataSource.setDay(dayMap)
-//            dayLocalDataSource.upsert(dayMap.mapToEntity())
-//        }
-//    }
 }

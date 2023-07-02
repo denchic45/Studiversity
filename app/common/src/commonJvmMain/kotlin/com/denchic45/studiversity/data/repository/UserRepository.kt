@@ -21,11 +21,11 @@ import com.denchic45.stuiversity.api.user.model.UserResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import me.tatarka.inject.annotations.Inject
 import java.util.UUID
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class UserRepository @Inject constructor(
+@Inject
+class UserRepository(
     private val userPreferences: UserPreferences,
     override val networkService: NetworkService,
     private val userLocalDataSource: UserLocalDataSource,
@@ -69,7 +69,8 @@ class UserRepository @Inject constructor(
             .map { it?.toUserResponse() },
         fetch = { userApi.getById(userId) },
         saveFetch = {
-            userLocalDataSource.upsert(it.toEntity()) }
+            userLocalDataSource.upsert(it.toEntity())
+        }
     )
 
     suspend fun remove(userId: UUID): EmptyResource {

@@ -5,10 +5,10 @@ import com.denchic45.studiversity.GroupCourseEntity
 import com.denchic45.studiversity.GroupCourseEntityQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
 
-@me.tatarka.inject.annotations.Inject
-class GroupCourseLocalDataSource @Inject constructor(db: AppDatabase) {
+@Inject
+class GroupCourseLocalDataSource(db: AppDatabase) {
     private val queries: GroupCourseEntityQueries = db.groupCourseEntityQueries
 
     suspend fun upsert(groupCourseEntity: GroupCourseEntity) = withContext(Dispatchers.IO) {

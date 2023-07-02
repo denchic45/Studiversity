@@ -4,12 +4,11 @@ import com.denchic45.studiversity.data.repository.CourseElementRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
 import com.denchic45.stuiversity.api.course.material.model.UpdateCourseMaterialRequest
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
+import me.tatarka.inject.annotations.Inject
 import java.util.UUID
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class UpdateCourseMaterialUseCase @Inject constructor(
+@Inject
+class UpdateCourseMaterialUseCase(
     private val courseElementRepository: CourseElementRepository,
 ) {
     suspend operator fun invoke(

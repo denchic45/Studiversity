@@ -11,7 +11,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class ScheduleComponent(
-    private val metaRepository: MetaRepository,
+    metaRepository: MetaRepository,
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {

@@ -26,7 +26,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class CourseElementRepository @javax.inject.Inject constructor(
+class CourseElementRepository(
     override val networkService: NetworkService,
     private val courseTopicApi: CourseTopicApi,
     private val courseElementsApi: CourseElementsApi,

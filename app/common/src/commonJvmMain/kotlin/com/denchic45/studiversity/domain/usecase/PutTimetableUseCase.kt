@@ -12,6 +12,6 @@ class PutTimetableUseCase(private val eventRepository: EventRepository) {
         weekOfYear: String,
         putTimetableRequest: PutTimetableRequest
     ): Resource<TimetableResponse> {
-        return eventRepository.putTimetable(weekOfYear, putTimetableRequest)
+        return eventRepository.updateTimetableOfWeek(weekOfYear, putTimetableRequest)
     }
 }

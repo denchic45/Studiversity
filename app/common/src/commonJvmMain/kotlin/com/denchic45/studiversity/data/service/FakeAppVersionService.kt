@@ -4,9 +4,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class FakeAppVersionService @Inject constructor(
+
+class FakeAppVersionService(
     private val coroutineScope: CoroutineScope,
 ) : AppVersionService() {
 

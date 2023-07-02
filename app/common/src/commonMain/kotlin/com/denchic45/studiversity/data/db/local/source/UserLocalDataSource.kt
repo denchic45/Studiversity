@@ -8,10 +8,10 @@ import com.denchic45.studiversity.UserEntityQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
 
-@me.tatarka.inject.annotations.Inject
-class UserLocalDataSource @Inject constructor(db: AppDatabase) {
+@Inject
+class UserLocalDataSource(db: AppDatabase) {
 
     private val queries: UserEntityQueries = db.userEntityQueries
 

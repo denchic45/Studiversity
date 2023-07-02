@@ -8,11 +8,11 @@ import com.denchic45.stuiversity.api.specialty.SpecialtyApi
 import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
+import me.tatarka.inject.annotations.Inject
 import java.util.UUID
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class SpecialtyRepository @Inject constructor(
+@Inject
+class SpecialtyRepository(
     private val specialtyLocalDataSource: SpecialtyLocalDataSource,
     override val networkService: NetworkService,
     private val specialtyApi: SpecialtyApi,

@@ -17,7 +17,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class RoleRepository @javax.inject.Inject constructor(
+class RoleRepository(
     private val appPreferences: AppPreferences,
     private val roleApi: RoleApi,
     private val capabilityApi: CapabilityApi,

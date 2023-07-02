@@ -17,8 +17,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.Closeable
 import java.lang.ref.WeakReference
 import java.text.NumberFormat
-import java.util.*
-import javax.inject.Inject
+import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.math.max

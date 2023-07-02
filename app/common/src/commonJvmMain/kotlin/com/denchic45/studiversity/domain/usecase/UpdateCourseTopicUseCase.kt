@@ -4,11 +4,11 @@ import com.denchic45.studiversity.data.repository.CourseRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import com.denchic45.stuiversity.api.course.topic.model.UpdateTopicRequest
-import java.util.*
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
-@me.tatarka.inject.annotations.Inject
-class UpdateCourseTopicUseCase @Inject constructor(private val courseRepository: CourseRepository) {
+@Inject
+class UpdateCourseTopicUseCase(private val courseRepository: CourseRepository) {
     suspend operator fun invoke(
         courseId: UUID,
         topicId: UUID, updateTopicRequest: UpdateTopicRequest,

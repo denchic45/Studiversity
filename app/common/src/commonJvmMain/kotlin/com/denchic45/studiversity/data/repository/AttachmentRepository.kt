@@ -37,7 +37,7 @@ import okio.Path.Companion.toPath
 import java.util.UUID
 
 @Inject
-class AttachmentRepository @javax.inject.Inject constructor(
+class AttachmentRepository constructor(
     override val networkService: NetworkService,
     private val attachmentLocalDataSource: AttachmentLocalDataSource,
     private val attachmentReferenceLocalDataSource: AttachmentReferenceLocalDataSource,
@@ -63,7 +63,7 @@ class AttachmentRepository @javax.inject.Inject constructor(
         courseId: UUID,
         workId: UUID,
     ): Flow<Resource<List<Attachment2>>> = observeResource(
-        query = getAttachmentsByReferenceId(workId).distinctUntilChanged().onEach {
+        query = getAttachmentsByReferenceId(workId).distinctUntilChanged().onEach { it ->
             println("GET_ATTACHMENTS_BY: $workId")
             it.forEach {
                 println("\t${it}")

@@ -10,7 +10,6 @@ import com.denchic45.studiversity.domain.usecase.RemoveCourseUseCase
 import com.denchic45.studiversity.domain.usecase.UnarchiveCourseUseCase
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
-import com.denchic45.studiversity.ui.courseeditor.CourseEditorComponent
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.search.CourseChooserComponent
 import com.denchic45.studiversity.ui.uiTextOf
@@ -28,7 +27,6 @@ class CoursesAdminComponent(
     private val unarchiveCourseUseCase: UnarchiveCourseUseCase,
     private val removeCourseUseCase: RemoveCourseUseCase,
     courseChooserComponent: (onSelect: (CourseResponse) -> Unit, ComponentContext) -> CourseChooserComponent,
-    courseEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> CourseEditorComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
     @Assisted
@@ -40,13 +38,6 @@ class CoursesAdminComponent(
 
     override val chooserComponent: CourseChooserComponent =
         courseChooserComponent(::onSelect, componentContext)
-
-//    private val overlayNavigation = OverlayNavigation<AddCourseConfig>()
-//    val childOverlay = childOverlay(source = overlayNavigation,
-//        handleBackButton = true,
-//        childFactory = { _, context ->
-//            AddCourseChild(courseEditorComponent(overlayNavigation::dismiss, null, context))
-//        })
 
     override fun onSelect(item: CourseResponse) {
         rootNavigation.bringToFront(RootConfig.Course(item.id))

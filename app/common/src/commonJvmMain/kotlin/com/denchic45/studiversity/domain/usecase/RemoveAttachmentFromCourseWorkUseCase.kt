@@ -6,7 +6,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class RemoveAttachmentFromCourseWorkUseCase @javax.inject.Inject constructor(
+class RemoveAttachmentFromCourseWorkUseCase(
     private val attachmentRepository: AttachmentRepository
 ) {
     suspend operator fun invoke(

@@ -4,11 +4,11 @@ import com.denchic45.studiversity.data.repository.CourseElementRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
+import me.tatarka.inject.annotations.Inject
 import java.util.UUID
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class FindCourseElementsUseCase @Inject constructor(
+@Inject
+class FindCourseElementsUseCase(
     private val courseElementRepository: CourseElementRepository,
 ) {
     suspend operator fun invoke(

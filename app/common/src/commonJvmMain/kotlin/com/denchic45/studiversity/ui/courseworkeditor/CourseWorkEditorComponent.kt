@@ -31,9 +31,9 @@ import com.denchic45.studiversity.ui.model.toAttachmentItems
 import com.denchic45.studiversity.ui.model.toRequest
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.studiversity.uivalidator.experimental2.condition.Condition
-import com.denchic45.studiversity.uivalidator.experimental2.validator.CompositeValidator
-import com.denchic45.studiversity.uivalidator.experimental2.validator.ValueValidator
+import com.denchic45.studiversity.uivalidator.condition.Condition
+import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
+import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse

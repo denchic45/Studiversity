@@ -6,25 +6,17 @@ import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.ui.model.toUserItem
-import com.denchic45.studiversity.util.capitalized
 import com.denchic45.stuiversity.api.room.model.RoomResponse
 import com.denchic45.stuiversity.api.room.model.displayName
 import com.denchic45.stuiversity.api.timetable.model.EventDetails
 import com.denchic45.stuiversity.api.timetable.model.LessonDetails
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
-import com.denchic45.stuiversity.util.toDate
-import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.Month
-import java.time.Year
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
-import java.time.format.FormatStyle
-import java.time.format.TextStyle
 import java.time.temporal.ChronoField
-import java.util.Locale
 
 sealed class Cell {
     data class Event(val iconName: String?, val name: String?, val room: RoomResponse?) : Cell()
@@ -142,7 +134,7 @@ fun BellSchedule.toItemOrders(
 
 
 
-fun String.toLocalDateOfWeekOfYear() = LocalDate.parse(
+fun String.toLocalDateOfWeekOfYear(): LocalDate = LocalDate.parse(
     this, DateTimeFormatterBuilder()
         .appendPattern("YYYY_ww")
         .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.value.toLong())

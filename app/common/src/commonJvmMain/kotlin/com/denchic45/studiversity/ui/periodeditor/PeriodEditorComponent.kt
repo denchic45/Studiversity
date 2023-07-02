@@ -20,10 +20,10 @@ import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.model.toPeriodMember
 import com.denchic45.studiversity.ui.search.CourseChooserComponent
 import com.denchic45.studiversity.ui.search.UserChooserComponent
-import com.denchic45.studiversity.uivalidator.experimental2.condition.Condition
-import com.denchic45.studiversity.uivalidator.experimental2.validator.CompositeValidator
-import com.denchic45.studiversity.uivalidator.experimental2.validator.ValueValidator
-import com.denchic45.studiversity.uivalidator.experimental2.validator.observable
+import com.denchic45.studiversity.uivalidator.condition.Condition
+import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
+import com.denchic45.studiversity.uivalidator.validator.ValueValidator
+import com.denchic45.studiversity.uivalidator.validator.observable
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.room.model.RoomResponse

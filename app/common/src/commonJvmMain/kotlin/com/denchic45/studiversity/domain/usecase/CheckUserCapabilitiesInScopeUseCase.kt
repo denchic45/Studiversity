@@ -6,10 +6,10 @@ import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.api.role.model.CheckCapabilitiesResponse
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
-class CheckUserCapabilitiesInScopeUseCase @javax.inject.Inject constructor(
+class CheckUserCapabilitiesInScopeUseCase(
     private val roleRepository: RoleRepository
 ) {
     operator fun invoke(

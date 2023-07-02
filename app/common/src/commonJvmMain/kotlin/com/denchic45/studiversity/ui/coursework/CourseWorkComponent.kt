@@ -33,7 +33,7 @@ import java.util.UUID
 class CourseWorkComponent(
     private val downloadFileUseCase: DownloadFileUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
-    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
+    checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val removeCourseElementUseCase: RemoveCourseElementUseCase,
     _courseWorkDetailsComponent: (
         courseId: UUID,
@@ -45,7 +45,7 @@ class CourseWorkComponent(
         elementId: UUID,
         ComponentContext,
     ) -> CourseWorkSubmissionsComponent,
-    private val _yourSubmissionComponent: (
+    _yourSubmissionComponent: (
         courseId: UUID,
         elementId: UUID,
         ComponentContext,
@@ -145,7 +145,7 @@ class CourseWorkComponent(
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
                 FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
                 FileState.Preview,FileState.FailDownload -> componentScope.launch {
-                    downloadFileUseCase(item.attachmentId!!)
+                    downloadFileUseCase(item.attachmentId)
                 }
 
                 else -> {}

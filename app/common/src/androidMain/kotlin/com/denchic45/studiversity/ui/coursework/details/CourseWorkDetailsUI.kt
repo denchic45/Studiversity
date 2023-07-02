@@ -126,7 +126,7 @@ private fun CourseWorkDetailsContent(
                 if (attachments.isNotEmpty()) {
                     HeaderItemUI(name = "Прикрепленные файлы", horizontalPadding = 0.dp)
                     LazyRow {
-                        items(attachments, key = { it.attachmentId ?: Unit }) {
+                        items(attachments, key = { it.attachmentId }) {
                             AttachmentListItem(item = it, onClick = { onAttachmentClick(it) })
                         }
                     }
@@ -197,9 +197,8 @@ fun CourseWorkDetailsPreview() {
                             state = FileState.Preview
                         )
                     )
-                ),
-                {}
-            )
+                )
+            ) {}
         }
     }
 }

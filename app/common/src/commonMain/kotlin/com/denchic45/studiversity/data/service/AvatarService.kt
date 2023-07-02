@@ -1,12 +1,13 @@
 package com.denchic45.studiversity.data.service
 
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.statement.readBytes
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class AvatarService @javax.inject.Inject constructor(private val client: HttpClient) {
+class AvatarService(private val client: HttpClient) {
     val colors = listOf(
         "3473E1",
         "FCBF49",

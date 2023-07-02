@@ -8,7 +8,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class FindStudyGroupByIdUseCase @javax.inject.Inject constructor(
+class FindStudyGroupByIdUseCase(
     private val studyGroupRepository: StudyGroupRepository,
 ) {
 

@@ -15,9 +15,9 @@ import com.denchic45.studiversity.domain.usecase.AddRoomUseCase
 import com.denchic45.studiversity.domain.usecase.FindRoomByIdUseCase
 import com.denchic45.studiversity.domain.usecase.UpdateRoomUseCase
 import com.denchic45.studiversity.getOptProperty
-import com.denchic45.studiversity.uivalidator.experimental2.condition.Condition
-import com.denchic45.studiversity.uivalidator.experimental2.validator.CompositeValidator
-import com.denchic45.studiversity.uivalidator.experimental2.validator.ValueValidator
+import com.denchic45.studiversity.uivalidator.condition.Condition
+import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
+import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.room.model.CreateRoomRequest

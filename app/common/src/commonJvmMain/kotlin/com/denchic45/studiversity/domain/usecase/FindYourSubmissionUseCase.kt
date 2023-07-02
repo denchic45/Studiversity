@@ -3,14 +3,14 @@ package com.denchic45.studiversity.domain.usecase
 import com.denchic45.studiversity.data.repository.SubmissionRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
-import java.util.*
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
-@me.tatarka.inject.annotations.Inject
-class FindYourSubmissionUseCase @Inject constructor(
+@Inject
+class FindYourSubmissionUseCase(
     private val submissionRepository: SubmissionRepository
 ) {
-    suspend operator fun invoke(courseId:UUID,workId: UUID): Resource<SubmissionResponse> {
+    suspend operator fun invoke(courseId: UUID, workId: UUID): Resource<SubmissionResponse> {
         return submissionRepository.findOwnSubmissionByWork(courseId, workId)
     }
 }

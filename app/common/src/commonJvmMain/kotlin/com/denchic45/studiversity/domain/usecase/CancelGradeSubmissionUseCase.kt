@@ -6,7 +6,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class CancelGradeSubmissionUseCase @javax.inject.Inject constructor(
+class CancelGradeSubmissionUseCase constructor(
     private val submissionRepository: SubmissionRepository
 ) {
     suspend operator fun invoke(courseId: UUID, workId: UUID, submissionId: UUID): EmptyResource {

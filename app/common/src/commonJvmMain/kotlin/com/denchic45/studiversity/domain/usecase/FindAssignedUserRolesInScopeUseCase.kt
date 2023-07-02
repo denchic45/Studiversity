@@ -8,10 +8,10 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class FindAssignedUserRolesInScopeUseCase @javax.inject.Inject constructor(
+class FindAssignedUserRolesInScopeUseCase(
     private val roleRepository: RoleRepository
 ) {
-     operator fun invoke(
+    operator fun invoke(
         userId: UUID? = null,
         scopeId: UUID? = null
     ): Flow<Resource<UserRolesResponse>> {

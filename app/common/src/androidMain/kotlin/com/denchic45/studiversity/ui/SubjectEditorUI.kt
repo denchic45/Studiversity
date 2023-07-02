@@ -82,7 +82,7 @@ fun SubjectEditorContent(
     onShortnameType: (String) -> Unit,
     onIconClick: () -> Unit
 ) {
-    Column() {
+    Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             SubcomposeAsyncImage(
                 model = state.iconUrl?.let { url ->

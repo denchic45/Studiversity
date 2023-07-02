@@ -1,20 +1,28 @@
 package com.denchic45.studiversity.data.db.local.source
 
-import com.denchic45.studiversity.*
-import com.denchic45.studiversity.data.db.local.model.DayWithEventsEntities
-import com.denchic45.stuiversity.util.DateTimePatterns
-import com.denchic45.stuiversity.util.toString
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import com.denchic45.studiversity.AppDatabase
+import com.denchic45.studiversity.DayEntity
+import com.denchic45.studiversity.EventEntity
+import com.denchic45.studiversity.EventEntityQueries
+import com.denchic45.studiversity.EventWithSubjectAndGroupAndTeachers
+import com.denchic45.studiversity.data.db.local.model.DayWithEventsEntities
+import com.denchic45.stuiversity.util.DateTimePatterns
+import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import me.tatarka.inject.annotations.Inject
 import java.time.LocalDate
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class EventLocalDataSource @Inject constructor(db: AppDatabase) {
+@Inject
+class EventLocalDataSource(db: AppDatabase) {
 
     private val queries: EventEntityQueries = db.eventEntityQueries
 

@@ -2,9 +2,9 @@ package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.SpecialtyRepository
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
 
-@me.tatarka.inject.annotations.Inject
-class FindSpecialtyByContainsNameUseCase @Inject constructor(
+@Inject
+class FindSpecialtyByContainsNameUseCase(
     specialtyRepository: SpecialtyRepository,
 ) : FindByContainsNameUseCase<SpecialtyResponse>(specialtyRepository)

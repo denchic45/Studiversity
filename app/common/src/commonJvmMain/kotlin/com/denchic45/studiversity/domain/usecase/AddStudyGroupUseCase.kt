@@ -4,10 +4,10 @@ import com.denchic45.studiversity.data.repository.StudyGroupRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import javax.inject.Inject
+import me.tatarka.inject.annotations.Inject
 
-@me.tatarka.inject.annotations.Inject
-class AddStudyGroupUseCase @Inject constructor(
+@Inject
+class AddStudyGroupUseCase(
     private val studyGroupRepository: StudyGroupRepository,
 ) {
 

@@ -4,11 +4,11 @@ import com.denchic45.studiversity.data.repository.SubjectRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
+import me.tatarka.inject.annotations.Inject
 import java.util.UUID
-import javax.inject.Inject
 
-@me.tatarka.inject.annotations.Inject
-class UpdateSubjectUseCase @Inject constructor(
+@Inject
+class UpdateSubjectUseCase(
     private val subjectRepository: SubjectRepository,
 ) {
 

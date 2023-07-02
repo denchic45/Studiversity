@@ -23,7 +23,6 @@ kotlin {
         val ktorVersion = "2.3.1"
         val koinVersion = "3.2.0"
         val decomposeVersion = "1.0.0"
-        val daggerVersion = "2.44"
 
         val commonMain by getting {
             dependencies {
@@ -40,12 +39,11 @@ kotlin {
 
                 api("io.github.qdsfdhvh:image-loader:1.3.1")
 
-                implementation("androidx.compose.material3:material3-window-size-class:1.1.0")
-                implementation("androidx.window:window:1.0.0")
+                implementation("androidx.compose.material3:material3-window-size-class:1.1.1")
+                implementation("androidx.window:window:1.1.0")
 
                 // Ktor
                 api("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 api("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 api("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 api("io.ktor:ktor-client-logging:$ktorVersion")
@@ -79,7 +77,7 @@ kotlin {
                 api("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
                 api("com.michael-bull.kotlin-result:kotlin-result-coroutines:1.1.17")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
             }
         }
         val commonTest by getting {
@@ -95,7 +93,7 @@ kotlin {
                 dependsOn(commonMain)
 
                 implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.1")
 
                 implementation("app.cash.sqldelight:runtime-jvm:$sqlDelightVersion")
                 implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
@@ -106,19 +104,12 @@ kotlin {
 
                 api("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
                 implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-
-                // Dagger
-                api("com.google.dagger:dagger:$daggerVersion")
             }
         }
         val commonJvmTest by creating {
-//            kotlin.srcDir("src/commonJvmTest/kotlin")
             dependencies {
                 dependsOn(commonTest)
                 implementation("com.github.skebir:prettytable:v1.0")
-//                implementation(kotlin("stdlib-common"))
-//                implementation("junit:junit:4.13.2")
-//                implementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
             }
         }
         val androidMain by getting {
@@ -155,7 +146,7 @@ kotlin {
                 // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
                 api("androidx.compose.foundation:foundation:$composeVersion")
                 // Material Design
-                api("androidx.compose.material3:material3:1.1.0")
+                api("androidx.compose.material3:material3:1.1.1")
 
                 implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 
@@ -168,10 +159,6 @@ kotlin {
 
                 api("androidx.recyclerview:recyclerview:1.3.0")
 
-                // Dagger
-                api("com.google.dagger:dagger-android:$daggerVersion")
-                api("com.google.dagger:dagger-android-support:$daggerVersion")
-
                 // Decompose
                 api("com.arkivanov.decompose:extensions-compose-jetpack:$decomposeVersion")
 
@@ -179,8 +166,8 @@ kotlin {
                 implementation("com.github.SmartToolFactory:Compose-Cropper:0.3.0")
 
                 // Navigation
-                api("androidx.navigation:navigation-fragment-ktx:2.5.3")
-                api("androidx.navigation:navigation-ui-ktx:2.5.3")
+                api("androidx.navigation:navigation-fragment-ktx:2.6.0")
+                api("androidx.navigation:navigation-ui-ktx:2.6.0")
 
                 // Firebase SDK
                 api(project.dependencies.platform("com.google.firebase:firebase-bom:30.2.0"))
@@ -208,7 +195,7 @@ kotlin {
                 implementation("me.omico.lux:lux-androidx-compose-material3-pullrefresh")
             }
         }
-        val androidTest by getting {
+        val androidUnitTest by getting {
             dependencies {
                 dependsOn(commonJvmTest)
                 implementation("junit:junit:4.13.2")

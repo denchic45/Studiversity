@@ -81,8 +81,6 @@ android {
     }
 }
 
-val daggerVersion = "2.44"
-
 dependencies {
     implementation(project((":common")))
 
@@ -118,16 +116,12 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.github.tarek360.RichPath:animator:0.1.1")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("com.airbnb.android:lottie:4.0.0")
+    implementation("com.airbnb.android:lottie:6.0.0")
 
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
     // kotlin-inject
     ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
-
-    // Dagger-android
-    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
-    kapt("com.google.dagger:dagger-android-processor:$daggerVersion")
 
     implementation("com.google.code.gson:gson:2.9.0")
     implementation("com.fasterxml.jackson.core", "jackson-core", "2.13.1")

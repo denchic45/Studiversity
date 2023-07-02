@@ -1,11 +1,8 @@
 package com.denchic45.studiversity.ui.updateView
 
-import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.LinearLayout
 import com.denchic45.studiversity.databinding.SnackbarUpdateBinding
 import com.denchic45.studiversity.util.animateHeight
@@ -20,7 +17,6 @@ class SnackbarUpdateView @JvmOverloads constructor(
     private var _binding: SnackbarUpdateBinding? = null
     val binding: SnackbarUpdateBinding
         get() = _binding!!
-
 
     var onLaterClickListener: () -> Unit = {}
     var onDownloadClickListener: () -> Unit = {}
