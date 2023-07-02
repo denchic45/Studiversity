@@ -45,4 +45,4 @@ https://github.com/denchic45/Studiversity/assets/80104523/f7f1bd8a-2cdd-4639-b6b
 
 ## 📎 Дополнительная информация
 
-Смотреть [презентацию](https://1drv.ms/p/s!AkCEIF5jokBdhuUgeCNs0E7DgVOryw?e=5TuKRi)
+Смотреть [презентацию](https://1drv.ms/p/s!AkCEIF5jokBdhuYeBBy6EFqOFhstYA)
