@@ -7,6 +7,6 @@ import androidx.compose.runtime.getValue
 
 @Composable
 fun YourUpcomingWorksScreen(component: YourUpcomingWorksComponent) {
-    val works by component.observedWorks.collectAsState()
+    val works by component.works.collectAsState()
     WorksListContent(works, component::onWorkClick)
 }
