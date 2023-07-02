@@ -150,7 +150,6 @@ fun AdminListItem(
     contentDescription: String,
     onClick: () -> Unit,
 ) {
-
     NavigationDrawerItem(
         label = { Text(text = title, style = MaterialTheme.typography.labelLarge) },
         onClick = onClick,

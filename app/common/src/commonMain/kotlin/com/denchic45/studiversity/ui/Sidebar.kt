@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Sidebar(onDismiss: () -> Unit,title: @Composable ()->Unit, content: @Composable () -> Unit) {
+fun Sidebar(onDismiss: () -> Unit, title: @Composable () -> Unit, content: @Composable () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(0.dp),
