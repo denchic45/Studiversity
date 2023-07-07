@@ -269,7 +269,7 @@ class TimetablesPublisherComponent(
     }
 
     fun onRemovePeriodSwipe(position: Int) {
-        currentEditor.onPeriodRemove(position)
+        currentEditor.onRemovePeriod(position)
     }
 
     private val currentSelectedDayTimetable: List<PeriodResponse>

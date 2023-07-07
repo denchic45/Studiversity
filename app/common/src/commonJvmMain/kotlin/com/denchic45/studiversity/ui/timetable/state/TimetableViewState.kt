@@ -51,6 +51,7 @@ private fun PeriodResponse.toCell() = when (val details = details) {
         details.course.subject?.name,
         room
     )
+
     is EventDetails -> Cell.Event(
         details.iconUrl,
         details.name,
@@ -81,11 +82,11 @@ fun List<PeriodResponse>.toPeriodItems() = buildList {
         if (diffOrders > 0) {
             repeat(diffOrders) { add(Window()) }
         }
-            add(period.toItem())
+        add(period.toItem())
     }
 }
 
-private fun PeriodResponse.toItem() = PeriodItem(
+fun PeriodResponse.toItem() = PeriodItem(
     id = id,
     studyGroup = StudyGroupNameItem(studyGroup.id, studyGroup.name),
     room = room?.displayName,
@@ -94,6 +95,7 @@ private fun PeriodResponse.toItem() = PeriodItem(
         is EventDetails -> with(details) {
             PeriodDetails.Event(name, iconUrl, color)
         }
+
         is LessonDetails -> with(details) {
             PeriodDetails.Lesson(course.id, course.subject?.iconUrl, course.subject?.name)
         }
@@ -103,7 +105,8 @@ private fun PeriodResponse.toItem() = PeriodItem(
 fun BellSchedule.toItemOrders(
     latestEventOrder: Int,
 ) = buildList {
-    periods.take(latestEventOrder)
+    periods
+//        .take(latestEventOrder)
         .forEachIndexed { index, period ->
             add(CellOrder(index + 1, period.start))
         }
@@ -131,7 +134,6 @@ fun BellSchedule.toItemOrders(
         }
     }
 }
-
 
 
 fun String.toLocalDateOfWeekOfYear(): LocalDate = LocalDate.parse(

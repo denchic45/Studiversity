@@ -249,7 +249,7 @@ class TimetableFinderComponent(
     }
 
     fun onRemovePeriodSwipe(periodPosition: Int) {
-        dayTimetableEditorComponent!!.onPeriodRemove(periodPosition)
+        dayTimetableEditorComponent!!.onRemovePeriod(periodPosition)
     }
 
 //    fun onDateSelect(date: LocalDate) {

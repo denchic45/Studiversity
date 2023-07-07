@@ -1,9 +1,11 @@
 package com.denchic45.studiversity.ui.timetableeditor
 
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
+import com.denchic45.studiversity.domain.timetable.model.PeriodItem
+import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
+import com.denchic45.studiversity.ui.timetable.state.TimetableState
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.util.copy
-import com.denchic45.studiversity.util.map
 import com.denchic45.stuiversity.api.timetable.model.EventRequest
 import com.denchic45.stuiversity.api.timetable.model.EventResponse
 import com.denchic45.stuiversity.api.timetable.model.LessonRequest
@@ -11,71 +13,47 @@ import com.denchic45.stuiversity.api.timetable.model.LessonResponse
 import com.denchic45.stuiversity.api.timetable.model.PeriodMember
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.time.LocalDate
 import java.util.UUID
 
 @Inject
 class DayTimetableEditorComponent(
-//    metaRepository: MetaRepository,
     @Assisted
-    private val source: TimetableResponse,
+    private val source: TimetableState,
     @Assisted
     private val studyGroupId: UUID,
-    @Assisted
-    private val _selectedDate: StateFlow<LocalDate>,
 //    @Assisted
-//    private val owner: Flow<TimetableOwner>,
-//    @Assisted
-//    private val _weekTimetable: List<List<PeriodResponse>>,
-//    @Assisted
-//    private val onFinish: (PutTimetableRequest?) -> Unit,
+//    private val _selectedDate: StateFlow<LocalDate>,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-//    val selectedDate = MutableStateFlow(_selectedDate)
+//    private val selectedDay = _selectedDate.map(componentScope) { it.dayOfWeek.ordinal }
 
-//    private val sourceFlow = _sourceFlow.shareIn(componentScope, SharingStarted.Lazily)
-
-//    private val mondayDate = sourceFlow.mapResource { it.weekOfYear.toLocalDateOfWeekOfYear() }
-
-    private val selectedDay = _selectedDate.map(componentScope) { it.dayOfWeek.ordinal }
-
-//    val editingWeekTimetable: List<MutableStateFlow<List<PeriodResponse>>> = listOf(
-//        MutableStateFlow(emptyList()),
-//        MutableStateFlow(emptyList()),
-//        MutableStateFlow(emptyList()),
-//        MutableStateFlow(emptyList()),
-//        MutableStateFlow(emptyList()),
-//        MutableStateFlow(emptyList()),
+//    val editingWeekTimetable = MutableStateFlow<List<List<PeriodResponse>>>(
+//        listOf(
+//            emptyList(),
+//            emptyList(),
+//            emptyList(),
+//            emptyList(),
+//            emptyList(),
+//            emptyList(),
+//        )
 //    )
 
-    val editingWeekTimetable = MutableStateFlow<List<List<PeriodResponse>>>(
-        listOf(
-            emptyList(),
-            emptyList(),
-            emptyList(),
-            emptyList(),
-            emptyList(),
-            emptyList(),
-        )
-    )
+    val editingTimetableState = MutableStateFlow(source)
 
-    init {
-        componentScope.launch {
-            source.let { response ->
-                editingWeekTimetable.value = response.days
-            }
-        }
-    }
+//    init {
+//        componentScope.launch {
+//            source.let { response ->
+//                editingWeekTimetable.value = response.days
+//            }
+//        }
+//    }
 
 
 //    @OptIn(ExperimentalCoroutinesApi::class)
@@ -107,37 +85,21 @@ class DayTimetableEditorComponent(
 //        }
 //    }.shareIn(componentScope, SharingStarted.Lazily, 1)
 
-    fun onAddPeriod(period: PeriodResponse) {
-        editingWeekTimetable.update {
-            it.copy {
-                this[selectedDay.value] = this[selectedDay.value] + period
-            }
+    fun onAddPeriod(dayOfWeek: Int, period: PeriodResponse) {
+        editingTimetableState.update { timetable ->
+            timetable.addPeriod(dayOfWeek, period)
         }
     }
 
-    fun onUpdatePeriod(position: Int, period: PeriodResponse) {
-        editingWeekTimetable.update {
-            it.copy {
-                this[selectedDay.value] = this[selectedDay.value].copy {
-                    this[position] = period
-                }
-            }
+    fun onUpdatePeriod(dayOfWeek: Int, position: Int, period: PeriodResponse) {
+        editingTimetableState.update { timetable ->
+            timetable.updatePeriod(dayOfWeek, period, position)
         }
     }
 
-    fun onPeriodRemove(position: Int) {
-        editingWeekTimetable.update { timetable ->
-            timetable.copy {
-                this[selectedDay.value] = this[selectedDay.value].copy {
-                    removeAt(position)
-                    val diff = size - position
-                    if (diff > 0)
-                        repeat(diff) {
-                            val response = this[position + it]
-                            this[position + it] = response.updateOrder(response.order - 1)
-                        }
-                }
-            }
+    fun onRemovePeriod(dayOfWeek: Int, position: Int) {
+        editingTimetableState.update { timetable ->
+            timetable.removePeriod(dayOfWeek, position)
         }
     }
 
@@ -146,12 +108,11 @@ class DayTimetableEditorComponent(
         is LessonResponse -> copy(order = order)
     }
 
-    fun onDestroy() {
-    }
+    fun onDestroy() {}
 
 
     val request: PutTimetableRequest
-        get() = editingWeekTimetable.value.map {
+        get() = editingTimetableState.value.timetable.map {
             it.map { response ->
                 when (response) {
                     is EventResponse -> EventRequest(
@@ -182,4 +143,30 @@ class DayTimetableEditorComponent(
                 saturday = it[5]
             )
         }
+
+    fun TimetableState.toPutTimetableRequest() {
+
+        fun List<PeriodSlot>.toPeriodRequests() {
+            buildList {
+                this@toPeriodRequests.withIndex()
+                    .mapNotNull { (index, item) -> (item as? PeriodItem)?.let { index to it } }
+                    .map { (index, item) ->
+                        when (item.details) {
+                            is PeriodDetails.Lesson -> {
+
+                            }
+                            is PeriodDetails.Event -> {
+
+                            }
+                        }
+                    }
+            }
+        }
+
+        return buildList {
+            timetable.map(List<PeriodSlot>::toPeriodRequests)
+        }
+    }
+
+
 }
