@@ -15,7 +15,7 @@ import com.denchic45.stuiversity.api.timetable.model.LessonDetails
 import com.denchic45.stuiversity.api.timetable.model.LessonResponse
 import com.denchic45.stuiversity.api.timetable.model.PeriodMember
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
-import com.denchic45.stuiversity.api.timetable.model.StudyGroupName
+import com.denchic45.stuiversity.api.timetable.model.StudyGroupNameResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import com.denchic45.stuiversity.api.timetable.model.toPeriodMember
 import com.denchic45.stuiversity.api.user.UserApi
@@ -219,7 +219,7 @@ class TimetableParser(
                 date = date,
                 order = order,
                 room = findRoomByName(roomName),
-                studyGroup = StudyGroupName(currentStudyGroup.id, currentStudyGroup.name),
+                studyGroup = StudyGroupNameResponse(currentStudyGroup.id, currentStudyGroup.name),
                 members = findTeacherByContent(content),
                 details = LessonDetails(course)
             )
@@ -229,7 +229,7 @@ class TimetableParser(
                 date = date,
                 order = order,
                 room = null,
-                studyGroup = StudyGroupName(currentStudyGroup.id, currentStudyGroup.name),
+                studyGroup = StudyGroupNameResponse(currentStudyGroup.id, currentStudyGroup.name),
                 members = findTeacherByContent(content),
                 // TODO: remove hardcoded url
                 details = EventDetails(

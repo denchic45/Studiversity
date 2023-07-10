@@ -52,6 +52,7 @@ import com.denchic45.studiversity.ui.timetable.DayTimetableContent
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.flow.StateFlow
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -132,9 +133,9 @@ private fun TimetablePublisherContent(
     onStudyGroupChoose: () -> Unit,
     onStudyGroupSelect: (Int) -> Unit,
     onRemoveStudyGroupClick: (Int) -> Unit,
-    onAddPeriodClick: () -> Unit,
-    onEditPeriodClick: (Int) -> Unit,
-    onRemovePeriodSwipe: (Int) -> Unit,
+    onAddPeriodClick: (DayOfWeek) -> Unit,
+    onEditPeriodClick: (DayOfWeek, Int) -> Unit,
+    onRemovePeriodSwipe: (DayOfWeek, Int) -> Unit,
 ) {
     Surface {
         Column {
@@ -259,11 +260,11 @@ private fun TimetablePublisherContent(
                     DayTimetableContent(
                         selectedDate = selectedDate,
                         timetableResource = resourceOf(viewState),
-                        scrollableWeeks = false,
                         onDateSelect = onDateSelect,
                         onAddPeriodClick = onAddPeriodClick,
                         onEditPeriodClick = onEditPeriodClick,
-                        onRemovePeriodSwipe = onRemovePeriodSwipe
+                        onRemovePeriodSwipe = onRemovePeriodSwipe,
+                        scrollableWeeks = false
                     )
                 }
             }

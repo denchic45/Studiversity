@@ -15,7 +15,6 @@ import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import com.denchic45.stuiversity.util.toDate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
@@ -40,16 +39,18 @@ class TimetableComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    private val updateData = MutableStateFlow(true)
+    private val updating = MutableStateFlow(true)
     val refreshing = MutableStateFlow(false)
 
     private val bellSchedule = metaRepository.observeBellSchedule
         .shareIn(componentScope, SharingStarted.Lazily, replay = 1)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val _weekTimetable = owner.flatMapLatest { owner ->
-        getTimetableResponse(owner)
-    }
+    val isEdit = MutableStateFlow(false)
+
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    private val _weekTimetable = owner.flatMapLatest { owner ->
+//        getTimetableResponse(owner)
+//    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun getTimetableResponse(owner: TimetableOwner): Flow<Resource<TimetableResponse>> {
@@ -62,8 +63,6 @@ class TimetableComponent(
             }
         }
     }
-
-    val weekTimetable = _weekTimetable.stateInResource(componentScope)
 
     val timetableStateResource = getTimetableState().stateInResource(componentScope)
 
@@ -78,31 +77,32 @@ class TimetableComponent(
 
     init {
         componentScope.launch {
-            updateData.emitAll(refreshing.drop(1))
+            updating.emitAll(refreshing.drop(1))
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun getTimetableState(): StateFlow<Resource<TimetableState>> {
-        return updateData.filter { it }
-            .flatMapLatest {
-                bellSchedule.flatMapLatest { schedule ->
-                    selectedWeekOfYear.flatMapLatest { selectedWeek ->
-                        owner.flatMapLatest { owner ->
+        return updating.filter { it }.flatMapLatest {
+            bellSchedule.flatMapLatest { schedule ->
+                selectedWeekOfYear.flatMapLatest { selectedWeek ->
+                    owner.flatMapLatest { owner ->
+                        isEdit.flatMapLatest { isEdit ->
                             getTimetableResponse(owner).mapResource {
-                                updateData.value = false
+                                updating.value = false
                                 refreshing.value = false
-
-                                it.days.toTimetableState(
+                                it.toTimetableState(
                                     yearWeek = selectedWeek,
                                     bellSchedule = schedule,
+                                    isEdit = isEdit,
                                     showStudyGroups = owner !is TimetableOwner.StudyGroup
                                 )
                             }
                         }
                     }
                 }
-            }.stateInResource(componentScope)
+            }
+        }.stateInResource(componentScope)
     }
 }
 

@@ -34,7 +34,10 @@ import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.denchic45.studiversity.common.R
-import com.denchic45.studiversity.domain.model.StudyGroupNameItem
+import com.denchic45.studiversity.data.service.model.BellPeriod
+import com.denchic45.studiversity.domain.model.CourseItem
+import com.denchic45.studiversity.domain.model.StudyGroupItem
+import com.denchic45.studiversity.domain.model.SubjectItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
@@ -43,13 +46,14 @@ import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.theme.AppTheme
 import com.denchic45.studiversity.ui.theme.spacing
+import com.denchic45.stuiversity.api.room.model.RoomResponse
 import java.util.UUID
 
 @Composable
 fun PeriodListItem(
     item: PeriodSlot,
     order: Int,
-    time: String,
+    time: BellPeriod?,
     showStudyGroup: Boolean = true,
     isEdit: Boolean = false,
     onEditClick: () -> Unit = {},
@@ -81,7 +85,7 @@ fun PeriodListItem(
                                 .data(
                                     when (val details = item.details) {
                                         is PeriodDetails.Event -> details.iconUrl
-                                        is PeriodDetails.Lesson -> details.subjectIconUrl
+                                        is PeriodDetails.Lesson -> details.course.subject?.iconUrl
                                     }
                                 )
                                 .build()
@@ -98,12 +102,11 @@ fun PeriodListItem(
                         Column(Modifier.weight(1f)) {
                             when (val details = item.details) {
                                 is PeriodDetails.Lesson -> {
-                                    details.subjectName?.let {
-                                        Text(
-                                            text = details.subjectName,
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
-                                    }
+                                    Text(
+                                        text = details.course.subject?.name ?: details.course.name,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+
                                 }
 
                                 is PeriodDetails.Event -> Text(
@@ -112,7 +115,7 @@ fun PeriodListItem(
                                 )
                             }
                             Text(
-                                text = time,
+                                text = time?.displayText ?: "-",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -132,9 +135,11 @@ fun PeriodListItem(
                         }
                         item.room?.let {
                             Text(
-                                text = it,
+                                text = it.name,
                                 textAlign = TextAlign.End,
-                                modifier = Modifier.widthIn(max = 48.dp).padding(horizontal = MaterialTheme.spacing.small),
+                                modifier = Modifier
+                                    .widthIn(max = 48.dp)
+                                    .padding(horizontal = MaterialTheme.spacing.small),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -153,7 +158,7 @@ fun PeriodListItem(
                                 color = Color.Gray
                             )
                             Text(
-                                text = time,
+                                text = time?.displayText ?: "-",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -193,8 +198,8 @@ fun PeriodItemPreview() {
             order = 1,
             item = PeriodItem(
                 id = -1,
-                studyGroup = StudyGroupNameItem(UUID.randomUUID(), "ПКС-4"),
-                room = "1 м.",
+                studyGroup = StudyGroupItem(UUID.randomUUID(), "ПКС-4"),
+                room = RoomResponse(UUID.randomUUID(), "1 м.", ""),
                 members = listOf(
                     UserItem(
                         id = UUID.randomUUID(),
@@ -204,12 +209,19 @@ fun PeriodItemPreview() {
                     )
                 ),
                 details = PeriodDetails.Lesson(
-                    courseId = UUID.randomUUID(),
-                    subjectIconUrl = "https://coil-kt.github.io/coil/images/coil_logo_black.svg",
-                    "Математика"
+                    CourseItem(
+                        UUID.randomUUID(),
+                        "Математика",
+                        SubjectItem(
+                            UUID.randomUUID(),
+                            "Математика",
+                            "Матем",
+                            "https://coil-kt.github.io/coil/images/coil_logo_black.svg"
+                        )
+                    )
                 )
             ),
-            time = "8:30 - 9:20",
+            time = BellPeriod("8:30", "9:20"),
             isEdit = true
         )
     }
@@ -222,7 +234,7 @@ fun EmptyPeriodItemPreview() {
         PeriodListItem(
             order = 1,
             item = Window(),
-            time = "8:30 - 9:20"
+            time = BellPeriod("8:30", "9:20")
         )
     }
 }

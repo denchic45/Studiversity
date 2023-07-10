@@ -93,9 +93,8 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
                 timetableResource = viewState,
                 onDateSelect = component::onDateSelect,
                 onStudyGroupClick = component::onStudyGroupClick,
-                refreshing = refreshing,
-                onRefresh = { component.refreshing.value = true }
-            )
+                refreshing = refreshing
+            ) { component.refreshing.value = true }
         }
     }
 }

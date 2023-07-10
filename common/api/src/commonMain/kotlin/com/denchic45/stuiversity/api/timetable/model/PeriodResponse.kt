@@ -15,7 +15,7 @@ import java.util.*
 sealed interface PeriodResponse : PeriodModel {
     val id: Long
     val date: LocalDate
-    val studyGroup: StudyGroupName
+    val studyGroup: StudyGroupNameResponse
     val details: PeriodDetails
     val room: RoomResponse?
     val members: List<PeriodMember>
@@ -33,7 +33,7 @@ data class LessonResponse(
     override val date: LocalDate,
     override val order: Int,
     override val room: RoomResponse?,
-    override val studyGroup: StudyGroupName,
+    override val studyGroup: StudyGroupNameResponse,
     override val members: List<PeriodMember>,
     override val details: LessonDetails
 ) : PeriodResponse {
@@ -49,7 +49,7 @@ data class EventResponse(
     override val date: LocalDate,
     override val order: Int,
     override val room: RoomResponse?,
-    override val studyGroup: StudyGroupName,
+    override val studyGroup: StudyGroupNameResponse,
     override val members: List<PeriodMember>,
     override val details: EventDetails
 ) : PeriodResponse {
@@ -59,13 +59,13 @@ data class EventResponse(
 }
 
 @Serializable
-data class StudyGroupName(
+data class StudyGroupNameResponse(
     @Serializable(UUIDSerializer::class)
     val id: UUID,
     val name: String
 )
 
-fun StudyGroupResponse.toStudyGroupName() = StudyGroupName(
+fun StudyGroupResponse.toStudyGroupName() = StudyGroupNameResponse(
     id = id,
     name = name
 )

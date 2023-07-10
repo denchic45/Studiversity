@@ -12,6 +12,11 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.repository.MetaRepository
 import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.model.toItem
+import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
+import com.denchic45.studiversity.domain.timetable.model.PeriodItem
+import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
+import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.domain.usecase.PutTimetableUseCase
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
@@ -22,28 +27,26 @@ import com.denchic45.studiversity.ui.search.StudyGroupChooserComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerDelegate
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
+import com.denchic45.studiversity.ui.timetable.state.toItemOrders
 import com.denchic45.studiversity.ui.timetable.state.toLocalDateOfWeekOfYear
-import com.denchic45.studiversity.ui.timetable.state.toTimetableState
 import com.denchic45.studiversity.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.timetable.model.EventDetails
-import com.denchic45.stuiversity.api.timetable.model.LessonDetails
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
-import com.denchic45.stuiversity.api.timetable.model.toStudyGroupName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.UUID
 
@@ -57,20 +60,19 @@ class TimetablesPublisherComponent(
     ) -> StudyGroupChooserComponent,
     private val periodEditorComponent: (
         EditingPeriod,
-        (PeriodResponse?) -> Unit,
+        (PeriodItem?) -> Unit,
         ComponentContext,
     ) -> PeriodEditorComponent,
     private val putTimetableUseCase: PutTimetableUseCase,
     private val _dayTimetableEditorComponent: (
-        timetable: TimetableResponse,
+        source: TimetableState,
         studyGroupId: UUID,
-        _selectedDate: StateFlow<LocalDate>,
         ComponentContext,
     ) -> DayTimetableEditorComponent,
     @Assisted
     private val weekOfYear: String,
     @Assisted
-    _studyGroupTimetables: List<Pair<StudyGroupResponse, TimetableResponse>>,
+    _studyGroupTimetables: List<Pair<StudyGroupResponse, TimetableState>>,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
@@ -127,6 +129,7 @@ class TimetablesPublisherComponent(
     }
 
     private val bellSchedule = metaRepository.observeBellSchedule
+        .shareIn(componentScope, SharingStarted.Lazily)
 
     val studyGroups = MutableStateFlow(_studyGroupTimetables.map { it.first })
 
@@ -137,13 +140,12 @@ class TimetablesPublisherComponent(
     )
 
     private fun createDayTimetableEditorComponent(
-        timetable: TimetableResponse,
+        timetable: TimetableState,
         groupId: UUID,
     ): DayTimetableEditorComponent {
         return _dayTimetableEditorComponent(
             timetable,
             groupId,
-            selectedDate,
             componentContext.childContext("DayTimetable $groupId ${System.currentTimeMillis()}") // Make random name because context never destroy after deleting component
         )
     }
@@ -157,42 +159,33 @@ class TimetablesPublisherComponent(
 
     init {
         componentScope.launch {
-            timetablesViewStates.value = editorComponents.value.map { getViewState(it) }
+            timetablesViewStates.value = editorComponents.value.map { it.editingTimetableState }
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun getViewState(component: DayTimetableEditorComponent) =
-        bellSchedule.flatMapLatest { schedule ->
-            isEdit.flatMapLatest { isEdit ->
-                component.editingWeekTimetable.map {
-                    it.toTimetableState(weekOfYear, schedule, isEdit)
-                }
-            }
-
-        }.stateIn(componentScope)
+    private suspend fun getViewState(component: DayTimetableEditorComponent): StateFlow<TimetableState> {
+        return component.editingTimetableState.stateIn(componentScope)
+    }
 
     val selectedGroup = MutableStateFlow(0)
 
     private fun onAddStudyGroup(studyGroupResponse: StudyGroupResponse) {
-        studyGroups.update { it + studyGroupResponse }
-
-        val dayTimetableEditorComponent = createDayTimetableEditorComponent(
-            TimetableResponse(
-                weekOfYear,
-                listOf(),
-                listOf(),
-                listOf(),
-                listOf(),
-                listOf(),
-                listOf()
-            ),
-            studyGroupResponse.id,
-        )
-        editorComponents.update { components ->
-            components + dayTimetableEditorComponent
-        }
         componentScope.launch {
+            studyGroups.update { it + studyGroupResponse }
+
+            val dayTimetableEditorComponent = createDayTimetableEditorComponent(
+                timetable = TimetableState(
+                    firstWeekDate = selectedDate.value,
+                    dayTimetables = emptyList(),
+                    orders = bellSchedule.first().toItemOrders()
+                ),
+                groupId = studyGroupResponse.id,
+            )
+            editorComponents.update { components ->
+                components + dayTimetableEditorComponent
+            }
+
             timetablesViewStates.update { it + getViewState(dayTimetableEditorComponent) }
         }
     }
@@ -224,8 +217,8 @@ class TimetablesPublisherComponent(
         isEdit.value = edit
     }
 
-    fun onAddPeriodClick() {
-        val group = studyGroups.value[selectedGroup.value].toStudyGroupName()
+    fun onAddPeriodClick(dayOfWeek: DayOfWeek) {
+        val group = selectedStudyGroupItem
 
         // TODO: Вместо EditingPeriod передавать данные в другой обертке т.к. выбрасывается:
         //  Parcelable encountered IOException writing serializable object (name = com.denchic45.studiversity.ui.timetableLoader.TimetablesPublisherComponent$onAddPeriodClick$2)
@@ -237,53 +230,76 @@ class TimetablesPublisherComponent(
                     group.name
                 ).apply {
                     order = currentSelectedDayTimetable
-                        .lastOrNull()?.order?.let { it + 1 } ?: 1
+                        .size + 1
                 }
-            ) { it?.let(currentEditor::onAddPeriod) })
+            ) { it?.let { currentEditor.onAddPeriod(dayOfWeek, it) } })
     }
 
-    fun onEditPeriodClick(periodPos: Int) {
+    private val selectedStudyGroupItem get() = studyGroups.value[selectedGroup.value].toItem()
+
+    fun onEditPeriodClick(dayOfWeek: DayOfWeek, periodPosition: Int) {
         overlayNavigation.activate(OverlayConfig.PeriodEditor(
-            currentSelectedDayTimetable[periodPos].let { period ->
-                val group = period.studyGroup
-                EditingPeriod(period.date, group.id, group.name).apply {
-                    order = period.order
-                    room = period.room
-                    members = period.members
-                    details = when (val details = period.details) {
-                        is EventDetails -> EditingPeriodDetails.Event().apply {
-                            name = details.name
-                            color = details.color
-                            iconUrl = details.iconUrl
+            currentSelectedDayTimetable[periodPosition].let { slot ->
+                val group = selectedStudyGroupItem
+                EditingPeriod(getDateByDayOfWeek(dayOfWeek), group.id, group.name).apply {
+                    order = periodPosition + 1
+                    when (slot) {
+                        is PeriodItem -> {
+                            room = slot.room
+                            members = slot.members
+                            details = when (val details = slot.details) {
+                                is PeriodDetails.Lesson -> EditingPeriodDetails.Lesson().apply {
+                                    course = details.course
+                                }
+
+                                is PeriodDetails.Event -> EditingPeriodDetails.Event().apply {
+                                    name = details.name
+                                    color = details.color
+                                    iconUrl = details.iconUrl
+                                }
+                            }
                         }
 
-                        is LessonDetails -> EditingPeriodDetails.Lesson().apply {
-                            course = details.course
-                        }
+                        is Window -> EditingPeriod.createEmpty(
+                            selectedDate.value,
+                            selectedStudyGroupItem,
+                            getNewLatestOrder(dayOfWeek)
+                        )
                     }
                 }
             }
         ) {
-            it?.let { currentEditor.onUpdatePeriod(periodPos, it) }
+            it?.let { currentEditor.onUpdatePeriod(dayOfWeek, periodPosition, it) }
         })
     }
 
-    fun onRemovePeriodSwipe(position: Int) {
-        currentEditor.onRemovePeriod(position)
+    private fun getNewLatestOrder(dayOfWeek: DayOfWeek): Int {
+        return selectedTimetableState.getByDay(dayOfWeek).size + 1
     }
 
-    private val currentSelectedDayTimetable: List<PeriodResponse>
-        get() = currentEditor.editingWeekTimetable.value[selectedDate.value.dayOfWeek.ordinal]
+    fun onRemovePeriodSwipe(dayOfWeek: DayOfWeek, position: Int) {
+        currentEditor.onRemovePeriod(dayOfWeek, position)
+    }
+
+    private val currentSelectedDayTimetable: List<PeriodSlot>
+        get() = selectedTimetableState.getByDay(selectedDate.value.dayOfWeek)
+
+
+    private val selectedTimetableState get() = currentEditor.editingTimetableState.value
 
 
     private val currentEditor
         get() = editorComponents.value[selectedGroup.value]
 
+    private fun getDateByDayOfWeek(dayOfWeek: DayOfWeek): LocalDate {
+        return weekOfYear.toLocalDateOfWeekOfYear(dayOfWeek)
+    }
+
     fun onPublishClick() {
         publishState.update { PublishState.SENDING }
         componentScope.launch {
             val result = editorComponents.value.map {
-                async { putTimetableUseCase(weekOfYear, it.request) }
+                async { putTimetableUseCase(weekOfYear, it.getRequestModel()) }
             }.awaitAll()
 
             publishState.update {

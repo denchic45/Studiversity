@@ -69,10 +69,10 @@ fun DayTimetableContent(
     selectedDate: LocalDate,
     timetableResource: Resource<TimetableState>,
     onDateSelect: (date: LocalDate) -> Unit,
-    onAddPeriodClick: (() -> Unit)? = null,
-    onEditPeriodClick: ((Int) -> Unit)? = null,
+    onAddPeriodClick: ((DayOfWeek) -> Unit)? = null,
+    onEditPeriodClick: ((DayOfWeek, Int) -> Unit)? = null,
+    onRemovePeriodSwipe: ((DayOfWeek, Int) -> Unit)? = null,
     onStudyGroupClick: ((studyGroupId: UUID) -> Unit)? = null,
-    onRemovePeriodSwipe: ((Int) -> Unit)? = null,
     startDate: LocalDate = selectedDate.minusWeeks(1),
     endDate: LocalDate = selectedDate.plusMonths(1),
     scrollableWeeks: Boolean = true,
@@ -143,10 +143,10 @@ fun DayTimetableContent(
                         Periods(
                             timetableState = timetableState,
                             selectedDayOfWeek = selectedDayOfWeek,
+                            onAddPeriodClick = onAddPeriodClick,
                             onEditPeriodClick = onEditPeriodClick,
-                            onStudyGroupClClick = onStudyGroupClick,
                             onRemovePeriodSwipe = onRemovePeriodSwipe,
-                            onAddPeriodClick = onAddPeriodClick
+                            onStudyGroupClClick = onStudyGroupClick
                         )
                     }
                 }
@@ -176,10 +176,10 @@ fun DayTimetableContent(
 private fun Periods(
     timetableState: TimetableState,
     selectedDayOfWeek: DayOfWeek,
-    onEditPeriodClick: ((Int) -> Unit)?,
+    onAddPeriodClick: ((DayOfWeek) -> Unit)?,
+    onEditPeriodClick: ((DayOfWeek, Int) -> Unit)?,
+    onRemovePeriodSwipe: ((DayOfWeek, Int) -> Unit)?,
     onStudyGroupClClick: ((UUID) -> Unit)?,
-    onRemovePeriodSwipe: ((Int) -> Unit)?,
-    onAddPeriodClick: (() -> Unit)?,
 ) {
     val scrollState = rememberScrollState()
     Crossfade(targetState = selectedDayOfWeek) { dayOfWeek ->
@@ -197,7 +197,7 @@ private fun Periods(
                     .verticalScroll(scrollState)
             )
         } else {
-            val items = timetableState.getDay(dayOfWeek)
+            val items = timetableState.getByDay(dayOfWeek)
             if (items.isEmpty() && !timetableState.isEdit) {
                 IconTitleBox(
                     icon = {
@@ -219,12 +219,17 @@ private fun Periods(
                     ) { index, item ->
                         val periodListItem = @Composable {
                             PeriodListItem(
-                                order = timetableState.orders[index].order,
+                                order = index + 1,
                                 item = item,
-                                time = timetableState.orders[index].time,
+                                time = timetableState.getOrderTime(index),
                                 showStudyGroup = timetableState.showStudyGroups,
                                 isEdit = timetableState.isEdit,
-                                onEditClick = { onEditPeriodClick?.invoke(index) },
+                                onEditClick = {
+                                    onEditPeriodClick?.invoke(
+                                        selectedDayOfWeek,
+                                        index
+                                    )
+                                },
                                 onStudyGroupClick = onStudyGroupClClick
                             )
                         }
@@ -234,7 +239,7 @@ private fun Periods(
                                 when (it) {
                                     DismissValue.Default -> false
                                     DismissValue.DismissedToStart -> {
-                                        onRemovePeriodSwipe?.invoke(currentIndex)
+                                        onRemovePeriodSwipe?.invoke(selectedDayOfWeek, currentIndex)
                                         true
                                     }
 
@@ -254,7 +259,9 @@ private fun Periods(
                     if (timetableState.isEdit) {
                         item {
                             ListItem(
-                                modifier = Modifier.clickable { onAddPeriodClick?.invoke() },
+                                modifier = Modifier.clickable {
+                                    onAddPeriodClick?.invoke(selectedDayOfWeek)
+                                },
                                 headlineContent = { Text("Добавить") },
                                 leadingContent = {
                                     Icon(

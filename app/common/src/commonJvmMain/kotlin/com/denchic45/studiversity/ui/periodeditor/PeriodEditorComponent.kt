@@ -14,10 +14,14 @@ import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.domain.model.CourseItem
+import com.denchic45.studiversity.domain.model.StudyGroupItem
+import com.denchic45.studiversity.domain.model.toItem
 import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
+import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.usecase.FindRoomByContainsNameUseCase
 import com.denchic45.studiversity.ui.model.UserItem
-import com.denchic45.studiversity.ui.model.toPeriodMember
 import com.denchic45.studiversity.ui.search.CourseChooserComponent
 import com.denchic45.studiversity.ui.search.UserChooserComponent
 import com.denchic45.studiversity.uivalidator.condition.Condition
@@ -27,13 +31,7 @@ import com.denchic45.studiversity.uivalidator.validator.observable
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.room.model.RoomResponse
-import com.denchic45.stuiversity.api.timetable.model.EventDetails
-import com.denchic45.stuiversity.api.timetable.model.EventResponse
-import com.denchic45.stuiversity.api.timetable.model.LessonDetails
-import com.denchic45.stuiversity.api.timetable.model.LessonResponse
-import com.denchic45.stuiversity.api.timetable.model.PeriodMember
-import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
-import com.denchic45.stuiversity.api.timetable.model.StudyGroupName
+import com.denchic45.stuiversity.api.timetable.model.StudyGroupNameResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
@@ -55,7 +53,7 @@ class PeriodEditorComponent(
     @Assisted
     private val config: EditingPeriod,
     @Assisted
-    private val onFinish: (PeriodResponse?) -> Unit,
+    private val onFinish: (PeriodItem?) -> Unit,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -189,7 +187,7 @@ class PeriodEditorComponent(
     }
 
     private fun onTeacherSelect(userItem: UserItem) {
-        state.members = state.members + userItem.toPeriodMember()
+        state.members = state.members + userItem
     }
 
 //    fun onCourseChoose() {
@@ -215,40 +213,33 @@ class PeriodEditorComponent(
         state.room = null
     }
 
-    fun onRemoveMemberClick(member: PeriodMember) {
+    fun onRemoveMemberClick(member: UserItem) {
         state.members = state.members - member
     }
 
     fun onSaveClick() {
         if (!validator.validate()) return
+        val studyGroup = state.studyGroup.toItem()
+
         onFinish(
-            when (val details = state.details) {
-                is EditingPeriodDetails.Event -> EventResponse(
-                    id = Random.nextLong(0, 1000),
-                    date = state.date,
-                    order = state.order,
-                    room = state.room,
-                    studyGroup = state.group,
-                    members = state.members,
-                    details = EventDetails(
+            PeriodItem(
+                id = Random.nextLong(0, 1000),
+                studyGroup = studyGroup,
+                room = state.room,
+                members = state.members,
+                details = when (val details = state.details) {
+                    is EditingPeriodDetails.Lesson -> {
+                        PeriodDetails.Lesson(details.course!!)
+                    }
+
+                    is EditingPeriodDetails.Event -> PeriodDetails.Event(
                         name = details.name,
                         color = details.color,
                         iconUrl = details.iconUrl
                     )
-                )
+                }
+            )
 
-                is EditingPeriodDetails.Lesson -> LessonResponse(
-                    id = Random.nextLong(0, 1000),
-                    date = state.date,
-                    order = state.order,
-                    room = state.room,
-                    studyGroup = state.group,
-                    members = state.members,
-                    details = LessonDetails(
-                        course = details.course!!,
-                    )
-                )
-            }
         )
     }
 
@@ -294,10 +285,31 @@ class EditingPeriod(
 ) : Parcelable {
     var date: LocalDate by mutableStateOf(_date)
     var order: Int by mutableStateOf(1)
-    var group: StudyGroupName by mutableStateOf(StudyGroupName(groupId, groupName))
+    var studyGroup: StudyGroupNameResponse by mutableStateOf(
+        StudyGroupNameResponse(
+            groupId,
+            groupName
+        )
+    )
     var room: RoomResponse? by mutableStateOf(null)
-    var members: List<PeriodMember> by mutableStateOf(emptyList())
+    var members: List<UserItem> by mutableStateOf(emptyList())
     var details: EditingPeriodDetails by mutableStateOf(EditingPeriodDetails.Lesson())
+
+    companion object {
+        fun createEmpty(
+            date: LocalDate,
+            studyGroupItem: StudyGroupItem,
+            order: Int
+        ): EditingPeriod {
+            return EditingPeriod(
+                _date = date,
+                groupId = studyGroupItem.id,
+                groupName = studyGroupItem.name
+            ).apply {
+                this.order = order
+            }
+        }
+    }
 }
 
 @Stable
@@ -314,7 +326,7 @@ sealed class EditingPeriodDetails {
 
     @Stable
     class Lesson : EditingPeriodDetails() {
-        var course: CourseResponse? by mutableStateOf(null)
+        var course: CourseItem? by mutableStateOf(null)
         var courseError: Boolean by mutableStateOf(false)
         override val type = PeriodEditorComponent.DetailsType.LESSON
     }

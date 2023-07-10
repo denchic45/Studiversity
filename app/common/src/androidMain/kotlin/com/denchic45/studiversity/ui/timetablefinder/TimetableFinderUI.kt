@@ -38,7 +38,6 @@ import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.appbar2.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
 import com.denchic45.studiversity.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.studiversity.ui.search.StudyGroupListItem
@@ -58,7 +57,7 @@ fun TimetableFinderScreen(
     val selectedDate by component.selectedDate.collectAsState()
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
     val state = remember(component::state)
-    val timetableResource by component.timetable.collectAsState()
+    val timetableResource by component.timetableStateResourceFlow.collectAsState()
 
     val overlay by component.childOverlay.subscribeAsState()
 

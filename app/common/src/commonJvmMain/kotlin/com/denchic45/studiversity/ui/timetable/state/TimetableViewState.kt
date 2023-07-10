@@ -1,20 +1,18 @@
 package com.denchic45.studiversity.ui.timetable.state
 
 import com.denchic45.studiversity.data.service.model.BellSchedule
-import com.denchic45.studiversity.domain.model.StudyGroupNameItem
+import com.denchic45.studiversity.domain.model.StudyGroupItem
+import com.denchic45.studiversity.domain.model.toItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.stuiversity.api.room.model.RoomResponse
-import com.denchic45.stuiversity.api.room.model.displayName
 import com.denchic45.stuiversity.api.timetable.model.EventDetails
 import com.denchic45.stuiversity.api.timetable.model.LessonDetails
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 
@@ -88,8 +86,8 @@ fun List<PeriodResponse>.toPeriodItems() = buildList {
 
 fun PeriodResponse.toItem() = PeriodItem(
     id = id,
-    studyGroup = StudyGroupNameItem(studyGroup.id, studyGroup.name),
-    room = room?.displayName,
+    studyGroup = StudyGroupItem(studyGroup.id, studyGroup.name),
+    room = room,
     members = members.map { it.toUserItem() },
     details = when (val details = details) {
         is EventDetails -> with(details) {
@@ -97,48 +95,47 @@ fun PeriodResponse.toItem() = PeriodItem(
         }
 
         is LessonDetails -> with(details) {
-            PeriodDetails.Lesson(course.id, course.subject?.iconUrl, course.subject?.name)
+            PeriodDetails.Lesson(course.toItem())
         }
     }
 )
 
-fun BellSchedule.toItemOrders(
-    latestEventOrder: Int,
-) = buildList {
+fun BellSchedule.toItemOrders() = buildList {
     periods
 //        .take(latestEventOrder)
         .forEachIndexed { index, period ->
             add(CellOrder(index + 1, period.start))
         }
-    val diff = latestEventOrder - periods.size
-    if (diff > 0) {
-        val preLastPeriod = periods[periods.size - 2]
-        val lastPeriod = periods.last()
-        val startTimeOfLastPeriod =
-            LocalTime.parse(lastPeriod.start, DateTimeFormatter.ofPattern("HH:mm"))
-        val endTimeOfLastPeriod =
-            LocalTime.parse(lastPeriod.start, DateTimeFormatter.ofPattern("HH:mm"))
-        val endTimeOfPreLastPeriod =
-            LocalTime.parse(preLastPeriod.end, DateTimeFormatter.ofPattern("HH:mm"))
+//    val diff = latestEventOrder - periods.size
+//    if (diff > 0) {
+//        val preLastPeriod = periods[periods.size - 2]
+//        val lastPeriod = periods.last()
+//        val startTimeOfLastPeriod =
+//            LocalTime.parse(lastPeriod.start, DateTimeFormatter.ofPattern("HH:mm"))
+//        val endTimeOfLastPeriod =
+//            LocalTime.parse(lastPeriod.start, DateTimeFormatter.ofPattern("HH:mm"))
+//        val endTimeOfPreLastPeriod =
+//            LocalTime.parse(preLastPeriod.end, DateTimeFormatter.ofPattern("HH:mm"))
 
-        val breakTime = startTimeOfLastPeriod.minusHours(endTimeOfPreLastPeriod.hour.toLong())
-            .minusMinutes(endTimeOfPreLastPeriod.minute.toLong())
-        val periodTime = endTimeOfLastPeriod.minusHours(startTimeOfLastPeriod.hour.toLong())
-            .minusMinutes(startTimeOfLastPeriod.minute.toLong())
+//        val breakTime = startTimeOfLastPeriod.minusHours(endTimeOfPreLastPeriod.hour.toLong())
+//            .minusMinutes(endTimeOfPreLastPeriod.minute.toLong())
+//        val periodTime = endTimeOfLastPeriod.minusHours(startTimeOfLastPeriod.hour.toLong())
+//            .minusMinutes(startTimeOfLastPeriod.minute.toLong())
 
-        repeat(diff) {
-            val lastCell: CellOrder = last()
-            val lastTime = LocalTime.parse(lastCell.time, DateTimeFormatter.ofPattern("HH:mm"))
-            val time = lastTime.plusMinutes(breakTime.minute.toLong() + periodTime.minute.toLong())
-            add(CellOrder(lastCell.order + 1, time.format(DateTimeFormatter.ofPattern("HH:mm"))))
-        }
-    }
+//        repeat(diff) {
+//            val lastCell: CellOrder = last()
+//            val lastTime = LocalTime.parse(lastCell.time, DateTimeFormatter.ofPattern("HH:mm"))
+//            val time = lastTime.plusMinutes(breakTime.minute.toLong() + periodTime.minute.toLong())
+//            add(CellOrder(lastCell.order + 1, time.format(DateTimeFormatter.ofPattern("HH:mm"))))
+//        }
+//    }
 }
 
 
-fun String.toLocalDateOfWeekOfYear(): LocalDate = LocalDate.parse(
-    this, DateTimeFormatterBuilder()
-        .appendPattern("YYYY_ww")
-        .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.value.toLong())
-        .toFormatter()
-)
+fun String.toLocalDateOfWeekOfYear(dayOfWeek: DayOfWeek = DayOfWeek.MONDAY): LocalDate =
+    LocalDate.parse(
+        this, DateTimeFormatterBuilder()
+            .appendPattern("YYYY_ww")
+            .parseDefaulting(ChronoField.DAY_OF_WEEK, dayOfWeek.value.toLong())
+            .toFormatter()
+    )

@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import com.denchic45.studiversity.data.service.model.BellPeriod
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onLoading
 import com.denchic45.studiversity.domain.onSuccess
@@ -29,7 +30,6 @@ import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
 import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.studiversity.ui.timetable.state.CellOrder
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
 import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesComponent
 import com.denchic45.stuiversity.util.DateTimePatterns
@@ -45,21 +45,21 @@ fun TimetableScreen(component: YourTimetablesComponent) {
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
     val mondayDate by component.mondayDate.collectAsState()
 
-Column {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
-        elevation = CardDefaults.cardElevation(0.dp)
-    ) {
-        TimetableContent(
-            selectedDate = mondayDate,
-            timetableResource = timetable,
-            onTodayClick = component::onTodayClick,
-            onPreviousWeekClick = component::onPreviousWeekClick,
-            onNextWeekClick = component::onNextWeekClick
-        )
+    Column {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
+            elevation = CardDefaults.cardElevation(0.dp)
+        ) {
+            TimetableContent(
+                selectedDate = mondayDate,
+                timetableResource = timetable,
+                onTodayClick = component::onTodayClick,
+                onPreviousWeekClick = component::onPreviousWeekClick,
+                onNextWeekClick = component::onNextWeekClick
+            )
+        }
     }
-}
 }
 
 //@Composable
@@ -99,7 +99,7 @@ Column {
 
 
 fun <T> getTween(): TweenSpec<T> {
-  return  tween(
+    return tween(
         durationMillis = 1000,
         easing = LinearEasing
     )
@@ -168,10 +168,13 @@ fun TimetableContent(
                             Divider()
                             Row {
                                 timetableState.onSuccess { state ->
-                                    LessonOrders(verticalScroll, state.orders)
+                                    LessonOrders(state, verticalScroll)
                                     LessonCells(modifierHorScroll, verticalScroll, state)
                                 }.onLoading {
-                                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Box(
+                                        Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
                                         LinearProgressIndicator()
                                     }
                                 }
@@ -228,23 +231,26 @@ private fun TimetableBar(
 }
 
 @Composable
-fun LessonOrders(state: ScrollState, orders: List<CellOrder>) {
-    Column(Modifier.width(78.dp).verticalScroll(state), horizontalAlignment = Alignment.End) {
-        repeat(orders.size) { LessonsOrder(orders[it]) }
+fun LessonOrders(timetableState: TimetableState, scrollState: ScrollState) {
+    Column(Modifier.width(78.dp).verticalScroll(scrollState), horizontalAlignment = Alignment.End) {
+        repeat(timetableState.maxEventsOfWeek) { position ->
+            timetableState.getOrderTime(position)
+            LessonsOrder(position, timetableState.getOrderTime(position))
+        }
     }
 }
 
 @Composable
-private fun LessonsOrder(cellOrder: CellOrder) {
+private fun LessonsOrder(order: Int, time: BellPeriod?) {
     Row(Modifier.height(129.dp)) {
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                cellOrder.time,
+                order.toString(),
                 Modifier.padding(top = 8.dp, end = 16.dp),
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                cellOrder.order.toString(),
+                time?.displayText ?: "-",
                 Modifier.padding(top = 4.dp, end = 16.dp),
                 color = Color.Gray,
                 style = MaterialTheme.typography.headlineMedium,
@@ -303,7 +309,7 @@ fun LessonCells(
                 }
                 Column(Modifier.fillMaxWidth()) {
 
-                    state.timetable[dayOfWeek].forEach {
+                    state.dayTimetables[dayOfWeek].forEach {
                         LessonCell(it)
                         Divider(Modifier.fillMaxWidth().height(1.dp))
                     }
@@ -328,7 +334,7 @@ fun LessonCell(item: PeriodSlot) {
                 when (val details = item.details) {
                     is PeriodDetails.Lesson -> {
                         Box(Modifier.size(36.dp)) {
-                            details.subjectIconUrl?.let {
+                            details.course.subject?.iconUrl?.let {
                                 Icon(
                                     painter = rememberAsyncImagePainter(it),
                                     modifier = Modifier.fillMaxSize(),
@@ -339,7 +345,7 @@ fun LessonCell(item: PeriodSlot) {
                         }
                         Spacer(Modifier.weight(1f))
                         Text(
-                            details.subjectName ?: "null",
+                            details.course.subject?.name ?: "null",
                             Modifier.padding(top = MaterialTheme.spacing.extraSmall),
                             style = MaterialTheme.typography.titleLarge
                         )

@@ -9,4 +9,6 @@ data class BellSchedule(
 )
 
 @Serializable
-data class BellPeriod(val start: String, val end: String)
+data class BellPeriod(val start: String, val end: String) {
+    val displayText = "$start - $end"
+}
