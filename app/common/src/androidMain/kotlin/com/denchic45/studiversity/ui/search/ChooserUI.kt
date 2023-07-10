@@ -1,6 +1,7 @@
 package com.denchic45.studiversity.ui.search
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -168,11 +169,9 @@ fun StartSearch() {
 fun EmptySearch() {
     IconTitleBox(
         icon = {
-            Icon(
+            Image(
                 painter = painterResource(id = R.drawable.ill_404),
-                contentDescription = "not found",
-                tint = MaterialTheme.colorScheme.surfaceVariant,
-                modifier = Modifier.size(78.dp)
+                contentDescription = "not found"
             )
         }, title = { Text(text = "Ничего не найдено") }
     )

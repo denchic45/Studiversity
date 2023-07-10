@@ -43,7 +43,7 @@ import java.time.format.DateTimeFormatter
 fun TimetableScreen(component: YourTimetablesComponent) {
     val timetable by component.timetableState.collectAsState()
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
-    val mondayDate by component.mondayDate.collectAsState()
+    val mondayDate by component.selectedDate.collectAsState()
 
     Column {
         Card(

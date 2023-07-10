@@ -1,6 +1,7 @@
 package com.denchic45.studiversity.ui.timetableeditor
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
@@ -21,7 +22,7 @@ import java.time.DayOfWeek
 import java.util.UUID
 
 @Inject
-class DayTimetableEditorComponent(
+class TimetableEditorComponent(
     @Assisted
     private val source: TimetableState,
     @Assisted
@@ -32,6 +33,14 @@ class DayTimetableEditorComponent(
     private val componentScope = componentScope()
 
     val editingTimetableState = MutableStateFlow(source)
+
+    private fun onBackClick() {
+        editingTimetableState.value = source
+    }
+
+    init {
+        backHandler.register(BackCallback(onBack = ::onBackClick))
+    }
 
     fun onAddPeriod(dayOfWeek: DayOfWeek, period: PeriodItem) {
         editingTimetableState.update { timetable ->

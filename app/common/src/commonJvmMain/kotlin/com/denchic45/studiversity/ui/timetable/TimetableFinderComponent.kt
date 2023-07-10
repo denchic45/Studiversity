@@ -45,13 +45,6 @@ class TimetableFinderComponent(
     private val bellSchedule = metaRepository.observeBellSchedule
         .shareIn(componentScope, SharingStarted.Lazily, replay = 1)
 
-    val isEdit = MutableStateFlow(false)
-
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    private val _weekTimetable = owner.flatMapLatest { owner ->
-//        getTimetableResponse(owner)
-//    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun getTimetableResponse(owner: TimetableOwner): Flow<Resource<TimetableResponse>> {
         return selectedWeekOfYear.flatMapLatest { weekOfYear ->
@@ -66,15 +59,6 @@ class TimetableFinderComponent(
 
     val timetableStateResource = getTimetableState().stateInResource(componentScope)
 
-//    fun getTimetableState(
-//        bellSchedule: Flow<BellSchedule>,
-//        timetableResource: Flow<Resource<TimetableResponse>>,
-//    ): StateFlow<Resource<TimetableState>> {
-//        return getTimetableStateOfLists(
-//            timetableResource.mapResource { it.days }
-//        )
-//    }
-
     init {
         componentScope.launch {
             updating.emitAll(refreshing.drop(1))
@@ -87,17 +71,14 @@ class TimetableFinderComponent(
             bellSchedule.flatMapLatest { schedule ->
                 selectedWeekOfYear.flatMapLatest { selectedWeek ->
                     owner.flatMapLatest { owner ->
-                        isEdit.flatMapLatest { isEdit ->
-                            getTimetableResponse(owner).mapResource {
-                                updating.value = false
-                                refreshing.value = false
-                                it.toTimetableState(
-                                    yearWeek = selectedWeek,
-                                    bellSchedule = schedule,
-                                    isEdit = isEdit,
-                                    showStudyGroups = owner !is TimetableOwner.StudyGroup
-                                )
-                            }
+                        getTimetableResponse(owner).mapResource {
+                            updating.value = false
+                            refreshing.value = false
+                            it.toTimetableState(
+                                yearWeek = selectedWeek,
+                                bellSchedule = schedule,
+                                showStudyGroups = owner !is TimetableOwner.StudyGroup
+                            )
                         }
                     }
                 }

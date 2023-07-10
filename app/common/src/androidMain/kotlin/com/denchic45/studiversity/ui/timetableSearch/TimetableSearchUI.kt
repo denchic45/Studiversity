@@ -55,7 +55,7 @@ import java.time.LocalDate
 fun TimetableSearchScreen(
     component: TimetableSearchComponent,
 ) {
-    val selectedDate by component.mondayDate.collectAsState()
+    val selectedDate by component.selectedDate.collectAsState()
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
     val state = remember(component::state)
     val timetableResource by component.timetableStateResourceFlow.collectAsState()
@@ -107,7 +107,7 @@ fun TimetableSearchScreen(
                 isEdit = isEdit,
                 timetableResource = timetableResource,
                 onQueryType = component::onQueryType,
-                onDateSelect = component::onWeekSelect,
+                onDateSelect = component::onDateSelect,
                 onGroupSelect = component::onGroupSelect,
                 onAddPeriodClick = component::onAddPeriodClick,
                 onEditPeriodClick = component::onEditPeriodClick,
@@ -178,19 +178,17 @@ fun TimetableSearchContent(
         Box(
             modifier = Modifier.padding(
                 PaddingValues(
-                    start = MaterialTheme.spacing.normal,
                     top = 72.dp,
-                    end = MaterialTheme.spacing.normal,
                     bottom = MaterialTheme.spacing.normal
                 )
             )
         ) {
             state.selectedStudyGroup?.let {
                 DayTimetableContent(
-                    monday = selectedDate,
+                    selectedDate = selectedDate,
                     timetableResource = timetableResource,
                     isEdit = isEdit,
-                    onWeekSelect = onDateSelect,
+                    onDateSelect = onDateSelect,
                     onAddPeriodClick = onAddPeriodClick,
                     onEditPeriodClick = onEditPeriodClick,
                     onRemovePeriodSwipe = onRemovePeriodSwipe,

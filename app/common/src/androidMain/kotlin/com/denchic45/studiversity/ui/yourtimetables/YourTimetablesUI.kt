@@ -18,12 +18,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.ui.appbar2.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.DayTimetableContent
 import com.denchic45.studiversity.ui.timetable.getMonthTitle
+import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,9 +35,19 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
     val selectedTimetable by component.selectedTimetablePosition.collectAsState()
     val groups by component.studyGroups.collectAsState()
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
-    val selectedDate by component.mondayDate.collectAsState()
+    val selectedDate by component.selectedDate.collectAsState()
 
-    updateAppBarState(selectedYearWeek, AppBarContent(uiTextOf(getMonthTitle(selectedYearWeek))))
+    updateAppBarState(
+        selectedYearWeek, AppBarContent(
+            title = uiTextOf(getMonthTitle(selectedYearWeek)),
+            actionItems = listOf(
+                ActionMenuItem2(
+                    uiIconOf(R.drawable.ic_calendar),
+                    onClick = component::onTodayClick
+                )
+            )
+        )
+    )
 
     Surface {
         Column {
@@ -88,10 +101,10 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
             val refreshing by component.refreshing.collectAsState()
 
             DayTimetableContent(
-                monday = selectedDate,
+                selectedDate = selectedDate,
                 timetableResource = viewState,
                 isEdit = false,
-                onWeekSelect = component::onWeekSelect,
+                onDateSelect = component::onDateSelect,
                 onStudyGroupClick = component::onStudyGroupClick,
                 refreshing = refreshing
             ) { component.refreshing.value = true }

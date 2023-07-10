@@ -50,7 +50,7 @@ import com.denchic45.studiversity.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.studiversity.ui.search.StudyGroupChooserScreen
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.DayTimetableContent
-import com.denchic45.studiversity.ui.timetableeditor.DayTimetableEditorComponent
+import com.denchic45.studiversity.ui.timetableeditor.TimetableEditorComponent
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -66,7 +66,7 @@ fun TimetablesPublisherScreen(
     val timetablesEditors by component.editorComponents.collectAsState()
     val studyGroups by component.studyGroups.collectAsState()
     val isEdit by component.isEdit.collectAsState()
-    val selectedDate by component.mondayDate.collectAsState()
+    val selectedDate by component.selectedDate.collectAsState()
     val overlay by component.childOverlay.subscribeAsState()
 
     val pagerState = rememberPagerState()
@@ -91,7 +91,7 @@ fun TimetablesPublisherScreen(
         pagerState = pagerState,
         editors = timetablesEditors,
         selectedDate = selectedDate,
-        onDateSelect = component::onWeekSelect,
+        onDateSelect = component::onDateSelect,
         onEditChangeClick = component::onEditEnableClick,
         onPublishClick = component::onPublishClick,
         onStudyGroupChoose = component::onStudyGroupChoose,
@@ -125,7 +125,7 @@ private fun TimetablePublisherContent(
     isEdit: Boolean,
     studyGroups: List<StudyGroupResponse>,
     pagerState: PagerState,
-    editors: List<DayTimetableEditorComponent>,
+    editors: List<TimetableEditorComponent>,
     selectedDate: LocalDate,
     onDateSelect: (LocalDate) -> Unit,
     onEditChangeClick: (Boolean) -> Unit,
@@ -257,10 +257,10 @@ private fun TimetablePublisherContent(
                 ) { position ->
                     val state by editors[position].editingTimetableState.collectAsState()
                     DayTimetableContent(
-                        monday = selectedDate,
+                        selectedDate = selectedDate,
                         timetableResource = resourceOf(state),
                         isEdit = isEdit,
-                        onWeekSelect = onDateSelect,
+                        onDateSelect = onDateSelect,
                         onAddPeriodClick = onAddPeriodClick,
                         onEditPeriodClick = onEditPeriodClick,
                         onRemovePeriodSwipe = onRemovePeriodSwipe,

@@ -29,19 +29,16 @@ import com.denchic45.studiversity.ui.timetable.TimetableOwnerDelegate
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
 import com.denchic45.studiversity.ui.timetable.state.toLocalDateOfWeekOfYear
 import com.denchic45.studiversity.ui.timetable.state.toTimetableState
-import com.denchic45.studiversity.ui.timetableeditor.DayTimetableEditorComponent
+import com.denchic45.studiversity.ui.timetableeditor.TimetableEditorComponent
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
@@ -63,11 +60,11 @@ class TimetablesPublisherComponent(
         ComponentContext,
     ) -> PeriodEditorComponent,
     private val putTimetableUseCase: PutTimetableUseCase,
-    private val _dayTimetableEditorComponent: (
+    private val _TimetableEditorComponent: (
         source: TimetableState,
         studyGroupId: UUID,
         ComponentContext,
-    ) -> DayTimetableEditorComponent,
+    ) -> TimetableEditorComponent,
     @Assisted
     private val weekOfYear: String,
     @Assisted
@@ -116,7 +113,7 @@ class TimetablesPublisherComponent(
 
     val studyGroups = MutableStateFlow(_studyGroupTimetables.map { it.first })
 
-    val editorComponents = MutableStateFlow(emptyList<DayTimetableEditorComponent>())
+    val editorComponents = MutableStateFlow(emptyList<TimetableEditorComponent>())
 
     val isEdit = MutableStateFlow(false)
 
@@ -142,8 +139,8 @@ class TimetablesPublisherComponent(
     private fun createDayTimetableEditorComponent(
         timetable: TimetableState,
         studyGroupId: UUID,
-    ): DayTimetableEditorComponent {
-        return _dayTimetableEditorComponent(
+    ): TimetableEditorComponent {
+        return _TimetableEditorComponent(
             timetable,
             studyGroupId,
             componentContext.childContext("DayTimetable $studyGroupId ${System.currentTimeMillis()}") // Make random name because context never destroy after deleting component
@@ -156,7 +153,7 @@ class TimetablesPublisherComponent(
 
             val dayTimetableEditorComponent = createDayTimetableEditorComponent(
                 timetable = TimetableState(
-                    firstWeekDate = mondayDate.value,
+                    firstWeekDate = selectedDate.value,
                     dayTimetables = listOf(
                         emptyList(),
                         emptyList(),

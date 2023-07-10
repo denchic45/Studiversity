@@ -80,7 +80,6 @@ data class TimetableState(
 fun TimetableResponse.toTimetableState(
     yearWeek: String,
     bellSchedule: BellSchedule,
-    isEdit: Boolean = false,
     showStudyGroups: Boolean = false
 ): TimetableState {
     return TimetableState(

@@ -38,11 +38,9 @@ import androidx.compose.material3.pullrefresh.pullRefresh
 import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,7 +55,6 @@ import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
-import com.denchic45.stuiversity.util.withDayOfWeek
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.daysOfWeek
@@ -70,22 +67,21 @@ import java.util.UUID
 
 @Composable
 fun DayTimetableContent(
-    monday: LocalDate,
+    selectedDate: LocalDate,
     timetableResource: Resource<TimetableState>,
     isEdit: Boolean,
-    onWeekSelect: (monday: LocalDate) -> Unit,
+    onDateSelect: (monday: LocalDate) -> Unit,
     onAddPeriodClick: ((DayOfWeek) -> Unit)? = null,
     onEditPeriodClick: ((DayOfWeek, Int) -> Unit)? = null,
     onRemovePeriodSwipe: ((DayOfWeek, Int) -> Unit)? = null,
     onStudyGroupClick: ((studyGroupId: UUID) -> Unit)? = null,
-    startDate: LocalDate = monday.minusWeeks(1),
-    endDate: LocalDate = monday.plusMonths(1),
+    startDate: LocalDate = selectedDate.minusWeeks(1),
+    endDate: LocalDate = selectedDate.plusMonths(1),
     scrollableWeeks: Boolean = true,
     refreshing: Boolean = false,
     onRefresh: (() -> Unit)? = null
 ) {
 
-    var selectedDate by remember { mutableStateOf(monday) }
     Surface {
         Column(
             Modifier
@@ -98,6 +94,9 @@ fun DayTimetableContent(
                 firstVisibleWeekDate = selectedDate,
                 firstDayOfWeek = DayOfWeek.MONDAY
             )
+            LaunchedEffect(selectedDate) {
+                state.animateScrollToWeek(selectedDate)
+            }
             val daysOfWeek = daysOfWeek(DayOfWeek.MONDAY)
             Row {
                 daysOfWeek.forEach {
@@ -129,12 +128,7 @@ fun DayTimetableContent(
                                         Modifier.background(MaterialTheme.colorScheme.tertiaryContainer)
                                     else Modifier
                                 )
-                                .clickable(onClick = {
-                                    selectedDate = day.date
-                                    if (selectedDate.dayOfWeek != day.date.dayOfWeek) {
-                                        onWeekSelect(day.date.withDayOfWeek(DayOfWeek.MONDAY))
-                                    }
-                                }),
+                                .clickable(onClick = { onDateSelect(day.date) }),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -148,8 +142,8 @@ fun DayTimetableContent(
 
             val timetableContent: @Composable () -> Unit = {
                 ResourceContent(resource = timetableResource) { timetableState ->
-                    val selectedDayOfWeek = monday.dayOfWeek
-                    if (timetableState.contains(monday)) {
+                    val selectedDayOfWeek = selectedDate.dayOfWeek
+                    if (timetableState.contains(selectedDate)) {
                         Periods(
                             timetableState = timetableState,
                             isEdit = isEdit,

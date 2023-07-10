@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.arkivanov.decompose.router.overlay.ChildOverlay
 import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
@@ -29,13 +30,14 @@ import com.denchic45.studiversity.ui.timetable.TimetableFinderComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerDelegate
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
-import com.denchic45.studiversity.ui.timetableeditor.DayTimetableEditorComponent
+import com.denchic45.studiversity.ui.timetableeditor.TimetableEditorComponent
 import com.denchic45.studiversity.util.asFlow
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
@@ -61,11 +63,11 @@ class TimetableSearchComponent(
         Flow<TimetableOwner>,
         ComponentContext,
     ) -> TimetableFinderComponent,
-    private val _dayTimetableEditorComponent: (
+    private val _timetableEditorComponent: (
         source: TimetableState,
         studyGroupId: UUID,
         ComponentContext,
-    ) -> DayTimetableEditorComponent,
+    ) -> TimetableEditorComponent,
     private val periodEditorComponent: (
         EditingPeriod,
         (PeriodItem?) -> Unit,
@@ -76,20 +78,53 @@ class TimetableSearchComponent(
 ) : ComponentContext by componentContext,
     TimetableOwnerComponent by TimetableOwnerDelegate(componentContext) {
 
+    private val owner = MutableStateFlow<TimetableOwner.StudyGroup?>(null)
+
+    private val timetableFinderComponent = _timetableFinderComponent(
+        selectedWeekOfYear,
+        owner.filterNotNull(),
+        componentContext.childContext("TimetableFinder")
+    )
+
+    private val actualTimetable = timetableFinderComponent.timetableStateResource
+        .shareIn(componentScope, SharingStarted.Lazily)
+
+    val state = TimetableFinderState()
+
+    private val query = MutableStateFlow("")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val foundStudyGroups = query.filter(String::isNotEmpty).flatMapLatest {
+        findStudyGroupByContainsNameUseCase(it)
+    }
+
     private val timetableEditorNavigation = OverlayNavigation<TimetableEditorConfig>()
     private val timetableEditorOverlay = childOverlay(
         source = timetableEditorNavigation,
         handleBackButton = true,
         childFactory = { _, componentContext ->
             TimetableEditorChild(
-                _dayTimetableEditorComponent(
-                    timetableComponent.timetableStateResource.value.success().value,
+                _timetableEditorComponent(
+                    timetableStateResourceFlow.value.success().value,
                     owner.value!!.ownerId,
                     componentContext
                 )
             )
         }
     )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val timetableStateResourceFlow = editorComponentFlow().flatMapLatest { overlay ->
+        overlay.overlay?.instance?.component?.editingTimetableState
+            ?.map { resourceOf(it) } ?: actualTimetable
+    }.stateInResource(componentScope)
+
+
+    private fun editorComponentFlow(): SharedFlow<ChildOverlay<TimetableEditorConfig, TimetableEditorChild>> {
+        return timetableEditorOverlay.asFlow()
+            .shareIn(componentScope, SharingStarted.Lazily, 1)
+    }
+
 
     private val overlayNavigation = OverlayNavigation<OverlayConfig>()
     val childOverlay = childOverlay<OverlayConfig, OverlayChild>(
@@ -112,49 +147,10 @@ class TimetableSearchComponent(
         }
     )
 
-    private val owner = MutableStateFlow<TimetableOwner.StudyGroup?>(null)
-
-//    val isEdit = MutableStateFlow(false)
-
-    private val timetableComponent = _timetableFinderComponent(
-        selectedWeekOfYear,
-        owner.filterNotNull(),
-        componentContext.childContext("Timetable")
-    )
-
-    private val actualTimetable = timetableComponent.timetableStateResource
-        .shareIn(componentScope, SharingStarted.Lazily, 1)
-
-    private val editorComponentFlow = timetableEditorOverlay.asFlow()
-        .shareIn(componentScope, SharingStarted.Lazily, 1)
-
-    private val isShowEditorFlow = editorComponentFlow.map { it.overlay != null }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val timetableStateResourceFlow = editorComponentFlow.flatMapLatest { overlay ->
-        overlay.overlay?.instance?.component?.editingTimetableState
-            ?.map { resourceOf(it) } ?: actualTimetable
-    }.stateInResource(componentScope)
-
-    val state = TimetableFinderState()
-
-    private val query = MutableStateFlow("")
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val foundGroups = query.filter(String::isNotEmpty).flatMapLatest {
-        findStudyGroupByContainsNameUseCase(it)
-    }
-
     init {
         componentScope.launch {
-            foundGroups.collect {
+            foundStudyGroups.collect {
                 state.foundGroups = it
-            }
-        }
-        // Update edit state on change
-        componentScope.launch {
-            isShowEditorFlow.collect { isEdit ->
-                timetableComponent.isEdit.value = isEdit
             }
         }
     }
@@ -166,14 +162,14 @@ class TimetableSearchComponent(
     private val dayTimetableEditorComponent
         get() = timetableEditorOverlay.value.overlay?.instance?.component
 
-    val isEdit = editorComponentFlow.map { it.overlay != null }
+    val isEdit = editorComponentFlow().map { it.overlay != null }
         .stateIn(componentScope, SharingStarted.Lazily, false)
 
     fun onSaveChangesClick() {
         dayTimetableEditorComponent?.getRequestModel()?.let {
             componentScope().launch {
                 putTimetableUseCase(
-                    weekOfYear = timetableComponent.selectedWeekOfYear.first(),
+                    weekOfYear = timetableFinderComponent.selectedWeekOfYear.first(),
                     putTimetableRequest = it
                 )
             }
@@ -205,8 +201,7 @@ class TimetableSearchComponent(
     }
 
     private fun getNewLatestOrder(dayOfWeek: DayOfWeek) = dayTimetableEditorComponent!!
-        .editingTimetableState.value.getByDay(dayOfWeek)
-        .size + 1
+        .editingTimetableState.value.getByDay(dayOfWeek).size + 1
 
 
     fun onEditPeriodClick(dayOfWeek: DayOfWeek, periodPosition: Int) {
@@ -275,7 +270,7 @@ class TimetableSearchComponent(
     @Parcelize
     object TimetableEditorConfig : Parcelable
 
-    class TimetableEditorChild(val component: DayTimetableEditorComponent)
+    class TimetableEditorChild(val component: TimetableEditorComponent)
 
     @Parcelize
     sealed class OverlayConfig : Parcelable {
