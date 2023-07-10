@@ -3,6 +3,7 @@ package com.denchic45.studiversity.ui.timetable.state
 import androidx.compose.runtime.Immutable
 import com.denchic45.studiversity.data.service.model.BellPeriod
 import com.denchic45.studiversity.data.service.model.BellSchedule
+import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
 import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.util.copy
@@ -19,7 +20,7 @@ data class TimetableState(
     val firstWeekDate: LocalDate,
     val dayTimetables: List<List<PeriodSlot>>,
     private val bellSchedule: BellSchedule,
-    val isEdit: Boolean = false,
+//    val isEdit: Boolean = false,
     val showStudyGroups: Boolean = false
 ) {
 
@@ -43,23 +44,23 @@ data class TimetableState(
         return yearWeek == selectedDate.get(WeekFields.ISO.weekOfWeekBasedYear())
     }
 
-    fun addPeriod(dayOfWeek: DayOfWeek, period: PeriodResponse): TimetableState {
+    fun addPeriod(dayOfWeek: DayOfWeek, period: PeriodItem): TimetableState {
         return copy(
             dayTimetables = dayTimetables.copy {
-                this[dayOfWeek.ordinal] = this[dayOfWeek.ordinal] + period.toItem()
+                this[dayOfWeek.ordinal] = this[dayOfWeek.ordinal] + period
             }
         )
     }
 
     fun updatePeriod(
         dayOfWeek: DayOfWeek,
-        period: PeriodResponse,
+        period: PeriodItem,
         position: Int
     ): TimetableState {
         return copy(
             dayTimetables = dayTimetables.copy {
                 this[dayOfWeek.ordinal] = this[dayOfWeek.ordinal].copy {
-                    this[position] = period.toItem()
+                    this[position] = period
                 }
             }
         )
@@ -91,7 +92,7 @@ fun TimetableResponse.toTimetableState(
         ),
         dayTimetables = days.toItems(),
         bellSchedule = bellSchedule,
-        isEdit = isEdit,
+//        isEdit = isEdit,
         showStudyGroups = showStudyGroups
     )
 }

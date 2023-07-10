@@ -9,11 +9,12 @@ import com.denchic45.studiversity.ui.timetable.DayTimetableContent
 @Composable
 fun StudyGroupTimetableScreen(component: StudyGroupTimetableComponent) {
     val timetableState by component.timetableState.collectAsState()
-    val selectedDate by component.selectedDate.collectAsState()
+    val monday by component.mondayDate.collectAsState()
 
     DayTimetableContent(
-        selectedDate = selectedDate,
+        monday = monday,
         timetableResource = timetableState,
-        onDateSelect = component::onDateSelect
+        onWeekSelect = component::onWeekSelect,
+        isEdit = false
     )
 }

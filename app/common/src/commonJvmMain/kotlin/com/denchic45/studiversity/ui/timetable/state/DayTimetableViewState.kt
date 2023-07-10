@@ -43,14 +43,14 @@ fun List<PeriodResponse>.toDayTimetableViewState(
     return DayTimetableViewState(
         date = date,
         periods = toPeriodItems(),
-        orders = bellSchedule.toItemOrders(latestEventOrder),
+        orders = bellSchedule.toItemOrders(),
         maxEventsSize = latestEventOrder,
         isEdit = isEdit
     )
 }
 
 fun DayTimetableViewState.update(bellSchedule: BellSchedule): DayTimetableViewState {
-    return copy(orders = bellSchedule.toItemOrders(maxEventsSize))
+    return copy(orders = bellSchedule.toItemOrders())
 }
 
 fun DayTimetableViewState.update(periodsOfDay: List<PeriodSlot>) = copy(periods = periodsOfDay)

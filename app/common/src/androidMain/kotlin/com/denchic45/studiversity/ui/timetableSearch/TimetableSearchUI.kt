@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.timetablefinder
+package com.denchic45.studiversity.ui.timetableSearch
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -48,36 +48,38 @@ import com.denchic45.studiversity.ui.timetable.state.TimetableState
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 @Composable
-fun TimetableFinderScreen(
-    component: TimetableFinderComponent,
+fun TimetableSearchScreen(
+    component: TimetableSearchComponent,
 ) {
-    val selectedDate by component.selectedDate.collectAsState()
+    val selectedDate by component.mondayDate.collectAsState()
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
     val state = remember(component::state)
     val timetableResource by component.timetableStateResourceFlow.collectAsState()
+    val isEdit by component.isEdit.collectAsState()
 
     val overlay by component.childOverlay.subscribeAsState()
 
     when (val child = overlay.overlay?.instance) {
-        is TimetableFinderComponent.OverlayChild.PeriodEditor -> {
+        is TimetableSearchComponent.OverlayChild.PeriodEditor -> {
             PeriodEditorScreen(child.component)
         }
 
         null -> {
             updateAppBarState(
-                key1 = selectedYearWeek,
-                key2 = timetableResource,
+                key1 = timetableResource,
+                key2 = isEdit,
                 key3 = state.selectedStudyGroup,
                 content = AppBarContent(
                     title = uiTextOf(
                         if (state.selectedStudyGroup != null) getMonthTitle(selectedYearWeek)
                         else ""
-                    ), actionItems = when (val resource = timetableResource) {
+                    ), actionItems = when (timetableResource) {
                         is Resource.Success -> {
-                            if (resource.value.isEdit) {
+                            if (isEdit) {
                                 listOf(
                                     ActionMenuItem2(
                                         icon = uiIconOf(Icons.Default.Done),
@@ -99,12 +101,13 @@ fun TimetableFinderScreen(
                 )
             )
 
-            TimetableFinderContent(
+            TimetableSearchContent(
                 selectedDate = selectedDate,
                 state = state,
+                isEdit = isEdit,
                 timetableResource = timetableResource,
                 onQueryType = component::onQueryType,
-                onDateSelect = component::onDateSelect,
+                onDateSelect = component::onWeekSelect,
                 onGroupSelect = component::onGroupSelect,
                 onAddPeriodClick = component::onAddPeriodClick,
                 onEditPeriodClick = component::onEditPeriodClick,
@@ -116,16 +119,17 @@ fun TimetableFinderScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimetableFinderContent(
+fun TimetableSearchContent(
     selectedDate: LocalDate,
     state: TimetableFinderState,
+    isEdit: Boolean,
     timetableResource: Resource<TimetableState>,
     onQueryType: (String) -> Unit,
     onDateSelect: (LocalDate) -> Unit,
     onGroupSelect: (StudyGroupResponse) -> Unit,
-    onAddPeriodClick: () -> Unit,
-    onEditPeriodClick: (Int) -> Unit,
-    onRemovePeriodSwipe: (Int) -> Unit,
+    onAddPeriodClick: (DayOfWeek) -> Unit,
+    onEditPeriodClick: (DayOfWeek, Int) -> Unit,
+    onRemovePeriodSwipe: (DayOfWeek, Int) -> Unit,
 ) {
     Surface {
         var active by remember { mutableStateOf(false) }
@@ -169,7 +173,7 @@ fun TimetableFinderContent(
 
         val scrollableWeeks = when (timetableResource) {
             Resource.Loading, is Resource.Error -> true
-            is Resource.Success -> !timetableResource.value.isEdit
+            is Resource.Success -> !isEdit
         }
         Box(
             modifier = Modifier.padding(
@@ -183,9 +187,10 @@ fun TimetableFinderContent(
         ) {
             state.selectedStudyGroup?.let {
                 DayTimetableContent(
-                    selectedDate = selectedDate,
+                    monday = selectedDate,
                     timetableResource = timetableResource,
-                    onDateSelect = onDateSelect,
+                    isEdit = isEdit,
+                    onWeekSelect = onDateSelect,
                     onAddPeriodClick = onAddPeriodClick,
                     onEditPeriodClick = onEditPeriodClick,
                     onRemovePeriodSwipe = onRemovePeriodSwipe,

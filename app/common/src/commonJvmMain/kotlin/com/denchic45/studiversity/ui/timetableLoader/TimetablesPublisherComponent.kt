@@ -27,12 +27,12 @@ import com.denchic45.studiversity.ui.search.StudyGroupChooserComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerDelegate
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
-import com.denchic45.studiversity.ui.timetable.state.toItemOrders
 import com.denchic45.studiversity.ui.timetable.state.toLocalDateOfWeekOfYear
+import com.denchic45.studiversity.ui.timetable.state.toTimetableState
 import com.denchic45.studiversity.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
+import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -47,7 +47,6 @@ import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.time.DayOfWeek
-import java.time.LocalDate
 import java.util.UUID
 
 @Inject
@@ -72,7 +71,7 @@ class TimetablesPublisherComponent(
     @Assisted
     private val weekOfYear: String,
     @Assisted
-    _studyGroupTimetables: List<Pair<StudyGroupResponse, TimetableState>>,
+    _studyGroupTimetables: List<Pair<StudyGroupResponse, TimetableResponse>>,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
@@ -112,63 +111,44 @@ class TimetablesPublisherComponent(
         }
     )
 
-    @Parcelize
-    sealed class OverlayConfig : Parcelable {
-        object GroupChooser : OverlayConfig()
-
-        data class PeriodEditor(
-            val periodConfig: EditingPeriod,
-            val onFinish: (PeriodResponse?) -> Unit,
-        ) : OverlayConfig()
-    }
-
-    sealed class OverlayChild {
-        class GroupChooser(val component: StudyGroupChooserComponent) : OverlayChild()
-
-        class PeriodEditor(val component: PeriodEditorComponent) : OverlayChild()
-    }
-
     private val bellSchedule = metaRepository.observeBellSchedule
-        .shareIn(componentScope, SharingStarted.Lazily)
+        .shareIn(componentScope, SharingStarted.Lazily, 1)
 
     val studyGroups = MutableStateFlow(_studyGroupTimetables.map { it.first })
 
-    private val editorComponents = MutableStateFlow(
-        _studyGroupTimetables.map {
-            createDayTimetableEditorComponent(it.second, it.first.id)
-        }
-    )
-
-    private fun createDayTimetableEditorComponent(
-        timetable: TimetableState,
-        groupId: UUID,
-    ): DayTimetableEditorComponent {
-        return _dayTimetableEditorComponent(
-            timetable,
-            groupId,
-            componentContext.childContext("DayTimetable $groupId ${System.currentTimeMillis()}") // Make random name because context never destroy after deleting component
-        )
-    }
+    val editorComponents = MutableStateFlow(emptyList<DayTimetableEditorComponent>())
 
     val isEdit = MutableStateFlow(false)
 
     val publishState = MutableStateFlow(PublishState.PREPARATION)
 
-    val timetablesViewStates: MutableStateFlow<List<StateFlow<TimetableState>>> =
-        MutableStateFlow(emptyList())
+    val selectedGroup = MutableStateFlow(0)
 
     init {
         componentScope.launch {
-            timetablesViewStates.value = editorComponents.value.map { it.editingTimetableState }
+            val bellSchedule = bellSchedule.first()
+            editorComponents.value = _studyGroupTimetables.map {
+                createDayTimetableEditorComponent(
+                    timetable = it.second.toTimetableState(
+                        yearWeek = weekOfYear,
+                        bellSchedule = bellSchedule
+                    ),
+                    studyGroupId = it.first.id
+                )
+            }
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun getViewState(component: DayTimetableEditorComponent): StateFlow<TimetableState> {
-        return component.editingTimetableState.stateIn(componentScope)
+    private fun createDayTimetableEditorComponent(
+        timetable: TimetableState,
+        studyGroupId: UUID,
+    ): DayTimetableEditorComponent {
+        return _dayTimetableEditorComponent(
+            timetable,
+            studyGroupId,
+            componentContext.childContext("DayTimetable $studyGroupId ${System.currentTimeMillis()}") // Make random name because context never destroy after deleting component
+        )
     }
-
-    val selectedGroup = MutableStateFlow(0)
 
     private fun onAddStudyGroup(studyGroupResponse: StudyGroupResponse) {
         componentScope.launch {
@@ -176,17 +156,24 @@ class TimetablesPublisherComponent(
 
             val dayTimetableEditorComponent = createDayTimetableEditorComponent(
                 timetable = TimetableState(
-                    firstWeekDate = selectedDate.value,
-                    dayTimetables = emptyList(),
-                    orders = bellSchedule.first().toItemOrders()
+                    firstWeekDate = mondayDate.value,
+                    dayTimetables = listOf(
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList()
+                    ),
+                    bellSchedule = bellSchedule.first()
                 ),
-                groupId = studyGroupResponse.id,
+                studyGroupId = studyGroupResponse.id,
             )
             editorComponents.update { components ->
                 components + dayTimetableEditorComponent
             }
 
-            timetablesViewStates.update { it + getViewState(dayTimetableEditorComponent) }
+//            timetablesViewStates.update { it + getViewState(dayTimetableEditorComponent) }
         }
     }
 
@@ -204,7 +191,7 @@ class TimetablesPublisherComponent(
                 }
                 studyGroups.update { it - it[position] }
                 editorComponents.update { it - it[position].apply { onDestroy() } }
-                timetablesViewStates.update { it - it[position] }
+//                timetablesViewStates.update { it - it[position] }
             }
         }
     }
@@ -218,19 +205,15 @@ class TimetablesPublisherComponent(
     }
 
     fun onAddPeriodClick(dayOfWeek: DayOfWeek) {
-        val group = selectedStudyGroupItem
-
         // TODO: Вместо EditingPeriod передавать данные в другой обертке т.к. выбрасывается:
         //  Parcelable encountered IOException writing serializable object (name = com.denchic45.studiversity.ui.timetableLoader.TimetablesPublisherComponent$onAddPeriodClick$2)
         overlayNavigation.activate(
             OverlayConfig.PeriodEditor(
                 EditingPeriod(
-                    selectedDate.value,
-                    group.id,
-                    group.name
+                    getDateByDayOfWeek(dayOfWeek),
+                    selectedStudyGroupItem,
                 ).apply {
-                    order = currentSelectedDayTimetable
-                        .size + 1
+                    order = getDayTimetable(dayOfWeek).size + 1
                 }
             ) { it?.let { currentEditor.onAddPeriod(dayOfWeek, it) } })
     }
@@ -239,9 +222,8 @@ class TimetablesPublisherComponent(
 
     fun onEditPeriodClick(dayOfWeek: DayOfWeek, periodPosition: Int) {
         overlayNavigation.activate(OverlayConfig.PeriodEditor(
-            currentSelectedDayTimetable[periodPosition].let { slot ->
-                val group = selectedStudyGroupItem
-                EditingPeriod(getDateByDayOfWeek(dayOfWeek), group.id, group.name).apply {
+            getDayTimetable(dayOfWeek)[periodPosition].let { slot ->
+                EditingPeriod(getDateByDayOfWeek(dayOfWeek), selectedStudyGroupItem).apply {
                     order = periodPosition + 1
                     when (slot) {
                         is PeriodItem -> {
@@ -261,7 +243,7 @@ class TimetablesPublisherComponent(
                         }
 
                         is Window -> EditingPeriod.createEmpty(
-                            selectedDate.value,
+                            getDateByDayOfWeek(dayOfWeek),
                             selectedStudyGroupItem,
                             getNewLatestOrder(dayOfWeek)
                         )
@@ -281,8 +263,9 @@ class TimetablesPublisherComponent(
         currentEditor.onRemovePeriod(dayOfWeek, position)
     }
 
-    private val currentSelectedDayTimetable: List<PeriodSlot>
-        get() = selectedTimetableState.getByDay(selectedDate.value.dayOfWeek)
+    private fun getDayTimetable(dayOfWeek: DayOfWeek): List<PeriodSlot> {
+        return selectedTimetableState.getByDay(dayOfWeek)
+    }
 
 
     private val selectedTimetableState get() = currentEditor.editingTimetableState.value
@@ -291,9 +274,9 @@ class TimetablesPublisherComponent(
     private val currentEditor
         get() = editorComponents.value[selectedGroup.value]
 
-    private fun getDateByDayOfWeek(dayOfWeek: DayOfWeek): LocalDate {
-        return weekOfYear.toLocalDateOfWeekOfYear(dayOfWeek)
-    }
+//    private fun getDateByDayOfWeek(dayOfWeek: DayOfWeek): LocalDate {
+//        return weekOfYear.toLocalDateOfWeekOfYear(dayOfWeek)
+//    }
 
     fun onPublishClick() {
         publishState.update { PublishState.SENDING }
@@ -315,4 +298,19 @@ class TimetablesPublisherComponent(
 
     enum class PublishState { PREPARATION, SENDING, DONE, FAILED }
 
+    @Parcelize
+    sealed class OverlayConfig : Parcelable {
+        object GroupChooser : OverlayConfig()
+
+        data class PeriodEditor(
+            val periodConfig: EditingPeriod,
+            val onFinish: (PeriodItem?) -> Unit,
+        ) : OverlayConfig()
+    }
+
+    sealed class OverlayChild {
+        class GroupChooser(val component: StudyGroupChooserComponent) : OverlayChild()
+
+        class PeriodEditor(val component: PeriodEditorComponent) : OverlayChild()
+    }
 }

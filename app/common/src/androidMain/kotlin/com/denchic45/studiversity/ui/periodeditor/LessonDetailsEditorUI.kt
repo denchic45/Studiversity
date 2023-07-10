@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -34,15 +33,15 @@ import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.timetable.model.PeriodMember
 
 @Composable
 fun LessonDetailsEditorScreen(
     component: LessonDetailsEditorComponent,
-    members: List<PeriodMember>,
+    members: List<UserItem>,
     onAddMemberClick: () -> Unit,
-    onRemoveMemberClick: (PeriodMember) -> Unit,
+    onRemoveMemberClick: (UserItem) -> Unit,
 ) {
     val details = remember { component.details }
     LessonDetailsEditorContent(
@@ -57,9 +56,9 @@ fun LessonDetailsEditorScreen(
 @Composable
 fun LessonDetailsEditorContent(
     details: EditingPeriodDetails.Lesson,
-    members: List<PeriodMember>,
+    members: List<UserItem>,
     onAddMemberClick: () -> Unit,
-    onRemoveMemberClick: (PeriodMember) -> Unit,
+    onRemoveMemberClick: (UserItem) -> Unit,
     onCourseChoose: () -> Unit,
 ) {
     Column {
@@ -110,7 +109,7 @@ fun LessonDetailsEditorContent(
             members.forEach {
                 AssistChip(
                     onClick = { /*TODO*/ },
-                    label = { Text(text = it.fullName) },
+                    label = { Text(text = it.title) },
                     leadingIcon = {
                         AsyncImage(
                             model = it.avatarUrl,

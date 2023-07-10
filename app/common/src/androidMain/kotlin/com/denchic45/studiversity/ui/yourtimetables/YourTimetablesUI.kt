@@ -32,7 +32,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
     val selectedTimetable by component.selectedTimetablePosition.collectAsState()
     val groups by component.studyGroups.collectAsState()
     val selectedYearWeek by component.selectedWeekOfYear.collectAsState()
-    val selectedDate by component.selectedDate.collectAsState()
+    val selectedDate by component.mondayDate.collectAsState()
 
     updateAppBarState(selectedYearWeek, AppBarContent(uiTextOf(getMonthTitle(selectedYearWeek))))
 
@@ -51,9 +51,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
                             readOnly = true,
                             onValueChange = {},
                             trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = showList
-                                )
+                                ExposedDropdownMenuDefaults.TrailingIcon(showList)
                             },
                             singleLine = true,
                             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
@@ -88,10 +86,12 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
 
             val viewState by component.timetableState.collectAsState()
             val refreshing by component.refreshing.collectAsState()
+
             DayTimetableContent(
-                selectedDate = selectedDate,
+                monday = selectedDate,
                 timetableResource = viewState,
-                onDateSelect = component::onDateSelect,
+                isEdit = false,
+                onWeekSelect = component::onWeekSelect,
                 onStudyGroupClick = component::onStudyGroupClick,
                 refreshing = refreshing
             ) { component.refreshing.value = true }

@@ -25,7 +25,7 @@ import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetableLoader.TimetableLoaderScreen
-import com.denchic45.studiversity.ui.timetablefinder.TimetableFinderScreen
+import com.denchic45.studiversity.ui.timetableSearch.TimetableSearchScreen
 import com.denchic45.studiversity.ui.uiTextOf
 
 @Composable
@@ -98,7 +98,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
                 updateAppBarState( AppBarContent(title = uiTextOf("Панель управления")))
             }
 
-            is AdminDashboardComponent.Child.TimetableFinder -> TimetableFinderScreen(child.component)
+            is AdminDashboardComponent.Child.TimetableFinder -> TimetableSearchScreen(child.component)
             is AdminDashboardComponent.Child.TimetableLoader -> TimetableLoaderScreen(child.component)
             is AdminDashboardComponent.Child.Courses -> CoursesAdminScreen(child.component)
             is AdminDashboardComponent.Child.Users -> UsersAdminScreen(child.component)

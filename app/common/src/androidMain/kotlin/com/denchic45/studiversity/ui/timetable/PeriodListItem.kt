@@ -119,6 +119,17 @@ fun PeriodListItem(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
+                        item.room?.let {
+                            Text(
+                                text = it.shortname,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier
+                                    .widthIn(max = 48.dp)
+                                    .padding(horizontal = MaterialTheme.spacing.small),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
                         if (showStudyGroup) {
                             AssistChip(
                                 onClick = { onStudyGroupClick?.let { it(item.studyGroup.id) } },
@@ -132,17 +143,6 @@ fun PeriodListItem(
                                 })
 
                             Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
-                        }
-                        item.room?.let {
-                            Text(
-                                text = it.name,
-                                textAlign = TextAlign.End,
-                                modifier = Modifier
-                                    .widthIn(max = 48.dp)
-                                    .padding(horizontal = MaterialTheme.spacing.small),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
                         }
                     }
 
@@ -199,7 +199,7 @@ fun PeriodItemPreview() {
             item = PeriodItem(
                 id = -1,
                 studyGroup = StudyGroupItem(UUID.randomUUID(), "ПКС-4"),
-                room = RoomResponse(UUID.randomUUID(), "1 м.", ""),
+                room = RoomResponse(UUID.randomUUID(), "1 м.", "1"),
                 members = listOf(
                     UserItem(
                         id = UUID.randomUUID(),

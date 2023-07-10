@@ -7,7 +7,7 @@ import java.time.format.DateTimeParseException
 import java.util.*
 
 fun String.toDate(format: String): Date =
-    SimpleDateFormat(format, Locale.getDefault()).parse(this)!!
+    SimpleDateFormat(format, Locale.getDefault()).parse(this)
 
 fun Date.toString(format: String): String =
     SimpleDateFormat(format, Locale.getDefault()).format(this)

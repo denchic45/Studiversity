@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,9 +50,8 @@ import com.denchic45.studiversity.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.studiversity.ui.search.StudyGroupChooserScreen
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.DayTimetableContent
-import com.denchic45.studiversity.ui.timetable.state.TimetableState
+import com.denchic45.studiversity.ui.timetableeditor.DayTimetableEditorComponent
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import kotlinx.coroutines.flow.StateFlow
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -63,10 +63,10 @@ fun TimetablesPublisherScreen(
     updateAppBarState(AppBarContent())
 
     val publishState by component.publishState.collectAsState()
-    val viewStates by component.timetablesViewStates.collectAsState()
+    val timetablesEditors by component.editorComponents.collectAsState()
     val studyGroups by component.studyGroups.collectAsState()
     val isEdit by component.isEdit.collectAsState()
-    val selectedDate by component.selectedDate.collectAsState()
+    val selectedDate by component.mondayDate.collectAsState()
     val overlay by component.childOverlay.subscribeAsState()
 
     val pagerState = rememberPagerState()
@@ -74,7 +74,7 @@ fun TimetablesPublisherScreen(
     LaunchedEffect(Unit) {
         component.selectedGroup.collect { index ->
             println("pager state: $index")
-            pagerState.scrollToPage(index)
+            pagerState.animateScrollToPage(index)
         }
     }
 
@@ -89,10 +89,10 @@ fun TimetablesPublisherScreen(
         isEdit = isEdit,
         studyGroups = studyGroups,
         pagerState = pagerState,
-        viewStates = viewStates,
+        editors = timetablesEditors,
         selectedDate = selectedDate,
-        onDateSelect = component::onDateSelect,
-        onEditEnableClick = component::onEditEnableClick,
+        onDateSelect = component::onWeekSelect,
+        onEditChangeClick = component::onEditEnableClick,
         onPublishClick = component::onPublishClick,
         onStudyGroupChoose = component::onStudyGroupChoose,
         onStudyGroupSelect = component::onStudyGroupSelect,
@@ -125,10 +125,10 @@ private fun TimetablePublisherContent(
     isEdit: Boolean,
     studyGroups: List<StudyGroupResponse>,
     pagerState: PagerState,
-    viewStates: List<StateFlow<TimetableState>>,
+    editors: List<DayTimetableEditorComponent>,
     selectedDate: LocalDate,
     onDateSelect: (LocalDate) -> Unit,
-    onEditEnableClick: (Boolean) -> Unit,
+    onEditChangeClick: (Boolean) -> Unit,
     onPublishClick: () -> Unit,
     onStudyGroupChoose: () -> Unit,
     onStudyGroupSelect: (Int) -> Unit,
@@ -193,10 +193,10 @@ private fun TimetablePublisherContent(
                         trailingContent = {
                             Switch(
                                 checked = isEdit,
-                                onCheckedChange = onEditEnableClick
+                                onCheckedChange = onEditChangeClick
                             )
                         },
-                        modifier = Modifier.clickable { onEditEnableClick(!isEdit) }
+                        modifier = Modifier.clickable { onEditChangeClick(!isEdit) }
                     )
             }
 
@@ -215,7 +215,7 @@ private fun TimetablePublisherContent(
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
-                    Button(onClick = { onStudyGroupChoose() }) {
+                    Button(onClick = onStudyGroupChoose) {
                         Text(text = "Добавить группу")
                     }
                 }
@@ -225,6 +225,7 @@ private fun TimetablePublisherContent(
                     modifier = Modifier,
                     divider = {}
                 ) {
+                    val coroutineScope = rememberCoroutineScope()
                     // Add tabs for all of our pages
                     studyGroups.forEachIndexed { index, group ->
                         Tab(
@@ -240,9 +241,7 @@ private fun TimetablePublisherContent(
                                     }
                                 }
                             },
-                            onClick = {
-                                onStudyGroupSelect(index)
-                            },
+                            onClick = { onStudyGroupSelect(index) },
                         )
                     }
                     Tab(
@@ -253,14 +252,15 @@ private fun TimetablePublisherContent(
                 }
                 Divider()
                 HorizontalPager(
-                    pageCount = viewStates.size,
+                    pageCount = editors.size,
                     state = pagerState
                 ) { position ->
-                    val viewState by viewStates[position].collectAsState()
+                    val state by editors[position].editingTimetableState.collectAsState()
                     DayTimetableContent(
-                        selectedDate = selectedDate,
-                        timetableResource = resourceOf(viewState),
-                        onDateSelect = onDateSelect,
+                        monday = selectedDate,
+                        timetableResource = resourceOf(state),
+                        isEdit = isEdit,
+                        onWeekSelect = onDateSelect,
                         onAddPeriodClick = onAddPeriodClick,
                         onEditPeriodClick = onEditPeriodClick,
                         onRemovePeriodSwipe = onRemovePeriodSwipe,

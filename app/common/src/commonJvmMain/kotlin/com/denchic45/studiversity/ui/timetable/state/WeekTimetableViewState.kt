@@ -18,40 +18,38 @@ data class WeekTimetableViewState(
     val orders: List<CellOrder>,
     val maxEventsSize: Int,
     val isEdit: Boolean = false,
-) {
-//    val title = getMonthTitle(mondayDate)
-}
+)
 
-fun List<List<PeriodResponse>>.toDayTimetableViewState(
-    weekOfYear:String,
-    bellSchedule: BellSchedule,
-): WeekTimetableViewState {
-    val latestEventOrder = max(maxOf { it.size }, 6)
-    return WeekTimetableViewState(
-        mondayDate = LocalDate.parse(
-            weekOfYear, DateTimeFormatterBuilder()
-                .appendPattern("YYYY_ww")
-                .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.value.toLong())
-                .toFormatter()
-        ),
-        periods = toItemsForWeek(latestEventOrder),
-        orders = bellSchedule.toItemOrders(latestEventOrder),
-        maxEventsSize = latestEventOrder
-    )
-}
+//fun List<List<PeriodResponse>>.toDayTimetableViewState(
+//    weekOfYear:String,
+//    bellSchedule: BellSchedule,
+//): WeekTimetableViewState {
+//    val latestEventOrder = max(maxOf { it.size }, 6)
+//    return WeekTimetableViewState(
+//        mondayDate = LocalDate.parse(
+//            weekOfYear, DateTimeFormatterBuilder()
+//                .appendPattern("YYYY_ww")
+//                .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.value.toLong())
+//                .toFormatter()
+//        ),
+//        periods = toItemsForWeek(latestEventOrder),
+//        orders = bellSchedule.toItemOrders(),
+//        maxEventsSize = latestEventOrder
+//    )
+//}
 
 
- private fun List<List<PeriodResponse>>.toItemsForWeek(latestPeriodOrder:Int): List<List<PeriodSlot>> = buildList {
-//    val latestPeriodOrder = max(maxOf { it.size }, 6)
-    this@toItemsForWeek.forEach { periods ->
-        add(periods.toPeriodItems().let {
-            it + List(latestPeriodOrder - size) { Window() }
-        })
-    }
-}
+// private fun List<List<PeriodResponse>>.toItemsForWeek(latestPeriodOrder:Int): List<List<PeriodSlot>> = buildList {
+////    val latestPeriodOrder = max(maxOf { it.size }, 6)
+//    this@toItemsForWeek.forEach { periods ->
+//        add(periods.toPeriodItems().let {
+//            it + List(latestPeriodOrder - size) { Window() }
+//        })
+//    }
+//}
 
 fun WeekTimetableViewState.update(bellSchedule: BellSchedule): WeekTimetableViewState {
-    return copy(orders = bellSchedule.toItemOrders(maxEventsSize))
+    return copy(orders = bellSchedule.toItemOrders())
 }
 
 fun WeekTimetableViewState.update(

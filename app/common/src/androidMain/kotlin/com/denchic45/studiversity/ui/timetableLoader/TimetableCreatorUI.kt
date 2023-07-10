@@ -41,6 +41,7 @@ import com.denchic45.studiversity.util.getFile
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import com.denchic45.stuiversity.util.toToLocalDateTime
+import com.denchic45.stuiversity.util.withDayOfWeek
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
@@ -95,7 +96,7 @@ fun TimetableCreatorDialog(component: TimetableCreatorComponent, onDismissReques
     )
 
     var selectedDate by remember {
-        mutableStateOf(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
+        mutableStateOf(LocalDate.now().withDayOfWeek(DayOfWeek.MONDAY))
     }
 
     val showWeekPicker by component.showWeekPicker.collectAsState()

@@ -28,7 +28,7 @@ import java.util.*
 
 
 @Inject
-class TimetableComponent(
+class TimetableFinderComponent(
     metaRepository: MetaRepository,
     private val findTimetableOfWeekUseCase: FindTimetableOfWeekUseCase,
     @Assisted val selectedWeekOfYear: StateFlow<String>,

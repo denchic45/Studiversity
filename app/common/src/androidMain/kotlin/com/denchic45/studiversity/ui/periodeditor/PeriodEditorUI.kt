@@ -306,29 +306,29 @@ fun TransparentTextField(
     )
 }
 
-@Preview
-@Composable
-fun PeriodEditorPreview() {
-    AppTheme {
-        PeriodEditorContent(
-            state = EditingPeriod(LocalDate.now(), UUID.randomUUID(), "ПКС").apply {
-                order = 1
-                (details as EditingPeriodDetails.Lesson).course = CourseResponse(
-                    id = UUID.randomUUID(),
-                    name = "Математика ПКС",
-                    subject = SubjectResponse(
-                        id = UUID.randomUUID(),
-                        name = "Математика",
-                        shortname = "Матем",
-                        iconUrl = ""
-                    ),
-                    archived = false
-                )
-            },
-            foundRooms = resourceOf(),
-            onRoomType = {},
-            onRoomSelect = {},
-            onRoomRemove = {}
-        )
-    }
-}
+//@Preview
+//@Composable
+//fun PeriodEditorPreview() {
+//    AppTheme {
+//        PeriodEditorContent(
+//            state = EditingPeriod(LocalDate.now(), UUID.randomUUID(), "ПКС").apply {
+//                order = 1
+//                (details as EditingPeriodDetails.Lesson).course = CourseResponse(
+//                    id = UUID.randomUUID(),
+//                    name = "Математика ПКС",
+//                    subject = SubjectResponse(
+//                        id = UUID.randomUUID(),
+//                        name = "Математика",
+//                        shortname = "Матем",
+//                        iconUrl = ""
+//                    ),
+//                    archived = false
+//                )
+//            },
+//            foundRooms = resourceOf(),
+//            onRoomType = {},
+//            onRoomSelect = {},
+//            onRoomRemove = {}
+//        )
+//    }
+//}

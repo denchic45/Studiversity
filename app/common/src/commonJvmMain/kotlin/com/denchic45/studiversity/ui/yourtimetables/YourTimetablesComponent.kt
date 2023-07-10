@@ -2,10 +2,6 @@ package com.denchic45.studiversity.ui.yourtimetables
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.pref.AppPreferences
 import com.denchic45.studiversity.domain.map
 import com.denchic45.studiversity.domain.onSuccess
@@ -14,13 +10,11 @@ import com.denchic45.studiversity.domain.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.studiversity.domain.usecase.TimetableOwner
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
-import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
-import com.denchic45.studiversity.ui.timetable.TimetableComponent
+import com.denchic45.studiversity.ui.timetable.TimetableFinderComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerDelegate
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -33,9 +27,9 @@ import java.util.UUID
 class YourTimetablesComponent(
     private val appPreferences: AppPreferences,
     findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
-    _timetableComponent: (StateFlow<String>, Flow<TimetableOwner>, ComponentContext) -> TimetableComponent,
+    _timetableFinderComponent: (StateFlow<String>, Flow<TimetableOwner>, ComponentContext) -> TimetableFinderComponent,
     @Assisted
- private val  onStudyGroupOpen:(UUID)->Unit,
+    private val onStudyGroupOpen: (UUID) -> Unit,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
@@ -94,7 +88,7 @@ class YourTimetablesComponent(
 //        .shareIn(componentScope, SharingStarted.Lazily)
 
 
-    private val timetableComponent = _timetableComponent(
+    private val timetableComponent = _timetableFinderComponent(
         selectedWeekOfYear,
         selectedOwner,
         componentContext.childContext("DayTimetable")

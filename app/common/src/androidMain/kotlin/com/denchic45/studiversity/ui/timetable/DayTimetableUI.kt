@@ -39,7 +39,10 @@ import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +57,7 @@ import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
+import com.denchic45.stuiversity.util.withDayOfWeek
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.daysOfWeek
@@ -66,19 +70,22 @@ import java.util.UUID
 
 @Composable
 fun DayTimetableContent(
-    selectedDate: LocalDate,
+    monday: LocalDate,
     timetableResource: Resource<TimetableState>,
-    onDateSelect: (date: LocalDate) -> Unit,
+    isEdit: Boolean,
+    onWeekSelect: (monday: LocalDate) -> Unit,
     onAddPeriodClick: ((DayOfWeek) -> Unit)? = null,
     onEditPeriodClick: ((DayOfWeek, Int) -> Unit)? = null,
     onRemovePeriodSwipe: ((DayOfWeek, Int) -> Unit)? = null,
     onStudyGroupClick: ((studyGroupId: UUID) -> Unit)? = null,
-    startDate: LocalDate = selectedDate.minusWeeks(1),
-    endDate: LocalDate = selectedDate.plusMonths(1),
+    startDate: LocalDate = monday.minusWeeks(1),
+    endDate: LocalDate = monday.plusMonths(1),
     scrollableWeeks: Boolean = true,
     refreshing: Boolean = false,
     onRefresh: (() -> Unit)? = null
 ) {
+
+    var selectedDate by remember { mutableStateOf(monday) }
     Surface {
         Column(
             Modifier
@@ -122,9 +129,12 @@ fun DayTimetableContent(
                                         Modifier.background(MaterialTheme.colorScheme.tertiaryContainer)
                                     else Modifier
                                 )
-                                .clickable(
-                                    onClick = { onDateSelect(day.date) }
-                                ),
+                                .clickable(onClick = {
+                                    selectedDate = day.date
+                                    if (selectedDate.dayOfWeek != day.date.dayOfWeek) {
+                                        onWeekSelect(day.date.withDayOfWeek(DayOfWeek.MONDAY))
+                                    }
+                                }),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -138,10 +148,11 @@ fun DayTimetableContent(
 
             val timetableContent: @Composable () -> Unit = {
                 ResourceContent(resource = timetableResource) { timetableState ->
-                    val selectedDayOfWeek = selectedDate.dayOfWeek
-                    if (timetableState.contains(selectedDate)) {
+                    val selectedDayOfWeek = monday.dayOfWeek
+                    if (timetableState.contains(monday)) {
                         Periods(
                             timetableState = timetableState,
+                            isEdit = isEdit,
                             selectedDayOfWeek = selectedDayOfWeek,
                             onAddPeriodClick = onAddPeriodClick,
                             onEditPeriodClick = onEditPeriodClick,
@@ -175,6 +186,7 @@ fun DayTimetableContent(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun Periods(
     timetableState: TimetableState,
+    isEdit: Boolean,
     selectedDayOfWeek: DayOfWeek,
     onAddPeriodClick: ((DayOfWeek) -> Unit)?,
     onEditPeriodClick: ((DayOfWeek, Int) -> Unit)?,
@@ -198,7 +210,7 @@ private fun Periods(
             )
         } else {
             val items = timetableState.getByDay(dayOfWeek)
-            if (items.isEmpty() && !timetableState.isEdit) {
+            if (items.isEmpty() && !isEdit) {
                 IconTitleBox(
                     icon = {
                         Image(
@@ -223,7 +235,7 @@ private fun Periods(
                                 item = item,
                                 time = timetableState.getOrderTime(index),
                                 showStudyGroup = timetableState.showStudyGroups,
-                                isEdit = timetableState.isEdit,
+                                isEdit = isEdit,
                                 onEditClick = {
                                     onEditPeriodClick?.invoke(
                                         selectedDayOfWeek,
@@ -233,7 +245,7 @@ private fun Periods(
                                 onStudyGroupClick = onStudyGroupClClick
                             )
                         }
-                        if (timetableState.isEdit) {
+                        if (isEdit) {
                             val currentIndex by rememberUpdatedState(index)
                             val dismissState = rememberDismissState(confirmValueChange = {
                                 when (it) {
@@ -256,7 +268,7 @@ private fun Periods(
                             periodListItem()
                         }
                     }
-                    if (timetableState.isEdit) {
+                    if (isEdit) {
                         item {
                             ListItem(
                                 modifier = Modifier.clickable {

@@ -11,14 +11,14 @@ import com.denchic45.studiversity.ui.navigation.StackChildrenContainer
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.timetableLoader.TimetableLoaderComponent
-import com.denchic45.studiversity.ui.timetablefinder.TimetableFinderComponent
+import com.denchic45.studiversity.ui.timetableSearch.TimetableSearchComponent
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
 class AdminDashboardComponent(
-    timetableFinderComponent: (ComponentContext) -> TimetableFinderComponent,
+    timetableSearchComponent: (ComponentContext) -> TimetableSearchComponent,
     timetableLoaderComponent: (onClose: () -> Unit, ComponentContext) -> TimetableLoaderComponent,
     coursesAdminComponent: (
         rootNavigation: StackNavigation<RootConfig>,
@@ -61,7 +61,7 @@ class AdminDashboardComponent(
             when (config) {
                 Config.None -> Child.None
 
-                Config.TimetableFinder -> Child.TimetableFinder(timetableFinderComponent(context))
+                Config.TimetableFinder -> Child.TimetableFinder(timetableSearchComponent(context))
                 Config.TimetableLoader -> Child.TimetableLoader(
                     timetableLoaderComponent(navigation::pop, context)
                 )
@@ -152,7 +152,7 @@ class AdminDashboardComponent(
 
     sealed interface Child {
         object None : Child
-        class TimetableFinder(val component: TimetableFinderComponent) : Child
+        class TimetableFinder(val component: TimetableSearchComponent) : Child
         class TimetableLoader(val component: TimetableLoaderComponent) : Child
         class Courses(val component: CoursesAdminComponent) : Child
         class Users(val component: UsersAdminComponent) : Child

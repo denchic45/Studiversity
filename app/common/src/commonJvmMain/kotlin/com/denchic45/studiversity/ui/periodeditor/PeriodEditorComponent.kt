@@ -16,7 +16,6 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.model.CourseItem
 import com.denchic45.studiversity.domain.model.StudyGroupItem
-import com.denchic45.studiversity.domain.model.toItem
 import com.denchic45.studiversity.domain.stateInResource
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
@@ -31,7 +30,6 @@ import com.denchic45.studiversity.uivalidator.validator.observable
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.room.model.RoomResponse
-import com.denchic45.stuiversity.api.timetable.model.StudyGroupNameResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
@@ -40,7 +38,6 @@ import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.time.LocalDate
-import java.util.UUID
 import kotlin.random.Random
 
 @Inject
@@ -219,7 +216,7 @@ class PeriodEditorComponent(
 
     fun onSaveClick() {
         if (!validator.validate()) return
-        val studyGroup = state.studyGroup.toItem()
+        val studyGroup = state.studyGroup
 
         onFinish(
             PeriodItem(
@@ -280,17 +277,11 @@ class PeriodEditorComponent(
 @Stable
 class EditingPeriod(
     private val _date: LocalDate,
-    private val groupId: UUID,
-    private val groupName: String
+    private val _studyGroup: StudyGroupItem,
 ) : Parcelable {
     var date: LocalDate by mutableStateOf(_date)
     var order: Int by mutableStateOf(1)
-    var studyGroup: StudyGroupNameResponse by mutableStateOf(
-        StudyGroupNameResponse(
-            groupId,
-            groupName
-        )
-    )
+    var studyGroup: StudyGroupItem by mutableStateOf(_studyGroup)
     var room: RoomResponse? by mutableStateOf(null)
     var members: List<UserItem> by mutableStateOf(emptyList())
     var details: EditingPeriodDetails by mutableStateOf(EditingPeriodDetails.Lesson())
@@ -303,8 +294,7 @@ class EditingPeriod(
         ): EditingPeriod {
             return EditingPeriod(
                 _date = date,
-                groupId = studyGroupItem.id,
-                groupName = studyGroupItem.name
+                _studyGroup = studyGroupItem,
             ).apply {
                 this.order = order
             }

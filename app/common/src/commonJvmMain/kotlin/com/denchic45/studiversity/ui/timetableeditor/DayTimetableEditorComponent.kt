@@ -33,51 +33,13 @@ class DayTimetableEditorComponent(
 
     val editingTimetableState = MutableStateFlow(source)
 
-//    init {
-//        componentScope.launch {
-//            source.let { response ->
-//                editingWeekTimetable.value = response.days
-//            }
-//        }
-//    }
-
-
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    val viewState = bellSchedule.flatMapLatest { schedule ->
-//        mondayDate.flatMapResourceFlow { monday ->
-//            isEdit.flatMapLatest { edit ->
-//                selectedDay.flatMapLatest { selected ->
-//                    if (edit) {
-//                        editingWeekTimetable[selected].map {
-//                            resourceOf(
-//                                it.toTimetableViewState(
-//                                    date = monday.plusDays(selected.toLong()),
-//                                    bellSchedule = schedule,
-//                                    isEdit = true
-//                                )
-//                            )
-//                        }
-//                    } else {
-//                        sourceFlow.mapResource {
-//                            it.days[selected].toTimetableViewState(
-//                                date = monday.plusDays(selected.toLong()),
-//                                bellSchedule = schedule,
-//                                isEdit = false
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }.shareIn(componentScope, SharingStarted.Lazily, 1)
-
-    fun onAddPeriod(dayOfWeek: DayOfWeek, period: PeriodResponse) {
+    fun onAddPeriod(dayOfWeek: DayOfWeek, period: PeriodItem) {
         editingTimetableState.update { timetable ->
             timetable.addPeriod(dayOfWeek, period)
         }
     }
 
-    fun onUpdatePeriod(dayOfWeek: DayOfWeek, position: Int, period: PeriodResponse) {
+    fun onUpdatePeriod(dayOfWeek: DayOfWeek, position: Int, period: PeriodItem) {
         editingTimetableState.update { timetable ->
             timetable.updatePeriod(dayOfWeek, period, position)
         }
@@ -138,25 +100,22 @@ class DayTimetableEditorComponent(
                 .mapNotNull { (index, item) -> (item as? PeriodItem)?.let { index to it } }
                 .map { (index, item) ->
                     when (item.details) {
-                        is PeriodDetails.Lesson -> {
-                            LessonRequest(
-                                order = index + 1,
-                                roomId = item.room?.id,
-                                memberIds = item.members.map { it.id },
-                                courseId = item.details.course.id
-                            )
-                        }
+                        is PeriodDetails.Lesson -> LessonRequest(
+                            order = index + 1,
+                            roomId = item.room?.id,
+                            memberIds = item.members.map { it.id },
+                            courseId = item.details.course.id
+                        )
 
-                        is PeriodDetails.Event -> {
-                            EventRequest(
-                                order = index + 1,
-                                roomId = item.room?.id,
-                                memberIds = item.members.map { it.id },
-                                name = item.details.name,
-                                color = item.details.color,
-                                iconUrl = item.details.iconUrl
-                            )
-                        }
+
+                        is PeriodDetails.Event -> EventRequest(
+                            order = index + 1,
+                            roomId = item.room?.id,
+                            memberIds = item.members.map { it.id },
+                            name = item.details.name,
+                            color = item.details.color,
+                            iconUrl = item.details.iconUrl
+                        )
                     }
                 }
         }

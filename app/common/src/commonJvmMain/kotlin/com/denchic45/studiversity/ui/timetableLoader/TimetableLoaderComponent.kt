@@ -29,7 +29,7 @@ class TimetableLoaderComponent(
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     fun onDismissRequest() {
-       onClose()
+        onClose()
     }
 
     private val navigation = StackNavigation<TimetableLoaderConfig>()
@@ -42,12 +42,12 @@ class TimetableLoaderComponent(
                 is TimetableLoaderConfig.Creator -> TimetableLoaderChild.Creator(
                     timetablesCreatorComponent(
                         { result ->
-                                navigation.replaceCurrent(
-                                    TimetableLoaderConfig.Publisher(
-                                        result.weekOfYear,
-                                        result.timetables
-                                    )
+                            navigation.replaceCurrent(
+                                TimetableLoaderConfig.Publisher(
+                                    result.weekOfYear,
+                                    result.timetables
                                 )
+                            )
                         },
                         componentContext
                     )

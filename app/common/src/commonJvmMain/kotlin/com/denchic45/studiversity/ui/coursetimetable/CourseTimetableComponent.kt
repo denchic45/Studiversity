@@ -4,7 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.denchic45.studiversity.data.repository.MetaRepository
 import com.denchic45.studiversity.domain.usecase.TimetableOwner
-import com.denchic45.studiversity.ui.timetable.TimetableComponent
+import com.denchic45.studiversity.ui.timetable.TimetableFinderComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerDelegate
 import kotlinx.coroutines.flow.Flow
@@ -17,18 +17,18 @@ import java.util.UUID
 @Inject
 class CourseTimetableComponent(
     metaRepository: MetaRepository,
-    _timetableComponent: (
+    _timetableFinderComponent: (
         StateFlow<String>,
         Flow<TimetableOwner>,
         ComponentContext,
-    ) -> TimetableComponent,
+    ) -> TimetableFinderComponent,
     @Assisted
     private val courseId: UUID,
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext,
     TimetableOwnerComponent by TimetableOwnerDelegate(componentContext) {
-    private val timetableComponent = _timetableComponent(
+    private val timetableComponent = _timetableFinderComponent(
         selectedWeekOfYear,
         flowOf(TimetableOwner.Course(courseId)),
         componentContext.childContext("timetable")
