@@ -105,6 +105,10 @@ class YourWorksComponent(
         appNavigation.bringToFront(MainComponent.Config.CourseWork(courseId, workId))
     }
 
+    fun onTabSelect(position: Int) {
+        selectedTab.value = position
+    }
+
     sealed class TabChild(val title: String) {
         class Upcoming(val component: YourUpcomingWorksComponent) : TabChild("Предстоящие")
         class Overdue(val component: YourOverdueWorksComponent) : TabChild("Просроченные")

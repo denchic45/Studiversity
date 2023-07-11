@@ -9,7 +9,7 @@ import com.denchic45.studiversity.ui.timetable.TimetableContent
 @Composable
 fun StudyGroupTimetableScreen(component: StudyGroupTimetableComponent) {
     val timetable by component.timetableState.collectAsState()
-    val selectedDate by component.selectedDate.collectAsState()
+    val selectedDate by component.mondayDate.collectAsState()
 
     TimetableContent(
         selectedDate = selectedDate,

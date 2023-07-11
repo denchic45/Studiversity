@@ -20,7 +20,6 @@ data class TimetableState(
     val firstWeekDate: LocalDate,
     val dayTimetables: List<List<PeriodSlot>>,
     private val bellSchedule: BellSchedule,
-//    val isEdit: Boolean = false,
     val showStudyGroups: Boolean = false
 ) {
 
@@ -91,7 +90,6 @@ fun TimetableResponse.toTimetableState(
         ),
         dayTimetables = days.toItems(),
         bellSchedule = bellSchedule,
-//        isEdit = isEdit,
         showStudyGroups = showStudyGroups
     )
 }

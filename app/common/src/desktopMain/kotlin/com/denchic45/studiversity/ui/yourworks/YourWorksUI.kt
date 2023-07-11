@@ -2,14 +2,14 @@ package com.denchic45.studiversity.ui.yourworks
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,16 +19,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Task
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +47,7 @@ import com.denchic45.studiversity.ui.CustomAppBar
 import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.Scaffold
+import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
@@ -65,15 +70,15 @@ fun YourWorksScreen(component: YourWorksComponent) {
         CardContent {
             Box {
                 Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    val pagerState = rememberPagerState()
+                    val pagerState = rememberPagerState(initialPage = component.selectedTab.value)
                     TabRow(
                         selectedTabIndex = pagerState.currentPage,
                         modifier = Modifier.widthIn(max = 864.dp),
-//                    indicator = { tabPositions ->
-//                        TabIndicator(
-//                            Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage])
-//                        )
-//                    },
+                        indicator = { tabPositions ->
+                            TabIndicator(
+                                Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                            )
+                        },
                         divider = {}
                     ) {
                         // Add tabs for all of our pages
@@ -83,6 +88,7 @@ fun YourWorksScreen(component: YourWorksComponent) {
                                 selected = pagerState.currentPage == index,
                                 onClick = {
                                     coroutineScope.launch {
+                                        component.onTabSelect(index)
                                         pagerState.animateScrollToPage(index)
                                     }
                                 },
@@ -92,15 +98,18 @@ fun YourWorksScreen(component: YourWorksComponent) {
                     Divider()
 
                     HorizontalPager(state = pagerState, pageCount = children.size) {
-                        Box(modifier = Modifier.fillMaxSize()) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.TopCenter
+                        ) {
                             when (val child = children[it]) {
-                                is YourWorksComponent.TabChild.Upcoming -> YourUpcomingWorksScreen(
-                                    child.component
-                                )
+                                is YourWorksComponent.TabChild.Upcoming -> {
+                                    YourUpcomingWorksScreen(child.component)
+                                }
 
-                                is YourWorksComponent.TabChild.Overdue -> YourOverdueWorksScreen(
-                                    child.component
-                                )
+                                is YourWorksComponent.TabChild.Overdue -> {
+                                    YourOverdueWorksScreen(child.component)
+                                }
 
                                 is YourWorksComponent.TabChild.Submitted -> {
                                     YourSubmittedWorksScreen(child.component)
@@ -131,7 +140,7 @@ fun WorksListContent(works: Resource<List<CourseWorkResponse>>, onClick: (UUID, 
     ResourceContent(resource = works) {
         if (it.isNotEmpty())
             LazyColumn(
-               modifier = Modifier.widthIn(max = 960.dp),
+                modifier = Modifier.widthIn(max = 960.dp),
                 contentPadding = PaddingValues(
                     horizontal = MaterialTheme.spacing.normal,
                     vertical = MaterialTheme.spacing.medium
@@ -152,15 +161,7 @@ fun WorksListContent(works: Resource<List<CourseWorkResponse>>, onClick: (UUID, 
 
 @Composable
 fun CourseWorkListItem(response: CourseWorkResponse, onClick: () -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .height(height = 64.dp)
-            .clickable(
-                onClick = { onClick() })
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    TonalListItem(onClick = onClick) {
         Box(
             modifier = Modifier
                 .size(36.dp)
@@ -186,5 +187,30 @@ fun CourseWorkListItem(response: CourseWorkResponse, onClick: () -> Unit) {
                 Text(text = it.toString("dd MMM"), style = MaterialTheme.typography.bodySmall)
             }
         }
+        Spacer(Modifier.weight(1f))
+    }
+}
+
+@Composable
+fun TonalListItem(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    selected: Boolean = false,
+    interactionSource: MutableInteractionSource = remember(::MutableInteractionSource),
+    content: @Composable RowScope.() -> Unit
+) {
+    val shape = MaterialTheme.shapes.large
+    Row(
+        modifier = modifier.run {
+            if (selected) background(MaterialTheme.colorScheme.secondaryContainer, shape)
+            else this
+        }.clip(shape).height(64.dp).selectable(
+            onClick = onClick,
+            selected = selected,
+            interactionSource = interactionSource,
+            indication = rememberRipple(color = MaterialTheme.colorScheme.secondary)
+        ).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
+    ) {
+        content()
     }
 }

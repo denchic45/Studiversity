@@ -35,7 +35,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
 
     Column {
         val timetable by component.timetableState.collectAsState()
-        val mondayDate by component.selectedDate.collectAsState()
+        val mondayDate by component.mondayDate.collectAsState()
 
         Scaffold(
             topBar = {

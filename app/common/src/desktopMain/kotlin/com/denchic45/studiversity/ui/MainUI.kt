@@ -5,9 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -89,7 +89,7 @@ fun MainScreen(component: MainComponent) {
                                 contentDescription = "works"
                             )
                         },
-                        selected = activeChild is MainComponent.Child.AdminDashboard,
+                        selected = activeChild is MainComponent.Child.YourWorks,
                         onClick = {
                             component.onWorksClick()
                         }
@@ -106,15 +106,13 @@ fun MainScreen(component: MainComponent) {
                         )
                     },
                     selected = activeChild is MainComponent.Child.AdminDashboard,
-                    onClick = {
-                        component.onAdminDashboardClick()
-                    }
+                    onClick = component::onAdminDashboardClick
                 )
                 if (availableScreens.adminDashboard) {
                     NavigationRailItem(
                         icon = {
                             Icon(
-                                imageVector = Icons.Outlined.Widgets,
+                                imageVector = Icons.Outlined.Dashboard,
                                 contentDescription = "admin dashboard"
                             )
                         },
