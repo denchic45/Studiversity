@@ -106,16 +106,17 @@ class UserMembershipRepository(
         .innerJoin(Users, { UsersMemberships.memberId }, { Users.id })
         .select(Memberships.scopeId eq scopeId and (Users.id eq userId))
         .let { rows ->
+            val firstRow = rows.first()
             ScopeMember(
                 user = UserResponse(
-                    id = rows.first()[Users.id].value,
-                    firstName = rows.first()[Users.firstName],
-                    surname = rows.first()[Users.surname],
-                    patronymic = rows.first()[Users.patronymic],
-                    account = Account(rows.first()[Users.email]),
-                    avatarUrl = rows.first()[Users.avatarUrl],
-                    generatedAvatar = rows.first()[Users.generatedAvatar],
-                    gender = rows.first()[Users.gender]
+                    id = firstRow[Users.id].value,
+                    firstName = firstRow[Users.firstName],
+                    surname = firstRow[Users.surname],
+                    patronymic = firstRow[Users.patronymic],
+                    account = Account(firstRow[Users.email]),
+                    avatarUrl = firstRow[Users.avatarUrl],
+                    generatedAvatar = firstRow[Users.generatedAvatar],
+                    gender = firstRow[Users.gender]
                 ),
                 scopeId = scopeId,
                 membershipIds = rows.map { it[UsersMemberships.membershipId].value },

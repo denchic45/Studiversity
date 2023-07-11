@@ -40,16 +40,18 @@ class CourseRepository(private val bucket: BucketApi) {
     ): List<CourseResponse> {
         val query = Courses.selectAll()
 
-        if (memberId != null || studyGroupId != null) {
+        if (
+//            memberId != null ||
+            studyGroupId != null) {
             query.adjustColumnSet {
                 innerJoin(Memberships, { Courses.id }, { scopeId })
             }
         }
-
         memberId?.let {
+            val scopeIds = ScopeDao.findIdsByMemberId(it)
             query
-                .adjustColumnSet { innerJoin(UsersMemberships, { Memberships.id }, { membershipId }) }
-                .andWhere { UsersMemberships.memberId eq memberId }
+//                .adjustColumnSet { innerJoin(UsersMemberships, { Memberships.id }, { membershipId }) }
+                .andWhere { Courses.id inList scopeIds }
         }
         studyGroupId?.let {
             query.adjustColumnSet {
