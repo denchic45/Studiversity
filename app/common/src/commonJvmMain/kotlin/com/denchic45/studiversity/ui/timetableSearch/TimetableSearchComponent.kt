@@ -10,6 +10,7 @@ import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.Resource
@@ -101,7 +102,6 @@ class TimetableSearchComponent(
     private val timetableEditorNavigation = OverlayNavigation<TimetableEditorConfig>()
     private val timetableEditorOverlay = childOverlay(
         source = timetableEditorNavigation,
-        handleBackButton = true,
         childFactory = { _, componentContext ->
             TimetableEditorChild(
                 _timetableEditorComponent(
@@ -147,7 +147,25 @@ class TimetableSearchComponent(
         }
     )
 
+    private val dayTimetableEditorComponent
+        get() = timetableEditorOverlay.value.overlay?.instance?.component
+
+    val isEdit = editorComponentFlow().map { it.overlay != null }
+        .stateIn(componentScope, SharingStarted.Lazily, false)
+
+    private val backCallback = BackCallback(onBack = ::onCancelChanges)
+
+    fun onEditClick() {
+        timetableEditorNavigation.activate(TimetableEditorConfig)
+    }
+
     init {
+        backHandler.register(backCallback)
+        componentScope.launch {
+            isEdit.collect {
+                backCallback.isEnabled = it
+            }
+        }
         componentScope.launch {
             foundStudyGroups.collect {
                 state.foundGroups = it
@@ -155,18 +173,8 @@ class TimetableSearchComponent(
         }
     }
 
-    fun onEditClick() {
-        timetableEditorNavigation.activate(TimetableEditorConfig)
-    }
-
-    private val dayTimetableEditorComponent
-        get() = timetableEditorOverlay.value.overlay?.instance?.component
-
-    val isEdit = editorComponentFlow().map { it.overlay != null }
-        .stateIn(componentScope, SharingStarted.Lazily, false)
-
     fun onSaveChangesClick() {
-        dayTimetableEditorComponent?.getRequestModel()?.let {
+        dayTimetableEditorComponent!!.getRequestModel().let {
             componentScope().launch {
                 putTimetableUseCase(
                     weekOfYear = timetableFinderComponent.selectedWeekOfYear.first(),
@@ -174,6 +182,11 @@ class TimetableSearchComponent(
                 )
             }
         }
+        timetableEditorNavigation.dismiss()
+    }
+
+    private fun onCancelChanges() {
+        dayTimetableEditorComponent!!.onReset()
         timetableEditorNavigation.dismiss()
     }
 
@@ -200,16 +213,13 @@ class TimetableSearchComponent(
             })
     }
 
-    private fun getNewLatestOrder(dayOfWeek: DayOfWeek) = dayTimetableEditorComponent!!
-        .editingTimetableState.value.getByDay(dayOfWeek).size + 1
+    private fun getNewLatestOrder(dayOfWeek: DayOfWeek): Int {
+        return dayTimetableEditorComponent!!
+            .editingTimetableState.value.getByDay(dayOfWeek).size + 1
+    }
 
 
     fun onEditPeriodClick(dayOfWeek: DayOfWeek, periodPosition: Int) {
-//        val slot = timetableStateResourceFlow.value.success().value.getByDay(dayOfWeek)
-
-//        val group = state.selectedStudyGroup!!.toStudyGroupName()
-//        val dayOfWeek = selectedDate.value.dayOfWeek
-
         overlayNavigation.activate(
             OverlayConfig.PeriodEditor(
                 dayTimetableEditorComponent!!.editingTimetableState.value
@@ -239,11 +249,7 @@ class TimetableSearchComponent(
                                 selectedStudyGroupItem,
                                 getNewLatestOrder(dayOfWeek)
                             )
-
-
                         }
-
-
                     }
                 }
             ) {
@@ -263,10 +269,6 @@ class TimetableSearchComponent(
         dayTimetableEditorComponent!!.onRemovePeriod(dayOfWeek, periodPosition)
     }
 
-//    fun onDateSelect(date: LocalDate) {
-//        selectedDate.value = date
-//    }
-
     @Parcelize
     object TimetableEditorConfig : Parcelable
 
@@ -283,7 +285,6 @@ class TimetableSearchComponent(
     sealed class OverlayChild {
         class PeriodEditor(val component: PeriodEditorComponent) : OverlayChild()
     }
-
 }
 
 class TimetableFinderState {

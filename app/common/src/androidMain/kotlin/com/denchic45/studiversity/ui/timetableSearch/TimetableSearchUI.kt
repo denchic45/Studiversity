@@ -202,9 +202,7 @@ fun TimetableSearchContent(
                     modifier = Modifier.size(78.dp)
                 )
             }, title = {
-                Text(
-                    text = "Выберите группу"
-                )
+                Text("Выберите группу")
             })
         }
     }

@@ -3,6 +3,7 @@ package com.denchic45.studiversity.ui.timetable
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -177,7 +178,7 @@ fun DayTimetableContent(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 private fun Periods(
     timetableState: TimetableState,
     isEdit: Boolean,
@@ -256,7 +257,8 @@ private fun Periods(
                                 state = dismissState,
                                 background = { SwipePeriodBackground(dismissState) },
                                 dismissContent = { periodListItem() },
-                                directions = setOf(DismissDirection.EndToStart)
+                                directions = setOf(DismissDirection.EndToStart),
+                                modifier = Modifier.animateItemPlacement()
                             )
                         } else {
                             periodListItem()
@@ -314,21 +316,3 @@ fun SwipePeriodBackground(dismissState: DismissState) {
         )
     }
 }
-
-
-//@Preview
-//@Composable
-//fun TimetableEditorContentPreview() {
-//    DayTimetableContent(
-//        selectedDate = LocalDate.now(),
-//        timetableResource = Resource.Success(
-//            DayTimetableViewState(
-//                LocalDate.now(),
-//                listOf(),
-//                listOf(),
-//                6,
-//                true
-//            )
-//        ),
-//        onDateSelect = {})
-//}

@@ -1,18 +1,13 @@
 package com.denchic45.studiversity.ui.timetableeditor
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.essenty.backhandler.BackCallback
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
-import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.timetable.model.EventRequest
-import com.denchic45.stuiversity.api.timetable.model.EventResponse
 import com.denchic45.stuiversity.api.timetable.model.LessonRequest
-import com.denchic45.stuiversity.api.timetable.model.LessonResponse
 import com.denchic45.stuiversity.api.timetable.model.PeriodRequest
-import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -30,17 +25,8 @@ class TimetableEditorComponent(
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
-    private val componentScope = componentScope()
 
     val editingTimetableState = MutableStateFlow(source)
-
-    private fun onBackClick() {
-        editingTimetableState.value = source
-    }
-
-    init {
-        backHandler.register(BackCallback(onBack = ::onBackClick))
-    }
 
     fun onAddPeriod(dayOfWeek: DayOfWeek, period: PeriodItem) {
         editingTimetableState.update { timetable ->
@@ -60,46 +46,7 @@ class TimetableEditorComponent(
         }
     }
 
-    private fun PeriodResponse.updateOrder(order: Int) = when (this) {
-        is EventResponse -> copy(order = order)
-        is LessonResponse -> copy(order = order)
-    }
-
     fun onDestroy() {}
-
-
-//    val request: PutTimetableRequest
-//        get() = editingTimetableState.value.timetable.map {
-//            it.map { response ->
-//                when (response) {
-//                    is EventResponse -> EventRequest(
-//                        order = response.order,
-//                        roomId = response.room?.id,
-//                        memberIds = response.members.map(PeriodMember::id),
-//                        name = response.details.name,
-//                        color = response.details.color,
-//                        iconUrl = response.details.iconUrl
-//                    )
-//
-//                    is LessonResponse -> LessonRequest(
-//                        order = response.order,
-//                        roomId = response.room?.id,
-//                        memberIds = response.members.map(PeriodMember::id),
-//                        courseId = response.details.course.id
-//                    )
-//                }
-//            }
-//        }.let {
-//            PutTimetableRequest(
-//                studyGroupId = studyGroupId,
-//                monday = it[0],
-//                tuesday = it[1],
-//                wednesday = it[2],
-//                thursday = it[3],
-//                friday = it[4],
-//                saturday = it[5]
-//            )
-//        }
 
     fun getRequestModel() = editingTimetableState.value.toPutTimetableRequest()
 
@@ -138,5 +85,9 @@ class TimetableEditorComponent(
             friday = toRequests(dayTimetables[4]),
             saturday = toRequests(dayTimetables[5])
         )
+    }
+
+    fun onReset() {
+        editingTimetableState.value = source
     }
 }
