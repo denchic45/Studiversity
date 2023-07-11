@@ -23,8 +23,12 @@ object Users : UUIDTable("user", "user_id") {
 
 class UserDao(id: EntityID<UUID>) : UUIDEntity(id) {
     companion object : UUIDEntityClass<UserDao>(Users) {
-        fun isExistEmail(email: String): Boolean {
+        fun isExistByEmail(email: String): Boolean {
             return table.exists { Users.email eq email }
+        }
+
+        fun isExistById(userId: UUID): Boolean {
+            return table.exists { Users.id eq userId }
         }
     }
 

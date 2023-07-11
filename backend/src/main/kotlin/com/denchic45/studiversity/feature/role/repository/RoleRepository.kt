@@ -149,11 +149,14 @@ class RoleRepository {
             UsersRolesScopes.userId eq userId
                     and (UsersRolesScopes.scopeId eq scopeId)
         )
+        return when {
+            !result.empty() -> result.toUserRolesResponse(userId)
 
-        return if (scopeId == config.organization.id && result.empty()) {
-            UserRolesResponse(userId, listOf(Role.User))
-        } else {
-            result.toUserRolesResponse(userId)
+            UserDao.isExistById(userId) && scopeId == config.organization.id -> {
+                UserRolesResponse(userId, listOf(Role.User))
+            }
+
+            else -> throw NotFoundException("USER_NOT_FOUND")
         }
     }
 
@@ -185,7 +188,7 @@ class RoleRepository {
 
     fun setByUserAndScope(userId: UUID, roleIds: List<Long>, scopeId: UUID) {
         removeUserRolesFromScope(userId, scopeId)
-        roleIds.forEach { roleId->
+        roleIds.forEach { roleId ->
             setByUserAndScope(userId, roleId, scopeId)
         }
     }
