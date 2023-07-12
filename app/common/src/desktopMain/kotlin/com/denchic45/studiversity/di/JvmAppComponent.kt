@@ -1,11 +1,9 @@
 package com.denchic45.studiversity.di
 
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.denchic45.studiversity.data.db.local.DriverFactory
 import com.denchic45.studiversity.data.pref.AppPreferences
 import com.denchic45.studiversity.data.service.AppVersionService
 import com.denchic45.studiversity.data.service.FakeAppVersionService
-import com.denchic45.studiversity.ui.navigation.OverlayConfig
 import com.denchic45.studiversity.util.SystemDirs
 import io.ktor.client.engine.cio.CIO
 import kotlinx.coroutines.CoroutineScope
@@ -27,13 +25,6 @@ abstract class JvmAppComponent(
     @Component val networkComponent: NetworkComponent
 ) : CommonApplicationComponent() {
 
-//    lateinit var componentContext: ComponentContext
-
-//    @Provides
-//    fun provideComponentContext(): ComponentContext {
-//        return componentContext
-//    }
-
     @AppScope
     @Provides
     fun provideSystemDirs() = SystemDirs()
@@ -43,12 +34,6 @@ abstract class JvmAppComponent(
     fun provideApplicationScope() = CoroutineScope(SupervisorJob())
 
     abstract val appPreferences: AppPreferences
-
-    @AppScope
-    @Provides
-    fun provideOverlayNavigator(): OverlayNavigation<OverlayConfig> {
-        return OverlayNavigation()
-    }
 
     @AppScope
     @Provides
