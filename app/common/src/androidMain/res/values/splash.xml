@@ -11,7 +11,7 @@
         <item name="windowSplashScreenBackground">#FFFFFF</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/launch_screen</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="appBarLayoutStyle">@style/MyAppBar</item>
+<!--        <item name="appBarLayoutStyle">@style/MyAppBar</item>-->
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>

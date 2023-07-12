@@ -2,7 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose") version "1.4.0"
     id("com.android.library")
-    id("kotlin-kapt")
+//    id("kotlin-kapt")
     kotlin("plugin.serialization") version "1.8.20"
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
@@ -70,8 +70,6 @@ kotlin {
 
                 api("com.darkrockstudios:mpfilepicker:1.1.0")
 
-                // cache4k
-                implementation("io.github.reactivecircus.cache4k:cache4k:0.11.0")
 
                 // kotlin-result
                 api("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
@@ -98,7 +96,10 @@ kotlin {
                 implementation("app.cash.sqldelight:runtime-jvm:$sqlDelightVersion")
                 implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
-                implementation("com.google.code.gson:gson:2.9.0")
+//                implementation("com.google.code.gson:gson:2.9.0")
+
+                // Ktor
+                api("io.ktor:ktor-client-okhttp:$ktorVersion")
 
                 implementation("net.harawata:appdirs:1.2.1")
 
@@ -109,74 +110,66 @@ kotlin {
         val commonJvmTest by creating {
             dependencies {
                 dependsOn(commonTest)
-                implementation("com.github.skebir:prettytable:v1.0")
+//                implementation("com.github.skebir:prettytable:v1.0")
             }
         }
         val androidMain by getting {
             dependencies {
                 dependsOn(commonJvmMain)
 //                kotlin.srcDir("build/generated/ksp/android/androidRelease")
+                implementation("androidx.core:core-ktx:1.10.1")
 
-                api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.10.1")
+                implementation("com.kizitonwose.calendar:compose:2.3.0")
 
-                api("com.kizitonwose.calendar:compose:2.3.0")
+                implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
 
-                api("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+                implementation("com.arkivanov.decompose:extensions-android:$decomposeVersion")
 
-                api("com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.5.3")
-
-                api("com.arkivanov.decompose:extensions-android:$decomposeVersion")
-
-                api("io.ktor:ktor-client-android:$ktorVersion")
-                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+                implementation("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("app.cash.sqldelight:android-driver:$sqlDelightVersion")
-
-                api("com.squareup.retrofit2:retrofit:2.9.0")
 
                 api("androidx.work:work-runtime-ktx:2.8.1")
 
                 // Compose
                 val composeVersion = "1.4.3"
-                api("androidx.compose.runtime:runtime:$composeVersion")
-                api("androidx.compose.ui:ui:$composeVersion")
-                api("androidx.activity:activity-compose:1.7.2")
+                implementation("androidx.compose.runtime:runtime:$composeVersion")
+                implementation("androidx.compose.ui:ui:$composeVersion")
+                implementation("androidx.activity:activity-compose:1.7.2")
                 // Tooling support (Previews, etc.)
-                api("androidx.compose.ui:ui-tooling:$composeVersion")
+                implementation("androidx.compose.ui:ui-tooling:$composeVersion")
                 // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-                api("androidx.compose.foundation:foundation:$composeVersion")
+                implementation("androidx.compose.foundation:foundation:$composeVersion")
                 // Material Design
-                api("androidx.compose.material3:material3:1.1.1")
+                implementation("androidx.compose.material3:material3:1.1.1")
 
                 implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 
                 implementation("com.airbnb.android:lottie-compose:6.0.0")
 
-                api("androidx.core:core-splashscreen:1.0.1")
+                implementation("androidx.core:core-splashscreen:1.0.1")
 
                 // Lifecycle
-                api("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
-                api("androidx.recyclerview:recyclerview:1.3.0")
 
                 // Decompose
-                api("com.arkivanov.decompose:extensions-compose-jetpack:$decomposeVersion")
+                implementation("com.arkivanov.decompose:extensions-compose-jetpack:$decomposeVersion")
 
                 // Cropper
                 implementation("com.github.SmartToolFactory:Compose-Cropper:0.3.0")
 
                 // Navigation
-                api("androidx.navigation:navigation-fragment-ktx:2.6.0")
-                api("androidx.navigation:navigation-ui-ktx:2.6.0")
+//                api("androidx.navigation:navigation-fragment-ktx:2.6.0")
+//                api("androidx.navigation:navigation-ui-ktx:2.6.0")
 
                 // Firebase SDK
-                api(project.dependencies.platform("com.google.firebase:firebase-bom:30.2.0"))
-                api("com.google.firebase:firebase-firestore") {
-                    exclude("com.squareup.okhttp")
-                }
-                api("com.google.firebase:firebase-storage")
-                api("com.google.firebase:firebase-auth")
-                api("com.google.firebase:firebase-analytics")
+//                api(project.dependencies.platform("com.google.firebase:firebase-bom:30.2.0"))
+//                api("com.google.firebase:firebase-firestore") {
+//                    exclude("com.squareup.okhttp")
+//                }
+//                api("com.google.firebase:firebase-storage")
+//                api("com.google.firebase:firebase-auth")
+//                api("com.google.firebase:firebase-analytics")
 
                 implementation("io.grpc:grpc-okhttp:1.44.1") {
                     exclude("com.squareup.okhttp")
@@ -188,7 +181,7 @@ kotlin {
                 api("com.google.android.play:core:1.10.3")
                 api("com.google.android.play:core-ktx:1.8.1")
 
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.1")
                 // Flow layout
                 api("com.google.accompanist:accompanist-flowlayout:0.27.0")
 
@@ -208,15 +201,13 @@ kotlin {
 
                 api(compose.preview)
 
-                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
-
                 api("app.cash.sqldelight:sqlite-driver:$sqlDelightVersion")
                 api("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 // Decompose
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.4")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.1")
 
                 implementation ("com.github.Dansoftowner:jSystemThemeDetector:3.6")
 
@@ -232,6 +223,7 @@ kotlin {
 }
 
 dependencies {
+    // kotlin-inject
     add("kspAndroid", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
     add("kspDesktop", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
     // support new language API
@@ -239,9 +231,7 @@ dependencies {
 }
 
 android {
-
     namespace = "com.denchic45.studiversity.common"
-
     compileSdk = 33
     sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -271,9 +261,9 @@ android {
         kotlin.srcDir("src/$name/kotlin")
         java.srcDir("src/$name/java")
     }
-    kapt {
-        correctErrorTypes = true
-    }
+//    kapt {
+//        correctErrorTypes = true
+//    }
 }
 
 sqldelight {

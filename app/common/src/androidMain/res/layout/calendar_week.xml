@@ -71,22 +71,22 @@
             android:textSize="12sp" />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/gilroy_semi_bold"
-            android:gravity="center_horizontal"
-            android:text="ВС"
-            android:textColor="@color/gray"
-            android:textSize="12sp" />
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/gilroy_semi_bold"
+                android:gravity="center_horizontal"
+                android:text="ВС"
+                android:textColor="@color/gray"
+                android:textSize="12sp" />
     </LinearLayout>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewpager_week"
-        android:layout_width="match_parent"
-        android:descendantFocusability="blocksDescendants"
-        android:clickable="false"
-        android:focusable="false"
-        android:layout_height="52dp"/>
+    <!--    <androidx.viewpager2.widget.ViewPager2-->
+    <!--        android:id="@+id/viewpager_week"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:descendantFocusability="blocksDescendants"-->
+    <!--        android:clickable="false"-->
+    <!--        android:focusable="false"-->
+    <!--        android:layout_height="52dp"/>-->
 
 </LinearLayout>

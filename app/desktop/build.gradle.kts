@@ -2,9 +2,8 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("multiplatform")
-    id("kotlin-kapt")
+//    id("kotlin-kapt")
     id("org.jetbrains.compose") version "1.4.0"
-
     id("com.google.devtools.ksp")
 }
 
@@ -22,30 +21,22 @@ kotlin {
             exclude("org.jetbrains.kotlinx", "kotlinx-coroutines-android")
         }
         withJava()
-        kapt {
-            correctErrorTypes = true
-        }
+//        kapt {
+//            correctErrorTypes = true
+//        }
     }
 
     sourceSets {
         val jvmMain by getting {
-
             kotlin.srcDir("build/generated/ksp/jvm/jvmMain/kotlin")
             dependencies {
-
-                implementation(project(mapOf("path" to ":common")))
-
+                implementation(project(":common"))
                 implementation(compose.desktop.currentOs)
-
                 // Kamel
                 implementation("com.alialbaali.kamel:kamel-image:0.4.0")
             }
         }
     }
-}
-
-dependencies {
-    add("kspJvm", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
 }
 
 compose.desktop {

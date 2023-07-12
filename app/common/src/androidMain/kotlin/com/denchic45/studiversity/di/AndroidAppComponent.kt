@@ -4,19 +4,13 @@ import android.app.Application
 import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
-import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.DefaultComponentContext
-import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.studiversity.data.pref.AppPreferences
 import com.denchic45.studiversity.data.storage.AttachmentStorage
-import com.denchic45.studiversity.data.storage.FileProvider
 import com.denchic45.studiversity.data.workmanager.AppWorkerFactory
 import com.denchic45.studiversity.data.workmanager.DownloadWorker
-import com.denchic45.studiversity.ui.MainComponent
 import com.denchic45.studiversity.ui.appbar.AppBarInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.fab.FabInteractor
-import com.denchic45.studiversity.ui.root.RootComponent
 import com.denchic45.studiversity.util.SystemDirs
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
@@ -45,9 +39,6 @@ abstract class AndroidAppComponent(
     @Provides
     fun applicationScope() = CoroutineScope(SupervisorJob())
 
-    @AppScope
-    @Provides
-    fun fileProvider(context: Context) = FileProvider(context.contentResolver)
     abstract val appPreferences: AppPreferences
     abstract val allWorkers: Map<Class<out ListenableWorker>, (Context, WorkerParameters) -> ListenableWorker>
 

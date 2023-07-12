@@ -71,7 +71,8 @@ fun CourseElementsScreen(component: CourseElementsComponent) {
             elementsResource = elementsResource,
             onElementClick = component::onItemClick,
         )
-        PullRefreshIndicator(refreshing, refreshState, Modifier.align(Alignment.TopCenter))
+        if (refreshState.progress > 0)
+            PullRefreshIndicator(refreshing, refreshState, Modifier.align(Alignment.TopCenter))
     }
 }
 
