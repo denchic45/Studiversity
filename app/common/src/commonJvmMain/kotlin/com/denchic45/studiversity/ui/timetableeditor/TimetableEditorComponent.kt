@@ -40,6 +40,12 @@ class TimetableEditorComponent(
         }
     }
 
+    fun onMovePeriod(dayOfWeek: DayOfWeek, oldPosition: Int, newPosition: Int) {
+        editingTimetableState.update { timetable ->
+            timetable.movePeriod(dayOfWeek, oldPosition, newPosition)
+        }
+    }
+
     fun onRemovePeriod(dayOfWeek: DayOfWeek, position: Int) {
         editingTimetableState.update { timetable ->
             timetable.removePeriod(dayOfWeek, position)

@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -162,7 +163,9 @@ class TimetableSearchComponent(
     init {
         backHandler.register(backCallback)
         componentScope.launch {
-            isEdit.collect {
+            isEdit.combine(childOverlay.asFlow()) { isEdit, childOverlay ->
+                isEdit && childOverlay.overlay == null
+            }.collect {
                 backCallback.isEnabled = it
             }
         }
@@ -267,6 +270,10 @@ class TimetableSearchComponent(
 
     fun onRemovePeriodSwipe(dayOfWeek: DayOfWeek, periodPosition: Int) {
         dayTimetableEditorComponent!!.onRemovePeriod(dayOfWeek, periodPosition)
+    }
+
+    fun onMovePeriodDrag(dayOfWeek: DayOfWeek, oldPosition: Int, newPosition: Int) {
+        dayTimetableEditorComponent!!.onMovePeriod(dayOfWeek, oldPosition, newPosition)
     }
 
     @Parcelize

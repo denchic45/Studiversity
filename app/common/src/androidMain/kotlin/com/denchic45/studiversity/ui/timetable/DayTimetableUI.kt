@@ -2,6 +2,7 @@ package com.denchic45.studiversity.ui.timetable
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -41,15 +42,18 @@ import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.IconTitleBox
@@ -59,6 +63,10 @@ import com.denchic45.studiversity.ui.timetable.state.TimetableState
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.daysOfWeek
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.detectReorderAfterLongPress
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -74,6 +82,7 @@ fun DayTimetableContent(
     onDateSelect: (monday: LocalDate) -> Unit,
     onAddPeriodClick: ((DayOfWeek) -> Unit)? = null,
     onEditPeriodClick: ((DayOfWeek, Int) -> Unit)? = null,
+    onMovePeriodDrag: ((DayOfWeek, Int, Int) -> Unit)? = null,
     onRemovePeriodSwipe: ((DayOfWeek, Int) -> Unit)? = null,
     onStudyGroupClick: ((studyGroupId: UUID) -> Unit)? = null,
     startDate: LocalDate = selectedDate.minusWeeks(1),
@@ -151,6 +160,7 @@ fun DayTimetableContent(
                             selectedDayOfWeek = selectedDayOfWeek,
                             onAddPeriodClick = onAddPeriodClick,
                             onEditPeriodClick = onEditPeriodClick,
+                            onMovePeriodDrag = onMovePeriodDrag,
                             onRemovePeriodSwipe = onRemovePeriodSwipe,
                             onStudyGroupClClick = onStudyGroupClick
                         )
@@ -185,6 +195,7 @@ private fun Periods(
     selectedDayOfWeek: DayOfWeek,
     onAddPeriodClick: ((DayOfWeek) -> Unit)?,
     onEditPeriodClick: ((DayOfWeek, Int) -> Unit)?,
+    onMovePeriodDrag: ((DayOfWeek, Int, Int) -> Unit)?,
     onRemovePeriodSwipe: ((DayOfWeek, Int) -> Unit)?,
     onStudyGroupClClick: ((UUID) -> Unit)?,
 ) {
@@ -219,7 +230,22 @@ private fun Periods(
                         .verticalScroll(scrollState)
                 )
             } else {
-                LazyColumn(Modifier.fillMaxSize()) {
+                val reorderableState = rememberReorderableLazyListState(
+                    onMove = { from, to ->
+                        onMovePeriodDrag?.invoke(dayOfWeek, from.index, to.index)
+                    },
+                    canDragOver = { from, to ->
+                        val canDragOver = from.index < items.size
+                        println("ON MOVE FROM: ${from.index} TO: ${to.index} SIZE: ${items.size} BOOL: $canDragOver")
+                        canDragOver
+                    },
+                )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .reorderable(reorderableState),
+                    state = reorderableState.listState,
+                ) {
                     itemsIndexed(
                         items = items,
                         key = { _, item -> item.id }
@@ -253,13 +279,25 @@ private fun Periods(
                                     else -> throw IllegalStateException()
                                 }
                             })
-                            SwipeToDismiss(
-                                state = dismissState,
-                                background = { SwipePeriodBackground(dismissState) },
-                                dismissContent = { periodListItem() },
-                                directions = setOf(DismissDirection.EndToStart),
-                                modifier = Modifier.animateItemPlacement()
-                            )
+                            ReorderableItem(reorderableState, key = item.id) { isDragging ->
+                                val elevation by animateDpAsState(if (isDragging) 16.dp else 0.dp)
+                                val zIndex = remember(isDragging) {
+                                    if (isDragging) 1f else 0f
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .detectReorderAfterLongPress(reorderableState)
+                                        .zIndex(zIndex)
+                                        .shadow(elevation)
+                                ) {
+                                    SwipeToDismiss(
+                                        state = dismissState,
+                                        background = { SwipePeriodBackground(dismissState) },
+                                        dismissContent = { periodListItem() },
+                                        directions = setOf(DismissDirection.EndToStart)
+                                    )
+                                }
+                            }
                         } else {
                             periodListItem()
                         }

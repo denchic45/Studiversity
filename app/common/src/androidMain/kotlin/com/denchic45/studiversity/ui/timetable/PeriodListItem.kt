@@ -54,12 +54,13 @@ fun PeriodListItem(
     item: PeriodSlot,
     order: Int,
     time: BellPeriod?,
+    modifier: Modifier = Modifier,
     showStudyGroup: Boolean = true,
     isEdit: Boolean = false,
     onEditClick: () -> Unit = {},
     onStudyGroupClick: ((studyGroupId: UUID) -> Unit)? = null
 ) {
-    Surface {
+    Surface(modifier) {
         var expanded by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier

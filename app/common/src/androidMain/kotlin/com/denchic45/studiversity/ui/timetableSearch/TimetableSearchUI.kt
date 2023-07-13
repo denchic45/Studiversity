@@ -111,6 +111,7 @@ fun TimetableSearchScreen(
                 onGroupSelect = component::onGroupSelect,
                 onAddPeriodClick = component::onAddPeriodClick,
                 onEditPeriodClick = component::onEditPeriodClick,
+                onMovePeriodDrag = component::onMovePeriodDrag,
                 onRemovePeriodSwipe = component::onRemovePeriodSwipe
             )
         }
@@ -129,6 +130,7 @@ fun TimetableSearchContent(
     onGroupSelect: (StudyGroupResponse) -> Unit,
     onAddPeriodClick: (DayOfWeek) -> Unit,
     onEditPeriodClick: (DayOfWeek, Int) -> Unit,
+    onMovePeriodDrag: (DayOfWeek, Int, Int) -> Unit,
     onRemovePeriodSwipe: (DayOfWeek, Int) -> Unit,
 ) {
     Surface {
@@ -143,6 +145,7 @@ fun TimetableSearchContent(
                 onQueryChange = onQueryType,
                 onSearch = {},
                 active = active,
+                enabled = !isEdit,
                 placeholder = { Text("Поиск группы") },
                 onActiveChange = { active = it },
                 leadingIcon = {
@@ -191,6 +194,7 @@ fun TimetableSearchContent(
                     onDateSelect = onDateSelect,
                     onAddPeriodClick = onAddPeriodClick,
                     onEditPeriodClick = onEditPeriodClick,
+                    onMovePeriodDrag = onMovePeriodDrag,
                     onRemovePeriodSwipe = onRemovePeriodSwipe,
                     scrollableWeeks = scrollableWeeks
                 )

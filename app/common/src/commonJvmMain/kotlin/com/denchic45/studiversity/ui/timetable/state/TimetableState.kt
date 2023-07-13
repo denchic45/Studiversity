@@ -7,6 +7,7 @@ import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
 import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.util.copy
+import com.denchic45.studiversity.util.swap
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import java.time.DayOfWeek
@@ -43,37 +44,47 @@ data class TimetableState(
         return yearWeek == selectedDate.get(WeekFields.ISO.weekOfWeekBasedYear())
     }
 
-    fun addPeriod(dayOfWeek: DayOfWeek, period: PeriodItem): TimetableState {
-        return copy(
-            dayTimetables = dayTimetables.copy {
-                this[dayOfWeek.ordinal] = this[dayOfWeek.ordinal] + period
-            }
-        )
-    }
+    fun addPeriod(
+        dayOfWeek: DayOfWeek,
+        period: PeriodItem
+    ): TimetableState = copy(
+        dayTimetables = dayTimetables.copy {
+            this[dayOfWeek.ordinal] = this[dayOfWeek.ordinal] + period
+        }
+    )
 
     fun updatePeriod(
         dayOfWeek: DayOfWeek,
         period: PeriodItem,
         position: Int
-    ): TimetableState {
-        return copy(
-            dayTimetables = dayTimetables.copy {
-                this[dayOfWeek.ordinal] = this[dayOfWeek.ordinal].copy {
-                    this[position] = period
-                }
+    ): TimetableState = copy(
+        dayTimetables = dayTimetables.copy {
+            this[dayOfWeek.ordinal] = this[dayOfWeek.ordinal].copy {
+                this[position] = period
             }
-        )
-    }
+        }
+    )
 
-    fun removePeriod(dayOfWeek: DayOfWeek, position: Int): TimetableState {
-        return copy(
-            dayTimetables = dayTimetables.copy {
-                this[dayOfWeek.ordinal] = this[dayOfWeek.ordinal].copy {
-                    removeAt(position)
-                }
+    fun movePeriod(
+        dayOfWeek: DayOfWeek,
+        oldPosition: Int,
+        newPosition: Int
+    ): TimetableState = copy(
+        dayTimetables = dayTimetables.copy {
+            this[dayOfWeek.ordinal] = this[dayOfWeek.ordinal].swap(oldPosition, newPosition)
+        }
+    )
+
+    fun removePeriod(
+        dayOfWeek: DayOfWeek,
+        position: Int
+    ): TimetableState = copy(
+        dayTimetables = dayTimetables.copy {
+            this[dayOfWeek.ordinal] = this[dayOfWeek.ordinal].copy {
+                removeAt(position)
             }
-        )
-    }
+        }
+    )
 }
 
 fun TimetableResponse.toTimetableState(
