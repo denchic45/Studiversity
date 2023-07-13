@@ -23,10 +23,7 @@ import com.denchic45.studiversity.ui.MainScreen
 import com.denchic45.studiversity.ui.auth.AuthScreen
 import com.denchic45.studiversity.ui.root.RootComponent
 import com.denchic45.studiversity.ui.theme.DesktopApp
-import com.denchic45.studiversity.di.appComponent
 import java.awt.Toolkit
-
-//val splashComponent = appComponent.splashComponent
 
 fun main() = mainApp()
 
@@ -40,7 +37,6 @@ private fun mainApp() {
     )
     val rootComponent = appComponent.rootComponent(componentContext)
     application {
-
         val active by rootComponent.childActive.subscribeAsState()
 
         when (val child = active.overlay!!.instance) {
@@ -89,16 +85,6 @@ private fun mainApp() {
                 }
             }
         }
-
-//        val isAuth by splashComponent.isAuth.collectAsState(null)
-//
-//        isAuth?.let {
-//            if (it) {
-//
-//            } else {
-//
-//            }
-//        }
     }
 }
 
