@@ -18,7 +18,6 @@ kotlin {
         }
     }
 
-
     sourceSets {
         val ktorVersion = "2.3.1"
         val koinVersion = "3.2.0"
@@ -27,53 +26,54 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 // Compose
-                api(compose.runtime)
-                api(compose.foundation)
+                implementation(compose.runtime)
+                implementation(compose.foundation)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                api(compose.material3)
-                api(compose.materialIconsExtended)
+                implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
 
-                api(project(":common:api"))
+                implementation(project(":common:api"))
 
-                api("ca.gosyer:compose-material-dialogs-datetime:0.9.2")
+                implementation("ca.gosyer:compose-material-dialogs-datetime:0.9.2")
 
-                api("io.github.qdsfdhvh:image-loader:1.3.1")
+                implementation("io.github.qdsfdhvh:image-loader:1.3.1")
 
                 implementation("androidx.compose.material3:material3-window-size-class:1.1.1")
                 implementation("androidx.window:window:1.1.0")
 
+                implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
+
                 // Ktor
-                api("io.ktor:ktor-client-core:$ktorVersion")
-                api("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                api("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-                api("io.ktor:ktor-client-logging:$ktorVersion")
-                api("io.ktor:ktor-client-auth:$ktorVersion")
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-client-logging:$ktorVersion")
+                implementation("io.ktor:ktor-client-auth:$ktorVersion")
 
                 // Decompose
                 api("com.arkivanov.decompose:decompose:$decomposeVersion")
 
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
                 implementation("app.cash.sqldelight:runtime:$sqlDelightVersion")
                 implementation("app.cash.sqldelight:coroutines-extensions:$sqlDelightVersion")
-                api("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
+                implementation("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
 
                 implementation("io.insert-koin:koin-core:$koinVersion")
 
                 // Settings
-                api("com.russhwolf:multiplatform-settings:1.0.0")
-                api("com.russhwolf:multiplatform-settings-coroutines:1.0.0")
+                implementation("com.russhwolf:multiplatform-settings:1.0.0")
+                implementation("com.russhwolf:multiplatform-settings-coroutines:1.0.0")
 
-                api("com.squareup.okio:okio:3.3.0")
+                implementation("com.squareup.okio:okio:3.3.0")
 
-                api("me.tatarka.inject:kotlin-inject-runtime:0.6.1")
+                implementation("me.tatarka.inject:kotlin-inject-runtime:0.6.1")
 
-                api("com.darkrockstudios:mpfilepicker:1.1.0")
-
+                implementation("com.darkrockstudios:mpfilepicker:1.1.0")
 
                 // kotlin-result
-                api("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
-                api("com.michael-bull.kotlin-result:kotlin-result-coroutines:1.1.17")
+                implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
+                implementation("com.michael-bull.kotlin-result:kotlin-result-coroutines:1.1.17")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
             }
@@ -96,10 +96,8 @@ kotlin {
                 implementation("app.cash.sqldelight:runtime-jvm:$sqlDelightVersion")
                 implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
-//                implementation("com.google.code.gson:gson:2.9.0")
-
                 // Ktor
-                api("io.ktor:ktor-client-okhttp:$ktorVersion")
+                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
 
                 implementation("net.harawata:appdirs:1.2.1")
 
@@ -116,7 +114,6 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 dependsOn(commonJvmMain)
-//                kotlin.srcDir("build/generated/ksp/android/androidRelease")
                 implementation("androidx.core:core-ktx:1.10.1")
 
                 implementation("com.kizitonwose.calendar:compose:2.3.0")
@@ -128,7 +125,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("app.cash.sqldelight:android-driver:$sqlDelightVersion")
 
-                api("androidx.work:work-runtime-ktx:2.8.1")
+                implementation("androidx.work:work-runtime-ktx:2.8.1")
 
                 // Compose
                 val composeVersion = "1.4.3"
@@ -151,39 +148,25 @@ kotlin {
                 // Lifecycle
                 implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
-
                 // Decompose
                 implementation("com.arkivanov.decompose:extensions-compose-jetpack:$decomposeVersion")
 
                 // Cropper
                 implementation("com.github.SmartToolFactory:Compose-Cropper:0.3.0")
 
-                // Navigation
-//                api("androidx.navigation:navigation-fragment-ktx:2.6.0")
-//                api("androidx.navigation:navigation-ui-ktx:2.6.0")
-
-                // Firebase SDK
-//                api(project.dependencies.platform("com.google.firebase:firebase-bom:30.2.0"))
-//                api("com.google.firebase:firebase-firestore") {
+//                implementation("io.grpc:grpc-okhttp:1.44.1") {
 //                    exclude("com.squareup.okhttp")
 //                }
-//                api("com.google.firebase:firebase-storage")
-//                api("com.google.firebase:firebase-auth")
-//                api("com.google.firebase:firebase-analytics")
 
-                implementation("io.grpc:grpc-okhttp:1.44.1") {
-                    exclude("com.squareup.okhttp")
-                }
+                implementation("io.coil-kt:coil-compose:2.2.2")
+                implementation("io.coil-kt:coil-svg:2.3.0")
 
-                api("io.coil-kt:coil-compose:2.2.2")
-                api("io.coil-kt:coil-svg:2.3.0")
+                implementation("com.google.android.play:core:1.10.3")
+                implementation("com.google.android.play:core-ktx:1.8.1")
 
-                api("com.google.android.play:core:1.10.3")
-                api("com.google.android.play:core-ktx:1.8.1")
-
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.1")
                 // Flow layout
-                api("com.google.accompanist:accompanist-flowlayout:0.27.0")
+                implementation("com.google.accompanist:accompanist-flowlayout:0.27.0")
 
                 implementation("me.omico.lux:lux-androidx-compose-material3-pullrefresh")
             }
@@ -198,18 +181,17 @@ kotlin {
             kotlin.srcDir("build/generated/ksp/desktop/desktopMain/kotlin")
             dependencies {
                 api(compose.desktop.currentOs)
-
                 api(compose.preview)
 
-                api("app.cash.sqldelight:sqlite-driver:$sqlDelightVersion")
-                api("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
+                implementation("app.cash.sqldelight:sqlite-driver:$sqlDelightVersion")
+                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 // Decompose
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.1")
 
-                implementation ("com.github.Dansoftowner:jSystemThemeDetector:3.6")
+                implementation("com.github.Dansoftowner:jSystemThemeDetector:3.6")
 
                 dependsOn(commonJvmMain)
             }

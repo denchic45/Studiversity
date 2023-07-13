@@ -9,6 +9,7 @@ plugins {
 
 group = "com.denchic45"
 version = "1.0"
+
 kotlin {
     jvm {
         compilations.all {
