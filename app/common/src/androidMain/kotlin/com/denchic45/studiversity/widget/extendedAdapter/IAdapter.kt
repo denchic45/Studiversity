@@ -6,6 +6,6 @@ interface IAdapter {
 
     val listItems: MutableList<Any>
 
-    val count : Int
+    val count: Int
         get() = listItems.size
 }

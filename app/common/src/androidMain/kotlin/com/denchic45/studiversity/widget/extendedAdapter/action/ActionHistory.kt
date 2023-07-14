@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.widget.extendedAdapter.action
 
-import java.util.*
+import java.util.Stack
 
 class ActionHistory {
     private val stack: Stack<Action> = Stack()

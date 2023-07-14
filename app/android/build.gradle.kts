@@ -68,7 +68,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.6"
+        kotlinCompilerExtensionVersion = "1.4.5"
     }
 
     sourceSets.all {
@@ -80,7 +80,7 @@ android {
 dependencies {
     implementation(project((":common")))
     implementation("androidx.compose.runtime:runtime-tracing:1.0.0-alpha03")
-    implementation("androidx.recyclerview:recyclerview:1.3.0")
+
     implementation("androidx.appcompat:appcompat:1.6.1")
     // support new language API
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")

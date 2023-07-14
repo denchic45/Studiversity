@@ -65,9 +65,7 @@ fun StudyGroupContent(
                     modifier = Modifier.width(396.dp),
                     indicator = { tabPositions ->
                         TabIndicator(
-                            Modifier.tabIndicatorOffset(
-                                tabPositions[selectedTab]
-                            )
+                            Modifier.tabIndicatorOffset(tabPositions[selectedTab])
                         )
                     },
                     divider = {}

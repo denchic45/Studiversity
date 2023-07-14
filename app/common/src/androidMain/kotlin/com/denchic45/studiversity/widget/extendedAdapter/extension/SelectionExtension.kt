@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.widget.extendedAdapter.extension
 
+
 import com.denchic45.studiversity.widget.extendedAdapter.AdapterDelegateExtension
 import com.denchic45.studiversity.widget.extendedAdapter.DelegationAdapterDsl
 import com.denchic45.studiversity.widget.extendedAdapter.IDelegationAdapterExtended
@@ -8,7 +9,7 @@ import com.denchic45.studiversity.widget.extendedAdapter.extension.SelectionExte
 import com.denchic45.studiversity.widget.extendedAdapter.extension.SelectionExtension.Companion.PAYLOAD_ITEM_SELECT
 import com.denchic45.studiversity.widget.extendedAdapter.extension.SelectionExtension.Companion.PAYLOAD_START_SELECTION
 import com.denchic45.studiversity.widget.extendedAdapter.extension.SelectionExtension.Companion.SELECTION_ULTIMATED
-import java.util.*
+import java.util.LinkedList
 
 
 fun DelegationAdapterDsl.ExtensionsBuilder.selection(block: SelectionExtensionBuilder.() -> Unit) {

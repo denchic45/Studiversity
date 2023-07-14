@@ -1,10 +1,18 @@
 package com.denchic45.stuiversity.util
 
 import java.text.SimpleDateFormat
-import java.time.*
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.Year
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 fun String.toDate(format: String): Date =
     SimpleDateFormat(format, Locale.getDefault()).parse(this)
@@ -105,4 +113,6 @@ object DateTimePatterns {
     const val d_MMMM = "d MMMM"
     const val E = "E"
     const val YYYY_ww = "YYYY_ww"
+
+    const val HH_mm = "HH:mm"
 }

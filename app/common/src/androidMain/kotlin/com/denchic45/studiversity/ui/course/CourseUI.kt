@@ -45,7 +45,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -75,6 +74,7 @@ import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
 import com.denchic45.studiversity.ui.appbar2.hideAppBar
+import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.courseeditor.CourseEditorScreen
 import com.denchic45.studiversity.ui.courseelements.CourseElementsScreen
 import com.denchic45.studiversity.ui.coursematerial.CourseMaterialScreen
@@ -375,9 +375,7 @@ fun CourseContent(
 
                 TabRow(selectedTabIndex = pagerState.currentPage,
                     indicator = { positions ->
-                        TabRowDefaults.Indicator(
-                            Modifier.tabIndicatorOffset(positions[pagerState.currentPage])
-                        )
+                        TabIndicator(Modifier.tabIndicatorOffset(positions[pagerState.currentPage]))
                     }) {
                     children.forEachIndexed { index, child ->
                         Tab(

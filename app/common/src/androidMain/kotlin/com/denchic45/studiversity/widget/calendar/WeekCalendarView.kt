@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.widget.calendar
+package com.denchic45.studiversity.widget.calendar
 
 //import android.content.Context
 //import android.os.Parcelable

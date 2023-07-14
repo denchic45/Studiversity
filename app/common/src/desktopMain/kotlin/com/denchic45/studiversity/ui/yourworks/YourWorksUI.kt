@@ -1,6 +1,12 @@
 package com.denchic45.studiversity.ui.yourworks
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -17,8 +23,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -32,6 +36,8 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -55,7 +61,7 @@ import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun YourWorksScreen(component: YourWorksComponent) {
     val children = component.tabChildren
@@ -70,14 +76,12 @@ fun YourWorksScreen(component: YourWorksComponent) {
         CardContent {
             Box {
                 Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    val pagerState = rememberPagerState(initialPage = component.selectedTab.value)
+                    val selectedTab by component.selectedTab.collectAsState()
                     TabRow(
-                        selectedTabIndex = pagerState.currentPage,
+                        selectedTabIndex = selectedTab,
                         modifier = Modifier.widthIn(max = 864.dp),
                         indicator = { tabPositions ->
-                            TabIndicator(
-                                Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage])
-                            )
+                            TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab]))
                         },
                         divider = {}
                     ) {
@@ -85,24 +89,26 @@ fun YourWorksScreen(component: YourWorksComponent) {
                         children.forEachIndexed { index, child ->
                             Tab(
                                 text = { Text(child.title) },
-                                selected = pagerState.currentPage == index,
+                                selected = selectedTab == index,
                                 onClick = {
                                     coroutineScope.launch {
                                         component.onTabSelect(index)
-                                        pagerState.animateScrollToPage(index)
                                     }
                                 },
                             )
                         }
                     }
                     Divider()
-
-                    HorizontalPager(state = pagerState, pageCount = children.size) {
+                    AnimatedContent(children[selectedTab],
+                        transitionSpec = {
+                            slideInVertically { -it / 8 } + fadeIn() with slideOutVertically { it / 8 } + fadeOut()
+                        }
+                    ) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.TopCenter
                         ) {
-                            when (val child = children[it]) {
+                            when (val child = it) {
                                 is YourWorksComponent.TabChild.Upcoming -> {
                                     YourUpcomingWorksScreen(child.component)
                                 }

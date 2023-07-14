@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.widget.calendar.model
+package com.denchic45.studiversity.widget.calendar.model
 
 import java.time.LocalDate
 

@@ -3,17 +3,13 @@ package com.denchic45.studiversity.ui.coursework
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -31,14 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.takeValueIfSuccess
-import com.denchic45.studiversity.ui.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.theme.LocalBackDispatcher
-import com.denchic45.stuiversity.util.DateTimePatterns
-import com.denchic45.stuiversity.util.toString
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Composable
 fun CourseWorkScreen(component: CourseWorkComponent) {
@@ -121,52 +112,6 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
 //    )
 }
 
-@Composable
-fun CourseWorkHeader(
-    name: String,
-    createdAt: LocalDateTime,
-    updatedAt: LocalDateTime?,
-    dueDate: LocalDate?,
-    allowEdit: Boolean,
-    onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit
-) {
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = name, style = MaterialTheme.typography.headlineMedium)
-            if (allowEdit) {
-                Spacer(Modifier.weight(1f))
-                var expanded by remember { mutableStateOf(false) }
-                ExpandableDropdownMenu(expanded, onExpandedChange = { expanded = it }) {
-                    DropdownMenuItem(
-                        text = { Text("Изменить") },
-                        onClick = onEditClick
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Удалить") },
-                        onClick = onDeleteClick
-                    )
-                }
-            }
-        }
-        Row(
-            Modifier.height(84.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                createdAt.toString(DateTimePatterns.dd_MMM) +
-                        updatedAt?.let { "(Обновлено: ${it.toString(DateTimePatterns.dd_MMM)})" }
-            )
-
-            dueDate?.let {
-                Spacer(Modifier.weight(1f))
-                Text("Срок сдачи: ${it.toString(DateTimePatterns.dd_MMM)}")
-            }
-        }
-    }
-}
 
 @Composable
 private fun CourseWorkContent(
@@ -244,7 +189,6 @@ private fun CourseWorkBody(
     onDeleteClick: () -> Unit,
     onClose: () -> Unit,
 ) {
-
     LaunchedEffect(selectedTab) {
         // Collect from the pager state a snapshotFlow reading the currentPage
         snapshotFlow { selectedTab }.collect { page ->
@@ -262,11 +206,7 @@ private fun CourseWorkBody(
                     TabRow(
                         selectedTabIndex = selectedTab,
                         indicator = { tabPositions ->
-                            TabIndicator(
-                                Modifier.tabIndicatorOffset(
-                                    tabPositions[selectedTab]
-                                )
-                            )
+                            TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab]))
                         },
                         divider = {}
                     ) {

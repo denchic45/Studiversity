@@ -129,7 +129,7 @@ kotlin {
 
                 // Compose
                 val composeVersion = "1.4.3"
-                implementation("androidx.compose.runtime:runtime:$composeVersion")
+                api("androidx.compose.runtime:runtime:$composeVersion")
                 implementation("androidx.compose.ui:ui:$composeVersion")
                 implementation("androidx.activity:activity-compose:1.7.2")
                 // Tooling support (Previews, etc.)
@@ -160,6 +160,8 @@ kotlin {
 
                 implementation("io.coil-kt:coil-compose:2.2.2")
                 implementation("io.coil-kt:coil-svg:2.3.0")
+
+                implementation("androidx.recyclerview:recyclerview:1.3.0")
 
                 implementation("com.google.android.play:core:1.10.3")
                 implementation("com.google.android.play:core-ktx:1.8.1")

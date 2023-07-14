@@ -33,6 +33,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
@@ -63,6 +64,7 @@ import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
 import com.denchic45.studiversity.ui.appbar2.DropdownMenuItem2
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
+import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsScreen
 import com.denchic45.studiversity.ui.coursework.submissiondetails.SubmissionDetailsContent
 import com.denchic45.studiversity.ui.coursework.submissions.CourseWorkSubmissionsScreen
@@ -328,7 +330,10 @@ private fun CourseWorkBody(
         Column {
             if (children.size != 1) {
                 TabRow(
-                    selectedTabIndex = pagerState.currentPage
+                    selectedTabIndex = pagerState.currentPage,
+                    indicator = { positions ->
+                        TabIndicator(Modifier.tabIndicatorOffset(positions[pagerState.currentPage]))
+                    }
                 ) {
                     // Add tabs for all of our pages
                     children.forEachIndexed { index, child ->

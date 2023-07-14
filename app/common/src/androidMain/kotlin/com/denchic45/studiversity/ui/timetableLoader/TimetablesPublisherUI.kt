@@ -30,6 +30,7 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +47,7 @@ import com.denchic45.studiversity.domain.resourceOf
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
 import com.denchic45.studiversity.ui.appbar2.hideAppBar
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
+import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.studiversity.ui.search.StudyGroupChooserScreen
 import com.denchic45.studiversity.ui.theme.spacing
@@ -222,6 +224,9 @@ private fun TimetablePublisherContent(
             } else {
                 ScrollableTabRow(
                     selectedTabIndex = pagerState.currentPage,
+                    indicator = { positions ->
+                        TabIndicator(Modifier.tabIndicatorOffset(positions[pagerState.currentPage]))
+                    },
                     modifier = Modifier,
                     divider = {}
                 ) {

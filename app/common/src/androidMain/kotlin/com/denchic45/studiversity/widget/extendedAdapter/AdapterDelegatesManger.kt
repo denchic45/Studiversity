@@ -111,7 +111,10 @@ class AdapterDelegatesManger(
         this.adapter = adapter
     }
 
-    private val diffUtil: AdapterDiffUtil = AdapterDiffUtil(changePayload)
+    private val diffUtil: AdapterDelegatesManger.AdapterDiffUtil =
+        AdapterDelegatesManger.AdapterDiffUtil(
+            changePayload
+        )
     private val extensions: MutableMap<Class<*>, AdapterDelegateExtension> = mutableMapOf()
     private val actionHistory: ActionHistory = ActionHistory()
     private lateinit var adapter: IDelegationAdapterExtended
@@ -191,6 +194,7 @@ class AdapterDelegatesManger(
         val adapterDelegateExtension = extensions[clazz]
         return adapterDelegateExtension as T
     }
+
 
     override fun delegatesCount(): Int = delegates.size()
 
@@ -319,4 +323,5 @@ interface DelegateEventEmitter {
     fun onNotifyAdapterItemMoved(positionStart: Int, itemCount: Int)
 }
 
-interface IEVentEmitter : ObserverEventEmitter, DelegateEventEmitter
+interface IEVentEmitter : ObserverEventEmitter,
+    DelegateEventEmitter
