@@ -61,9 +61,7 @@ private fun SubmissionsContent(
             items(submissions, key = { it.id }) { submission ->
                 ListItem(
                     modifier = Modifier
-                        .clickable {
-                            component.onSubmissionClick(submission.id)
-                        }
+                        .clickable { component.onSubmissionClick(submission.id) }
                         .padding(vertical = MaterialTheme.spacing.small),
                     leadingContent = {
                         UserAvatarImage(url = submission.author.avatarUrl)

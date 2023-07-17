@@ -62,12 +62,12 @@ class CourseTopicsComponent(
         }
     }
 
-    fun onSectionMoved() {
+    fun onTopicMoved() {
         if (oldPosition == position)
             return
 
         componentScope.launch {
-          topics.value.onSuccess { topics->
+            topics.value.onSuccess { topics ->
 //              val prevOrder = if (position == 0) 0 else topics[position - 1].order
 //
 //              val nextOrder =
@@ -87,10 +87,14 @@ class CourseTopicsComponent(
 //                      )
 //                  }
 //              )
-          }
+            }
             oldPosition = -1
             position = -1
-          }
+        }
+    }
+
+    fun onTopicReorder(topicId: UUID, order: Int) {
+
     }
 
     fun onTopicAdd(name: String) {
@@ -100,7 +104,7 @@ class CourseTopicsComponent(
         }
     }
 
-    fun onTopicRename( position: Int, name: String) {
+    fun onTopicRename(position: Int, name: String) {
         topics.value.onSuccess { list ->
             componentScope.launch {
                 updateCourseTopicUseCase(
@@ -123,5 +127,4 @@ class CourseTopicsComponent(
             }
         }
     }
-
 }

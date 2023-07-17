@@ -27,7 +27,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -90,13 +89,15 @@ fun SubmissionDetailsScreen(
             onDismissRequest = onDismissRequest,
             sheetState = sheetState,
         ) {
-
             val imeState by rememberImeState()
             Column(Modifier.let { if (imeState) it.padding(bottom = 220.dp) else it }) {
                 SubmissionHeaderContent(uiState.first)
-                UserListItem(item = with(uiState.first.author) {
-                    UserItem(id, firstName, surname, avatarUrl)
-                }, modifier = Modifier.padding(vertical = MaterialTheme.spacing.normal))
+                UserListItem(
+                    item = with(uiState.first.author) {
+                        UserItem(id, firstName, surname, avatarUrl)
+                    },
+                    modifier = Modifier.padding(vertical = MaterialTheme.spacing.normal)
+                )
                 SubmissionDetailsContent(uiState.first, component::onAttachmentClick)
                 Spacer(Modifier.height(MaterialTheme.spacing.normal))
                 if (uiState.second)
@@ -106,7 +107,6 @@ fun SubmissionDetailsScreen(
                         onCancel = component::onGradeCancel
                     )
             }
-
         }
     }.onLoading {
         AlertDialog(onDismissRequest = {}) {
@@ -138,10 +138,6 @@ private fun SubmissionGradeContent(
         verticalAlignment = Alignment.CenterVertically
     ) {
         uiState.first.grade?.let {
-//            Text(
-//                text = it.value.toString(),
-//                modifier = Modifier.weight(1f),
-//            )
             Button(onClick = onCancel) {
                 Text("Отменить оценку")
             }

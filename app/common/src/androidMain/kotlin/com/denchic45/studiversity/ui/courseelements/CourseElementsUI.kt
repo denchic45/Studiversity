@@ -162,9 +162,7 @@ fun CourseElementsContent(
                         tint = MaterialTheme.colorScheme.surfaceVariant,
                     )
                 },
-                title = {
-                    Text(text = "Пусто")
-                })
+                title = { Text(text = "Пусто") })
         }
     }
 }

@@ -111,7 +111,6 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     }
 
     val allowEdit by component.allowEditWork.collectAsState(initial = false)
-//    val appBarState = LocalAppBarState.current
 
     updateAppBarState(
         allowEdit, AppBarContent(
@@ -128,20 +127,6 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
                 ) else emptyList()
         )
     )
-
-//    component.lifecycle.doOnStart {
-//        appBarState.content = AppBarContent(dropdownItems = if (allowEdit)
-//            listOf(
-//                DropdownMenuItem2(
-//                    title = uiTextOf("Изменить"),
-//                    onClick = { component.onEditClick() }
-//                ),
-//                DropdownMenuItem2(
-//                    title = uiTextOf("Удалить"),
-//                    onClick = { component.onRemoveClick() }
-//                )
-//            ) else emptyList())
-//    }
 
     component.openAttachment.collectWithLifecycle {
         attachmentViewer.openAttachment(it)

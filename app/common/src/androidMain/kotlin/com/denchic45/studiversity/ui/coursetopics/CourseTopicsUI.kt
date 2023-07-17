@@ -19,21 +19,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.arkivanov.essenty.lifecycle.doOnStart
 import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
+import com.denchic45.studiversity.ui.appbar2.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.periodeditor.TransparentTextField
 import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 
 @Composable
 fun CourseTopicsScreen(component: CourseTopicsComponent) {
-    val appBarState = LocalAppBarState.current
-    component.lifecycle.doOnStart { appBarState.content = AppBarContent() }
+    updateAnimatedAppBarState(AppBarContent())
     val topicsResource by component.topics.collectAsState()
     CourseTopicsContent(
-        topicsResource,
+        items = topicsResource,
         onTopicRename = component::onTopicRename,
         onTopicRemove = component::onTopicRemove
     )
@@ -41,18 +39,18 @@ fun CourseTopicsScreen(component: CourseTopicsComponent) {
 
 @Composable
 private fun CourseTopicsContent(
-    topicsResource: Resource<List<TopicResponse>>,
+    items: Resource<List<TopicResponse>>,
     onTopicRename: (Int, String) -> Unit,
     onTopicRemove: (Int) -> Unit
 ) {
-    topicsResource.onSuccess { topics ->
+    ResourceContent(items) { topics ->
         LazyColumn {
             itemsIndexed(topics, key = { _, item -> item.id }) { index, item ->
                 var isEdit by remember { mutableStateOf(false) }
                 if (isEdit) {
                     TopicItemUI(item, onEditClick = { isEdit = true })
                 } else {
-                    EditingTopicItemUI(
+                    EditingTopicItem(
                         name = item.name,
                         onRename = { newName ->
                             if (item.name != newName)
@@ -92,7 +90,7 @@ private fun TopicItemUI(response: TopicResponse, onEditClick: () -> Unit) {
 }
 
 @Composable
-private fun EditingTopicItemUI(
+private fun EditingTopicItem(
     name: String,
     onRename: (String) -> Unit,
     onRemove: () -> Unit

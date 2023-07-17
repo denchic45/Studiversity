@@ -49,7 +49,6 @@ class YourTimetablesComponent(
 //    )
 
     fun onTimetableSelect(position: Int) {
-//        selectedTimetable.value = position
         studyGroups.value.onSuccess { groups ->
             appPreferences.selectedStudyGroupTimetableId = if (position == -1) null
             else groups[position].id.toString()
@@ -81,12 +80,6 @@ class YourTimetablesComponent(
         id?.let { TimetableOwner.StudyGroup(id.toUUID()) }
             ?: TimetableOwner.Member(null)
     }
-
-//        MutableStateFlow<TimetableOwner>(TimetableOwner.Member(null))
-
-//    private val bellSchedule = metaRepository.observeBellSchedule
-//        .shareIn(componentScope, SharingStarted.Lazily)
-
 
     private val timetableComponent = _timetableFinderComponent(
         selectedWeekOfYear,
