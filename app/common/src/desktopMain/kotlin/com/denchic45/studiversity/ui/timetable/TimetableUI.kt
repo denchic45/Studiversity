@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.denchic45.studiversity.data.service.model.BellPeriod
+import com.denchic45.studiversity.data.service.model.PeriodTime
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onLoading
 import com.denchic45.studiversity.domain.onSuccess
@@ -196,7 +196,7 @@ fun LessonOrders(timetableState: TimetableState, scrollState: ScrollState) {
 }
 
 @Composable
-private fun LessonsOrder(order: Int, time: BellPeriod?) {
+private fun LessonsOrder(order: Int, time: PeriodTime?) {
     Row(Modifier.height(129.dp)) {
         Column(horizontalAlignment = Alignment.End) {
             Text(

@@ -1,0 +1,13 @@
+package com.denchic45.studiversity.ui.notifications
+
+import com.arkivanov.decompose.ComponentContext
+import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
+
+
+@Inject
+class NotificationsComponent(
+    @Assisted
+    private val componentContext: ComponentContext
+) : ComponentContext by componentContext {
+}
