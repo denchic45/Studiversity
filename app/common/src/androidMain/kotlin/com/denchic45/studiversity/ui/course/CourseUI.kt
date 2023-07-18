@@ -93,14 +93,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CourseScreen(component: CourseComponent) {
-//    val appBarState = LocalAppBarState.current
-//    component.lifecycle.apply {
-//        doOnStop {
-//            appBarState.expand()
-//        }
-//    }
-
-
     val course by component.course.collectAsState()
     val allowEdit by component.allowEdit.collectAsState(false)
     val children = component.children
@@ -110,27 +102,21 @@ fun CourseScreen(component: CourseComponent) {
 
     Children(stack = component.childStack) {
         when (val child = childStack.active.instance) {
-            is CourseComponent.Child.Topics -> CourseTopicsScreen(
-                component = child.component
-            )
+            is CourseComponent.Child.Topics -> CourseTopicsScreen(child.component)
 
-            is CourseComponent.Child.CourseEditor -> CourseEditorScreen(
-                component = child.component,
-            )
+            is CourseComponent.Child.CourseEditor -> CourseEditorScreen(child.component)
 
-            is CourseComponent.Child.CourseWork -> CourseWorkScreen(
-                component = child.component,
-            )
+            is CourseComponent.Child.CourseWork -> CourseWorkScreen(child.component)
 
-            is CourseComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(
-                component = child.component,
-            )
+            is CourseComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
 
             is CourseComponent.Child.CourseStudyGroupsEditor -> CourseStudyGroupsScreen(child.component)
 
+            is CourseComponent.Child.CourseMaterial -> CourseMaterialScreen(child.component)
+
+            is CourseComponent.Child.CourseWorMaterialEditor -> CourseMaterialEditorScreen(child.component)
             CourseComponent.Child.None -> {
                 hideAppBar()
-                println("HIDE: 1")
                 CourseContent(
                     course = course,
                     allowEdit = allowEdit,
@@ -144,9 +130,6 @@ fun CourseScreen(component: CourseComponent) {
                     onAddMaterialClick = component::onAddMaterialClick
                 )
             }
-
-            is CourseComponent.Child.CourseMaterial -> CourseMaterialScreen(child.component)
-            is CourseComponent.Child.CourseWorMaterialEditor -> CourseMaterialEditorScreen(child.component)
         }
     }
 
@@ -161,7 +144,8 @@ fun CourseScreen(component: CourseComponent) {
 }
 
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalFoundationApi::class,
     ExperimentalAnimationApi::class
 )
 @Composable
@@ -313,16 +297,6 @@ fun CourseContent(
                             contentColor = contentColor,
                             modifier = Modifier
                         ) {
-//                    Icon(
-//                        painter = rememberVectorPainter(Icons.Outlined.Task),
-//                        contentDescription = "add work",
-//                        modifier = Modifier.rotate( rotation.value + 180f)
-//                    )
-//                    Icon(
-//                        painter = rememberVectorPainter(Icons.Default.Add),
-//                        contentDescription = "add element",
-//                        modifier = Modifier.rotate(rotation.value)
-//                    )
                             Crossfade(targetState = fabExpanded) {
                                 if (it) {
                                     Icon(

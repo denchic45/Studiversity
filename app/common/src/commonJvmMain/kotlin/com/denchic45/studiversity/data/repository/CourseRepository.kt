@@ -1,42 +1,25 @@
 package com.denchic45.studiversity.data.repository
 
-import com.denchic45.studiversity.data.db.local.source.CourseContentLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.CourseTopicLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.GroupCourseLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.GroupLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SectionLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.SubjectLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SubmissionLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.mapper.toCourseEntity
 import com.denchic45.studiversity.data.mapper.toCourseResponse
-import com.denchic45.studiversity.data.mapper.toEntity
-import com.denchic45.studiversity.data.mapper.toResponse
 import com.denchic45.studiversity.data.mapper.toSubjectEntity
-import com.denchic45.studiversity.data.mapper.toTopicEntities
-import com.denchic45.studiversity.data.mapper.toTopicResponses
 import com.denchic45.studiversity.data.observeResource
-import com.denchic45.studiversity.data.pref.AppPreferences
-import com.denchic45.studiversity.data.pref.CoursePreferences
-import com.denchic45.studiversity.data.pref.TimestampPreferences
-import com.denchic45.studiversity.data.pref.UserPreferences
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.studiversity.data.storage.ContentAttachmentStorage
-import com.denchic45.studiversity.data.storage.SubmissionAttachmentStorage
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
-import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
-import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
-import com.denchic45.stuiversity.api.course.topic.model.CreateTopicRequest
-import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
-import com.denchic45.stuiversity.api.course.topic.model.UpdateTopicRequest
 import com.denchic45.stuiversity.util.uuidOfMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -46,24 +29,15 @@ import java.util.UUID
 
 @Inject
 class CourseRepository(
-    private val coursePreferences: CoursePreferences,
     override val networkService: NetworkService,
-    private val contentAttachmentStorage: ContentAttachmentStorage,
-    private val submissionAttachmentStorage: SubmissionAttachmentStorage,
-    private val userPreferences: UserPreferences,
-    private val timestampPreferences: TimestampPreferences,
-    private val appPreferences: AppPreferences,
-    private val courseContentLocalDataSource: CourseContentLocalDataSource,
-    private val submissionLocalDataSource: SubmissionLocalDataSource,
     override val userLocalDataSource: UserLocalDataSource,
     override val groupLocalDataSource: GroupLocalDataSource,
     override val courseLocalDataSource: CourseLocalDataSource,
     override val specialtyLocalDataSource: SpecialtyLocalDataSource,
-    override val sectionLocalDataSource: SectionLocalDataSource,
+    override val courseTopicLocalDataSource: CourseTopicLocalDataSource,
     override val groupCourseLocalDataSource: GroupCourseLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val coursesApi: CoursesApi,
-    private val courseTopicApi: CourseTopicApi,
 ) : NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
     FindByContainsNameRepository<CourseResponse> {
 
@@ -82,53 +56,9 @@ class CourseRepository(
         coursesApi.getById(courseId)
     }
 
-//    fun find(courseId: String): Flow<Course?> {
-//        return flow {
-//            coroutineScope {
-//                launch {
-//                    courseRemoteDataSource.observeById(courseId).collect { courseMap ->
-//                        courseMap?.let {
-//                            if (courseMap.groupIds.isNotEmpty()) {
-//                                groupRemoteDataSource.findByIdIn(courseMap.groupIds)
-//                                    ?.let { saveGroups(it) }
-//                            }
-//                            saveCourse(courseMap)
-//                        } ?: courseLocalDataSource.deleteById(courseId)
-//                    }
-//                }
-//
-//
-//                emitAll(courseLocalDataSource.observeById(courseId).map {
-//                    if (it.isEmpty()) return@map null
-//                    it.entityToCourseDomain()
-//                }.distinctUntilChanged())
-//            }
-//        }
-//    }
-
-
-    // FIXME: maybe remove
-//    suspend fun observeByYourGroup() {
-//        combine(timestampPreferences.observeGroupCoursesUpdateTimestamp.filter { it != 0L }
-//            .drop(if (appPreferences.coursesLoadedFirstTime) 1 else 0),
-//            groupPreferences.observeGroupId.filter(String::isNotEmpty)) { timestamp, groupId -> timestamp to groupId }.collect { (timestamp, groupId) ->
-//            appPreferences.coursesLoadedFirstTime = true
-//            getAndSaveCoursesByGroupIdRemotely(groupId)
-//        }
-//    }
-
     suspend fun findByMe() = fetchResource {
         coursesApi.getList(memberId = uuidOfMe())
     }
-
-//    fun findByYourAsTeacher(): Flow<List<CourseHeader>> = flow {
-//        coroutineScope {
-//            launch { getAndSaveCoursesByTeacherRemotely(userPreferences.id) }
-//            emitAll(courseLocalDataSource.getByTeacherId(userPreferences.id)
-//                .map { it.entitiesToDomains() })
-//        }
-//    }
-
 
 //    fun findContentByCourseId(courseId: String): Flow<List<DomainModel>> = flow {
 //        coroutineScope {
@@ -201,14 +131,6 @@ class CourseRepository(
         coursesApi.getList(studyGroupId = studyGroupId)
     }
 
-//    fun findByGroupId(groupId: String): Flow<List<CourseHeader>> = flow {
-//        if (groupId != groupPreferences.groupId) coroutineScope {
-//            getAndSaveCoursesByGroupIdRemotely(groupId)
-//        }
-//        emitAll(courseLocalDataSource.observeCoursesByStudyGroupId(groupId)
-//            .map { it.entitiesToCourseHeaders() })
-//    }
-
     private suspend fun getAndSaveCoursesByGroupIdRemotely(studyGroupId: UUID) {
         fetchResource { coursesApi.getList(studyGroupId = studyGroupId) }
             .onSuccess {
@@ -238,45 +160,14 @@ class CourseRepository(
 //        }
 //    }
 
-    // FIXME: may be remove
-//    fun findByYourGroup(): Flow<List<CourseHeader>> {
-//        return groupPreferences.observeGroupId.filter(String::isNotEmpty).flatMapLatest {
-//            courseLocalDataSource.observeCoursesByStudyGroupId(it)
-//        }.map { it.entitiesToCourseHeaders() }
-//    }
-
-    suspend fun add(createCourseRequest: CreateCourseRequest) = fetchResource {
-        coursesApi.create(createCourseRequest)
+    suspend fun add(request: CreateCourseRequest) = fetchResource {
+        coursesApi.create(request)
     }
 
-    suspend fun removeStudyGroupFromCourses(courseId: UUID, studyGroupId: UUID) = fetchResource {
-        coursesApi.deleteStudyGroup(courseId, studyGroupId)
-    }
-
-
-//    suspend fun addTask(task: Task, attachments: List<Attachment>) {
-//        requireAllowWriteData()
-//        courseRemoteDataSource.addTask(
-//            courseContentMap = CourseContentMap(task.toMap(
-//                attachments = contentAttachmentStorage.addContentAttachments(
-//                    task.id,
-//                    attachments
-//                ), order = createLastContentOrder(task)
-//            ).apply {
-//                val studentIdsOfCourse =
-//                    userLocalDataSource.getStudentIdsOfCourseByCourseId(task.courseId)
-//                put("notSubmittedByStudentIds", studentIdsOfCourse)
-//                put("submissions", studentIdsOfCourse.associateWith { studentId ->
-//                    SubmissionMap.createNotSubmitted(
-//                        id = UUIDS.createShort(),
-//                        studentId = studentId,
-//                        contentId = task.id,
-//                        courseId = task.courseId
-//                    )
-//                })
-//            })
-//        )
-//    }
+    suspend fun update(
+        courseId: UUID,
+        request: UpdateCourseRequest,
+    ) = fetchResource { coursesApi.update(courseId, request) }
 
 //    private suspend fun getLastContentOrderByCourseIdAndSectionId(
 //        courseId: String,
@@ -303,171 +194,6 @@ class CourseRepository(
 //        getLastContentOrderByCourseIdAndSectionId(task.courseId, task.sectionId) + 1024
 
 
-    fun observeTopicsByCourseId(courseId: UUID): Flow<Resource<List<TopicResponse>>> {
-        return observeResource(
-            query = sectionLocalDataSource.getByCourseId(courseId.toString())
-                .map { it.toTopicResponses() },
-            fetch = { courseTopicApi.getByCourseId(courseId) },
-            saveFetch = { sectionLocalDataSource.upsert(it.toTopicEntities(courseId)) }
-        )
-    }
-
-    suspend fun findTopic(courseId: UUID, topicId: UUID) = observeResource(
-        query = sectionLocalDataSource.observe(topicId.toString()).map { it.toResponse() },
-        fetch = { courseTopicApi.getById(courseId, topicId) },
-        saveFetch = { sectionLocalDataSource.upsert(it.toEntity(courseId)) }
-    )
-
-//    fun findTaskSubmissionByContentIdAndStudentId(
-//        taskId: String,
-//        studentId: String,
-//    ): Flow<Task.Submission> {
-//        return submissionLocalDataSource.getByTaskIdAndUserId(taskId, studentId).map { entities ->
-//            entities?.toDomain(
-//                getSubmissionAttachments(entities)
-//
-//            ) ?: Task.Submission.createEmptyNotSubmitted(
-//                contentId = taskId,
-//                student = userLocalDataSource.get(studentId)!!.toUserDomain()
-//            )
-//        }.distinctUntilChanged()
-//    }
-
-//    suspend fun updateSubmissionFromStudent(submission: Task.Submission) {
-//        requireNetworkAvailable()
-//        val studentId = submission.student.id
-//        val contentId = submission.contentId
-//
-//        val attachmentUrls =
-//            submissionAttachmentStorage.update(contentId, studentId, submission.content.attachments)
-//
-//        val courseId = findCourseIdByContentId(contentId)
-//        courseRemoteDataSource.updateSubmissionFromStudent(
-//            submissionMap = SubmissionMap(
-//                submission.toMap(
-//                    courseId,
-//                    attachmentUrls
-//                )
-//            ),
-//            studentId = studentId,
-//            attachmentUrls = attachmentUrls,
-//            courseId = courseId,
-//            contentId = contentId
-//        )
-//    }
-
-    private suspend fun findCourseIdByContentId(contentId: String) =
-        courseLocalDataSource.getCourseIdByContentId(contentId)
-
-
-//    suspend fun rejectSubmission(
-//        taskId: String,
-//        studentId: String,
-//        cause: String,
-//        teacherId: String = userPreferences.id,
-//    ) {
-//        requireNetworkAvailable()
-//        courseRemoteDataSource.rejectSubmission(
-//            courseContentLocalDataSource.getCourseIdByTaskId(
-//                taskId
-//            ), taskId, studentId, cause, teacherId
-//        )
-//    }
-
-
-//    suspend fun isCourseTeacher(userId: String, courseId: String): Boolean {
-//        return courseLocalDataSource.isCourseTeacher(courseId, userId)
-//    }
-
-    suspend fun updateTopic(
-        courseId: UUID,
-        topicId: UUID,
-        updateTopicRequest: UpdateTopicRequest,
-    ) = fetchResource {
-        courseTopicApi.update(courseId, topicId, updateTopicRequest)
-    }
-
-//    suspend fun updateCourseSections(sections: List<Section>) {
-//        requireAllowWriteData()
-//        courseRemoteDataSource.updateCourseSections(sections.domainsToMaps())
-//    }
-
-    suspend fun addTopic(courseId: UUID, createTopicRequest: CreateTopicRequest) = fetchResource {
-        courseTopicApi.create(courseId, createTopicRequest)
-    }
-
-    suspend fun removeTopic(
-        courseId: UUID,
-        topicId: UUID,
-        relatedTopicElements: RelatedTopicElements,
-    ) = fetchResource {
-        courseTopicApi.delete(courseId, topicId, relatedTopicElements)
-    }
-
-//    suspend fun updateContentOrder(contentId: String, order: Int) {
-//        requireAllowWriteData()
-//        courseRemoteDataSource.updateContentOrder(
-//            courseContentLocalDataSource.getCourseIdByTaskId(
-//                contentId
-//            ), contentId, order
-//        )
-//    }
-
-//    fun findUpcomingTasksForYourGroup(): Flow<List<Task>> = flow {
-//        coroutineScope {
-//            launch {
-//                courseRemoteDataSource.findUpcomingTasksByGroupId(userPreferences.id).collect {
-//                    saveCourseContentsLocal(it)
-//                }
-//            }
-//            emitAll(courseContentLocalDataSource.getByGroupIdAndGreaterCompletionDate(
-//                groupPreferences.groupId
-//            ).map { it.entitiesToTaskDomains() })
-//        }
-//    }
-
-//    fun findOverdueTasksForYourGroup(): Flow<List<Task>> = flow {
-//        coroutineScope {
-//            launch {
-//                saveCourseContentsLocal(
-//                    courseRemoteDataSource.findOverdueTasksByGroupId(
-//                        userPreferences.id
-//                    )
-//                )
-//            }
-//
-//            emitAll(courseContentLocalDataSource.getByGroupIdAndNotSubmittedUser(
-//                groupPreferences.groupId,
-//                userPreferences.id
-//            ).map { it.entitiesToTaskDomains() })
-//        }
-//    }
-
-//    fun findCompletedTasksForYourGroup(): Flow<List<Task>> {
-//        return flow {
-//            coroutineScope {
-//                launch {
-//                    saveCourseContentsLocal(
-//                        courseRemoteDataSource.findCompletedTasksByStudentId(
-//                            userPreferences.id
-//                        )
-//                    )
-//                }
-//                emitAll(courseContentLocalDataSource.getByGroupIdAndSubmittedUser(
-//                    groupPreferences.groupId,
-//                    userPreferences.id
-//                ).map { it.entitiesToTaskDomains() })
-//            }
-//
-//        }
-//    }
-
-    suspend fun update(
-        courseId: UUID,
-        updateCourseRequest: UpdateCourseRequest,
-    ) = fetchResource { coursesApi.update(courseId, updateCourseRequest) }
-
-
     suspend fun archiveCourse(courseId: UUID) = fetchResource {
         coursesApi.setArchive(courseId)
     }
@@ -481,8 +207,6 @@ class CourseRepository(
     }
 }
 
-class SameCoursesException : Exception()
-
 interface SaveCourseRepository {
 
     val userLocalDataSource: UserLocalDataSource
@@ -491,7 +215,7 @@ interface SaveCourseRepository {
 
     val subjectLocalDataSource: SubjectLocalDataSource
 
-    val sectionLocalDataSource: SectionLocalDataSource
+    val courseTopicLocalDataSource: CourseTopicLocalDataSource
     val groupCourseLocalDataSource: GroupCourseLocalDataSource
 
 

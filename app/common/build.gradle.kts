@@ -1,6 +1,6 @@
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.4.0"
+    id("org.jetbrains.compose") version "1.4.1"
     id("com.android.library")
 //    id("kotlin-kapt")
     kotlin("plugin.serialization") version "1.8.20"
@@ -26,22 +26,21 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 // Compose
-                implementation(compose.runtime)
-                implementation(compose.foundation)
+                api(compose.runtime)
+                api(compose.foundation)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
+                api(compose.material3)
+                api(compose.materialIconsExtended)
 
                 implementation(project(":common:api"))
 
+                // Compose
+                implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
                 implementation("ca.gosyer:compose-material-dialogs-datetime:0.9.2")
-
                 implementation("io.github.qdsfdhvh:image-loader:1.3.1")
-
                 implementation("androidx.compose.material3:material3-window-size-class:1.1.1")
                 implementation("androidx.window:window:1.1.0")
 
-                implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 
                 // Ktor
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -94,7 +93,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.1")
 
                 implementation("app.cash.sqldelight:runtime-jvm:$sqlDelightVersion")
-                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
+//                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 // Ktor
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
@@ -186,7 +185,7 @@ kotlin {
                 api(compose.preview)
 
                 implementation("app.cash.sqldelight:sqlite-driver:$sqlDelightVersion")
-                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
+//                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 // Decompose
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")

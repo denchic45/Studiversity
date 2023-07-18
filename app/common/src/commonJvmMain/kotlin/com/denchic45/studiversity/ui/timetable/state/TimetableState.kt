@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.ui.timetable.state
 
 import androidx.compose.runtime.Immutable
-import com.denchic45.studiversity.data.service.model.BellPeriod
 import com.denchic45.studiversity.data.service.model.BellSchedule
+import com.denchic45.studiversity.data.service.model.PeriodTime
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
 import com.denchic45.studiversity.domain.timetable.model.Window
@@ -29,7 +29,7 @@ data class TimetableState(
         else dayTimetables[dayOfWeek.ordinal].dropLastWhile { it is Window }
     }
 
-    fun getOrderTime(position: Int): BellPeriod? {
+    fun getOrderTime(position: Int): PeriodTime? {
         val periods = bellSchedule.periods
         return if (position >= periods.size) null
         else periods[position]

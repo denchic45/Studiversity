@@ -16,7 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
-import com.denchic45.studiversity.data.service.model.BellPeriod
+import com.denchic45.studiversity.data.service.model.PeriodTime
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
@@ -67,7 +67,7 @@ fun ScheduleScreen(component: ScheduleComponent) {
 
 @Composable
 private fun LunchPeriodListItem(
-    item: BellPeriod
+    item: PeriodTime
 ) {
     Row(Modifier) {
         ListItem(
@@ -89,11 +89,14 @@ private fun LunchPeriodListItem(
 }
 
 @Composable
-private fun PeriodListItem(
-    index: Int,
-    item: BellPeriod
-) {
+private fun PeriodListItem(index: Int, time: PeriodTime) {
     ListItem(
+        headlineContent = {
+            Text(
+                text = "пара",
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
         leadingContent = {
             Text(
                 text = "$index",
@@ -101,15 +104,9 @@ private fun PeriodListItem(
                 color = MaterialTheme.colorScheme.primary
             )
         },
-        headlineContent = {
-            Text(
-                text = "пара",
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
         trailingContent = {
             Text(
-                text = "${item.start}–${item.end}",
+                text = "${time.start}–${time.end}",
                 style = MaterialTheme.typography.titleMedium
             )
         }

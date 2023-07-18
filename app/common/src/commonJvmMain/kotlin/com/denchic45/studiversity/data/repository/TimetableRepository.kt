@@ -21,7 +21,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Inject
-class EventRepository(
+class TimetableRepository(
     override val networkService: NetworkService,
     private val eventLocalDataSource: EventLocalDataSource,
     private val courseLocalDataSource: CourseLocalDataSource,
@@ -57,16 +57,14 @@ class EventRepository(
         roomIds: List<UUID>? = null,
         sorting: List<PeriodsSorting> = emptyList(),
     ) = fetchResource {
-        val timetable = timetableApi.getTimetable(
-            weekOfYear,
-            studyGroupIds,
-            courseIds,
-            memberIds,
-            roomIds,
-            sorting
+        timetableApi.getTimetable(
+            weekOfYear = weekOfYear,
+            studyGroupIds = studyGroupIds,
+            courseIds = courseIds,
+            memberIds = memberIds,
+            roomIds = roomIds,
+            sorting = sorting
         )
-        println("Result timetable: $timetable")
-        timetable
     }
 
 //    fun findEventsOfDayByGroupIdAndDate(groupId: String, date: LocalDate): Flow<EventsOfDay> {
@@ -114,24 +112,6 @@ class EventRepository(
             memberIds = listOf(userPreferences.id.toUUID())
         )
     }
-
-
-//    fun findEventsForDayForTeacherByDate(date: LocalDate): Flow<EventsOfDay> = callbackFlow {
-//        val teacherId = userPreferences.id
-//        launch {
-//            eventLocalDataSource.observeEventsByDateAndTeacherId(date, teacherId)
-//                .distinctUntilChanged().map { it.entitiesToEventsOfDay(date) }.collect { send(it) }
-//        }
-//
-//        eventRemoteDataSource.observeEventsOfTeacherByDate(teacherId, date).collect { dayMaps ->
-//            for (dayMap in dayMaps) {
-//                if (!groupLocalDataSource.isExist(dayMap.groupId)) {
-//                    saveGroup(groupRemoteDataSource.findById(dayMap.groupId))
-//                }
-//                saveDay(dayMap)
-//            }
-//        }
-//    }
 
 //    private suspend fun saveDay(dayMap: DayMap) {
 //        val notRelatedTeacherEntities = courseLocalDataSource.getNotRelatedTeacherIdsToGroup(

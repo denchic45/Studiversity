@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class SectionLocalDataSource(db: AppDatabase) {
+class CourseTopicLocalDataSource(db: AppDatabase) {
 
     private val queries: SectionEntityQueries = db.sectionEntityQueries
 

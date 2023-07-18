@@ -50,14 +50,51 @@ class CourseTopicsComponent(
         }
     }
 
-    fun onTopicMove(oldPosition: Int, position: Int) {
+    fun onTopicMove(oldPos: Int, newPos: Int) {
         if (this.oldPosition == -1)
-            this.oldPosition = oldPosition
-        this.position = position
+            this.oldPosition = oldPos
+        this.position = newPos
 
         topics.value.onSuccess { list ->
             componentScope.launch {
-                topics.emit(resourceOf(list.swap(oldPosition, position)))
+                topics.emit(resourceOf(list.swap(oldPos, newPos)))
+            }
+        }
+    }
+
+
+    fun onTopicReorder(topicId: UUID, oldPos: Int, newPos: Int) {
+        if (oldPos == newPos) return
+
+    }
+
+    fun onTopicAdd(name: String) {
+        if (name.isEmpty()) return
+        componentScope.launch {
+            addCourseTopicUseCase(courseId, CreateTopicRequest(name))
+        }
+    }
+
+    fun onTopicRename(position: Int, name: String) {
+        topics.value.onSuccess { list ->
+            componentScope.launch {
+                updateCourseTopicUseCase(
+                    courseId,
+                    list[position].id,
+                    UpdateTopicRequest(optPropertyOf(name))
+                )
+            }
+        }
+    }
+
+    fun onTopicRemove(position: Int) {
+        topics.value.onSuccess { list ->
+            componentScope.launch {
+                removeCourseTopicUseCase(
+                    courseId,
+                    list[position].id,
+                    RelatedTopicElements.CLEAR_TOPIC
+                )
             }
         }
     }
@@ -93,38 +130,4 @@ class CourseTopicsComponent(
         }
     }
 
-    fun onTopicReorder(topicId: UUID, order: Int) {
-
-    }
-
-    fun onTopicAdd(name: String) {
-        if (name.isEmpty()) return
-        componentScope.launch {
-            addCourseTopicUseCase(courseId, CreateTopicRequest(name))
-        }
-    }
-
-    fun onTopicRename(position: Int, name: String) {
-        topics.value.onSuccess { list ->
-            componentScope.launch {
-                updateCourseTopicUseCase(
-                    courseId,
-                    list[position].id,
-                    UpdateTopicRequest(optPropertyOf(name))
-                )
-            }
-        }
-    }
-
-    fun onTopicRemove(position: Int) {
-        topics.value.onSuccess { list ->
-            componentScope.launch {
-                removeCourseTopicUseCase(
-                    courseId,
-                    list[position].id,
-                    RelatedTopicElements.CLEAR_TOPIC
-                )
-            }
-        }
-    }
 }

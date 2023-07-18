@@ -27,22 +27,6 @@ class SpecialtyRepository(
         specialtyApi.getById(specialtyId)
     }
 
-//    fun observe(id: String): Flow<Specialty?> {
-//        coroutineScope.launch {
-//            specialtyLocalDataSource.upsert(
-//                specialtyRemoteDataSource.findById(id).mapToSpecialtyEntity()
-//            )
-//        }
-//        return specialtyLocalDataSource.observe(id)
-//            .map { entity -> entity?.toDomain() }
-//    }
-
-//    fun findAllSpecialties(): Flow<List<Specialty>> {
-//        return specialtyRemoteDataSource.findAllSpecialties()
-//            .map { it.mapsToDomains() }
-//    }
-
-
     suspend fun add(createSpecialtyRequest: CreateSpecialtyRequest) = fetchResource {
         specialtyApi.create(createSpecialtyRequest)
     }

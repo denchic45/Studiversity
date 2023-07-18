@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.data.repository
 
 import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.CourseTopicLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.GroupCourseLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.GroupLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SectionLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.SubjectLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
@@ -46,7 +46,7 @@ class StudyGroupRepository constructor(
     override val groupCourseLocalDataSource: GroupCourseLocalDataSource,
     override val userLocalDataSource: UserLocalDataSource,
     override val courseLocalDataSource: CourseLocalDataSource,
-    override val sectionLocalDataSource: SectionLocalDataSource,
+    override val courseTopicLocalDataSource: CourseTopicLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val studyGroupApi: StudyGroupApi,
     private val courseApi: CoursesApi,

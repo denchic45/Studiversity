@@ -12,31 +12,10 @@ class SubmissionRepository(
     private val submissionsApi: SubmissionsApi
 ) : NetworkServiceOwner {
     suspend fun findByWorkAndStudent(
-        courseId: UUID, workId: UUID,
+        courseId: UUID,
+        workId: UUID,
         studentId: UUID,
     ) = fetchResource { submissionsApi.getByStudent(courseId, workId, studentId) }
-
-//    suspend fun updateByStudent(
-//        courseId: UUID,
-//        workId: UUID,
-//        submissionId: UUID,
-//        attachment: Attachment,
-//    ) = fetchResource {
-//        when (attachment) {
-//            is AttachmentFile -> submissionsApi.uploadFileToSubmission(
-//                courseId,
-//                workId,
-//                submissionId,
-//                attachment
-//            )
-//            is AttachmentLink -> submissionsApi.addLinkToSubmission(
-//                courseId,
-//                workId,
-//                submissionId,
-//                CreateLinkRequest(attachment.url)
-//            )
-//        }
-//    }
 
     suspend fun submitSubmission(
         courseId: UUID,

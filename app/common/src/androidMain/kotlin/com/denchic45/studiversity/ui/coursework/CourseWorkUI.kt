@@ -449,7 +449,7 @@ fun SubmissionSheetCollapsed(
                         }
                     }
 
-                    SubmissionState.SUBMITTED -> Button(onClick = { onCancel() }) {
+                    SubmissionState.SUBMITTED -> Button(onClick = onCancel) {
                         Text(text = "Отменить")
                     }
 
@@ -514,7 +514,7 @@ fun SubmissionSheetExpanded(
     ) {
         SubmissionDetailsContent(uiState, onAttachmentClick, onAttachmentRemove)
         Spacer(modifier = Modifier.weight(1f))
-        Row(Modifier.padding(MaterialTheme.spacing.normal)) {
+        Column(Modifier.padding(MaterialTheme.spacing.normal)) {
             when (uiState.state) {
                 SubmissionState.NEW,
                 SubmissionState.CREATED,
@@ -528,8 +528,8 @@ fun SubmissionSheetExpanded(
                     }
                     if (uiState.attachments.isNotEmpty()) {
                         Spacer(modifier = Modifier.width(MaterialTheme.spacing.normal))
-                        Button(onClick = { onSubmit() }, modifier = Modifier) {
-                            Text(text = "Сдать работу")
+                        Button(onClick = onSubmit, modifier = Modifier) {
+                            Text(text = "Сдать работу!")
                         }
                     }
                 }

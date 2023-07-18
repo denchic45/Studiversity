@@ -34,7 +34,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.denchic45.studiversity.common.R
-import com.denchic45.studiversity.data.service.model.BellPeriod
+import com.denchic45.studiversity.data.service.model.PeriodTime
 import com.denchic45.studiversity.domain.model.CourseItem
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.model.SubjectItem
@@ -53,7 +53,7 @@ import java.util.UUID
 fun PeriodListItem(
     item: PeriodSlot,
     order: Int,
-    time: BellPeriod?,
+    time: PeriodTime?,
     modifier: Modifier = Modifier,
     showStudyGroup: Boolean = true,
     isEdit: Boolean = false,
@@ -222,7 +222,7 @@ fun PeriodItemPreview() {
                     )
                 )
             ),
-            time = BellPeriod("8:30", "9:20"),
+            time = PeriodTime("8:30", "9:20"),
             isEdit = true
         )
     }
@@ -235,7 +235,7 @@ fun EmptyPeriodItemPreview() {
         PeriodListItem(
             order = 1,
             item = Window(),
-            time = BellPeriod("8:30", "9:20")
+            time = PeriodTime("8:30", "9:20")
         )
     }
 }

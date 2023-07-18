@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Edit
@@ -32,6 +33,7 @@ fun CourseTopicsScreen(component: CourseTopicsComponent) {
     val topicsResource by component.topics.collectAsState()
     CourseTopicsContent(
         items = topicsResource,
+        onTopicCreate = component::onTopicAdd,
         onTopicRename = component::onTopicRename,
         onTopicRemove = component::onTopicRemove
     )
@@ -40,19 +42,23 @@ fun CourseTopicsScreen(component: CourseTopicsComponent) {
 @Composable
 private fun CourseTopicsContent(
     items: Resource<List<TopicResponse>>,
+    onTopicCreate: (String) -> Unit,
     onTopicRename: (Int, String) -> Unit,
     onTopicRemove: (Int) -> Unit
 ) {
     ResourceContent(items) { topics ->
         LazyColumn {
+            item {
+                CreatingTopicItem(onSave = onTopicCreate)
+            }
             itemsIndexed(topics, key = { _, item -> item.id }) { index, item ->
                 var isEdit by remember { mutableStateOf(false) }
                 if (isEdit) {
-                    TopicItemUI(item, onEditClick = { isEdit = true })
+                    TopicItem(item, onEditClick = { isEdit = true })
                 } else {
                     EditingTopicItem(
                         name = item.name,
-                        onRename = { newName ->
+                        onSave = { newName ->
                             if (item.name != newName)
                                 onTopicRename(index, newName)
                             isEdit = false
@@ -66,10 +72,10 @@ private fun CourseTopicsContent(
 }
 
 @Composable
-private fun TopicItemUI(response: TopicResponse, onEditClick: () -> Unit) {
+private fun TopicItem(item: TopicResponse, onEditClick: () -> Unit) {
     ListItem(
         headlineContent = {
-            Text(text = response.name)
+            Text(text = item.name)
         },
         leadingContent = {
             Icon(
@@ -90,16 +96,59 @@ private fun TopicItemUI(response: TopicResponse, onEditClick: () -> Unit) {
 }
 
 @Composable
+private fun CreatingTopicItem(onSave: (String) -> Unit) {
+    var enabled by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf("") }
+    ListItem(
+        headlineContent = {
+            if (enabled) {
+                TransparentTextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    placeholder = "Создать тему"
+                )
+            } else {
+                Text(text = "Создать тему")
+            }
+        },
+        leadingContent = {
+            IconButton(onClick = {
+                enabled = false
+                text = ""
+            }) {
+                Icon(
+                    imageVector = Icons.Outlined.Close,
+                    contentDescription = "Cancel create topic"
+                )
+            }
+        },
+        trailingContent = {
+            IconButton(
+                enabled = text.isNotEmpty(),
+                onClick = {
+                    onSave(text)
+                    enabled = false
+                }) {
+                Icon(
+                    imageVector = Icons.Outlined.Done,
+                    contentDescription = ""
+                )
+            }
+        }
+    )
+}
+
+@Composable
 private fun EditingTopicItem(
     name: String,
-    onRename: (String) -> Unit,
+    onSave: (String) -> Unit,
     onRemove: () -> Unit
 ) {
     var text by remember { mutableStateOf(name) }
     ListItem(
         headlineContent = {
             TransparentTextField(
-                value = name,
+                value = text,
                 onValueChange = { text = it }
             )
         },
@@ -112,7 +161,7 @@ private fun EditingTopicItem(
             }
         },
         trailingContent = {
-            IconButton(onClick = { onRename(text) }) {
+            IconButton(enabled = text.isNotEmpty(), onClick = { onSave(text) }) {
                 Icon(
                     imageVector = Icons.Outlined.Done,
                     contentDescription = ""

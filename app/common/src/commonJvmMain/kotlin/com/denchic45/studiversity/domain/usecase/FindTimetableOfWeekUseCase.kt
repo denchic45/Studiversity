@@ -1,29 +1,35 @@
 package com.denchic45.studiversity.domain.usecase
 
-import com.denchic45.studiversity.data.repository.EventRepository
+import com.denchic45.studiversity.data.repository.TimetableRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import com.denchic45.stuiversity.util.uuidOrMe
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
-class FindTimetableOfWeekUseCase(private val eventRepository: EventRepository) {
+class FindTimetableOfWeekUseCase(private val timetableRepository: TimetableRepository) {
     suspend operator fun invoke(
         weekOfYear: String,
         owner: TimetableOwner,
     ): Resource<TimetableResponse> = when (owner) {
-      is  TimetableOwner.Member -> {
-            eventRepository.findTimetable(weekOfYear, memberIds = listOf(uuidOrMe(owner.ownerId)))
+        is TimetableOwner.Member -> {
+            timetableRepository.findTimetable(
+                weekOfYear,
+                memberIds = listOf(uuidOrMe(owner.ownerId))
+            )
         }
-      is  TimetableOwner.StudyGroup -> {
-            eventRepository.findTimetable(weekOfYear, studyGroupIds = listOf(owner.ownerId))
+
+        is TimetableOwner.StudyGroup -> {
+            timetableRepository.findTimetable(weekOfYear, studyGroupIds = listOf(owner.ownerId))
         }
-      is  TimetableOwner.Course -> {
-            eventRepository.findTimetable(weekOfYear, courseIds = listOf(owner.ownerId))
+
+        is TimetableOwner.Course -> {
+            timetableRepository.findTimetable(weekOfYear, courseIds = listOf(owner.ownerId))
         }
-       is TimetableOwner.Room -> {
-            eventRepository.findTimetable(weekOfYear, roomIds = listOf(owner.ownerId))
+
+        is TimetableOwner.Room -> {
+            timetableRepository.findTimetable(weekOfYear, roomIds = listOf(owner.ownerId))
         }
     }
 }
