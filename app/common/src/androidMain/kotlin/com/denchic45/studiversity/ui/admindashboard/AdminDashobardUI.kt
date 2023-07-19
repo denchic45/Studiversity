@@ -24,8 +24,8 @@ import com.denchic45.studiversity.ui.appbar2.AppBarContent
 import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar2.updateAppBarState
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.studiversity.ui.timetableLoader.TimetableLoaderScreen
-import com.denchic45.studiversity.ui.timetableSearch.TimetableSearchScreen
+import com.denchic45.studiversity.ui.timetableloader.TimetableLoaderScreen
+import com.denchic45.studiversity.ui.timetablesearch.TimetableSearchScreen
 import com.denchic45.studiversity.ui.uiTextOf
 
 @Composable

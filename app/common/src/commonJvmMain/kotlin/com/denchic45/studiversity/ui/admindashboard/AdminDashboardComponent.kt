@@ -10,8 +10,8 @@ import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.ui.navigation.StackChildrenContainer
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.profile.ProfileComponent
-import com.denchic45.studiversity.ui.timetableLoader.TimetableLoaderComponent
-import com.denchic45.studiversity.ui.timetableSearch.TimetableSearchComponent
+import com.denchic45.studiversity.ui.timetableloader.TimetableLoaderComponent
+import com.denchic45.studiversity.ui.timetablesearch.TimetableSearchComponent
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
