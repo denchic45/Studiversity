@@ -15,6 +15,7 @@ import com.denchic45.studiversity.feature.studygroup.studyGroupModule
 import com.denchic45.studiversity.feature.timetable.timetableModule
 import com.denchic45.studiversity.feature.user.userModule
 import com.denchic45.studiversity.transaction.DatabaseTransactionWorker
+import com.denchic45.studiversity.transaction.DatabaseSuspendedTransactionWorker
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.studiversity.transaction.TransactionWorker
 import com.denchic45.studiversity.util.EmailSender
@@ -45,7 +46,10 @@ val otherModule = module {
             config.smtp.password,
         )
     }
-    factory { DatabaseTransactionWorker() } binds arrayOf(TransactionWorker::class, SuspendTransactionWorker::class)
+
+    factory { DatabaseTransactionWorker() } binds arrayOf(TransactionWorker::class)
+
+    factory { DatabaseSuspendedTransactionWorker() } binds arrayOf(SuspendTransactionWorker::class)
 }
 
 fun Application.configureDI() {

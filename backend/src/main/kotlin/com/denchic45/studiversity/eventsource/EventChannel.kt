@@ -1,11 +1,8 @@
 package com.denchic45.studiversity.eventsource
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -40,6 +37,7 @@ interface EventSource<T : Event> {
     suspend fun <C : T> on(type: KClass<C>, block: (event: C) -> Unit)
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 fun main(): Unit = runBlocking {
     val channel = UserChannel()
     GlobalScope.launch {

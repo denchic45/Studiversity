@@ -1,25 +1,33 @@
 package com.denchic45.studiversity.ui.coursetopics
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Topic
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
@@ -54,8 +62,6 @@ private fun CourseTopicsContent(
             itemsIndexed(topics, key = { _, item -> item.id }) { index, item ->
                 var isEdit by remember { mutableStateOf(false) }
                 if (isEdit) {
-                    TopicItem(item, onEditClick = { isEdit = true })
-                } else {
                     EditingTopicItem(
                         name = item.name,
                         onSave = { newName ->
@@ -65,6 +71,8 @@ private fun CourseTopicsContent(
                         },
                         onRemove = { onTopicRemove(index) }
                     )
+                } else {
+                    TopicItem(item, onEditClick = { isEdit = true })
                 }
             }
         }
@@ -78,10 +86,12 @@ private fun TopicItem(item: TopicResponse, onEditClick: () -> Unit) {
             Text(text = item.name)
         },
         leadingContent = {
-            Icon(
-                imageVector = Icons.Outlined.Topic,
-                contentDescription = ""
-            )
+            Box(modifier = Modifier.size(40.dp), contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Outlined.Menu,
+                    contentDescription = "",
+                )
+            }
         },
         trailingContent = {
             IconButton(onClick = onEditClick) {
@@ -99,13 +109,21 @@ private fun TopicItem(item: TopicResponse, onEditClick: () -> Unit) {
 private fun CreatingTopicItem(onSave: (String) -> Unit) {
     var enabled by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
+
     ListItem(
         headlineContent = {
             if (enabled) {
+                val focusRequester = remember { FocusRequester() }
+
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                }
+
                 TransparentTextField(
                     value = text,
                     onValueChange = { text = it },
-                    placeholder = "Создать тему"
+                    placeholder = "Создать тему",
+                    modifier = Modifier.focusRequester(focusRequester)
                 )
             } else {
                 Text(text = "Создать тему")
@@ -113,28 +131,31 @@ private fun CreatingTopicItem(onSave: (String) -> Unit) {
         },
         leadingContent = {
             IconButton(onClick = {
-                enabled = false
-                text = ""
+                if (enabled) text = ""
+                enabled = !enabled
             }) {
                 Icon(
-                    imageVector = Icons.Outlined.Close,
-                    contentDescription = "Cancel create topic"
+                    imageVector = if (enabled) Icons.Default.Close else Icons.Default.Add,
+                    contentDescription = if (enabled) "Cancel create topic" else "Create topic"
                 )
             }
         },
         trailingContent = {
-            IconButton(
-                enabled = text.isNotEmpty(),
-                onClick = {
-                    onSave(text)
-                    enabled = false
-                }) {
-                Icon(
-                    imageVector = Icons.Outlined.Done,
-                    contentDescription = ""
-                )
+            if (enabled) {
+                IconButton(
+                    enabled = text.isNotEmpty(),
+                    onClick = {
+                        onSave(text)
+                        enabled = false
+                    }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Done,
+                        contentDescription = ""
+                    )
+                }
             }
-        }
+        },
+        modifier = Modifier.clickable { enabled = true }
     )
 }
 
