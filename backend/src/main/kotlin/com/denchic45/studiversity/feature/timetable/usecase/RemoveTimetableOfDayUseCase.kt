@@ -1,20 +1,20 @@
 package com.denchic45.studiversity.feature.timetable.usecase
 
 import com.denchic45.studiversity.feature.timetable.TimetableRepository
-import com.denchic45.studiversity.transaction.TransactionWorker
+import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder
 import java.util.*
 
 class RemoveTimetableOfDayUseCase(
-    private val transactionWorker: TransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val timetableRepository: TimetableRepository
 ) {
-    operator fun invoke(
+  suspend operator fun invoke(
         studyGroupId: UUID,
         weekOfYear: String,
         dayOfWeek: Int
-    ) = transactionWorker {
+    ) = suspendTransactionWorker {
         timetableRepository.removeByStudyGroupIdAndDate(
             studyGroupId = studyGroupId,
             date = LocalDate.parse(

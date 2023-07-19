@@ -9,7 +9,7 @@ class RemoveUserFromMembershipUseCase(
     private val userMembershipRepository: UserMembershipRepository,
     private val roleRepository: RoleRepository
 ) {
-    operator fun invoke(member: Member, scopeId: UUID) {
+  suspend operator fun invoke(member: Member, scopeId: UUID) {
         userMembershipRepository.removeMember(member)
         roleRepository.removeUserRolesFromScope(member.userId, scopeId)
     }

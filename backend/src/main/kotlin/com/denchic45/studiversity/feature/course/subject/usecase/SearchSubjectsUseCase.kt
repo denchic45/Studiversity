@@ -1,15 +1,15 @@
 package com.denchic45.studiversity.feature.course.subject.usecase
 
 import com.denchic45.studiversity.feature.course.subject.SubjectRepository
-import com.denchic45.studiversity.transaction.TransactionWorker
+import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.studiversity.util.searchable
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 
 class SearchSubjectsUseCase(
-    private val transactionWorker: TransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val subjectRepository: SubjectRepository
 ) {
-    operator fun invoke(query: String?): List<SubjectResponse> = transactionWorker {
+    suspend operator fun invoke(query: String?): List<SubjectResponse> = suspendTransactionWorker {
         subjectRepository.find(query?.searchable())
     }
 }

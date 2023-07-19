@@ -8,10 +8,10 @@ import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import java.util.*
 
 class AddAttachmentUseCase(
-    private val transactionWorker: SuspendTransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val attachmentRepository: AttachmentRepository
 ) {
-    suspend operator fun invoke(request: AttachmentRequest, ownerId: UUID) = transactionWorker.suspendInvoke {
+    suspend operator fun invoke(request: AttachmentRequest, ownerId: UUID) = suspendTransactionWorker.invoke {
         when (request) {
             is CreateFileRequest -> attachmentRepository.addFileAttachment(request, ownerId)
             is CreateLinkRequest -> attachmentRepository.addLinkAttachment(request, ownerId)

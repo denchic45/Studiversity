@@ -7,7 +7,7 @@ import io.ktor.server.plugins.*
 
 class FindRolesByNamesUseCase(private val roleRepository: RoleRepository) {
 
-    operator fun invoke(roleNames: List<String>): List<Role> {
+  suspend operator fun invoke(roleNames: List<String>): List<Role> {
         return roleRepository.findByNames(roleNames).let {
             if (it.contains(null))
                 throw NotFoundException(RoleErrors.NOT_FOUND_ROLE)

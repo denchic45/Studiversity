@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.feature.course.work.submission.usecase
 
 //class RemoveAttachmentOfSubmissionUseCase(
-//    private val transactionWorker: SuspendTransactionWorker,
+//    private val transactionWorker: TransactionWorker,
 //    private val attachmentRepository: AttachmentRepository
 //) {
 //

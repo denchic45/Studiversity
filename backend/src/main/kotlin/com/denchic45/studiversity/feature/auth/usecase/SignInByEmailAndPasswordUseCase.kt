@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.auth.usecase
 
 import com.denchic45.studiversity.feature.auth.model.RefreshToken
 import com.denchic45.studiversity.feature.user.UserRepository
-import com.denchic45.studiversity.transaction.TransactionWorker
+import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.stuiversity.api.auth.AuthErrors
 import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest
 import io.ktor.server.plugins.*
@@ -12,10 +12,10 @@ import java.time.ZoneOffset
 import java.util.*
 
 class SignInByEmailAndPasswordUseCase(
-    private val transactionWorker: TransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val userRepository: UserRepository
 ) {
-    operator fun invoke(signInByEmailPasswordRequest: SignInByEmailPasswordRequest) = transactionWorker {
+    suspend operator fun invoke(signInByEmailPasswordRequest: SignInByEmailPasswordRequest) = suspendTransactionWorker {
         val userByEmail = userRepository.findEmailPasswordByEmail(signInByEmailPasswordRequest.email)
             ?: throw BadRequestException(AuthErrors.INVALID_EMAIL)
         if (!BCrypt.checkpw(signInByEmailPasswordRequest.password, userByEmail.password))

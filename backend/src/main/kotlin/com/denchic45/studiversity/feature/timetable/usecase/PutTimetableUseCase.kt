@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.feature.timetable.usecase
 
 import com.denchic45.studiversity.feature.timetable.TimetableRepository
-import com.denchic45.studiversity.transaction.TransactionWorker
+import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import java.time.DayOfWeek
@@ -10,11 +10,11 @@ import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 
 class PutTimetableUseCase(
-    private val transactionWorker: TransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val timetableRepository: TimetableRepository
 ) {
-    operator fun invoke(weekOfYear: String, putTimetableRequest: PutTimetableRequest): TimetableResponse {
-        return transactionWorker {
+  suspend operator fun invoke(weekOfYear: String, putTimetableRequest: PutTimetableRequest): TimetableResponse {
+        return suspendTransactionWorker {
             val monday = LocalDate.parse(
                 weekOfYear, DateTimeFormatterBuilder()
                     .appendPattern("YYYY_ww")

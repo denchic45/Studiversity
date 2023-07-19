@@ -6,10 +6,10 @@ import java.util.*
 
 
 class RemoveAttachmentUseCase(
-    private val transactionWorker: SuspendTransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val attachmentRepository: AttachmentRepository
 ) {
-    suspend operator fun invoke(attachmentId: UUID) = transactionWorker.suspendInvoke {
+    suspend operator fun invoke(attachmentId: UUID) = suspendTransactionWorker.invoke {
         attachmentRepository.removeAttachment(attachmentId)
     }
 }

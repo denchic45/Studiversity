@@ -11,7 +11,6 @@ import com.denchic45.studiversity.feature.room.configureRooms
 import com.denchic45.studiversity.feature.schedule.configureSchedule
 import com.denchic45.studiversity.feature.specialty.configureSpecialties
 import com.denchic45.studiversity.feature.studygroup.configureStudyGroups
-import com.denchic45.studiversity.feature.teacher.configureTeachers
 import com.denchic45.studiversity.feature.timetable.configureTimetable
 import com.denchic45.studiversity.feature.user.configureUsers
 import com.denchic45.studiversity.logger.logger
@@ -70,7 +69,6 @@ fun Application.module() = runBlocking {
         configureUsers()
         configureRoles()
         configureMembership()
-        configureTeachers()
         configureAttachments()
         configureStudyGroups()
         configureSpecialties()

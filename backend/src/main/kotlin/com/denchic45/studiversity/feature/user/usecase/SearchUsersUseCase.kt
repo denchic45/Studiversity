@@ -1,14 +1,14 @@
 package com.denchic45.studiversity.feature.user.usecase
 
 import com.denchic45.studiversity.feature.user.UserRepository
-import com.denchic45.studiversity.transaction.TransactionWorker
+import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.studiversity.util.searchable
 
 class SearchUsersUseCase(
-    private val transactionWorker: TransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val userRepository: UserRepository
 ) {
-    operator fun invoke(query: String) = transactionWorker {
+  suspend operator fun invoke(query: String) = suspendTransactionWorker {
         userRepository.find(query.searchable())
     }
 }

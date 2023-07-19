@@ -9,7 +9,7 @@ class AddUserToMembershipUseCase(
     private val userMembershipRepository: UserMembershipRepository,
     private val roleRepository: RoleRepository
 ) {
-    operator fun invoke(member: Member, roles: List<Long>, scopeId: UUID) {
+  suspend operator fun invoke(member: Member, roles: List<Long>, scopeId: UUID) {
         userMembershipRepository.addMember(member)
         roleRepository.addUserRolesToScope(member.userId, roles, scopeId)
     }

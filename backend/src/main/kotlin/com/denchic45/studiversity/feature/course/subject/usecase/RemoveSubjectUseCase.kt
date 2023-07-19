@@ -5,7 +5,7 @@ import io.ktor.server.plugins.*
 import java.util.*
 
 class RemoveSubjectUseCase(private val subjectRepository: SubjectRepository) {
-    operator fun invoke(id: UUID) {
+  suspend operator fun invoke(id: UUID) {
         subjectRepository.remove(id) ?: throw NotFoundException()
     }
 }

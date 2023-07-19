@@ -4,7 +4,7 @@ package com.denchic45.studiversity.feature.course.element.usecase
 //    private val transactionWorker: TransactionWorker,
 //    private val attachmentRepository: AttachmentRepository
 //) {
-//    operator fun invoke(elementId: UUID) = transactionWorker {
+//  suspend operator fun invoke(elementId: UUID) = transactionWorker {
 //        attachmentRepository.findAttachmentsByCourseElementId(elementId)
 //    }
 //}

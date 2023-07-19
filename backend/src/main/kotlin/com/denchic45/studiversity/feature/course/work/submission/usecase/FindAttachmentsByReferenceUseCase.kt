@@ -6,11 +6,11 @@ import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import java.util.*
 
 class FindAttachmentsByReferenceUseCase(
-    private val transactionWorker: SuspendTransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val attachmentRepository: AttachmentRepository
 ) {
     suspend operator fun invoke(consumerId: UUID): List<AttachmentHeader> {
-        return transactionWorker.suspendInvoke {
+        return suspendTransactionWorker.invoke {
             attachmentRepository.findAttachmentsByReferenceId(consumerId)
         }
     }

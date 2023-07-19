@@ -6,7 +6,7 @@ import io.ktor.server.plugins.*
 import java.util.*
 
 class RequireAvailableRolesInScopeUseCase(private val roleRepository: RoleRepository) {
-    operator fun invoke(rolesIds: List<Long>, scopeId: UUID) {
+  suspend operator fun invoke(rolesIds: List<Long>, scopeId: UUID) {
         if (!roleRepository.existRolesByScope(rolesIds, scopeId))
             throw BadRequestException(RoleErrors.NOT_AVAILABLE_ROLE_IN_SCOPE)
     }

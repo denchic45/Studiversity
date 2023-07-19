@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.auth.usecase
 
 import com.denchic45.studiversity.feature.auth.model.MagicLinkToken
 import com.denchic45.studiversity.feature.user.UserRepository
-import com.denchic45.studiversity.transaction.TransactionWorker
+import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.studiversity.util.EmailSender
 import com.denchic45.stuiversity.api.auth.AuthErrors
 import com.denchic45.stuiversity.api.auth.model.ResetPasswordRequest
@@ -12,11 +12,11 @@ import java.time.ZoneOffset
 import java.util.*
 
 class RecoverPasswordUseCase(
-    private val transactionWorker: TransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val userRepository: UserRepository,
     private val emailSender: EmailSender
 ) {
-    operator fun invoke(recoverPasswordRequest: ResetPasswordRequest, url: String) = transactionWorker {
+    suspend operator fun invoke(recoverPasswordRequest: ResetPasswordRequest, url: String) = suspendTransactionWorker {
         val email = recoverPasswordRequest.email
         val user = userRepository.findUserByEmail(email)
             ?: throw BadRequestException(AuthErrors.INVALID_EMAIL)

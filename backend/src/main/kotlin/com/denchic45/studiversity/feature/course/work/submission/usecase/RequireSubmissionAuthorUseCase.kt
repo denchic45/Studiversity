@@ -9,7 +9,7 @@ class RequireSubmissionAuthorUseCase(
     private val transactionWorker: TransactionWorker,
     private val submissionRepository: SubmissionRepository
 ) {
-    operator fun invoke(submissionId: UUID, authorId: UUID) = transactionWorker {
+  operator fun invoke(submissionId: UUID, authorId: UUID) = transactionWorker {
         if (!submissionRepository.isAuthorBySubmissionId(submissionId, authorId)) {
             throw ForbiddenException()
         }

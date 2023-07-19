@@ -7,11 +7,11 @@ import io.ktor.server.plugins.*
 import java.util.*
 
 class FindAttachmentUseCase(
-    private val transactionWorker: SuspendTransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val attachmentRepository: AttachmentRepository
 ) {
     suspend operator fun invoke(attachmentId: UUID): AttachmentResponse {
-        return transactionWorker.suspendInvoke {
+        return suspendTransactionWorker.invoke {
             attachmentRepository.findAttachmentById(attachmentId)
                 ?: throw NotFoundException()
         }

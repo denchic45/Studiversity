@@ -11,12 +11,12 @@ import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import org.mindrot.jbcrypt.BCrypt
 
 class SignUpUserManuallyUseCase(
-    private val transactionWorker: SuspendTransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
     private val emailSender: EmailSender
 ) {
-    suspend operator fun invoke(createUserRequest: CreateUserRequest) = transactionWorker.suspendInvoke {
+    suspend operator fun invoke(createUserRequest: CreateUserRequest) = suspendTransactionWorker.invoke {
         val password = PasswordGenerator().generate()
         logger.info { "generated password for user: ${createUserRequest.email}, password: $password" }
         val user = userRepository.add(createUserRequest, BCrypt.hashpw(password, BCrypt.gensalt()))

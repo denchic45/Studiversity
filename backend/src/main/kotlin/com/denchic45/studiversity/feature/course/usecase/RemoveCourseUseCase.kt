@@ -10,12 +10,12 @@ import io.ktor.server.plugins.*
 import java.util.*
 
 class RemoveCourseUseCase(
-    private val transactionWorker: SuspendTransactionWorker,
+    private val suspendTransactionWorker: SuspendTransactionWorker,
     private val attachmentRepository: AttachmentRepository,
     private val courseRepository: CourseRepository,
     private val scopeRepository: ScopeRepository
 ) {
-    suspend operator fun invoke(courseId: UUID) = transactionWorker.suspendInvoke {
+    suspend operator fun invoke(courseId: UUID) = suspendTransactionWorker {
         if (!courseRepository.exist(courseId))
             throw NotFoundException()
         if (!courseRepository.isArchivedCourse(courseId))
