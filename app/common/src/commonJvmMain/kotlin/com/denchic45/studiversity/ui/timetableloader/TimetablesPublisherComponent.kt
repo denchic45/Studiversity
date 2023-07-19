@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.timetableLoader
+package com.denchic45.studiversity.ui.timetableloader
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext

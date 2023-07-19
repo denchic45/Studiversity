@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.timetableSearch
+package com.denchic45.studiversity.ui.timetablesearch
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

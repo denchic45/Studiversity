@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.timetableLoader
+package com.denchic45.studiversity.ui.timetableloader
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,7 +44,6 @@ import com.denchic45.stuiversity.util.toToLocalDateTime
 import com.denchic45.stuiversity.util.withDayOfWeek
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
 import java.time.temporal.WeekFields
 import java.util.Locale
 

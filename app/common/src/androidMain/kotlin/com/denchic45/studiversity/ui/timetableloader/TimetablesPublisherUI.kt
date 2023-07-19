@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.timetableLoader
+package com.denchic45.studiversity.ui.timetableloader
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable

@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.appVersion
+package com.denchic45.studiversity.appversion
 
 import android.app.Activity
 import android.content.Context

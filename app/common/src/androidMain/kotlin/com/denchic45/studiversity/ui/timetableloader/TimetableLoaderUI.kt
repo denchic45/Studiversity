@@ -1,10 +1,7 @@
-package com.denchic45.studiversity.ui.timetableLoader
+package com.denchic45.studiversity.ui.timetableloader
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
-import com.arkivanov.essenty.lifecycle.doOnStart
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
 
 @Composable
 fun TimetableLoaderScreen(

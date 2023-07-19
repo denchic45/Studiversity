@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.timetableSearch
+package com.denchic45.studiversity.ui.timetablesearch
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
