@@ -6,8 +6,9 @@ import kotlinx.serialization.Serializable
 import java.util.*
 
 @Serializable
-data class TopicResponse(
+data class CourseTopicResponse(
     val id: @Serializable(UUIDSerializer::class) UUID,
+    val courseId: @Serializable(UUIDSerializer::class) UUID,
     val name: String,
-    val order:Int
+    val order: Int
 )

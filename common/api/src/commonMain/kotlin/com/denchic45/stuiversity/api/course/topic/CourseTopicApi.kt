@@ -4,8 +4,8 @@ package com.denchic45.stuiversity.api.course.topic
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
+import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 import com.denchic45.stuiversity.api.course.topic.model.CreateTopicRequest
-import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import com.denchic45.stuiversity.api.course.topic.model.UpdateTopicRequest
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -17,17 +17,20 @@ import kotlinx.serialization.json.Json
 import java.util.*
 
 interface CourseTopicApi {
-    suspend fun create(courseId: UUID, createTopicRequest: CreateTopicRequest): ResponseResult<TopicResponse>
+    suspend fun create(
+        courseId: UUID,
+        createTopicRequest: CreateTopicRequest
+    ): ResponseResult<CourseTopicResponse>
 
     suspend fun update(
         courseId: UUID,
         topicId: UUID,
         updateTopicRequest: UpdateTopicRequest
-    ): ResponseResult<TopicResponse>
+    ): ResponseResult<CourseTopicResponse>
 
-    suspend fun getById(courseId: UUID, topicId: UUID): ResponseResult<TopicResponse>
+    suspend fun getById(courseId: UUID, topicId: UUID): ResponseResult<CourseTopicResponse>
 
-    suspend fun getByCourseId(courseId: UUID): ResponseResult<List<TopicResponse>>
+    suspend fun getByCourseId(courseId: UUID): ResponseResult<List<CourseTopicResponse>>
 
     suspend fun delete(courseId: UUID, topicId: UUID, relatedTopicElements: RelatedTopicElements): EmptyResponseResult
 }
@@ -42,7 +45,10 @@ enum class RelatedTopicElements {
 }
 
 class CourseTopicApiImpl(private val client: HttpClient) : CourseTopicApi {
-    override suspend fun create(courseId: UUID, createTopicRequest: CreateTopicRequest): ResponseResult<TopicResponse> {
+    override suspend fun create(
+        courseId: UUID,
+        createTopicRequest: CreateTopicRequest
+    ): ResponseResult<CourseTopicResponse> {
         return client.post("/courses/$courseId/topics") {
             contentType(ContentType.Application.Json)
             setBody(createTopicRequest)
@@ -53,18 +59,21 @@ class CourseTopicApiImpl(private val client: HttpClient) : CourseTopicApi {
         courseId: UUID,
         topicId: UUID,
         updateTopicRequest: UpdateTopicRequest
-    ): ResponseResult<TopicResponse> {
+    ): ResponseResult<CourseTopicResponse> {
         return client.patch("/courses/$courseId/topics/$topicId") {
             contentType(ContentType.Application.Json)
             setBody(updateTopicRequest)
         }.toResult()
     }
 
-    override suspend fun getById(courseId: UUID, topicId: UUID): ResponseResult<TopicResponse> {
+    override suspend fun getById(
+        courseId: UUID,
+        topicId: UUID
+    ): ResponseResult<CourseTopicResponse> {
         return client.get("/courses/$courseId/topics/$topicId").toResult()
     }
 
-    override suspend fun getByCourseId(courseId: UUID): ResponseResult<List<TopicResponse>> {
+    override suspend fun getByCourseId(courseId: UUID): ResponseResult<List<CourseTopicResponse>> {
         return client.get("/courses/$courseId/topics").toResult()
     }
 

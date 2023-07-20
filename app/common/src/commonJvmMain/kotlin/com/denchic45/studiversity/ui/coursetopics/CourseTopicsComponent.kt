@@ -12,8 +12,8 @@ import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.studiversity.util.swap
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
+import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 import com.denchic45.stuiversity.api.course.topic.model.CreateTopicRequest
-import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
 import com.denchic45.stuiversity.api.course.topic.model.UpdateTopicRequest
 import com.denchic45.stuiversity.util.optPropertyOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,12 +39,12 @@ class CourseTopicsComponent(
     private var oldPosition = -1
     private var position = -1
 
-    private val _topics = observeCourseTopicsUseCase(courseId)
-    val topics = MutableStateFlow<Resource<List<TopicResponse>>>(resourceOf())
+    private val observedTopics = observeCourseTopicsUseCase(courseId)
+    val topics = MutableStateFlow<Resource<List<CourseTopicResponse>>>(resourceOf())
 
     init {
         componentScope.launch {
-            _topics.collect {
+            observedTopics.collect {
                 topics.emit(it)
             }
         }

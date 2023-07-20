@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.ui.coursetopics
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -15,7 +16,7 @@ import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,13 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar2.AppBarContent
 import com.denchic45.studiversity.ui.appbar2.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.periodeditor.TransparentTextField
-import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
+import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 
 @Composable
 fun CourseTopicsScreen(component: CourseTopicsComponent) {
@@ -49,60 +51,32 @@ fun CourseTopicsScreen(component: CourseTopicsComponent) {
 
 @Composable
 private fun CourseTopicsContent(
-    items: Resource<List<TopicResponse>>,
+    items: Resource<List<CourseTopicResponse>>,
     onTopicCreate: (String) -> Unit,
     onTopicRename: (Int, String) -> Unit,
     onTopicRemove: (Int) -> Unit
 ) {
     ResourceContent(items) { topics ->
+        var indexOfEditing by remember { mutableStateOf(-1) }
         LazyColumn {
             item {
                 CreatingTopicItem(onSave = onTopicCreate)
             }
             itemsIndexed(topics, key = { _, item -> item.id }) { index, item ->
-                var isEdit by remember { mutableStateOf(false) }
-                if (isEdit) {
-                    EditingTopicItem(
-                        name = item.name,
-                        onSave = { newName ->
-                            if (item.name != newName)
-                                onTopicRename(index, newName)
-                            isEdit = false
-                        },
-                        onRemove = { onTopicRemove(index) }
-                    )
-                } else {
-                    TopicItem(item, onEditClick = { isEdit = true })
-                }
+                EditableTopicItem(
+                    item = item,
+                    isEdit = indexOfEditing == index,
+                    onEditClick = { indexOfEditing = index },
+                    onSaveClick = { newName ->
+                        if (item.name != newName)
+                            onTopicRename(index, newName)
+                        indexOfEditing = -1
+                    },
+                    onRemoveClick = { onTopicRemove(index) }
+                )
             }
         }
     }
-}
-
-@Composable
-private fun TopicItem(item: TopicResponse, onEditClick: () -> Unit) {
-    ListItem(
-        headlineContent = {
-            Text(text = item.name)
-        },
-        leadingContent = {
-            Box(modifier = Modifier.size(40.dp), contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = Icons.Outlined.Menu,
-                    contentDescription = "",
-                )
-            }
-        },
-        trailingContent = {
-            IconButton(onClick = onEditClick) {
-                Icon(
-                    imageVector = Icons.Outlined.Edit,
-                    contentDescription = ""
-                )
-            }
-        },
-        modifier = Modifier.clickable(onClick = onEditClick)
-    )
 }
 
 @Composable
@@ -112,22 +86,20 @@ private fun CreatingTopicItem(onSave: (String) -> Unit) {
 
     ListItem(
         headlineContent = {
+            val focusRequester = remember { FocusRequester() }
             if (enabled) {
-                val focusRequester = remember { FocusRequester() }
-
                 LaunchedEffect(Unit) {
                     focusRequester.requestFocus()
                 }
-
-                TransparentTextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    placeholder = "Создать тему",
-                    modifier = Modifier.focusRequester(focusRequester)
-                )
-            } else {
-                Text(text = "Создать тему")
             }
+            TransparentTextField(
+                value = text,
+                onValueChange = { text = it },
+                placeholder = "Создать тему",
+                readOnly = !enabled,
+                modifier = Modifier.focusRequester(focusRequester)
+            )
+
         },
         leadingContent = {
             IconButton(onClick = {
@@ -136,7 +108,7 @@ private fun CreatingTopicItem(onSave: (String) -> Unit) {
             }) {
                 Icon(
                     imageVector = if (enabled) Icons.Default.Close else Icons.Default.Add,
-                    contentDescription = if (enabled) "Cancel create topic" else "Create topic"
+                    contentDescription = if (enabled) "Cancel creating topic" else "Create topic"
                 )
             }
         },
@@ -160,31 +132,52 @@ private fun CreatingTopicItem(onSave: (String) -> Unit) {
 }
 
 @Composable
-private fun EditingTopicItem(
-    name: String,
-    onSave: (String) -> Unit,
-    onRemove: () -> Unit
+private fun EditableTopicItem(
+    item: CourseTopicResponse,
+    isEdit: Boolean,
+    onEditClick: () -> Unit,
+    onSaveClick: (String) -> Unit,
+    onRemoveClick: () -> Unit
 ) {
-    var text by remember { mutableStateOf(name) }
+    var text by remember { mutableStateOf(item.name) }
     ListItem(
         headlineContent = {
             TransparentTextField(
                 value = text,
-                onValueChange = { text = it }
+                onValueChange = { text = it },
+                readOnly = !isEdit,
+                modifier = Modifier.clickable(onClick = onEditClick)
             )
         },
         leadingContent = {
-            IconButton(onClick = onRemove) {
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = ""
-                )
+            if (isEdit) {
+                IconButton(onClick = onRemoveClick, modifier = Modifier.background(Color.Cyan)) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = ""
+                    )
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .minimumInteractiveComponentSize()
+                        .size(40.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Menu,
+                        contentDescription = ""
+                    )
+                }
             }
         },
         trailingContent = {
-            IconButton(enabled = text.isNotEmpty(), onClick = { onSave(text) }) {
+            IconButton(
+                enabled = text.isNotEmpty(),
+                onClick = { if (isEdit) onSaveClick(text) else onEditClick() }
+            ) {
                 Icon(
-                    imageVector = Icons.Outlined.Done,
+                    imageVector = if (isEdit) Icons.Outlined.Done else Icons.Outlined.Edit,
                     contentDescription = ""
                 )
             }

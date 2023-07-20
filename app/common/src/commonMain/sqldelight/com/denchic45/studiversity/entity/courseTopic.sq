@@ -1,7 +1,7 @@
 import kotlin.Int;
 
 CREATE TABLE courseTopic (
-section_id TEXT NOT NULL UNIQUE PRIMARY KEY,
+topic_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 course_id TEXT NOT NULL,
 name TEXT NOT NULL,
 `order` INTEGER AS Int NOT NULL
@@ -9,22 +9,25 @@ name TEXT NOT NULL,
 
 upsert:
 INSERT INTO courseTopic VALUES ?
-ON CONFLICT(section_id)
+ON CONFLICT(topic_id)
 DO UPDATE SET
 name = excluded.name,
 `order` = excluded.`order`;
 
 getById:
-SELECT * FROM courseTopic WHERE section_id =: sectionId;
+SELECT * FROM courseTopic WHERE topic_id =: sectionId;
 
 getByCourseId:
-SELECT * FROM courseTopic WHERE course_id =:courseId ORDER BY `order`;
+SELECT * FROM courseTopic WHERE course_id =: courseId ORDER BY `order`;
+
+deleteById:
+DELETE FROM courseTopic WHERE topic_id =: topidId;
 
 deleteByCourseId:
 DELETE FROM courseTopic WHERE course_id =: courseId;
 
 deleteMissing:
-DELETE FROM courseTopic WHERE section_id NOT IN(
-    SELECT section_id FROM courseTopic
-    WHERE section_id IN(?)
+DELETE FROM courseTopic WHERE topic_id NOT IN(
+    SELECT topic_id FROM courseTopic
+    WHERE topic_id IN(?)
 );
