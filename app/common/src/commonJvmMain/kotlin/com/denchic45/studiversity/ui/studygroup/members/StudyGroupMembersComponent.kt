@@ -13,7 +13,6 @@ import com.denchic45.studiversity.domain.usecase.RemoveMemberFromScopeUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveUserRoleFromScopeUseCase
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
-import com.denchic45.studiversity.ui.model.MenuAction
 import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
@@ -48,54 +47,6 @@ class StudyGroupMembersComponent(
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
 
-//    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
-//
-//    val childOverlay = childOverlay(
-//        source = overlayNavigation,
-//        childFactory = { config, componentContext ->
-//            when (config) {
-//                is OverlayConfig.Member -> {
-//                    OverlayChild.Member(profileComponent(config.memberId, componentContext))
-//                }
-//
-//                is OverlayConfig.UserEditor -> {
-//                    OverlayChild.UserEditor(
-//                        userEditorComponent(
-//                            overlayNavigation::dismiss,
-//                            config.userId,
-//                            componentContext
-//                        )
-//                    )
-//                }
-//            }
-//        }
-//    )
-
-//    private val navigation = StackNavigation<GroupMembersConfig>()
-
-//    val stack: Value<ChildStack<GroupMembersConfig, GroupMembersChild>> = childStack(
-//        source = navigation,
-//        initialConfiguration = GroupMembersConfig.Unselected,
-//        childFactory = { config, _ ->
-//            when (config) {
-//                GroupMembersConfig.Unselected -> GroupMembersChild.Unselected
-//                is ProfileConfig -> ProfileChild(profileComponent(config.userId, componentContext))
-//                is UserEditorConfig -> {
-//                    val appBarInteractor = AppBarInteractor()
-//                    UserEditorChild(
-//                        userEditorComponent(
-//                            appBarInteractor,
-//                            navigation::pop,
-//                            config.userId,
-//                            config.role,
-//                            componentContext
-//                        ),
-//                        appBarInteractor
-//                    )
-//                }
-//            }
-//        })
-
     private val componentScope = componentScope()
 
     private val checkUserCapabilities = checkUserCapabilitiesInScopeUseCase(
@@ -124,20 +75,7 @@ class StudyGroupMembersComponent(
         )
     }.stateInResource(componentScope)
 
-
-//    val memberAction = MutableStateFlow<Pair<List<StudentAction>, UUID>?>(null)
-
     val memberActions = MutableStateFlow<Pair<List<MemberAction>, UUID>?>(null)
-
-//    init {
-//        componentScope.launch {
-//            selectedMember.collect { userId ->
-//                val config = if (userId != null) ProfileConfig(userId)
-//                else GroupMembersConfig.Unselected
-//                navigation.bringToFront(config)
-//            }
-//        }
-//    }
 
     fun onMemberSelect(memberId: UUID) {
         onMemberOpen(memberId)
@@ -182,7 +120,6 @@ class StudyGroupMembersComponent(
         }
     }
 
-
     fun onMemberActionsExpand(memberId: UUID) {
         members.value.onSuccess { members ->
             memberActions.update {
@@ -204,29 +141,5 @@ class StudyGroupMembersComponent(
         memberActions.value = null
     }
 
-//    @Parcelize
-//    sealed class OverlayConfig : Parcelable {
-//
-//        data class Member(val memberId: UUID) : OverlayConfig()
-//
-//        data class UserEditor(val userId: UUID) : OverlayConfig()
-//    }
-//
-//    sealed class OverlayChild {
-//
-//        class Member(val component: ProfileComponent) : OverlayChild()
-//
-//        class UserEditor(val component: UserEditorComponent) : OverlayChild()
-//    }
-
     enum class MemberAction { EDIT, REMOVE, SET_HEADMAN, REMOVE_HEADMAN }
-
-    enum class StudentAction(
-        override val title: String,
-        override val iconName: String? = null,
-    ) : MenuAction {
-        SetHeadman("Назначить старостой"),
-        RemoveHeadman("Лишить прав старосты"),
-//        Edit("Редактировать")
-    }
 }

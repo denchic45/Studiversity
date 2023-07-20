@@ -2,9 +2,9 @@ package com.denchic45.studiversity.ui.coursework
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.denchic45.studiversity.data.domain.model.FileState
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.mapResource
+import com.denchic45.studiversity.domain.model.FileState
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
@@ -144,7 +144,7 @@ class CourseWorkComponent(
         when (item) {
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
                 FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
-                FileState.Preview,FileState.FailDownload -> componentScope.launch {
+                FileState.Preview, FileState.FailDownload -> componentScope.launch {
                     downloadFileUseCase(item.attachmentId)
                 }
 

@@ -201,7 +201,6 @@ class MainComponent(
             }
     }
 
-    // TODO listen root role of current user to show works screen
     val availableScreens = combine(
         hasStudyGroupsFlow,
         assignedRolesInOrganization.map {

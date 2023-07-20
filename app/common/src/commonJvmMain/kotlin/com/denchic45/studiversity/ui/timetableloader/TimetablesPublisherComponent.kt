@@ -84,7 +84,7 @@ class TimetablesPublisherComponent(
         source = overlayNavigation,
         childFactory = { config, componentContext ->
             when (config) {
-                OverlayConfig.GroupChooser -> OverlayChild.GroupChooser(
+                OverlayConfig.StudyGroupChooser -> OverlayChild.StudyGroupChooser(
                     studyGroupChooserComponent(
                         {
                             overlayNavigation.dismiss()
@@ -169,8 +169,6 @@ class TimetablesPublisherComponent(
             editorComponents.update { components ->
                 components + dayTimetableEditorComponent
             }
-
-//            timetablesViewStates.update { it + getViewState(dayTimetableEditorComponent) }
         }
     }
 
@@ -188,7 +186,6 @@ class TimetablesPublisherComponent(
                 }
                 studyGroups.update { it - it[position] }
                 editorComponents.update { it - it[position].apply { onDestroy() } }
-//                timetablesViewStates.update { it - it[position] }
             }
         }
     }
@@ -264,16 +261,10 @@ class TimetablesPublisherComponent(
         return selectedTimetableState.getByDay(dayOfWeek)
     }
 
-
     private val selectedTimetableState get() = currentEditor.editingTimetableState.value
-
 
     private val currentEditor
         get() = editorComponents.value[selectedGroup.value]
-
-//    private fun getDateByDayOfWeek(dayOfWeek: DayOfWeek): LocalDate {
-//        return weekOfYear.toLocalDateOfWeekOfYear(dayOfWeek)
-//    }
 
     fun onPublishClick() {
         publishState.update { PublishState.SENDING }
@@ -290,14 +281,14 @@ class TimetablesPublisherComponent(
     }
 
     fun onStudyGroupChoose() {
-        overlayNavigation.activate(OverlayConfig.GroupChooser)
+        overlayNavigation.activate(OverlayConfig.StudyGroupChooser)
     }
 
     enum class PublishState { PREPARATION, SENDING, DONE, FAILED }
 
     @Parcelize
     sealed class OverlayConfig : Parcelable {
-        object GroupChooser : OverlayConfig()
+        object StudyGroupChooser : OverlayConfig()
 
         data class PeriodEditor(
             val periodConfig: EditingPeriod,
@@ -306,7 +297,7 @@ class TimetablesPublisherComponent(
     }
 
     sealed class OverlayChild {
-        class GroupChooser(val component: StudyGroupChooserComponent) : OverlayChild()
+        class StudyGroupChooser(val component: StudyGroupChooserComponent) : OverlayChild()
 
         class PeriodEditor(val component: PeriodEditorComponent) : OverlayChild()
     }

@@ -7,7 +7,6 @@ import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.overlay
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.studiversity.PlatformMain
 import com.denchic45.studiversity.domain.usecase.ObserveAuthStateUseCase
 import com.denchic45.studiversity.ui.MainComponent
 import com.denchic45.studiversity.ui.auth.AuthComponent
@@ -49,7 +48,7 @@ class RootComponent(
     init {
         componentScope.launch {
             observeAuthStateUseCase().collect {
-                withContext(Dispatchers.PlatformMain) {
+                withContext(Dispatchers.Main) {
                     if (it) {
                         navigation.activate(Config.Main)
                     } else {

@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.PlatformMain
 import com.denchic45.studiversity.domain.EmptyResource
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.resourceOf
@@ -21,9 +20,9 @@ import me.tatarka.inject.annotations.Inject
 class LoginComponent(
     private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
     @Assisted
-    private val onForgotPassword:()->Unit,
+    private val onForgotPassword: () -> Unit,
     @Assisted
-    private val onRegister:()->Unit,
+    private val onRegister: () -> Unit,
     @Assisted
     private val onSuccess: () -> Unit,
     @Assisted
@@ -54,7 +53,7 @@ class LoginComponent(
         componentScope.launch {
             state.result = resourceOf()
             val result = signInWithEmailAndPasswordUseCase(state.email, state.password)
-            withContext(Dispatchers.PlatformMain) {
+            withContext(Dispatchers.Main) {
                 state.result = result
                 result.onSuccess { onSuccess() }
             }

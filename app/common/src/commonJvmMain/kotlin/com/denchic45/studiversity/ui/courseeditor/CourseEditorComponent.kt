@@ -203,7 +203,7 @@ class CourseEditorComponent(
                 when (result) {
                     is Resource.Error -> {}
                     is Resource.Loading -> {}
-                    is Resource.Success -> withContext(Dispatchers.Main.immediate) {
+                    is Resource.Success -> withContext(Dispatchers.Main) {
                         onFinish()
                     }
                 }

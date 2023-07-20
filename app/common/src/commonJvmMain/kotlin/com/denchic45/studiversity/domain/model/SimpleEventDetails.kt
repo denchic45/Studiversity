@@ -1,8 +1,5 @@
 package com.denchic45.studiversity.domain.model
 
-import com.denchic45.studiversity.data.domain.model.EventType
-import com.denchic45.studiversity.util.UUIDS
-
 //data class SimpleEventDetails constructor(
 //    override var id: String,
 //    val name: String,

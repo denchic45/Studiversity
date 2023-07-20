@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.data.remote.model
 
-import com.denchic45.studiversity.data.domain.model.DocModel
+import com.denchic45.studiversity.domain.model.DocModel
 import com.denchic45.studiversity.util.SearchKeysGenerator
 
 data class SpecialtyDoc(

@@ -1,12 +1,8 @@
-package com.denchic45.studiversity.data.pref
+package com.denchic45.studiversity.data.preference
 
 import com.russhwolf.settings.*
-import com.russhwolf.settings.coroutines.getIntFlow
-import com.russhwolf.settings.coroutines.getIntOrNullFlow
 import com.russhwolf.settings.coroutines.getStringFlow
 import com.russhwolf.settings.coroutines.getStringOrNullFlow
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalSettingsApi::class)
 class AppPreferences(val settings: ObservableSettings) : Settings by settings {

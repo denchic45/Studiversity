@@ -1,9 +1,10 @@
 package com.denchic45.studiversity.data.remote.model
 
-import com.denchic45.studiversity.data.domain.model.DocModel
-import com.denchic45.studiversity.data.domain.model.UserRole
+import com.denchic45.studiversity.domain.model.DocModel
+import com.denchic45.studiversity.domain.model.UserRole
 import com.denchic45.studiversity.util.SearchKeysGenerator
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 data class UserDoc(
     var id: String = UUID.randomUUID().toString(),

@@ -3,8 +3,8 @@ package com.denchic45.studiversity.appversion
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-import com.denchic45.studiversity.data.pref.AppPreferences
-import com.denchic45.studiversity.data.pref.TimestampPreferences
+import com.denchic45.studiversity.data.preference.AppPreferences
+import com.denchic45.studiversity.data.preference.TimestampPreferences
 import com.denchic45.studiversity.data.service.AppVersionService
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.InstallStateUpdatedListener

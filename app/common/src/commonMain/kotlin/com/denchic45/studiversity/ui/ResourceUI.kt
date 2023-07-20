@@ -7,7 +7,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.denchic45.studiversity.data.domain.Failure
+import com.denchic45.studiversity.domain.Failure
 import com.denchic45.studiversity.domain.Resource
 
 @Composable

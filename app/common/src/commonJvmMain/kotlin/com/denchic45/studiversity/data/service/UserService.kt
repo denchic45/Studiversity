@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.data.service
 
-import com.denchic45.studiversity.data.pref.AppPreferences
-import com.denchic45.studiversity.data.pref.UserPreferences
+import com.denchic45.studiversity.data.preference.AppPreferences
+import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.domain.EmptyResource
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.toEmptyResource

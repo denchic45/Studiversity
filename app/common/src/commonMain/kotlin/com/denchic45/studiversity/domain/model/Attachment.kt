@@ -1,9 +1,8 @@
-package com.denchic45.studiversity.data.domain.model
+package com.denchic45.studiversity.domain.model
 
 import com.denchic45.studiversity.util.Files
 import com.denchic45.studiversity.util.getExtension
 import okio.Path
-import java.io.File
 
 sealed interface Attachment
 

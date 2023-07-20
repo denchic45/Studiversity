@@ -1,7 +1,5 @@
 package com.denchic45.studiversity.domain.model
 
-import com.denchic45.studiversity.data.domain.model.Attachment
-import com.denchic45.studiversity.data.domain.model.DomainModel
 import com.denchic45.stuiversity.util.toString
 import java.time.LocalDateTime
 import java.util.Date

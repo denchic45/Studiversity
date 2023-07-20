@@ -9,9 +9,9 @@ import com.denchic45.studiversity.data.db.local.source.SubjectLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
-import com.denchic45.studiversity.data.pref.AppPreferences
-import com.denchic45.studiversity.data.pref.TimestampPreferences
-import com.denchic45.studiversity.data.pref.UserPreferences
+import com.denchic45.studiversity.data.preference.AppPreferences
+import com.denchic45.studiversity.data.preference.TimestampPreferences
+import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess

@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.data.repository
 
-import com.denchic45.studiversity.data.domain.model.DomainModel
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.data.service.withCollectHasNetwork
 import com.denchic45.studiversity.data.service.withHasNetwork
 import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.model.DomainModel
 import com.denchic45.studiversity.domain.toResource
 import com.denchic45.stuiversity.api.common.ResponseResult
 import kotlinx.coroutines.flow.Flow

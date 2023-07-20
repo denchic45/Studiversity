@@ -1,12 +1,12 @@
 package com.denchic45.studiversity.data.db.remote.model
 
-import com.denchic45.studiversity.data.domain.model.UserRole
+import com.denchic45.studiversity.domain.model.UserRole
 import com.denchic45.studiversity.util.FireMap
 import com.denchic45.studiversity.util.SearchKeysGenerator
 import com.denchic45.studiversity.util.mapOrNull
-import java.util.*
+import java.util.Date
 
- class UserMap( val map: FireMap) : FireMap by map {
+class UserMap( val map: FireMap) : FireMap by map {
     val id: String by map
     val firstName: String by map
     val surname: String by map

@@ -6,7 +6,7 @@ import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.mapper.toEntity
 import com.denchic45.studiversity.data.mapper.toUserResponse
 import com.denchic45.studiversity.data.observeResource
-import com.denchic45.studiversity.data.pref.UserPreferences
+import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.EmptyResource
 import com.denchic45.studiversity.domain.Resource

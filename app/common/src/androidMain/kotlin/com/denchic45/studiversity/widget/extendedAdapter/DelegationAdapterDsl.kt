@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.widget.extendedAdapter
 
-import com.denchic45.studiversity.data.domain.model.DomainModel
+import com.denchic45.studiversity.domain.model.DomainModel
 
 @DslMarker
 annotation class ExtendedAdapterMarker

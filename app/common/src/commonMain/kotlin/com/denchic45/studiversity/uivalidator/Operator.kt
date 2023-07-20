@@ -33,7 +33,3 @@ fun <T> List<Condition<T>>.validate(value: T, operator: Operator<Condition<T>>):
 fun <T> List<Validator<out T>>.validate(operator: Operator<Validator<out T>>): Boolean {
     return operator(this) { it.validate() }
 }
-
-//fun List<Validator<*>>.validate(operator: Operator<Validator< *>>): Boolean {
-//    return operator(this) { it.validate() }
-//}

@@ -1,11 +1,11 @@
 package com.denchic45.studiversity.ui.coursework.submissiondetails
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.data.domain.model.FileState
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.combine
 import com.denchic45.studiversity.domain.map
 import com.denchic45.studiversity.domain.mapResource
+import com.denchic45.studiversity.domain.model.FileState
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.resourceOf
 import com.denchic45.studiversity.domain.stateInResource

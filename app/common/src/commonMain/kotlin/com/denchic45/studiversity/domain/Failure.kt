@@ -1,7 +1,7 @@
-package com.denchic45.studiversity.data.domain
+package com.denchic45.studiversity.domain
 
 import com.denchic45.stuiversity.util.ErrorResponse
-import io.ktor.http.*
+import io.ktor.http.HttpStatusCode
 
 sealed class Failure
 object NoConnection : Failure()

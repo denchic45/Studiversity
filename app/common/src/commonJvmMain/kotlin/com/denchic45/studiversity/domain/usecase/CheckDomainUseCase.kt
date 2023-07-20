@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.domain.usecase
 
-import com.denchic45.studiversity.data.domain.Cause
 import com.denchic45.studiversity.data.service.AuthService
+import com.denchic45.studiversity.domain.Cause
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.resourceOf
 import com.denchic45.stuiversity.api.Pong

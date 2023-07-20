@@ -1,7 +1,6 @@
 package com.denchic45.studiversity.domain.model
 
-import com.denchic45.studiversity.data.domain.model.DomainModel
-import java.util.*
+import java.util.Date
 
 abstract class CourseContent : DomainModel {
     abstract val courseId: String

@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.domain.usecase
 
-import com.denchic45.studiversity.data.domain.model.Attachment2
 import com.denchic45.studiversity.data.repository.AttachmentRepository
 import com.denchic45.studiversity.data.service.DownloadsService
 import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.model.Attachment2
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID

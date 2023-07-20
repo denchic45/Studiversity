@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.data.service
 
 import com.denchic45.studiversity.data.db.local.source.AttachmentLocalDataSource
-import com.denchic45.studiversity.data.domain.model.FileState
 import com.denchic45.studiversity.data.storage.AttachmentStorage
+import com.denchic45.studiversity.domain.model.FileState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf

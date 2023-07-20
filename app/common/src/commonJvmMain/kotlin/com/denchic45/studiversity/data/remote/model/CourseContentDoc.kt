@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.data.remote.model
 
 import com.denchic45.studiversity.data.db.remote.model.ContentCommentMap
-import com.denchic45.studiversity.data.domain.model.TaskStatus
 import com.denchic45.studiversity.domain.model.ContentDetails
 import com.denchic45.studiversity.domain.model.ContentType
-import java.util.*
+import com.denchic45.studiversity.domain.model.TaskStatus
+import java.util.Date
 
 data class CourseContentDoc constructor(
     val id: String,

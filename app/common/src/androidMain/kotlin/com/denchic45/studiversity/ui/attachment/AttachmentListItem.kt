@@ -35,7 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.data.domain.model.FileState
+import com.denchic45.studiversity.domain.model.FileState
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.theme.spacing
 import com.seiko.imageloader.rememberAsyncImagePainter

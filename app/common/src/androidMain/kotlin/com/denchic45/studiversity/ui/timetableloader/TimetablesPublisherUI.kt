@@ -106,7 +106,7 @@ fun TimetablesPublisherScreen(
 
     overlay.overlay?.let {
         when (val child = it.instance) {
-            is TimetablesPublisherComponent.OverlayChild.GroupChooser -> {
+            is TimetablesPublisherComponent.OverlayChild.StudyGroupChooser -> {
                 hideAppBar()
                 StudyGroupChooserScreen(
                     component = child.component

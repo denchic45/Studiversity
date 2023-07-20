@@ -7,10 +7,10 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
-import com.denchic45.studiversity.data.domain.model.FileState
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.filterSuccess
 import com.denchic45.studiversity.domain.map
+import com.denchic45.studiversity.domain.model.FileState
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.resourceOf
 import com.denchic45.studiversity.domain.stateInResource

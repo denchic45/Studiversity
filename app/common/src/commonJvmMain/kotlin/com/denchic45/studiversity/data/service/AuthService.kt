@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.data.service
 
 import com.denchic45.studiversity.data.db.local.DbHelper
-import com.denchic45.studiversity.data.pref.AppPreferences
+import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.di.GuestHttpClient
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
@@ -21,8 +21,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
-import io.ktor.http.URLProtocol
-import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineScope

@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
-import com.denchic45.studiversity.data.pref.AppPreferences
+import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.storage.AttachmentStorage
 import com.denchic45.studiversity.data.workmanager.AppWorkerFactory
 import com.denchic45.studiversity.data.workmanager.DownloadWorker

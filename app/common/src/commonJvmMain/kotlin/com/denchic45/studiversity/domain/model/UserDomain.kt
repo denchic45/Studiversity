@@ -1,7 +1,5 @@
 package com.denchic45.studiversity.domain.model
 
-import com.denchic45.studiversity.data.domain.model.DomainModel
-import com.denchic45.studiversity.data.domain.model.UserRole
 import com.denchic45.stuiversity.api.user.model.Gender
 import java.util.UUID
 

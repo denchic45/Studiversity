@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.data.pref.core
+package com.denchic45.studiversity.data.preference.core
 
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings

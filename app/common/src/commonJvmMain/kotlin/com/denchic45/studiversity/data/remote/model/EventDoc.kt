@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.data.remote.model
 
-import com.denchic45.studiversity.data.domain.model.DocModel
-import java.util.*
+import com.denchic45.studiversity.domain.model.DocModel
+import java.util.Date
 
 data class EventDoc(
     var id: String,

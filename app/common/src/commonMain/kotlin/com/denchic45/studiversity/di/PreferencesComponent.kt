@@ -1,6 +1,8 @@
 package com.denchic45.studiversity.di
 
-import com.denchic45.studiversity.data.pref.*
+import com.denchic45.studiversity.data.preference.AppPreferences
+import com.denchic45.studiversity.data.preference.TimestampPreferences
+import com.denchic45.studiversity.data.preference.UserPreferences
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
@@ -23,12 +25,6 @@ abstract class PreferencesComponent(@get:Provides val factory: SettingsFactory) 
     @Provides
     fun provideTimestampPreferences(): TimestampPreferences {
         return TimestampPreferences(factory.createObservable("Timestamp"))
-    }
-
-    @LayerScope
-    @Provides
-    fun provideCoursePreferences(): CoursePreferences {
-        return CoursePreferences(factory.createObservable("Courses"))
     }
 }
 

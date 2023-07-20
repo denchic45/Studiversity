@@ -227,7 +227,6 @@ class TimetableSearchComponent(
             OverlayConfig.PeriodEditor(
                 dayTimetableEditorComponent!!.editingTimetableState.value
                     .getByDay(dayOfWeek)[periodPosition].let { slot ->
-
                     EditingPeriod(getDateByDayOfWeek(dayOfWeek), selectedStudyGroupItem).apply {
                         order = periodPosition + 1
                         when (slot) {

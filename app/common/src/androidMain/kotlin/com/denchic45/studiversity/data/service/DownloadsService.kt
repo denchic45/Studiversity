@@ -8,8 +8,8 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.denchic45.studiversity.data.db.local.source.AttachmentLocalDataSource
-import com.denchic45.studiversity.data.domain.model.FileState
 import com.denchic45.studiversity.data.workmanager.DownloadWorker
+import com.denchic45.studiversity.domain.model.FileState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject

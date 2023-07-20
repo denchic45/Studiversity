@@ -17,11 +17,11 @@ import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindCourseByIdUseCase
-import com.denchic45.studiversity.ui.CourseMembersComponent
 import com.denchic45.studiversity.ui.courseeditor.CourseEditorComponent
 import com.denchic45.studiversity.ui.courseelements.CourseElementsComponent
 import com.denchic45.studiversity.ui.coursematerial.CourseMaterialComponent
 import com.denchic45.studiversity.ui.coursematerialeditor.CourseMaterialEditorComponent
+import com.denchic45.studiversity.ui.coursemembers.CourseMembersComponent
 import com.denchic45.studiversity.ui.coursestudygroups.CourseStudyGroupsComponent
 import com.denchic45.studiversity.ui.coursetimetable.CourseTimetableComponent
 import com.denchic45.studiversity.ui.coursetopics.CourseTopicsComponent

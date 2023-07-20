@@ -41,7 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.data.domain.Forbidden
+import com.denchic45.studiversity.domain.Forbidden
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
@@ -51,7 +51,7 @@ import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import com.denchic45.stuiversity.api.course.element.model.CourseMaterial
 import com.denchic45.stuiversity.api.course.element.model.CourseWork
-import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
+import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.util.toString
 import java.time.LocalDate
@@ -78,7 +78,7 @@ fun CourseElementsScreen(component: CourseElementsComponent) {
 
 @Composable
 fun CourseElementsContent(
-    elementsResource: Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>>,
+    elementsResource: Resource<List<Pair<CourseTopicResponse?, List<CourseElementResponse>>>>,
     onElementClick: (elementId: UUID, type: CourseElementType) -> Unit,
 ) {
     ResourceContent(

@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.domain.usecase
 
-import com.denchic45.studiversity.data.domain.model.FileState
 import com.denchic45.studiversity.data.service.DownloadsService
+import com.denchic45.studiversity.domain.model.FileState
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID

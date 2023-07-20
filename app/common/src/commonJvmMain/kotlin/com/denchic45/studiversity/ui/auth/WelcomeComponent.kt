@@ -1,14 +1,13 @@
 package com.denchic45.studiversity.ui.auth
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.PlatformMain
-import com.denchic45.studiversity.data.domain.Cause
-import com.denchic45.studiversity.data.domain.ClientError
-import com.denchic45.studiversity.data.domain.Forbidden
-import com.denchic45.studiversity.data.domain.NoConnection
-import com.denchic45.studiversity.data.domain.NotFound
-import com.denchic45.studiversity.data.domain.ServerError
-import com.denchic45.studiversity.data.pref.AppPreferences
+import com.denchic45.studiversity.data.preference.AppPreferences
+import com.denchic45.studiversity.domain.Cause
+import com.denchic45.studiversity.domain.ClientError
+import com.denchic45.studiversity.domain.Forbidden
+import com.denchic45.studiversity.domain.NoConnection
+import com.denchic45.studiversity.domain.NotFound
+import com.denchic45.studiversity.domain.ServerError
 import com.denchic45.studiversity.domain.onFailure
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.usecase.CheckDomainUseCase
@@ -39,16 +38,17 @@ class WelcomeComponent(
     val state = MutableStateFlow<State>(State.Idle)
 
 
-    fun onDomainType(text:String) {
+    fun onDomainType(text: String) {
         url.value = text
     }
+
     fun onCheckDomainClick() {
         componentScope.launch {
             state.value = State.Loading
             checkDomainUseCase(url.value).onSuccess {
                 state.value = State.Success(it.organization)
                 appPreferences.url = url.value
-                withContext(Dispatchers.PlatformMain) {
+                withContext(Dispatchers.Main) {
                     onSuccess()
                 }
             }.onFailure {
@@ -72,7 +72,6 @@ class WelcomeComponent(
             }
         }
     }
-
 
 
     sealed class State(val isError: Boolean = false) {

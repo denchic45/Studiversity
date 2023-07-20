@@ -2,7 +2,7 @@ package com.denchic45.studiversity.ui.yourtimetables
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.denchic45.studiversity.data.pref.AppPreferences
+import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.domain.map
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.resourceOf

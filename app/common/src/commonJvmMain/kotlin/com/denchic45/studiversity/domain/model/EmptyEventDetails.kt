@@ -1,7 +1,5 @@
 package com.denchic45.studiversity.domain.model
 
-import com.denchic45.studiversity.data.domain.model.EventType
-
 //class EmptyEventDetails : EventDetails() {
 //    override val eventType: EventType
 //        get() = EventType.EMPTY

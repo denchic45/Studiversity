@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.di
 
-import com.denchic45.studiversity.data.pref.AppPreferences
+import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.attachment.AttachmentApiImpl
 import com.denchic45.stuiversity.api.auth.AuthApi

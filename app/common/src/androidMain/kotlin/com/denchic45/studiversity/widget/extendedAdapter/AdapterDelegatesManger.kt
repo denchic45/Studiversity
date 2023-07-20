@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.collection.SparseArrayCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.denchic45.studiversity.data.domain.model.DomainModel
+import com.denchic45.studiversity.domain.model.DomainModel
 import com.denchic45.studiversity.widget.extendedAdapter.action.ActionHistory
 
 

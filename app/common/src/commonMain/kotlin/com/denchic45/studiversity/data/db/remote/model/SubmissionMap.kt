@@ -1,11 +1,11 @@
 package com.denchic45.studiversity.data.db.remote.model
 
-import com.denchic45.studiversity.data.domain.model.TaskStatus
+import com.denchic45.studiversity.domain.model.TaskStatus
 import com.denchic45.studiversity.util.FireMap
 import com.denchic45.studiversity.util.mapListOrEmpty
 import com.denchic45.studiversity.util.mapOrDefault
 import com.denchic45.studiversity.util.mapOrNull
-import java.util.*
+import java.util.Date
 
 data class SubmissionMap(private val map: FireMap) : FireMap by map {
     val id: String by map

@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.data.pref.core
+package com.denchic45.studiversity.data.preference.core
 
 import com.denchic45.studiversity.util.SystemDirs
 import java.io.File

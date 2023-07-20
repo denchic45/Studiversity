@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.data.service
 
-import com.denchic45.studiversity.data.domain.NoConnection
+import com.denchic45.studiversity.domain.NoConnection
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.resourceOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi

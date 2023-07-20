@@ -1,8 +1,5 @@
 package com.denchic45.studiversity.util
 
-import com.denchic45.studiversity.data.domain.model.DomainModel
-import com.denchic45.studiversity.domain.model.CourseContent
-
 //object CourseContents {
 //
 //    fun sort(

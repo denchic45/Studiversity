@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.di
 
-import com.denchic45.studiversity.data.pref.core.FilePreferences
-import com.russhwolf.settings.PreferencesSettings
+import com.denchic45.studiversity.data.preference.core.FilePreferences
 import com.russhwolf.settings.ObservableSettings
+import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 
 actual class SettingsFactory {

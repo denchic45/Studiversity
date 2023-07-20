@@ -1,13 +1,5 @@
 package com.denchic45.studiversity.domain
 
-import com.denchic45.studiversity.data.domain.Cause
-import com.denchic45.studiversity.data.domain.ClientError
-import com.denchic45.studiversity.data.domain.Failure
-import com.denchic45.studiversity.data.domain.Forbidden
-import com.denchic45.studiversity.data.domain.NoConnection
-import com.denchic45.studiversity.data.domain.NotFound
-import com.denchic45.studiversity.data.domain.ServerError
-import com.denchic45.studiversity.data.domain.toFailure
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.github.michaelbull.result.mapBoth
 import kotlinx.coroutines.CoroutineScope

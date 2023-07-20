@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.data.domain.model
+package com.denchic45.studiversity.domain.model
 
 import okio.Path
 import java.util.UUID

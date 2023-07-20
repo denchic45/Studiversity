@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.di
 
 import com.denchic45.studiversity.data.db.local.DriverFactory
-import com.denchic45.studiversity.data.pref.AppPreferences
+import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.service.AppVersionService
 import com.denchic45.studiversity.data.service.FakeAppVersionService
 import com.denchic45.studiversity.util.SystemDirs

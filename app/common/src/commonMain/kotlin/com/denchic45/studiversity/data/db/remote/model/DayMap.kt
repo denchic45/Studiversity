@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.data.db.remote.model
 
-import com.denchic45.studiversity.data.domain.model.EventType
+import com.denchic45.studiversity.domain.model.EventType
 import com.denchic45.studiversity.util.MutableFireMap
 import com.denchic45.studiversity.util.mapListOrEmpty
-import java.util.*
+import java.util.Date
 
 data class DayMap(private val map: MutableFireMap) : MutableFireMap by map {
     var id: String by map

@@ -1,15 +1,14 @@
 package com.denchic45.studiversity.data
 
-import com.denchic45.studiversity.data.domain.Cause
 import com.denchic45.studiversity.data.repository.NetworkServiceOwner
 import com.denchic45.studiversity.data.service.withCollectHasNetwork
 import com.denchic45.studiversity.data.service.withHasNetwork
 import com.denchic45.studiversity.data.service.withHasNetworkFlow
+import com.denchic45.studiversity.domain.Cause
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.loadingResource
 import com.denchic45.studiversity.domain.onFailure
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.resourceOf
 import com.denchic45.studiversity.domain.toResource
 import com.denchic45.stuiversity.api.common.ResponseResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi

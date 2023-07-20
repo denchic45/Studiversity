@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.data.remote.model
 
-import com.denchic45.studiversity.data.domain.model.DocModel
-import com.denchic45.studiversity.data.domain.model.EventType
+import com.denchic45.studiversity.domain.model.DocModel
+import com.denchic45.studiversity.domain.model.EventType
 import com.denchic45.studiversity.util.UUIDS
-import java.util.*
+import java.util.Date
 
 data class DayDoc(
     val id: String,

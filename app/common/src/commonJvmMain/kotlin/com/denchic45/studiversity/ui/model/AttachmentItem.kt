@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.ui.model
 
-import com.denchic45.studiversity.data.domain.model.Attachment2
-import com.denchic45.studiversity.data.domain.model.FileAttachment2
-import com.denchic45.studiversity.data.domain.model.FileState
-import com.denchic45.studiversity.data.domain.model.LinkAttachment2
+import com.denchic45.studiversity.domain.model.Attachment2
+import com.denchic45.studiversity.domain.model.FileAttachment2
+import com.denchic45.studiversity.domain.model.FileState
+import com.denchic45.studiversity.domain.model.LinkAttachment2
 import com.denchic45.studiversity.util.Files
 import com.denchic45.studiversity.util.getExtension
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest

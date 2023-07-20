@@ -7,7 +7,7 @@ import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.studiversity.data.pref.UserPreferences
+import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.flatMapResourceFlow
 import com.denchic45.studiversity.domain.map

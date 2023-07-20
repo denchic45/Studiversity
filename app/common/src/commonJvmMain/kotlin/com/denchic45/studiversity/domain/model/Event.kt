@@ -1,11 +1,5 @@
 package com.denchic45.studiversity.domain.model
 
-import com.denchic45.studiversity.data.domain.model.EventType
-import com.denchic45.studiversity.data.domain.model.DomainModel
-import com.denchic45.studiversity.util.UUIDS
-import java.time.LocalDate
-import java.util.*
-
 //data class Event(
 //    override val id: UUID,
 //    val groupHeader: GroupHeader,

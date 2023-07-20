@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.denchic45.studiversity.data.domain.Failure
+import com.denchic45.studiversity.domain.Failure
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.theme.spacing
 

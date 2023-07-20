@@ -1,7 +1,6 @@
 package com.denchic45.studiversity.domain
 
-import com.denchic45.studiversity.data.domain.NotFound
-import com.denchic45.studiversity.data.pref.AppPreferences
+import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.repository.StudyGroupRepository
 import com.denchic45.studiversity.data.repository.UserRepository
 import com.denchic45.studiversity.data.service.AuthService

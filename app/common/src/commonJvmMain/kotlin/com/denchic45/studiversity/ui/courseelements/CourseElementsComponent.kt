@@ -9,7 +9,7 @@ import com.denchic45.studiversity.domain.usecase.RemoveCourseElementUseCase
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
-import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
+import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -37,7 +37,7 @@ class CourseElementsComponent(
     private val _elements = flow { emit(findCourseElementsUseCase(courseId)) }
         .stateInResource(componentScope)
 
-    val elements = MutableStateFlow<Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>>>(
+    val elements = MutableStateFlow<Resource<List<Pair<CourseTopicResponse?, List<CourseElementResponse>>>>>(
             resourceOf()
         )
 

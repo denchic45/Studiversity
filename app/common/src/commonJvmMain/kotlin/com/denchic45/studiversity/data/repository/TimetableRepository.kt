@@ -8,7 +8,7 @@ import com.denchic45.studiversity.data.db.local.source.StudyGroupLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
 import com.denchic45.studiversity.data.fetchObservingResource
 import com.denchic45.studiversity.data.fetchResource
-import com.denchic45.studiversity.data.pref.UserPreferences
+import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.stuiversity.api.timetable.TimetableApi
 import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting

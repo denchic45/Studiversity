@@ -3,7 +3,7 @@ package com.denchic45.studiversity.domain.usecase
 import com.denchic45.studiversity.data.repository.CourseElementRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
-import com.denchic45.stuiversity.api.course.topic.model.TopicResponse
+import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
@@ -13,7 +13,7 @@ class FindCourseElementsUseCase(
 ) {
     suspend operator fun invoke(
         courseId: UUID,
-    ): Resource<List<Pair<TopicResponse?, List<CourseElementResponse>>>> {
+    ): Resource<List<Pair<CourseTopicResponse?, List<CourseElementResponse>>>> {
         return courseElementRepository.findElementsByCourse(courseId)
     }
 }

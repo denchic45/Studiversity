@@ -1,6 +1,5 @@
 package com.denchic45.studiversity.domain.model
 
-import com.denchic45.studiversity.data.domain.model.DomainModel
 import com.denchic45.studiversity.ui.model.UserItem
 import java.util.UUID
 
