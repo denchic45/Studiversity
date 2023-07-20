@@ -1,14 +1,13 @@
 package com.denchic45.studiversity.data.mapper
 
 
-import com.denchic45.studiversity.CourseEntity
-import com.denchic45.studiversity.CourseWithSubjectEntity
+import com.denchic45.studiversity.entity.Course
+import com.denchic45.studiversity.entity.CourseWithSubject
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.util.toUUID
-import kotlin.collections.List
 
-fun CourseResponse.toCourseEntity() = CourseEntity(
+fun CourseResponse.toCourseEntity() = Course(
     course_id = id.toString(),
     name = name,
     subject_id = subject?.id.toString(),
@@ -17,7 +16,7 @@ fun CourseResponse.toCourseEntity() = CourseEntity(
 
 fun List<CourseResponse>.toCourseEntities() = map(CourseResponse::toCourseEntity)
 
-fun CourseWithSubjectEntity.toCourseResponse() = CourseResponse(
+fun CourseWithSubject.toCourseResponse() = CourseResponse(
     id = course_id.toUUID(),
     name = name,
     subject = subject_id?.toUUID()?.let {
@@ -27,11 +26,11 @@ fun CourseWithSubjectEntity.toCourseResponse() = CourseResponse(
             shortname = subject_shortname!!,
             iconUrl = icon_name!!
         )
-    } ,
+    },
     archived = archived
 )
 
-fun List<CourseWithSubjectEntity>.toCourseResponse() = map(CourseWithSubjectEntity::toCourseResponse)
+fun List<CourseWithSubject>.toCourseResponse() = map(CourseWithSubject::toCourseResponse)
 
 //fun List<CourseMap>.mapsToCourseHeaderDomains() = map { it.toCourseHeader() }
 
@@ -73,7 +72,7 @@ fun List<CourseWithSubjectEntity>.toCourseResponse() = map(CourseWithSubjectEnti
 //fun CourseWithSubjectAndTeacherEntities.entityToCourseHeaderDomain() = CourseHeader(
 //    id = courseEntity.course_id,
 //    name = courseEntity.name,
-//    subject = subjectEntity.entityToSubjectDomain(),
+//    subject = Subject.entityToSubjectDomain(),
 //    teacher = teacherEntity.toUserDomain()
 //)
 

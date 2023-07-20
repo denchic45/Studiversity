@@ -1,6 +1,6 @@
 import kotlin.collections.List;
 
-CREATE TABLE submissionEntity (
+CREATE TABLE submission (
 submission_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 student_id TEXT NOT NULL,
 work_id TEXT NOT NULL,
@@ -18,7 +18,7 @@ timestamp INTEGER NOT NULL
 );
 
 upsert:
-INSERT INTO submissionEntity VALUES ?
+INSERT INTO submission VALUES ?
 ON CONFLICT (submission_id)
 DO UPDATE SET
 status = excluded.status,
@@ -32,26 +32,26 @@ submitted_date = excluded.submitted_date,
 timestamp = excluded.timestamp;
 
 getByWorkIdAndUserId:
-SELECT * FROM submissionEntity s
+SELECT * FROM submission s
 WHERE work_id =: contentId AND student_id =: studentId;
 
 getSubmissionsAndStudentsByTaskId:
-SELECT * FROM submissionEntity s
-JOIN userEntity u ON u.user_id = s.student_id
+SELECT * FROM submission s
+JOIN user u ON u.user_id = s.student_id
 WHERE work_id =: taskId;
 
 -- getStudentsWithoutSubmission:
 -- SELECT
 --   u.*
 -- FROM
---   userEntity u
+--   User u
 --   LEFT JOIN submissionEntity s ON s.student_id = u.user_id
 -- WHERE
 --   u.user_group_id IN(
 --     SELECT
 --       u.user_group_id
 --     FROM
---       userEntity uu
+--       User uu
 --       JOIN groupCourseEntity gc ON u.user_group_id = gc.group_id
 --       JOIN courseContentEntity cc ON gc.course_id = cc.course_id
 --     WHERE
@@ -60,5 +60,5 @@ WHERE work_id =: taskId;
 --   AND s.student_id IS NULL;
 
 deleteByContentId:
-DELETE FROM submissionEntity
+DELETE FROM submission
 WHERE work_id =: id;

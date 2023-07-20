@@ -1,6 +1,6 @@
 //package com.denchic45.studiversity.data.mapper
 //
-//import com.denchic45.studiversity.DayEntity
+//import com.denchic45.studiversity.entity.DayEntity
 //import com.denchic45.studiversity.data.db.local.model.DayWithEventsEntities
 //import com.denchic45.studiversity.data.db.remote.model.DayMap
 //import com.denchic45.studiversity.domain.model.EventsOfDay

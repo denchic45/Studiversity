@@ -1,15 +1,15 @@
-CREATE TABLE specialtyEntity (
+CREATE TABLE specialty (
 specialty_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 name TEXT NOT NULL,
 shortname TEXT
 );
 
 upsert:
-INSERT INTO specialtyEntity VALUES ?
+INSERT INTO specialty VALUES ?
 ON CONFLICT(specialty_id) DO UPDATE SET
 name = excluded.name,
 shortname = excluded.shortname;
 
 getById:
-SELECT * FROM specialtyEntity
+SELECT * FROM specialty
 WHERE specialty_id =: id;

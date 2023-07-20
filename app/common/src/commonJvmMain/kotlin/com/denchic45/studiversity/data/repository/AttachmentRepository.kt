@@ -1,7 +1,5 @@
 package com.denchic45.studiversity.data.repository
 
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.AttachmentEntity
 import com.denchic45.studiversity.data.db.local.source.AttachmentLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.AttachmentReferenceLocalDataSource
 import com.denchic45.studiversity.data.db.local.suspendedTransaction
@@ -15,6 +13,8 @@ import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.data.storage.AttachmentStorage
 import com.denchic45.studiversity.domain.EmptyResource
 import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.Attachment
 import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
@@ -117,7 +117,7 @@ class AttachmentRepository constructor(
             when (attachment) {
                 is FileAttachmentHeader -> {
                     val fileName = attachment.item.name
-                    AttachmentEntity(
+                    Attachment(
                         attachment_id = attachment.id.toString(),
                         attachment_name = fileName,
                         url = null,
@@ -132,7 +132,7 @@ class AttachmentRepository constructor(
 
                 is LinkAttachmentHeader -> {
                     val linkAttachmentResponse = attachment.item
-                    AttachmentEntity(
+                    Attachment(
                         attachment_id = attachment.id.toString(),
                         attachment_name = linkAttachmentResponse.name,
                         url = linkAttachmentResponse.url,

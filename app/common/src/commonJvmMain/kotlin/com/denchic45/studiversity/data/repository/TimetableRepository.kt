@@ -3,8 +3,8 @@ package com.denchic45.studiversity.data.repository
 import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.DayLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.EventLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.GroupLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.StudyGroupLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
 import com.denchic45.studiversity.data.fetchObservingResource
 import com.denchic45.studiversity.data.fetchResource
@@ -28,7 +28,7 @@ class TimetableRepository(
     private val dayLocalDataSource: DayLocalDataSource,
     private val userPreferences: UserPreferences,
     override val userLocalDataSource: UserLocalDataSource,
-    override val groupLocalDataSource: GroupLocalDataSource,
+    override val studyGroupLocalDataSource: StudyGroupLocalDataSource,
     override val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val timetableApi: TimetableApi,
 ) : NetworkServiceOwner, SaveGroupOperation {
@@ -117,13 +117,13 @@ class TimetableRepository(
 //        val notRelatedTeacherEntities = courseLocalDataSource.getNotRelatedTeacherIdsToGroup(
 //            dayMap.teacherIds, dayMap.groupId
 //        ).map { teacherId ->
-//            userRemoteDataSource.findById(teacherId).mapToUserEntity()
+//            userRemoteDataSource.findById(teacherId).mapToUser()
 //        }
 //
 //        val notRelatedSubjectEntities = courseLocalDataSource.getNotRelatedSubjectIdsToGroup(
 //            dayMap.subjectIds, dayMap.groupId
 //        ).map { subjectId ->
-//            subjectRemoteDataSource.findById(subjectId).mapToSubjectEntity()
+//            subjectRemoteDataSource.findById(subjectId).mapToSubject()
 //        }
 //
 //        val eventEntities = dayMap.events.map { EventMap(it).mapToEntity(dayMap.id) }

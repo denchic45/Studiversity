@@ -2,12 +2,12 @@ package com.denchic45.studiversity.data.db.local.source
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.CourseEntity
-import com.denchic45.studiversity.CourseEntityQueries
-import com.denchic45.studiversity.CourseWithSubjectEntity
-import com.denchic45.studiversity.GetCourseWithSubjectWithTeacherAndGroupsById
-import com.denchic45.studiversity.SubjectEntity
+import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.Course
+import com.denchic45.studiversity.entity.CourseQueries
+import com.denchic45.studiversity.entity.CourseWithSubject
+import com.denchic45.studiversity.entity.GetCourseWithSubjectWithTeacherAndGroupsById
+import com.denchic45.studiversity.entity.Subject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -16,15 +16,15 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class CourseLocalDataSource(private val db: AppDatabase) {
 
-    private val queries: CourseEntityQueries = db.courseEntityQueries
+    private val queries: CourseQueries = db.courseQueries
 
-    fun upsert(courseEntity: CourseEntity) {
+    fun upsert(courseEntity: Course) {
 //        withContext(Dispatchers.IO) {
         queries.upsert(courseEntity)
 //        }
     }
 
-    fun observeById(id: String): Flow<List<CourseWithSubjectEntity>> {
+    fun observeById(id: String): Flow<List<CourseWithSubject>> {
         return queries.getById(id).asFlow()
             .mapToList(Dispatchers.IO)
     }
@@ -34,7 +34,7 @@ class CourseLocalDataSource(private val db: AppDatabase) {
             queries.getCourseWithSubjectWithTeacherAndGroupsById(id).executeAsList()
         }
 
-//    fun observeCoursesByStudyGroupId(groupId: String): Flow<List<CourseWithSubjectEntity>> {
+//    fun observeCoursesByStudyGroupId(groupId: String): Flow<List<CourseWithSubject>> {
 //        return queries.getCoursesByStudyGroupId(groupId)
 //            .asFlow()
 //            .mapToList(Dispatchers.IO)
@@ -83,18 +83,18 @@ class CourseLocalDataSource(private val db: AppDatabase) {
     }
 
     fun saveCourse(
-        subjectEntity: SubjectEntity?,
-        courseEntity: CourseEntity
+        subject: Subject?,
+        courseEntity: Course
     ) {
         db.transaction {
 //            db.groupCourseEntityQueries.apply {
 //                deleteByCourseId(courseId)
 //                groupCourseEntities.forEach { upsert(it) }
 //            }
-//            db.userEntityQueries.upsert(teacherEntity)
-            subjectEntity?.let { db.subjectEntityQueries.upsert(it) }
+//            db.UserQueries.upsert(teacherEntity)
+            subject?.let { db.subjectQueries.upsert(it) }
             queries.upsert(courseEntity)
-//            db.sectionEntityQueries.apply {
+//            db.CourseTopicQueries.apply {
 //                deleteByCourseId(courseId)
 //                sectionEntities.forEach { upsert(it) }
 //            }

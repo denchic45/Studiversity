@@ -1,14 +1,14 @@
-CREATE TABLE teacherEventEntity (
+CREATE TABLE eventMember (
 event_id TEXT NOT NULL,
 teacher_id TEXT NOT NULL,
 FOREIGN KEY (event_id) REFERENCES eventEntity(event_id) ON DELETE CASCADE,
-FOREIGN KEY (teacher_id) REFERENCES userEntity(user_id) ON DELETE CASCADE,
+FOREIGN KEY (teacher_id) REFERENCES user(user_id) ON DELETE CASCADE,
 UNIQUE(event_id, teacher_id)
 );
 
 upsert:
-INSERT INTO teacherEventEntity VALUES ?
+INSERT INTO eventMember VALUES ?
 ON CONFLICT(event_id, teacher_id) DO NOTHING;
 
 deleteByEventId:
-DELETE FROM teacherEventEntity WHERE event_id =: eventId;
+DELETE FROM eventMember WHERE event_id =: eventId;

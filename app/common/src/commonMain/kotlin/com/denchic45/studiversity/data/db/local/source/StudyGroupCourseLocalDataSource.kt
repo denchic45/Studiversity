@@ -1,21 +1,21 @@
 package com.denchic45.studiversity.data.db.local.source
 
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.GroupCourseEntity
-import com.denchic45.studiversity.GroupCourseEntityQueries
+import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.StudyGroupCourse
+import com.denchic45.studiversity.entity.StudyGroupCourseQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class GroupCourseLocalDataSource(db: AppDatabase) {
-    private val queries: GroupCourseEntityQueries = db.groupCourseEntityQueries
+class StudyGroupCourseLocalDataSource(db: AppDatabase) {
+    private val queries: StudyGroupCourseQueries = db.studyGroupCourseQueries
 
-    suspend fun upsert(groupCourseEntity: GroupCourseEntity) = withContext(Dispatchers.IO) {
+    suspend fun upsert(groupCourseEntity: StudyGroupCourse) = withContext(Dispatchers.IO) {
         queries.upsert(groupCourseEntity)
     }
 
-    fun upsert(groupCourseEntities: List<GroupCourseEntity>) {
+    fun upsert(groupCourseEntities: List<StudyGroupCourse>) {
 //        withContext(Dispatchers.IO) {
         queries.transaction {
             groupCourseEntities.forEach { queries.upsert(it) }

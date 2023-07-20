@@ -1,6 +1,6 @@
 import java.time.LocalDate;
 
-CREATE TABLE IF NOT EXISTS studyGroupEntity (
+CREATE TABLE IF NOT EXISTS studyGroup (
 study_group_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 group_name TEXT NOT NULL,
 specialty_id TEXT NOT NULL,
@@ -11,11 +11,11 @@ end_academic_year TEXT AS LocalDate NOT NULL
 );
 
 CREATE VIEW studyGroupWithSpecialty AS
-SELECT * FROM studyGroupEntity g
-JOIN specialtyEntity s ON s.specialty_id = g.specialty_id;
+SELECT * FROM studyGroup g
+JOIN specialty s ON s.specialty_id = g.specialty_id;
 
 upsert:
-INSERT INTO studyGroupEntity
+INSERT INTO studyGroup
 VALUES ?
 ON CONFLICT(study_group_id)
 DO UPDATE SET
@@ -31,15 +31,15 @@ SELECT * FROM studyGroupWithSpecialty g
 WHERE study_group_id =:groupId;
 
 getNameById:
-SELECT * FROM studyGroupEntity
+SELECT * FROM studyGroup
 WHERE study_group_id =:groupId;
 
 isExist:
 SELECT EXISTS(
-SELECT * FROM studyGroupEntity
+SELECT * FROM studyGroup
 WHERE study_group_id = :id
 );
 
 deleteById:
-DELETE FROM studyGroupEntity
+DELETE FROM studyGroup
 WHERE study_group_id =:groupId;

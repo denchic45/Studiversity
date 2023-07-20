@@ -1,18 +1,18 @@
 import kotlin.Boolean;
 
-CREATE TABLE IF NOT EXISTS courseEntity (
+CREATE TABLE IF NOT EXISTS course (
 course_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 name TEXT NOT NULL,
 subject_id TEXT,
 archived INTEGER AS Boolean NOT NULL
 );
 
-CREATE VIEW courseWithSubjectEntity AS
-SELECT* FROM courseEntity c
-LEFT JOIN subjectEntity s ON c.subject_id = s.subject_id;
+CREATE VIEW courseWithSubject AS
+SELECT* FROM course c
+LEFT JOIN subject s ON c.subject_id = s.subject_id;
 
 upsert:
-INSERT INTO courseEntity
+INSERT INTO course
 VALUES ?
 ON CONFLICT(course_id)
 DO UPDATE SET
@@ -21,18 +21,18 @@ subject_id = excluded.subject_id,
 archived = excluded.archived;
 
 getById:
-SELECT * FROM courseWithSubjectEntity WHERE course_id =: id;
+SELECT * FROM courseWithSubject WHERE course_id =: id;
 
 getCourseWithSubjectWithTeacherAndGroupsById:
-SELECT c.*, s.* FROM courseEntity c
-JOIN subjectEntity s ON s.subject_id = c.subject_id
-JOIN groupCourseEntity gc ON gc.course_id = c.course_id
+SELECT c.*, s.* FROM course c
+JOIN subject s ON s.subject_id = c.subject_id
+JOIN studyGroupCourse gc ON gc.course_id = c.course_id
 WHERE c.course_id =: id;
 
 getCoursesByStudyGroupId:
-SELECT c.*, s.* FROM courseEntity c
-JOIN groupCourseEntity gc ON gc.course_id =c.course_id
-JOIN subjectEntity s ON s.subject_id = c.subject_id
+SELECT c.*, s.* FROM course c
+JOIN studyGroupCourse gc ON gc.course_id =c.course_id
+JOIN subject s ON s.subject_id = c.subject_id
 WHERE gc.group_id =: groupId;
 
 -- hasRelatedTeacherToGroup:
@@ -44,19 +44,19 @@ WHERE gc.group_id =: groupId;
 
 hasRelatedSubjectToGroup:
 SELECT EXISTS (
-SELECT 1 FROM courseEntity c
-JOIN groupCourseEntity gc ON gc.group_id =:groupId
+SELECT 1 FROM course c
+JOIN studyGroupCourse gc ON gc.group_id =:groupId
 WHERE subject_id=:subjectId
 );
 
 -- getCourseWithSubjectAndTeacherByTeacherId:
 -- SELECT * FROM courseEntity c
--- JOIN subjectEntity s ON s.subject_id = c.subject_id
--- JOIN userEntity u ON u.user_id = c.teacher_id
+-- JOIN Subject s ON s.subject_id = c.subject_id
+-- JOIN User u ON u.user_id = c.teacher_id
 -- WHERE teacher_id =: id;
 
 deleteById:
-DELETE FROM courseEntity
+DELETE FROM course
 WHERE course_id =: courseId;
 
 -- isCourseTeacher:

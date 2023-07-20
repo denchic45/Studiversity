@@ -1,4 +1,4 @@
-CREATE TABLE subjectEntity (
+CREATE TABLE subject (
 subject_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 subject_name TEXT NOT NULL,
 subject_shortname TEXT NOT NULL,
@@ -6,19 +6,19 @@ icon_name TEXT NOT NULL
 );
 
 upsert:
-INSERT INTO subjectEntity VALUES ?
+INSERT INTO subject VALUES ?
 ON CONFLICT(subject_id) DO UPDATE SET
 subject_name = excluded.subject_name,
 icon_name = excluded.icon_name;
 
 getById:
-SELECT * FROM subjectEntity WHERE subject_id =: id;
+SELECT * FROM subject WHERE subject_id =: id;
 
 getByGroupId:
-SELECT s.* FROM subjectEntity s
-JOIN courseEntity c ON s.subject_id == c.subject_id
-JOIN groupCourseEntity gc ON gc.course_id == c.course_id
+SELECT s.* FROM subject s
+JOIN course c ON s.subject_id == c.subject_id
+JOIN studyGroupCourse gc ON gc.course_id == c.course_id
 WHERE gc.group_id =:groupId;
 
 delete:
-DELETE FROM subjectEntity WHERE subject_id =: id;
+DELETE FROM subject WHERE subject_id =: id;

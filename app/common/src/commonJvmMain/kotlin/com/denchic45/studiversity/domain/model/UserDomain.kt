@@ -2,11 +2,10 @@ package com.denchic45.studiversity.domain.model
 
 import com.denchic45.studiversity.data.domain.model.DomainModel
 import com.denchic45.studiversity.data.domain.model.UserRole
-import com.denchic45.studiversity.util.UUIDS
 import com.denchic45.stuiversity.api.user.model.Gender
 import java.util.UUID
 
-data class User(
+data class UserDomain(
     override var id: UUID,
     val firstName: String,
     val surname: String,
@@ -37,12 +36,12 @@ data class User(
     val fullName: String
         get() = "$firstName $surname"
 
-    fun isIt(user: User): Boolean {
-        return user.id == id
+    fun isIt(userDomain: UserDomain): Boolean {
+        return userDomain.id == id
     }
 
-    override fun copy(): User {
-        return User(
+    override fun copy(): UserDomain {
+        return UserDomain(
             id,
             firstName,
             surname,

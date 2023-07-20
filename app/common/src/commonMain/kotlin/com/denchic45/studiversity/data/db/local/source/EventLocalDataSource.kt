@@ -3,12 +3,12 @@ package com.denchic45.studiversity.data.db.local.source
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.DayEntity
-import com.denchic45.studiversity.EventEntity
-import com.denchic45.studiversity.EventEntityQueries
-import com.denchic45.studiversity.EventWithSubjectAndGroupAndTeachers
 import com.denchic45.studiversity.data.db.local.model.DayWithEventsEntities
+import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.DayEntity
+import com.denchic45.studiversity.entity.EventEntity
+import com.denchic45.studiversity.entity.EventEntityQueries
+import com.denchic45.studiversity.entity.EventWithSubjectAndGroupAndTeachers
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.Dispatchers

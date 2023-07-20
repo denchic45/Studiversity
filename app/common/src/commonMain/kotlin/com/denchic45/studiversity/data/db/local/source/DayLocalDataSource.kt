@@ -1,12 +1,12 @@
 package com.denchic45.studiversity.data.db.local.source
 
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.DayEntity
-import com.denchic45.studiversity.DayEntityQueries
-import com.denchic45.studiversity.EventEntity
-import com.denchic45.studiversity.SubjectEntity
-import com.denchic45.studiversity.TeacherEventEntity
-import com.denchic45.studiversity.UserEntity
+import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.DayEntity
+import com.denchic45.studiversity.entity.DayEntityQueries
+import com.denchic45.studiversity.entity.EventEntity
+import com.denchic45.studiversity.entity.EventMember
+import com.denchic45.studiversity.entity.Subject
+import com.denchic45.studiversity.entity.User
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.Dispatchers
@@ -41,17 +41,17 @@ class DayLocalDataSource(private val db: AppDatabase) {
 
 
     suspend fun saveDay(
-        notRelatedTeacherEntities: List<UserEntity>,
-        notRelatedSubjectEntities: List<SubjectEntity>,
+        notRelatedTeacherEntities: List<User>,
+        notRelatedSubjectEntities: List<Subject>,
         dayEntity: DayEntity,
         eventEntities: List<EventEntity>,
-        teacherEventEntities: List<TeacherEventEntity>,
+        eventMembers: List<EventMember>,
     ) {
 //        withContext(Dispatchers.IO) {
         println("object db: $db")
         db.transaction {
-            notRelatedTeacherEntities.forEach { db.userEntityQueries.upsert(it) }
-            notRelatedSubjectEntities.forEach { db.subjectEntityQueries.upsert(it) }
+            notRelatedTeacherEntities.forEach { db.userQueries.upsert(it) }
+            notRelatedSubjectEntities.forEach { db.subjectQueries.upsert(it) }
             dayEntityQueries.apply {
                 deleteById(dayEntity.day_id)
                 upsert(dayEntity)
@@ -60,12 +60,12 @@ class DayLocalDataSource(private val db: AppDatabase) {
                 getEventIdsByDayId(dayEntity.day_id).executeAsList().let { eventIds ->
                     eventIds.forEach { eventId ->
                         deleteByEventId(eventId)
-                        db.teacherEventEntityQueries.deleteByEventId(eventId)
+                        db.eventMemberQueries.deleteByEventId(eventId)
                     }
                 }
                 eventEntities.forEach { upsert(it) }
             }
-            teacherEventEntities.forEach { db.teacherEventEntityQueries.upsert(it) }
+            eventMembers.forEach { db.eventMemberQueries.upsert(it) }
         }
 //        }
     }

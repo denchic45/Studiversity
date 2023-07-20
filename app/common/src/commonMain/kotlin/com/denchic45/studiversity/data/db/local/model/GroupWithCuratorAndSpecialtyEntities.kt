@@ -1,11 +1,11 @@
 package com.denchic45.studiversity.data.db.local.model
 
-import com.denchic45.studiversity.StudyGroupEntity
-import com.denchic45.studiversity.SpecialtyEntity
-import com.denchic45.studiversity.UserEntity
+import com.denchic45.studiversity.entity.Specialty
+import com.denchic45.studiversity.entity.StudyGroup
+import com.denchic45.studiversity.entity.User
 
 class GroupWithCuratorAndSpecialtyEntities(
-    val groupEntity: StudyGroupEntity,
-    val curatorEntity: UserEntity,
-    val specialtyEntity: SpecialtyEntity
+    val studyGroup: StudyGroup,
+    val curatorEntity: User,
+    val Specialty: Specialty
 )

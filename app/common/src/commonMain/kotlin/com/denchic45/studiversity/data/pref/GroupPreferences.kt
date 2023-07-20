@@ -1,6 +1,6 @@
 //package com.denchic45.studiversity.data.pref
 //
-//import com.denchic45.studiversity.StudyGroupEntity
+//import com.denchic45.studiversity.entity.StudyGroupEntity
 //import com.russhwolf.settings.ExperimentalSettingsApi
 //import com.russhwolf.settings.ObservableSettings
 //import com.russhwolf.settings.coroutines.getStringFlow

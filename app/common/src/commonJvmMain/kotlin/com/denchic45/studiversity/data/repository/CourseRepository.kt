@@ -2,16 +2,16 @@ package com.denchic45.studiversity.data.repository
 
 import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.CourseTopicLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.GroupCourseLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.GroupLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.StudyGroupCourseLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.StudyGroupLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.SubjectLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.mapper.toCourseEntity
 import com.denchic45.studiversity.data.mapper.toCourseResponse
-import com.denchic45.studiversity.data.mapper.toSubjectEntity
+import com.denchic45.studiversity.data.mapper.toSubject
 import com.denchic45.studiversity.data.observeResource
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.Resource
@@ -31,11 +31,11 @@ import java.util.UUID
 class CourseRepository(
     override val networkService: NetworkService,
     override val userLocalDataSource: UserLocalDataSource,
-    override val groupLocalDataSource: GroupLocalDataSource,
+    override val studyGroupLocalDataSource: StudyGroupLocalDataSource,
     override val courseLocalDataSource: CourseLocalDataSource,
     override val specialtyLocalDataSource: SpecialtyLocalDataSource,
     override val courseTopicLocalDataSource: CourseTopicLocalDataSource,
-    override val groupCourseLocalDataSource: GroupCourseLocalDataSource,
+    override val studyGroupCourseLocalDataSource: StudyGroupCourseLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val coursesApi: CoursesApi,
 ) : NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
@@ -96,7 +96,7 @@ class CourseRepository(
 //            submissionAttachmentStorage.deleteFromLocal(it)
 //        }
 //
-//        val submissionEntities = mutableListOf<SubmissionEntity>()
+//        val submissionEntities = mutableListOf<Submission>()
 //        val contentCommentEntities = mutableListOf<ContentCommentEntity>()
 //        val submissionCommentEntities = mutableListOf<SubmissionCommentEntity>()
 //
@@ -134,7 +134,7 @@ class CourseRepository(
     private suspend fun getAndSaveCoursesByGroupIdRemotely(studyGroupId: UUID) {
         fetchResource { coursesApi.getList(studyGroupId = studyGroupId) }
             .onSuccess {
-                groupCourseLocalDataSource.deleteByGroup(studyGroupId.toString())
+                studyGroupCourseLocalDataSource.deleteByGroup(studyGroupId.toString())
                 saveCourses(it)
             }
     }
@@ -210,26 +210,26 @@ class CourseRepository(
 interface SaveCourseRepository {
 
     val userLocalDataSource: UserLocalDataSource
-    val groupLocalDataSource: GroupLocalDataSource
+    val studyGroupLocalDataSource: StudyGroupLocalDataSource
     val courseLocalDataSource: CourseLocalDataSource
 
     val subjectLocalDataSource: SubjectLocalDataSource
 
     val courseTopicLocalDataSource: CourseTopicLocalDataSource
-    val groupCourseLocalDataSource: GroupCourseLocalDataSource
+    val studyGroupCourseLocalDataSource: StudyGroupCourseLocalDataSource
 
 
     suspend fun saveCourse(courseResponse: CourseResponse) {
         courseLocalDataSource.saveCourse(
-            subjectEntity = courseResponse.subject?.toSubjectEntity(),
+            subject = courseResponse.subject?.toSubject(),
             courseEntity = courseResponse.toCourseEntity()
         )
 
 //        groupCourseLocalDataSource.deleteByCourseId(courseMap.id)
 
-//        userLocalDataSource.upsert(UserMap(courseMap.teacher).mapToUserEntity())
+//        userLocalDataSource.upsert(UserMap(courseMap.teacher).mapToUser())
 
-//        subjectLocalDataSource.upsert(SubjectMap(courseMap.subject).mapToSubjectEntity())
+//        subjectLocalDataSource.upsert(SubjectMap(courseMap.subject).mapToSubject())
 
 //        courseLocalDataSource.upsert(courseMap.mapToEntity())
 

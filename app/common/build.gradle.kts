@@ -252,7 +252,7 @@ android {
 sqldelight {
     databases {
         create("AppDatabase") {
-            packageName.set("com.denchic45.studiversity")
+            packageName.set("com.denchic45.studiversity.entity")
             sourceFolders.set(listOf("sqldelight"))
             dialect("app.cash.sqldelight:sqlite-3-38-dialect:$sqlDelightVersion")
         }

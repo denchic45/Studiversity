@@ -4,12 +4,12 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrDefault
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.ContentCommentEntity
-import com.denchic45.studiversity.CourseContentEntity
-import com.denchic45.studiversity.CourseContentEntityQueries
-import com.denchic45.studiversity.SubmissionCommentEntity
-import com.denchic45.studiversity.SubmissionEntity
+import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.ContentCommentEntity
+import com.denchic45.studiversity.entity.CourseContentEntity
+import com.denchic45.studiversity.entity.CourseContentEntityQueries
+import com.denchic45.studiversity.entity.Submission
+import com.denchic45.studiversity.entity.SubmissionCommentEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -27,7 +27,7 @@ class CourseContentLocalDataSource(private val db: AppDatabase) {
         }
 
     private fun deleteByIds(courseContentEntities: List<String>) = queries.transaction {
-        courseContentEntities.forEach { queries.delete(it) }
+        courseContentEntities.forEach(queries::delete)
     }
 
     fun upsert(courseContentEntity: CourseContentEntity) =
@@ -38,8 +38,7 @@ class CourseContentLocalDataSource(private val db: AppDatabase) {
     fun upsert(courseContentEntities: List<CourseContentEntity>) =
 
         queries.transaction {
-            courseContentEntities.forEach { queries.upsert(it) }
-
+            courseContentEntities.forEach(queries::upsert)
         }
 
     fun getByCourseId(courseId: String): Flow<List<CourseContentEntity>> {
@@ -95,19 +94,19 @@ class CourseContentLocalDataSource(private val db: AppDatabase) {
         removedCourseContentIds: List<String>,
         remainingCourseContent: List<CourseContentEntity>,
         contentIds: List<String>,
-        submissionEntities: List<SubmissionEntity>,
+        submissionEntities: List<Submission>,
         contentCommentEntities: List<ContentCommentEntity>,
         submissionCommentEntities: List<SubmissionCommentEntity>,
     ) = withContext(Dispatchers.IO) {
         db.transaction {
             contentIds.forEach {
-                db.submissionEntityQueries.deleteByContentId(it)
+                db.submissionQueries.deleteByContentId(it)
                 db.contentCommentEntityQueries.deleteByContentId(it)
             }
             deleteByIds(removedCourseContentIds)
             upsert(remainingCourseContent)
             submissionEntities.forEach {
-                db.submissionEntityQueries.upsert(it)
+                db.submissionQueries.upsert(it)
             }
             contentCommentEntities.forEach {
                 db.contentCommentEntityQueries.upsert(it)

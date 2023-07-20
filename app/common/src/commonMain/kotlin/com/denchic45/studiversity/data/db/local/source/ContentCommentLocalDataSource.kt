@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.data.db.local.source
 
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.ContentCommentEntity
-import com.denchic45.studiversity.ContentCommentEntityQueries
+import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.ContentCommentEntity
+import com.denchic45.studiversity.entity.ContentCommentEntityQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject

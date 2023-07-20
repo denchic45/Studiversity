@@ -1,7 +1,7 @@
 import com.denchic45.stuiversity.api.user.model.Gender;
 import kotlin.Boolean;
 
-CREATE TABLE IF NOT EXISTS userEntity (
+CREATE TABLE IF NOT EXISTS user (
     user_id TEXT NOT NULL UNIQUE PRIMARY KEY,
     first_name TEXT NOT NULL,
     surname TEXT NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS userEntity (
 
 
 upsert:
-INSERT INTO userEntity
+INSERT INTO user
 VALUES ?
 ON CONFLICT(user_id)
 DO UPDATE SET
@@ -27,60 +27,60 @@ gender = excluded.gender;
 
 getById:
 SELECT *
-FROM userEntity
+FROM user
 WHERE user_id = :id;
 
 getAll:
 SELECT *
-FROM userEntity;
+FROM user;
 
 isExist:
 SELECT EXISTS(
-SELECT * FROM userEntity
+SELECT * FROM user
 WHERE user_id = :id
 );
 
 updateAvatar:
-UPDATE userEntity SET avatar_url = :avatarUrl, generated_avatar = :isGenerated
+UPDATE user SET avatar_url = :avatarUrl, generated_avatar = :isGenerated
 WHERE user_id = :userId;
 
 -- getByGroupId:
--- SELECT * FROM userEntity
+-- SELECT * FROM user
 -- WHERE user_group_id =: groupId
 -- ORDER BY surname;
 
 -- getGroupId:
--- SELECT user_group_id FROM userEntity
+-- SELECT user_group_id FROM user
 -- WHERE user_id =: userId;
 
 -- isExistByIdAndGroupId:
 -- SELECT EXISTS(
--- SELECT * FROM userEntity WHERE user_id =: id
+-- SELECT * FROM user WHERE user_id =: id
 -- AND user_group_id =: groupId
 -- );
 
 -- deleteMissingStudentsByGroup:
--- DELETE FROM userEntity
+-- DELETE FROM user
 -- WHERE user_group_id =: groupId
 -- AND gender
 -- AND user_id NOT IN ?;
 
 -- getStudentIdsOfCourseByCourseId:
 -- SELECT u.user_id
--- FROM userEntity  u
+-- FROM user  u
 -- JOIN groupCourseEntity gc
 -- ON u.user_group_id = gc.group_id
 -- WHERE gc.course_id =: courseId;
 
 -- getStudentsWithCuratorByGroupId:
 -- SELECT u.*, g.group_id, g.headman_id, g.curator_id FROM groupEntity g
--- JOIN userEntity u
+-- JOIN user u
 -- ON u.user_group_id = g.group_id
 -- OR u.user_id = g.curator_id
 -- WHERE group_id =: groupId
 -- ORDER BY surname;
 
 -- deleteMissingTeachersByGroup:
--- DELETE FROM userEntity
+-- DELETE FROM user
 -- WHERE user_group_id =: groupId
 -- AND user_id NOT IN(?);

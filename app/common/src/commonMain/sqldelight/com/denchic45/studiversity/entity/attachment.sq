@@ -1,7 +1,7 @@
 import com.denchic45.stuiversity.api.course.element.model.AttachmentType;
 import kotlin.Boolean;
 
-CREATE TABLE attachmentEntity (
+CREATE TABLE attachment (
 attachment_id TEXT NOT NULL UNIQUE PRIMARY KEY,
 attachment_name TEXT NOT NULL,
 url TEXT,
@@ -13,7 +13,7 @@ sync INTEGER AS Boolean NOT NULL
 );
 
 upsert:
-INSERT INTO attachmentEntity
+INSERT INTO attachment
 VALUES ?
 ON CONFLICT(attachment_id)
 DO UPDATE SET
@@ -25,7 +25,7 @@ path = excluded.path,
 owner_id = excluded.owner_id;
 
 updateSync:
-UPDATE attachmentEntity
+UPDATE attachment
 SET sync =: sync
 WHERE attachment_id =: id;
 
@@ -34,18 +34,18 @@ INSERT OR IGNORE INTO attachmentRefEntity (attachment_id, entity_id)
 VALUES (?, ?);
 
 getByDirPath:
-SELECT * FROM attachmentEntity
+SELECT * FROM attachment
 WHERE path LIKE (:path || '%');
 
 getByReference:
-SELECT a.* FROM attachmentEntity a
+SELECT a.* FROM attachment a
 JOIN attachmentRefEntity ar ON a.attachment_id = ar.attachment_id
 WHERE ar.entity_id =: entityID;
 
 getUnreferenced:
-SELECT a.attachment_id FROM attachmentEntity a
+SELECT a.attachment_id FROM attachment a
 LEFT JOIN attachmentRefEntity ar ON a.attachment_id = ar.attachment_id
 WHERE ar.attachment_id ISNULL;
 
 delete:
-DELETE FROM attachmentEntity WHERE attachment_id =: id;
+DELETE FROM attachment WHERE attachment_id =: id;

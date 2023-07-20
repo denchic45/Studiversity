@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.di
 
 import app.cash.sqldelight.db.SqlDriver
-import com.denchic45.studiversity.AppDatabase
 import com.denchic45.studiversity.data.db.local.DbHelper
 import com.denchic45.studiversity.data.db.local.DriverFactory
+import com.denchic45.studiversity.entity.AppDatabase
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 

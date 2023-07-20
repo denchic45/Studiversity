@@ -1,21 +1,21 @@
 package com.denchic45.studiversity.data.db.local.source
 
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.TeacherEventEntity
-import com.denchic45.studiversity.TeacherEventEntityQueries
+import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.EventMember
+import com.denchic45.studiversity.entity.EventMemberQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class TeacherEventLocalDataSource(db: AppDatabase) {
-    private val queries: TeacherEventEntityQueries = db.teacherEventEntityQueries
+    private val queries: EventMemberQueries = db.eventMemberQueries
 
-    suspend fun insert(teacherEventEntity: TeacherEventEntity) = withContext(Dispatchers.IO) {
-        queries.upsert(teacherEventEntity)
+    suspend fun insert(eventMember: EventMember) = withContext(Dispatchers.IO) {
+        queries.upsert(eventMember)
     }
 
-    suspend fun insert(teacherEventEntities: List<TeacherEventEntity>) =
+    suspend fun insert(teacherEventEntities: List<EventMember>) =
         withContext(Dispatchers.IO) {
             queries.transaction {
                 teacherEventEntities.map {

@@ -2,10 +2,10 @@ package com.denchic45.studiversity.domain.model
 
 import com.denchic45.studiversity.data.domain.model.Attachment
 import com.denchic45.studiversity.data.domain.model.DomainModel
-import com.denchic45.studiversity.util.UUIDS
 import com.denchic45.stuiversity.util.toString
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 
 data class Task(
@@ -53,7 +53,7 @@ data class Task(
 
     data class Submission(
         val contentId: String,
-        val student: User,
+        val student: UserDomain,
         val content: Content,
         val status: SubmissionStatus,
         val contentUpdateDate: LocalDateTime,
@@ -64,7 +64,7 @@ data class Task(
             get() = status !is SubmissionStatus.NotSubmitted
 
         companion object {
-            fun createEmptyNotSubmitted(contentId: String, student: User): Submission {
+            fun createEmptyNotSubmitted(contentId: String, student: UserDomain): Submission {
                 return Submission(
                     contentId,
                     student,
@@ -106,13 +106,13 @@ data class Task(
         ) : SubmissionStatus()
 
         data class Graded(
-            val teacher: User,
+            val teacher: UserDomain,
             val grade: Int,
             val gradedDate: LocalDateTime,
         ) : SubmissionStatus()
 
         data class Rejected(
-            val teacher: User,
+            val teacher: UserDomain,
             val cause: String,
             val rejectedDate: LocalDateTime,
         ) : SubmissionStatus()
@@ -121,7 +121,7 @@ data class Task(
     data class Comment(
         override val id: UUID,
         val content: String,
-        val author: User,
+        val author: UserDomain,
         val createdDate: LocalDateTime,
     ) : DomainModel
 

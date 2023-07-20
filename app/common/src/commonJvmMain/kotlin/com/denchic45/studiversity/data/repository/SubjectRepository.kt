@@ -2,8 +2,8 @@ package com.denchic45.studiversity.data.repository
 
 import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.CourseTopicLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.GroupCourseLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.GroupLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.StudyGroupCourseLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.StudyGroupLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.SubjectLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
 import com.denchic45.studiversity.data.fetchResource
@@ -20,10 +20,10 @@ import java.util.UUID
 class SubjectRepository(
     override val networkService: NetworkService,
     override val userLocalDataSource: UserLocalDataSource,
-    override val groupLocalDataSource: GroupLocalDataSource,
+    override val studyGroupLocalDataSource: StudyGroupLocalDataSource,
     override val courseLocalDataSource: CourseLocalDataSource,
     override val courseTopicLocalDataSource: CourseTopicLocalDataSource,
-    override val groupCourseLocalDataSource: GroupCourseLocalDataSource,
+    override val studyGroupCourseLocalDataSource: StudyGroupCourseLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val subjectApi: SubjectApi,
 ) : NetworkServiceOwner, SaveCourseRepository,

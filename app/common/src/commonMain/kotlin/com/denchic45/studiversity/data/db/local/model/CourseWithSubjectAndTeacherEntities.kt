@@ -1,11 +1,11 @@
 package com.denchic45.studiversity.data.db.local.model
 
-import com.denchic45.studiversity.CourseEntity
-import com.denchic45.studiversity.SubjectEntity
-import com.denchic45.studiversity.UserEntity
+import com.denchic45.studiversity.entity.Course
+import com.denchic45.studiversity.entity.Subject
+import com.denchic45.studiversity.entity.User
 
 class CourseWithSubjectAndTeacherEntities(
-    var courseEntity: CourseEntity,
-    var subjectEntity: SubjectEntity,
-    var teacherEntity: UserEntity
+    var courseEntity: Course,
+    var Subject: Subject,
+    var teacherEntity: User
 )

@@ -3,27 +3,27 @@ package com.denchic45.studiversity.data.db.local.source
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.StudyGroupEntity
-import com.denchic45.studiversity.StudyGroupEntityQueries
-import com.denchic45.studiversity.StudyGroupWithSpecialty
+import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.StudyGroup
+import com.denchic45.studiversity.entity.StudyGroupQueries
+import com.denchic45.studiversity.entity.StudyGroupWithSpecialty
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class GroupLocalDataSource(private val db: AppDatabase) {
+class StudyGroupLocalDataSource(db: AppDatabase) {
 
-    private val queries: StudyGroupEntityQueries = db.studyGroupEntityQueries
+    private val queries: StudyGroupQueries = db.studyGroupQueries
 
-    suspend fun upsert(groupEntity: StudyGroupEntity) = withContext(Dispatchers.IO) {
-        queries.upsert(groupEntity)
+    suspend fun upsert(studyGroup: StudyGroup) = withContext(Dispatchers.IO) {
+        queries.upsert(studyGroup)
     }
 
-    suspend fun upsert(groupEntities: List<StudyGroupEntity>) = withContext(Dispatchers.IO) {
+    suspend fun upsert(studyGroups: List<StudyGroup>) = withContext(Dispatchers.IO) {
         queries.transaction {
-            groupEntities.forEach { queries.upsert(it) }
+            studyGroups.forEach { queries.upsert(it) }
         }
     }
 
@@ -37,7 +37,7 @@ class GroupLocalDataSource(private val db: AppDatabase) {
             .mapToOneOrNull(Dispatchers.IO)
     }
 
-    fun getNameById(groupId: String): Flow<StudyGroupEntity> {
+    fun getNameById(groupId: String): Flow<StudyGroup> {
         return queries.getNameById(groupId).asFlow().mapToOne(Dispatchers.IO)
     }
 
@@ -58,20 +58,20 @@ class GroupLocalDataSource(private val db: AppDatabase) {
 
 //    suspend fun saveGroup(
 //        groupEntity: StudyGroupEntity,
-//        allUsersEntity: List<UserEntity>,
+//        allUsersEntity: List<User>,
 //        availableStudentIds: List<String>,
-//        specialtyEntity: SpecialtyEntity,
+//        Specialty: Specialty,
 //    ) {
 //        withContext(Dispatchers.IO) {
 //            db.transaction {
 //                queries.upsert(groupEntity)
-//                db.userEntityQueries.apply {
+//                db.UserQueries.apply {
 //                    allUsersEntity.forEach {
 //                        upsert(it)
 //                        deleteMissingStudentsByGroup(groupEntity.group_id, availableStudentIds)
 //                    }
 //                }
-//                db.specialtyEntityQueries.upsert(specialtyEntity)
+//                db.SpecialtyQueries.upsert(Specialty)
 //            }
 //        }
 //    }

@@ -1,16 +1,9 @@
 package com.denchic45.studiversity.data.mapper
 
-import com.denchic45.studiversity.EventEntity
-import com.denchic45.studiversity.EventWithSubjectAndGroupAndTeachers
-import com.denchic45.studiversity.TeacherEventEntity
+
 import com.denchic45.studiversity.data.db.remote.model.EventMap
-import com.denchic45.studiversity.data.domain.model.EventType
-import com.denchic45.studiversity.data.domain.model.UserRole
-import com.denchic45.studiversity.domain.model.*
-import com.denchic45.studiversity.util.FireMap
-import com.denchic45.stuiversity.util.toDate
-import java.time.LocalDate
-import java.util.*
+import com.denchic45.studiversity.entity.EventEntity
+import com.denchic45.studiversity.entity.EventMember
 
 fun EventMap.mapToEntity(dayId: String) = EventEntity(
     event_id = id,
@@ -30,14 +23,11 @@ fun List<EventMap>.docsToEntities(dayId: String): List<EventEntity> {
     return map { eventDoc -> eventDoc.mapToEntity(dayId) }
 }
 
-fun List<EventEntity>.toTeacherEventEntities(): List<TeacherEventEntity> {
+fun List<EventEntity>.toTeacherEventEntities(): List<EventMember> {
     return filterNot { it.teacher_ids.isNullOrEmpty() }
         .flatMap { eventEntity ->
             eventEntity.teacher_ids!!.map { id: String ->
-                TeacherEventEntity(
-                    eventEntity.event_id,
-                    id
-                )
+                EventMember(eventEntity.event_id, id)
             }
         }
 }

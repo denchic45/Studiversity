@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS studyGroupCourse (
+    group_id TEXT NOT NULL,
+    course_id TEXT NOT NULL,
+    PRIMARY KEY(group_id, course_id),
+    FOREIGN KEY (group_id) REFERENCES studyGroup(study_group_id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES course(course_id) ON DELETE CASCADE,
+    UNIQUE(group_id, course_id)
+);
+
+upsert:
+INSERT INTO studyGroupCourse
+VALUES ?
+ON CONFLICT(group_id, course_id)
+DO UPDATE SET
+group_id = excluded.group_id,
+course_id = excluded.course_id;
+
+deleteByGroupId:
+DELETE FROM studyGroupCourse WHERE group_id =:groupId;
+
+deleteByCourseId:
+DELETE FROM studyGroupCourse WHERE course_id =:courseId;

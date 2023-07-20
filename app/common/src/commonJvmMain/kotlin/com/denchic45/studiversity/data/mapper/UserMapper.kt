@@ -1,12 +1,9 @@
 package com.denchic45.studiversity.data.mapper
 
-import com.denchic45.studiversity.UserEntity
-import com.denchic45.studiversity.data.remote.model.UserDoc
-import com.denchic45.studiversity.domain.model.User
+import com.denchic45.studiversity.entity.User
 import com.denchic45.stuiversity.api.user.model.Account
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.toUUID
-import java.util.*
 
 
 //fun UserResponse.toUser() = User(
@@ -21,7 +18,7 @@ import java.util.*
 //
 //fun List<UserResponse>.toUsers() = map(UserResponse::toUser)
 
-fun UserEntity.toUserResponse() = UserResponse(
+fun User.toUserResponse() = UserResponse(
     id = user_id.toUUID(),
     firstName = first_name,
     surname = surname,
@@ -34,15 +31,15 @@ fun UserEntity.toUserResponse() = UserResponse(
     gender = gender
 )
 
-fun List<UserEntity>.toUserResponses() = map(UserEntity::toUserResponse)
+fun List<User>.toUserResponses() = map(User::toUserResponse)
 
-fun UserResponse.toEntity() = UserEntity(
+fun UserResponse.toEntity() = User(
     user_id = id.toString(),
-    first_name =    firstName,
+    first_name = firstName,
     surname = surname,
     patronymic = patronymic,
     email = account.email,
-    avatar_url =  avatarUrl,
+    avatar_url = avatarUrl,
     generated_avatar = generatedAvatar,
     gender = gender
 )

@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.data.db.local.source
 
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.AttachmentRefEntity
-import com.denchic45.studiversity.AttachmentRefEntityQueries
+import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.AttachmentRefEntity
+import com.denchic45.studiversity.entity.AttachmentRefEntityQueries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject

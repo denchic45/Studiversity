@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.data.mapper
 
-import com.denchic45.studiversity.SubmissionCommentEntity
 import com.denchic45.studiversity.data.db.remote.model.SubmissionCommentMap
+import com.denchic45.studiversity.entity.SubmissionCommentEntity
 
 fun SubmissionCommentMap.domainToEntity() = SubmissionCommentEntity(
     comment_id = id,

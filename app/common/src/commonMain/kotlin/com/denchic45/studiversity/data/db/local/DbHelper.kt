@@ -5,15 +5,15 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.Transacter
 import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
-import com.denchic45.studiversity.AppDatabase
-import com.denchic45.studiversity.AttachmentEntity
-import com.denchic45.studiversity.CourseContentEntity
-import com.denchic45.studiversity.EventEntity
-import com.denchic45.studiversity.SectionEntity
-import com.denchic45.studiversity.StudyGroupEntity
-import com.denchic45.studiversity.SubmissionEntity
-import com.denchic45.studiversity.UserEntity
 import com.denchic45.studiversity.data.mapper.ListMapper
+import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.Attachment
+import com.denchic45.studiversity.entity.CourseContentEntity
+import com.denchic45.studiversity.entity.CourseTopic
+import com.denchic45.studiversity.entity.EventEntity
+import com.denchic45.studiversity.entity.StudyGroup
+import com.denchic45.studiversity.entity.Submission
+import com.denchic45.studiversity.entity.User
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -48,26 +48,20 @@ class DbHelper(val driver: SqlDriver) {
         courseContentEntityAdapter = CourseContentEntity.Adapter(
             attachmentsAdapter = ListColumnAdapter()
         ),
-        submissionEntityAdapter = SubmissionEntity.Adapter(
+        submissionAdapter = Submission.Adapter(
             attachmentsAdapter = ListColumnAdapter()
         ),
         eventEntityAdapter = EventEntity.Adapter(
             teacher_idsAdapter = ListColumnAdapter(),
             positionAdapter = IntColumnAdapter
         ),
-        userEntityAdapter = UserEntity.Adapter(
-            EnumColumnAdapter()
+        userAdapter = User.Adapter(EnumColumnAdapter()),
+        studyGroupAdapter = StudyGroup.Adapter(
+            start_academic_yearAdapter = LocalDateColumnAdapter(),
+            end_academic_yearAdapter = LocalDateColumnAdapter()
         ),
-        studyGroupEntityAdapter = StudyGroupEntity.Adapter(
-            LocalDateColumnAdapter(),
-            LocalDateColumnAdapter()
-        ),
-        attachmentEntityAdapter = AttachmentEntity.Adapter(
-            EnumColumnAdapter()
-        ),
-        sectionEntityAdapter = SectionEntity.Adapter(
-            orderAdapter = IntColumnAdapter
-        )
+        attachmentAdapter = Attachment.Adapter(EnumColumnAdapter()),
+        courseTopicAdapter = CourseTopic.Adapter(IntColumnAdapter)
     )
 
     private var version: Int

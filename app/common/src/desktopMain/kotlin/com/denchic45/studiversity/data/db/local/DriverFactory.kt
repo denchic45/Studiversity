@@ -2,7 +2,7 @@ package com.denchic45.studiversity.data.db.local
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import com.denchic45.studiversity.AppDatabase
+import com.denchic45.studiversity.entity.AppDatabase
 import com.denchic45.studiversity.util.SystemDirs
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
