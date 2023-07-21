@@ -1,6 +1,5 @@
 package com.denchic45.studiversity.ui.coursetopics
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,18 +28,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.periodeditor.TransparentTextField
+import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 
 @Composable
 fun CourseTopicsScreen(component: CourseTopicsComponent) {
-    updateAnimatedAppBarState(AppBarContent())
+    updateAnimatedAppBarState(AppBarContent(uiTextOf("Изменить темы")))
     val topicsResource by component.topics.collectAsState()
     CourseTopicsContent(
         items = topicsResource,
@@ -57,17 +59,25 @@ private fun CourseTopicsContent(
     onTopicRemove: (Int) -> Unit
 ) {
     ResourceContent(items) { topics ->
+        var isCreating by remember { mutableStateOf(false) }
         var indexOfEditing by remember { mutableStateOf(-1) }
         LazyColumn {
             item {
-                CreatingTopicItem(onSave = onTopicCreate)
+                CreatingTopicItem(
+                    enabled = isCreating,
+                    onEnableChange = {
+                        isCreating = it
+                        indexOfEditing = -1
+                    },
+                    onSave = onTopicCreate
+                )
             }
             itemsIndexed(topics, key = { _, item -> item.id }) { index, item ->
                 EditableTopicItem(
                     item = item,
                     isEdit = indexOfEditing == index,
                     onEditClick = { indexOfEditing = index },
-                    onSaveClick = { newName ->
+                    onSave = { newName ->
                         if (item.name != newName)
                             onTopicRename(index, newName)
                         indexOfEditing = -1
@@ -80,31 +90,40 @@ private fun CourseTopicsContent(
 }
 
 @Composable
-private fun CreatingTopicItem(onSave: (String) -> Unit) {
-    var enabled by remember { mutableStateOf(false) }
+private fun CreatingTopicItem(
+    enabled: Boolean,
+    onEnableChange: (Boolean) -> Unit,
+    onSave: (String) -> Unit
+) {
     var text by remember { mutableStateOf("") }
-
+    val focusManager = LocalFocusManager.current
     ListItem(
         headlineContent = {
             val focusRequester = remember { FocusRequester() }
-            if (enabled) {
-                LaunchedEffect(Unit) {
+            LaunchedEffect(enabled) {
+                if (enabled) {
                     focusRequester.requestFocus()
+                } else {
+                    text = ""
+                    focusManager.clearFocus()
                 }
             }
             TransparentTextField(
                 value = text,
                 onValueChange = { text = it },
                 placeholder = "Создать тему",
-                readOnly = !enabled,
-                modifier = Modifier.focusRequester(focusRequester)
+//                readOnly = !enabled,
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .onFocusChanged {
+                        onEnableChange(it.isFocused)
+                    }
             )
 
         },
         leadingContent = {
             IconButton(onClick = {
-                if (enabled) text = ""
-                enabled = !enabled
+                onEnableChange(!enabled)
             }) {
                 Icon(
                     imageVector = if (enabled) Icons.Default.Close else Icons.Default.Add,
@@ -118,16 +137,17 @@ private fun CreatingTopicItem(onSave: (String) -> Unit) {
                     enabled = text.isNotEmpty(),
                     onClick = {
                         onSave(text)
-                        enabled = false
+                        onEnableChange(false)
                     }) {
                     Icon(
                         imageVector = Icons.Outlined.Done,
-                        contentDescription = ""
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
         },
-        modifier = Modifier.clickable { enabled = true }
+        modifier = Modifier.clickable { onEnableChange(true) }
     )
 }
 
@@ -136,22 +156,39 @@ private fun EditableTopicItem(
     item: CourseTopicResponse,
     isEdit: Boolean,
     onEditClick: () -> Unit,
-    onSaveClick: (String) -> Unit,
+    onSave: (String) -> Unit,
     onRemoveClick: () -> Unit
 ) {
     var text by remember { mutableStateOf(item.name) }
+    val focusManager = LocalFocusManager.current
     ListItem(
         headlineContent = {
+            val focusRequester = remember { FocusRequester() }
+            LaunchedEffect(isEdit) {
+                if (isEdit) {
+                    focusRequester.requestFocus()
+                } else {
+                    focusManager.clearFocus()
+                    if (item.name != text)
+                        onSave(text)
+                }
+            }
             TransparentTextField(
                 value = text,
                 onValueChange = { text = it },
-                readOnly = !isEdit,
-                modifier = Modifier.clickable(onClick = onEditClick)
+//                readOnly = !isEdit,
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .onFocusChanged {
+                        if (it.isFocused) {
+                            onEditClick()
+                        }
+                    }
             )
         },
         leadingContent = {
             if (isEdit) {
-                IconButton(onClick = onRemoveClick, modifier = Modifier.background(Color.Cyan)) {
+                IconButton(onClick = onRemoveClick, modifier = Modifier) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
                         contentDescription = ""
@@ -174,13 +211,14 @@ private fun EditableTopicItem(
         trailingContent = {
             IconButton(
                 enabled = text.isNotEmpty(),
-                onClick = { if (isEdit) onSaveClick(text) else onEditClick() }
+                onClick = { if (isEdit) onSave(text) else onEditClick() }
             ) {
                 Icon(
                     imageVector = if (isEdit) Icons.Outlined.Done else Icons.Outlined.Edit,
                     contentDescription = ""
                 )
             }
-        }
+        },
+        modifier = Modifier.clickable(onClick = onEditClick)
     )
 }
