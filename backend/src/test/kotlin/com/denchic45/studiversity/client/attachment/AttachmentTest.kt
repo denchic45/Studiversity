@@ -71,7 +71,7 @@ class AttachmentTest : KtorClientTest() {
     }
 
     private suspend fun deleteAttachment(attachmentId: UUID) {
-        courseWorkApiOfTeacher.deleteAttachmentFromWork(course.id, courseWork.id, attachmentId)
+        courseWorkApiOfTeacher.deleteAttachment(course.id, courseWork.id, attachmentId)
             .apply {
                 Assertions.assertNotNull(get()) { unwrapError().toString() }
             }

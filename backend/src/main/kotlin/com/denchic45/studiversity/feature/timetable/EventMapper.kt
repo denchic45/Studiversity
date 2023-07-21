@@ -13,7 +13,7 @@ fun PeriodDao.toResponse() = when (type) {
         order = order,
         room = room?.toResponse(),
         studyGroup = studyGroup.let {
-            StudyGroupName(
+            StudyGroupNameResponse(
                 id = it.id.value,
                 name = it.name
             )
@@ -30,7 +30,7 @@ fun PeriodDao.toResponse() = when (type) {
         order = order,
         room = room?.toResponse(),
         studyGroup = studyGroup.let {
-            StudyGroupName(
+            StudyGroupNameResponse(
                 id = it.id.value,
                 name = it.name
             )

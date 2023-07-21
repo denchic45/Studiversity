@@ -178,7 +178,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 30),
                     1,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 ),
@@ -187,7 +187,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 30),
                     2,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 ),
@@ -196,7 +196,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 30),
                     3,
                     room5,
-                    studyGroup2.toStudyGroupName(),
+                    studyGroup2.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 )
@@ -207,7 +207,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     0,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 ),
@@ -216,7 +216,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     1,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 ),
@@ -225,7 +225,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     2,
                     room5,
-                    studyGroup2.toStudyGroupName(),
+                    studyGroup2.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 ),
@@ -234,7 +234,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     3,
                     room10,
-                    studyGroup2.toStudyGroupName(),
+                    studyGroup2.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(engCourse)
                 )
@@ -255,8 +255,8 @@ class TimetableTest : KtorClientTest() {
             }
     }
 
-    private fun StudyGroupResponse.toStudyGroupName(): StudyGroupName {
-        return StudyGroupName(id, name)
+    private fun StudyGroupResponse.toStudyGroupNameResponse(): StudyGroupNameResponse {
+        return StudyGroupNameResponse(id, name)
     }
 
     @Test
@@ -280,7 +280,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 30),
                     1,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 ),
@@ -289,7 +289,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 30),
                     2,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 ),
@@ -298,7 +298,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 30),
                     1,
                     room5,
-                    studyGroup2.toStudyGroupName(),
+                    studyGroup2.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(mathCourse)
                 ),
@@ -307,7 +307,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 30),
                     3,
                     room5,
-                    studyGroup2.toStudyGroupName(),
+                    studyGroup2.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 )
@@ -318,7 +318,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     0,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(mathCourse)
                 ),
@@ -327,7 +327,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     1,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(mathCourse)
                 ),
@@ -336,7 +336,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     0,
                     room5,
-                    studyGroup2.toStudyGroupName(),
+                    studyGroup2.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(mathCourse)
                 ),
@@ -345,7 +345,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     1,
                     room5,
-                    studyGroup2.toStudyGroupName(),
+                    studyGroup2.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(mathCourse)
                 ),
@@ -355,7 +355,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     2,
                     room5,
-                    studyGroup2.toStudyGroupName(),
+                    studyGroup2.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 ),
@@ -391,7 +391,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 30),
                     2,
                     room10,
-                    studyGroup2.toStudyGroupName(),
+                    studyGroup2.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(engCourse)
                 ),
@@ -400,7 +400,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 30),
                     3,
                     room10,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(engCourse)
                 ),
@@ -411,7 +411,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     3,
                     room10,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(engCourse)
                 ),
@@ -420,7 +420,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     3,
                     room10,
-                    studyGroup2.toStudyGroupName(),
+                    studyGroup2.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(engCourse)
                 )
@@ -459,7 +459,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     0,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
 
                     LessonDetails(mathCourse)
@@ -469,7 +469,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     1,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 ),
@@ -478,7 +478,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     2,
                     roomWorkshop,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(physicsCourse)
                 ),
@@ -487,7 +487,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 1, 31),
                     3,
                     room10,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(engCourse)
                 )
@@ -515,7 +515,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 2, 1),
                     1,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 ),
@@ -524,7 +524,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 2, 1),
                     2,
                     roomWorkshop,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(physicsCourse)
                 ),
@@ -533,7 +533,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 2, 1),
                     3,
                     roomWorkshop,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember2),
                     LessonDetails(physicsCourse)
                 ),
@@ -542,7 +542,7 @@ class TimetableTest : KtorClientTest() {
                     LocalDate.of(2023, 2, 1),
                     4,
                     room5,
-                    studyGroup1.toStudyGroupName(),
+                    studyGroup1.toStudyGroupNameResponse(),
                     listOf(teacherMember1),
                     LessonDetails(mathCourse)
                 ),
