@@ -13,8 +13,8 @@ import com.denchic45.studiversity.util.componentScope
 import com.denchic45.studiversity.util.swap
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
-import com.denchic45.stuiversity.api.course.topic.model.CreateTopicRequest
-import com.denchic45.stuiversity.api.course.topic.model.UpdateTopicRequest
+import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
+import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
 import com.denchic45.stuiversity.util.optPropertyOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -71,7 +71,7 @@ class CourseTopicsComponent(
     fun onTopicAdd(name: String) {
         if (name.isEmpty()) return
         componentScope.launch {
-            addCourseTopicUseCase(courseId, CreateTopicRequest(name))
+            addCourseTopicUseCase(CreateCourseTopicRequest(courseId, name))
         }
     }
 
@@ -79,9 +79,8 @@ class CourseTopicsComponent(
         topics.value.onSuccess { list ->
             componentScope.launch {
                 updateCourseTopicUseCase(
-                    courseId,
                     list[position].id,
-                    UpdateTopicRequest(optPropertyOf(name))
+                    UpdateCourseTopicRequest(courseId,optPropertyOf(name))
                 )
             }
         }

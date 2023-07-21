@@ -6,8 +6,10 @@ import org.koin.dsl.module
 private val useCaseModule = module {
     single { AddCourseTopicUseCase(get(), get()) }
     single { UpdateCourseTopicUseCase(get(), get()) }
+    single { ReorderCourseTopicUseCase(get(), get()) }
     single { RemoveCourseTopicUseCase(get(), get()) }
     single { FindCourseTopicUseCase(get(), get()) }
+    single { FindCourseIdByTopicIdUseCase(get(), get()) }
     single { FindCourseTopicsByCourseUseCase(get(), get()) }
 }
 

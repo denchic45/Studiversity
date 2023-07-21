@@ -3,7 +3,6 @@ package com.denchic45.studiversity.feature.course
 import com.denchic45.studiversity.config
 import com.denchic45.studiversity.feature.course.element.courseElementRoutes
 import com.denchic45.studiversity.feature.course.material.courseMaterialsRoutes
-import com.denchic45.studiversity.feature.course.topic.courseTopicsRoutes
 import com.denchic45.studiversity.feature.course.usecase.*
 import com.denchic45.studiversity.feature.course.work.courseWorksRoutes
 import com.denchic45.studiversity.feature.course.work.courseWorksRoutes2
@@ -14,7 +13,6 @@ import com.denchic45.studiversity.validation.buildValidationResult
 import com.denchic45.studiversity.validation.require
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
 import io.ktor.http.*
@@ -75,19 +73,8 @@ fun Application.courseRoutes() {
                     parameters.append("member_id", call.currentUserId().toString())
                 }
             }
-            studentWorksRoute()
             courseWorksRoutes2()
         }
-    }
-}
-
-fun Route.studentWorksRoute() {
-    get {
-        val studentId = call.getUserUuidByQueryParameterOrMe("student_id")
-        val overdue = call.request.queryParameters["overdue"]?.toBoolean()
-        val statuses = call.request.queryParameters.getAll("status")?.map { SubmissionState.valueOf(it) }
-
-        // TODO: complete (maybe not)
     }
 }
 
@@ -156,7 +143,6 @@ private fun Route.courseByIdRoutes() {
         courseElementRoutes()
         courseWorksRoutes()
         courseMaterialsRoutes()
-        courseTopicsRoutes()
     }
 }
 

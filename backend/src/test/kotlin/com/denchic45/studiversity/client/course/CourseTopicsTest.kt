@@ -11,8 +11,9 @@ import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
-import com.denchic45.stuiversity.api.course.topic.model.CreateTopicRequest
-import com.denchic45.stuiversity.api.course.topic.model.UpdateTopicRequest
+import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
+import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
+import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
@@ -73,15 +74,14 @@ class CourseTopicsTest : KtorClientTest() {
 
         assertEquals("My Topic", topic.name)
 
-        courseTopicApi.getByCourseId(course.id).also(::assertResultIsOk).apply {
+        courseTopicApi.getList(course.id).also(::assertResultIsOk).apply {
             assertEquals(1, unwrap().size)
             assertEquals(topic, unwrap()[0])
         }
 
         val updatedTopic = courseTopicApi.update(
-            courseId = course.id,
             topicId = topic.id,
-            updateTopicRequest = UpdateTopicRequest(OptionalProperty.Present("Updated Topic"))
+            request = UpdateCourseTopicRequest(course.id, OptionalProperty.Present("Updated Topic"))
         ).also(::assertResultIsOk).unwrap()
 
         assertEquals("Updated Topic", updatedTopic.name)
@@ -271,9 +271,10 @@ class CourseTopicsTest : KtorClientTest() {
     }
 
     private suspend fun removeTopic(topicId: UUID, relatedTopicElements: RelatedTopicElements) {
-        courseTopicApi.delete(course.id, topicId, relatedTopicElements).also(::assertResultIsOk)
+        courseTopicApi.delete(topicId, relatedTopicElements).also(::assertResultIsOk)
     }
 }
 
-suspend fun CourseTopicApi.createTopic(courseId: UUID, name: String = "My Topic") =
-    create(courseId, CreateTopicRequest(name)).also(::assertResultIsOk).unwrap()
+suspend fun CourseTopicApi.createTopic(courseId: UUID, name: String = "My Topic"): CourseTopicResponse {
+    return create(CreateCourseTopicRequest(courseId, name)).also(::assertResultIsOk).unwrap()
+}

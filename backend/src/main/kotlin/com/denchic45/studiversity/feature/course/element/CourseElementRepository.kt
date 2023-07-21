@@ -34,7 +34,7 @@ class CourseElementRepository {
     fun remove(courseId: UUID, elementId: UUID): Boolean = CourseElementDao
         .find(CourseElements.courseId eq courseId and (CourseElements.id eq elementId))
         .singleOrNull()?.apply {
-            decreaseElementOrdersByTopicIdAndGreaterElementOrder(topic?.id?.value, order)
+            decreaseElementsOrdersByTopicIdAndGreaterOrder(topic?.id?.value, order)
         }?.delete() != null
 
     fun findMaxGradeByWorkId(workId: UUID): Short {
@@ -53,12 +53,12 @@ class CourseElementRepository {
     fun update(
         courseId: UUID,
         elementId: UUID,
-        updateCourseElementRequest: UpdateCourseElementRequest
+        request: UpdateCourseElementRequest
     ): CourseElementResponse {
         val dao = CourseElementDao.findById(elementId)!!
 
-        updateCourseElementRequest.topicId.ifPresent { topicId ->
-            decreaseElementOrdersByTopicIdAndGreaterElementOrder(dao.topic?.id?.value, dao.order)
+        request.topicId.ifPresent { topicId ->
+            decreaseElementsOrdersByTopicIdAndGreaterOrder(dao.topic?.id?.value, dao.order)
             dao.order = generateOrderByCourseAndTopicId(courseId, topicId)
             dao.topic = topicId?.let { CourseTopicDao.findById(it) }
         }
@@ -66,7 +66,7 @@ class CourseElementRepository {
         return dao.toResponse(getElementDetailsByIdAndType(elementId, dao.type))
     }
 
-    private fun decreaseElementOrdersByTopicIdAndGreaterElementOrder(topicId: UUID?, order: Int) {
+    private fun decreaseElementsOrdersByTopicIdAndGreaterOrder(topicId: UUID?, order: Int) {
         CourseElements.update(where = { CourseElements.topicId eq topicId and (CourseElements.order greater order) }) {
             it[CourseElements.order] = CourseElements.order - 1
         }

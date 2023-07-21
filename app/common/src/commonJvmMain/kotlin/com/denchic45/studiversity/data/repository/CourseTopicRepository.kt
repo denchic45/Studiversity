@@ -13,8 +13,8 @@ import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
-import com.denchic45.stuiversity.api.course.topic.model.CreateTopicRequest
-import com.denchic45.stuiversity.api.course.topic.model.UpdateTopicRequest
+import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
+import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
@@ -30,7 +30,7 @@ class CourseTopicRepository(
 
     suspend fun findById(courseId: UUID, topicId: UUID) = observeResource(
         query = courseTopicLocalDataSource.observe(topicId.toString()).map { it.toResponse() },
-        fetch = { courseTopicApi.getById(courseId, topicId) },
+        fetch = { courseTopicApi.getById(topicId) },
         saveFetch = { courseTopicLocalDataSource.upsert(it.toEntity()) }
     )
 
@@ -38,7 +38,7 @@ class CourseTopicRepository(
         return observeResource(
             query = courseTopicLocalDataSource.getByCourseId(courseId.toString())
                 .map { it.toTopicResponses() },
-            fetch = { courseTopicApi.getByCourseId(courseId) },
+            fetch = { courseTopicApi.getList(courseId) },
             saveFetch = {
                 courseTopicLocalDataSource.upsertByCourseId(
                     it.toTopicEntities(),
@@ -48,18 +48,17 @@ class CourseTopicRepository(
         )
     }
 
-    suspend fun add(courseId: UUID, request: CreateTopicRequest) = fetchResource {
-        courseTopicApi.create(courseId, request)
+    suspend fun add(request: CreateCourseTopicRequest) = fetchResource {
+        courseTopicApi.create(request)
     }.onSuccess {
         courseTopicLocalDataSource.upsert(it.toEntity())
     }
 
     suspend fun update(
-        courseId: UUID,
         topicId: UUID,
-        request: UpdateTopicRequest,
+        request: UpdateCourseTopicRequest,
     ) = fetchResource {
-        courseTopicApi.update(courseId, topicId, request)
+        courseTopicApi.update(topicId, request)
     }
 
     suspend fun remove(
@@ -67,7 +66,7 @@ class CourseTopicRepository(
         topicId: UUID,
         relatedTopicElements: RelatedTopicElements,
     ) = fetchResource {
-        courseTopicApi.delete(courseId, topicId, relatedTopicElements)
+        courseTopicApi.delete(topicId, relatedTopicElements)
     }.onSuccess {
         courseTopicLocalDataSource.deleteById(topicId.toString())
     }

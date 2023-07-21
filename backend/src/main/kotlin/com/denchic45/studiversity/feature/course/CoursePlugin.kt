@@ -1,20 +1,14 @@
 package com.denchic45.studiversity.feature.course
 
 import com.denchic45.studiversity.feature.course.subject.subjectRoutes
-import com.denchic45.studiversity.logger.logger
+import com.denchic45.studiversity.feature.course.topic.courseTopicRoutes
 import io.ktor.server.application.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @Suppress("unused")
 fun Application.configureCourses() {
     courseRoutes()
+    courseTopicRoutes()
     subjectRoutes()
-    GlobalScope.launch {
-        CoursesChannel.on(CourseEvent.CourseAdded::class) {
-            logger.info("event: $it")
-        }
-    }
 }
 
 object CourseErrors {

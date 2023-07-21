@@ -35,7 +35,7 @@ class CourseElementRepository(
 ) : NetworkServiceOwner {
     suspend fun findElementsByCourse(courseId: UUID) = fetchResource {
         binding {
-            val topics = async { courseTopicApi.getByCourseId(courseId).bind() }
+            val topics = async { courseTopicApi.getList(courseId).bind() }
             val elements = async { courseElementsApi.getByCourseId(courseId).bind() }
             topics.await() to elements.await()
         }.map { (topics, elements) ->
