@@ -10,6 +10,7 @@ import com.denchic45.studiversity.domain.usecase.RemoveCourseTopicUseCase
 import com.denchic45.studiversity.domain.usecase.UpdateCourseTopicUseCase
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.util.componentScope
+import com.denchic45.studiversity.util.copy
 import com.denchic45.studiversity.util.swap
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
@@ -17,6 +18,7 @@ import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
 import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
 import com.denchic45.stuiversity.util.optPropertyOf
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -56,9 +58,7 @@ class CourseTopicsComponent(
         this.position = newPos
 
         topics.value.onSuccess { list ->
-            componentScope.launch {
-                topics.emit(resourceOf(list.swap(oldPos, newPos)))
-            }
+            topics.update { resourceOf(list.swap(oldPos, newPos)) }
         }
     }
 
@@ -80,8 +80,12 @@ class CourseTopicsComponent(
             componentScope.launch {
                 updateCourseTopicUseCase(
                     list[position].id,
-                    UpdateCourseTopicRequest(courseId,optPropertyOf(name))
-                )
+                    UpdateCourseTopicRequest(courseId, optPropertyOf(name))
+                ).onSuccess { response ->
+                    topics.value.onSuccess { list ->
+                        topics.update { resourceOf(list.copy { this[position] = response }) }
+                    }
+                }
             }
         }
     }
