@@ -9,6 +9,7 @@ import com.denchic45.studiversity.feature.role.usecase.*
 import com.denchic45.studiversity.ktor.*
 import com.denchic45.studiversity.util.hasNotDuplicates
 import com.denchic45.studiversity.validation.buildValidationResult
+import com.denchic45.stuiversity.api.membership.MembershipErrors
 import com.denchic45.stuiversity.api.membership.model.ManualJoinMemberRequest
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.api.role.model.UpdateUserRolesRequest
@@ -98,7 +99,7 @@ fun Route.membersRoute() {
                         .joinMember(body)
                 }
 
-                else -> throw BadRequestException("UNKNOWN_MEMBERSHIP_ACTION")
+                else -> throw BadRequestException(MembershipErrors.UNKNOWN_MEMBERSHIP_ACTION)
             }
             call.respond(HttpStatusCode.Created, result)
         }

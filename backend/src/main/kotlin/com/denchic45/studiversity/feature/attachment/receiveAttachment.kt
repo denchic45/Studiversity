@@ -3,7 +3,7 @@ package com.denchic45.studiversity.feature.attachment
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionErrors
+import com.denchic45.stuiversity.api.course.work.submission.SubmissionErrors
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*

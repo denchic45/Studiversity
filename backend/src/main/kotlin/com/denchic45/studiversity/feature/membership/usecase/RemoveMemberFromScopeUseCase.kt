@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.feature.membership.usecase
 
-import com.denchic45.studiversity.feature.membership.MembershipErrors
 import com.denchic45.studiversity.feature.membership.repository.UserMembershipRepository
 import com.denchic45.studiversity.feature.role.repository.RoleRepository
 import com.denchic45.studiversity.ktor.ConflictException
 import com.denchic45.studiversity.transaction.DatabaseSuspendedTransactionWorker
+import com.denchic45.stuiversity.api.membership.MembershipErrors
 import io.ktor.server.plugins.*
 import java.util.*
 

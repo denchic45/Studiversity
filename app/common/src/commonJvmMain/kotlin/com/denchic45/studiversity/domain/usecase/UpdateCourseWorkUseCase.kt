@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.domain.usecase
 
-import com.denchic45.studiversity.data.repository.CourseElementRepository
+import com.denchic45.studiversity.data.repository.CourseWorkRepository
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
@@ -9,13 +9,13 @@ import java.util.UUID
 
 @Inject
 class UpdateCourseWorkUseCase(
-    private val courseElementRepository: CourseElementRepository,
+    private val courseWorkRepository: CourseWorkRepository,
 ) {
     suspend operator fun invoke(
         courseId: UUID,
         workId: UUID,
-        updateCourseWorkRequest: UpdateCourseWorkRequest,
+        request: UpdateCourseWorkRequest,
     ): Resource<CourseWorkResponse> {
-        return courseElementRepository.updateCourseWork(courseId, workId, updateCourseWorkRequest)
+        return courseWorkRepository.update(courseId, workId, request)
     }
 }

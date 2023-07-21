@@ -4,6 +4,7 @@ import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.course.work.toWorkResponse
 import com.denchic45.studiversity.util.toSqlSortOrder
+import com.denchic45.stuiversity.api.course.element.CourseElementErrors
 import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
@@ -59,7 +60,7 @@ class CourseElementRepository {
 
         request.topicId.ifPresent { topicId ->
             if (topicId != null && CourseTopicDao.findById(topicId)?.courseId != courseElementDao.course.id.value)
-                throw BadRequestException("TOPIC_FROM_ANOTHER_COURSE")
+                throw BadRequestException(CourseElementErrors.TOPIC_FROM_ANOTHER_COURSE)
             decreaseElementsOrdersByTopicIdAndGreaterOrder(courseElementDao.topic?.id?.value, courseElementDao.order)
             courseElementDao.order = generateOrderByCourseAndTopicId(courseId, topicId)
             courseElementDao.topic = topicId?.let { CourseTopicDao.findById(it) }

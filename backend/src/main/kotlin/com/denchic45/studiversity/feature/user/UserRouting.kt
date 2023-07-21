@@ -16,6 +16,7 @@ import com.denchic45.studiversity.util.tryToUUID
 import com.denchic45.studiversity.validation.require
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.user.UserErrors
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -108,8 +109,8 @@ private fun Route.userByIdRoute() {
                         val fileSourceName = part.originalFileName as String
                         val fileBytes = part.streamProvider().readBytes()
                         CreateFileRequest(fileSourceName, fileBytes)
-                    } else throw BadRequestException("INVALID_AVATAR")
-                } ?: throw BadRequestException("INVALID_AVATAR")
+                    } else throw BadRequestException(UserErrors.INVALID_AVATAR)
+                } ?: throw BadRequestException(UserErrors.INVALID_AVATAR)
 
                 val url = updateAvatar(
                     userId = call.parameters.getUuidOrFail("userId"),

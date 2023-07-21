@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.feature.course.subject
+package com.denchic45.stuiversity.api.course.subject
 
 object SubjectErrors {
     const val INVALID_SUBJECT_NAME = "INVALID_SUBJECT_NAME"

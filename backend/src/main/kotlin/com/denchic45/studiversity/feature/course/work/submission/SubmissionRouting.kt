@@ -181,7 +181,6 @@ fun Route.submissionByIdRoute() {
                 )
                 val body = call.receive<GradeRequest>()
                 val submission = setGradeSubmission(
-                    workId = workId,
                     grade = SubmissionGradeRequest(body.value, courseId, currentUserId, submissionId)
                 )
                 call.respond(HttpStatusCode.OK, submission)

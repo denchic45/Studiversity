@@ -5,6 +5,7 @@ import com.denchic45.studiversity.feature.membership.repository.UserMembershipRe
 import com.denchic45.studiversity.feature.role.repository.RoleRepository
 import com.denchic45.studiversity.logger.logger
 import com.denchic45.studiversity.transaction.TransactionWorker
+import com.denchic45.stuiversity.api.membership.MembershipErrors
 import com.denchic45.stuiversity.api.membership.model.ManualJoinMemberRequest
 import com.denchic45.stuiversity.api.membership.model.Member
 import com.denchic45.stuiversity.api.membership.model.ScopeMember

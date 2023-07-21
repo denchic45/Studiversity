@@ -9,6 +9,7 @@ import com.denchic45.studiversity.ktor.jwtPrincipal
 import com.denchic45.studiversity.util.onlyDigits
 import com.denchic45.studiversity.validation.buildValidationResult
 import com.denchic45.studiversity.validation.require
+import com.denchic45.stuiversity.api.course.subject.SubjectErrors
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
 import com.denchic45.stuiversity.api.role.model.Capability

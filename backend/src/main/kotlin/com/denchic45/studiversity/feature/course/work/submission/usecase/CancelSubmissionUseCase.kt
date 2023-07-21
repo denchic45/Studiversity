@@ -2,6 +2,7 @@ package com.denchic45.studiversity.feature.course.work.submission.usecase
 
 import com.denchic45.studiversity.feature.course.work.submission.SubmissionRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
+import com.denchic45.stuiversity.api.course.work.submission.SubmissionErrors
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import io.ktor.server.plugins.*
 import java.util.*
@@ -14,11 +15,11 @@ class CancelSubmissionUseCase(
     suspend operator fun invoke(submissionId: UUID, studentId: UUID) = suspendTransactionWorker {
         val currentSubmission = submissionRepository.find(submissionId) ?: throw NotFoundException()
         if (currentSubmission.author.id != studentId)
-            throw BadRequestException("INVALID_AUTHOR")
+            throw BadRequestException(SubmissionErrors.INVALID_AUTHOR)
         if (currentSubmission.state in SubmissionState.notSubmitted())
-            throw BadRequestException("NOT_SUBMITTED")
+            throw BadRequestException(SubmissionErrors.NOT_SUBMITTED)
         if (currentSubmission.grade != null)
-            throw BadRequestException("SUBMISSION_GRADED")
+            throw BadRequestException(SubmissionErrors.SUBMISSION_GRADED)
         submissionRepository.cancelSubmission(submissionId)
     }
 }
