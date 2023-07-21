@@ -42,7 +42,7 @@ class DownloadWorker(
         ).setContentTitle(title)
             .setTicker(title)
             .setProgress(0, 0, true)
-            .setSmallIcon(R.drawable.arrow_drop_down)
+            .setSmallIcon(R.drawable.ic_arrow_drop_down)
             .setOngoing(true)
             .build()
         return ForegroundInfo(1, notification)

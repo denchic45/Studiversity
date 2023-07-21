@@ -8,7 +8,6 @@ import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.storage.AttachmentStorage
 import com.denchic45.studiversity.data.workmanager.AppWorkerFactory
 import com.denchic45.studiversity.data.workmanager.DownloadWorker
-import com.denchic45.studiversity.ui.appbar.AppBarInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.fab.FabInteractor
 import com.denchic45.studiversity.util.SystemDirs
@@ -55,8 +54,6 @@ abstract class AndroidAppComponent(
     abstract val authedClient: HttpClient
 
     abstract val workFactory: AppWorkerFactory
-
-    abstract val appBarInteractor: AppBarInteractor
 
     abstract val fabInteractor: FabInteractor
 

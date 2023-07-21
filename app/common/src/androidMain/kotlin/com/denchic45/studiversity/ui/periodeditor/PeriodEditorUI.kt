@@ -275,6 +275,7 @@ fun TransparentTextField(
     value: String,
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
+    enabled: Boolean = true,
     readOnly: Boolean = false,
     singleLine: Boolean = true,
     placeholder: String? = null,
@@ -282,6 +283,7 @@ fun TransparentTextField(
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
+        enabled = enabled,
         readOnly = readOnly,
         singleLine = singleLine,
         decorationBox = { innerTextField ->
@@ -298,30 +300,3 @@ fun TransparentTextField(
         modifier = modifier
     )
 }
-
-//@Preview
-//@Composable
-//fun PeriodEditorPreview() {
-//    AppTheme {
-//        PeriodEditorContent(
-//            state = EditingPeriod(LocalDate.now(), UUID.randomUUID(), "ПКС").apply {
-//                order = 1
-//                (details as EditingPeriodDetails.Lesson).course = CourseResponse(
-//                    id = UUID.randomUUID(),
-//                    name = "Математика ПКС",
-//                    subject = SubjectResponse(
-//                        id = UUID.randomUUID(),
-//                        name = "Математика",
-//                        shortname = "Матем",
-//                        iconUrl = ""
-//                    ),
-//                    archived = false
-//                )
-//            },
-//            foundRooms = resourceOf(),
-//            onRoomType = {},
-//            onRoomSelect = {},
-//            onRoomRemove = {}
-//        )
-//    }
-//}
