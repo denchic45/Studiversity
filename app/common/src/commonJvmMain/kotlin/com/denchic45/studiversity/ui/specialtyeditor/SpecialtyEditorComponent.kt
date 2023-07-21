@@ -75,8 +75,8 @@ class SpecialtyEditorComponent(
 
     private val fieldEditor = FieldEditor(
         mapOf(
-            "name" to Field("", editingState::name),
-            "shortname" to Field("", editingState::shortname)
+            "name" to Field(editingState::name),
+            "shortname" to Field(editingState::shortname)
         )
     )
 

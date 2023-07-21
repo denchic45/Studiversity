@@ -20,6 +20,7 @@ import com.denchic45.studiversity.domain.usecase.FindCourseWorkAttachmentsUseCas
 import com.denchic45.studiversity.domain.usecase.FindCourseWorkUseCase
 import com.denchic45.studiversity.domain.usecase.ObserveCourseTopicsUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveAttachmentFromCourseWorkUseCase
+import com.denchic45.studiversity.domain.usecase.UpdateCourseElementUseCase
 import com.denchic45.studiversity.domain.usecase.UpdateCourseWorkUseCase
 import com.denchic45.studiversity.domain.usecase.UploadAttachmentToCourseWorkUseCase
 import com.denchic45.studiversity.getOptProperty
@@ -36,6 +37,7 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
+import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
@@ -73,6 +75,7 @@ class CourseWorkEditorComponent(
     observeCourseTopicsUseCase: ObserveCourseTopicsUseCase,
     private val addCourseWorkUseCase: AddCourseWorkUseCase,
     private val updateCourseWorkUseCase: UpdateCourseWorkUseCase,
+    private val updateCourseElementUseCase: UpdateCourseElementUseCase,
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
@@ -114,13 +117,13 @@ class CourseWorkEditorComponent(
 
     private val fieldEditor = FieldEditor(
         mapOf<String, Field<*>>(
-            "name" to Field("", editingState::name),
-            "description" to Field("", editingState::description),
-            "dueDate" to Field(null, editingState::dueDate),
-            "dueTime" to Field(null, editingState::dueTime),
-            "topicId" to Field(null) { editingState.selectedTopic?.id },
-            "addedAttachments" to Field(emptyList()) { _addedAttachmentItems.value },
-            "removedAttachments" to Field(emptyList()) { removedAttachmentIds.value }
+            "name" to Field(editingState::name),
+            "description" to Field(editingState::description),
+            "dueDate" to Field(editingState::dueDate),
+            "dueTime" to Field(editingState::dueTime),
+            "topicId" to Field { editingState.selectedTopic?.id },
+            "addedAttachments" to Field { _addedAttachmentItems.value },
+            "removedAttachments" to Field { removedAttachmentIds.value }
         )
     )
 
@@ -272,14 +275,23 @@ class CourseWorkEditorComponent(
                         courseId, workId, UpdateCourseWorkRequest(
                             name = fieldEditor.getOptProperty("name"),
                             description = fieldEditor.getOptProperty("description"),
-                            topicId = fieldEditor.getOptProperty("topicId"),
                             dueDate = fieldEditor.getOptProperty("dueDate"),
                             dueTime = fieldEditor.getOptProperty("dueTime"),
                             maxGrade = optPropertyOf(5)
                         )
                     ).onSuccess { courseWork ->
+                        if (fieldEditor.fieldChanged("topicId")) {
+                            updateCourseElementUseCase(
+                                courseId,
+                                workId,
+                                UpdateCourseElementRequest(
+                                    topicId = fieldEditor.getOptProperty("topicId")
+                                )
+                            )
+                        }
+
                         removedAttachmentIds.value.map {
-                            removeAttachmentFromCourseWorkUseCase(courseId,courseWork.id, it)
+                            removeAttachmentFromCourseWorkUseCase(courseId, courseWork.id, it)
                         }
                         loadAddedAttachments(courseWork)
                     }

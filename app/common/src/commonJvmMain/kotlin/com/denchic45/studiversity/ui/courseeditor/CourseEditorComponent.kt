@@ -115,22 +115,9 @@ class CourseEditorComponent(
         val subjectIconUrl: String,
     )
 
-//    val uiState = MutableStateFlow<Resource<EditingCourse>>(Resource.Loading)
-
-//    private val typedSubjectName = MutableSharedFlow<String>()
-
-//    val showFoundSubjects = typedSubjectName
-//        .map { name -> findSubjectByContainsNameUseCase(name) }
-//        .stateInResource(componentScope)
-
-//    val subjectNameTypeEnable = MutableLiveData<Boolean>()
-
-    //    private val courseId: UUID? = _courseId?.toUUID()
-//    private var foundSubjects: List<SubjectResponse>? = null
-
     private val fieldEditor = FieldEditor(mapOf(
-        "name" to Field("") { editingState.name },
-        "subject" to Field(null) { editingState.subject }
+        "name" to Field { editingState.name },
+        "subject" to Field { editingState.subject }
     ))
 
     private val validator = CompositeValidator(
@@ -141,29 +128,6 @@ class CourseEditorComponent(
             )
         )
     )
-
-//    private val uiValidator: UIValidator = UIValidator.of(
-//        Validation(Rule({ subjectId.isNullOrEmpty() }, "Предмет отсутствует"))
-//    )
-
-
-//    private fun setupForExistItem() {
-//        if (courseId != null) {
-//            componentScope.launch {
-//                findCourseByIdUseCase(courseId).onSuccess { course ->
-//                    uiState.updateResource {
-//                        EditingCourse(
-//                            name = course.name,
-//                            subjectId = course.subject?.id,
-//                            subjectName = course.subject?.name,
-//                            subjectIconUrl = course.subject?.iconUrl
-//                        )
-//                    }
-//                    uiEditor.oldItem = uiState.value
-//                }
-//            }
-//        }
-//    }
 
     val viewState = (courseId?.let {
         flow<Resource<EditingCourse>> {
@@ -236,30 +200,6 @@ class CourseEditorComponent(
         }
     }
 
-//    private fun confirmFinish() {
-//        viewModelScope.launch {
-//            when {
-//                uiEditor.isNew -> {
-//                    openConfirmation(Pair("Закрыть редактор курса", "Новый курс не будет сохранен"))
-//                    if (confirmDialogInteractor.receiveConfirm()) {
-//                        finish()
-//                    }
-//                }
-//
-//                uiEditor.hasBeenChanged() -> {
-//                    openConfirmation(
-//                        "Закрыть редактор курса" to
-//                                "Изменения курса не будут сохранены"
-//                    )
-//                    if (confirmDialogInteractor.receiveConfirm()) {
-//                        finish()
-//                    }
-//                }
-//
-//                else -> finish()
-//            }
-//        }
-//    }
 
     private suspend fun removeCourse() {
 //        when (interactor.removeCourse(courseId!!)) {
@@ -276,11 +216,6 @@ class CourseEditorComponent(
     fun onSubjectClose() {
         editingState.subject = null
     }
-
-//    override fun onCreateOptions() {
-//        super.onCreateOptions()
-//        viewModelScope.launch { setMenuItemVisible(R.id.option_course_delete to !uiEditor.isNew) }
-//    }
 
     @Parcelize
     sealed class DialogConfig : Parcelable {

@@ -7,6 +7,7 @@ import com.denchic45.studiversity.util.toSqlSortOrder
 import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
@@ -23,7 +24,6 @@ class CourseElementRepository {
 
     fun findWorkById(workId: UUID): CourseWorkResponse? {
         return CourseWorkDao.findById(workId)
-//            ?.load(CourseWorkDao::dueDate, CourseWorkDao::dueTime, CourseWorkDao::type, CourseWorkDao::maxGrade)
             ?.let { CourseElementDao.findById(workId)?.toWorkResponse(it) }
     }
 
@@ -55,15 +55,17 @@ class CourseElementRepository {
         elementId: UUID,
         request: UpdateCourseElementRequest
     ): CourseElementResponse {
-        val dao = CourseElementDao.findById(elementId)!!
+        val courseElementDao = CourseElementDao.findById(elementId)!!
 
         request.topicId.ifPresent { topicId ->
-            decreaseElementsOrdersByTopicIdAndGreaterOrder(dao.topic?.id?.value, dao.order)
-            dao.order = generateOrderByCourseAndTopicId(courseId, topicId)
-            dao.topic = topicId?.let { CourseTopicDao.findById(it) }
+            if (topicId != null && CourseTopicDao.findById(topicId)?.courseId != courseElementDao.course.id.value)
+                throw BadRequestException("TOPIC_FROM_ANOTHER_COURSE")
+            decreaseElementsOrdersByTopicIdAndGreaterOrder(courseElementDao.topic?.id?.value, courseElementDao.order)
+            courseElementDao.order = generateOrderByCourseAndTopicId(courseId, topicId)
+            courseElementDao.topic = topicId?.let { CourseTopicDao.findById(it) }
         }
 
-        return dao.toResponse(getElementDetailsByIdAndType(elementId, dao.type))
+        return courseElementDao.toResponse(getElementDetailsByIdAndType(elementId, courseElementDao.type))
     }
 
     private fun decreaseElementsOrdersByTopicIdAndGreaterOrder(topicId: UUID?, order: Int) {

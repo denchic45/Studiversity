@@ -37,10 +37,10 @@ fun Application.configureStatusPages() {
             call.respondWithError(HttpStatusCode.Conflict, ErrorInfo(exception.message ?: ""))
         }
 
-        status(HttpStatusCode.NotFound) { call, status ->
+        status(HttpStatusCode.NotFound) { call, _ ->
             call.respondWithError(HttpStatusCode.NotFound, ErrorInfo("NOT_FOUND"))
         }
-        status(HttpStatusCode.InternalServerError) { call, status ->
+        status(HttpStatusCode.InternalServerError) { call, _ ->
             call.respondWithError(HttpStatusCode.InternalServerError, ErrorInfo("INTERNAL_SERVER"))
         }
     }

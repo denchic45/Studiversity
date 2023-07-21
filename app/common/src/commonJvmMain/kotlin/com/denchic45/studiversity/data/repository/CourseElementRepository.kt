@@ -9,6 +9,7 @@ import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
+import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
 import com.denchic45.stuiversity.api.course.material.CourseMaterialApi
 import com.denchic45.stuiversity.api.course.material.model.CreateCourseMaterialRequest
 import com.denchic45.stuiversity.api.course.material.model.UpdateCourseMaterialRequest
@@ -115,6 +116,14 @@ class CourseElementRepository(
                 attachment
             )
         }
+    }
+
+    suspend fun updateCourseElement(
+        courseId: UUID,
+        elementId: UUID,
+        request: UpdateCourseElementRequest,
+    ) = fetchResource {
+        courseElementsApi.update(courseId, elementId, request)
     }
 
     suspend fun updateCourseWork(

@@ -15,8 +15,6 @@ data class UpdateCourseWorkRequest(
     @Serializable(OptionalPropertySerializer::class)
     val description: OptionalProperty<String?> = OptionalProperty.NotPresent,
     @Serializable(OptionalPropertySerializer::class)
-    val topicId: OptionalProperty<@Serializable(UUIDSerializer::class) UUID?> = OptionalProperty.NotPresent,
-    @Serializable(OptionalPropertySerializer::class)
     val dueDate: OptionalProperty<@Serializable(LocalDateSerializer::class)LocalDate?> = OptionalProperty.NotPresent,
     @Serializable(OptionalPropertySerializer::class)
     val dueTime:OptionalProperty<@Serializable(LocalTimeSerializer::class)LocalTime?>  = OptionalProperty.NotPresent,

@@ -14,27 +14,18 @@ class FieldEditor(private val fields: Map<String, Field<*>>) {
 
     fun <T> getValue(name: String) = field<T>(name)
 
-    fun <T> ifChanged(name: String, value: () -> T): OptionalProperty<T> {
-        return if (fields.getValue(name).hasChanged())
-            optPropertyOf(value())
-        else OptionalProperty.NotPresent
+    fun <T> ifChanged(name: String, block: (T) -> Unit) {
+        val value = field<T>(name)
+        if (value.hasChanged())
+            block(value.currentValue())
     }
-
 
     fun <T> updateOldValueBy(name: String, oldValue: T) {
         field<T>(name).oldValue = oldValue
     }
 }
 
-class Field<T>(
-    val currentValue: () -> T,
-) {
-
-    constructor(
-        _oldValue_: T,
-        currentValue: () -> T,
-    ) : this(currentValue)
-
+class Field<T>(val currentValue: () -> T) {
     var oldValue: T = currentValue()
 
     fun hasChanged() = oldValue != currentValue()

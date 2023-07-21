@@ -57,11 +57,11 @@ class StudyGroupEditorComponent(
 
     private val fieldEditor = FieldEditor(
         mapOf(
-            "name" to Field("") { editingState.name },
-            "startAcademicYear" to Field(0) { editingState.startAcademicYear },
-            "endAcademicYear" to Field(0) { editingState.endAcademicYear },
-            "specialtyId" to Field(null) { editingState.specialty?.id }
-    ))
+            "name" to Field(editingState::name),
+            "startAcademicYear" to Field(editingState::startAcademicYear),
+            "endAcademicYear" to Field(editingState::endAcademicYear),
+            "specialtyId" to Field { editingState.specialty?.id }
+        ))
 
     private val validator = CompositeValidator(
         listOf(

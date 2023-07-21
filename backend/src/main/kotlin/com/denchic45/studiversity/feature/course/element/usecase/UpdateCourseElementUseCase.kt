@@ -14,11 +14,11 @@ class UpdateCourseElementUseCase(
     suspend operator fun invoke(
         courseId: UUID,
         elementId: UUID,
-        updateCourseElementRequest: UpdateCourseElementRequest
+        request: UpdateCourseElementRequest
     ): CourseElementResponse {
         return suspendTransactionWorker {
             if (!courseElementRepository.exist(courseId, elementId)) throw NotFoundException()
-            courseElementRepository.update(courseId, elementId, updateCourseElementRequest)
+            courseElementRepository.update(courseId, elementId, request)
         }
     }
 }

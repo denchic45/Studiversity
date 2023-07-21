@@ -110,11 +110,11 @@ class CourseMaterialEditorComponent(
 
     private val fieldEditor = FieldEditor(
         mapOf<String, Field<*>>(
-            "name" to Field("", editingState::name),
-            "description" to Field("", editingState::description),
-            "topicId" to Field(null) { editingState.selectedTopic?.id },
-            "addedAttachments" to Field(emptyList()) { _addedAttachmentItems.value },
-            "removedAttachments" to Field(emptyList()) { removedAttachmentIds.value }
+            "name" to Field(editingState::name),
+            "description" to Field(editingState::description),
+            "topicId" to Field { editingState.selectedTopic?.id },
+            "addedAttachments" to Field(_addedAttachmentItems::value),
+            "removedAttachments" to Field(removedAttachmentIds::value)
         )
     )
 
@@ -249,7 +249,7 @@ class CourseMaterialEditorComponent(
                         )
                     ).onSuccess { material ->
                         removedAttachmentIds.value.map {
-                            removeAttachmentFromCourseMaterialUseCase(courseId,material.id, it)
+                            removeAttachmentFromCourseMaterialUseCase(courseId, material.id, it)
                         }
                         loadAddedAttachments(material)
                     }
