@@ -1,7 +1,6 @@
 package com.denchic45.studiversity.util
 
 import com.arkivanov.decompose.router.children.NavigationSource
-import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow

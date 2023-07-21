@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.appbar2
+package com.denchic45.studiversity.ui.appbar
 
 import com.denchic45.studiversity.ui.UiIcon
 import com.denchic45.studiversity.ui.UiText

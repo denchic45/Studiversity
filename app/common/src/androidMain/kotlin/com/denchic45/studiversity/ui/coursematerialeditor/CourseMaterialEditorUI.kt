@@ -53,9 +53,9 @@ import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onLoading
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.ui.DropdownMenuItem
-import com.denchic45.studiversity.ui.appbar2.ActionMenuItem2
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.updateAppBarState
+import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
+import com.denchic45.studiversity.ui.appbar.AppBarContent
+import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.asString
 import com.denchic45.studiversity.ui.attachment.AttachmentListItem
 import com.denchic45.studiversity.ui.component.HeaderItemUI

@@ -20,9 +20,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.ui.appbar2.ActionMenuItem2
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.updateAppBarState
+import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
+import com.denchic45.studiversity.ui.appbar.AppBarContent
+import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.DayTimetableContent
 import com.denchic45.studiversity.ui.timetable.getMonthTitle

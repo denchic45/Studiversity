@@ -35,10 +35,10 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.ui.IconTitleBox
-import com.denchic45.studiversity.ui.appbar2.ActionMenuItem2
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.updateAppBarState
+import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
+import com.denchic45.studiversity.ui.appbar.AppBarContent
+import com.denchic45.studiversity.ui.appbar.updateAppBarState
+import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.periodeditor.PeriodEditorScreen
 import com.denchic45.studiversity.ui.search.StudyGroupListItem
 import com.denchic45.studiversity.ui.theme.spacing

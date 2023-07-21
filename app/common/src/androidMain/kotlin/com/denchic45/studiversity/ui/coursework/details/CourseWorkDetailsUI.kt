@@ -17,7 +17,6 @@ import androidx.compose.material.icons.outlined.Comment
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -136,7 +135,6 @@ private fun CourseWorkDetailsContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseWorkHeader(name: String, commentsCount: Int = 0) {
     Column {

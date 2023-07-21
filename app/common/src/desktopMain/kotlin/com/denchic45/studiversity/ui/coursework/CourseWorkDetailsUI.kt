@@ -21,8 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.resourceOf
-import com.denchic45.studiversity.ui.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsComponent
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.theme.CommonAppTheme

@@ -32,35 +32,6 @@ class CourseElementRepository(
         }
     }
 
-
-//    suspend fun addLinkToWork(
-//        courseId: UUID,
-//        workId: UUID,
-//        linkUrl: String
-//    ) = fetchResource {
-//        courseWorkApi.addLinkToWork(
-//            courseId = courseId,
-//            courseWorkId = workId,
-//            createLinkRequest = CreateLinkRequest(linkUrl)
-//        )
-//    }
-
-//    suspend fun addFileToWork(
-//        courseId: UUID,
-//        workId: UUID,
-//        uri: Uri
-//    ) = fetchResource {
-//        courseWorkApi.uploadFileToWork(
-//            courseId = courseId,
-//            courseWorkId = workId,
-//            createFileRequest = CreateFileRequest(
-//                fileProvider.getName(uri),
-//                fileProvider.getBytes(uri)
-//            )
-//        )
-//    }
-
-
     suspend fun updateCourseElement(
         courseId: UUID,
         elementId: UUID,
@@ -68,7 +39,6 @@ class CourseElementRepository(
     ) = fetchResource {
         courseElementsApi.update(courseId, elementId, request)
     }
-
 
 //    fun findAttachments(courseId: UUID, workId: UUID) = observeResource(
 //        query = attachmentLocalDataSource.getByDirPath(courseWorkStorage.path.toString()).map {

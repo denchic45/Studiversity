@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.denchic45.studiversity.ui.appbar.AppBarInteractor
 
 class AppBarMediator {
     var title by mutableStateOf("")

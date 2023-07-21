@@ -18,8 +18,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.denchic45.studiversity.ui.ExpandableDropdownMenu
-import com.denchic45.studiversity.ui.appbar2.hideAppBar
+import com.denchic45.studiversity.ui.appbar.hideAppBar
+import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.search.CourseListItem
 import com.denchic45.studiversity.ui.search.SearchScreen
 import com.denchic45.stuiversity.api.course.model.CourseResponse

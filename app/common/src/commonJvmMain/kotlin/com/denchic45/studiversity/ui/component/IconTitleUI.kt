@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui
+package com.denchic45.studiversity.ui.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

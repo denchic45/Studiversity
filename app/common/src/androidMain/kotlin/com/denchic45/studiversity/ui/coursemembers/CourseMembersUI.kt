@@ -24,7 +24,7 @@ import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onLoading
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.takeValueIfSuccess
-import com.denchic45.studiversity.ui.ExpandableDropdownMenu
+import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.theme.spacing

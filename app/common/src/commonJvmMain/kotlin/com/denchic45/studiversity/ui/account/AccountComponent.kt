@@ -9,6 +9,4 @@ import me.tatarka.inject.annotations.Inject
 class AccountComponent(
     @Assisted
     private val componentContext: ComponentContext
-) : ComponentContext by componentContext {
-
-}
+) : ComponentContext by componentContext

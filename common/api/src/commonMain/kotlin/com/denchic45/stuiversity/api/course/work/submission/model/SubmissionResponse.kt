@@ -1,12 +1,9 @@
 package com.denchic45.stuiversity.api.course.work.submission.model
 
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
-import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import com.denchic45.stuiversity.api.course.work.grade.GradeResponse
 import com.denchic45.stuiversity.util.LocalDateTimeSerializer
 import com.denchic45.stuiversity.util.UUIDSerializer
-import kotlinx.serialization.EncodeDefault
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 import java.util.*

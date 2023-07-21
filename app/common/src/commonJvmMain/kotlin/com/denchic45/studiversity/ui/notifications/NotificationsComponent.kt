@@ -9,5 +9,4 @@ import me.tatarka.inject.annotations.Inject
 class NotificationsComponent(
     @Assisted
     private val componentContext: ComponentContext
-) : ComponentContext by componentContext {
-}
+) : ComponentContext by componentContext

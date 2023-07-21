@@ -1,7 +1,6 @@
 package com.denchic45.studiversity.ui.confirm
 
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -10,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import com.denchic45.studiversity.ui.get
-import com.denchic45.studiversity.ui.uiTextOf
 import kotlinx.coroutines.launch
 
 @Composable

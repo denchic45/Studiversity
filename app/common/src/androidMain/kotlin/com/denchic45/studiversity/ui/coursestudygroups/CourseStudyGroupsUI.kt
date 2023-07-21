@@ -20,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.updateAppBarState
+import com.denchic45.studiversity.ui.appbar.AppBarContent
+import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.search.StudyGroupChooserScreen
 import com.denchic45.studiversity.ui.search.StudyGroupListItem
 import com.denchic45.studiversity.ui.uiTextOf

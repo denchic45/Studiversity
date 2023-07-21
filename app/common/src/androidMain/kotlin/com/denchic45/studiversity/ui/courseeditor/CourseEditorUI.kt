@@ -34,10 +34,10 @@ import coil.request.ImageRequest
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.appbar2.ActionMenuItem2
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
-import com.denchic45.studiversity.ui.appbar2.updateAnimatedAppBarState
+import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
+import com.denchic45.studiversity.ui.appbar.AppBarContent
+import com.denchic45.studiversity.ui.appbar.LocalAppBarState
+import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.search.SubjectChooserScreen
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.uiIconOf

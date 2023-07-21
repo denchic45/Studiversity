@@ -28,9 +28,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.ui.Sidebar
-import com.denchic45.studiversity.ui.appbar2.ActionMenuItem2
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.updateAnimatedAppBarState
+import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
+import com.denchic45.studiversity.ui.appbar.AppBarContent
+import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.component.HeaderItemUI
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
@@ -43,7 +43,6 @@ fun UserEditorSidebar(component: UserEditorComponent) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserEditorScreen(component: UserEditorComponent) {
     val state = remember { component.state }

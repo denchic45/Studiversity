@@ -7,11 +7,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.defaultComponentContext
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.arkivanov.essenty.backhandler.backHandler
-import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.studiversity.app
 import com.denchic45.studiversity.ui.auth.AuthScreen
 import com.denchic45.studiversity.ui.root.RootComponent

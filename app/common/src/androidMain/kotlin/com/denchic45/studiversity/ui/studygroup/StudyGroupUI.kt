@@ -20,9 +20,9 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.ifSuccess
 import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.DropdownMenuItem2
-import com.denchic45.studiversity.ui.appbar2.updateAppBarState
+import com.denchic45.studiversity.ui.appbar.AppBarContent
+import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
+import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorScreen

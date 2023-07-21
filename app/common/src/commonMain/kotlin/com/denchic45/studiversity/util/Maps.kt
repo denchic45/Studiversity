@@ -21,7 +21,6 @@ open class MapValueOrNullDelegate<V>(private val map: FireMap) {
 
 class MutableMapValueOrNullDelegate<V>(private val map: MutableFireMap) :
     MapValueOrNullDelegate<V>(map) {
-    @Suppress("UNCHECKED_CAST")
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: V) {
         map[property.name] = value as Any?
     }

@@ -76,9 +76,9 @@ import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.ui.MainComponent
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
-import com.denchic45.studiversity.ui.appbar2.NavigationIcon
-import com.denchic45.studiversity.ui.appbar2.expandAppBar
+import com.denchic45.studiversity.ui.appbar.LocalAppBarState
+import com.denchic45.studiversity.ui.appbar.NavigationIcon
+import com.denchic45.studiversity.ui.appbar.expandAppBar
 import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.course.CourseScreen

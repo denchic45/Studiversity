@@ -26,12 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.DropdownMenuItem2
-import com.denchic45.studiversity.ui.appbar2.updateAppBarState
+import com.denchic45.studiversity.ui.appbar.AppBarContent
+import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
+import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.attachment.AttachmentListItem
 import com.denchic45.studiversity.ui.component.HeaderItemUI
-import com.denchic45.studiversity.ui.courseelements.CourseElementsContent
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.uiTextOf

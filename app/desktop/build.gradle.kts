@@ -7,8 +7,7 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-group = "com.denchic45"
-version = "1.0"
+group = "com.denchic45.studiversity"
 
 kotlin {
     jvm {

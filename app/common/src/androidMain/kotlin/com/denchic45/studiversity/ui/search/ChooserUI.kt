@@ -31,9 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.common.R
-import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.appbar2.hideAppBar
+import com.denchic45.studiversity.ui.appbar.hideAppBar
+import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.theme.spacing
 
 @Composable

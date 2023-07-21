@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import com.denchic45.studiversity.ui.admindashboard.CustomListItem
-import com.denchic45.studiversity.ui.appbar2.hideAppBar
+import com.denchic45.studiversity.ui.appbar.hideAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.model.GroupMembers
 import com.denchic45.studiversity.domain.takeValueIfSuccess
-import com.denchic45.studiversity.ui.ExpandableDropdownMenu
-import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.studygroup.members.StudyGroupMembersComponent
 import com.denchic45.studiversity.ui.theme.spacing

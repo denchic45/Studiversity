@@ -7,7 +7,6 @@ import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.ui.model.toUserItem
-import com.denchic45.stuiversity.api.room.model.RoomResponse
 import com.denchic45.stuiversity.api.timetable.model.EventDetails
 import com.denchic45.stuiversity.api.timetable.model.LessonDetails
 import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
@@ -16,46 +15,46 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 
-sealed class Cell {
-    data class Event(val iconName: String?, val name: String?, val room: RoomResponse?) : Cell()
-    object Empty : Cell()
-}
+//sealed class Cell {
+//    data class Event(val iconName: String?, val name: String?, val room: RoomResponse?) : Cell()
+//    object Empty : Cell()
+//}
 
 data class CellOrder(val order: Int, val time: String)
 
-fun toCells(
-    periods: List<PeriodResponse>,
-    latestPeriodOrder: Int,
-) = buildList {
-    periods.forEachIndexed { index, period ->
-        val diffOrders = period.order - index
-        if (diffOrders > 1) {
-            repeat(diffOrders) { add(Cell.Empty) }
-        } else {
-            add(period.toCell())
-        }
-    }
+//fun toCells(
+//    periods: List<PeriodResponse>,
+//    latestPeriodOrder: Int,
+//) = buildList {
+//    periods.forEachIndexed { index, period ->
+//        val diffOrders = period.order - index
+//        if (diffOrders > 1) {
+//            repeat(diffOrders) { add(Cell.Empty) }
+//        } else {
+//            add(period.toCell())
+//        }
+//    }
+//
+//    val diffOrders = latestPeriodOrder - periods.size
+//    if (diffOrders > 0) {
+//        repeat(diffOrders) { add(Cell.Empty) }
+//    }
+//}
 
-    val diffOrders = latestPeriodOrder - periods.size
-    if (diffOrders > 0) {
-        repeat(diffOrders) { add(Cell.Empty) }
-    }
-}
 
-
-private fun PeriodResponse.toCell() = when (val details = details) {
-    is LessonDetails -> Cell.Event(
-        details.course.subject?.iconUrl,
-        details.course.subject?.name,
-        room
-    )
-
-    is EventDetails -> Cell.Event(
-        details.iconUrl,
-        details.name,
-        room
-    )
-}
+//private fun PeriodResponse.toCell() = when (val details = details) {
+//    is LessonDetails -> Cell.Event(
+//        details.course.subject?.iconUrl,
+//        details.course.subject?.name,
+//        room
+//    )
+//
+//    is EventDetails -> Cell.Event(
+//        details.iconUrl,
+//        details.name,
+//        room
+//    )
+//}
 
 //fun toItemsForDay(periods: List<PeriodResponse>): List<PeriodItem?> {
 //    return periods.toPeriodItems()

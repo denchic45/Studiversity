@@ -46,10 +46,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.updateAppBarState
+import com.denchic45.studiversity.ui.appbar.AppBarContent
+import com.denchic45.studiversity.ui.appbar.updateAppBarState
+import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
@@ -142,7 +142,10 @@ fun WorksListContent(
                     icon = { Icon(Icons.Outlined.Task, contentDescription = "empty tasks") },
                     title = { Text(text = "Нет заданий") }
                 )
-                Box(Modifier.fillMaxSize().verticalScroll(state))
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(state))
             }
         }
         PullRefreshIndicator(refreshing, refreshState, Modifier.align(Alignment.TopCenter))

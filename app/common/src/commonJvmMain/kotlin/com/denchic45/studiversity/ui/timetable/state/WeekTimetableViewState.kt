@@ -1,16 +1,9 @@
 package com.denchic45.studiversity.ui.timetable.state
 
 import com.denchic45.studiversity.data.service.model.BellSchedule
-import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
-import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.util.copy
-import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
-import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.format.DateTimeFormatterBuilder
-import java.time.temporal.ChronoField
-import kotlin.math.max
 
 data class WeekTimetableViewState(
     val mondayDate: LocalDate,

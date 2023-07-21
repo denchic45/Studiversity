@@ -1,18 +1,9 @@
 package com.denchic45.studiversity.ui.root
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.value.Value
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.studiversity.ui.navigation.ChildrenContainerChild
 import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
-import com.denchic45.studiversity.ui.navigator.RootChild
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.navigator.RootNavigatorComponent
-import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesComponent
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 

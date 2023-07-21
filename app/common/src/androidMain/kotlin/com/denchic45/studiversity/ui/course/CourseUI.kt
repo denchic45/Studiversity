@@ -70,10 +70,10 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.Forbidden
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
-import com.denchic45.studiversity.ui.appbar2.hideAppBar
+import com.denchic45.studiversity.ui.appbar.hideAppBar
+import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.courseeditor.CourseEditorScreen
 import com.denchic45.studiversity.ui.courseelements.CourseElementsScreen

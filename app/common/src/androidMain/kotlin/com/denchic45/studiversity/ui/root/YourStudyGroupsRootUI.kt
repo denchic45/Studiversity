@@ -1,15 +1,5 @@
 package com.denchic45.studiversity.ui.root
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
-import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.studiversity.ui.appbar2.LocalAppBarState
-import com.denchic45.studiversity.ui.course.CourseScreen
-import com.denchic45.studiversity.ui.courseeditor.CourseEditorScreen
-import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
-import com.denchic45.studiversity.ui.yourstudygroups.YourStudyGroupsScreen
-
 //@Composable
 //fun YourStudyGroupsRootScreen(
 //    component: YourStudyGroupsRootComponent,

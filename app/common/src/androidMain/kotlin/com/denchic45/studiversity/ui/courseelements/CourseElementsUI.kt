@@ -43,8 +43,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.Forbidden
 import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.theme.AppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse

@@ -6,11 +6,16 @@ import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
 import com.denchic45.stuiversity.api.room.model.RoomResponse
 import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
-import com.denchic45.stuiversity.api.user.model.UserResponse
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import java.util.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import java.util.UUID
 
 interface RoomApi {
     suspend fun create(createRoomRequest: CreateRoomRequest): ResponseResult<RoomResponse>

@@ -4,7 +4,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,8 +55,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
 import com.kizitonwose.calendar.compose.WeekCalendar
@@ -188,7 +187,7 @@ fun DayTimetableContent(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 private fun Periods(
     timetableState: TimetableState,
     isEdit: Boolean,

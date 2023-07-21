@@ -1,11 +1,5 @@
 package com.denchic45.studiversity.ui.root
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
-import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesScreen
-
 //@Composable
 //fun YourTimetablesRootScreen(component: YourTimetablesRootComponent) {
 //    val stack by component.childStack.subscribeAsState()

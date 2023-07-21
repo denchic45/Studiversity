@@ -2,10 +2,8 @@ package com.denchic45.studiversity.util
 
 import okio.Path
 import java.io.File
-import java.io.FileOutputStream
 import java.net.FileNameMap
 import java.net.URLConnection
-import kotlin.math.min
 
 
 fun Path.getType() = getMimeType().split("/")[0]

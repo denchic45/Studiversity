@@ -50,9 +50,9 @@ import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.AppBarTitle
 import com.denchic45.studiversity.ui.CardContent
 import com.denchic45.studiversity.ui.CustomAppBar
-import com.denchic45.studiversity.ui.IconTitleBox
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.Scaffold
+import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath

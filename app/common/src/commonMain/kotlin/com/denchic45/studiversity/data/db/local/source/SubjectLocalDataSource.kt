@@ -1,7 +1,6 @@
 package com.denchic45.studiversity.data.db.local.source
 
 import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.denchic45.studiversity.entity.AppDatabase
 import com.denchic45.studiversity.entity.Subject
@@ -31,10 +30,6 @@ class SubjectLocalDataSource(db: AppDatabase) {
 
     fun observe(id: String): Flow<Subject?> {
         return queries.getById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
-    }
-
-    fun observeByGroupId(groupId: String): Flow<List<Subject>> {
-        return queries.getByGroupId(groupId).asFlow().mapToList(Dispatchers.IO)
     }
 
     suspend fun delete(id:String) = withContext(Dispatchers.IO) {

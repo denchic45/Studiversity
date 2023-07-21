@@ -38,27 +38,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.ifSuccess
-import com.denchic45.studiversity.domain.resourceOf
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.appbar2.hideAppBar
+import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.search.CourseChooserScreen
 import com.denchic45.studiversity.ui.search.UserChooserScreen
-import com.denchic45.studiversity.ui.theme.AppTheme
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.api.room.model.RoomResponse
 import com.denchic45.stuiversity.util.DateTimePatterns
 import com.denchic45.stuiversity.util.toString
-import java.time.LocalDate
-import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

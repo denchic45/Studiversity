@@ -1,7 +1,5 @@
 package com.denchic45.studiversity.domain.model
 
-import java.time.LocalDate
-
 //data class GroupTimetable(
 //    val groupHeader: GroupHeader,
 //    val weekEvents: List<EventsOfDay>,

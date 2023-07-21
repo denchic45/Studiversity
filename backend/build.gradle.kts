@@ -19,7 +19,7 @@ plugins {
     war
 }
 
-group = "com.studiversity"
+group = "com.denchic45.studiversity"
 
 version = "0.0.1"
 application {

@@ -61,9 +61,9 @@ import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.model.FileState
 import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.DropdownMenuItem2
-import com.denchic45.studiversity.ui.appbar2.updateAppBarState
+import com.denchic45.studiversity.ui.appbar.AppBarContent
+import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
+import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsScreen
 import com.denchic45.studiversity.ui.coursework.submissiondetails.SubmissionDetailsContent

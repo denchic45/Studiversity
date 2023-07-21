@@ -21,7 +21,7 @@ import java.util.UUID
 @Inject
 class CourseWorkDetailsComponent(
     private val findCourseWorkUseCase: FindCourseWorkUseCase,
-    private val findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
+    findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
     private val downloadFileUseCase: DownloadFileUseCase,
     @Assisted
     private val courseId: UUID,

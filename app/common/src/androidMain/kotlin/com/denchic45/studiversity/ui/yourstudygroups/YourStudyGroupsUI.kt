@@ -25,9 +25,9 @@ import com.denchic45.studiversity.domain.onSuccess
 import com.denchic45.studiversity.domain.takeValueIfSuccess
 import com.denchic45.studiversity.ui.CircularLoadingBox
 import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
-import com.denchic45.studiversity.ui.appbar2.AppBarContent
-import com.denchic45.studiversity.ui.appbar2.DropdownMenuItem2
-import com.denchic45.studiversity.ui.appbar2.updateAppBarState
+import com.denchic45.studiversity.ui.appbar.AppBarContent
+import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
+import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupContent

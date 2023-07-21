@@ -1,12 +1,5 @@
 package com.denchic45.studiversity.ui.theme
 
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.platform.Font
-
-
-
-
 
 //val AppTypography = Typography(
 //    displayLarge = TextStyle(

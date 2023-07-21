@@ -14,7 +14,7 @@ import java.io.FileOutputStream
 import kotlin.math.min
 
 
-// TODO: испаользовать для скачивания файлов по частям
+// TODO: использовать для скачивания файлов по частям
 @OptIn(InternalAPI::class)
 suspend fun HttpClient.download(url: String, outFile: File, chunkSize: Int = 1024) {
     val length = head(url).headers[HttpHeaders.ContentLength]?.toLong() as Long

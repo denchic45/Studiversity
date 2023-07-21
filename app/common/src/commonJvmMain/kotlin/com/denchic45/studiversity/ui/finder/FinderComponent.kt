@@ -6,7 +6,6 @@ import com.arkivanov.decompose.router.overlay.OverlayNavigation
 import com.arkivanov.decompose.router.overlay.activate
 import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
-import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.ui.course.CourseComponent
