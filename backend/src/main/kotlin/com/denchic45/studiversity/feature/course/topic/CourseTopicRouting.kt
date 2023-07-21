@@ -3,6 +3,7 @@ package com.denchic45.studiversity.feature.course.topic
 import com.denchic45.studiversity.feature.course.topic.usecase.*
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.ktor.currentUserId
+import com.denchic45.studiversity.ktor.getEnumOrFail
 import com.denchic45.studiversity.ktor.getUuidOrFail
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
@@ -27,7 +28,6 @@ fun Application.courseTopicRoutes() {
                 val addCourseTopic: AddCourseTopicUseCase by inject()
                 val findCourseTopicsByCourse: FindCourseTopicsByCourseUseCase by inject()
 
-
                 post {
                     val currentUserId = call.currentUserId()
                     val request = call.receive<CreateCourseTopicRequest>()
@@ -38,13 +38,13 @@ fun Application.courseTopicRoutes() {
                         scopeId = request.courseId
                     )
 
-                    val topic = addCourseTopic(call.receive())
+                    val topic = addCourseTopic(request)
                     call.respond(HttpStatusCode.Created, topic)
                 }
 
                 get {
                     val currentUserId = call.currentUserId()
-                    val courseId = call.request.queryParameters.getUuidOrFail("courseId")
+                    val courseId = call.request.queryParameters.getUuidOrFail("course_id")
 
                     requireCapability(
                         userId = currentUserId,
@@ -103,8 +103,7 @@ private fun Route.courseTopicById() {
             val topicId = call.parameters.getUuidOrFail("topicId")
             val courseId = findCourseIdByTopicId(topicId)
 
-            val relatedTopicElements =
-                Json.decodeFromString<RelatedTopicElements>(call.parameters.getOrFail("elements"))
+            val relatedTopicElements = call.parameters.getEnumOrFail<RelatedTopicElements>("elements")
 
             requireCapability(
                 userId = currentUserId,

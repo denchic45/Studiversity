@@ -22,6 +22,15 @@ fun Parameters.getUuidOrFail(name: String): UUID = try {
     throw e
 }
 
+inline fun <reified T : Enum<T>> Parameters.getEnum(name: String): T? {
+    return get(name)?.let<String, T>(::enumValueOf)
+}
+
+inline fun <reified T : Enum<T>> Parameters.getEnumOrFail(name: String): T {
+    return enumValueOf(getOrFail(name))
+}
+
+
 inline fun <reified T : Sorting> Parameters.getSortingBy(
     sortingClass: SortingClass<T>,
     parameterName: String = "sort_by"
