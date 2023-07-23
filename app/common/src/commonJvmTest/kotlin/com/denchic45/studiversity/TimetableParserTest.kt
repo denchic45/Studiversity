@@ -4,6 +4,7 @@ import com.denchic45.studiversity.domain.timetable.TimetableParser
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.course.CoursesApi
+import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
@@ -11,6 +12,10 @@ import com.denchic45.stuiversity.api.course.subject.SubjectApi
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
+import com.denchic45.stuiversity.api.room.RoomApi
+import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
+import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
 import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
 import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
@@ -27,7 +32,7 @@ import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.net.URISyntaxException
 import java.net.URL
-import java.util.UUID
+import java.util.*
 import kotlin.test.Test
 
 
@@ -56,9 +61,10 @@ class TimetableParserTest {
             studyGroupApi = studyGroupApi,
             userApi = userApi,
             courseApi = courseApi,
-            subjectApi = subjectApi
+            subjectApi = subjectApi,
+            roomApi = roomApi
         ).parseDoc(inputStream)
-     println(parseDoc)
+        println(parseDoc)
     }
 
     private val studyGroupApi = object : StudyGroupApi {
@@ -129,6 +135,7 @@ class TimetableParserTest {
                             patronymic = "Иванович",
                             account = Account("ivan@gmail.com"),
                             avatarUrl = "",
+                            generatedAvatar = true,
                             gender = Gender.MALE
                         )
                     )
@@ -138,6 +145,14 @@ class TimetableParserTest {
         }
 
         override suspend fun getList(query: String): ResponseResult<List<UserResponse>> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun updateAvatar(userId: UUID, request: CreateFileRequest): ResponseResult<String> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun deleteAvatar(userId: UUID): ResponseResult<String> {
             TODO("Not yet implemented")
         }
 
@@ -156,10 +171,11 @@ class TimetableParserTest {
         }
 
         override suspend fun getList(
-            memberId: UUIDWrapper,
+            memberId: UUIDWrapper?,
             studyGroupId: UUID?,
             subjectId: UUID?,
-            query: String?,
+            archived: Boolean?,
+            query: String?
         ): ResponseResult<List<CourseResponse>> {
             return Ok(
                 if (subjectId == subjectResponse.id)
@@ -250,6 +266,32 @@ class TimetableParserTest {
         }
 
         override suspend fun delete(subjectId: UUID): EmptyResponseResult {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun getIconsUrls(): ResponseResult<List<String>> {
+            TODO("Not yet implemented")
+        }
+    }
+
+    private val roomApi = object : RoomApi {
+        override suspend fun create(createRoomRequest: CreateRoomRequest): ResponseResult<RoomResponse> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun getById(roomId: UUID): ResponseResult<RoomResponse> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun getList(query: String): ResponseResult<List<RoomResponse>> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun update(roomId: UUID, updateRoomRequest: UpdateRoomRequest): ResponseResult<RoomResponse> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun delete(roomId: UUID): EmptyResponseResult {
             TODO("Not yet implemented")
         }
     }

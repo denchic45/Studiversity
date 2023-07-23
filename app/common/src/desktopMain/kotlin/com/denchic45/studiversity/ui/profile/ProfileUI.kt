@@ -47,7 +47,6 @@ fun ProfileSideBar(
         )
         profileViewState.onSuccess { profile ->
             ProfileHeader(profile.avatarUrl, profile.fullName)
-            Divider(Modifier.fillMaxWidth())
 //            if (profile.groupInfo != null) {
 //                ListItem(Modifier.clickable(
 //                    profile.groupClickable,
