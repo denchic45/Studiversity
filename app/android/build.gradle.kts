@@ -87,9 +87,6 @@ dependencies {
 
 //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.8.1")
 
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-
     // junit
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")

@@ -21,7 +21,7 @@ kotlin {
     sourceSets {
         val ktorVersion = "2.3.1"
         val koinVersion = "3.2.0"
-        val decomposeVersion = "1.0.0"
+        val decomposeVersion = "2.0.0"
 
         val commonMain by getting {
             dependencies {
@@ -40,7 +40,6 @@ kotlin {
                 implementation("io.github.qdsfdhvh:image-loader:1.3.1")
                 implementation("androidx.compose.material3:material3-window-size-class:1.1.1")
                 implementation("androidx.window:window:1.1.0")
-
 
                 // Ktor
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -93,7 +92,6 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.1")
 
                 implementation("app.cash.sqldelight:runtime-jvm:$sqlDelightVersion")
-//                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 // Ktor
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
@@ -137,26 +135,18 @@ kotlin {
                 implementation("androidx.compose.foundation:foundation:$composeVersion")
                 // Material Design
                 implementation("androidx.compose.material3:material3:1.1.1")
-
-                implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
-
-                implementation("com.airbnb.android:lottie-compose:6.0.0")
-
-                implementation("androidx.core:core-splashscreen:1.0.1")
-
                 // Lifecycle
                 implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
+                implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+                implementation("com.airbnb.android:lottie-compose:6.0.0")
+                implementation("androidx.core:core-splashscreen:1.0.1")
+
                 // Decompose
                 implementation("com.arkivanov.decompose:extensions-compose-jetpack:$decomposeVersion")
-
                 // Cropper
                 implementation("com.github.SmartToolFactory:Compose-Cropper:0.3.0")
-
-//                implementation("io.grpc:grpc-okhttp:1.44.1") {
-//                    exclude("com.squareup.okhttp")
-//                }
-
+                // Coil
                 implementation("io.coil-kt:coil-compose:2.2.2")
                 implementation("io.coil-kt:coil-svg:2.3.0")
 
@@ -185,7 +175,6 @@ kotlin {
                 api(compose.preview)
 
                 implementation("app.cash.sqldelight:sqlite-driver:$sqlDelightVersion")
-//                implementation("app.cash.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 // Decompose
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
