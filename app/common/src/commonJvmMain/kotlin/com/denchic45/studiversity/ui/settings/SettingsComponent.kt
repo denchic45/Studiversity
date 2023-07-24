@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.ui.settings
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.service.AuthService
@@ -21,10 +21,10 @@ class SettingsComponent(
     private val componentContext: ComponentContext
 ) : ComponentContext by componentContext {
 
-    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
-    val childOverlay = childOverlay(
+    private val slotNavigation = SlotNavigation<OverlayConfig>()
+    val childSlot = childSlot(
         handleBackButton = true,
-        source = overlayNavigation,
+        source = slotNavigation,
         childFactory = { config, context ->
             when (config) {
                 OverlayConfig.Account -> {
@@ -43,15 +43,15 @@ class SettingsComponent(
     )
 
     fun onAccountClick() {
-        overlayNavigation.activate(OverlayConfig.Account)
+        slotNavigation.activate(OverlayConfig.Account)
     }
 
     fun onNotificationsClick() {
-        overlayNavigation.activate(OverlayConfig.Notifications)
+        slotNavigation.activate(OverlayConfig.Notifications)
     }
 
     fun onThemePickerClick() {
-        overlayNavigation.activate(OverlayConfig.ThemePicker)
+        slotNavigation.activate(OverlayConfig.ThemePicker)
     }
 
     fun onSignOutClick() {
