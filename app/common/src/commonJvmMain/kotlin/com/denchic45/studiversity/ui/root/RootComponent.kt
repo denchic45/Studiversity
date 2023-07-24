@@ -1,15 +1,15 @@
 package com.denchic45.studiversity.ui.root
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.overlay
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.child
+import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.usecase.ObserveAuthStateUseCase
-import com.denchic45.studiversity.ui.MainComponent
 import com.denchic45.studiversity.ui.auth.AuthComponent
+import com.denchic45.studiversity.ui.main.MainComponent
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,22 +28,23 @@ class RootComponent(
 
     private val componentScope = componentScope()
 
-    private val navigation = OverlayNavigation<Config>()
+    private val navigation = SlotNavigation<Config>()
 
-    val childActive = childOverlay(
+    val childSlot = childSlot(
         source = navigation,
+        key = "DefaultChildOverlay",
         initialConfiguration = { Config.Splash },
         childFactory = { config, context ->
             when (config) {
+                Config.Splash -> Child.Splash
                 Config.Auth -> Child.Auth(authComponent(context))
                 Config.Main -> Child.Main(mainComponent(context))
-                Config.Splash -> Child.Splash
             }
         }
     )
 
     val isReady
-        get() = childActive.overlay?.instance !is Child.Splash
+        get() = childSlot.child?.instance !is Child.Splash
 
     init {
         componentScope.launch {

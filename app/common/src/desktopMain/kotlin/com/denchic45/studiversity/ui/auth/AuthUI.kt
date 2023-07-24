@@ -12,19 +12,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.window.ApplicationScope
+import androidx.compose.ui.window.rememberWindowState
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.denchic45.studiversity.WindowWidthSizeClass
 import com.denchic45.studiversity.domain.ifSuccess
 import com.denchic45.studiversity.ui.animation.slideVertical
+import com.denchic45.studiversity.ui.theme.DesktopApp
 import com.denchic45.studiversity.ui.theme.LocalWindowState
 import com.denchic45.studiversity.ui.theme.calculateWindowSizeClass
 import com.denchic45.studiversity.ui.theme.md_theme_dark_tertiary
 import com.denchic45.studiversity.ui.theme.rememberWindowSizeClass
+
+@Composable
+fun ApplicationScope.AuthWindow(component: AuthComponent, backDispatcher: BackDispatcher) {
+    val state = rememberWindowState()
+    DesktopApp(
+        title = "Studiversity - Авторизация",
+        onCloseRequest = ::exitApplication,
+        state = state,
+        backDispatcher = backDispatcher
+    ) {
+        AuthScreen(component)
+    }
+}
 
 @Composable
 fun AuthScreen(component: AuthComponent) {
@@ -58,7 +75,8 @@ fun AuthScreen(component: AuthComponent) {
                     is AuthComponent.Child.Login -> LoginScreen(child.component)
                     is AuthComponent.Child.Registration -> RegistrationScreen(child.component)
                     is AuthComponent.Child.ResetPassword -> {
-                        Text("Восстановить пароль")}
+                        Text("Восстановить пароль")
+                    }
                 }
             }
         }

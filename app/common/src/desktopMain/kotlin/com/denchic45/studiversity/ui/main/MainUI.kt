@@ -1,15 +1,17 @@
-package com.denchic45.studiversity.ui
+package com.denchic45.studiversity.ui.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.HelpOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,22 +20,67 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.ApplicationScope
+import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.rememberWindowState
+import com.arkivanov.decompose.ExperimentalDecomposeApi
+import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleController
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.arkivanov.essenty.backhandler.BackDispatcher
+import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.ui.AppBarMediator
+import com.denchic45.studiversity.ui.LocalAppBarMediator
+import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
+import com.denchic45.studiversity.ui.components.UserListItem
 import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.course.CourseScreen
 import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
+import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.ui.navigation.OverlayChild
 import com.denchic45.studiversity.ui.root.RootScreen
+import com.denchic45.studiversity.ui.settings.SettingsDialog
 import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
+import com.denchic45.studiversity.ui.theme.DesktopApp
+import com.denchic45.studiversity.ui.theme.isSystemInDarkTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
 import com.denchic45.studiversity.ui.yourworks.YourWorksScreen
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.seiko.imageloader.rememberAsyncImagePainter
+import java.awt.Toolkit
 
+@OptIn(ExperimentalDecomposeApi::class)
+@Composable
+fun ApplicationScope.MainWindow(
+    component: MainComponent,
+    lifecycle: LifecycleRegistry,
+    backDispatcher: BackDispatcher
+) {
+    val size = Toolkit.getDefaultToolkit().screenSize.run {
+        DpSize((width - 124).dp, (height - 124).dp)
+    }
+    val state = rememberWindowState(
+        size = size,
+        position = WindowPosition(Alignment.Center)
+    )
+    LifecycleController(lifecycle, state)
+
+    DesktopApp(
+        title = "Studiversity",
+        onCloseRequest = ::exitApplication,
+        state = state,
+        backDispatcher = backDispatcher
+    ) {
+        CompositionLocalProvider(LocalAppBarMediator provides AppBarMediator()) {
+            MainScreen(component)
+        }
+    }
+}
 
 @Composable
 fun MainScreen(component: MainComponent) {
@@ -52,7 +99,8 @@ fun MainScreen(component: MainComponent) {
                 showBackButton = false,
                 onBackClick = component::onBackClick,
                 onHelpClick = {},
-                onNotificationsClick = {}
+                onNotificationsClick = {},
+                onSettingsClick = component::onSettingsClick
             )
 
             Row {
@@ -142,19 +190,23 @@ fun MainScreen(component: MainComponent) {
                 }
 
                 val overlay by component.childOverlay.subscribeAsState()
-                overlay.overlay?.let {
+                overlay.child?.let {
                     when (val instance = it.instance) {
                         is OverlayChild.Confirm -> with(instance.config) {
                             ConfirmDialog(
                                 title = title,
                                 text = text,
                                 onConfirm = {},
-                                onDismiss = component::onOverlayDismiss
+                                onDismiss = component::onDialogClose
                             )
                         }
 
                         is OverlayChild.YourProfile -> TODO("Open profile dialog")
-                        is OverlayChild.Settings -> TODO()
+                        is OverlayChild.Settings -> SettingsDialog(
+                            onCloseRequest = component::onDialogClose,
+                            component = instance.component
+                        )
+
                         is OverlayChild.Schedule -> TODO()
                     }
                 }
@@ -163,16 +215,19 @@ fun MainScreen(component: MainComponent) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainAppBar(
     userInfo: Resource<UserResponse>,
     showBackButton: Boolean,
     onBackClick: () -> Unit,
     onHelpClick: () -> Unit,
-    onNotificationsClick: () -> Unit
+    onNotificationsClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().height(64.dp).padding(horizontal = MaterialTheme.spacing.medium),
+        modifier = Modifier.fillMaxWidth().height(64.dp)
+            .padding(horizontal = MaterialTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (showBackButton) {
@@ -199,26 +254,78 @@ fun MainAppBar(
         }
         var showProfilePopup by remember { mutableStateOf(false) }
         IconButton(onClick = { showProfilePopup = true }) {
-            ResourceContent(userInfo, onLoading = { CircularProgressIndicator(Modifier.size(24.dp)) }) {
-                Image(
-                    painter = rememberAsyncImagePainter(it.avatarUrl),
-                    contentDescription = "avatar",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color.LightGray),
-                )
+            ResourceContent(
+                userInfo,
+                onLoading = { CircularProgressIndicator(Modifier.size(24.dp)) }) {
+                Column {
+                    Image(
+                        painter = rememberAsyncImagePainter(it.avatarUrl),
+                        contentDescription = "avatar",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(40.dp)
+                            .clip(CircleShape)
+                            .background(Color.LightGray),
+                    )
+
+                    DropdownMenu(
+                        expanded = showProfilePopup,
+                        onDismissRequest = { showProfilePopup = false }) {
+                        UserListItem(it.toUserItem(), onClick = {})
+                        ListItem(
+                            headlineText = { Text("Настройки") },
+                            leadingContent = { Icon(Icons.Outlined.Settings, null) },
+                            trailingContent = {
+                                Switch(
+                                    checked = isSystemInDarkTheme(),
+                                    onCheckedChange = { onSettingsClick() }
+                                )
+                            }
+                        )
+                        Column {
+                            var expandedThemePicker by remember { mutableStateOf(false) }
+                            ListItem(
+                                headlineText = { Text("Тема:") },
+                                leadingContent = { Icon(Icons.Outlined.DarkMode, null) },
+                                trailingContent = { Text("По умолчанию (пример)") }
+                            )
+                            ExpandableDropdownMenu(
+                                expanded = expandedThemePicker,
+                                onExpandedChange = { expandedThemePicker = it }) {
+                                DropdownMenuItem(
+                                    text = { Text("Светлая") },
+                                    onClick = {}
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Темная") },
+                                    onClick = {}
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("По умолчанию") },
+                                    onClick = {}
+                                )
+                            }
+                        }
+                        ListItem(
+                            headlineText = { Text("Помощь") },
+                            leadingContent = { Icon(Icons.Rounded.HelpOutline, null) },
+                            trailingContent = {
+                                Switch(
+                                    checked = isSystemInDarkTheme(),
+                                    onCheckedChange = { onSettingsClick() }
+                                )
+                            }
+                        )
+                    }
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomAppBar(
     title: @Composable RowScope.() -> Unit,
     modifier: Modifier = Modifier,
-    navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     Row(
@@ -229,16 +336,14 @@ fun CustomAppBar(
         Spacer(Modifier.weight(1f))
         actions()
     }
-//    TopAppBar(
-//        title = title,
-//        modifier = modifier.height(80.dp).padding(end = 24.dp).background(Color.DarkGray),
-//        actions = actions
-//    )
 }
 
 @Composable
 fun AppBarTitle(text: String) {
-    Box(Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterStart) {
+    Box(
+        modifier = Modifier.fillMaxHeight(),
+        contentAlignment = Alignment.CenterStart
+    ) {
         Text(
             text = text,
             color = MaterialTheme.colorScheme.onSurface,
