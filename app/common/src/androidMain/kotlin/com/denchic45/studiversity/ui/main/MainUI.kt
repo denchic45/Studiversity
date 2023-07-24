@@ -74,7 +74,6 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.ui.MainComponent
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar.NavigationIcon
@@ -134,18 +133,15 @@ fun MainScreen(
     val sizeClass = calculateWindowSizeClass(activity)
     when (sizeClass.widthSizeClass) {
         WindowWidthSizeClass.Compact -> {
-            CompactMainScreen(
-                component,
-                activity = activity
-            )
+            CompactMainScreen(component, activity)
         }
 
         WindowWidthSizeClass.Medium -> {
-            MediumMainScreen(component, activity = activity)
+            MediumMainScreen(component, activity)
         }
 
         WindowWidthSizeClass.Expanded -> {
-            MediumMainScreen(component, activity = activity)
+            MediumMainScreen(component, activity)
         }
     }
     ConfirmDialog(confirmDialogInteractor)
@@ -223,7 +219,7 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
             ScreenContainer(paddingValues, stack)
             Box(Modifier.padding(paddingValues)) {
                 val overlay by component.childOverlay.subscribeAsState()
-                overlay.overlay?.let {
+                overlay.child?.let {
                     when (val child = it.instance) {
                         is OverlayChild.Confirm -> with(child.config) {
                             TODO()
@@ -406,7 +402,7 @@ private fun DrawerContent(
                         contentDescription = "schedule"
                     )
                 },
-                selected = overlay.overlay?.instance is OverlayChild.Schedule,
+                selected = overlay.child?.instance is OverlayChild.Schedule,
                 onClick = {
                     component.onScheduleClick()
                     closeDrawer()
@@ -499,7 +495,7 @@ private fun DrawerContent(
                         contentDescription = "settings"
                     )
                 },
-                selected = overlay.overlay?.instance is OverlayChild.Settings,
+                selected = overlay.child?.instance is OverlayChild.Settings,
                 onClick = {
                     component.onSettingsClick()
                     closeDrawer()

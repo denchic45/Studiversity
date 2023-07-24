@@ -1,11 +1,17 @@
-package com.denchic45.studiversity.ui
+package com.denchic45.studiversity.ui.main
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
-import com.arkivanov.decompose.router.stack.*
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.navigate
+import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -21,8 +27,8 @@ import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.studiversity.ui.navigation.ChildrenContainerChild
 import com.denchic45.studiversity.ui.navigation.OverlayChild
-import com.denchic45.studiversity.ui.navigation.OverlayConfig
 import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
+import com.denchic45.studiversity.ui.navigation.SlotConfig
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.root.YourStudyGroupsRootComponent
 import com.denchic45.studiversity.ui.root.YourTimetablesRootComponent
@@ -33,12 +39,18 @@ import com.denchic45.studiversity.ui.yourworks.YourWorksComponent
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Role
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class MainComponent(
@@ -151,28 +163,36 @@ class MainComponent(
             }
         })
 
-    private val overlayNavigation: OverlayNavigation<OverlayConfig> = OverlayNavigation()
+    private val slotNavigation: SlotNavigation<SlotConfig> = SlotNavigation()
 
-    val childOverlay = childOverlay(
-        source = overlayNavigation,
+    val childOverlay = childSlot(
+        source = slotNavigation,
         handleBackButton = true,
         key = "MainChildOverlay"
     ) { config, context ->
         when (config) {
-            is OverlayConfig.Confirm -> OverlayChild.Confirm(config)
-            OverlayConfig.YourProfile -> OverlayChild.YourProfile(
+            is SlotConfig.Confirm -> OverlayChild.Confirm(
+                config
+            )
+
+            SlotConfig.YourProfile -> OverlayChild.YourProfile(
                 profileComponent(
                     {
                         navigation.bringToFront(Config.StudyGroup(it))
-                        overlayNavigation.dismiss()
+                        slotNavigation.dismiss()
                     },
                     userInfo.value.ifSuccess { it.id } ?: error("Id required"),
                     context
                 )
             )
 
-            is OverlayConfig.Settings -> OverlayChild.Settings(settingsComponent(context))
-            OverlayConfig.Schedule -> OverlayChild.Schedule(scheduleComponent(componentContext))
+            is SlotConfig.Settings -> com.denchic45.studiversity.ui.navigation.OverlayChild.Settings(
+                settingsComponent(context)
+            )
+
+            SlotConfig.Schedule -> com.denchic45.studiversity.ui.navigation.OverlayChild.Schedule(
+                scheduleComponent(componentContext)
+            )
         }
     }
 
@@ -219,34 +239,34 @@ class MainComponent(
     }
 
     fun onTimetableClick() {
-        onOverlayDismiss()
+        onDialogClose()
         navigation.bringToFront(Config.YourTimetables)
     }
 
     fun onStudyGroupsClick() {
-        onOverlayDismiss()
+        onDialogClose()
         navigation.bringToFront(Config.YourStudyGroups)
     }
 
-    fun onOverlayDismiss() {
-        overlayNavigation.dismiss()
+    fun onDialogClose() {
+        slotNavigation.dismiss()
     }
 
     fun onProfileClick() {
-        overlayNavigation.activate(OverlayConfig.YourProfile)
+        slotNavigation.activate(SlotConfig.YourProfile)
     }
 
     fun onScheduleClick() {
-        overlayNavigation.activate(OverlayConfig.Schedule)
+        slotNavigation.activate(SlotConfig.Schedule)
     }
 
     fun onWorksClick() {
-        onOverlayDismiss()
+        onDialogClose()
         navigation.bringToFront(Config.YourWorks)
     }
 
     fun onCourseClick(courseId: UUID) {
-        onOverlayDismiss()
+        onDialogClose()
         navigation.bringToFront(Config.Course(courseId))
     }
 
@@ -255,7 +275,7 @@ class MainComponent(
     }
 
     fun onSettingsClick() {
-        overlayNavigation.activate(OverlayConfig.Settings)
+        slotNavigation.activate(SlotConfig.Settings)
     }
 
     fun onBackClick() {

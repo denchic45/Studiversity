@@ -7,10 +7,11 @@ import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.studiversity.ui.AppNavigation
-import com.denchic45.studiversity.ui.MainComponent
 import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
+import com.denchic45.studiversity.ui.main.AppNavigation
+import com.denchic45.studiversity.ui.main.MainComponent
+import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import kotlinx.coroutines.flow.MutableStateFlow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -38,7 +39,7 @@ class YourWorksComponent(
     private val appNavigation: AppNavigation,
     @Assisted
     componentContext: ComponentContext,
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, EmptyChildrenContainer {
 
 //    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
 //

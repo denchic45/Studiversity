@@ -7,24 +7,24 @@ import com.denchic45.studiversity.ui.schedule.ScheduleComponent
 import com.denchic45.studiversity.ui.settings.SettingsComponent
 
 @Parcelize
-sealed interface OverlayConfig : Parcelable {
+sealed interface SlotConfig : Parcelable {
     data class Confirm(
         val title: String,
         val text: String? = null,
         val icon: String? = null,
         val onConfirm: () -> Unit
-    ) : OverlayConfig
+    ) : SlotConfig
 
-    object YourProfile : OverlayConfig
+    object YourProfile : SlotConfig
 
-    object Schedule : OverlayConfig
+    object Schedule : SlotConfig
 
-    object Settings : OverlayConfig
+    object Settings : SlotConfig
 
 }
 
 sealed interface OverlayChild {
-    class Confirm(val config: OverlayConfig.Confirm) : OverlayChild
+    class Confirm(val config: SlotConfig.Confirm) : OverlayChild
 
     class Schedule(val component: ScheduleComponent) : OverlayChild
 

@@ -31,8 +31,8 @@ class MainActivity : ComponentActivity() {
         val confirmDialogInteractor = appComponent.confirmDialogInteractor
         setContent {
             AppTheme {
-                val active by rootComponent.childActive.subscribeAsState()
-                AnimatedContent(targetState = active.overlay) { overlay ->
+                val active by rootComponent.childSlot.subscribeAsState()
+                AnimatedContent(targetState = active.child) { overlay ->
                     overlay?.instance.let {
                         when (val child = it) {
                             is RootComponent.Child.Auth -> AuthScreen(child.component)

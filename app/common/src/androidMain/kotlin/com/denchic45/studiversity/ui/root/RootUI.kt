@@ -28,7 +28,7 @@ fun RootStackScreen(
                 is RootChild.AdminDashboard -> AdminDashboardScreen(child.component)
                 is RootChild.Course -> CourseScreen(child.component)
                 is RootChild.StudyGroup -> StudyGroupScreen(child.component)
-                is RootChild.Works -> TODO()
+                is RootChild.YourWorks -> TODO()
                 is RootChild.CourseEditor -> CourseEditorScreen(child.component)
                 is RootChild.CourseWork -> CourseWorkScreen(child.component)
                 is RootChild.CourseWorkEditor -> CourseWorkEditorScreen(child.component)

@@ -31,9 +31,9 @@ import java.util.UUID
 
 @Composable
 fun UserListItem(
-    modifier: Modifier = Modifier,
-    onClick: (id: UUID) -> Unit,
     item: UserItem,
+    onClick: (id: UUID) -> Unit,
+    modifier: Modifier = Modifier,
     actionsVisible: Boolean = true,
     selected: Boolean = false,
     interactionSource: MutableInteractionSource = remember(::MutableInteractionSource),
@@ -78,15 +78,19 @@ fun UserListItem(
 @Preview
 @Composable
 fun UserItemPreview() {
-    val modifier = Modifier
-    UserListItem(modifier,
-        {},
-        UserItem(
-            UUID.randomUUID(),
-            "User",
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Android_new_logo_2019.svg/2560px-Android_new_logo_2019.svg.png",
-            "Sub"
-        ), actions = {
-            Icon(painterResource("drawable/ic_subject_history.xml"), null)
-        })
+    UserListItem(
+        item = UserItem(
+            id = UUID.randomUUID(),
+            firstName = "User",
+            surname = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Android_new_logo_2019.svg/2560px-Android_new_logo_2019.svg.png",
+            avatarUrl = "Sub"
+        ),
+        onClick = {},
+        actions = {
+            Icon(
+                painterResource("drawable/ic_subject_history.xml"),
+                null
+            )
+        }
+    )
 }

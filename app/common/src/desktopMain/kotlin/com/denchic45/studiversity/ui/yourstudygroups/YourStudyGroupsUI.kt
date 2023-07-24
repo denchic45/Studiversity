@@ -4,21 +4,30 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.ui.AppBarTitle
-import com.denchic45.studiversity.ui.CustomAppBar
 import com.denchic45.studiversity.ui.Scaffold
 import com.denchic45.studiversity.ui.components.ExposedDropdownMenuDefaults
+import com.denchic45.studiversity.ui.main.AppBarTitle
+import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupContent
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import java.util.*
+import java.util.UUID
 
 
 @Composable
