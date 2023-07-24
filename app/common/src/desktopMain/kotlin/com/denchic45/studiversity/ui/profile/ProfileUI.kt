@@ -3,6 +3,8 @@ package com.denchic45.studiversity.ui.profile
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,7 +42,7 @@ fun ProfileSideBar(
             title = {},
             actions = {
                 IconButton(onCloseClick) {
-                    Icon(painterResource("ic_close".toDrawablePath()), null)
+                    Icon(Icons.Rounded.Close, null)
                 }
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)

@@ -171,9 +171,7 @@ class MainComponent(
         key = "MainChildOverlay"
     ) { config, context ->
         when (config) {
-            is SlotConfig.Confirm -> OverlayChild.Confirm(
-                config
-            )
+            is SlotConfig.Confirm -> OverlayChild.Confirm(config)
 
             SlotConfig.YourProfile -> OverlayChild.YourProfile(
                 profileComponent(
@@ -186,11 +184,11 @@ class MainComponent(
                 )
             )
 
-            is SlotConfig.Settings -> com.denchic45.studiversity.ui.navigation.OverlayChild.Settings(
+            is SlotConfig.Settings -> OverlayChild.Settings(
                 settingsComponent(context)
             )
 
-            SlotConfig.Schedule -> com.denchic45.studiversity.ui.navigation.OverlayChild.Schedule(
+            SlotConfig.Schedule -> OverlayChild.Schedule(
                 scheduleComponent(componentContext)
             )
         }

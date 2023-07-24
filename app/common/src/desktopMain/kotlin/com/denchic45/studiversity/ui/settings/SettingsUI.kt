@@ -5,7 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,12 +28,14 @@ fun SettingsDialog(onCloseRequest: () -> Unit, component: SettingsComponent) {
         resizable = false
     ) {
         Row {
-            Column(Modifier.width(272.dp)) {
+            Column(Modifier.width(192.dp)) {
                 ListItem(
-                    headlineText = { Text("Аккаунт") }
+                    headlineText = { Text("Аккаунт") },
+                    leadingContent = { Icon(Icons.Outlined.AccountCircle, "account settings") }
                 )
                 ListItem(
-                    headlineText = { Text("Уведомления") }
+                    headlineText = { Text("Уведомления") },
+                    leadingContent = { Icon(Icons.Outlined.Notifications, "alarm settings") }
                 )
             }
             Box(Modifier.aspectRatio(1f)) {

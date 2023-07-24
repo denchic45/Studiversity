@@ -1,7 +1,10 @@
 package com.denchic45.studiversity.ui.main
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -11,6 +14,7 @@ import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.HelpOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -34,24 +38,21 @@ import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.ui.AppBarMediator
 import com.denchic45.studiversity.ui.LocalAppBarMediator
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
-import com.denchic45.studiversity.ui.components.UserListItem
 import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.course.CourseScreen
 import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
-import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.ui.navigation.OverlayChild
 import com.denchic45.studiversity.ui.root.RootScreen
 import com.denchic45.studiversity.ui.settings.SettingsDialog
 import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
 import com.denchic45.studiversity.ui.theme.DesktopApp
-import com.denchic45.studiversity.ui.theme.isSystemInDarkTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
 import com.denchic45.studiversity.ui.yourworks.YourWorksScreen
 import com.denchic45.stuiversity.api.user.model.UserResponse
-import com.seiko.imageloader.rememberAsyncImagePainter
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import java.awt.Toolkit
 
 @OptIn(ExperimentalDecomposeApi::class)
@@ -226,25 +227,21 @@ fun MainAppBar(
     onSettingsClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().height(64.dp)
-            .padding(horizontal = MaterialTheme.spacing.medium),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+            .padding(horizontal = MaterialTheme.spacing.normal),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (showBackButton) {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.Rounded.ArrowBack,
-                    contentDescription = "back"
-                )
-            }
-        }
-        Spacer(Modifier.weight(1f))
-        IconButton(onClick = onHelpClick) {
+//        if (showBackButton) {
+        IconButton(onClick = onBackClick, enabled = showBackButton) {
             Icon(
-                painter = painterResource("ic_help_circle".toDrawablePath()),
-                contentDescription = "help"
+                imageVector = Icons.Rounded.ArrowBack,
+                contentDescription = "back"
             )
         }
+//        }
+        Spacer(Modifier.weight(1f))
         var showNotificationsPopup by remember { mutableStateOf(false) }
         IconButton(onClick = { showNotificationsPopup = true }) {
             Icon(
@@ -256,10 +253,10 @@ fun MainAppBar(
         IconButton(onClick = { showProfilePopup = true }) {
             ResourceContent(
                 userInfo,
-                onLoading = { CircularProgressIndicator(Modifier.size(24.dp)) }) {
+                onLoading = { CircularProgressIndicator(Modifier.size(24.dp)) }) { user ->
                 Column {
-                    Image(
-                        painter = rememberAsyncImagePainter(it.avatarUrl),
+                    KamelImage(
+                        resource = asyncPainterResource(user.avatarUrl),
                         contentDescription = "avatar",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.size(40.dp)
@@ -269,28 +266,83 @@ fun MainAppBar(
 
                     DropdownMenu(
                         expanded = showProfilePopup,
-                        onDismissRequest = { showProfilePopup = false }) {
-                        UserListItem(it.toUserItem(), onClick = {})
+                        onDismissRequest = { showProfilePopup = false },
+                        modifier = Modifier.width(336.dp)
+                    ) {
+                        val interactionSource = remember(::MutableInteractionSource)
+                        val isHovered by interactionSource.collectIsHoveredAsState()
+                        val profilePadding = MaterialTheme.spacing.small
+                        Card(
+                            colors = if (isHovered)
+                                CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                                )
+                            else CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
+                            ),
+                            shape = MaterialTheme.shapes.medium,
+                            modifier = Modifier
+                                .padding(
+                                    start = profilePadding,
+                                    end = profilePadding,
+                                    bottom = profilePadding
+                                )
+                                .hoverable(interactionSource)
+                        ) {
+                            Row(
+                                Modifier.padding(MaterialTheme.spacing.normal),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                KamelImage(
+                                    resource = asyncPainterResource(user.avatarUrl),
+                                    null,
+                                    Modifier.size(40.dp).clip(CircleShape),
+                                    contentScale = ContentScale.Crop
+                                )
+                                Column(Modifier.padding(start = 16.dp)) {
+                                    Text(user.fullName, style = MaterialTheme.typography.bodyLarge)
+                                    Text(
+                                        "Посмотреть профиль",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                                Spacer(Modifier.weight(1f))
+                                Icon(
+                                    imageVector = Icons.Rounded.ChevronRight,
+                                    contentDescription = "show profile",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                         ListItem(
                             headlineText = { Text("Настройки") },
                             leadingContent = { Icon(Icons.Outlined.Settings, null) },
-                            trailingContent = {
-                                Switch(
-                                    checked = isSystemInDarkTheme(),
-                                    onCheckedChange = { onSettingsClick() }
-                                )
-                            }
+                            modifier = Modifier.clickable(onClick = {
+                                showProfilePopup = false
+                                onSettingsClick()
+                            })
                         )
                         Column {
                             var expandedThemePicker by remember { mutableStateOf(false) }
                             ListItem(
-                                headlineText = { Text("Тема:") },
+                                headlineText = {
+                                    Row {
+                                        Text("Тема: ")
+                                        Text(
+                                            "По умолчанию",
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                },
                                 leadingContent = { Icon(Icons.Outlined.DarkMode, null) },
-                                trailingContent = { Text("По умолчанию (пример)") }
+                                modifier = Modifier.clickable {
+                                    expandedThemePicker = !expandedThemePicker
+                                }
                             )
-                            ExpandableDropdownMenu(
+                            DropdownMenu(
                                 expanded = expandedThemePicker,
-                                onExpandedChange = { expandedThemePicker = it }) {
+                                onDismissRequest = { expandedThemePicker = false }
+                            ) {
                                 DropdownMenuItem(
                                     text = { Text("Светлая") },
                                     onClick = {}
@@ -308,11 +360,9 @@ fun MainAppBar(
                         ListItem(
                             headlineText = { Text("Помощь") },
                             leadingContent = { Icon(Icons.Rounded.HelpOutline, null) },
-                            trailingContent = {
-                                Switch(
-                                    checked = isSystemInDarkTheme(),
-                                    onCheckedChange = { onSettingsClick() }
-                                )
+                            modifier = Modifier.clickable {
+                                showProfilePopup = false
+                                onHelpClick()
                             }
                         )
                     }
