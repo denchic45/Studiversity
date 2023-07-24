@@ -32,8 +32,6 @@ kotlin {
             dependencies {
                 implementation(project(":common"))
                 implementation(compose.desktop.currentOs)
-                // Kamel
-                implementation("com.alialbaali.kamel:kamel-image:0.4.0")
             }
         }
     }

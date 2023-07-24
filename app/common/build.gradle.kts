@@ -180,6 +180,8 @@ kotlin {
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.1")
+                
+                implementation("media.kamel:kamel-image:0.7.0")
 
                 implementation("com.github.Dansoftowner:jSystemThemeDetector:3.6")
 
