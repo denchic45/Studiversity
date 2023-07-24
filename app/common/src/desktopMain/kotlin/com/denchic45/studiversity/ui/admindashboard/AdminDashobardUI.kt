@@ -28,7 +28,6 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,100 +42,92 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.appbar.AppBarContent
-import com.denchic45.studiversity.ui.appbar.LocalAppBarState
 import com.denchic45.studiversity.ui.search.SearchState
 import com.denchic45.studiversity.ui.search.SearchableComponent
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
-import com.denchic45.studiversity.ui.uiTextOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminDashboardScreen(component: AdminDashboardComponent) {
-    val appBarState = LocalAppBarState.current
-
     val childStack by component.childStack.subscribeAsState()
 
     Row {
         ModalDrawerSheet(Modifier.requiredWidth(300.dp)) {
+            AdminListItem(
+                title = "Расписания",
+                selected = childStack.active.instance is AdminDashboardComponent.Child.TimetableFinder,
+                painter = painterResource("ic_timetable".toDrawablePath()),
+                contentDescription = "timetables",
+                onClick = component::onTimetableFinderClick
+            )
 
+            AdminListItem(
+                title = "Создать расписание",
+                selected = childStack.active.instance is AdminDashboardComponent.Child.TimetableLoader,
+                painter = rememberVectorPainter(Icons.Default.AddBox),
+                contentDescription = "timetables",
+                onClick = component::onTimetableLoaderClick
+            )
+
+            AdminListItem(
+                title = "Курсы",
+                selected = childStack.active.instance is AdminDashboardComponent.Child.Courses,
+                painter = painterResource("ic_course".toDrawablePath()),
+                contentDescription = "courses",
+                onClick = component::onCoursesClick
+            )
+
+            AdminListItem(
+                title = "Пользователи",
+                selected = childStack.active.instance is AdminDashboardComponent.Child.Users,
+                painter = painterResource("ic_user".toDrawablePath()),
+                contentDescription = "users",
+                onClick = component::onUsersClick
+            )
+
+            AdminListItem(
+                title = "Учебные группы",
+                selected = childStack.active.instance is AdminDashboardComponent.Child.StudyGroups,
+                painter = painterResource("ic_study_group".toDrawablePath()),
+                contentDescription = "study groups",
+                onClick = component::onStudyGroupsClick
+            )
+
+            AdminListItem(
+                title = "Предметы",
+                selected = childStack.active.instance is AdminDashboardComponent.Child.Subjects,
+                painter = painterResource("ic_subject".toDrawablePath()),
+                contentDescription = "subjects",
+                onClick = component::onSubjectsClick
+            )
+
+            AdminListItem(
+                title = "Специальности",
+                selected = childStack.active.instance is AdminDashboardComponent.Child.Specialties,
+                painter = painterResource("ic_specialty".toDrawablePath()),
+                contentDescription = "specialties",
+                onClick = component::onSpecialtiesClick
+            )
         }
-    }
 
-    Children(component.childStack) {
-        when (val child = it.instance) {
-            AdminDashboardComponent.Child.None -> {
-                LaunchedEffect(Unit) {
-                    appBarState.content = AppBarContent(title = uiTextOf("Панель управления"))
+        Children(component.childStack) {
+            when (val child = it.instance) {
+                AdminDashboardComponent.Child.None -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Выберите раздел")
+                    }
                 }
-                Column {
-                    AdminListItem(
-                        title = "Расписания",
-                        selected = childStack.active.instance is AdminDashboardComponent.Child.TimetableFinder,
-                        painter = painterResource("ic_timetable".toDrawablePath()),
-                        contentDescription = "timetables",
-                        onClick = component::onTimetableFinderClick
-                    )
 
-                    AdminListItem(
-                        title = "Создать расписание",
-                        selected = childStack.active.instance is AdminDashboardComponent.Child.TimetableLoader,
-                        painter = rememberVectorPainter(Icons.Default.AddBox),
-                        contentDescription = "timetables",
-                        onClick = component::onTimetableLoaderClick
-                    )
-
-                    AdminListItem(
-                        title = "Курсы",
-                        selected = childStack.active.instance is AdminDashboardComponent.Child.Courses,
-                        painter = painterResource("ic_course".toDrawablePath()),
-                        contentDescription = "courses",
-                        onClick = component::onCoursesClick
-                    )
-
-                    AdminListItem(
-                        title = "Пользователи",
-                        selected = childStack.active.instance is AdminDashboardComponent.Child.Users,
-                        painter = painterResource("ic_user".toDrawablePath()),
-                        contentDescription = "users",
-                        onClick = component::onUsersClick
-                    )
-
-                    AdminListItem(
-                        title = "Учебные группы",
-                        selected = childStack.active.instance is AdminDashboardComponent.Child.StudyGroups,
-                        painter = painterResource("ic_study_group".toDrawablePath()),
-                        contentDescription = "study groups",
-                        onClick = component::onStudyGroupsClick
-                    )
-
-                    AdminListItem(
-                        title = "Предметы",
-                        selected = childStack.active.instance is AdminDashboardComponent.Child.Subjects,
-                        painter = painterResource("ic_subject".toDrawablePath()),
-                        contentDescription = "subjects",
-                        onClick = component::onSubjectsClick
-                    )
-
-                    AdminListItem(
-                        title = "Специальности",
-                        selected = childStack.active.instance is AdminDashboardComponent.Child.Specialties,
-                        painter = painterResource("ic_specialty".toDrawablePath()),
-                        contentDescription = "specialties",
-                        onClick = component::onSpecialtiesClick
-                    )
-                }
+                is AdminDashboardComponent.Child.TimetableFinder -> TODO()
+                is AdminDashboardComponent.Child.TimetableLoader -> TODO()
+                is AdminDashboardComponent.Child.Courses -> CoursesAdminScreen(child.component)
+                is AdminDashboardComponent.Child.Users -> UsersAdminScreen(child.component)
+                is AdminDashboardComponent.Child.StudyGroups -> StudyGroupsAdminScreen(child.component)
+                is AdminDashboardComponent.Child.Subjects -> SubjectsAdminScreen(child.component)
+                is AdminDashboardComponent.Child.Specialties -> TODO()
+                is AdminDashboardComponent.Child.Rooms -> TODO()
             }
-
-            is AdminDashboardComponent.Child.TimetableFinder -> TODO()
-            is AdminDashboardComponent.Child.TimetableLoader -> TODO()
-            is AdminDashboardComponent.Child.Courses -> CoursesAdminScreen(child.component)
-            is AdminDashboardComponent.Child.Users -> UsersAdminScreen(child.component)
-            is AdminDashboardComponent.Child.StudyGroups -> TODO()
-            is AdminDashboardComponent.Child.Subjects -> TODO()
-            is AdminDashboardComponent.Child.Specialties -> TODO()
-            is AdminDashboardComponent.Child.Rooms -> TODO()
         }
     }
 }

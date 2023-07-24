@@ -62,6 +62,7 @@ class AdminDashboardComponent(
                 Config.None -> Child.None
 
                 Config.TimetableFinder -> Child.TimetableFinder(timetableSearchComponent(context))
+
                 Config.TimetableLoader -> Child.TimetableLoader(
                     timetableLoaderComponent(navigation::pop, context)
                 )
@@ -86,22 +87,6 @@ class AdminDashboardComponent(
             }
         }
     )
-
-//    private val sidebarNavigation = OverlayNavigation<SidebarConfig>()
-
-//    val childSidebar = childOverlay(
-//        source = sidebarNavigation,
-//        handleBackButton = true,
-//        childFactory = { config, context ->
-//            when (config) {
-//                is SidebarConfig.Profile -> SidebarChild.Profile(profileComponent({
-//                    rootNavigation.bringToFront(
-//                        RootConfig.StudyGroup(it)
-//                    )
-//                }, config.userId, context))
-//            }
-//        }
-//    )
 
     fun onTimetableFinderClick() {
         navigation.bringToFront(Config.TimetableFinder)
@@ -170,16 +155,4 @@ class AdminDashboardComponent(
     sealed interface SidebarChild {
         class Profile(val component: ProfileComponent) : SidebarChild
     }
-
-//    @Parcelize
-//    sealed interface StackOverlayConfig : Parcelable {
-//        data class Course(val courseId: UUID) : StackOverlayConfig
-//        data class StudyGroup(val studyGroupId: UUID) : StackOverlayConfig
-//    }
-//
-//    sealed interface StackOverlayChild {
-//        class Course(val component: CourseComponent) : StackOverlayChild
-//        class StudyGroup(val component: StudyGroupComponent) : StackOverlayChild
-//    }
-
 }
