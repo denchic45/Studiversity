@@ -45,7 +45,6 @@ fun List<Attachment2>.toAttachmentItems(): List<AttachmentItem> {
                 previewUrl = null,
                 attachmentId = attachment.id,
                 state = attachment.state,
-//                path = attachment.path,
                 path = attachment.path
             )
 

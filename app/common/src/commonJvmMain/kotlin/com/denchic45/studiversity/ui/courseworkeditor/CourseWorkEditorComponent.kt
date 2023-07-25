@@ -99,9 +99,12 @@ class CourseWorkEditorComponent(
 
     private val editingState = EditingWork()
 
+    val attachmentItems2 = MutableStateFlow(resourceOf(listOf<AttachmentItem>()))
+
     private val _attachmentItems = workId?.let { id ->
         findCourseWorkAttachmentsUseCase(courseId, id)
     } ?: flowOf(resourceOf(emptyList()))
+
     private val addedAttachmentItems = MutableStateFlow<List<AttachmentItem>>(emptyList())
     private val removedAttachmentIds = MutableStateFlow(emptyList<UUID>())
 
@@ -120,7 +123,7 @@ class CourseWorkEditorComponent(
     }.stateInResource(componentScope)
 
     private val fieldEditor = FieldEditor(
-        mapOf<String, Field<*>>(
+        mapOf(
             "name" to Field(editingState::name),
             "description" to Field(editingState::description),
             "dueDate" to Field(editingState::dueDate),
@@ -132,7 +135,7 @@ class CourseWorkEditorComponent(
     private val uiValidator = CompositeValidator(
         listOf(
             ValueValidator(
-                value = { editingState.name },
+                value = editingState::name,
                 conditions = listOf(Condition(String::isNotEmpty))
             )
         )
@@ -148,7 +151,7 @@ class CourseWorkEditorComponent(
                     dueTime = response.dueTime
 
                     response.topicId?.let { topicId ->
-                        courseTopics.first().onSuccess { topics ->
+                        topicsByCourse.first().onSuccess { topics ->
                             topics.find { it.id == topicId }?.let {
                                 DropdownMenuItem(it.id.toString(), uiTextOf(it.name))
                             }
@@ -169,12 +172,21 @@ class CourseWorkEditorComponent(
 
     val savingChangesResource = MutableStateFlow<EmptyResource>(resourceOf(Unit))
 
-    private val courseTopics = observeCourseTopicsUseCase(courseId)
+    private val topicsByCourse = observeCourseTopicsUseCase(courseId)
         .shareIn(componentScope, SharingStarted.Lazily, replay = 1)
 
     init {
+        // load existing attachments
+        workId?.let {
+            componentScope.launch {
+                findCourseWorkAttachmentsUseCase(courseId, it).first().onSuccess {
+                    attachmentItems2.update { it }
+                }
+            }
+        }
+
         componentScope.launch {
-            courseTopics.filterSuccess().collect {
+            topicsByCourse.filterSuccess().collect {
                 editingState.foundTopics = it.value.map { response ->
                     DropdownMenuItem(
                         id = response.id.toString(),
