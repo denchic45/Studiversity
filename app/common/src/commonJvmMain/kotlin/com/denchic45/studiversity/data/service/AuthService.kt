@@ -3,9 +3,9 @@ package com.denchic45.studiversity.data.service
 import com.denchic45.studiversity.data.db.local.DbHelper
 import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.di.GuestHttpClient
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.toResource
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.toResource
 import com.denchic45.studiversity.util.SystemDirs
 import com.denchic45.studiversity.util.databasePath
 import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest

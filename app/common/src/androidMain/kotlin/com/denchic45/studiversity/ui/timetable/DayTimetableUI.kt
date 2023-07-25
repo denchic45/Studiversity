@@ -54,7 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.denchic45.studiversity.common.R
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.theme.spacing

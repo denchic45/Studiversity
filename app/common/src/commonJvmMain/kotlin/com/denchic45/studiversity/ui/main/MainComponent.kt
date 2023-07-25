@@ -16,9 +16,9 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.MainInteractor
-import com.denchic45.studiversity.domain.ifSuccess
-import com.denchic45.studiversity.domain.stateInResource
-import com.denchic45.studiversity.domain.takeValueIfSuccess
+import com.denchic45.studiversity.domain.resource.ifSuccess
+import com.denchic45.studiversity.domain.resource.stateInResource
+import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.domain.usecase.FindAssignedUserRolesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindYourCoursesUseCase
 import com.denchic45.studiversity.ui.admindashboard.AdminDashboardRootComponent
@@ -26,8 +26,8 @@ import com.denchic45.studiversity.ui.course.CourseComponent
 import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.studiversity.ui.navigation.ChildrenContainerChild
-import com.denchic45.studiversity.ui.navigation.OverlayChild
 import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
+import com.denchic45.studiversity.ui.navigation.SlotChild
 import com.denchic45.studiversity.ui.navigation.SlotConfig
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.root.YourStudyGroupsRootComponent
@@ -165,15 +165,15 @@ class MainComponent(
 
     private val slotNavigation: SlotNavigation<SlotConfig> = SlotNavigation()
 
-    val childOverlay = childSlot(
+    val childSlot = childSlot(
         source = slotNavigation,
         handleBackButton = true,
-        key = "MainChildOverlay"
+        key = "MainChildSlot"
     ) { config, context ->
         when (config) {
-            is SlotConfig.Confirm -> OverlayChild.Confirm(config)
+            is SlotConfig.Confirm -> SlotChild.Confirm(config)
 
-            SlotConfig.YourProfile -> OverlayChild.YourProfile(
+            SlotConfig.YourProfile -> SlotChild.YourProfile(
                 profileComponent(
                     {
                         navigation.bringToFront(Config.StudyGroup(it))
@@ -184,11 +184,11 @@ class MainComponent(
                 )
             )
 
-            is SlotConfig.Settings -> OverlayChild.Settings(
+            is SlotConfig.Settings -> SlotChild.Settings(
                 settingsComponent(context)
             )
 
-            SlotConfig.Schedule -> OverlayChild.Schedule(
+            SlotConfig.Schedule -> SlotChild.Schedule(
                 scheduleComponent(componentContext)
             )
         }

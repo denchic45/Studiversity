@@ -7,6 +7,8 @@ class FieldEditor(private val fields: Map<String, Field<*>>) {
 
     fun hasChanges() = fields.any { it.value.hasChanged() }
 
+    fun hasChanges(vararg names: String) = fields.any { it.key in names && it.value.hasChanged() }
+
     fun fieldChanged(name: String) = fields.getValue(name).hasChanged()
 
     @Suppress("UNCHECKED_CAST")

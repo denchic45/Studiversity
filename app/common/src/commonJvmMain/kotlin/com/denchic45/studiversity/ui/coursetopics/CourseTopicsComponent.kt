@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.ui.coursetopics
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.resourceOf
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.domain.usecase.AddCourseTopicUseCase
 import com.denchic45.studiversity.domain.usecase.ObserveCourseTopicsUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveCourseTopicUseCase

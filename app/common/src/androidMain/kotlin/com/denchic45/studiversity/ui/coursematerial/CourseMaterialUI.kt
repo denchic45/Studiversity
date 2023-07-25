@@ -24,8 +24,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
 import com.denchic45.studiversity.ui.appbar.updateAppBarState

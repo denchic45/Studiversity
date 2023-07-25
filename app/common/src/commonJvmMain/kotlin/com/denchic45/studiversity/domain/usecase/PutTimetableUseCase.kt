@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.TimetableRepository
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import me.tatarka.inject.annotations.Inject

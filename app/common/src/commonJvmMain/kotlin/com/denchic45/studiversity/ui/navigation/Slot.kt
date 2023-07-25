@@ -23,14 +23,14 @@ sealed interface SlotConfig : Parcelable {
 
 }
 
-sealed interface OverlayChild {
-    class Confirm(val config: SlotConfig.Confirm) : OverlayChild
+sealed interface SlotChild {
+    class Confirm(val config: SlotConfig.Confirm) : SlotChild
 
-    class Schedule(val component: ScheduleComponent) : OverlayChild
+    class Schedule(val component: ScheduleComponent) : SlotChild
 
-    class YourProfile(val component: ProfileComponent) : OverlayChild
+    class YourProfile(val component: ProfileComponent) : SlotChild
 
-    class Settings(val component: SettingsComponent) : OverlayChild
+    class Settings(val component: SettingsComponent) : SlotChild
 }
 
 

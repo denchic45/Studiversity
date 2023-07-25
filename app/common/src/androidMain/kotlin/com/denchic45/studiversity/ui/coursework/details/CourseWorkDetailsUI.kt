@@ -30,9 +30,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.model.FileState
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.attachment.AttachmentListItem
 import com.denchic45.studiversity.ui.component.HeaderItemUI
 import com.denchic45.studiversity.ui.model.AttachmentItem

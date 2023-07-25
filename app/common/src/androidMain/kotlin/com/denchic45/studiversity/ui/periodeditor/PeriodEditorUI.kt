@@ -42,8 +42,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.ifSuccess
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.ifSuccess
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.search.CourseChooserScreen

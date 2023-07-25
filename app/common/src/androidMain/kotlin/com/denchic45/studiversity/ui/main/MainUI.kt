@@ -73,7 +73,7 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.denchic45.studiversity.common.R
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar.NavigationIcon
@@ -85,7 +85,7 @@ import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.studiversity.ui.get
 import com.denchic45.studiversity.ui.getPainter
-import com.denchic45.studiversity.ui.navigation.OverlayChild
+import com.denchic45.studiversity.ui.navigation.SlotChild
 import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.root.RootStackScreen
 import com.denchic45.studiversity.ui.schedule.ScheduleScreen
@@ -218,10 +218,10 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
         ) { paddingValues ->
             ScreenContainer(paddingValues, stack)
             Box(Modifier.padding(paddingValues)) {
-                val overlay by component.childOverlay.subscribeAsState()
+                val overlay by component.childSlot.subscribeAsState()
                 overlay.child?.let {
                     when (val child = it.instance) {
-                        is OverlayChild.Confirm -> with(child.config) {
+                        is SlotChild.Confirm -> with(child.config) {
                             TODO()
 //                        ConfirmDialog(
 //                            title = title,
@@ -231,9 +231,9 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
 //                        )
                         }
 
-                        is OverlayChild.YourProfile -> ProfileScreen(child.component)
-                        is OverlayChild.Settings -> SettingsScreen(child.component)
-                        is OverlayChild.Schedule -> ScheduleScreen(child.component)
+                        is SlotChild.YourProfile -> ProfileScreen(child.component)
+                        is SlotChild.Settings -> SettingsScreen(child.component)
+                        is SlotChild.Schedule -> ScheduleScreen(child.component)
                     }
                 } ?: expandAppBar()
             }
@@ -388,7 +388,7 @@ private fun DrawerContent(
                 )
             }
             val context = LocalContext.current
-            val overlay by component.childOverlay.subscribeAsState()
+            val overlay by component.childSlot.subscribeAsState()
             NavigationDrawerItem(
                 label = {
                     Text(
@@ -402,7 +402,7 @@ private fun DrawerContent(
                         contentDescription = "schedule"
                     )
                 },
-                selected = overlay.child?.instance is OverlayChild.Schedule,
+                selected = overlay.child?.instance is SlotChild.Schedule,
                 onClick = {
                     component.onScheduleClick()
                     closeDrawer()
@@ -495,7 +495,7 @@ private fun DrawerContent(
                         contentDescription = "settings"
                     )
                 },
-                selected = overlay.child?.instance is OverlayChild.Settings,
+                selected = overlay.child?.instance is SlotChild.Settings,
                 onClick = {
                     component.onSettingsClick()
                     closeDrawer()

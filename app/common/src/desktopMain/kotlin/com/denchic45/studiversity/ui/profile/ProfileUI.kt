@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.theme.toDrawablePath
 import com.seiko.imageloader.rememberAsyncImagePainter
 

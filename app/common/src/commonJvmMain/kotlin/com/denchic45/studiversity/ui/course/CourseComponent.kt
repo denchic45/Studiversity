@@ -13,8 +13,8 @@ import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindCourseByIdUseCase
 import com.denchic45.studiversity.ui.courseeditor.CourseEditorComponent

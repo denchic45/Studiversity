@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
-import com.denchic45.studiversity.domain.onFailure
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.onFailure
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.AddUserUseCase
 import com.denchic45.studiversity.ui.model.MenuAction
 import com.denchic45.studiversity.uivalidator.Operator

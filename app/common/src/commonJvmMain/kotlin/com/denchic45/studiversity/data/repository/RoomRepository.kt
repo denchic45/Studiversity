@@ -3,7 +3,7 @@ package com.denchic45.studiversity.data.repository
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.stuiversity.api.room.RoomApi
 import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
 import com.denchic45.stuiversity.api.room.model.RoomResponse

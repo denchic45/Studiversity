@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.data.storage
 
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.toResource
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.toResource
 import com.denchic45.stuiversity.api.schedule.ScheduleApi
 import com.denchic45.stuiversity.api.schedule.model.Schedule
 import me.tatarka.inject.annotations.Inject

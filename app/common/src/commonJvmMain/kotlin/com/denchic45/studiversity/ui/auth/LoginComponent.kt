@@ -5,9 +5,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.EmptyResource
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.resourceOf
+import com.denchic45.studiversity.domain.resource.EmptyResource
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.domain.usecase.SignInWithEmailAndPasswordUseCase
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.Dispatchers

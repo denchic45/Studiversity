@@ -5,6 +5,12 @@ import com.denchic45.studiversity.data.repository.StudyGroupRepository
 import com.denchic45.studiversity.data.repository.UserRepository
 import com.denchic45.studiversity.data.service.AuthService
 import com.denchic45.studiversity.data.service.UserService
+import com.denchic45.studiversity.domain.resource.NotFound
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.filterSuccess
+import com.denchic45.studiversity.domain.resource.map
+import com.denchic45.studiversity.domain.resource.onFailure
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.CoroutineScope

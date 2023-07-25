@@ -18,7 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.studiversity.domain.ifSuccess
+import com.denchic45.studiversity.domain.resource.ifSuccess
 import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2

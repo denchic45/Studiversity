@@ -31,7 +31,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState

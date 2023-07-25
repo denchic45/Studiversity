@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.SubjectRepository
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Resource
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 

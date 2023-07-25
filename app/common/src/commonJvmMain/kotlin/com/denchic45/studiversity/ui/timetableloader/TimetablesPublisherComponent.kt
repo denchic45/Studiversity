@@ -11,8 +11,8 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.repository.MetaRepository
-import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.model.toItem
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot

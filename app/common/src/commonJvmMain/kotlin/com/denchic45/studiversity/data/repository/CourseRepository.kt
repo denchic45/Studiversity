@@ -14,8 +14,8 @@ import com.denchic45.studiversity.data.mapper.toCourseResponse
 import com.denchic45.studiversity.data.mapper.toSubject
 import com.denchic45.studiversity.data.observeResource
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest

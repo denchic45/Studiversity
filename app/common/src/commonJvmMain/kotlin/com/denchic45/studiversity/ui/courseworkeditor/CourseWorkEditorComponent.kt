@@ -7,13 +7,16 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.filterSuccess
-import com.denchic45.studiversity.domain.map
 import com.denchic45.studiversity.domain.model.FileState
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.resourceOf
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.EmptyResource
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.emptyResource
+import com.denchic45.studiversity.domain.resource.filterSuccess
+import com.denchic45.studiversity.domain.resource.map
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.resourceOf
+import com.denchic45.studiversity.domain.resource.stateInResource
+import com.denchic45.studiversity.domain.resource.suspendBindResources
 import com.denchic45.studiversity.domain.usecase.AddCourseWorkUseCase
 import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
 import com.denchic45.studiversity.domain.usecase.FindCourseWorkAttachmentsUseCase
@@ -37,6 +40,7 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
+import com.denchic45.stuiversity.api.course.element.model.CourseElementResponse
 import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
@@ -66,13 +70,13 @@ import java.util.UUID
 
 @Inject
 class CourseWorkEditorComponent(
+    observeCourseTopicsUseCase: ObserveCourseTopicsUseCase,
     private val findCourseWorkUseCase: FindCourseWorkUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
     private val uploadAttachmentToCourseWorkUseCase: UploadAttachmentToCourseWorkUseCase,
     private val downloadFileUseCase: DownloadFileUseCase,
     private val removeAttachmentFromCourseWorkUseCase: RemoveAttachmentFromCourseWorkUseCase,
-    observeCourseTopicsUseCase: ObserveCourseTopicsUseCase,
     private val addCourseWorkUseCase: AddCourseWorkUseCase,
     private val updateCourseWorkUseCase: UpdateCourseWorkUseCase,
     private val updateCourseElementUseCase: UpdateCourseElementUseCase,
@@ -81,7 +85,7 @@ class CourseWorkEditorComponent(
     @Assisted
     private val courseId: UUID,
     @Assisted
-    private val workId: UUID?,
+    private var workId: UUID?,
     @Assisted
     topicId: UUID?,
     @Assisted
@@ -95,10 +99,10 @@ class CourseWorkEditorComponent(
 
     private val editingState = EditingWork()
 
-    private val _attachmentItems = workId?.let {
-        findCourseWorkAttachmentsUseCase(courseId, workId)
+    private val _attachmentItems = workId?.let { id ->
+        findCourseWorkAttachmentsUseCase(courseId, id)
     } ?: flowOf(resourceOf(emptyList()))
-    private val _addedAttachmentItems = MutableStateFlow<List<AttachmentItem>>(emptyList())
+    private val addedAttachmentItems = MutableStateFlow<List<AttachmentItem>>(emptyList())
     private val removedAttachmentIds = MutableStateFlow(emptyList<UUID>())
 
     val allowSave = MutableStateFlow(false)
@@ -107,7 +111,7 @@ class CourseWorkEditorComponent(
 
     val attachmentItems = combine(
         _attachmentItems,
-        _addedAttachmentItems,
+        addedAttachmentItems,
         removedAttachmentIds
     ) { items, addedItems, removedIds ->
         items.map { attachments ->
@@ -120,12 +124,10 @@ class CourseWorkEditorComponent(
             "name" to Field(editingState::name),
             "description" to Field(editingState::description),
             "dueDate" to Field(editingState::dueDate),
-            "dueTime" to Field(editingState::dueTime),
-            "topicId" to Field { editingState.selectedTopic?.id },
-            "addedAttachments" to Field { _addedAttachmentItems.value },
-            "removedAttachments" to Field { removedAttachmentIds.value }
+            "dueTime" to Field(editingState::dueTime)
         )
     )
+    private val topicField = Field { editingState.selectedTopic?.id }
 
     private val uiValidator = CompositeValidator(
         listOf(
@@ -153,7 +155,6 @@ class CourseWorkEditorComponent(
                         }
                     }
 
-
                     fieldEditor.updateOldValues(
                         "name" to name,
                         "description" to description,
@@ -166,6 +167,7 @@ class CourseWorkEditorComponent(
         }
     } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
 
+    val savingChangesResource = MutableStateFlow<EmptyResource>(resourceOf(Unit))
 
     private val courseTopics = observeCourseTopicsUseCase(courseId)
         .shareIn(componentScope, SharingStarted.Lazily, replay = 1)
@@ -184,7 +186,7 @@ class CourseWorkEditorComponent(
     }
 
     private fun updateAllowSave() {
-        allowSave.update { fieldEditor.hasChanges() }
+        allowSave.update { hasChanges() }
     }
 
     fun onNameType(name: String) {
@@ -210,7 +212,7 @@ class CourseWorkEditorComponent(
     }
 
     fun onFilesSelect(selectedFiles: List<Path>) {
-        _addedAttachmentItems.update {
+        addedAttachmentItems.update {
             it + selectedFiles.map { path ->
                 AttachmentItem.FileAttachmentItem(
                     path.name,
@@ -238,7 +240,7 @@ class CourseWorkEditorComponent(
                     item.attachmentId.let { removedAttachmentId ->
                         removedAttachmentIds.update { it + removedAttachmentId }
                     }
-                    _addedAttachmentItems.update { it - item }
+                    addedAttachmentItems.update { it - item }
                     updateAllowSave()
                 }
             }
@@ -246,90 +248,125 @@ class CourseWorkEditorComponent(
     }
 
     fun onAttachmentClick(item: AttachmentItem) {
-        when (item) {
-            is AttachmentItem.FileAttachmentItem -> when (item.state) {
-                FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
-                FileState.Preview, FileState.FailDownload -> componentScope.launch {
-                    downloadFileUseCase(item.attachmentId)
+        componentScope.launch {
+            when (item) {
+                is AttachmentItem.FileAttachmentItem -> when (item.state) {
+                    FileState.Downloaded -> openAttachment.emit(item)
+                    FileState.Preview, FileState.FailDownload -> downloadFileUseCase(item.attachmentId)
                     // TODO: Возможно использовать в будущем: открывать файл сразу после его загрузки
 //                            .collect {
 //                            if (it == FileState.Downloaded)
 //                                openAttachment.postValue(item.path.toFile())
 //                        }
+
+
+                    else -> {}
                 }
 
-                else -> {}
-            }
-
-            is AttachmentItem.LinkAttachmentItem -> componentScope.launch {
-                openAttachment.emit(item)
+                is AttachmentItem.LinkAttachmentItem -> openAttachment.emit(item)
             }
         }
     }
 
     fun onSaveClick() {
-        if (uiValidator.validate() && fieldEditor.hasChanges()) {
-            componentScope.launch {
-                val result = workId?.let { workId ->
-                    updateCourseWorkUseCase(
-                        courseId, workId, UpdateCourseWorkRequest(
-                            name = fieldEditor.getOptProperty("name"),
-                            description = fieldEditor.getOptProperty("description"),
-                            dueDate = fieldEditor.getOptProperty("dueDate"),
-                            dueTime = fieldEditor.getOptProperty("dueTime"),
-                            maxGrade = optPropertyOf(5)
-                        )
-                    ).onSuccess { courseWork ->
-                        if (fieldEditor.fieldChanged("topicId")) {
-                            updateCourseElementUseCase(
-                                courseId,
-                                workId,
-                                UpdateCourseElementRequest(
-                                    topicId = fieldEditor.getOptProperty("topicId")
-                                )
-                            )
-                        }
-
-                        removedAttachmentIds.value.map {
-                            removeAttachmentFromCourseWorkUseCase(courseId, courseWork.id, it)
-                        }
-                        loadAddedAttachments(courseWork)
-                    }
-                } ?: run {
-                    addCourseWorkUseCase(
-                        courseId,
-                        CreateCourseWorkRequest(
-                            name = editingState.name,
-                            description = editingState.description.takeIf(String::isNotEmpty),
-                            topicId = editingState.selectedTopic?.id?.toUUID(),
-                            dueDate = editingState.dueDate,
-                            dueTime = editingState.dueTime,
-                            workType = CourseWorkType.ASSIGNMENT,
-                            maxGrade = 5
-                        )
-                    ).onSuccess { courseWork ->
-                        loadAddedAttachments(courseWork)
-                    }
+        if (!uiValidator.validate()) return
+        componentScope.launch {
+            savingChangesResource.value = suspendBindResources {
+                if (fieldEditor.hasChanges()) {
+                    workId = saveUpdatedWork().bind().id
                 }
-                result.onSuccess {
-                    withContext(Dispatchers.Main) {
-                        onFinish()
-                    }
+                if (topicField.hasChanged()) {
+                    saveUpdatedTopic().bind()
+                }
+                if (addedAttachmentItems.value.isNotEmpty())
+                    savingChangesResource.update { resourceOf() }
+                saveRemovedAttachments().bind()
+                saveAddedAttachments().bind()
+                savingChangesResource.update { emptyResource() }
+            }.onSuccess {
+                withContext(Dispatchers.Main) {
+                    onFinish()
                 }
             }
         }
     }
 
-    private suspend fun loadAddedAttachments(
-        courseWork: CourseWorkResponse,
-    ) {
-        _addedAttachmentItems.value.map { item ->
-            uploadAttachmentToCourseWorkUseCase(
-                courseId = courseId,
-                workId = courseWork.id,
-                request = item.toRequest()
+    private fun hasChanges(): Boolean = fieldEditor.hasChanges()
+            || topicField.hasChanged()
+            || addedAttachmentItems.value.isNotEmpty()
+            || removedAttachmentIds.value.isNotEmpty()
+
+    private suspend fun saveUpdatedTopic(): Resource<CourseElementResponse> {
+        return updateCourseElementUseCase(
+            courseId = courseId,
+            workId = workId!!,
+            request = UpdateCourseElementRequest(
+                topicId = fieldEditor.getOptProperty("topicId")
             )
+        )
+    }
+
+    private suspend fun saveUpdatedWork(): Resource<CourseWorkResponse> {
+        return workId?.let { workId ->
+            updateCourseWorkUseCase(
+                courseId = courseId,
+                workId = workId,
+                request = UpdateCourseWorkRequest(
+                    name = fieldEditor.getOptProperty("name"),
+                    description = fieldEditor.getOptProperty("description"),
+                    dueDate = fieldEditor.getOptProperty("dueDate"),
+                    dueTime = fieldEditor.getOptProperty("dueTime"),
+                    maxGrade = optPropertyOf(5)
+                )
+            )
+        } ?: addCourseWorkUseCase(
+            courseId = courseId,
+            request = CreateCourseWorkRequest(
+                name = editingState.name,
+                description = editingState.description.takeIf(String::isNotEmpty),
+                topicId = editingState.selectedTopic?.id?.toUUID(),
+                dueDate = editingState.dueDate,
+                dueTime = editingState.dueTime,
+                workType = CourseWorkType.ASSIGNMENT,
+                maxGrade = 5
+            )
+        )
+    }
+
+    private suspend fun saveRemovedAttachments(): EmptyResource {
+        val successfullyRemovedAttachmentIds = mutableListOf<UUID>()
+        val res = suspendBindResources {
+            removedAttachmentIds.value.forEach { attachmentId ->
+                removeAttachmentFromCourseWorkUseCase(
+                    courseId,
+                    workId!!,
+                    attachmentId
+                ).onSuccess {
+                    successfullyRemovedAttachmentIds += attachmentId
+                }.bind()
+            }
         }
+        removedAttachmentIds.update { it - successfullyRemovedAttachmentIds.toSet() }
+        return res
+    }
+
+    private suspend fun saveAddedAttachments(): EmptyResource {
+        val successfullyAddedAttachmentIds = mutableListOf<UUID>()
+        val res = suspendBindResources {
+            addedAttachmentItems.value.forEach { item ->
+                uploadAttachmentToCourseWorkUseCase(
+                    courseId = courseId,
+                    workId = workId!!,
+                    request = item.toRequest()
+                ).onSuccess {
+                    successfullyAddedAttachmentIds += it.id
+                }.bind()
+            }
+        }
+        addedAttachmentItems.update { oldAddedAttachments ->
+            oldAddedAttachments.filterNot { item -> item.attachmentId in successfullyAddedAttachmentIds }
+        }
+        return res
     }
 
     fun onTopicNameType(name: String) {
@@ -355,5 +392,3 @@ class CourseWorkEditorComponent(
         var nameMessage: String? by mutableStateOf(null)
     }
 }
-
-

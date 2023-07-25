@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import com.denchic45.studiversity.domain.onLoading
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.onLoading
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.LocalAppBarMediator
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.profile.ProfileSideBar

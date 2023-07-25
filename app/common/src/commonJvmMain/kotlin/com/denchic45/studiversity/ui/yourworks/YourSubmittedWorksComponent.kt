@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.ui.yourworks
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindYourSubmittedCourseWorksUseCase
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi

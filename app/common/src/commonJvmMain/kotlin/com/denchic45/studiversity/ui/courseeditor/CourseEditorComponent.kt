@@ -15,9 +15,9 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.map
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.map
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.AddCourseUseCase
 import com.denchic45.studiversity.domain.usecase.FindCourseByIdUseCase
 import com.denchic45.studiversity.domain.usecase.UpdateCourseUseCase

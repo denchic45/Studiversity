@@ -20,9 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.takeValueIfSuccess
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.ui.CircularLoadingBox
 import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
 import com.denchic45.studiversity.ui.appbar.AppBarContent

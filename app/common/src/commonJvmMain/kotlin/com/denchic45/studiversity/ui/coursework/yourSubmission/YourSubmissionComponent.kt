@@ -2,14 +2,14 @@ package com.denchic45.studiversity.ui.coursework.yourSubmission
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.backhandler.BackCallback
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.filterNotNullValue
-import com.denchic45.studiversity.domain.flatMapResourceFlow
-import com.denchic45.studiversity.domain.map
-import com.denchic45.studiversity.domain.mapResource
-import com.denchic45.studiversity.domain.onFailure
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.filterNotNullValue
+import com.denchic45.studiversity.domain.resource.flatMapResourceFlow
+import com.denchic45.studiversity.domain.resource.map
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.onFailure
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CancelSubmissionUseCase
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindSubmissionAttachmentsUseCase

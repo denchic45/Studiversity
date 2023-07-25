@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.data.service
 
-import com.denchic45.studiversity.domain.NoConnection
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.resourceOf
+import com.denchic45.studiversity.domain.resource.NoConnection
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.resourceOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

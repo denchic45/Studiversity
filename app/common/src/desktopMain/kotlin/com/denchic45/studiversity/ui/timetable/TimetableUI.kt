@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.denchic45.studiversity.data.service.model.PeriodTime
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onLoading
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onLoading
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot

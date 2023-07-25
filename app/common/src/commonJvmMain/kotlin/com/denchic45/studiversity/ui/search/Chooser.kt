@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.ui.search
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.resourceOf
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

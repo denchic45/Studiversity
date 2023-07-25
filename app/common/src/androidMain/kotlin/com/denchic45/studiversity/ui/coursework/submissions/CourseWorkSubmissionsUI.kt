@@ -20,8 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.coursework.submissiondetails.SubmissionDetailsScreen
 import com.denchic45.studiversity.ui.search.UserAvatarImage
 import com.denchic45.studiversity.ui.theme.spacing

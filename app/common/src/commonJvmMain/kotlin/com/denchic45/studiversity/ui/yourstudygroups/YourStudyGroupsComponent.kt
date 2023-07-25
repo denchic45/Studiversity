@@ -7,9 +7,9 @@ import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.preference.AppPreferences
-import com.denchic45.studiversity.domain.mapResource
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.studiversity.ui.navigation.ChildrenContainer

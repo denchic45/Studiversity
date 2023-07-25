@@ -7,10 +7,10 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.mapResource
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.AddRoomUseCase
 import com.denchic45.studiversity.domain.usecase.FindRoomByIdUseCase
 import com.denchic45.studiversity.domain.usecase.UpdateRoomUseCase

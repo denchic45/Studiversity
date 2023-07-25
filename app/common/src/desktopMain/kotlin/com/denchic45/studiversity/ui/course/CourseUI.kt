@@ -35,7 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.decompose.router.overlay.ChildOverlay
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.LocalAppBarMediator
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.theme.spacing

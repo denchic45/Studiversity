@@ -22,7 +22,7 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stac
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.denchic45.studiversity.WindowWidthSizeClass
-import com.denchic45.studiversity.domain.ifSuccess
+import com.denchic45.studiversity.domain.resource.ifSuccess
 import com.denchic45.studiversity.ui.animation.slideVertical
 import com.denchic45.studiversity.ui.theme.DesktopApp
 import com.denchic45.studiversity.ui.theme.LocalWindowState

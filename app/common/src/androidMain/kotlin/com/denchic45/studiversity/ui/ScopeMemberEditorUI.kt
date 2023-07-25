@@ -18,7 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.studiversity.domain.resourceOf
+import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.name
 import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar.AppBarContent

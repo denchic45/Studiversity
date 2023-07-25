@@ -7,8 +7,8 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.denchic45.studiversity.domain.Failure
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Failure
+import com.denchic45.studiversity.domain.resource.Resource
 
 @Composable
 fun <T> ResourceContent(

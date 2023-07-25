@@ -3,7 +3,7 @@ package com.denchic45.studiversity.data.repository
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest

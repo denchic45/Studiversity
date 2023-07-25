@@ -16,7 +16,7 @@ import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.studiversity.domain.ifSuccess
+import com.denchic45.studiversity.domain.resource.ifSuccess
 import com.denchic45.studiversity.ui.theme.md_theme_dark_tertiary
 
 

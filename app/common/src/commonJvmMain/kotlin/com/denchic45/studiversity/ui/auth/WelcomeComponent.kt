@@ -2,14 +2,14 @@ package com.denchic45.studiversity.ui.auth
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.data.preference.AppPreferences
-import com.denchic45.studiversity.domain.Cause
-import com.denchic45.studiversity.domain.ClientError
-import com.denchic45.studiversity.domain.Forbidden
-import com.denchic45.studiversity.domain.NoConnection
-import com.denchic45.studiversity.domain.NotFound
-import com.denchic45.studiversity.domain.ServerError
-import com.denchic45.studiversity.domain.onFailure
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.Cause
+import com.denchic45.studiversity.domain.resource.ClientError
+import com.denchic45.studiversity.domain.resource.Forbidden
+import com.denchic45.studiversity.domain.resource.NoConnection
+import com.denchic45.studiversity.domain.resource.NotFound
+import com.denchic45.studiversity.domain.resource.ServerError
+import com.denchic45.studiversity.domain.resource.onFailure
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.CheckDomainUseCase
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.OrganizationResponse

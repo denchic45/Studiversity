@@ -7,9 +7,9 @@ import com.arkivanov.decompose.router.overlay.childOverlay
 import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.resourceOf
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.resourceOf
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindCourseWorkSubmissionsUseCase
 import com.denchic45.studiversity.ui.coursework.submissiondetails.SubmissionDetailsComponent
 import com.denchic45.studiversity.util.componentScope

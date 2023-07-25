@@ -8,8 +8,8 @@ import com.denchic45.studiversity.data.mapper.toTopicEntities
 import com.denchic45.studiversity.data.mapper.toTopicResponses
 import com.denchic45.studiversity.data.observeResource
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
 import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse

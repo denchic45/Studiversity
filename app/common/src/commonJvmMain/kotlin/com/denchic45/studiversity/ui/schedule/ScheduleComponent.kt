@@ -2,8 +2,8 @@ package com.denchic45.studiversity.ui.schedule
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.data.repository.MetaRepository
-import com.denchic45.studiversity.domain.resourceOf
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.resourceOf
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Assisted

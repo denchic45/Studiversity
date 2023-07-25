@@ -7,12 +7,12 @@ import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.observeResource
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.data.storage.AttachmentStorage
-import com.denchic45.studiversity.domain.EmptyResource
-import com.denchic45.studiversity.domain.Resource
 import com.denchic45.studiversity.domain.model.Attachment2
 import com.denchic45.studiversity.domain.model.FileAttachment2
 import com.denchic45.studiversity.domain.model.FileState
 import com.denchic45.studiversity.domain.model.LinkAttachment2
+import com.denchic45.studiversity.domain.resource.EmptyResource
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.entity.AppDatabase
 import com.denchic45.studiversity.entity.Attachment
 import com.denchic45.stuiversity.api.attachment.AttachmentApi

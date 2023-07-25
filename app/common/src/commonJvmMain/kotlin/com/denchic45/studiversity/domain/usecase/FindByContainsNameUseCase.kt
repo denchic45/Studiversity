@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.FindByContainsNameRepository
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Resource
 import kotlinx.coroutines.flow.Flow
 
 abstract class FindByContainsNameUseCase<T>(

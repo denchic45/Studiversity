@@ -46,7 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.CardContent
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.Scaffold

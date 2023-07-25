@@ -34,7 +34,7 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleC
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.AppBarMediator
 import com.denchic45.studiversity.ui.LocalAppBarMediator
 import com.denchic45.studiversity.ui.ResourceContent
@@ -42,8 +42,9 @@ import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.course.CourseScreen
 import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
-import com.denchic45.studiversity.ui.navigation.OverlayChild
+import com.denchic45.studiversity.ui.navigation.SlotChild
 import com.denchic45.studiversity.ui.root.RootScreen
+import com.denchic45.studiversity.ui.schedule.ScheduleScreen
 import com.denchic45.studiversity.ui.settings.SettingsDialog
 import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
 import com.denchic45.studiversity.ui.theme.DesktopApp
@@ -190,10 +191,10 @@ fun MainScreen(component: MainComponent) {
                     is MainComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
                 }
 
-                val overlay by component.childOverlay.subscribeAsState()
+                val overlay by component.childSlot.subscribeAsState()
                 overlay.child?.let {
-                    when (val instance = it.instance) {
-                        is OverlayChild.Confirm -> with(instance.config) {
+                    when (val child = it.instance) {
+                        is SlotChild.Confirm -> with(child.config) {
                             ConfirmDialog(
                                 title = title,
                                 text = text,
@@ -202,13 +203,17 @@ fun MainScreen(component: MainComponent) {
                             )
                         }
 
-                        is OverlayChild.YourProfile -> TODO("Open profile dialog")
-                        is OverlayChild.Settings -> SettingsDialog(
+                        is SlotChild.YourProfile -> TODO("Open profile dialog")
+                        is SlotChild.Settings -> SettingsDialog(
                             onCloseRequest = component::onDialogClose,
-                            component = instance.component
+                            component = child.component
                         )
 
-                        is OverlayChild.Schedule -> TODO()
+                        is SlotChild.Schedule -> {
+                            DropdownMenu(true, onDismissRequest = component::onDialogClose) {
+                                ScheduleScreen(child.component)
+                            }
+                        }
                     }
                 }
             }

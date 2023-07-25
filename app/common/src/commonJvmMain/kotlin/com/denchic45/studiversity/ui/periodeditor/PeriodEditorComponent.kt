@@ -16,7 +16,7 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.model.CourseItem
 import com.denchic45.studiversity.domain.model.StudyGroupItem
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.usecase.FindRoomByContainsNameUseCase

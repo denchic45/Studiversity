@@ -1,14 +1,14 @@
 package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.service.DownloadsService
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.flatMapResourceFlow
 import com.denchic45.studiversity.domain.model.Attachment2
 import com.denchic45.studiversity.domain.model.FileAttachment2
 import com.denchic45.studiversity.domain.model.FileState
 import com.denchic45.studiversity.domain.model.LinkAttachment2
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.resourceOf
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.flatMapResourceFlow
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.resourceOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf

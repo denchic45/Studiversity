@@ -49,9 +49,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onLoading
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onLoading
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.DropdownMenuItem
 import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar.AppBarContent

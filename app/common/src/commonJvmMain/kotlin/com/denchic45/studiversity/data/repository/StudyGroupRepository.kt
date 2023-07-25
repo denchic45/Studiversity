@@ -13,8 +13,8 @@ import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.preference.TimestampPreferences
 import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.member.MembersApi
 import com.denchic45.stuiversity.api.role.RoleApi

@@ -2,11 +2,11 @@ package com.denchic45.studiversity.ui.coursework
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.mapResource
 import com.denchic45.studiversity.domain.model.FileState
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveCourseElementUseCase

@@ -19,8 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.resourceOf
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsComponent

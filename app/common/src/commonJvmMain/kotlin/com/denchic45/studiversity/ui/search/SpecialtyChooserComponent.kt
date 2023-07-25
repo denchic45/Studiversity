@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.ui.search
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.Resource
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.usecase.FindSpecialtyByContainsNameUseCase
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 import kotlinx.coroutines.flow.Flow

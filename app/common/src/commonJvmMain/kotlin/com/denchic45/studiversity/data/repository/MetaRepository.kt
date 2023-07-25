@@ -3,7 +3,7 @@ package com.denchic45.studiversity.data.repository
 import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.service.model.BellSchedule
 import com.denchic45.studiversity.data.storage.MetaStorage
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.onSuccess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter

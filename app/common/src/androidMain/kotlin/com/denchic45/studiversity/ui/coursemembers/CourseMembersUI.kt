@@ -20,10 +20,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.onLoading
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.takeValueIfSuccess
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onLoading
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.search.UserListItem

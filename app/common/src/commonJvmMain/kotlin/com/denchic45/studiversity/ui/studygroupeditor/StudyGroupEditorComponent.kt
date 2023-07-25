@@ -8,6 +8,12 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
 import com.denchic45.studiversity.domain.*
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.filterSuccess
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.onFailure
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.AddStudyGroupUseCase
 import com.denchic45.studiversity.domain.usecase.FindSpecialtyByContainsNameUseCase
 import com.denchic45.studiversity.domain.usecase.FindStudyGroupByIdUseCase

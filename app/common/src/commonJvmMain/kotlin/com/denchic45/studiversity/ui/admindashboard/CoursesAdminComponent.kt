@@ -4,7 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.push
-import com.denchic45.studiversity.domain.onSuccess
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.ArchiveCourseUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveCourseUseCase
 import com.denchic45.studiversity.domain.usecase.UnarchiveCourseUseCase

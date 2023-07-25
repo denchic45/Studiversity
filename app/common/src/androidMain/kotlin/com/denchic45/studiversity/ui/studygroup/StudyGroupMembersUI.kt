@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.model.GroupMembers
-import com.denchic45.studiversity.domain.takeValueIfSuccess
+import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.component.HeaderItemUI

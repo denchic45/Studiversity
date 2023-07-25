@@ -3,10 +3,10 @@ package com.denchic45.studiversity.ui.yourtimetables
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.denchic45.studiversity.data.preference.AppPreferences
-import com.denchic45.studiversity.domain.map
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.resourceOf
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.map
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.resourceOf
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.studiversity.domain.usecase.TimetableOwner
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer

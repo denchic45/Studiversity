@@ -9,9 +9,9 @@ import com.arkivanov.decompose.router.overlay.dismiss
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.studiversity.domain.ifSuccess
-import com.denchic45.studiversity.domain.onSuccess
-import com.denchic45.studiversity.domain.resourceOf
+import com.denchic45.studiversity.domain.resource.ifSuccess
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.domain.usecase.AddMemberToScopeManuallyUseCase
 import com.denchic45.studiversity.domain.usecase.AssignRolesToUserInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindMemberByScopeIdAndMemberIdUseCase

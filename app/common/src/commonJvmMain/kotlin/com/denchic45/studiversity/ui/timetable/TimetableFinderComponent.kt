@@ -2,10 +2,10 @@ package com.denchic45.studiversity.ui.timetable
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.data.repository.MetaRepository
-import com.denchic45.studiversity.domain.Resource
-import com.denchic45.studiversity.domain.mapResource
-import com.denchic45.studiversity.domain.resourceOf
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.resourceOf
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindTimetableOfWeekUseCase
 import com.denchic45.studiversity.domain.usecase.TimetableOwner
 import com.denchic45.studiversity.ui.timetable.state.TimetableState

@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.ui.coursework.details
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.mapResource
 import com.denchic45.studiversity.domain.model.FileState
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
 import com.denchic45.studiversity.domain.usecase.FindCourseWorkAttachmentsUseCase
 import com.denchic45.studiversity.domain.usecase.FindCourseWorkUseCase

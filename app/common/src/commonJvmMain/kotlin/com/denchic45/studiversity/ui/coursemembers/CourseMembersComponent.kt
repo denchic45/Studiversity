@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.ui.coursemembers
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.map
-import com.denchic45.studiversity.domain.mapResource
-import com.denchic45.studiversity.domain.stateInResource
+import com.denchic45.studiversity.domain.resource.map
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindMembersByScopeUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveMemberFromScopeUseCase

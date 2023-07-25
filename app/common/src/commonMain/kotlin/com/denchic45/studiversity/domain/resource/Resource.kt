@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.domain
+package com.denchic45.studiversity.domain.resource
 
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.github.michaelbull.result.mapBoth
