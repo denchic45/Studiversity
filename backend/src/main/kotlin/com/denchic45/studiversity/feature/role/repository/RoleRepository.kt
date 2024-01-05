@@ -37,7 +37,7 @@ class RoleRepository {
         }
     }
 
-    private fun isExistRoleOfUserByScope(userId: UUID, roleId: Long, scopeId: UUID): Boolean {
+    fun isExistRoleOfUserByScope(userId: UUID, roleId: Long, scopeId: UUID): Boolean {
         return UsersRolesScopes.exists {
             UsersRolesScopes.userId eq userId and
                     (UsersRolesScopes.roleId eq roleId) and
@@ -164,7 +164,12 @@ class RoleRepository {
         UserRoleScopeDao.find(UsersRolesScopes.scopeId eq scopeId).toUsersWithRoles()
     }
 
-    fun addUserRolesToScope(userId: UUID, roles: List<Long>, scopeId: UUID) = transaction {
+    fun findUsersIdsByScopeIdAndRoleId(scopeId: UUID, roleId: Long): List<UUID> {
+        return UserRoleScopeDao.find(UsersRolesScopes.scopeId eq scopeId and (UsersRolesScopes.roleId eq roleId))
+            .map { it.userId.value }
+    }
+
+    fun addUserRolesInScope(userId: UUID, roles: List<Long>, scopeId: UUID) = transaction {
         roles.filterNot { roleId ->
             UsersRolesScopes.exists {
                 UsersRolesScopes.userId eq userId and
@@ -201,11 +206,13 @@ class RoleRepository {
     } > 0
 
 
-    fun removeByUserAndScope(userId: UUID, roleId: Long, scopeId: UUID) {
+    fun removeRoleByUserAndScope(userId: UUID, roleId: Long, scopeId: UUID) {
         UsersRolesScopes.deleteWhere {
             UsersRolesScopes.userId eq userId and
                     (UsersRolesScopes.roleId eq roleId) and
                     (UsersRolesScopes.scopeId eq scopeId)
         }
     }
+
+
 }

@@ -7,7 +7,6 @@ import com.denchic45.studiversity.database.DatabaseFactoryImpl
 import com.denchic45.studiversity.feature.attachment.attachmentModule
 import com.denchic45.studiversity.feature.auth.authModule
 import com.denchic45.studiversity.feature.course.courseModule
-import com.denchic45.studiversity.feature.membership.membershipModule
 import com.denchic45.studiversity.feature.role.roleModule
 import com.denchic45.studiversity.feature.room.roomModule
 import com.denchic45.studiversity.feature.specialty.specialtyModule
@@ -61,7 +60,7 @@ fun Application.configureDI() {
             authModule,
             userModule,
             roleModule,
-            membershipModule,
+//            membershipModule,
             studyGroupModule,
             specialtyModule,
             attachmentModule,

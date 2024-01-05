@@ -1,6 +1,5 @@
 package com.denchic45.studiversity.feature.studygroup.usecase
 
-import com.denchic45.studiversity.feature.membership.repository.MembershipRepository
 import com.denchic45.studiversity.feature.role.ScopeType
 import com.denchic45.studiversity.feature.role.repository.ScopeRepository
 import com.denchic45.studiversity.feature.studygroup.repository.StudyGroupRepository
@@ -15,12 +14,11 @@ class AddStudyGroupUseCase(
     private val suspendTransactionWorker: SuspendTransactionWorker,
     private val groupRepository: StudyGroupRepository,
     private val scopeRepository: ScopeRepository,
-    private val membershipRepository: MembershipRepository
 ) {
   suspend operator fun invoke(request: CreateStudyGroupRequest): StudyGroupResponse = suspendTransactionWorker {
         groupRepository.add(request).also { response ->
             scopeRepository.add(response.id, ScopeType.StudyGroup, organizationId)
-            membershipRepository.addManualMembership(CreateMembershipRequest("manual", response.id))
+//            membershipRepository.addManualMembership(CreateMembershipRequest("manual", response.id))
         }
     }
 }

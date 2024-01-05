@@ -9,6 +9,6 @@ class RemoveRoleFromUserInScopeUseCase(
     private val roleRepository: RoleRepository
 ) {
   suspend operator fun invoke(userId: UUID, roleId: Long, scopeId: UUID) = suspendTransactionWorker {
-        roleRepository.removeByUserAndScope(userId, roleId, scopeId)
+        roleRepository.removeRoleByUserAndScope(userId, roleId, scopeId)
     }
 }

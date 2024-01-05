@@ -48,12 +48,7 @@ class StudyGroupRepository {
         specialtyId: UUID?,
         academicYear: Int?
     ): List<StudyGroupResponse> {
-        val query = StudyGroups.leftJoin(Specialties, { this.specialtyId }, { Specialties.id })
-            .leftJoin(
-                Memberships,
-                { StudyGroups.id },
-                { scopeId })
-            .selectAll()
+        val query = StudyGroups.selectAll()
         q?.let {
             query.andWhere {
                 StudyGroups.name.lowerCase().trim() like "%$q%" or
@@ -62,14 +57,17 @@ class StudyGroupRepository {
             }
         }
         memberId?.let {
-            query.adjustColumnSet { innerJoin(UsersMemberships, { Memberships.id }, { membershipId }) }
-                .andWhere { UsersMemberships.memberId eq memberId }
+            query.adjustColumnSet { innerJoin(StudyGroupsMembers, { StudyGroups.id }, { studyGroupId }) }
+                .andWhere { StudyGroupsMembers.memberId eq memberId }
         }
         roleId?.let {
             query.andWhere { UsersRolesScopes.roleId eq it }
         }
         specialtyId?.let {
-            query.andWhere { Specialties.id eq it }
+            query.adjustColumnSet {
+                innerJoin(Specialties, { StudyGroups.specialtyId }, { Specialties.id })
+            }
+                .andWhere { Specialties.id eq it }
         }
         academicYear?.let {
             query.andWhere {

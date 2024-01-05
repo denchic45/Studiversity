@@ -5,7 +5,6 @@ import com.denchic45.studiversity.di.configureDI
 import com.denchic45.studiversity.feature.attachment.configureAttachments
 import com.denchic45.studiversity.feature.auth.configureAuth
 import com.denchic45.studiversity.feature.course.configureCourses
-import com.denchic45.studiversity.feature.membership.configureMembership
 import com.denchic45.studiversity.feature.role.configureRoles
 import com.denchic45.studiversity.feature.room.configureRooms
 import com.denchic45.studiversity.feature.schedule.configureSchedule
@@ -37,7 +36,7 @@ fun main() {
 private lateinit var engine: ApplicationEngine
 
 private fun startServer() {
-    logger.info { "starting server..."}
+    logger.info { "starting server..." }
     engine = embeddedServer(factory = Netty, port = 8080, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }
@@ -49,26 +48,26 @@ fun restartServer() {
 
 @Suppress("unused")
 fun Application.module() = runBlocking {
-    logger.info { "starting started..."}
+    logger.info { "starting started..." }
     install(PartialContent)
     install(AutoHeadResponse)
     configureDI()
     configureSerialization()
     configureStatusPages()
-    logger.info { "initialized: ${config.organization.initialized}"}
+    logger.info { "initialized: ${config.organization.initialized}" }
     if (config.organization.initialized) {
         configurePing()
-        logger.info { "configure database..."}
+        logger.info { "configure database..." }
         configureDatabase()
-        logger.info { "database configured"}
-        logger.info { "configure supabase..."}
+        logger.info { "database configured" }
+        logger.info { "configure supabase..." }
         configureSupabase()
-        logger.info { "database configured"}
+        logger.info { "database configured" }
         configureAuth()
-        logger.info { "auth configured"}
+        logger.info { "auth configured" }
         configureUsers()
         configureRoles()
-        configureMembership()
+//        configureMembership()
         configureAttachments()
         configureStudyGroups()
         configureSpecialties()
@@ -77,7 +76,7 @@ fun Application.module() = runBlocking {
         configureSchedule()
         configureRooms()
         configureRouting()
-        logger.info { "configuration success"}
+        logger.info { "configuration success" }
     }
 }
 

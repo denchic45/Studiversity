@@ -13,6 +13,6 @@ class AttachStudyGroupToCourseUseCase(
     suspend operator fun invoke(courseId: UUID, studyGroupId: UUID) = suspendTransactionWorker {
         if (courseRepository.existStudyGroupByCourse(courseId, studyGroupId))
             throw BadRequestException(CourseErrors.STUDY_GROUP_ALREADY_EXIST)
-        courseRepository.addCourseStudyGroup(courseId, studyGroupId)
+        courseRepository.addStudyGroupToCourse(courseId, studyGroupId)
     }
 }

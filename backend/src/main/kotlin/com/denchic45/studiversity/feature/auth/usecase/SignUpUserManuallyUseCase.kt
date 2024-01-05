@@ -20,7 +20,7 @@ class SignUpUserManuallyUseCase(
         val password = PasswordGenerator().generate()
         logger.info { "generated password for user: ${createUserRequest.email}, password: $password" }
         val user = userRepository.add(createUserRequest, BCrypt.hashpw(password, BCrypt.gensalt()))
-        roleRepository.addUserRolesToScope(user.id,createUserRequest.roleIds, config.organization.id)
+        roleRepository.addUserRolesInScope(user.id,createUserRequest.roleIds, config.organization.id)
         emailSender.sendSimpleEmail(
             createUserRequest.email,
             "Регистрация",

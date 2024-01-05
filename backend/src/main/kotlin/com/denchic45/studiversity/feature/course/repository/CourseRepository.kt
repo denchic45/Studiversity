@@ -24,6 +24,11 @@ class CourseRepository(private val bucket: BucketApi) {
                 subject = SubjectDao.findById(this)
             }
         }
+
+        Enrollments.insert {
+            it[courseId] = dao.id
+            it[type] = EnrollmentType.DEFAULT
+        }
         return dao.toResponse()
     }
 
@@ -40,26 +45,18 @@ class CourseRepository(private val bucket: BucketApi) {
     ): List<CourseResponse> {
         val query = Courses.selectAll()
 
-        if (
-//            memberId != null ||
-            studyGroupId != null) {
-            query.adjustColumnSet {
-                innerJoin(Memberships, { Courses.id }, { scopeId })
-            }
-        }
         memberId?.let {
-            val scopeIds = ScopeDao.findIdsByMemberId(it)
-            query
-//                .adjustColumnSet { innerJoin(UsersMemberships, { Memberships.id }, { membershipId }) }
-                .andWhere { Courses.id inList scopeIds }
+            query.adjustColumnSet {
+                innerJoin(Enrollments, { Courses.id }, { courseId })
+                    .innerJoin(UserEnrollments, { Enrollments.id }, { enrollmentId })
+            }.andWhere { UserEnrollments.userId eq memberId }
         }
         studyGroupId?.let {
             query.adjustColumnSet {
-                innerJoin(ExternalStudyGroupsMemberships,
-                    { Memberships.id },
-                    { membershipId },
-                    { Memberships.type eq "by_group" })
-            }.andWhere { ExternalStudyGroupsMemberships.studyGroupId eq studyGroupId }
+                innerJoin(CoursesStudyGroups, { Courses.id }, { courseId })
+            }.adjustWhere {
+                CoursesStudyGroups.studyGroupId eq it
+            }
         }
         subjectId?.let {
             query.andWhere { Courses.subjectId eq subjectId }
@@ -91,50 +88,89 @@ class CourseRepository(private val bucket: BucketApi) {
     }
 
     fun existStudyGroupByCourse(courseId: UUID, studyGroupId: UUID): Boolean {
-        return ExternalStudyGroupsMemberships
-            .innerJoin(Memberships, { membershipId }, { Memberships.id })
-            .slice(ExternalStudyGroupsMemberships.studyGroupId)
-            .exists { Memberships.scopeId eq courseId and (ExternalStudyGroupsMemberships.studyGroupId eq studyGroupId) }
+        return CoursesStudyGroups.exists {
+            CoursesStudyGroups.courseId eq courseId and
+                    (CoursesStudyGroups.studyGroupId eq studyGroupId)
+        }
+//        return ExternalStudyGroupsMemberships
+//            .innerJoin(Memberships, { membershipId }, { Memberships.id })
+//            .slice(ExternalStudyGroupsMemberships.studyGroupId)
+//            .exists { Memberships.scopeId eq courseId and (ExternalStudyGroupsMemberships.studyGroupId eq studyGroupId) }
     }
+
 
     fun findStudyGroupsByCourse(courseId: UUID): List<StudyGroupResponse> {
         return StudyGroupDao.wrapRows(
-            ExternalStudyGroupsMemberships
-                .innerJoin(Memberships, { membershipId }, { Memberships.id })
-                .innerJoin(StudyGroups, { ExternalStudyGroupsMemberships.studyGroupId }, { StudyGroups.id })
-                .select(Memberships.scopeId eq courseId)
+//            ExternalStudyGroupsMemberships
+//                .innerJoin(Memberships, { membershipId }, { Memberships.id })
+//                .innerJoin(StudyGroups, { ExternalStudyGroupsMemberships.studyGroupId }, { StudyGroups.id })
+//                .select(Memberships.scopeId eq courseId)
+            CoursesStudyGroups.innerJoin(StudyGroups, { studyGroupId }, { StudyGroups.id })
+                .select(CoursesStudyGroups.courseId eq courseId)
         ).map(StudyGroupDao::toResponse)
     }
 
-    fun addCourseStudyGroup(courseId: UUID, studyGroupId: UUID) {
-        val membershipId = Memberships
-            .select(Memberships.scopeId eq courseId and (Memberships.type eq "by_group"))
-            .firstOrNull()?.get(Memberships.id)
-            ?: Memberships.insertIgnore {
-                it[scopeId] = courseId
-                it[active] = true
-                it[type] = "by_group"
-            }[Memberships.id]
-        ExternalStudyGroupsMemberships.insertIgnore {
-            it[ExternalStudyGroupsMemberships.membershipId] = membershipId
-            it[ExternalStudyGroupsMemberships.studyGroupId] = studyGroupId
+    // todo создавать enrollment для групп, если прикреплена только первая гурппа
+    fun addStudyGroupToCourse(courseId: UUID, studyGroupId: UUID) {
+        if (!Enrollments.exists {
+                Enrollments.courseId eq courseId and
+                        (Enrollments.type eq EnrollmentType.STUDY_GROUPS)
+            }) {
+            EnrollmentDao.new {
+                this.course = CourseDao[courseId]
+                this.type = EnrollmentType.STUDY_GROUPS
+            }
         }
+
+
+        CoursesStudyGroups.insert {
+            it[CoursesStudyGroups.courseId] = courseId
+            it[CoursesStudyGroups.studyGroupId] = studyGroupId
+        }
+
+
+//        val membershipId = Memberships
+//            .select(Memberships.scopeId eq courseId and (Memberships.type eq "by_group"))
+//            .firstOrNull()?.get(Memberships.id)
+//            ?: Memberships.insertIgnore {
+//                it[scopeId] = courseId
+//                it[active] = true
+//                it[type] = "by_group"
+//            }[Memberships.id]
+//        ExternalStudyGroupsMemberships.insertIgnore {
+//            it[ExternalStudyGroupsMemberships.membershipId] = membershipId
+//            it[ExternalStudyGroupsMemberships.studyGroupId] = studyGroupId
+//        }
     }
 
+    // todo удалять enrollment для групп, если откреплена последняя оставшаяся гурппа
     fun removeStudyGroupFromCourse(courseId: UUID, studyGroupId: UUID): Boolean {
-        val membershipOfCourseByGroupId = Memberships.slice(Memberships.id).select(
-            Memberships.scopeId eq courseId and (Memberships.type eq "by_group")
-        ).first()[Memberships.id]
-        val courseStudyGroupDeleted = ExternalStudyGroupsMemberships.deleteWhere {
-            ExternalStudyGroupsMemberships.studyGroupId eq studyGroupId and
-                    (membershipId eq membershipOfCourseByGroupId)
+        val studyGroupDetached = CoursesStudyGroups.deleteWhere {
+            CoursesStudyGroups.courseId eq courseId and
+                    (CoursesStudyGroups.studyGroupId eq studyGroupId)
         } > 0
-        // Remove course membership for groups if no groups remain
-        if (!ExternalStudyGroupsMemberships.exists {
-                ExternalStudyGroupsMemberships.membershipId eq membershipOfCourseByGroupId
-            })
-            Memberships.deleteWhere { Memberships.id eq membershipOfCourseByGroupId }
-        return courseStudyGroupDeleted
+
+//        val membershipOfCourseByGroupId = Memberships.slice(Memberships.id).select(
+//            Memberships.scopeId eq courseId and (Memberships.type eq "by_group")
+//        ).first()[Memberships.id]
+
+//        val courseStudyGroupDeleted = ExternalStudyGroupsMemberships.deleteWhere {
+//            ExternalStudyGroupsMemberships.studyGroupId eq studyGroupId and
+//                    (membershipId eq membershipOfCourseByGroupId)
+//        } > 0
+
+        // Remove course enrollment for groups if no groups remain
+        if (!CoursesStudyGroups.exists { CoursesStudyGroups.courseId eq courseId })
+            Enrollments.deleteWhere {
+                Enrollments.courseId eq courseId and (type eq EnrollmentType.STUDY_GROUPS)
+            }
+//        if (!ExternalStudyGroupsMemberships.exists {
+//                ExternalStudyGroupsMemberships.membershipId eq membershipOfCourseByGroupId
+//            })
+//            Memberships.deleteWhere { Memberships.id eq membershipOfCourseByGroupId }
+//        return courseStudyGroupDeleted
+
+        return studyGroupDetached
     }
 
     fun addArchivedCourse(courseId: UUID) {

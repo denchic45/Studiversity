@@ -2,6 +2,7 @@ package com.denchic45.studiversity.feature.course
 
 import com.denchic45.studiversity.config
 import com.denchic45.studiversity.feature.course.element.courseElementModule
+import com.denchic45.studiversity.feature.course.member.courseMemberModule
 import com.denchic45.studiversity.feature.course.repository.CourseRepository
 import com.denchic45.studiversity.feature.course.subject.subjectModule
 import com.denchic45.studiversity.feature.course.topic.courseTopicModule
@@ -10,7 +11,7 @@ import com.denchic45.studiversity.feature.course.work.submission.courseSubmissio
 import org.koin.dsl.module
 
 private val useCaseModule = module {
-    single { AddCourseUseCase(config.organization.id, get(), get(), get(), get()) }
+    single { AddCourseUseCase(config.organization.id, get(), get(), get()) }
     single { FindCourseByIdUseCase(get(), get()) }
     single { UpdateCourseUseCase(get(), get()) }
     single { RequireExistCourseUseCase(get(), get()) }
@@ -29,6 +30,7 @@ val courseModule = module {
     includes(
         useCaseModule,
         repositoryModule,
+        courseMemberModule,
         courseElementModule,
         courseSubmissionModule,
         courseTopicModule,

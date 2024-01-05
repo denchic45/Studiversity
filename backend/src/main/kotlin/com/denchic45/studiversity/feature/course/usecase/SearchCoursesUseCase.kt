@@ -9,8 +9,13 @@ class SearchCoursesUseCase(
     private val suspendTransactionWorker: SuspendTransactionWorker,
     private val courseRepository: CourseRepository
 ) {
-    suspend operator fun invoke(memberId: UUID?, studyGroupId: UUID?, subjectId: UUID?, archived: Boolean?, q: String?) =
-        suspendTransactionWorker {
-            courseRepository.find(memberId, studyGroupId, subjectId, archived, q?.searchable())
-        }
+    suspend operator fun invoke(
+        memberId: UUID?,
+        studyGroupId: UUID?,
+        subjectId: UUID?,
+        archived: Boolean?,
+        q: String?
+    ) = suspendTransactionWorker {
+        courseRepository.find(memberId, studyGroupId, subjectId, archived, q?.searchable())
+    }
 }

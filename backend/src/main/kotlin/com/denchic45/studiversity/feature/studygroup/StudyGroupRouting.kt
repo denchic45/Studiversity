@@ -1,9 +1,11 @@
 package com.denchic45.studiversity.feature.studygroup
 
+import com.denchic45.studiversity.feature.studygroup.member.studyGroupMembers
 import com.denchic45.studiversity.feature.studygroup.usecase.*
 import com.denchic45.studiversity.ktor.CommonErrors
 import com.denchic45.studiversity.ktor.getUserUuidByQueryParameterOrMe
 import com.denchic45.studiversity.ktor.getUuid
+import com.denchic45.studiversity.ktor.getUuidOrFail
 import com.denchic45.studiversity.validation.buildValidationResult
 import com.denchic45.studiversity.validation.require
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
@@ -76,24 +78,25 @@ fun Application.studyGroupRoutes() {
 }
 
 private fun Route.studyGroupByIdRoutes() {
-    route("/{id}") {
+    route("/{studyGroupId}") {
         val findStudyGroupById: FindStudyGroupByIdUseCase by inject()
         val updateStudyGroup: UpdateStudyGroupUseCase by inject()
         val removeStudyGroup: RemoveStudyGroupUseCase by inject()
 
         get {
-            val id = call.parameters["id"]!!.toUUID()
-            call.respond(HttpStatusCode.OK, findStudyGroupById(id))
+            val studyGroupId = call.parameters.getUuidOrFail("studyGroupId")
+            call.respond(HttpStatusCode.OK, findStudyGroupById(studyGroupId))
         }
         patch {
-            val id = call.parameters["id"]!!.toUUID()
+            val studyGroupId = call.parameters.getUuidOrFail("studyGroupId")
             val body = call.receive<UpdateStudyGroupRequest>()
-            call.respond(HttpStatusCode.OK, updateStudyGroup(id, body))
+            call.respond(HttpStatusCode.OK, updateStudyGroup(studyGroupId, body))
         }
         delete {
-            val id = call.parameters["id"]!!.toUUID()
-            removeStudyGroup(id)
+            val studyGroupId = call.parameters.getUuidOrFail("studyGroupId")
+            removeStudyGroup(studyGroupId)
             call.respond(HttpStatusCode.NoContent)
         }
+        studyGroupMembers()
     }
 }

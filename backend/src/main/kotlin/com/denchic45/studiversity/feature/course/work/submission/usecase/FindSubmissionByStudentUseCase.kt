@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.course.work.submission.usecase
 
 import com.denchic45.studiversity.feature.course.element.CourseElementRepository
 import com.denchic45.studiversity.feature.course.work.submission.SubmissionRepository
-import com.denchic45.studiversity.feature.membership.repository.UserMembershipRepository
+import com.denchic45.studiversity.feature.role.repository.RoleRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import com.denchic45.stuiversity.api.role.model.Role
@@ -13,7 +13,7 @@ class FindSubmissionByStudentUseCase(
     private val suspendTransactionWorker: SuspendTransactionWorker,
     private val submissionRepository: SubmissionRepository,
     private val courseElementRepository: CourseElementRepository,
-    private val userMembershipRepository: UserMembershipRepository
+    private val roleRepository: RoleRepository
 ) {
 
     suspend operator fun invoke(courseWorkId: UUID, studentId: UUID, receivingUserId: UUID) = suspendTransactionWorker {
@@ -22,8 +22,8 @@ class FindSubmissionByStudentUseCase(
                 submissionRepository.updateSubmissionState(response.id, SubmissionState.CREATED)
                 submissionRepository.find(response.id)!!
             } else response
-        } ?: if (userMembershipRepository.existMemberByScopeIdAndRole(
-                memberId = studentId,
+        } ?: if (roleRepository.isExistRoleOfUserByScope(
+                userId = studentId,
                 scopeId = courseElementRepository.findCourseIdByElementId(courseWorkId)!!,
                 roleId = Role.Student.id
             )

@@ -10,6 +10,7 @@ object Roles : LongIdTable("role", "role_id") {
     val name = text("role_name")
     val shortName = text("shortname")
     val parent = reference("parent", Roles).nullable()
+    val order = integer("role_order")
 }
 
 class RoleDao(id: EntityID<Long>) : LongEntity(id) {
@@ -38,4 +39,5 @@ class RoleDao(id: EntityID<Long>) : LongEntity(id) {
     var name by Roles.name
     var shortName by Roles.shortName
     var parent by RoleDao optionalReferencedOn Roles.parent
+    var order by Roles.order
 }

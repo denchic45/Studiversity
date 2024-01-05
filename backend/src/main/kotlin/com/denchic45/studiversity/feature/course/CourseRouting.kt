@@ -3,6 +3,7 @@ package com.denchic45.studiversity.feature.course
 import com.denchic45.studiversity.config
 import com.denchic45.studiversity.feature.course.element.courseElementRoutes
 import com.denchic45.studiversity.feature.course.material.courseMaterialsRoutes
+import com.denchic45.studiversity.feature.course.member.courseMembers
 import com.denchic45.studiversity.feature.course.usecase.*
 import com.denchic45.studiversity.feature.course.work.courseWorksRoutes
 import com.denchic45.studiversity.feature.course.work.courseWorksRoutes2
@@ -88,9 +89,8 @@ private fun Route.courseByIdRoutes() {
         get {
             val courseId = call.parameters.getUuidOrFail("courseId")
 
-            val currentUserId = call.jwtPrincipal().payload.claimId
 
-            requireCapability(currentUserId, Capability.ReadCourse, courseId)
+            requireCapability(call.currentUserId(), Capability.ReadCourse, courseId)
 
             findCourseById(courseId).let { course -> call.respond(HttpStatusCode.OK, course) }
         }
@@ -139,6 +139,7 @@ private fun Route.courseByIdRoutes() {
             removeCourse(courseId)
             call.respond(HttpStatusCode.NoContent)
         }
+        courseMembers()
         courseStudyGroups()
         courseElementRoutes()
         courseWorksRoutes()
