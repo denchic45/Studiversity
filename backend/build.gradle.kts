@@ -134,6 +134,8 @@ dependencies {
 
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.16")
 
+    implementation("net.harawata:appdirs:1.2.1")
+
 //    implementation("org.slf4j:slf4j-simple:2.0.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")

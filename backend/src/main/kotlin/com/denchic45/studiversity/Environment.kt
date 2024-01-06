@@ -1,11 +1,13 @@
 package com.denchic45.studiversity
 
+import com.denchic45.studiversity.config.configFile
 import com.sksamuel.hoplite.ConfigAlias
 import com.sksamuel.hoplite.ConfigLoaderBuilder
+import com.sksamuel.hoplite.addFileSource
 import com.sksamuel.hoplite.addResourceSource
 import java.util.*
 
-data class OrganizationConf(val id: UUID, val name: String, val selfRegister: Boolean, val initialized: Boolean)
+data class OrganizationConf(val id: UUID, val name: String, val selfRegister: Boolean)
 
 data class JwtConf(val audience: String, val secret: String)
 
@@ -22,6 +24,7 @@ data class SmtpConf(
 data class SupabaseConf(val url: String, val key: String)
 
 data class Config(
+    val initialized: Boolean,
     val organization: OrganizationConf,
     val jwt: JwtConf,
     val database: DatabaseConf,
@@ -31,6 +34,6 @@ data class Config(
 
 val config: Config
     get() = ConfigLoaderBuilder.default()
-        .addResourceSource("/application.conf")
+        .addFileSource(configFile)
         .build()
         .loadConfigOrThrow()

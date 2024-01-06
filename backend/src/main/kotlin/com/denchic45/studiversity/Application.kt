@@ -1,5 +1,7 @@
 package com.denchic45.studiversity
 
+import com.denchic45.studiversity.config.configuration2
+import com.denchic45.studiversity.config.configFile
 import com.denchic45.studiversity.database.DatabaseFactory
 import com.denchic45.studiversity.di.configureDI
 import com.denchic45.studiversity.feature.attachment.configureAttachments
@@ -21,15 +23,20 @@ import com.denchic45.stuiversity.api.OrganizationResponse
 import com.denchic45.stuiversity.api.Pong
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
+import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.partialcontent.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import org.koin.ktor.ext.inject
+import java.io.File
+
 
 fun main() {
+
     startServer()
 }
 
@@ -48,14 +55,16 @@ fun restartServer() {
 
 @Suppress("unused")
 fun Application.module() = runBlocking {
+//    environment.config.propertyOrNull("database.url")
     logger.info { "starting started..." }
     install(PartialContent)
     install(AutoHeadResponse)
     configureDI()
     configureSerialization()
     configureStatusPages()
-    logger.info { "initialized: ${config.organization.initialized}" }
-    if (config.organization.initialized) {
+//    logger.info { "initialized: ${config.initialized}" }
+//    if (config.initialized) {
+    if (configuration2.initialized) {
         configurePing()
         logger.info { "configure database..." }
         configureDatabase()
@@ -78,7 +87,35 @@ fun Application.module() = runBlocking {
         configureRouting()
         logger.info { "configuration success" }
     }
+    routing {
+        singlePageApplication {
+            useResources = true
+            vue("static")
+        }
+        route("/init") {
+            get { call.respond(config.initialized) }
+            post {
+                val body = call.receive<InitRequest>()
+                configuration2.apply {
+                    // todo try connect to database
+                    dbUrl = body.dbUrl
+                    dbUser = body.dbUser
+                    dbPassword = body.dbPassword
+
+                    initialized = true
+                }
+            }
+        }
+    }
 }
+
+data class InitRequest(
+    val dbUrl: String,
+    val dbUser: String,
+    val dbPassword: String,
+
+    val organizationName: String
+)
 
 fun Application.configurePing() {
     routing {
