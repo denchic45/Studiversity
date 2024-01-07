@@ -1,7 +1,6 @@
 package com.denchic45.studiversity
 
 import com.denchic45.studiversity.config.configuration2
-import com.denchic45.studiversity.config.configFile
 import com.denchic45.studiversity.database.DatabaseFactory
 import com.denchic45.studiversity.di.configureDI
 import com.denchic45.studiversity.feature.attachment.configureAttachments
@@ -32,7 +31,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import org.koin.ktor.ext.inject
-import java.io.File
 
 
 fun main() {
@@ -90,7 +88,7 @@ fun Application.module() = runBlocking {
     routing {
         singlePageApplication {
             useResources = true
-            vue("static")
+            vue("web")
         }
         route("/init") {
             get { call.respond(config.initialized) }
