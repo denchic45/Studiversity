@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.auth.usecase
 
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.auth.PasswordGenerator
 import com.denchic45.studiversity.feature.role.repository.RoleRepository
 import com.denchic45.studiversity.feature.user.UserRepository
@@ -20,7 +20,7 @@ class SignUpUserManuallyUseCase(
         val password = PasswordGenerator().generate()
         logger.info { "generated password for user: ${createUserRequest.email}, password: $password" }
         val user = userRepository.add(createUserRequest, BCrypt.hashpw(password, BCrypt.gensalt()))
-        roleRepository.addUserRolesInScope(user.id,createUserRequest.roleIds, config.organization.id)
+        roleRepository.addUserRolesInScope(user.id,createUserRequest.roleIds, config.organizationId)
         emailSender.sendSimpleEmail(
             createUserRequest.email,
             "Регистрация",

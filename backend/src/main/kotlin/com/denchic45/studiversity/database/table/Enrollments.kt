@@ -19,8 +19,3 @@ class EnrollmentDao(id: EntityID<Long>) : LongEntity(id) {
 }
 
 enum class EnrollmentType { DEFAULT, STUDY_GROUPS }
-
-object UserEnrollments : Table("user_enrollments") {
-    val enrollmentId = reference("enrollment_id", Enrollments.id)
-    val userId = reference("user_id", Users)
-}

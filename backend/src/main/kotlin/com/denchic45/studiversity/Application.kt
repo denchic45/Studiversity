@@ -1,6 +1,6 @@
 package com.denchic45.studiversity
 
-import com.denchic45.studiversity.config.configuration2
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.database.DatabaseFactory
 import com.denchic45.studiversity.di.configureDI
 import com.denchic45.studiversity.feature.attachment.configureAttachments
@@ -17,17 +17,12 @@ import com.denchic45.studiversity.logger.logger
 import com.denchic45.studiversity.plugin.configureRouting
 import com.denchic45.studiversity.plugin.configureSerialization
 import com.denchic45.studiversity.plugin.configureStatusPages
-import com.denchic45.studiversity.supabase.configureSupabase
-import com.denchic45.stuiversity.api.OrganizationResponse
-import com.denchic45.stuiversity.api.Pong
+import com.denchic45.studiversity.setup.configureSetup
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
-import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.partialcontent.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import org.koin.ktor.ext.inject
@@ -62,78 +57,68 @@ fun Application.module() = runBlocking {
     configureStatusPages()
 //    logger.info { "initialized: ${config.initialized}" }
 //    if (config.initialized) {
-    if (configuration2.initialized) {
-        configurePing()
-        logger.info { "configure database..." }
-        configureDatabase()
-        logger.info { "database configured" }
-        logger.info { "configure supabase..." }
-        configureSupabase()
-        logger.info { "database configured" }
-        configureAuth()
-        logger.info { "auth configured" }
-        configureUsers()
-        configureRoles()
-//        configureMembership()
-        configureAttachments()
-        configureStudyGroups()
-        configureSpecialties()
-        configureCourses()
-        configureTimetable()
-        configureSchedule()
-        configureRooms()
-        configureRouting()
-        logger.info { "configuration success" }
-    }
-    routing {
-        singlePageApplication {
-            useResources = true
-            vue("web")
-        }
-        route("/init") {
-            get { call.respond(config.initialized) }
-            post {
-                val body = call.receive<InitRequest>()
-                configuration2.apply {
-                    // todo try connect to database
-                    dbUrl = body.dbUrl
-                    dbUser = body.dbUser
-                    dbPassword = body.dbPassword
-
-                    initialized = true
-                }
-            }
-        }
+    if (config.initialized) {
+        configureServer()
+    } else {
+        configureSetup()
+        // todo реализовать ожидание инициализации
+//        waitInitialization()
+//        configureServer()
     }
 }
 
-data class InitRequest(
-    val dbUrl: String,
-    val dbUser: String,
-    val dbPassword: String,
+private fun Application.configureServer() {
+    configurePing()
+    configureDatabase()
+    logger.info { "database configured" }
+    logger.info { "database configured" }
+    configureAuth()
+    logger.info { "auth configured" }
+    configureUsers()
+    configureRoles()
+//        configureMembership()
+    configureAttachments()
+    configureStudyGroups()
+    configureSpecialties()
+    configureCourses()
+    configureTimetable()
+    configureSchedule()
+    configureRooms()
+    configureRouting()
+    logger.info { "configuration success" }
+}
 
-    val organizationName: String
-)
+
+
+//data class InitRequest(
+//    val dbUrl: String,
+//    val dbUser: String,
+//    val dbPassword: String,
+//
+//    val organizationName: String
+//)
 
 fun Application.configurePing() {
     routing {
         get("/ping") {
-            val organization = config.organization
-            call.respond(
-                Pong(
-                    organization = OrganizationResponse(
-                        id = organization.id,
-                        name = organization.name,
-                        allowRegistration = organization.selfRegister
-                    )
-                )
-            )
+            // todo вернуть как было
+//            val organization = config.organization
+//            call.respond(
+//                Pong(
+//                    organization = OrganizationResponse(
+//                        id = organization.id,
+//                        name = organization.name,
+//                        allowRegistration = organization.selfRegister
+//                    )
+//                )
+//            )
         }
     }
 }
 
 
-private fun Application.configureDatabase() {
+fun Application.configureDatabase() {
+    logger.info { "configure database..." }
     val databaseFactory: DatabaseFactory by inject()
     databaseFactory.database
 }

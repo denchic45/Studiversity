@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.course
 
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.course.element.courseElementRoutes
 import com.denchic45.studiversity.feature.course.material.courseMaterialsRoutes
 import com.denchic45.studiversity.feature.course.member.courseMembers
@@ -59,7 +59,7 @@ fun Application.courseRoutes() {
                 post {
                     val currentUserId = call.principal<JWTPrincipal>()!!.payload.getClaim("sub").asString().toUUID()
 
-                    requireCapability(currentUserId, Capability.WriteCourse, config.organization.id)
+                    requireCapability(currentUserId, Capability.WriteCourse, config.organizationId)
 
                     val body = call.receive<CreateCourseRequest>()
 

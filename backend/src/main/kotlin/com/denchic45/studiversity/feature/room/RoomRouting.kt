@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.room
 
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.feature.room.usecase.*
 import com.denchic45.studiversity.ktor.currentUserId
@@ -24,7 +24,7 @@ fun Application.configureRooms() {
                 val searchRooms: SearchRoomsUseCase by inject()
 
                 post {
-                    requireCapability(call.currentUserId(), Capability.WriteRoom, config.organization.id)
+                    requireCapability(call.currentUserId(), Capability.WriteRoom, config.organizationId)
                     call.respond(HttpStatusCode.Created, addRoom(call.receive()))
                 }
 
@@ -42,7 +42,7 @@ fun Application.configureRooms() {
                         call.respond(HttpStatusCode.OK, findRoomById(call.parameters.getUuidOrFail("roomId")))
                     }
                     patch {
-                        requireCapability(call.currentUserId(), Capability.WriteRoom, config.organization.id)
+                        requireCapability(call.currentUserId(), Capability.WriteRoom, config.organizationId)
                         val room = updateRoom(call.parameters.getUuidOrFail("roomId"), call.receive())
                         call.respond(HttpStatusCode.OK, room)
                     }
@@ -50,7 +50,7 @@ fun Application.configureRooms() {
                         requireCapability(
                             call.currentUserId(),
                             Capability.WriteRoom,
-                            config.organization.id
+                            config.organizationId
                         )
                         removeRoom(call.parameters.getUuidOrFail("roomId"))
                         call.respond(HttpStatusCode.NoContent)

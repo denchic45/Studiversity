@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.util.isEmail
 import com.denchic45.studiversity.util.respondWithError
 import com.denchic45.studiversity.validation.ValidationResultBuilder
@@ -19,9 +19,9 @@ import io.ktor.server.routing.*
 
 fun Application.configureAuth() {
 
-    val jwtJWTSecret = config.jwt.secret
-    val jwtJWTAudience = config.jwt.audience
-    val jwtRealm = config.jwt.audience
+    val jwtJWTSecret = config.jwtSecret
+    val jwtJWTAudience = config.jwtAudience
+    val jwtRealm = config.jwtRealm
 
     authentication {
         jwt("auth-jwt") {

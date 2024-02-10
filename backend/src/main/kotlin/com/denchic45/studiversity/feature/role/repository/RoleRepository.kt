@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.role.repository
 
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.role.Permission
@@ -152,7 +152,7 @@ class RoleRepository {
         return when {
             !result.empty() -> result.toUserRolesResponse(userId)
 
-            UserDao.isExistById(userId) && scopeId == config.organization.id -> {
+            UserDao.isExistById(userId) && scopeId == config.organizationId -> {
                 UserRolesResponse(userId, listOf(Role.User))
             }
 

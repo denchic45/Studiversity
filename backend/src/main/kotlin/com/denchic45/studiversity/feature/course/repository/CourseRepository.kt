@@ -4,7 +4,6 @@ import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.course.toResponse
 import com.denchic45.studiversity.feature.studygroup.mapper.toResponse
-import com.denchic45.studiversity.supabase.deleteRecursive
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
@@ -187,6 +186,7 @@ class CourseRepository(private val bucket: BucketApi) {
 
     suspend fun removeCourse(courseId: UUID) {
         CourseDao.findById(courseId)!!.delete()
-        bucket.deleteRecursive("courses/$courseId")
+        // todo использовать свое хранилище
+//        bucket.deleteRecursive("courses/$courseId")
     }
 }

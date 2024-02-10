@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.di
 
 
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.database.DatabaseFactory
 import com.denchic45.studiversity.database.DatabaseFactoryImpl
 import com.denchic45.studiversity.feature.attachment.attachmentModule
@@ -13,11 +13,10 @@ import com.denchic45.studiversity.feature.specialty.specialtyModule
 import com.denchic45.studiversity.feature.studygroup.studyGroupModule
 import com.denchic45.studiversity.feature.timetable.timetableModule
 import com.denchic45.studiversity.feature.user.userModule
-import com.denchic45.studiversity.transaction.DatabaseTransactionWorker
 import com.denchic45.studiversity.transaction.DatabaseSuspendedTransactionWorker
+import com.denchic45.studiversity.transaction.DatabaseTransactionWorker
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.studiversity.transaction.TransactionWorker
-import com.denchic45.studiversity.util.EmailSender
 import io.ktor.server.application.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -30,21 +29,21 @@ val otherModule = module {
     single { CoroutineScope(SupervisorJob()) }
     single<DatabaseFactory> {
         DatabaseFactoryImpl(
-            config.database.url,
-            config.database.driver,
-            config.database.user,
-            config.database.password,
+            config.dbUrl,
+            "org.postgresql.Driver",   //            configuration2.driver,
+            config.dbUser,
+            config.dbPassword,
         )
     }
-    single {
-        EmailSender(
-            config.smtp.host,
-            config.smtp.port,
-            config.smtp.ssl,
-            config.smtp.username,
-            config.smtp.password,
-        )
-    }
+//    single {
+//        EmailSender(
+//            config.smtp.host,
+//            config.smtp.port,
+//            config.smtp.ssl,
+//            config.smtp.username,
+//            config.smtp.password,
+//        )
+//    }
 
     factory { DatabaseTransactionWorker() } binds arrayOf(TransactionWorker::class)
 
@@ -55,18 +54,9 @@ fun Application.configureDI() {
     install(Koin) {
         slf4jLogger()
         modules(
-            otherModule,
-            supabaseClientModule,
-            authModule,
-            userModule,
-            roleModule,
+            otherModule, authModule, userModule, roleModule,
 //            membershipModule,
-            studyGroupModule,
-            specialtyModule,
-            attachmentModule,
-            courseModule,
-            timetableModule,
-            roomModule
+            studyGroupModule, specialtyModule, attachmentModule, courseModule, timetableModule, roomModule
         )
     }
 }

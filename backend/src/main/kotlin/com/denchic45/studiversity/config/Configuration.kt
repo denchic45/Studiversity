@@ -2,6 +2,7 @@ package com.denchic45.studiversity.config
 
 import java.io.File
 import java.util.Properties
+import java.util.UUID
 import kotlin.reflect.KProperty
 
 
@@ -11,7 +12,7 @@ val dataFile: File = File("").absoluteFile
 val configFile = dataFile.resolve("config.properties")
     .apply { if (!exists()) createNewFile() }
 
-val configuration2 by lazy { Configuration() }
+val config by lazy { Configuration() }
 
 class Configuration {
     private val properties = Properties().apply { load(configFile.inputStream()) }
@@ -31,11 +32,26 @@ class Configuration {
 //        get() = preferences.get("db_password", "")
 //        set(value) = preferences.put("db_password", value)
 
+    var jwtAudience: String by property("")
+    var jwtSecret:String by property("")
+    var jwtRealm:String by property("")
+
     var dbUrl: String by property("db_url")
     var dbUser: String by property("db_user")
     var dbPassword: String by property("db_password")
 
+    var organizationId: UUID by property("organization_id")
+    var organizationName: String by property("organization_name")
+
+    var selfRegister: Boolean by property("self_register")
+
     var initialized: Boolean by property("initialized", false)
+}
+
+fun Configuration.database(url:String,user:String,password:String) {
+    dbUrl = url
+    dbUser = user
+    dbPassword = password
 }
 
 private class ConfigPropertyDelegate<T>(

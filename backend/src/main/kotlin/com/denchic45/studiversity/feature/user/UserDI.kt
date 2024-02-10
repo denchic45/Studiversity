@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.user
 
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.user.account.usecase.*
 import com.denchic45.studiversity.feature.user.usecase.FindUserByIdUseCase
 import com.denchic45.studiversity.feature.user.usecase.RemoveUserUseCase
@@ -20,7 +20,7 @@ private val useCaseModule = module {
 }
 
 private val repositoryModule = module {
-    single { UserRepository(config.organization.id, get(), get()) }
+    single { UserRepository(config.organizationId, get(), get()) }
 }
 
 val userModule = module {

@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.client.role
 
 import com.denchic45.studiversity.KtorClientTest
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.util.assertedResultIsError
 import com.denchic45.studiversity.util.assertedResultIsOk
 import com.denchic45.studiversity.util.unwrapAsserted
@@ -26,7 +26,7 @@ class AssignRoleTest : KtorClientTest() {
     private val userApi: UserApi by inject { parametersOf(client) }
     private val roleApi: RoleApi by inject { parametersOf(client) }
 
-    private val organizationId: UUID = config.organization.id
+    private val organizationId: UUID = config.organizationId
 
     private lateinit var user: UserResponse
 

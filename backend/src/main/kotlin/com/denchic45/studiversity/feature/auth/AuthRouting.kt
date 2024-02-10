@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.auth.usecase.*
 import com.denchic45.studiversity.ktor.ForbiddenException
 import com.denchic45.stuiversity.api.auth.AuthErrors
@@ -23,7 +23,7 @@ fun Route.signupRoute() {
     val signup: SignUpUseCase by inject()
 
     post("/signup") {
-        if (!config.organization.selfRegister) throw ForbiddenException()
+        if (!config.selfRegister) throw ForbiddenException()
         val signupRequest = call.receive<SignupRequest>()
         signup(signupRequest)
         call.respond(HttpStatusCode.OK)
@@ -42,12 +42,12 @@ fun Route.tokenRoute() {
         }
 
         val token = JWT.create()
-            .withAudience(config.jwt.audience)
+            .withAudience(config.jwtAudience)
             .withSubject(userIdWithToken.first.toString())
             .withExpiresAt(LocalDateTime.now().plusHours(1).toDate())
-            .sign(Algorithm.HMAC256(config.jwt.secret))
+            .sign(Algorithm.HMAC256(config.jwtSecret))
 
-        call.respond(HttpStatusCode.OK, SignInResponse(token, userIdWithToken.second, config.organization.id))
+        call.respond(HttpStatusCode.OK, SignInResponse(token, userIdWithToken.second, config.organizationId))
     }
 }
 

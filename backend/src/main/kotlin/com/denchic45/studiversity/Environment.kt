@@ -23,17 +23,17 @@ data class SmtpConf(
 
 data class SupabaseConf(val url: String, val key: String)
 
-data class Config(
-    val initialized: Boolean,
-    val organization: OrganizationConf,
-    val jwt: JwtConf,
-    val database: DatabaseConf,
-    val smtp: SmtpConf,
-    val supabase: SupabaseConf
-)
+//data class Config(
+//    val initialized: Boolean,
+//    val organization: OrganizationConf,
+//    val jwt: JwtConf,
+//    val database: DatabaseConf,
+//    val smtp: SmtpConf,
+//    val supabase: SupabaseConf
+//)
 
-val config: Config
-    get() = ConfigLoaderBuilder.default()
-        .addFileSource(configFile)
-        .build()
-        .loadConfigOrThrow()
+//val config: Config
+//    get() = ConfigLoaderBuilder.default()
+//        .addFileSource(configFile)
+//        .build()
+//        .loadConfigOrThrow()

@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.course.subject
 
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.course.subject.usecase.*
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.ktor.CommonErrors
@@ -51,7 +51,7 @@ fun Application.subjectRoutes() {
                     requireCapability(
                         call.jwtPrincipal().payload.claimId,
                         Capability.WriteSubject,
-                        config.organization.id
+                        config.organizationId
                     )
                     val subject = addSubject(call.receive())
                     call.respond(HttpStatusCode.Created, subject)
@@ -103,7 +103,7 @@ fun Route.subjectByIdRoute() {
             requireCapability(
                 call.jwtPrincipal().payload.claimId,
                 Capability.ReadSubject,
-                config.organization.id
+                config.organizationId
             )
 
             findSubjectById(id).let { subject ->
@@ -116,7 +116,7 @@ fun Route.subjectByIdRoute() {
             requireCapability(
                 call.jwtPrincipal().payload.claimId,
                 Capability.WriteSubject,
-                config.organization.id
+                config.organizationId
             )
 
             val body = call.receive<UpdateSubjectRequest>()
@@ -130,7 +130,7 @@ fun Route.subjectByIdRoute() {
             requireCapability(
                 call.jwtPrincipal().payload.claimId,
                 Capability.DeleteSubject,
-                config.organization.id
+                config.organizationId
             )
 
             removeSubject(id)

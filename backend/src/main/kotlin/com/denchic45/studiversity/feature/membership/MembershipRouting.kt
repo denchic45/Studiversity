@@ -46,7 +46,7 @@ package com.denchic45.studiversity.feature.membership
 //                            requireCapability(
 //                                call.jwtPrincipal().payload.claimId,
 //                                Capability.WriteMembership,
-//                                config.organization.id
+//                                config.organizationId
 //                            )
 //                            memberships[call.parameters.getOrFail("membershipId").toUUID()]
 //                                ?.forceSync()

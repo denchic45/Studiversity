@@ -1,7 +1,6 @@
 package com.denchic45.studiversity.feature.attachment
 
 import com.denchic45.studiversity.database.table.*
-import com.denchic45.studiversity.supabase.deleteRecursive
 import com.denchic45.stuiversity.api.course.element.model.*
 import io.github.jan.supabase.storage.BucketApi
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -12,6 +11,7 @@ import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.select
 import java.util.*
 
+// TODO: Использовать свое хранилище вместо supabase
 class AttachmentRepository(private val bucket: BucketApi) {
 
     suspend fun addFileAttachment(
@@ -152,7 +152,8 @@ class AttachmentRepository(private val bucket: BucketApi) {
 
         removeByOwnerIds(elementIds + submissionIds)
 
-        bucket.deleteRecursive("courses/$courseId")
+        // todo заменить на использование своего хранилища
+//        bucket.deleteRecursive("courses/$courseId")
     }
 
     private fun remove(attachmentId: UUID) {

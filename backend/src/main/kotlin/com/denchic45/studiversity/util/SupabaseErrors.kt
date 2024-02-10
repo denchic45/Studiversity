@@ -1,6 +1,5 @@
 package com.denchic45.studiversity.util
 
-import com.denchic45.studiversity.supabase.model.SupabaseErrorResponse
 import com.denchic45.stuiversity.util.CompositeError
 import com.denchic45.stuiversity.util.ErrorInfo
 import com.denchic45.stuiversity.util.ErrorResponse
@@ -21,11 +20,4 @@ suspend fun ApplicationCall.respondWithError(statusCode: HttpStatusCode, error: 
 
 suspend fun ApplicationCall.respondWithErrors(statusCode: HttpStatusCode, errors: CompositeError) {
     respond(statusCode, ErrorResponse(statusCode.value, errors))
-}
-
-suspend fun ApplicationCall.respondWithError(supabaseErrorResponse: SupabaseErrorResponse) {
-    respond(
-        HttpStatusCode.fromValue(supabaseErrorResponse.code),
-        ErrorResponse(supabaseErrorResponse.code, ErrorInfo(supabaseErrorResponse.msg))
-    )
 }

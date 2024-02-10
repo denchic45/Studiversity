@@ -22,6 +22,7 @@ function onCompleteClick() {
 
 <template>
   <div class="page">
+    <Panel header="Header">
     <h1 class="page__header">Сведения об организации</h1>
     <div class="page__form">
 
@@ -84,6 +85,7 @@ function onCompleteClick() {
       </form>
       <Button class="submit-button" type="submit" @click="onCompleteClick">Завершить</Button>
     </div>
+    </Panel>
   </div>
 </template>
 

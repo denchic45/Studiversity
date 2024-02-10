@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.studygroup
 
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.studygroup.member.studyMemberModule
 import com.denchic45.studiversity.feature.studygroup.repository.StudyGroupMemberRepository
 import com.denchic45.studiversity.feature.studygroup.repository.StudyGroupRepository
@@ -9,7 +9,7 @@ import org.koin.dsl.module
 
 private val useCaseModule = module {
     single { FindStudyGroupByIdUseCase(get(), get()) }
-    single { AddStudyGroupUseCase(config.organization.id, get(), get(), get()) }
+    single { AddStudyGroupUseCase(config.organizationId, get(), get(), get()) }
     single { UpdateStudyGroupUseCase(get(), get()) }
     single { SearchStudyGroupsUseCase(get(), get()) }
     single { RemoveStudyGroupUseCase(get(), get(), get()) }

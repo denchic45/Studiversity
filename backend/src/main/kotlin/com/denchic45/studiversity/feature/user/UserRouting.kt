@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.user
 
-import com.denchic45.studiversity.config
+import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.database.table.UserDao
 import com.denchic45.studiversity.feature.auth.usecase.SignUpUserManuallyUseCase
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
@@ -50,7 +50,7 @@ fun Application.userRoutes() {
                     requireCapability(
                         userId = call.currentUserId(),
                         capability = Capability.WriteUser,
-                        scopeId = config.organization.id
+                        scopeId = config.organizationId
                     )
                     call.respond(HttpStatusCode.Created, signUpUserManually(call.receive()))
                 }
@@ -80,7 +80,7 @@ private fun Route.userByIdRoute() {
             requireCapability(
                 userId = call.currentUserId(),
                 capability = Capability.DeleteUser,
-                scopeId = config.organization.id
+                scopeId = config.organizationId
             )
 
             removeUser(call.parameters.getUuidOrFail("userId"))
