@@ -1,8 +1,7 @@
 package com.denchic45.studiversity.config
 
 import java.io.File
-import java.util.Properties
-import java.util.UUID
+import java.util.*
 import kotlin.reflect.KProperty
 
 
@@ -33,10 +32,11 @@ class Configuration {
 //        set(value) = preferences.put("db_password", value)
 
     var jwtAudience: String by property("")
-    var jwtSecret:String by property("")
-    var jwtRealm:String by property("")
+    var jwtSecret: String by property("")
+    var jwtRealm: String by property("")
 
     var dbUrl: String by property("db_url")
+//    var dbName: String by property("db_name")
     var dbUser: String by property("db_user")
     var dbPassword: String by property("db_password")
 
@@ -48,7 +48,7 @@ class Configuration {
     var initialized: Boolean by property("initialized", false)
 }
 
-fun Configuration.database(url:String,user:String,password:String) {
+fun Configuration.database(url: String, user: String, password: String) {
     dbUrl = url
     dbUser = user
     dbPassword = password

@@ -8,12 +8,14 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 
 object ScopeTypes : LongIdTable("scope_type", "scope_type_id") {
     val name = varcharMax("scope_type_name")
-    val parent = reference("parent_type", ScopeTypes.id)
+    val parent = reference("parent_type", ScopeTypes.id).nullable()
 }
 
 class ScopeTypeDao(id: EntityID<Long>) : LongEntity(id) {
     companion object : LongEntityClass<ScopeTypeDao>(ScopeTypes)
 
     var name by ScopeTypes.name
-    var parentId by ScopeTypes.parent
+
+    //    var parentId by ScopeTypes.parent
+    var parent by ScopeTypeDao optionalReferencedOn ScopeTypes.parent
 }

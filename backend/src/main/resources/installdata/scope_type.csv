@@ -1,0 +1,5 @@
+scope_type_id,scope_type_name,parent_type
+1,organization,
+2,user,1
+3,course,1
+4,group,1

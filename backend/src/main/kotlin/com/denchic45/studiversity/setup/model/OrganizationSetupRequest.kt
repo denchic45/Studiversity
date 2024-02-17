@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class OrganizationSetupRequest(
     val name: String,
-    val selfRegistration: Boolean
+    val selfRegister: Boolean
 )

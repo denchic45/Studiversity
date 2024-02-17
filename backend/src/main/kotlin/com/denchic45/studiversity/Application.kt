@@ -18,6 +18,7 @@ import com.denchic45.studiversity.plugin.configureRouting
 import com.denchic45.studiversity.plugin.configureSerialization
 import com.denchic45.studiversity.plugin.configureStatusPages
 import com.denchic45.studiversity.setup.configureSetup
+import com.denchic45.studiversity.setup.onInitialized
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -62,8 +63,7 @@ fun Application.module() = runBlocking {
     } else {
         configureSetup()
         // todo реализовать ожидание инициализации
-//        waitInitialization()
-//        configureServer()
+        onInitialized(::configureServer)
     }
 }
 

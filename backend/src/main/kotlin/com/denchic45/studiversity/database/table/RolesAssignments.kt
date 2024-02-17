@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.database.table
 
-import org.jetbrains.exposed.dao.id.LongIdTable
+import org.jetbrains.exposed.sql.Table
 
-object RolesAssignments : LongIdTable("role_assignment", "role_assignment_id") {
+object RolesAssignments : Table("role_assignment") {
     val roleId = reference("role_id", Roles.id)
     val assignableRoleId = reference("assignable_role", Roles.id)
 

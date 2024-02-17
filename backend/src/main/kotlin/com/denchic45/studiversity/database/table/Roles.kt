@@ -8,9 +8,10 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 object Roles : LongIdTable("role", "role_id") {
     val name = text("role_name")
-    val shortName = text("shortname")
+    val shortname = text("shortname")
+    val scopeTypeId = reference("scope_type_id", ScopeTypes)
     val parent = reference("parent", Roles).nullable()
-    val order = integer("role_order")
+    val order = integer("role_order").nullable()
 }
 
 class RoleDao(id: EntityID<Long>) : LongEntity(id) {
@@ -37,7 +38,8 @@ class RoleDao(id: EntityID<Long>) : LongEntity(id) {
     }
 
     var name by Roles.name
-    var shortName by Roles.shortName
+    var shortname by Roles.shortname
+    var scopeType by ScopeTypeDao referencedOn Roles.scopeTypeId
     var parent by RoleDao optionalReferencedOn Roles.parent
     var order by Roles.order
 }

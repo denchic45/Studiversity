@@ -14,6 +14,8 @@ plugins {
     id("io.ktor.plugin") version "2.1.3"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.20"
 
+    id("org.jetbrains.kotlinx.dataframe") version "0.12.1"
+
     // Shadow plugin - enable support for building our UberJar
     id("com.github.johnrengelman.shadow") version "7.1.2"
     war
@@ -129,6 +131,8 @@ dependencies {
     implementation("com.sksamuel.hoplite:hoplite-watch:2.7.1")
 
     implementation("org.postgresql:postgresql:42.5.1")
+
+    implementation("org.jetbrains.kotlinx:dataframe:0.12.1")
 
 //    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("io.github.oshai:kotlin-logging-jvm:4.0.0-beta-29")

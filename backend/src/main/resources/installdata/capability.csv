@@ -1,0 +1,16 @@
+capability_id;capability_name;capability_resource;scope_type_id
+1;Создавать новых пользователей;user:write;2
+2;Удалять пользователей;user:delete;
+3;;;
+4;;;
+5;;;
+6;;;
+7;;;
+8;;;
+9;;;
+10;;;
+11;;;
+12;;;
+13;;;
+14;;;
+15;;;

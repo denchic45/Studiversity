@@ -30,7 +30,8 @@ val otherModule = module {
     single<DatabaseFactory> {
         DatabaseFactoryImpl(
             config.dbUrl,
-            "org.postgresql.Driver",   //            configuration2.driver,
+//            "org.postgresql.Driver",
+            //            configuration2.driver,
             config.dbUser,
             config.dbPassword,
         )

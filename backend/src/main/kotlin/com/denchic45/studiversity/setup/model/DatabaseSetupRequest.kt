@@ -4,7 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DatabaseSetupRequest(
-    val url: String,
+    val host: String,
+    val port: String,
+    val name: String,
     val user: String,
     val password: String
 )

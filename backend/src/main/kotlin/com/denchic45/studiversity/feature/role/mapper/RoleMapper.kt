@@ -7,7 +7,7 @@ import com.denchic45.stuiversity.api.role.model.UserRolesResponse
 import com.denchic45.stuiversity.api.role.model.UserWithRolesResponse
 import java.util.*
 
-fun RoleDao.toRole(): Role = Role(id = id.value, resource = shortName)
+fun RoleDao.toRole(): Role = Role(id = id.value, resource = shortname)
 
 fun Iterable<UserRoleScopeDao>.toUserRolesResponse(userId: UUID): UserRolesResponse = UserRolesResponse(
     userId = userId,

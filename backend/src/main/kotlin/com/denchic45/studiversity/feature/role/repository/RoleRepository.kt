@@ -109,8 +109,7 @@ class RoleRepository {
 
     fun existRolesByScope(roles: List<Long>, scopeId: UUID): Boolean = transaction {
         roles.all { roleId ->
-            val scopeType = ScopeDao.findById(scopeId)!!.scopeTypeId.value
-            RolesScopes.exists { RolesScopes.roleId eq roleId and (RolesScopes.scopeId eq scopeType) }
+            RoleDao[roleId].scopeType.id == ScopeDao[scopeId].id
         }
     }
 
@@ -135,8 +134,8 @@ class RoleRepository {
 
     fun findByNames(roleNames: List<String>) = transaction {
         roleNames.map { name ->
-            RoleDao.find(Roles.shortName eq name)
-                .singleOrNull()?.let { Role(it.id.value, it.shortName) }
+            RoleDao.find(Roles.shortname eq name)
+                .singleOrNull()?.let { Role(it.id.value, it.shortname) }
         }
     }
 

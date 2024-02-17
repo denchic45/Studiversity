@@ -24,10 +24,9 @@ data class ScopeType(val id: Long, val name: String, val parent: ScopeType?) {
     }
 
     companion object {
-        val Organization: ScopeType =
-            ScopeType(1, "organization", null)
+        val Organization: ScopeType = ScopeType(1, "organization", null)
         val User: ScopeType = ScopeType(2, "user", Organization)
-        val StudyGroup: ScopeType = ScopeType(3, " group", Organization)
-        val Course: ScopeType = ScopeType(4, "curse", Organization)
+        val Course: ScopeType = ScopeType(3, "curse", Organization)
+        val StudyGroup: ScopeType = ScopeType(4, " group", Organization)
     }
 }
