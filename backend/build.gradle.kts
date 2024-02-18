@@ -93,6 +93,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
+    implementation("io.ktor:ktor-server-cors:$ktorVersion")
 
     implementation("org.apache.commons:commons-email:1.5")
 

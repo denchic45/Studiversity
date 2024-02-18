@@ -19,10 +19,12 @@ import com.denchic45.studiversity.plugin.configureSerialization
 import com.denchic45.studiversity.plugin.configureStatusPages
 import com.denchic45.studiversity.setup.configureSetup
 import com.denchic45.studiversity.setup.onInitialized
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.autohead.*
+import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.partialcontent.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
@@ -53,6 +55,14 @@ fun Application.module() = runBlocking {
     logger.info { "starting started..." }
     install(PartialContent)
     install(AutoHeadResponse)
+    install(CORS) {
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Get)
+        allowHeader(HttpHeaders.AccessControlAllowOrigin)
+        allowHeader(HttpHeaders.ContentType)
+        anyHost()
+    }
     configureDI()
     configureSerialization()
     configureStatusPages()
