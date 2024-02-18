@@ -11,16 +11,20 @@ import Setup from "./Setup.vue";
 
 import axios from 'axios'
 
-const client = axios.create()
+const client = axios.create({
+    baseURL: 'http://localhost:8080'
+})
 
 let app = createApp(Setup);
-app.config.globalProperties.$client = client
+
 app.use(router)
     .use(PrimeVue)
-
     .component('Button', Button)
     .component('InputText', InputText)
     .component('Dropdown', Dropdown)
 
-    .mount('#app')
+
+// app.config.globalProperties.$client = client
+app.provide('client', client);
+app.mount('#app')
 
