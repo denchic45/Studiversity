@@ -88,9 +88,7 @@ private fun Route.courseByIdRoutes() {
 
         get {
             val courseId = call.parameters.getUuidOrFail("courseId")
-
-
-            requireCapability(call.currentUserId(), Capability.ReadCourse, courseId)
+//            requireCapability(call.currentUserId(), Capability.ReadOtherCourse, courseId)
 
             findCourseById(courseId).let { course -> call.respond(HttpStatusCode.OK, course) }
         }

@@ -14,9 +14,6 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.util.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
 
 
@@ -46,11 +43,11 @@ fun Application.courseTopicRoutes() {
                     val currentUserId = call.currentUserId()
                     val courseId = call.request.queryParameters.getUuidOrFail("course_id")
 
-                    requireCapability(
-                        userId = currentUserId,
-                        capability = Capability.ReadCourse,
-                        scopeId = courseId
-                    )
+//                    requireCapability(
+//                        userId = currentUserId,
+//                        capability = Capability.ReadOtherCourse,
+//                        scopeId = courseId
+//                    )
 
                     val topics = findCourseTopicsByCourse(courseId)
                     call.respond(HttpStatusCode.OK, topics)
@@ -75,11 +72,11 @@ private fun Route.courseTopicById() {
             val topicId = call.parameters.getUuidOrFail("topicId")
             val courseId = findCourseIdByTopicId(topicId)
 
-            requireCapability(
-                userId = currentUserId,
-                capability = Capability.ReadCourse,
-                scopeId = courseId
-            )
+//            requireCapability(
+//                userId = currentUserId,
+//                capability = Capability.ReadOtherCourse,
+//                scopeId = courseId
+//            )
 
             val topic = findCourseTopic(courseId, topicId)
             call.respond(HttpStatusCode.OK, topic)

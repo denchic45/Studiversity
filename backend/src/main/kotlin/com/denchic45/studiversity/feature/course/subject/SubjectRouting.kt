@@ -5,6 +5,7 @@ import com.denchic45.studiversity.feature.course.subject.usecase.*
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.ktor.CommonErrors
 import com.denchic45.studiversity.ktor.claimId
+import com.denchic45.studiversity.ktor.getUuidOrFail
 import com.denchic45.studiversity.ktor.jwtPrincipal
 import com.denchic45.studiversity.util.onlyDigits
 import com.denchic45.studiversity.validation.buildValidationResult
@@ -98,20 +99,14 @@ fun Route.subjectByIdRoute() {
         val removeSubject: RemoveSubjectUseCase by inject()
 
         get {
-            val id = call.parameters["id"]!!.toUUID()
-
-            requireCapability(
-                call.jwtPrincipal().payload.claimId,
-                Capability.ReadSubject,
-                config.organizationId
-            )
+            val id = call.parameters.getUuidOrFail("id")
 
             findSubjectById(id).let { subject ->
                 call.respond(HttpStatusCode.OK, subject)
             }
         }
         patch {
-            val id = call.parameters["id"]!!.toUUID()
+            val id = call.parameters.getUuidOrFail("id")
 
             requireCapability(
                 call.jwtPrincipal().payload.claimId,
@@ -129,7 +124,7 @@ fun Route.subjectByIdRoute() {
 
             requireCapability(
                 call.jwtPrincipal().payload.claimId,
-                Capability.DeleteSubject,
+                Capability.WriteSubject,
                 config.organizationId
             )
 

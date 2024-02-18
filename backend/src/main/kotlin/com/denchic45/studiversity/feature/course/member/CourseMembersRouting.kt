@@ -40,7 +40,7 @@ fun Route.courseMembers() {
             val currentUserId = call.currentUserId()
             val courseId = call.parameters.getUuidOrFail("courseId")
             // todo test Проверять наличие права зачислять участников на курс
-            requireCapability(currentUserId, Capability.WriteMembers, courseId)
+            requireCapability(currentUserId, Capability.WriteCourse, courseId)
 
             val request = call.receive<CreateMemberRequest>()
             val assignableRoles = request.roleIds
@@ -63,7 +63,7 @@ fun Route.courseMembers() {
                 val currentUserId = call.currentUserId()
                 val courseId = call.parameters.getUuidOrFail("courseId")
 
-                requireCapability(currentUserId, Capability.WriteMembers, courseId)
+                requireCapability(currentUserId, Capability.WriteCourse, courseId)
 
                 val memberId = call.parameters.getUuidOrFail("memberId")
 

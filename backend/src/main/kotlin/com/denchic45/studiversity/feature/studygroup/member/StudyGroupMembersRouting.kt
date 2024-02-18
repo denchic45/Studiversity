@@ -37,7 +37,7 @@ fun Route.studyGroupMembers() {
         post {
             val currentUserId = call.currentUserId()
             val studyGroupId = call.parameters.getUuidOrFail("studyGroupId")
-            requireCapability(currentUserId, Capability.WriteMembers, studyGroupId)
+            requireCapability(currentUserId, Capability.WriteStudyGroup, studyGroupId)
 
             val request = call.receive<CreateMemberRequest>()
             val assignableRoles = request.roleIds
@@ -58,7 +58,7 @@ fun Route.studyGroupMembers() {
                 val currentUserId = call.currentUserId()
                 val studyGroupId = call.parameters.getUuidOrFail("studyGroupId")
 
-                requireCapability(currentUserId, Capability.WriteMembers, studyGroupId)
+                requireCapability(currentUserId, Capability.WriteStudyGroup, studyGroupId)
 
                 val memberId = call.parameters.getUuidOrFail("memberId")
 
