@@ -4,53 +4,81 @@ import {useRouter} from 'vue-router'
 import InputText from "primevue/inputtext"
 import Button from 'primevue/button'
 import axios from "axios";
+import Password from "primevue/password";
 
-const dbHost = ref("")
-const dbName = ref("")
-const dbUser = ref("")
-const dbPassword = ref("")
+const firstname = ref("")
+const surname = ref("")
+const patronymic = ref("")
+const gender = ref()
+const email = ref("")
+const password = ref("")
+const confirmedPassword = ref("")
+
+const genders = [
+  {name: "Мужской", value: "MALE"},
+  {name: "Женский", value: "FEMALE"}
+]
 
 const router = useRouter()
 
 function onNextClick() {
   axios
-  router.push({name: 'org-config'})
+  router.push({name: 'organization-setup'})
 }
 </script>
 
 <template>
   <div class="page">
-    <h1 class="page__header">Настройка базы данных</h1>
+    <h1 class="page__header">Создайте первую учетную запись</h1>
     <div class="page__form">
       <div class="form">
       <span class="p-float-label">
         <InputText
-            v-model="dbHost"
+            v-model="firstname"
             aria-describedby="text-error"
             type="text"/>
-        <label for="value">Хост базы данных</label>
+        <label for="value">Имя</label>
       </span>
         <span class="p-float-label">
-        <InputText
-            v-model="dbName"
-            aria-describedby="text-error"
-            type="text"/>
-        <label for="value">Имя базы данных</label>
+        <InputText v-model="surname" aria-describedby="text-error" type="text"/>
+        <label for="value">Фамилия</label>
       </span>
         <span class="p-float-label">
-        <InputText
-            v-model="dbUser"
-            aria-describedby="text-error"
-            type="text"/>
-        <label for="value">Пользователь</label>
-      </span>
+        <InputText v-model="patronymic" aria-describedby="text-error" type="text"/>
+        <label for="value">Отчество</label>
+        </span>
         <span class="p-float-label">
-        <InputText
-            v-model="dbPassword"
-            aria-describedby="text-error"
-            type="text"/>
+        <InputText v-model="email" aria-describedby="text-error" type="text"/>
+        <label for="value">Почта</label>
+        </span>
+        <span class="p-float-label">
+           <Password
+               v-model="password"
+               :feedback="false"
+               aria-describedby="text-error"
+               toggleMask
+               type="password"
+               width="10px"/>
         <label for="value">Пароль</label>
       </span>
+        <span class="flex flex-column gap-2">
+           <label for="value">Повторите пароль</label>
+          <div>
+            <Password
+                v-model="confirmedPassword"
+                :feedback="false"
+                aria-describedby="text-error"
+                toggleMask
+                type="password"/>
+          </div>
+
+          <small id="username-help">Enter your username to reset your password.</small>
+        </span>
+        <div class="card">
+          <Dropdown v-model="gender" :highlightOnSelect="false" :options="genders" checkmark class="w-full"
+                    option-label="name"
+                    placeholder="Пол"/>
+        </div>
       </div>
       <Button class="submit-button" type="submit" @click="onNextClick">Продолжить</Button>
     </div>
