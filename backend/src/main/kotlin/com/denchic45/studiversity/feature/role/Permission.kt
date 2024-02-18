@@ -1,11 +1,11 @@
 package com.denchic45.studiversity.feature.role
 
 enum class Permission {
-    Undefined, Allow, Prohibit
+    UNDEFINED, ALLOW, PROHIBIT
 }
 
 fun List<Permission>.combinedPermission(): Permission {
-    if (isEmpty()) return Permission.Undefined
+    if (isEmpty()) return Permission.UNDEFINED
     if (size == 1) return single()
     return maxOf { it }
 }

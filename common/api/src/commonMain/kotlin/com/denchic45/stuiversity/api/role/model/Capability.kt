@@ -5,49 +5,40 @@ data class Capability(val resource: String) {
     override fun toString(): String = resource
 
     companion object {
-        val WriteUserConfidentialData: Capability = Capability("user/confidential:write")
-        val ReadUserConfidentialData: Capability = Capability("user/confidential:read")
-        val UpdateProfile: Capability = Capability("user/profile:update")
         val WriteUser: Capability = Capability("user:write")
         val DeleteUser: Capability = Capability("user:delete")
+        val WriteUserConfidentialData: Capability = Capability("user/confidential:write")
+        val ReadUserConfidentialData: Capability = Capability("user/confidential:read")
+        val UpdateProfile: Capability = Capability("user/profile:write")
 
+//        val WriteMembers: Capability = Capability("membership/members:write")
         val WriteAssignRoles: Capability = Capability("role/assignment:write")
+        val WriteRoom: Capability = Capability("room:write")
+        val WriteSpecialty: Capability = Capability("specialty:write")
+        val WriteSubject: Capability = Capability("subject:write")
+        val WriteTimetable: Capability = Capability("timestable:write")
 
-        val ReadMembers: Capability = Capability("membership/members:read")
-        val WriteMembers: Capability = Capability("membership/members:write")
-
-        val WriteMembership: Capability = Capability("membership:write")
-
-        val ReadStudyGroup: Capability = Capability("study_group:read")
+        val ReadOtherStudyGroup: Capability = Capability("study_group:read")
         val WriteStudyGroup: Capability = Capability("study_group:write")
         val DeleteStudyGroup: Capability = Capability("study_group:delete")
 
-        val WriteSpecialty: Capability = Capability("specialty:write")
-
-        val BeStudent: Capability = Capability("be_student") // TODO: test capability for test
-
-        val WriteTimetable: Capability = Capability("timetable:write")
-        val WriteRoom: Capability = Capability("room:write")
-
-        val ReadCourse: Capability = Capability("course:read")
         val WriteCourse: Capability = Capability("course:write")
+        val ArchiveCourse: Capability = Capability("course:archive")
         val DeleteCourse: Capability = Capability("course:delete")
         val WriteCourseTopics: Capability = Capability("course/topics:write")
         val WriteCourseStudyGroups: Capability = Capability("course/study_group:write")
 
         val ReadCourseElements: Capability = Capability("course/elements:read")
+        val WriteCourseElements: Capability = Capability("course/elements:write")
         val DeleteCourseElements: Capability = Capability("course/elements:delete")
 
-        val WriteCourseElements: Capability = Capability("course/elements:write")
-
         val ReadSubmissions: Capability = Capability("course/submissions:read")
-        val SubmitSubmission: Capability = Capability("course/submissions:submit")
         val GradeSubmission: Capability = Capability("course/submissions:grade")
+        val SubmitSubmission: Capability = Capability("course/submissions:submit")
 
-        val WriteSubject: Capability = Capability("subject:write")
-        val ReadSubject: Capability = Capability("subject:read")
-        val DeleteSubject: Capability = Capability("subject:delete")
+//        val ReadSubject: Capability = Capability("subject:read")
+//        val WriteOtherAttachments: Capability = Capability("attachment/other:write")
 
-        val WriteOtherAttachments: Capability = Capability("attachment/other:write")
+        val BeStudent: Capability = Capability("be_student") // TODO: test capability for test
     }
 }
