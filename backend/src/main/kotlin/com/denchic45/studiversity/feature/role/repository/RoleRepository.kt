@@ -69,9 +69,9 @@ class RoleRepository {
         var has = false
         for (nextScopeId in path) {
             when (findCapabilityPermissionOfUserInScope(userId, nextScopeId, capability.toString())) {
-                Permission.Undefined -> continue
-                Permission.Allow -> has = true
-                Permission.Prohibit -> {
+                Permission.UNDEFINED -> continue
+                Permission.ALLOW -> has = true
+                Permission.PROHIBIT -> {
                     has = false
                     break
                 }
@@ -104,7 +104,7 @@ class RoleRepository {
             RolesCapabilities.roleId inList roleIds
                     and (RolesCapabilities.capabilityResource eq capabilityResource)
         ).map { rolesCapabilitiesRow -> rolesCapabilitiesRow[RolesCapabilities.permission] }
-        .firstOrNull() ?: Permission.Undefined
+        .firstOrNull() ?: Permission.UNDEFINED
 
 
     fun existRolesByScope(roles: List<Long>, scopeId: UUID): Boolean = transaction {
