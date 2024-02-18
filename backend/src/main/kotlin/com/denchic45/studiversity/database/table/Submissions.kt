@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.database.table
 
-import com.denchic45.studiversity.util.varcharMax
+
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -12,7 +12,7 @@ import java.util.*
 object Submissions : UUIDTable("submission", "submission_id") {
     val courseWorkId = reference("course_work_id", CourseWorks)
     val authorId = reference("author_id", Users)
-    val content = varcharMax("content").nullable()
+    val content = text("content").nullable()
     val state = enumerationByName<SubmissionState>("state", 20)
 
     val updatedAt = datetime("updated_at").nullable()

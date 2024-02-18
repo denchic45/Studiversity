@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.database.table
 
-import com.denchic45.studiversity.util.varcharMax
+
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -12,7 +12,7 @@ import java.util.*
 
 object CourseTopics : UUIDTable("course_topic", "course_topic_id") {
     val courseId = uuid("course_id").references(Courses.id)
-    val name = varcharMax("topic_name")
+    val name = text("topic_name")
     val order = integer("topic_order")
 }
 

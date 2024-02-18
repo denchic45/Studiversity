@@ -2,7 +2,7 @@ package com.denchic45.studiversity.database.table
 
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.expression.NowTimestamp
-import com.denchic45.studiversity.util.varcharMax
+
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -29,7 +29,7 @@ object CourseElements : UUIDTable("course_element", "course_element_id") {
         onDelete = ReferenceOption.CASCADE,
         onUpdate = ReferenceOption.CASCADE
     ).nullable()
-    val name = varcharMax("element_name")
+    val name = text("element_name")
     val description = text("description").nullable()
     val order = integer("element_order")
     val createdAt = datetime("created_at").defaultExpression(NowTimestamp())

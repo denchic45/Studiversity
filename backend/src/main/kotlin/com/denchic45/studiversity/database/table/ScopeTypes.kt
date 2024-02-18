@@ -1,13 +1,13 @@
 package com.denchic45.studiversity.database.table
 
-import com.denchic45.studiversity.util.varcharMax
+
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object ScopeTypes : LongIdTable("scope_type", "scope_type_id") {
-    val name = varcharMax("scope_type_name")
+    val name = text("scope_type_name")
     val parent = reference("parent_type", ScopeTypes.id).nullable()
 }
 

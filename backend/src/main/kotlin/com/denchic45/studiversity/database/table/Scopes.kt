@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.database.table
 
-import com.denchic45.studiversity.util.varcharMax
+
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -10,7 +10,7 @@ import java.util.*
 
 object Scopes : UUIDTable("scope", "instance_id") {
     val type: Column<EntityID<Long>> = reference("type", ScopeTypes.id)
-    val path = varcharMax("path")
+    val path = text("path")
 }
 
 class ScopeDao(id: EntityID<UUID>) : UUIDEntity(id) {

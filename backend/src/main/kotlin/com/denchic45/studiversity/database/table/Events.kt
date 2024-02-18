@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.database.table
 
-import com.denchic45.studiversity.util.varcharMax
+
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -12,9 +12,9 @@ object Events : IdTable<Long>("event") {
     override val id: Column<EntityID<Long>> = long("period_id").autoIncrement().entityId()
         .references(Periods.id, onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE)
     override val primaryKey = PrimaryKey(id)
-    val name = varcharMax("event_name")
-    val color = varcharMax("color")
-    val icon = varcharMax("icon_url")
+    val name = text("event_name")
+    val color = text("color")
+    val icon = text("icon_url")
 }
 
 class EventDao(id: EntityID<Long>) : LongEntity(id) {

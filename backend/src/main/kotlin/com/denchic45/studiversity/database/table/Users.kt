@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.database.table
 
 import com.denchic45.studiversity.database.exists
-import com.denchic45.studiversity.util.varcharMax
+
 import com.denchic45.stuiversity.api.user.model.Gender
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -11,11 +11,11 @@ import java.util.*
 
 
 object Users : UUIDTable("user", "user_id") {
-    val firstName = varcharMax("first_name")
-    val surname = varcharMax("surname")
-    val patronymic = varcharMax("patronymic").nullable()
-    val email = varcharMax("email")
-    val password = varcharMax("password")
+    val firstName = text("first_name")
+    val surname = text("surname")
+    val patronymic = text("patronymic").nullable()
+    val email = text("email")
+    val password = text("password")
     val avatarUrl = text("avatar_url")
     val generatedAvatar = bool("generated_avatar")
     val gender = enumerationByName<Gender>("gender", 10)
