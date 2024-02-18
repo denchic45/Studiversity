@@ -35,7 +35,6 @@ import java.util.*
 
 class UserRepository(
     private val organizationId: UUID,
-    private val bucket: BucketApi,
     private val client: HttpClient
 ) : AddScopeRepoExt {
 
@@ -57,9 +56,8 @@ class UserRepository(
             gender = user.gender
         }.apply {
             avatarUrl = generateAvatar(id.value)
-        }.toUserResponse().apply {
-            addScope(id, ScopeType.User, organizationId)
-        }
+        }.toUserResponse()
+//            .apply { addScope(id, ScopeType.User, organizationId) }
     }
 
     fun findById(id: UUID): UserResponse? {
@@ -85,14 +83,15 @@ class UserRepository(
     }
 
     private suspend fun setAvatar(userId: UUID, request: CreateFileRequest, generated: Boolean): String {
-        val newPath = "avatars/$userId.${File(request.name).extension}"
-        bucket.upload(newPath, request.bytes)
-        return bucket.publicUrl(newPath).also {
-            UserDao.findById(userId)!!.apply {
-                avatarUrl = it
-                generatedAvatar = generated
-            }
-        }
+//        val newPath = "avatars/$userId.${File(request.name).extension}"
+//        bucket.upload(newPath, request.bytes)
+//        return bucket.publicUrl(newPath).also {
+//            UserDao.findById(userId)!!.apply {
+//                avatarUrl = it
+//                generatedAvatar = generated
+//            }
+//        }
+        return ""
     }
 
     suspend fun updateAvatar(userId: UUID, request: CreateFileRequest) {
@@ -106,8 +105,8 @@ class UserRepository(
     }
 
     private suspend fun deleteAvatar(userId: UUID) {
-        val name = bucket.list(prefix = "avatars") { search = userId.toString() }.single().name
-        bucket.delete("avatars/$name")
+//        val name = bucket.list(prefix = "avatars") { search = userId.toString() }.single().name
+//        bucket.delete("avatars/$name")
     }
 
     private suspend fun generateAvatar(userId: UUID): String {

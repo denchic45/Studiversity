@@ -20,7 +20,7 @@ private val useCaseModule = module {
 }
 
 private val repositoryModule = module {
-    single { UserRepository(config.organizationId, get(), get()) }
+    single { UserRepository(config.organizationId, get()) }
 }
 
 val userModule = module {
