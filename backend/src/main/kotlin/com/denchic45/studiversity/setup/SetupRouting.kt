@@ -2,8 +2,7 @@ package com.denchic45.studiversity.setup
 
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.config.database
-import com.denchic45.studiversity.database.DatabaseFactory
-import com.denchic45.studiversity.feature.auth.usecase.SignUpUserManuallyUseCase
+import com.denchic45.studiversity.feature.auth.usecase.SignUpUseCase
 import com.denchic45.studiversity.logger.logger
 import com.denchic45.studiversity.setup.model.DatabaseSetupRequest
 import com.denchic45.studiversity.setup.model.OrganizationSetupRequest
@@ -21,6 +20,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.ktor.ext.inject
 import java.sql.SQLException
+import java.util.*
 
 
 private var initializationCallback: (() -> Unit)? = null
@@ -37,10 +37,7 @@ fun Application.configureSetup() {
         }
 
         route("/setup") {
-            val databaseFactory: DatabaseFactory by inject()
-            val signUpUserManually: SignUpUserManuallyUseCase by inject()
-            // todo maybe useless
-//            get { call.respond(config.initialized) }
+            val signup: SignUpUseCase by inject()
 
             post("/database") {
                 val body = call.receive<DatabaseSetupRequest>()
@@ -50,8 +47,6 @@ fun Application.configureSetup() {
                     user = body.user,
                     password = body.password
                 )
-//                config.database(body.host, body.name, body.user, body.password)
-
                 requireDatabaseConnection()
 
                 setupDatabase()
@@ -62,15 +57,14 @@ fun Application.configureSetup() {
                 requireDatabaseConnection()
                 val body = call.receive<OrganizationSetupRequest>()
                 config.organizationName = body.name
-                config.selfRegister = body.selfRegister
+                config.organizationId = UUID.randomUUID()
+//                config.selfRegister = body.selfRegister
                 call.respond(HttpStatusCode.OK)
             }
 
             post("/admin") {
                 requireDatabaseConnection()
-
-                signUpUserManually(call.receive())
-
+                signup(call.receive())
                 initializationCallback?.invoke()
                 call.respond(HttpStatusCode.OK)
 //                configuration2.apply {
@@ -96,9 +90,10 @@ private suspend fun PipelineContext<*, ApplicationCall>.requireDatabaseConnectio
             call.respondWithError(
                 HttpStatusCode.BadRequest,
                 ErrorInfo(
-                    when (e.cause?.message ?: e.message) {
-                        "Invalid error message 'Wrong password'" -> SetupErrors.DATABASE_INVALID_PASSWORD
-                        "FATAL: Tenant or user not found" -> SetupErrors.DATABASE_USER_NOT_FOUND
+                    when (e.sqlState) {
+                        "28P01" -> SetupErrors.DATABASE_INVALID_PASSWORD
+                        "08001" -> SetupErrors.DATABASE_CONNECTION_FAILED
+                        "3D000" -> SetupErrors.DATABASE_DOES_NOT_EXIST
                         else -> SetupErrors.DATABASE_CONNECTION_FAILED
                     }
                 )
