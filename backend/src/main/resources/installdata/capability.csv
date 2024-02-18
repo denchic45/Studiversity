@@ -1,16 +1,30 @@
-capability_id;capability_name;capability_resource;scope_type_id
-1;Создавать новых пользователей;user:write;2
-2;Удалять пользователей;user:delete;
-3;;;
-4;;;
-5;;;
-6;;;
-7;;;
-8;;;
-9;;;
-10;;;
-11;;;
-12;;;
-13;;;
-14;;;
-15;;;
+capability_id,capability_name,capability_resource
+1,Создавать пользователей,user:write
+2,Удалять пользователей,user:delete
+3,Просматривать конфиденциальную информацию пользователей,user/confidential:read
+4,Изменять конфиденциальную информацию,user/confidential:write
+5,Изменять свой профиль,user/profile:write
+
+6,Назначать роли другим пользователям,role/assignment:write
+7,Управлять аудиториями,room:write
+8,Управлять специальностями,specialty:write
+9,Управлять дисциплинами,subject:write
+10,Управлять расписанием,timetable:write
+
+11,Просматривать чужие группы,study_group:read
+12,Управлять группой,study_group:write
+13,Удалять группы,study_group:delete
+
+14,Управлять курсом,course:write
+15,Архивировать курсы,course:archive
+16,Удалять курсы,course:delete
+17,Управлять темами курса,course/topics:write
+18,Управлять прикрепленными учебными группами,course/study_group:write
+
+19,Просматривать элементы курса,course/elements:read
+20,Управлять элементами курса,course/elements:write
+21,Удалять элементы курса,course/elements:delete
+
+22,Просматривать ответы на работу,course/submissions:read
+23,Оценивать работы студентов,course/submissions:grade
+24,Сдавать работу на проверку,course/submissions:submit
