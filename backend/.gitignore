@@ -28,4 +28,5 @@ out/
 
 application.conf
 src/main/resources/web
+src/main/resources/setup-web
 config.properties

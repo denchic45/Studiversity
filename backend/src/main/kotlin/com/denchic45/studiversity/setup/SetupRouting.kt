@@ -33,7 +33,12 @@ fun Application.configureSetup() {
     routing {
         singlePageApplication {
             useResources = true
-            vue("web")
+            vue("setup-web")
+        }
+
+        val spaRoute = children.last()
+        fun removeSPARoute() {
+            (children as MutableList).remove(spaRoute)
         }
 
         route("/setup") {
@@ -48,7 +53,6 @@ fun Application.configureSetup() {
                     password = body.password
                 )
                 requireDatabaseConnection()
-
                 setupDatabase()
                 call.respond(HttpStatusCode.OK)
             }
@@ -65,11 +69,10 @@ fun Application.configureSetup() {
             post("/admin") {
                 requireDatabaseConnection()
                 signup(call.receive())
+                removeSPARoute()
                 initializationCallback?.invoke()
                 call.respond(HttpStatusCode.OK)
-//                configuration2.apply {
-//                    initialized = true
-//                }
+                config.initialized = true
             }
         }
     }

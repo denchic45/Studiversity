@@ -66,13 +66,10 @@ fun Application.module() = runBlocking {
     configureDI()
     configureSerialization()
     configureStatusPages()
-//    logger.info { "initialized: ${config.initialized}" }
-//    if (config.initialized) {
     if (config.initialized) {
         configureServer()
     } else {
         configureSetup()
-        // todo реализовать ожидание инициализации
         onInitialized(::configureServer)
     }
 }
@@ -97,16 +94,6 @@ private fun Application.configureServer() {
     configureRouting()
     logger.info { "configuration success" }
 }
-
-
-
-//data class InitRequest(
-//    val dbUrl: String,
-//    val dbUser: String,
-//    val dbPassword: String,
-//
-//    val organizationName: String
-//)
 
 fun Application.configurePing() {
     routing {

@@ -3,7 +3,10 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
     plugins: [vue()],
-    configureWebpack: {
-        devtool: 'source-map',
-      },
+    build: {
+        outDir: '../../../backend/src/main/resources/setup-web'
+    }
+    // configureWebpack: {
+    //     devtool: 'source-map',
+    //   },
 })

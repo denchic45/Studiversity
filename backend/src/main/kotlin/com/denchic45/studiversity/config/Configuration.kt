@@ -40,7 +40,7 @@ class Configuration {
 
     var selfRegister: Boolean by property()
 
-    var initialized: Boolean by property(defValue = false)
+    var initialized: Boolean by property(map = String::toBoolean)
 }
 
 fun Configuration.database(url: String, user: String, password: String) {

@@ -5,6 +5,7 @@ import InputText from "primevue/inputtext"
 import Panel from 'primevue/panel';
 import Button from 'primevue/button'
 import Password from 'primevue/password'
+import SetupCompleted from "./SetupCompleted.vue";
 
 const client = inject('client');
 const router = useRouter()
@@ -44,8 +45,10 @@ async function onSubmitClick() {
     gender: gender.value,
     email: email.value,
     password: password.value
+  }).then(() => {
+    router.addRoute({path: '/setup-completed', component: SetupCompleted})
+    router.push('/setup-completed')
   })
-  router.push('/')
 }
 </script>
 
