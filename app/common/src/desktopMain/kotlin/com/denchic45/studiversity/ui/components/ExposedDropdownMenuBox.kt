@@ -2,12 +2,10 @@ package com.denchic45.studiversity.ui.components
 
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -109,27 +107,27 @@ interface ExposedDropdownMenuBoxScope {
     fun Modifier.menuAnchor(): Modifier
     fun Modifier.exposedDropdownSize(matchTextFieldWidth: Boolean = true): Modifier
 
-    @Composable
-    fun ExposedDropdownMenu(
-        expanded: MutableState<Boolean>,
-        modifier: Modifier = Modifier,
-        content: @Composable ColumnScope.() -> Unit,
-    ) {
-        DropdownMenu(
-            expanded = expanded.value,
-            onDismissRequest = {
-                if (!textFieldEnterState.value) {
-                    expanded.value = false
-                } else {
-                    expanded.value = false
-                    expanded.value = true
-                }
-            },
-            modifier = modifier.exposedDropdownSize()
-        ) {
-            content()
-        }
-    }
+//    @Composable
+//    fun ExposedDropdownMenu(
+//        expanded: MutableState<Boolean>,
+//        modifier: Modifier = Modifier,
+//        content: @Composable ColumnScope.() -> Unit,
+//    ) {
+//        DropdownMenu(
+//            expanded = expanded.value,
+//            onDismissRequest = {
+//                if (!textFieldEnterState.value) {
+//                    expanded.value = false
+//                } else {
+//                    expanded.value = false
+//                    expanded.value = true
+//                }
+//            },
+//            modifier = modifier.exposedDropdownSize()
+//        ) {
+//            content()
+//        }
+//    }
 }
 
 object ExposedDropdownMenuDefaults {

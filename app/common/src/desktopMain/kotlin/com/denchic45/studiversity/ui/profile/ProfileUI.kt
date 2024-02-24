@@ -5,15 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,7 +38,13 @@ fun ProfileSideBar(
                     Icon(Icons.Rounded.Close, null)
                 }
             },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
+            colors = topAppBarColors(
+                containerColor = Color.Transparent,
+//        scrolledContainerColor = MaterialTheme.colorScheme.applyTonalElevation(
+//    backgroundColor = containerColor,
+//    elevation = TopAppBarSmallTokens.OnScrollContainerElevation
+//)
+            )
         )
         profileViewState.onSuccess { profile ->
             ProfileHeader(profile.avatarUrl, profile.fullName)
@@ -65,10 +64,10 @@ fun ProfileSideBar(
                     leadingContent = {
                         Icon(painterResource("ic_email".toDrawablePath()), null)
                     },
-                    headlineText = {
+                    headlineContent = {
                         Text(personalDate.email, style = MaterialTheme.typography.bodyLarge)
                     },
-                    supportingText = { Text("Почта", style = MaterialTheme.typography.bodyMedium) })
+                    supportingContent = { Text("Почта", style = MaterialTheme.typography.bodyMedium) })
             }
         }
     }

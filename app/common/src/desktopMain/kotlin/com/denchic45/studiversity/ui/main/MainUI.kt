@@ -8,11 +8,7 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.Dashboard
-import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.HelpOutline
@@ -96,14 +92,14 @@ fun MainScreen(component: MainComponent) {
         val userInfo by component.userInfo.collectAsState()
 
         Column {
-            MainAppBar(
-                userInfo = userInfo,
-                showBackButton = false,
-                onBackClick = component::onBackClick,
-                onHelpClick = {},
-                onNotificationsClick = {},
-                onSettingsClick = component::onSettingsClick
-            )
+//            MainAppBar(
+//                userInfo = userInfo,
+//                showBackButton = false,
+//                onBackClick = component::onBackClick,
+//                onHelpClick = {},
+//                onNotificationsClick = {},
+//                onSettingsClick = component::onSettingsClick
+//            )
 
             Row {
                 NavigationRail(
@@ -113,6 +109,136 @@ fun MainScreen(component: MainComponent) {
                             Icon(
                                 imageVector = Icons.Outlined.Menu,
                                 contentDescription = "expandable navigation menu"
+                            )
+                        }
+                        Spacer(Modifier.height(MaterialTheme.spacing.normal))
+
+                        var showProfilePopup by remember { mutableStateOf(false) }
+                        IconButton(onClick = { showProfilePopup = true }) {
+                            ResourceContent(
+                                userInfo,
+                                onLoading = { CircularProgressIndicator(Modifier.size(24.dp)) }) { user ->
+                                Column {
+                                    KamelImage(
+                                        resource = asyncPainterResource(user.avatarUrl),
+                                        contentDescription = "avatar",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(Color.LightGray),
+                                    )
+
+                                    DropdownMenu(
+                                        expanded = showProfilePopup,
+                                        onDismissRequest = { showProfilePopup = false },
+                                        modifier = Modifier.width(336.dp)
+                                    ) {
+                                        val interactionSource = remember(::MutableInteractionSource)
+                                        val isHovered by interactionSource.collectIsHoveredAsState()
+                                        val profilePadding = MaterialTheme.spacing.small
+                                        Card(
+                                            colors = if (isHovered)
+                                                CardDefaults.cardColors(
+                                                    containerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                                                )
+                                            else CardDefaults.cardColors(
+                                                containerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
+                                            ),
+                                            shape = MaterialTheme.shapes.medium,
+                                            modifier = Modifier
+                                                .padding(
+                                                    start = profilePadding,
+                                                    end = profilePadding,
+                                                    bottom = profilePadding
+                                                )
+                                                .hoverable(interactionSource)
+                                        ) {
+                                            Row(
+                                                Modifier.padding(MaterialTheme.spacing.normal),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                KamelImage(
+                                                    resource = asyncPainterResource(user.avatarUrl),
+                                                    null,
+                                                    Modifier.size(40.dp).clip(CircleShape),
+                                                    contentScale = ContentScale.Crop
+                                                )
+                                                Column(Modifier.padding(start = 16.dp)) {
+                                                    Text(user.fullName, style = MaterialTheme.typography.bodyLarge)
+                                                    Text(
+                                                        "Посмотреть профиль",
+                                                        style = MaterialTheme.typography.bodyMedium
+                                                    )
+                                                }
+                                                Spacer(Modifier.weight(1f))
+                                                Icon(
+                                                    imageVector = Icons.Rounded.ChevronRight,
+                                                    contentDescription = "show profile",
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+                                        }
+                                        ListItem(
+                                            headlineContent = { Text("Настройки") },
+                                            leadingContent = { Icon(Icons.Outlined.Settings, null) },
+                                            modifier = Modifier.clickable(onClick = {
+                                                showProfilePopup = false
+                                                component.onSettingsClick()
+                                            })
+                                        )
+                                        Column {
+                                            var expandedThemePicker by remember { mutableStateOf(false) }
+                                            ListItem(
+                                                headlineContent = {
+                                                    Row {
+                                                        Text("Тема: ")
+                                                        Text(
+                                                            "По умолчанию",
+                                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                        )
+                                                    }
+                                                },
+                                                leadingContent = { Icon(Icons.Outlined.DarkMode, null) },
+                                                modifier = Modifier.clickable {
+                                                    expandedThemePicker = !expandedThemePicker
+                                                }
+                                            )
+                                            DropdownMenu(
+                                                expanded = expandedThemePicker,
+                                                onDismissRequest = { expandedThemePicker = false }
+                                            ) {
+                                                DropdownMenuItem(
+                                                    text = { Text("Светлая") },
+                                                    onClick = {}
+                                                )
+                                                DropdownMenuItem(
+                                                    text = { Text("Темная") },
+                                                    onClick = {}
+                                                )
+                                                DropdownMenuItem(
+                                                    text = { Text("По умолчанию") },
+                                                    onClick = {}
+                                                )
+                                            }
+                                        }
+                                        ListItem(
+                                            headlineContent = { Text("Помощь") },
+                                            leadingContent = { Icon(Icons.Rounded.HelpOutline, null) },
+                                            modifier = Modifier.clickable {
+                                                showProfilePopup = false
+//                                                onHelpClick()
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        var showNotificationsPopup by remember { mutableStateOf(false) }
+                        IconButton(onClick = { showNotificationsPopup = true }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Notifications,
+                                contentDescription = "notifications"
                             )
                         }
                     }) {
@@ -152,8 +278,8 @@ fun MainScreen(component: MainComponent) {
                                 contentDescription = "schedule"
                             )
                         },
-                        selected = activeChild is MainComponent.Child.AdminDashboard,
-                        onClick = component::onAdminDashboardClick
+                        selected = false,
+                        onClick = {}
                     )
                     if (availableScreens.adminDashboard) {
                         NavigationRailItem(
@@ -175,7 +301,7 @@ fun MainScreen(component: MainComponent) {
                                 contentDescription = "settings"
                             )
                         },
-                        selected = activeChild is MainComponent.Child.AdminDashboard,
+                        selected = false,
                         onClick = component::onSettingsClick
                     )
                 }
@@ -247,133 +373,7 @@ fun MainAppBar(
         }
 //        }
         Spacer(Modifier.weight(1f))
-        var showNotificationsPopup by remember { mutableStateOf(false) }
-        IconButton(onClick = { showNotificationsPopup = true }) {
-            Icon(
-                imageVector = Icons.Outlined.Notifications,
-                contentDescription = "notifications"
-            )
-        }
-        var showProfilePopup by remember { mutableStateOf(false) }
-        IconButton(onClick = { showProfilePopup = true }) {
-            ResourceContent(
-                userInfo,
-                onLoading = { CircularProgressIndicator(Modifier.size(24.dp)) }) { user ->
-                Column {
-                    KamelImage(
-                        resource = asyncPainterResource(user.avatarUrl),
-                        contentDescription = "avatar",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(40.dp)
-                            .clip(CircleShape)
-                            .background(Color.LightGray),
-                    )
 
-                    DropdownMenu(
-                        expanded = showProfilePopup,
-                        onDismissRequest = { showProfilePopup = false },
-                        modifier = Modifier.width(336.dp)
-                    ) {
-                        val interactionSource = remember(::MutableInteractionSource)
-                        val isHovered by interactionSource.collectIsHoveredAsState()
-                        val profilePadding = MaterialTheme.spacing.small
-                        Card(
-                            colors = if (isHovered)
-                                CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-                                )
-                            else CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
-                            ),
-                            shape = MaterialTheme.shapes.medium,
-                            modifier = Modifier
-                                .padding(
-                                    start = profilePadding,
-                                    end = profilePadding,
-                                    bottom = profilePadding
-                                )
-                                .hoverable(interactionSource)
-                        ) {
-                            Row(
-                                Modifier.padding(MaterialTheme.spacing.normal),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                KamelImage(
-                                    resource = asyncPainterResource(user.avatarUrl),
-                                    null,
-                                    Modifier.size(40.dp).clip(CircleShape),
-                                    contentScale = ContentScale.Crop
-                                )
-                                Column(Modifier.padding(start = 16.dp)) {
-                                    Text(user.fullName, style = MaterialTheme.typography.bodyLarge)
-                                    Text(
-                                        "Посмотреть профиль",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                                Spacer(Modifier.weight(1f))
-                                Icon(
-                                    imageVector = Icons.Rounded.ChevronRight,
-                                    contentDescription = "show profile",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                        ListItem(
-                            headlineText = { Text("Настройки") },
-                            leadingContent = { Icon(Icons.Outlined.Settings, null) },
-                            modifier = Modifier.clickable(onClick = {
-                                showProfilePopup = false
-                                onSettingsClick()
-                            })
-                        )
-                        Column {
-                            var expandedThemePicker by remember { mutableStateOf(false) }
-                            ListItem(
-                                headlineText = {
-                                    Row {
-                                        Text("Тема: ")
-                                        Text(
-                                            "По умолчанию",
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                },
-                                leadingContent = { Icon(Icons.Outlined.DarkMode, null) },
-                                modifier = Modifier.clickable {
-                                    expandedThemePicker = !expandedThemePicker
-                                }
-                            )
-                            DropdownMenu(
-                                expanded = expandedThemePicker,
-                                onDismissRequest = { expandedThemePicker = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text("Светлая") },
-                                    onClick = {}
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Темная") },
-                                    onClick = {}
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("По умолчанию") },
-                                    onClick = {}
-                                )
-                            }
-                        }
-                        ListItem(
-                            headlineText = { Text("Помощь") },
-                            leadingContent = { Icon(Icons.Rounded.HelpOutline, null) },
-                            modifier = Modifier.clickable {
-                                showProfilePopup = false
-                                onHelpClick()
-                            }
-                        )
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -402,7 +402,7 @@ fun AppBarTitle(text: String) {
         Text(
             text = text,
             color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.headlineLarge
+            style = MaterialTheme.typography.headlineSmall
         )
     }
 }

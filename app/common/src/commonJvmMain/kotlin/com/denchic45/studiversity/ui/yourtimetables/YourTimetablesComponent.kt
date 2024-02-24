@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 
 @Inject
@@ -58,7 +58,6 @@ class YourTimetablesComponent(
     fun onStudyGroupClick(studyGroupId: UUID) {
         onStudyGroupOpen(studyGroupId)
     }
-
 
     val studyGroups = findYourStudyGroupsUseCase().stateInResource(componentScope)
     val selectedTimetablePosition = combine(

@@ -1,32 +1,15 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -54,61 +37,63 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
 
     Row {
         ModalDrawerSheet(Modifier.requiredWidth(300.dp)) {
-            AdminListItem(
-                title = "Расписания",
-                selected = childStack.active.instance is AdminDashboardComponent.Child.TimetableFinder,
-                painter = painterResource("ic_timetable".toDrawablePath()),
-                contentDescription = "timetables",
-                onClick = component::onTimetableFinderClick
-            )
+            Column(Modifier.padding(MaterialTheme.spacing.normal)) {
+                AdminListItem(
+                    title = "Расписания",
+                    selected = childStack.active.instance is AdminDashboardComponent.Child.TimetableFinder,
+                    painter = painterResource("ic_timetable".toDrawablePath()),
+                    contentDescription = "timetables",
+                    onClick = component::onTimetableFinderClick
+                )
 
-            AdminListItem(
-                title = "Создать расписание",
-                selected = childStack.active.instance is AdminDashboardComponent.Child.TimetableLoader,
-                painter = rememberVectorPainter(Icons.Default.AddBox),
-                contentDescription = "timetables",
-                onClick = component::onTimetableLoaderClick
-            )
+                AdminListItem(
+                    title = "Создать расписание",
+                    selected = childStack.active.instance is AdminDashboardComponent.Child.TimetableLoader,
+                    painter = rememberVectorPainter(Icons.Default.AddBox),
+                    contentDescription = "timetables",
+                    onClick = component::onTimetableLoaderClick
+                )
 
-            AdminListItem(
-                title = "Курсы",
-                selected = childStack.active.instance is AdminDashboardComponent.Child.Courses,
-                painter = painterResource("ic_course".toDrawablePath()),
-                contentDescription = "courses",
-                onClick = component::onCoursesClick
-            )
+                AdminListItem(
+                    title = "Курсы",
+                    selected = childStack.active.instance is AdminDashboardComponent.Child.Courses,
+                    painter = painterResource("ic_course".toDrawablePath()),
+                    contentDescription = "courses",
+                    onClick = component::onCoursesClick
+                )
 
-            AdminListItem(
-                title = "Пользователи",
-                selected = childStack.active.instance is AdminDashboardComponent.Child.Users,
-                painter = painterResource("ic_user".toDrawablePath()),
-                contentDescription = "users",
-                onClick = component::onUsersClick
-            )
+                AdminListItem(
+                    title = "Пользователи",
+                    selected = childStack.active.instance is AdminDashboardComponent.Child.Users,
+                    painter = painterResource("ic_user".toDrawablePath()),
+                    contentDescription = "users",
+                    onClick = component::onUsersClick
+                )
 
-            AdminListItem(
-                title = "Учебные группы",
-                selected = childStack.active.instance is AdminDashboardComponent.Child.StudyGroups,
-                painter = painterResource("ic_study_group".toDrawablePath()),
-                contentDescription = "study groups",
-                onClick = component::onStudyGroupsClick
-            )
+                AdminListItem(
+                    title = "Учебные группы",
+                    selected = childStack.active.instance is AdminDashboardComponent.Child.StudyGroups,
+                    painter = painterResource("ic_study_group".toDrawablePath()),
+                    contentDescription = "study groups",
+                    onClick = component::onStudyGroupsClick
+                )
 
-            AdminListItem(
-                title = "Предметы",
-                selected = childStack.active.instance is AdminDashboardComponent.Child.Subjects,
-                painter = painterResource("ic_subject".toDrawablePath()),
-                contentDescription = "subjects",
-                onClick = component::onSubjectsClick
-            )
+                AdminListItem(
+                    title = "Предметы",
+                    selected = childStack.active.instance is AdminDashboardComponent.Child.Subjects,
+                    painter = painterResource("ic_subject".toDrawablePath()),
+                    contentDescription = "subjects",
+                    onClick = component::onSubjectsClick
+                )
 
-            AdminListItem(
-                title = "Специальности",
-                selected = childStack.active.instance is AdminDashboardComponent.Child.Specialties,
-                painter = painterResource("ic_specialty".toDrawablePath()),
-                contentDescription = "specialties",
-                onClick = component::onSpecialtiesClick
-            )
+                AdminListItem(
+                    title = "Специальности",
+                    selected = childStack.active.instance is AdminDashboardComponent.Child.Specialties,
+                    painter = painterResource("ic_specialty".toDrawablePath()),
+                    contentDescription = "specialties",
+                    onClick = component::onSpecialtiesClick
+                )
+            }
         }
 
         Children(component.childStack) {
@@ -157,21 +142,16 @@ fun <T> AdminSearchScreen(
     placeholder: String = "Поиск",
     itemContent: @Composable (T) -> Unit,
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        SearchContent(
-            component.chooserComponent,
-            keyItem,
-            Modifier.width(500.dp),
-            emptyQueryContent,
-            emptyResultContent,
-            placeholder,
-            component::onAddClick,
-            itemContent
-        )
-    }
+    SearchContent(
+        component.chooserComponent,
+        keyItem,
+        Modifier,
+        emptyQueryContent,
+        emptyResultContent,
+        placeholder,
+        component::onAddClick,
+        itemContent
+    )
 }
 
 @Composable
@@ -186,29 +166,55 @@ private fun <T> SearchContent(
     onAddClick: () -> Unit,
     itemContent: @Composable (T) -> Unit,
 ) {
-    Column(modifier) {
+    Column(
+        modifier.fillMaxSize().padding(vertical = MaterialTheme.spacing.normal),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         var query by remember { mutableStateOf(component.query.value) }
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTextField(
-                value = query,
-                onValueChange = {
-                    query = it
-                    component.onQueryChange(it)
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = "search"
-                    )
-                }
-            )
+        Row(Modifier, verticalAlignment = Alignment.CenterVertically) {
+//            OutlinedTextField(
+//                value = query,
+//                onValueChange = {
+//                    query = it
+//                    component.onQueryChange(it)
+//                },
+//                leadingIcon = {
+//                    Icon(
+//                        imageVector = Icons.Outlined.Search,
+//                        contentDescription = "search"
+//                    )
+//                }
+//            )
+            ProvideTextStyle(value = MaterialTheme.typography.titleMedium) {
+                SearchBar(
+                    modifier = Modifier.width(456.dp).height(56.dp),
+                    query = query,
+                    onQueryChange = {
+                        query = it
+                        component.onQueryChange(it)
+                    },
+                    onSearch = {},
+                    active = false,
+                    onActiveChange = {},
+                    content = {},
+                    placeholder = { Text(placeholder) },
+                    leadingIcon = { Icon(Icons.Outlined.Search, null) }
+                )
+            }
             Spacer(Modifier.width(MaterialTheme.spacing.normal))
-            IconButton(onClick = onAddClick) {
-                Icon(Icons.Default.Add, "add")
+//            IconButton(onClick = onAddClick) {
+//                Icon(Icons.Default.Add, "add")
+//            }
+            Button(onClick = onAddClick) {
+                Icon(Icons.Outlined.Add, null)
+                Spacer(Modifier.width(MaterialTheme.spacing.small))
+                Text("Добавить")
             }
         }
 
-        SearchedItemsContent(component, keyItem, emptyQueryContent, emptyResultContent, itemContent)
+        Box(Modifier.width(500.dp)) {
+            SearchedItemsContent(component, keyItem, emptyQueryContent, emptyResultContent, itemContent)
+        }
     }
 }
 
