@@ -144,25 +144,21 @@ class TimetableRepository {
                                 { Lessons.courseId },
                                 { id })
                         }
-                            .adjustSlice { slice(fields + Courses.name) }
+                            .adjustSelect { select(this.fields + Courses.name) }
                         Courses.name
                     }
 
                     is PeriodsSorting.Member -> {
                         query.adjustColumnSet {
-                            innerJoin(
-                                Users,
-                                { PeriodsMembers.memberId },
-                                { id })
-                        }
-                            .adjustSlice { slice(fields + Users.surname) }
+                            innerJoin(Users, { PeriodsMembers.memberId }, { id })
+                        }.adjustSelect { select(fields + Users.surname) }
                         Users.surname
                     }
 
                     is PeriodsSorting.Order -> Periods.order
                     is PeriodsSorting.Room -> {
                         query.adjustColumnSet { innerJoin(Rooms, { Periods.roomId }, { id }) }
-                            .adjustSlice { slice(fields + Rooms.name) }
+                            .adjustSelect { select(this.fields + Rooms.name) }
                         Rooms.name
                     }
 
