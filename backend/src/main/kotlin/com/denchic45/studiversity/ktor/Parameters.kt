@@ -35,8 +35,10 @@ inline fun <reified T : Sorting> Parameters.getSortingBy(
     sortingClass: SortingClass<T>,
     parameterName: String = "sort_by"
 ): List<T>? = getAll(parameterName)?.map {
-    sortingClass.create(it) ?: throw ParameterConversionException(it, typeOf<CourseElementsSorting>().toString())
+    sortingClass.create(it) ?: throw ParameterConversionException(it, typeOf<T>().toString())
 }
+
+
 
 // TODO: Add filter parameters
 

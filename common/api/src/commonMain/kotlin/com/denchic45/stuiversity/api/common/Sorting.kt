@@ -1,10 +1,10 @@
 package com.denchic45.stuiversity.api.common
 
 abstract class Sorting(
-    private val field: String,
+//    private val field: String,
 ) {
     abstract val order: SortOrder
-    override fun toString() = "$field:$order"
+//    override fun toString() = "$field:$order"
 }
 
 abstract class SortingClass<T : Sorting>(private vararg val factory: Pair<String, (sort: SortOrder) -> T>) {
@@ -13,3 +13,5 @@ abstract class SortingClass<T : Sorting>(private vararg val factory: Pair<String
         return factory.firstOrNull { it.first == field }?.run { second(SortOrder.valueOf(sort)) }
     }
 }
+
+enum class SortOrder { ASC, DESC }

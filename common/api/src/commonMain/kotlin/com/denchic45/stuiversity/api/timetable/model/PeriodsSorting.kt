@@ -4,13 +4,13 @@ import com.denchic45.stuiversity.api.common.SortOrder
 import com.denchic45.stuiversity.api.common.Sorting
 import com.denchic45.stuiversity.api.common.SortingClass
 
-sealed class PeriodsSorting(field: String) : Sorting(field) {
+sealed class PeriodsSorting : Sorting() {
 
-    class Order(override val order: SortOrder = SortOrder.ASC) : PeriodsSorting("order")
-    class StudyGroup(override val order: SortOrder = SortOrder.ASC) : PeriodsSorting("study_group")
-    class Course(override val order: SortOrder = SortOrder.ASC) : PeriodsSorting("course")
-    class Member(override val order: SortOrder = SortOrder.ASC) : PeriodsSorting("member")
-    class Room(override val order: SortOrder = SortOrder.ASC) : PeriodsSorting("room")
+    class Order(override val order: SortOrder = SortOrder.ASC) : PeriodsSorting()
+    class StudyGroup(override val order: SortOrder = SortOrder.ASC) : PeriodsSorting()
+    class Course(override val order: SortOrder = SortOrder.ASC) : PeriodsSorting()
+    class Member(override val order: SortOrder = SortOrder.ASC) : PeriodsSorting()
+    class Room(override val order: SortOrder = SortOrder.ASC) : PeriodsSorting()
 
     companion object : SortingClass<PeriodsSorting>(
         "order" to { Order(it) },
