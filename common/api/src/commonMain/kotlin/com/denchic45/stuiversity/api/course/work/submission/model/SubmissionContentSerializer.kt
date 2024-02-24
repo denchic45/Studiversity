@@ -8,7 +8,7 @@ import kotlinx.serialization.json.jsonObject
 
 object SubmissionContentSerializer :
     JsonContentPolymorphicSerializer<SubmissionContent>(SubmissionContent::class) {
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out SubmissionContent> {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<SubmissionContent> {
         // TODO: Rewrite serialization
         return when {
             element.jsonObject["attachments"] != null -> WorkSubmissionContent.serializer()

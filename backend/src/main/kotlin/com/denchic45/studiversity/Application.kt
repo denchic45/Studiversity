@@ -19,6 +19,8 @@ import com.denchic45.studiversity.plugin.configureSerialization
 import com.denchic45.studiversity.plugin.configureStatusPages
 import com.denchic45.studiversity.setup.configureSetup
 import com.denchic45.studiversity.setup.onInitialized
+import com.denchic45.stuiversity.api.OrganizationResponse
+import com.denchic45.stuiversity.api.Pong
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -26,6 +28,7 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.partialcontent.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import org.koin.ktor.ext.inject
@@ -98,17 +101,8 @@ private fun Application.configureServer() {
 fun Application.configurePing() {
     routing {
         get("/ping") {
-            // todo вернуть как было
-//            val organization = config.organization
-//            call.respond(
-//                Pong(
-//                    organization = OrganizationResponse(
-//                        id = organization.id,
-//                        name = organization.name,
-//                        allowRegistration = organization.selfRegister
-//                    )
-//                )
-//            )
+            val organization = OrganizationResponse(id = config.organizationId, name = config.organizationName)
+            call.respond(Pong(organization))
         }
     }
 }

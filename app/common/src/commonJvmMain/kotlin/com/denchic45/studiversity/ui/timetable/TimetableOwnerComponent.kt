@@ -60,7 +60,7 @@ class TimetableOwnerDelegate(
 //    }
 
     override val selectedWeekOfYear = selectedDate.map(componentScope) {
-        val week = it.get(WeekFields.ISO.weekOfWeekBasedYear())
+        val week = it.get(WeekFields.ISO.weekOfWeekBasedYear()).toString().padStart(2, '0')
         val year = it.get(WeekFields.ISO.weekBasedYear())
         "${year}_${week}".apply { println("WEEK owner: $this") }
     }

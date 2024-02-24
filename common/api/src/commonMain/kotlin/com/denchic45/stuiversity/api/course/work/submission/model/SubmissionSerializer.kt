@@ -6,7 +6,7 @@ import kotlinx.serialization.json.*
 
 object SubmissionSerializer :
     JsonContentPolymorphicSerializer<SubmissionResponse>(SubmissionResponse::class) {
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out SubmissionResponse> =
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<SubmissionResponse> =
         when (Json.decodeFromJsonElement<CourseElementType>(element.jsonObject.getValue("type"))) {
             CourseElementType.WORK -> WorkSubmissionResponse.serializer()
             CourseElementType.MATERIAL -> TODO()
