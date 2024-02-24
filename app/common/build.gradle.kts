@@ -1,9 +1,9 @@
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.4.1"
+    id("org.jetbrains.compose") version "1.5.12"
     id("com.android.library")
 //    id("kotlin-kapt")
-    kotlin("plugin.serialization") version "1.8.20"
+    kotlin("plugin.serialization") version "1.9.22"
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
     id("app.cash.sqldelight")
@@ -98,7 +98,7 @@ kotlin {
 
                 implementation("net.harawata:appdirs:1.2.1")
 
-                api("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
+                api("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
                 implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
             }
         }
@@ -125,14 +125,14 @@ kotlin {
                 implementation("androidx.work:work-runtime-ktx:2.8.1")
 
                 // Compose
-                val composeVersion = "1.4.3"
-                api("androidx.compose.runtime:runtime:$composeVersion")
-                implementation("androidx.compose.ui:ui:$composeVersion")
+                val jetpackComposeVersion = "1.6.2"
+                api("androidx.compose.runtime:runtime:$jetpackComposeVersion")
+                implementation("androidx.compose.ui:ui:$jetpackComposeVersion")
                 implementation("androidx.activity:activity-compose:1.7.2")
                 // Tooling support (Previews, etc.)
-                implementation("androidx.compose.ui:ui-tooling:$composeVersion")
+                implementation("androidx.compose.ui:ui-tooling:$jetpackComposeVersion")
                 // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-                implementation("androidx.compose.foundation:foundation:$composeVersion")
+                implementation("androidx.compose.foundation:foundation:$jetpackComposeVersion")
                 // Material Design
                 implementation("androidx.compose.material3:material3:1.1.1")
                 // Lifecycle
