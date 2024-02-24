@@ -41,7 +41,7 @@ private fun Route.userAssignedRolesRoute() {
         val requireAvailableRolesInScope: RequireAvailableRolesInScopeUseCase by inject()
         val requirePermissionToAssignRoles: RequirePermissionToAssignRolesUseCase by inject()
         val findAssignedUserRolesInScope: FindAssignedUserRolesInScopeUseCase by inject()
-        val putRoleToUserInScope: PutRoleToUserInScopeUseCase by inject()
+        val putRoleToUserInScope: SetRoleToUserInScopeUseCase by inject()
         val putRolesToUserInScope: PutRolesToUserInScopeUseCase by inject()
         val removeRoleFromUserInScope: RemoveRoleFromUserInScopeUseCase by inject()
 

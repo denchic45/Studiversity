@@ -2,12 +2,17 @@ package com.denchic45.studiversity.setup
 
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.config.database
+import com.denchic45.studiversity.database.table.ScopeDao
+import com.denchic45.studiversity.database.table.ScopeTypeDao
 import com.denchic45.studiversity.feature.auth.usecase.SignUpUseCase
+import com.denchic45.studiversity.feature.role.repository.ScopeRepository
+import com.denchic45.studiversity.feature.role.usecase.SetRoleToUserInScopeUseCase
 import com.denchic45.studiversity.logger.logger
 import com.denchic45.studiversity.setup.model.DatabaseSetupRequest
 import com.denchic45.studiversity.setup.model.OrganizationSetupRequest
 import com.denchic45.studiversity.setup.model.SetupErrors
 import com.denchic45.studiversity.util.respondWithError
+import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.util.ErrorInfo
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -42,7 +47,9 @@ fun Application.configureSetup() {
         }
 
         route("/setup") {
+            val scopeRepository: ScopeRepository by inject()
             val signup: SignUpUseCase by inject()
+            val setRoleToUserInScope: SetRoleToUserInScopeUseCase by inject()
 
             post("/database") {
                 val body = call.receive<DatabaseSetupRequest>()
@@ -62,13 +69,21 @@ fun Application.configureSetup() {
                 val body = call.receive<OrganizationSetupRequest>()
                 config.organizationName = body.name
                 config.organizationId = UUID.randomUUID()
+
+                ScopeDao.new(config.organizationId) {
+                    type = ScopeTypeDao[1]
+                    path = listOf(config.organizationId)
+                }
+
 //                config.selfRegister = body.selfRegister
                 call.respond(HttpStatusCode.OK)
             }
 
             post("/admin") {
                 requireDatabaseConnection()
-                signup(call.receive())
+                val user = signup(call.receive())
+                setRoleToUserInScope(user.id, Role.Moderator.id, config.organizationId)
+
                 removeSPARoute()
                 initializationCallback?.invoke()
                 call.respond(HttpStatusCode.OK)

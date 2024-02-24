@@ -39,9 +39,9 @@ class UserRepository(
 ) : AddScopeRepoExt {
 
 
-    suspend fun add(signupRequest: SignupRequest) {
+    suspend fun add(signupRequest: SignupRequest): UserResponse {
         val hashed: String = BCrypt.hashpw(signupRequest.password, BCrypt.gensalt())
-        add(signupRequest.toCreateUser(), hashed)
+      return  add(signupRequest.toCreateUser(), hashed)
     }
 
     suspend fun add(user: CreateUserRequest, password: String): UserResponse {

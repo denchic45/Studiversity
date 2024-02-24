@@ -5,7 +5,7 @@ import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import io.ktor.server.plugins.*
 import java.util.*
 
-class PutRoleToUserInScopeUseCase(
+class SetRoleToUserInScopeUseCase(
     private val suspendTransactionWorker: SuspendTransactionWorker,
     private val roleRepository: RoleRepository
 ) {
