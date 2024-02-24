@@ -39,15 +39,13 @@ fun Route.courseMembers() {
         post {
             val currentUserId = call.currentUserId()
             val courseId = call.parameters.getUuidOrFail("courseId")
-            // todo test Проверять наличие права зачислять участников на курс
             requireCapability(currentUserId, Capability.WriteCourse, courseId)
 
             val request = call.receive<CreateMemberRequest>()
             val assignableRoles = request.roleIds
-            // todo test Проверять допустимость назначенных ролей
+            
             requirePermissionToAssignRoles(currentUserId, assignableRoles, courseId)
             requireAvailableRolesInScope(assignableRoles, courseId)
-            // todo test Проверять не добавлен ли пользователь уже
             if (checkExistCourseMember(courseId, request.memberId)) {
                 call.respond(HttpStatusCode.BadRequest, CourseMemberErrors.COURSE_MEMBER_ALREADY_EXIST)
                 return@post

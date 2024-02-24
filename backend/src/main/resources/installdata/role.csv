@@ -1,11 +1,11 @@
-role_id,role_name,shortname,scope_type_id,parent,role_order
-1,Гость,guest,1,,
-2,Пользователь,user,1,,
-3,Модератор,moderator,1,,
-4,Учащийся,student_person,1,,
-5,Учитель,teacher_person,1,,
-6,Студент,student,3,,
-7,Преподаватель,teacher,3,,
-8,Студент группы,study_group_student,4,,2
-9,Староста,headman,4,8,
-10,Куратор,curator,4,,1
+role_id,role_name,shortname,scope_type_id,parent,upper_parent,role_order
+1,Гость,guest,1,,1,
+2,Пользователь,user,1,,2,
+3,Модератор,moderator,1,,3,
+4,Учащийся,student_person,1,,4,
+5,Учитель,teacher_person,1,5,,
+6,Студент,student,3,6,,
+7,Преподаватель,teacher,3,7,,
+8,Студент группы,study_group_student,4,,8,2
+9,Староста,headman,4,8,8,
+10,Куратор,curator,4,,10,1

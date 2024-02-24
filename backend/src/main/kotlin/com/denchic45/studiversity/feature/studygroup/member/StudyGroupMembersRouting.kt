@@ -8,9 +8,11 @@ import com.denchic45.studiversity.feature.studygroup.member.usecase.CheckExistSt
 import com.denchic45.studiversity.feature.studygroup.member.usecase.FindStudyGroupMembersUseCase
 import com.denchic45.studiversity.feature.studygroup.member.usecase.RemoveStudyGroupMemberUseCase
 import com.denchic45.studiversity.ktor.currentUserId
+import com.denchic45.studiversity.ktor.getSortingBy
 import com.denchic45.studiversity.ktor.getUuidOrFail
 import com.denchic45.stuiversity.api.member.CreateMemberRequest
 import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.stuiversity.api.studygroup.member.StudyGroupMemberSorting
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -31,7 +33,8 @@ fun Route.studyGroupMembers() {
         get {
             // todo Добавить проверку разрешения на просмотр участников группы
             val studyGroupId = call.parameters.getUuidOrFail("studyGroupId")
-            call.respond(findStudyGroupMembers(studyGroupId))
+            val sorting = call.request.queryParameters.getSortingBy(StudyGroupMemberSorting)
+            call.respond(findStudyGroupMembers(studyGroupId, sorting))
         }
 
         post {

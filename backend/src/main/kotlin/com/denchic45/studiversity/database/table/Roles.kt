@@ -5,13 +5,21 @@ import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.selectAll
 
 object Roles : LongIdTable("role", "role_id") {
     val name = text("role_name")
     val shortname = text("shortname")
     val scopeTypeId = reference("scope_type_id", ScopeTypes)
     val parent = reference("parent", Roles).nullable()
+    val upperParent = reference("upper_parent", Roles)
     val order = integer("role_order").nullable()
+
+    fun getUpperParent(roleId: Long): Long {
+        val role = Roles.selectAll().where(Roles.id eq roleId).single()
+        val parent = role[Roles.parent]?.value
+        return parent?.let { getUpperParent(it) } ?: role[Roles.id].value
+    }
 }
 
 class RoleDao(id: EntityID<Long>) : LongEntity(id) {
