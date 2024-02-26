@@ -26,6 +26,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.ktor.ext.inject
 import java.sql.SQLException
 import java.util.*
+import com.denchic45.stuiversity.api.user.model.UserResponse
 
 
 private var initializationCallback: (() -> Unit)? = null
