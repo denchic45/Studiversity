@@ -10,9 +10,9 @@ val supabaseVersion: String by project
 
 plugins {
     application
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.9.20"
     id("io.ktor.plugin") version "2.1.3"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.20"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20"
 
     id("org.jetbrains.kotlinx.dataframe") version "0.12.1"
 

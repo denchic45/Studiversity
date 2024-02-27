@@ -174,6 +174,8 @@ kotlin {
                 api(compose.desktop.currentOs)
                 api(compose.preview)
 
+                implementation("org.jetbrains.jewel:jewel-int-ui-decorated-window:0.15.0")
+
                 implementation("app.cash.sqldelight:sqlite-driver:$sqlDelightVersion")
 
                 // Decompose

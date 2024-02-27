@@ -69,9 +69,9 @@ fun ApplicationScope.MainWindow(
     LifecycleController(lifecycle, state)
 
     DesktopApp(
-        title = "Studiversity",
-        onCloseRequest = ::exitApplication,
         state = state,
+        onCloseRequest = ::exitApplication,
+        title = "Studiversity",
         backDispatcher = backDispatcher
     ) {
         CompositionLocalProvider(LocalAppBarMediator provides AppBarMediator()) {

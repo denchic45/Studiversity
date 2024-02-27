@@ -15,8 +15,8 @@ import com.denchic45.studiversity.ui.theme.DesktopApp
 @Composable
 fun ApplicationScope.SplashWindow(backDispatcher: BackDispatcher) {
     DesktopApp(
-        title = "Studiversity",
         onCloseRequest = ::exitApplication,
+        title = "Studiversity",
         backDispatcher = backDispatcher
     ) {
         CompositionLocalProvider(LocalAppBarMediator provides AppBarMediator()) {

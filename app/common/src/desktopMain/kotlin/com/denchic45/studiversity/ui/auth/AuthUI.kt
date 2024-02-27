@@ -34,9 +34,9 @@ import com.denchic45.studiversity.ui.theme.rememberWindowSizeClass
 fun ApplicationScope.AuthWindow(component: AuthComponent, backDispatcher: BackDispatcher) {
     val state = rememberWindowState()
     DesktopApp(
-        title = "Studiversity - Авторизация",
-        onCloseRequest = ::exitApplication,
         state = state,
+        onCloseRequest = ::exitApplication,
+        title = "Studiversity - Авторизация",
         backDispatcher = backDispatcher
     ) {
         AuthScreen(component)
