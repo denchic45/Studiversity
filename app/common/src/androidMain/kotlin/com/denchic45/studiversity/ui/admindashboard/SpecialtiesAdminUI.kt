@@ -27,11 +27,11 @@ import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 
 @Composable
 fun SpecialtiesAdminScreen(component: SpecialtiesAdminComponent) {
-    val childOverlay by component.childOverlay.subscribeAsState()
+    val childSlot by component.childSlot.subscribeAsState()
 
     SpecialtiesAdminMainScreen(component)
 
-    childOverlay.overlay?.let {
+    childSlot.child?.let {
         SpecialtiesAdminDetailScreen(it.instance)
     }
 }

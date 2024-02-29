@@ -74,7 +74,7 @@ import java.util.UUID
 fun ProfileScreen(component: ProfileComponent) {
 
     val viewStateResource by component.viewState.collectAsState()
-    val childOverlay by component.childOverlay.subscribeAsState()
+    val childSlot by component.childSlot.subscribeAsState()
 
     Surface {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -85,7 +85,7 @@ fun ProfileScreen(component: ProfileComponent) {
                 component::onStudyGroupClick
             )
             viewStateResource.onSuccess { viewState ->
-                childOverlay.overlay?.let {
+                childSlot.child?.let {
                     when (it.instance) {
                         ProfileComponent.OverlayChild.AvatarDialog -> {
                             AlertDialog(onDismissRequest = component::onDialogClose) {

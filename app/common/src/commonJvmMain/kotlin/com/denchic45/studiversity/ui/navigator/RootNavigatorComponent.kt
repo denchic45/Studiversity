@@ -133,17 +133,25 @@ class RootNavigatorComponent(
 
 @Parcelize
 sealed interface RootConfig : Parcelable {
-    object YourTimetables : RootConfig
+    data object YourTimetables : RootConfig {
+        private fun readResolve(): Any = YourTimetables
+    }
 
-    object YourStudyGroups : RootConfig
+    data object YourStudyGroups : RootConfig {
+        private fun readResolve(): Any = YourStudyGroups
+    }
 
-    object Works : RootConfig
+    data object Works : RootConfig {
+        private fun readResolve(): Any = Works
+    }
 
     data class StudyGroup(val studyGroupId: UUID) : RootConfig
 
     data class Course(val courseId: UUID) : RootConfig
 
-    object AdminDashboard : RootConfig
+    data object AdminDashboard : RootConfig {
+        private fun readResolve(): Any = AdminDashboard
+    }
 
     data class CourseEditor(val courseId: UUID?) : RootConfig
 

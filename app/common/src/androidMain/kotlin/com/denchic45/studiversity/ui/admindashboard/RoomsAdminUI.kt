@@ -28,11 +28,11 @@ import com.denchic45.stuiversity.api.room.model.RoomResponse
 @Composable
 fun RoomsAdminScreen(component: RoomsAdminComponent) {
 
-    val childOverlay by component.childOverlay.subscribeAsState()
+    val childSlot by component.childSlot.subscribeAsState()
 
     RoomsAdminMainScreen(component)
 
-    childOverlay.overlay?.let {
+    childSlot.child?.let {
         RoomsAdminDetailScreen(it.instance)
     }
 }

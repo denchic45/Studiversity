@@ -69,7 +69,7 @@ fun TimetablesPublisherScreen(
     val studyGroups by component.studyGroups.collectAsState()
     val isEdit by component.isEdit.collectAsState()
     val selectedDate by component.selectedDate.collectAsState()
-    val overlay by component.childOverlay.subscribeAsState()
+    val overlay by component.childSlot.subscribeAsState()
 
     val pagerState = rememberPagerState()
 
@@ -104,7 +104,7 @@ fun TimetablesPublisherScreen(
         onRemovePeriodSwipe = component::onRemovePeriodSwipe
     )
 
-    overlay.overlay?.let {
+    overlay.child?.let {
         when (val child = it.instance) {
             is TimetablesPublisherComponent.OverlayChild.StudyGroupChooser -> {
                 hideAppBar()

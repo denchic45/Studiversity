@@ -24,13 +24,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.denchic45.studiversity.ui.CardContent
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.search.SearchState
 import com.denchic45.studiversity.ui.search.SearchableComponent
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminDashboardScreen(component: AdminDashboardComponent) {
     val childStack by component.childStack.subscribeAsState()
@@ -117,7 +117,6 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminListItem(
     title: String,
@@ -202,9 +201,6 @@ private fun <T> SearchContent(
                 )
             }
             Spacer(Modifier.width(MaterialTheme.spacing.normal))
-//            IconButton(onClick = onAddClick) {
-//                Icon(Icons.Default.Add, "add")
-//            }
             Button(onClick = onAddClick) {
                 Icon(Icons.Outlined.Add, null)
                 Spacer(Modifier.width(MaterialTheme.spacing.small))
@@ -212,7 +208,7 @@ private fun <T> SearchContent(
             }
         }
 
-        Box(Modifier.width(500.dp)) {
+        CardContent(Modifier.width(500.dp)) {
             SearchedItemsContent(component, keyItem, emptyQueryContent, emptyResultContent, itemContent)
         }
     }

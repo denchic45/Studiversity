@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CardContent(content: @Composable () -> Unit) {
+fun CardContent(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.fillMaxHeight().padding(end = 24.dp, bottom = 24.dp),
+        modifier = modifier.fillMaxHeight().padding(end = 24.dp, bottom = 24.dp),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {

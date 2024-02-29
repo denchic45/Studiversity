@@ -48,12 +48,12 @@ import java.util.UUID
 @Composable
 fun CourseEditorScreen(component: CourseEditorComponent) {
     val resource by component.viewState.collectAsState()
-    val navigation by component.childOverlay.subscribeAsState()
+    val navigation by component.childSlot.subscribeAsState()
     val allowSave by component.allowSave.collectAsState()
 
     val appBarState = LocalAppBarState.current
 
-    when (val child = navigation.overlay?.instance) {
+    when (val child = navigation.child?.instance) {
         is CourseEditorComponent.DialogChild.SubjectChooser -> {
             SubjectChooserScreen(child.component)
         }

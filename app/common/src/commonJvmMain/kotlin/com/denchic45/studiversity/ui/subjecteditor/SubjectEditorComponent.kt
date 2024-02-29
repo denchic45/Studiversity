@@ -5,10 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.Field
@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class SubjectEditorComponent(
@@ -65,8 +65,8 @@ class SubjectEditorComponent(
         var iconUrl by mutableStateOf<String?>(null)
     }
 
-    private val overlayNavigation = OverlayNavigation<SubjectIcons>()
-    val childOverlay = childOverlay(
+    private val overlayNavigation = SlotNavigation<SubjectIcons>()
+    val childSlot = childSlot(
         source = overlayNavigation,
         handleBackButton = true,
         childFactory = { _, context ->
@@ -77,7 +77,9 @@ class SubjectEditorComponent(
         })
 
     @Parcelize
-    object SubjectIcons : Parcelable
+    object SubjectIcons : Parcelable {
+        private fun readResolve(): Any = SubjectIcons
+    }
 
     private val componentScope = componentScope()
 

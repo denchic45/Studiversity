@@ -28,9 +28,9 @@ import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 @Composable
 fun SubjectsAdminScreen(component: SubjectsAdminComponent) {
 
-    val childOverlay by component.childOverlay.subscribeAsState()
+    val childSlot by component.childSlot.subscribeAsState()
     SubjectsAdminMainScreen(component)
-    childOverlay.overlay?.let {
+    childSlot.child?.let {
         SubjectsAdminDetailScreen(it.instance)
     }
 }

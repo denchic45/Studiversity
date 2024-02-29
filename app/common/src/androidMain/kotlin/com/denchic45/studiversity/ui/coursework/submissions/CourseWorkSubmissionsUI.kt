@@ -33,7 +33,7 @@ import com.denchic45.stuiversity.util.toString
 @Composable
 fun CourseWorkSubmissionsScreen(component: CourseWorkSubmissionsComponent) {
     val submissionsResource by component.submissions.collectAsState()
-    val slot by component.childOverlay.subscribeAsState()
+    val slot by component.childSlot.subscribeAsState()
 
     val refreshing by component.refreshing.collectAsState()
     val refreshState = rememberPullRefreshState(refreshing, component::onRefresh)
@@ -43,7 +43,7 @@ fun CourseWorkSubmissionsScreen(component: CourseWorkSubmissionsComponent) {
         PullRefreshIndicator(refreshing, refreshState, Modifier.align(Alignment.TopCenter))
     }
 
-    slot.overlay?.let {
+    slot.child?.let {
         SubmissionDetailsScreen(
             component = it.instance.component,
             onDismissRequest = component::onSubmissionClose

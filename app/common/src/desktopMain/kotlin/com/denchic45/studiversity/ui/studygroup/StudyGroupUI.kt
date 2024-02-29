@@ -38,7 +38,7 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
     StudyGroupContent(
         selectedTab = selectedTab,
         children = component.childTabs,
-        sidebarChild = childSidebar.overlay?.instance,
+        sidebarChild = childSidebar.child?.instance,
         onTabSelect = component::onTabSelect,
         onSidebarClose = component::onSidebarClose
     )
@@ -90,7 +90,7 @@ fun StudyGroupContent(
                     ) {
                         AnimatedContent(children[selectedTab],
                             transitionSpec = {
-                                slideInVertically { -it / 8 } + fadeIn() with slideOutVertically { it / 8 } + fadeOut()
+                                (slideInVertically { -it / 8 } + fadeIn()).togetherWith(slideOutVertically { it / 8 } + fadeOut())
                             }
                         ) {
                             Box(Modifier.fillMaxSize()) {

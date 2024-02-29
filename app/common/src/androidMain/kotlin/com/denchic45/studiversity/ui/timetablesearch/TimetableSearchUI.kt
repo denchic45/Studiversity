@@ -61,9 +61,9 @@ fun TimetableSearchScreen(
     val timetableResource by component.timetableStateResourceFlow.collectAsState()
     val isEdit by component.isEdit.collectAsState()
 
-    val overlay by component.childOverlay.subscribeAsState()
+    val overlay by component.childSlot.subscribeAsState()
 
-    when (val child = overlay.overlay?.instance) {
+    when (val child = overlay.child?.instance) {
         is TimetableSearchComponent.OverlayChild.PeriodEditor -> {
             PeriodEditorScreen(child.component)
         }

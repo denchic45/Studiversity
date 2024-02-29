@@ -58,12 +58,12 @@ import com.denchic45.stuiversity.util.toString
 fun PeriodEditorScreen(component: PeriodEditorComponent) {
     hideAppBar()
 
-    val childOverlay by component.childOverlay.subscribeAsState()
+    val childSlot by component.childSlot.subscribeAsState()
     val foundRooms by component.foundRooms.collectAsState()
 
     Surface {
         Column {
-            when (val overlayChild = childOverlay.overlay?.instance) {
+            when (val overlayChild = childSlot.child?.instance) {
                 is PeriodEditorComponent.OverlayChild.CourseChooser -> {
                     CourseChooserScreen(component = overlayChild.component)
                 }

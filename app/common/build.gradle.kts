@@ -2,7 +2,6 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose") version "1.5.12"
     id("com.android.library")
-//    id("kotlin-kapt")
     kotlin("plugin.serialization") version "1.9.22"
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
@@ -11,7 +10,7 @@ plugins {
 
 val sqlDelightVersion = "2.0.0-alpha05"
 kotlin {
-    android()
+    androidTarget()
     jvm("desktop") {
         compilations.all {
             kotlinOptions.jvmTarget = "17"
@@ -145,7 +144,7 @@ kotlin {
                 // Decompose
                 implementation("com.arkivanov.decompose:extensions-compose-jetpack:$decomposeVersion")
                 // Cropper
-                implementation("com.github.SmartToolFactory:Compose-Cropper:0.3.0")
+                implementation("com.github.SmartToolFactory:Compose-Cropper:0.4.0")
                 // Coil
                 implementation("io.coil-kt:coil-compose:2.2.2")
                 implementation("io.coil-kt:coil-svg:2.3.0")
@@ -208,7 +207,7 @@ dependencies {
 
 android {
     namespace = "com.denchic45.studiversity.common"
-    compileSdk = 33
+    compileSdk = 34
     sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
         res.srcDirs("src/commonMain/resources", "src/androidMain/res")
@@ -219,6 +218,9 @@ android {
             viewBinding = true
             compose = true
         }
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
     packaging {
         resources.excludes.apply {
@@ -237,9 +239,6 @@ android {
         kotlin.srcDir("src/$name/kotlin")
         java.srcDir("src/$name/java")
     }
-//    kapt {
-//        correctErrorTypes = true
-//    }
 }
 
 sqldelight {

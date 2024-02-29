@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.ui.coursework.submissions
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.resource.Resource
@@ -55,9 +55,9 @@ class CourseWorkSubmissionsComponent(
         }
     }
 
-    private val overlayNavigation = OverlayNavigation<SubmissionConfig>()
+    private val overlayNavigation = SlotNavigation<SubmissionConfig>()
 
-    val childOverlay = childOverlay(
+    val childSlot = childSlot(
         handleBackButton = true,
         source = overlayNavigation
     ) { config, componentContext ->

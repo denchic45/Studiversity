@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.essenty.parcelable.Parcelable
@@ -22,7 +22,7 @@ import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class UsersAdminComponent(
@@ -40,8 +40,8 @@ class UsersAdminComponent(
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, SearchableAdminComponent<UserItem> {
     private val componentScope = componentScope()
-    private val sidebarNavigation = OverlayNavigation<Config>()
-    val childOverlay = childOverlay(source = sidebarNavigation,
+    private val sidebarNavigation = SlotNavigation<Config>()
+    val childSlot = childSlot(source = sidebarNavigation,
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
@@ -88,6 +88,10 @@ class UsersAdminComponent(
 
     override fun onAddClick() {
         sidebarNavigation.activate(Config.UserEditor(null))
+    }
+
+    fun onUserClick(userId: UUID) {
+        sidebarNavigation.activate(Config.Profile(userId))
     }
 
     @Parcelize

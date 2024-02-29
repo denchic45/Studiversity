@@ -69,8 +69,8 @@ fun SubjectEditorDialog(component: SubjectEditorComponent) {
         )
     }
 
-    val childOverlay by component.childOverlay.subscribeAsState()
-    childOverlay.overlay?.let {
+    val childSlot by component.childSlot.subscribeAsState()
+    childSlot.child?.let {
         SubjectIconsDialog(it.instance)
     }
 }

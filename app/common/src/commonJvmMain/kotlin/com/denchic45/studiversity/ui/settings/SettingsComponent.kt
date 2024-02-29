@@ -60,11 +60,17 @@ class SettingsComponent(
 
     @Parcelize
     sealed class OverlayConfig : Parcelable {
-        object Account : OverlayConfig()
+        data object Account : OverlayConfig() {
+            private fun readResolve(): Any = Account
+        }
 
-        object Notifications : OverlayConfig()
+        data object Notifications : OverlayConfig() {
+            private fun readResolve(): Any = Notifications
+        }
 
-        object ThemePicker : OverlayConfig()
+        data object ThemePicker : OverlayConfig() {
+            private fun readResolve(): Any = ThemePicker
+        }
     }
 
     sealed class OverlayChild {

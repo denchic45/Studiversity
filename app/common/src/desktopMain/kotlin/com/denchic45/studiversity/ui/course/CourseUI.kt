@@ -34,7 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import com.arkivanov.decompose.router.overlay.ChildOverlay
+import com.arkivanov.decompose.router.slot.ChildSlot
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.LocalAppBarMediator
 import com.denchic45.studiversity.ui.component.TabIndicator
@@ -92,7 +92,7 @@ fun CourseContent(
     course: Resource<CourseResponse>,
     allowEdit: Boolean,
     children: List<CourseComponent.TabChild>,
-    sidebarChild: ChildOverlay<CourseComponent.SidebarConfig, CourseComponent.SidebarChild>,
+    sidebarChild: ChildSlot<CourseComponent.SidebarConfig, CourseComponent.SidebarChild>,
     onEditCourseClick: () -> Unit,
     onOpenTopicsClick: () -> Unit
 ) {
@@ -127,7 +127,7 @@ fun CourseContent(
                         is CourseComponent.TabChild.Timetable -> TODO()
                     }
                 }
-                sidebarChild.overlay?.instance?.let { sidebar ->
+                sidebarChild.child?.instance?.let { sidebar ->
                     Box(Modifier.weight(1f)) {
                         when (sidebar) {
                             is CourseComponent.SidebarChild.Profile -> TODO()

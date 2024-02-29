@@ -2,10 +2,10 @@ package com.denchic45.studiversity.ui.course
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
@@ -184,8 +184,8 @@ class CourseComponent(
 
     val children = defaultTabChildren
 
-    private val sidebarNavigation = OverlayNavigation<SidebarConfig>()
-    val childSidebar = childOverlay(
+    private val sidebarNavigation = SlotNavigation<SidebarConfig>()
+    val childSidebar = childSlot(
         source = sidebarNavigation,
         handleBackButton = true,
         childFactory = { config, context ->

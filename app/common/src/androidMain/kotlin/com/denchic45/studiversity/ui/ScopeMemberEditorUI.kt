@@ -36,7 +36,7 @@ fun ScopeMemberEditorScreen(component: ScopeMemberEditorComponent) {
     val allowSave by component.allowSave.collectAsState()
     val isNew = component.isNew
 
-    val childOverlay by component.childOverlay.subscribeAsState()
+    val childSlot by component.childSlot.subscribeAsState()
 
     updateAppBarState(
         allowSave,
@@ -64,7 +64,7 @@ fun ScopeMemberEditorScreen(component: ScopeMemberEditorComponent) {
         }
     }
 
-    childOverlay.overlay?.let {
+    childSlot.child?.let {
         when (val child = it.instance) {
             is ScopeMemberEditorComponent.Child.UserChooser -> {
                 UserChooserScreen(child.component)

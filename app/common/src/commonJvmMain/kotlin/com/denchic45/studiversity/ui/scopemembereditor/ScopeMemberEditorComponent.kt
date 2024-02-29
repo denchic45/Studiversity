@@ -1,11 +1,11 @@
 package com.denchic45.studiversity.ui.scopemembereditor
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.ChildOverlay
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -54,9 +54,9 @@ class ScopeMemberEditorComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    private val overlayNavigation = OverlayNavigation<Config>()
+    private val overlayNavigation = SlotNavigation<Config>()
 
-    val childOverlay: Value<ChildOverlay<Config, Child>> = childOverlay(
+    val childSlot: Value<ChildSlot<Config, Child>> = childSlot(
         source = overlayNavigation,
         handleBackButton = true,
         childFactory = { config, context ->

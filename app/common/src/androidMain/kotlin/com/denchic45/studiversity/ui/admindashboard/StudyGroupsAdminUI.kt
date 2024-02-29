@@ -33,7 +33,7 @@ fun StudyGroupsAdminScreen(component: StudyGroupsAdminComponent) {
 
     AdaptiveMasterSidebarLayout(
         masterContent = { StudyGroupsAdminMainScreen(component) },
-        detailContent = childSidebar.overlay?.let {
+        detailContent = childSidebar.child?.let {
             { StudyGroupsAdminDetailScreen(it.instance) }
         }
     )

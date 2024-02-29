@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.essenty.parcelable.Parcelable
@@ -39,8 +39,8 @@ class StudyGroupsAdminComponent(
 
     override val chooserComponent = studyGroupChooserComponent(::onSelect, componentContext)
 
-    private val sidebarNavigation = OverlayNavigation<Config>()
-    val childSidebar = childOverlay(source = sidebarNavigation,
+    private val sidebarNavigation = SlotNavigation<Config>()
+    val childSidebar = childSlot(source = sidebarNavigation,
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {

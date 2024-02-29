@@ -59,7 +59,6 @@ fun TimetableScreen(component: YourTimetablesComponent) {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TimetableContent(
     selectedDate: LocalDate,
@@ -95,11 +94,9 @@ fun TimetableContent(
                     targetState = selectedDate,
                     transitionSpec = {
                         if (initialState > targetState) {
-                            slideInHorizontally { -it / 6 } + fadeIn() with
-                                    slideOutHorizontally { it / 6 } + fadeOut()
+                            (slideInHorizontally { -it / 6 } + fadeIn()) togetherWith slideOutHorizontally { it / 6 } + fadeOut()
                         } else {
-                            slideInHorizontally { it / 6 } + fadeIn() with
-                                    slideOutHorizontally { -it / 6 } + fadeOut()
+                            (slideInHorizontally { it / 6 } + fadeIn()) togetherWith slideOutHorizontally { -it / 6 } + fadeOut()
                         }
                     }
                 ) { monday ->
@@ -115,9 +112,7 @@ fun TimetableContent(
                         }
                         AnimatedContent(
                             targetState = timetableResource,
-                            transitionSpec = {
-                                fadeIn() with fadeOut()
-                            }
+                            transitionSpec = { fadeIn() togetherWith fadeOut() }
                         ) { timetableState ->
                             Divider()
                             Row {

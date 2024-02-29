@@ -133,7 +133,7 @@ fun CourseScreen(component: CourseComponent) {
         }
     }
 
-    childSidebar.overlay?.let {
+    childSidebar.child?.let {
         when (val child = it.instance) {
             is CourseComponent.SidebarChild.Profile -> ProfileScreen(child.component)
             is CourseComponent.SidebarChild.ScopeMemberEditor -> ScopeMemberEditorScreen(child.component)

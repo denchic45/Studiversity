@@ -1,6 +1,5 @@
 plugins {
     id("com.android.application")
-//    id("kotlin-kapt")
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.android")
@@ -23,7 +22,7 @@ android {
     testOptions.apply {
         unitTests.isIncludeAndroidResources = true
     }
-    compileSdk = 33
+    compileSdk = 34
     buildToolsVersion = "30.0.3"
 
     compileOptions {
@@ -35,7 +34,7 @@ android {
     defaultConfig {
         applicationId = "com.denchic45.studiversity"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
 
@@ -59,9 +58,6 @@ android {
         freeCompilerArgs = listOf("-Xjvm-default=compatibility")
 
     }
-//    kapt {
-//        correctErrorTypes = true
-//    }
     buildFeatures {
         viewBinding = true
         compose = true

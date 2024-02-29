@@ -1,12 +1,6 @@
 package com.denchic45.studiversity.ui.yourworks
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -65,7 +59,7 @@ import java.util.UUID
 @Composable
 fun YourWorksScreen(component: YourWorksComponent) {
     val children = component.tabChildren
-//    val childOverlay by component.childOverlay.subscribeAsState()
+//    val childSlot by component.childSlot.subscribeAsState()
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(topBar = {
@@ -101,7 +95,7 @@ fun YourWorksScreen(component: YourWorksComponent) {
                     Divider()
                     AnimatedContent(children[selectedTab],
                         transitionSpec = {
-                            slideInVertically { -it / 8 } + fadeIn() with slideOutVertically { it / 8 } + fadeOut()
+                            (slideInVertically { -it / 8 } + fadeIn()).togetherWith(slideOutVertically { it / 8 } + fadeOut())
                         }
                     ) {
                         Box(
@@ -124,7 +118,7 @@ fun YourWorksScreen(component: YourWorksComponent) {
                         }
                     }
                 }
-//                childOverlay.overlay?.let {
+//                childSlot.overlay?.let {
 //                    when (val child = it.instance) {
 //                        is YourWorksComponent.OverlayChild.CourseWork -> {
 //                            CourseWorkScreen(component = child.component)

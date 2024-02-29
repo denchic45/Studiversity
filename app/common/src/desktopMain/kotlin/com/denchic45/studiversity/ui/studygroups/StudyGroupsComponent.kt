@@ -3,8 +3,8 @@ package com.denchic45.studiversity.ui.studygroups
 //@Inject
 //class StudyGroupsComponent(
 //    private val findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
-//    private val overlayNavigator: OverlayNavigation<OverlayConfig>,
-//    private val yourStudyGroupsRootComponent: (OverlayNavigation<OverlayConfig>, groupId: UUID, ComponentContext) -> YourStudyGroupsRootComponent,
+//    private val overlayNavigator: SlotNavigation<OverlayConfig>,
+//    private val yourStudyGroupsRootComponent: (SlotNavigation<OverlayConfig>, groupId: UUID, ComponentContext) -> YourStudyGroupsRootComponent,
 //    @Assisted
 //    componentContext: ComponentContext,
 //) : ComponentContext by componentContext {

@@ -29,7 +29,7 @@ import com.denchic45.studiversity.ui.uiTextOf
 @Composable
 fun CourseStudyGroupsScreen(component: CourseStudyGroupsComponent) {
     val studyGroups by component.studyGroups.collectAsState()
-    val childOverlay by component.childOverlay.subscribeAsState()
+    val childSlot by component.childSlot.subscribeAsState()
     updateAppBarState(AppBarContent(uiTextOf("Группы курса")))
 
     Surface(
@@ -59,7 +59,7 @@ fun CourseStudyGroupsScreen(component: CourseStudyGroupsComponent) {
         }
     }
 
-    childOverlay.overlay?.let {
+    childSlot.child?.let {
         when(val child =it.instance) {
             is CourseStudyGroupsComponent.Child.StudyGroupChooser -> StudyGroupChooserScreen(
                 child.component

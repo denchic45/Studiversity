@@ -30,11 +30,11 @@ import com.denchic45.studiversity.ui.usereditor.UserEditorScreen
 fun UsersAdminScreen(component: UsersAdminComponent) {
 
 
-    val childOverlay by component.childOverlay.subscribeAsState()
+    val childSlot by component.childSlot.subscribeAsState()
 
     AdaptiveMasterSidebarLayout(
         masterContent = { UsersAdminMainScreen(component) },
-        detailContent = childOverlay.overlay?.let {
+        detailContent = childSlot.child?.let {
             { UsersAdminDetailScreen(it.instance) }
         }
     )

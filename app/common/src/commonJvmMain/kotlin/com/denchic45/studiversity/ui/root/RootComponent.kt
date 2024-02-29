@@ -32,7 +32,7 @@ class RootComponent(
 
     val childSlot = childSlot(
         source = navigation,
-        key = "DefaultChildOverlay",
+        key = "DefaultChildSlot",
         initialConfiguration = { Config.Splash },
         childFactory = { config, context ->
             when (config) {

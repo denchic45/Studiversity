@@ -4,17 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.resource.Resource
@@ -27,7 +18,7 @@ import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupContent
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import java.util.UUID
+import java.util.*
 
 
 @Composable
@@ -52,7 +43,7 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
             )
         }
     ) {
-        childStudyGroup.overlay?.instance?.let {
+        childStudyGroup.child?.instance?.let {
             YourStudyGroupScreen(it)
         }
     }
@@ -78,7 +69,7 @@ fun YourStudyGroupScreen(component: StudyGroupComponent) {
     StudyGroupContent(
         selectedTab = selectedTab,
         children = component.childTabs,
-        sidebarChild = childSidebar.overlay?.instance,
+        sidebarChild = childSidebar.child?.instance,
         onTabSelect = component::onTabSelect,
         onSidebarClose = component::onSidebarClose
     )

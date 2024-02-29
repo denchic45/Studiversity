@@ -2,11 +2,11 @@ package com.denchic45.studiversity.ui.timetableloader
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.overlay.ChildOverlay
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -77,9 +77,9 @@ class TimetablesPublisherComponent(
         weekOfYear.toLocalDateOfWeekOfYear()
     ) {
 
-    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
+    private val overlayNavigation = SlotNavigation<OverlayConfig>()
 
-    val childOverlay: Value<ChildOverlay<OverlayConfig, OverlayChild>> = childOverlay(
+    val childSlot: Value<ChildSlot<OverlayConfig, OverlayChild>> = childSlot(
         handleBackButton = true,
         source = overlayNavigation,
         childFactory = { config, componentContext ->

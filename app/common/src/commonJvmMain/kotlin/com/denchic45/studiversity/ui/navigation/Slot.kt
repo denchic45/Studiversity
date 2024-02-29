@@ -15,11 +15,17 @@ sealed interface SlotConfig : Parcelable {
         val onConfirm: () -> Unit
     ) : SlotConfig
 
-    object YourProfile : SlotConfig
+    data object YourProfile : SlotConfig {
+        private fun readResolve(): Any = YourProfile
+    }
 
-    object Schedule : SlotConfig
+    data object Schedule : SlotConfig {
+        private fun readResolve(): Any = Schedule
+    }
 
-    object Settings : SlotConfig
+    data object Settings : SlotConfig {
+        private fun readResolve(): Any = Settings
+    }
 
 }
 

@@ -61,7 +61,7 @@ import java.util.UUID
 @Composable
 fun YourWorksScreen(component: YourWorksComponent) {
     val children = component.tabChildren
-//    val childOverlay by component.childOverlay.subscribeAsState()
+//    val childSlot by component.childSlot.subscribeAsState()
     val coroutineScope = rememberCoroutineScope()
 
     updateAppBarState(AppBarContent(uiTextOf("Мои задания")))
@@ -106,7 +106,7 @@ fun YourWorksScreen(component: YourWorksComponent) {
             }
         }
 
-//        childOverlay.overlay?.let {
+//        childSlot.overlay?.let {
 //            when (val child = it.instance) {
 //                is YourWorksComponent.OverlayChild.CourseWork -> {
 //                    CourseWorkScreen(component = child.component)

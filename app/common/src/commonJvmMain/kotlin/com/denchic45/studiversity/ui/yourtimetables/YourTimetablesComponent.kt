@@ -36,9 +36,9 @@ class YourTimetablesComponent(
     EmptyChildrenContainer,
     TimetableOwnerComponent by TimetableOwnerDelegate(componentContext) {
 
-//    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
+//    private val overlayNavigation = SlotNavigation<OverlayConfig>()
 
-//    val childOverlay = childOverlay(
+//    val childSlot = childSlot(
 //        source = overlayNavigation,
 //        handleBackButton = true,
 //        childFactory = { config, context ->

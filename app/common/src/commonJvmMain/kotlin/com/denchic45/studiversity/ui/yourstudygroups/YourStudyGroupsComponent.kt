@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.ui.yourstudygroups
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.preference.AppPreferences
@@ -58,9 +58,9 @@ class YourStudyGroupsComponent(
 
     private val componentScope = componentScope()
 
-    private val studyGroupNavigation = OverlayNavigation<StudyGroupConfig>()
+    private val studyGroupNavigation = SlotNavigation<StudyGroupConfig>()
 
-    val childStudyGroup = childOverlay(
+    val childStudyGroup = childSlot(
         source = studyGroupNavigation,
         childFactory = { config, componentContext ->
             _studyGroupComponent(
@@ -73,8 +73,8 @@ class YourStudyGroupsComponent(
         key = "StudyGroup"
     )
 
-//    val overlayNavigation = OverlayNavigation<OverlayConfig>()
-//    val childOverlay = childOverlay(
+//    val overlayNavigation = SlotNavigation<OverlayConfig>()
+//    val childSlot = childSlot(
 //        source = overlayNavigation,
 //        childFactory = { config, context ->
 //            when (config) {
@@ -146,17 +146,17 @@ class YourStudyGroupsComponent(
     }
 
     fun onEditStudyGroupClick() {
-        childStudyGroup.value.overlay?.instance?.onEditClick()
+        childStudyGroup.value.child?.instance?.onEditClick()
     }
 
     fun onAddMemberClick() {
-        childStudyGroup.value.overlay?.instance?.onAddMemberClick()
+        childStudyGroup.value.child?.instance?.onAddMemberClick()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun hasChildrenFlow(): Flow<Boolean> {
         return childStudyGroup.asFlow()
-            .flatMapLatest { it.overlay?.instance?.hasChildrenFlow() ?: flowOf(false) }
+            .flatMapLatest { it.child?.instance?.hasChildrenFlow() ?: flowOf(false) }
     }
 
     @Parcelize

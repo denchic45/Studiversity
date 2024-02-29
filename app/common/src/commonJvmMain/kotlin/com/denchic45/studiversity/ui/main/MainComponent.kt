@@ -58,10 +58,7 @@ class MainComponent(
     findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootComponent,
     yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootComponent,
-    profileComponent: (
-        onStudyGroupOpen: (UUID) -> Unit,
-        UUID, ComponentContext,
-    ) -> ProfileComponent,
+    profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext, ) -> ProfileComponent,
     scheduleComponent: (ComponentContext) -> ScheduleComponent,
     studyGroupComponent: (
         onCourseOpen: (UUID) -> Unit,

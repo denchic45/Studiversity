@@ -50,7 +50,7 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
 
         val childStudyGroup by component.childStudyGroup.subscribeAsState()
 
-        childStudyGroup.overlay?.instance?.let { studyGroupComponent ->
+        childStudyGroup.child?.instance?.let { studyGroupComponent ->
             Box {
                 YourStudyGroupScreen(studyGroupComponent)
                 val childSidebar by studyGroupComponent.childSidebar.subscribeAsState()

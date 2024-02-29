@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.ui.navigation
 
-import com.arkivanov.decompose.router.overlay.ChildOverlay
+import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import com.denchic45.studiversity.ui.navigator.RootChild
@@ -37,7 +37,7 @@ fun <C : Any, T : Any> Value<ChildStack<C, T>>.hasBackStackFlow(): Flow<Boolean>
     return asFlow().map { it.hasBackStack() }
 }
 
-fun <C : Any, T : Any> Value<ChildOverlay<C, T>>.isActiveFlow(): Flow<Boolean> {
+fun <C : Any, T : Any> Value<ChildSlot<C, T>>.isActiveFlow(): Flow<Boolean> {
     return asFlow().map { it.isActive() }
 }
 
@@ -45,6 +45,6 @@ fun <C : Any, T : Any> ChildStack<C, T>.hasBackStack(): Boolean {
     return backStack.isNotEmpty()
 }
 
-fun <C : Any, T : Any> ChildOverlay<C, T>.isActive(): Boolean {
-    return overlay != null
+fun <C : Any, T : Any> ChildSlot<C, T>.isActive(): Boolean {
+    return child != null
 }

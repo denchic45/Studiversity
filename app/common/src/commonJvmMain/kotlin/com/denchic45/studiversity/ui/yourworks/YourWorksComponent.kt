@@ -41,9 +41,9 @@ class YourWorksComponent(
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext, EmptyChildrenContainer {
 
-//    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
+//    private val overlayNavigation = SlotNavigation<OverlayConfig>()
 //
-//    val childOverlay = childOverlay(
+//    val childSlot = childSlot(
 //        source = overlayNavigation,
 //        handleBackButton = true,
 //        childFactory = { config, context ->

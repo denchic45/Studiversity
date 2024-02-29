@@ -2,10 +2,10 @@ package com.denchic45.studiversity.ui.studygroup
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.resource.mapResource
@@ -98,9 +98,9 @@ class StudyGroupComponent(
 //            })
 //    )
 
-    private val sidebarNavigation = OverlayNavigation<OverlayConfig>()
+    private val sidebarNavigation = SlotNavigation<OverlayConfig>()
 
-    val childSidebar = childOverlay(
+    val childSidebar = childSlot(
         source = sidebarNavigation,
         handleBackButton = true,
         childFactory = { config, context ->

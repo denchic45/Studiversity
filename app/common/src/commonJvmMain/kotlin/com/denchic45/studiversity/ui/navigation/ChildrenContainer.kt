@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.ui.navigation
 
-import com.arkivanov.decompose.router.overlay.ChildOverlay
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.value.Value
@@ -23,12 +23,12 @@ interface StackChildrenContainer<C : Any, T : Any> : ChildrenContainer {
 }
 
 interface OverlayChildrenContainer<C : Any, T : Any> : ChildrenContainer {
-    val overlayNavigation: OverlayNavigation<C>
+    val overlayNavigation: SlotNavigation<C>
 
-    val childOverlay: Value<ChildOverlay<C, T>>
+    val childSlot: Value<ChildSlot<C, T>>
 
     override fun hasChildrenFlow(): Flow<Boolean> {
-        return childOverlay.isActiveFlow()
+        return childSlot.isActiveFlow()
     }
 }
 

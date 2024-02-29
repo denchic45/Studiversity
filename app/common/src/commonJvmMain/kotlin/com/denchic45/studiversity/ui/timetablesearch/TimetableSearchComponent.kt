@@ -5,11 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.overlay.ChildOverlay
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -36,25 +32,12 @@ import com.denchic45.studiversity.util.asFlow
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.time.DayOfWeek
-import java.util.UUID
+import java.util.*
 
 @Inject
 class TimetableSearchComponent(
@@ -100,8 +83,8 @@ class TimetableSearchComponent(
         findStudyGroupByContainsNameUseCase(it)
     }
 
-    private val timetableEditorNavigation = OverlayNavigation<TimetableEditorConfig>()
-    private val timetableEditorOverlay = childOverlay(
+    private val timetableEditorNavigation = SlotNavigation<TimetableEditorConfig>()
+    private val timetableEditorOverlay = childSlot(
         source = timetableEditorNavigation,
         childFactory = { _, componentContext ->
             TimetableEditorChild(
@@ -116,21 +99,21 @@ class TimetableSearchComponent(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val timetableStateResourceFlow = editorComponentFlow().flatMapLatest { overlay ->
-        overlay.overlay?.instance?.component?.editingTimetableState
+        overlay.child?.instance?.component?.editingTimetableState
             ?.map { resourceOf(it) } ?: actualTimetable
     }.stateInResource(componentScope)
 
 
-    private fun editorComponentFlow(): SharedFlow<ChildOverlay<TimetableEditorConfig, TimetableEditorChild>> {
+    private fun editorComponentFlow(): SharedFlow<ChildSlot<TimetableEditorConfig, TimetableEditorChild>> {
         return timetableEditorOverlay.asFlow()
             .shareIn(componentScope, SharingStarted.Lazily, 1)
     }
 
 
-    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
-    val childOverlay = childOverlay<OverlayConfig, OverlayChild>(
+    private val overlayNavigation = SlotNavigation<OverlayConfig>()
+    val childSlot = childSlot<OverlayConfig, OverlayChild>(
         source = overlayNavigation,
-        key = "TimetableSearchChildOverlay",
+        key = "TimetableSearchChildSlot",
         handleBackButton = true,
         childFactory = { config, componentContext ->
             when (config) {
@@ -149,9 +132,9 @@ class TimetableSearchComponent(
     )
 
     private val dayTimetableEditorComponent
-        get() = timetableEditorOverlay.value.overlay?.instance?.component
+        get() = timetableEditorOverlay.value.child?.instance?.component
 
-    val isEdit = editorComponentFlow().map { it.overlay != null }
+    val isEdit = editorComponentFlow().map { it.child != null }
         .stateIn(componentScope, SharingStarted.Lazily, false)
 
     private val backCallback = BackCallback(onBack = ::onCancelChanges)
@@ -163,8 +146,8 @@ class TimetableSearchComponent(
     init {
         backHandler.register(backCallback)
         componentScope.launch {
-            isEdit.combine(childOverlay.asFlow()) { isEdit, childOverlay ->
-                isEdit && childOverlay.overlay == null
+            isEdit.combine(childSlot.asFlow()) { isEdit, childSlot ->
+                isEdit && childSlot.child == null
             }.collect {
                 backCallback.isEnabled = it
             }

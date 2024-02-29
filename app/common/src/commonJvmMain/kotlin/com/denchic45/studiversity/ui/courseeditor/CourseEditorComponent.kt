@@ -5,11 +5,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.ChildOverlay
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -77,8 +77,8 @@ class CourseEditorComponent(
 //        ),
 //    ))
 
-    override val overlayNavigation = OverlayNavigation<DialogConfig>()
-    override val childOverlay: Value<ChildOverlay<DialogConfig, DialogChild>> = childOverlay(
+    override val overlayNavigation = SlotNavigation<DialogConfig>()
+    override val childSlot: Value<ChildSlot<DialogConfig, DialogChild>> = childSlot(
         handleBackButton = true,
         source = overlayNavigation,
         childFactory = { config, componentContext ->

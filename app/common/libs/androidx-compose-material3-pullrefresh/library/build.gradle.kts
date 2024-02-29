@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "me.omico.lux.compose.material3.pullrefresh"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         minSdk = 21
     }

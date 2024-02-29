@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.ui.studygroup
 
 //import com.arkivanov.decompose.ComponentContext
-//import com.arkivanov.decompose.router.overlay.OverlayNavigation
-//import com.arkivanov.decompose.router.overlay.activate
+//import com.arkivanov.decompose.router.slot.SlotNavigation
+//import com.arkivanov.decompose.router.slot.activate
 //import com.arkivanov.decompose.router.stack.StackNavigation
 //import com.arkivanov.decompose.router.stack.childStack
 //import com.denchic45.studiversity.ui.navigation.GroupChild
@@ -18,7 +18,7 @@ package com.denchic45.studiversity.ui.studygroup
 //class YourStudyGroupsRootComponent(
 //    groupComponent: (groupId: UUID, ComponentContext) -> GroupComponent,
 //    @Assisted
-//    private val overlayNavigator: OverlayNavigation<OverlayConfig>,
+//    private val overlayNavigator: SlotNavigation<OverlayConfig>,
 //    @Assisted
 //    private val groupId: UUID,
 //    @Assisted

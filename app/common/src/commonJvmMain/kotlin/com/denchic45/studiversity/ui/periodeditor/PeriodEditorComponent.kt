@@ -5,10 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
@@ -46,7 +46,7 @@ class PeriodEditorComponent(
     private val courseChooserComponent: (onFinish: (CourseResponse) -> Unit, ComponentContext) -> CourseChooserComponent,
     private val userChooserComponent: (onFinish: (UserItem) -> Unit, ComponentContext) -> UserChooserComponent,
     private val eventDetailsEditorComponent: (EditingPeriod, ComponentContext) -> EventDetailsEditorComponent,
-    private val lessonDetailsEditorComponent: (EditingPeriod, OverlayNavigation<OverlayConfig>, ComponentContext) -> LessonDetailsEditorComponent,
+    private val lessonDetailsEditorComponent: (EditingPeriod, SlotNavigation<OverlayConfig>, ComponentContext) -> LessonDetailsEditorComponent,
     @Assisted
     private val config: EditingPeriod,
     @Assisted
@@ -107,8 +107,8 @@ class PeriodEditorComponent(
         )
     )
 
-    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
-    val childOverlay = childOverlay(
+    private val overlayNavigation = SlotNavigation<OverlayConfig>()
+    val childSlot = childSlot(
         handleBackButton = true,
         source = overlayNavigation,
         childFactory = { config, componentContext ->

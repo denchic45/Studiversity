@@ -43,7 +43,7 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
         onTabSelect = component::onTabSelect
     )
 
-    childSidebar.overlay.let {
+    childSidebar.child.let {
         when (val child = it?.instance) {
             is StudyGroupComponent.OverlayChild.Member -> ProfileScreen(child.component)
             is StudyGroupComponent.OverlayChild.StudyGroupEditor -> StudyGroupEditorScreen(child.component)

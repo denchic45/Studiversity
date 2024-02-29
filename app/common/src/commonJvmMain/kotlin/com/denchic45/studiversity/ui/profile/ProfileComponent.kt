@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.ui.profile
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.overlay.OverlayNavigation
-import com.arkivanov.decompose.router.overlay.activate
-import com.arkivanov.decompose.router.overlay.childOverlay
-import com.arkivanov.decompose.router.overlay.dismiss
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.preference.UserPreferences
@@ -63,9 +63,9 @@ class ProfileComponent(
 
     val fullAvatarSize = MutableStateFlow(false)
 
-    private val overlayNavigation = OverlayNavigation<OverlayConfig>()
+    private val overlayNavigation = SlotNavigation<OverlayConfig>()
 
-    val childOverlay = childOverlay(
+    val childSlot = childSlot(
         source = overlayNavigation,
         handleBackButton = true,
         childFactory = { config, context ->
