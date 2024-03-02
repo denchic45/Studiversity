@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 val ktorVersion: String by project
 
 plugins {
@@ -11,16 +9,18 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-}
+//tasks.withType<KotlinCompile> {
+//    kotlinOptions {
+//        jvmTarget = "17"
+//    }
+//}
 
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "17"
+            kotlinOptions {
+                jvmTarget = "17"
+            }
         }
     }
     sourceSets {
