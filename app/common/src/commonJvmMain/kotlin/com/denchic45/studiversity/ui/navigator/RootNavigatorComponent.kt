@@ -1,12 +1,7 @@
 package com.denchic45.studiversity.ui.navigator
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.bringToFront
-import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -17,13 +12,14 @@ import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.studiversity.ui.navigation.ChildrenContainerChild
 import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
+import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.ui.yourstudygroups.YourStudyGroupsComponent
 import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesComponent
 import com.denchic45.studiversity.ui.yourworks.YourWorksComponent
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 
 @Inject
@@ -33,6 +29,7 @@ class RootNavigatorComponent(
         onCourseOpen: (UUID) -> Unit,
         onStudyGroupOpen: (UUID) -> Unit, ComponentContext,
     ) -> YourStudyGroupsComponent,
+    profileComponent: ((UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
     courseComponent: (
         onFinish: () -> Unit,
         onStudyGroupOpen: (UUID) -> Unit,
@@ -74,6 +71,14 @@ class RootNavigatorComponent(
                 RootConfig.YourTimetables -> RootChild.YourTimetables(
                     yourTimetablesComponent(
                         { navigation.bringToFront(RootConfig.StudyGroup(it)) },
+                        context
+                    )
+                )
+
+                is RootConfig.Profile -> RootChild.Profile(
+                    profileComponent(
+                        { navigation.push(RootConfig.StudyGroup(it)) },
+                        config.userId,
                         context
                     )
                 )
@@ -145,6 +150,8 @@ sealed interface RootConfig : Parcelable {
         private fun readResolve(): Any = Works
     }
 
+    data class Profile(val userId: UUID) : RootConfig
+
     data class StudyGroup(val studyGroupId: UUID) : RootConfig
 
     data class Course(val courseId: UUID) : RootConfig
@@ -171,6 +178,10 @@ sealed interface RootChild {
 
     class YourWorks(
         override val component: YourWorksComponent,
+    ) : RootChild, ChildrenContainerChild
+
+    class Profile(
+        override val component: ProfileComponent,
     ) : RootChild, ChildrenContainerChild
 
     class StudyGroup(

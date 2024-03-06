@@ -7,6 +7,7 @@ import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.usecase.RemoveUserUseCase
@@ -35,7 +36,7 @@ class UsersAdminComponent(
         UUID, ComponentContext,
     ) -> ProfileComponent,
     @Assisted
-    rootNavigation: StackNavigation<RootConfig>,
+    private val rootNavigation: StackNavigation<RootConfig>,
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, SearchableAdminComponent<UserItem> {
@@ -91,7 +92,8 @@ class UsersAdminComponent(
     }
 
     fun onUserClick(userId: UUID) {
-        sidebarNavigation.activate(Config.Profile(userId))
+//        sidebarNavigation.activate(Config.Profile(userId))
+        rootNavigation.push(RootConfig.Profile(userId))
     }
 
     @Parcelize

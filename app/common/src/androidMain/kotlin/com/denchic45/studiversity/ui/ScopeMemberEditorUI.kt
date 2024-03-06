@@ -19,7 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.resource.resourceOf
-import com.denchic45.studiversity.name
+import com.denchic45.studiversity.scopedRoleName
 import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
@@ -95,7 +95,7 @@ fun ScopeMemberEditorContent(
         LazyColumn {
             items(state.availableRoles) { role ->
                 ListItem(
-                    headlineContent = { Text(text = role.name()) },
+                    headlineContent = { Text(text = role.scopedRoleName()) },
                     trailingContent = {
                         if (role in state.assignedRoles) {
                             Icon(Icons.Outlined.Done, contentDescription = "assigned")

@@ -1,23 +1,8 @@
 package com.denchic45.studiversity.ui.yourstudygroups
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.resource.Resource
@@ -54,8 +39,8 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
             Box {
                 YourStudyGroupScreen(studyGroupComponent)
                 val childSidebar by studyGroupComponent.childSidebar.subscribeAsState()
-                showSpinner = childSidebar.overlay == null
-                when (val child = childSidebar.overlay?.instance) {
+                showSpinner = childSidebar.child == null
+                when (val child = childSidebar.child?.instance) {
                     is StudyGroupComponent.OverlayChild.Member -> ProfileScreen(child.component)
 
                     is StudyGroupComponent.OverlayChild.StudyGroupEditor -> {

@@ -78,7 +78,7 @@ fun StudyGroupContent(
     onTabSelect: (Int) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = children::size)
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TabRow(
@@ -103,7 +103,6 @@ fun StudyGroupContent(
         Divider()
         HorizontalPager(
             state = pagerState,
-            pageCount = children.size,
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 when (val child = children[it]) {

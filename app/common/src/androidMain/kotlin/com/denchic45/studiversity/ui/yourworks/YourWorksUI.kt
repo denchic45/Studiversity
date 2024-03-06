@@ -7,14 +7,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.Task
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material3.pullrefresh.PullRefreshIndicator
-import androidx.compose.material3.pullrefresh.PullRefreshState
-import androidx.compose.material3.pullrefresh.pullRefresh
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -98,6 +98,7 @@ fun YourWorksScreen(component: YourWorksComponent) {
 }
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WorksListContent(
     works: Resource<List<CourseWorkResponse>>,
@@ -150,7 +151,7 @@ fun CourseWorkListItem(response: CourseWorkResponse, onClick: () -> Unit) {
                 .padding(8.dp)
         ) {
             Icon(
-                imageVector = Icons.Outlined.Assignment,
+                imageVector = Icons.AutoMirrored.Outlined.Assignment,
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = null,
             )

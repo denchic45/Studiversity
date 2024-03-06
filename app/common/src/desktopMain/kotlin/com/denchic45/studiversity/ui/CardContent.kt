@@ -1,3 +1,4 @@
+
 package com.denchic45.studiversity.ui
 
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -9,12 +10,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.denchic45.studiversity.ui.theme.spacing
 
 @Composable
 fun CardContent(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        modifier = modifier.fillMaxHeight().padding(end = 24.dp, bottom = 24.dp),
+        modifier = modifier.fillMaxHeight()
+//            .padding(end = 24.dp, bottom = 24.dp),
+            .padding(MaterialTheme.spacing.medium),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {

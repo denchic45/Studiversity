@@ -8,11 +8,9 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.HelpOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -224,7 +222,7 @@ fun MainScreen(component: MainComponent) {
                                         }
                                         ListItem(
                                             headlineContent = { Text("Помощь") },
-                                            leadingContent = { Icon(Icons.Rounded.HelpOutline, null) },
+                                            leadingContent = { Icon(Icons.AutoMirrored.Rounded.HelpOutline, null) },
                                             modifier = Modifier.clickable {
                                                 showProfilePopup = false
 //                                                onHelpClick()
@@ -270,7 +268,7 @@ fun MainScreen(component: MainComponent) {
                         )
                     }
 
-                    Divider(Modifier.width(48.dp).align(Alignment.CenterHorizontally))
+                    HorizontalDivider(Modifier.width(48.dp).align(Alignment.CenterHorizontally))
 
                     NavigationRailItem(
                         icon = {
@@ -368,7 +366,7 @@ fun MainAppBar(
 //        if (showBackButton) {
         IconButton(onClick = onBackClick, enabled = showBackButton) {
             Icon(
-                imageVector = Icons.Rounded.ArrowBack,
+                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                 contentDescription = "back"
             )
         }
@@ -426,8 +424,8 @@ fun AppBarTitle(text: String) {
 }
 
 @Composable
-fun NavigationIconBack(onClick: @Composable () -> Unit) {
+fun NavigationIconBack(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
-        Icon(Icons.Default.ArrowBack, "pop")
+        Icon(Icons.AutoMirrored.Filled.ArrowBack, "pop")
     }
 }

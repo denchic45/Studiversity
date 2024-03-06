@@ -1,28 +1,32 @@
 package com.denchic45.studiversity.ui.profile
 
+import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.user.model.UserResponse
 
 data class ProfileViewState(
-    val fullName: String,
-    val avatarUrl: String,
-    val personalDate: PersonalData?,
+    val user: UserResponse,
+    val role: Role,
 
     val studyGroups: List<StudyGroupResponse>,
 
+    val self: Boolean,
     val allowEditConfidential: Boolean,
     val allowEditProfile: Boolean,
-    val allowUpdateAvatar: Boolean,
 ) {
     data class PersonalData(val email: String)
 }
 
-fun UserResponse.toProfileViewState(studyGroups:List<StudyGroupResponse>,allowEdit: Boolean, isOwned: Boolean) = ProfileViewState(
-    fullName = fullName,
-    avatarUrl = avatarUrl,
-    personalDate = account.email.let { ProfileViewState.PersonalData(it) },
+fun UserResponse.toProfileViewState(
+    role: Role,
+    studyGroups: List<StudyGroupResponse>,
+    allowEdit: Boolean,
+    self: Boolean
+) = ProfileViewState(
+    user = this,
     studyGroups = studyGroups,
+    self = self,
     allowEditConfidential = allowEdit,
     allowEditProfile = allowEdit,
-    allowUpdateAvatar = isOwned
+    role = role
 )

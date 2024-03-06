@@ -3,33 +3,22 @@ package com.denchic45.studiversity.ui.courseelements
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.MenuBook
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.pullrefresh.PullRefreshIndicator
-import androidx.compose.material3.pullrefresh.pullRefresh
-import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -56,9 +45,10 @@ import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.util.toString
 import java.time.LocalDate
 import java.time.LocalTime
-import java.util.UUID
+import java.util.*
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CourseElementsScreen(component: CourseElementsComponent) {
     val elementsResource by component.elements.collectAsState()
@@ -156,7 +146,7 @@ fun CourseElementsContent(
             IconTitleBox(
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.Assignment,
+                        imageVector = Icons.AutoMirrored.Outlined.Assignment,
                         contentDescription = "empty",
                         modifier = Modifier.size(78.dp),
                         tint = MaterialTheme.colorScheme.surfaceVariant,
@@ -189,8 +179,8 @@ fun CourseElementListItem(response: CourseElementResponse, onClick: () -> Unit) 
         ) {
             Icon(
                 imageVector = when (response.details) {
-                    is CourseWork -> Icons.Outlined.Assignment
-                    CourseMaterial -> Icons.Outlined.MenuBook
+                    is CourseWork -> Icons.AutoMirrored.Outlined.Assignment
+                    CourseMaterial -> Icons.AutoMirrored.Outlined.MenuBook
                 },
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = null,

@@ -8,17 +8,9 @@ import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.preference.UserPreferences
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.flatMapResourceFlow
-import com.denchic45.studiversity.domain.resource.map
-import com.denchic45.studiversity.domain.resource.mapResource
-import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
-import com.denchic45.studiversity.domain.usecase.FindStudyGroupsUseCase
-import com.denchic45.studiversity.domain.usecase.ObserveUserUseCase
-import com.denchic45.studiversity.domain.usecase.RemoveAvatarUseCase
-import com.denchic45.studiversity.domain.usecase.UpdateAvatarUseCase
+import com.denchic45.studiversity.domain.resource.*
+import com.denchic45.studiversity.domain.usecase.*
+import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -30,29 +22,32 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class ProfileComponent(
     userPreferences: UserPreferences,
     observeUserUseCase: ObserveUserUseCase,
-    findStudyGroupUseCase: FindStudyGroupsUseCase,
+    findStudyGroupsUseCase: FindStudyGroupsUseCase,
+    findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     private val updateAvatarUseCase: UpdateAvatarUseCase,
     private val removeAvatarUseCase: RemoveAvatarUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     @Assisted
     private val onStudyGroupOpen: (UUID) -> Unit,
     @Assisted
-  val  userId: UUID,
+    val userId: UUID,
     @Assisted
     componentContext: ComponentContext,
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, EmptyChildrenContainer {
 
     private val componentScope = componentScope()
 
     private val userFlow = observeUserUseCase(userId).stateInResource(componentScope)
 
-    private val studyGroups = findStudyGroupUseCase(memberId = uuidOf(userId))
+    private val userRole = findAssignedUserRolesInScopeUseCase(userId, null)
+
+    private val studyGroups = findStudyGroupsUseCase(memberId = uuidOf(userId))
 
     private val capabilities = userFlow.flatMapResourceFlow { profileUser ->
         checkUserCapabilitiesInScopeUseCase(
@@ -77,26 +72,28 @@ class ProfileComponent(
         }
     )
 
-    val viewState: StateFlow<Resource<ProfileViewState>> =
-        combine(userFlow, studyGroups, capabilities) { userRes, studyGroupsRes, capabilitiesRes ->
-            capabilitiesRes.mapResource { capabilities ->
-                studyGroupsRes.mapResource { studyGroups ->
-                    userRes.map { user ->
-                        user.toProfileViewState(
-                            studyGroups,
-                            capabilities.hasCapability(Capability.WriteUser),
-                            userPreferences.id.toUUID() == user.id
-                        )
-                    }
-                }
-            }
-        }.stateInResource(componentScope)
+    val viewState: StateFlow<Resource<ProfileViewState>> = combine(
+        userFlow,
+        userRole,
+        studyGroups,
+        capabilities
+    ) { userRes, roleRes, studyGroupsRes, capabilitiesRes ->
+        bindResources {
+            val user = userRes.bind()
+            user.toProfileViewState(
+                roleRes.bind().roles.single(),
+                studyGroupsRes.bind(),
+                capabilitiesRes.bind().hasCapability(Capability.WriteUser),
+                userPreferences.id.toUUID() == user.id,
+            )
+        }
+    }.stateInResource(componentScope)
 
     fun onAvatarClick() {
         viewState.value.onSuccess { profile ->
             userFlow.value.onSuccess { user ->
                 overlayNavigation.activate(
-                    if (profile.allowUpdateAvatar) {
+                    if (profile.self) {
                         if (user.generatedAvatar)
                             OverlayConfig.ImageChooser
                         else

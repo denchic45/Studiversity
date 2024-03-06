@@ -1,63 +1,23 @@
 package com.denchic45.studiversity.ui.course
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.*
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.MenuBook
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.contentColorFor
-import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -218,7 +178,7 @@ fun CourseContent(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back")
                     }
                 },
                 scrollBehavior = scrollBehavior
@@ -263,7 +223,7 @@ fun CourseContent(
                             ) {
                                 SmallFloatingActionButton(onClick = { onAddMaterialClick() }) {
                                     Icon(
-                                        painter = rememberVectorPainter(Icons.Outlined.MenuBook),
+                                        painter = rememberVectorPainter(Icons.AutoMirrored.Outlined.MenuBook),
                                         contentDescription = "add material",
                                         modifier = Modifier
                                     )
@@ -300,7 +260,7 @@ fun CourseContent(
                             Crossfade(targetState = fabExpanded) {
                                 if (it) {
                                     Icon(
-                                        painter = rememberVectorPainter(Icons.Outlined.Assignment),
+                                        painter = rememberVectorPainter(Icons.AutoMirrored.Outlined.Assignment),
                                         contentDescription = "add work",
                                         modifier = Modifier.rotate(rotation.value + 180f)
                                     )
@@ -345,7 +305,7 @@ fun CourseContent(
         }) {
             Column(Modifier.padding(paddingValues)) {
                 val coroutineScope = rememberCoroutineScope()
-                val pagerState = rememberPagerState()
+                val pagerState = rememberPagerState(pageCount = children::size)
 
                 TabRow(selectedTabIndex = pagerState.currentPage,
                     indicator = { positions ->
@@ -364,8 +324,7 @@ fun CourseContent(
                     }
                 }
                 HorizontalPager(
-                    state = pagerState,
-                    pageCount = children.size,
+                    state = pagerState
                 ) {
                     Box(modifier = Modifier.fillMaxHeight()) {
                         when (val child = children[it]) {

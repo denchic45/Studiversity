@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
@@ -17,10 +18,61 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.systemRoleName
+import com.denchic45.studiversity.ui.CardContent
+import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
 import com.seiko.imageloader.rememberAsyncImagePainter
 
+
+@Composable
+fun ProfileScreen(component: ProfileComponent) {
+    val state by component.viewState.collectAsState()
+    Box(Modifier.widthIn(max = 420.dp)) {
+        ProfileContent(state)
+    }
+}
+
+@Composable
+fun ProfileContent(state: Resource<ProfileViewState>) {
+    Column {
+        CardContent {
+            Row(Modifier.height(120.dp), verticalAlignment = Alignment.CenterVertically) {
+                state.onSuccess { profile ->
+                    val user = profile.user
+                    Image(
+                        painter = rememberAsyncImagePainter(user.avatarUrl),
+                        null,
+                        Modifier.size(68.dp).clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(Modifier.width(MaterialTheme.spacing.normal))
+                    Row {
+                        Text(user.fullName)
+                        Text(profile.role.systemRoleName())
+
+                        if (profile.studyGroups.size == 1) {
+                            Row {
+                                Icon(Icons.Outlined.Groups, null)
+                                Spacer(Modifier.width(MaterialTheme.spacing.small))
+                                val studyGroup = profile.studyGroups.single()
+                                Text(studyGroup.name)
+                            }
+                        } else if (profile.studyGroups.size > 1) {
+                            // TODO: сделать диалоговое окно с несклькими группами
+                            Icon(Icons.Outlined.Groups, null)
+                            Text("${profile.studyGroups.size} групп")
+                        }
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(MaterialTheme.spacing.normal))
+
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +99,8 @@ fun ProfileSideBar(
             )
         )
         profileViewState.onSuccess { profile ->
-            ProfileHeader(profile.avatarUrl, profile.fullName)
+            val user = profile.user
+            ProfileHeader(user.avatarUrl, user.fullName)
 //            if (profile.groupInfo != null) {
 //                ListItem(Modifier.clickable(
 //                    profile.groupClickable,
@@ -58,8 +111,8 @@ fun ProfileSideBar(
 //                        Text(text = profile.groupInfo, style = MaterialTheme.typography.bodyLarge)
 //                    })
 //            }
-            Divider(Modifier.fillMaxWidth())
-            profile.personalDate?.let { personalDate ->
+            HorizontalDivider(Modifier.fillMaxWidth())
+            user.account.let { personalDate ->
                 ListItem(
                     leadingContent = {
                         Icon(painterResource("ic_email".toDrawablePath()), null)

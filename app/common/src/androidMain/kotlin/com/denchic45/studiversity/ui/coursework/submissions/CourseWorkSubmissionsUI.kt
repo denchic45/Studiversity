@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefreshh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.pullrefresh.PullRefreshIndicator
-import androidx.compose.material3.pullrefresh.pullRefresh
-import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,7 +38,7 @@ fun CourseWorkSubmissionsScreen(component: CourseWorkSubmissionsComponent) {
     val refreshing by component.refreshing.collectAsState()
     val refreshState = rememberPullRefreshState(refreshing, component::onRefresh)
 
-    Box(modifier = Modifier.pullRefresh(refreshState)) {
+    Box(modifier = Modifier.pullRefreshh(refreshState)) {
         SubmissionsContent(submissionsResource, component)
         PullRefreshIndicator(refreshing, refreshState, Modifier.align(Alignment.TopCenter))
     }
