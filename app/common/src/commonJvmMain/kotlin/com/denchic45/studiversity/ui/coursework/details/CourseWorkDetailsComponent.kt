@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CourseWorkDetailsComponent(
@@ -41,18 +41,15 @@ class CourseWorkDetailsComponent(
     val openAttachment = MutableSharedFlow<AttachmentItem>()
 
     fun onAttachmentClick(item: AttachmentItem) {
-        when (item) {
-            is AttachmentItem.FileAttachmentItem -> when (item.state) {
-                FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
-                FileState.FailDownload,  FileState.Preview -> componentScope.launch {
-                    downloadFileUseCase(item.attachmentId)
+        componentScope.launch {
+            when (item) {
+                is AttachmentItem.FileAttachmentItem -> when (item.state) {
+                    FileState.Downloaded -> openAttachment.emit(item)
+                    FileState.FailDownload, FileState.Preview -> downloadFileUseCase(item.attachmentId)
+                    else -> {}
                 }
 
-                else -> {}
-            }
-
-            is AttachmentItem.LinkAttachmentItem -> componentScope.launch {
-                openAttachment.emit(item)
+                is AttachmentItem.LinkAttachmentItem -> openAttachment.emit(item)
             }
         }
     }

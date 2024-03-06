@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CourseWorkComponent(
@@ -99,9 +99,7 @@ class CourseWorkComponent(
     val children = capabilities.mapResource {
         buildList {
             withContext(Dispatchers.Main) {
-                add(
-                    Child.Details(courseWorkDetailsComponent)
-                )
+                add(Child.Details(courseWorkDetailsComponent))
                 it.ifHasCapability(Capability.ReadSubmissions) {
                     add(
                         Child.Submissions(

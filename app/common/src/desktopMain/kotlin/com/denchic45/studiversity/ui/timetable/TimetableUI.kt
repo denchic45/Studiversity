@@ -169,9 +169,7 @@ private fun TimetableBar(
         }
         Spacer(Modifier.width(MaterialTheme.spacing.small))
         Text(
-            text = getMonthTitle(
-                selectedDate.format(DateTimeFormatter.ofPattern(DateTimePatterns.YYYY_ww))
-            ),
+            text = getMonthTitle(selectedDate.format(DateTimeFormatter.ofPattern(DateTimePatterns.YYYY_ww))),
             style = MaterialTheme.typography.titleLarge
         )
     }

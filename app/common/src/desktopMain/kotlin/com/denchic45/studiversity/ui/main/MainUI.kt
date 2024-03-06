@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ChevronRight
@@ -394,6 +395,23 @@ fun CustomAppBar(
 }
 
 @Composable
+fun CustomCenteredAppBar(
+    modifier: Modifier = Modifier,
+    navigationContent: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    Row(
+        modifier = modifier.height(80.dp).padding(horizontal = MaterialTheme.spacing.normal),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        navigationContent()
+        Spacer(Modifier.weight(1f))
+        content()
+        Spacer(Modifier.weight(1f))
+    }
+}
+
+@Composable
 fun AppBarTitle(text: String) {
     Box(
         modifier = Modifier.fillMaxHeight(),
@@ -404,5 +422,12 @@ fun AppBarTitle(text: String) {
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.headlineSmall
         )
+    }
+}
+
+@Composable
+fun NavigationIconBack(onClick: @Composable () -> Unit) {
+    IconButton(onClick = onClick) {
+        Icon(Icons.Default.ArrowBack, "pop")
     }
 }

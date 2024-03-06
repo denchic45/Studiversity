@@ -1,35 +1,22 @@
 package com.denchic45.studiversity.ui.coursework
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.TabIndicator
+import com.denchic45.studiversity.ui.main.CustomCenteredAppBar
+import com.denchic45.studiversity.ui.main.NavigationIconBack
 import com.denchic45.studiversity.ui.theme.LocalBackDispatcher
+import com.denchic45.studiversity.ui.theme.spacing
 
 @Composable
 fun CourseWorkScreen(component: CourseWorkComponent) {
@@ -65,8 +52,22 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     var selectedTab by remember { mutableStateOf(0) }
 
     Row(Modifier.widthIn(max = 960.dp)) {
-        CourseWorkBody(
+        CourseWorkContent(
             childrenResource = childrenResource,
+            submissionContent = {
+                if (hasSubmission.takeValueIfSuccess() == true) {
+                    SubmissionPanel(
+                        resource = submissionResource,
+                        onAttachmentAdd = {
+                            // TODO: use desktop file chooser
+                        },
+                        onAttachmentClick = component::onAttachmentClick,
+                        onAttachmentRemove = yourSubmissionComponent::onAttachmentRemove,
+                        onSubmit = yourSubmissionComponent::onSubmit,
+                        onCancel = yourSubmissionComponent::onCancel
+                    )
+                }
+            },
             allowEdit = allowEdit,
             selectedTab = selectedTab,
             onTabSelect = { selectedTab = it },
@@ -74,114 +75,13 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
             onDeleteClick = component::onDeleteClick,
             onClose = backDispatcher::back
         )
-        if (hasSubmission.takeValueIfSuccess() == true) {
-            SubmissionPanel(
-                resource = submissionResource,
-                onAttachmentAdd = {
-                    // TODO: use desktop file chooser
-                },
-                onAttachmentClick = component::onAttachmentClick,
-                onAttachmentRemove = yourSubmissionComponent::onAttachmentRemove,
-                onSubmit = yourSubmissionComponent::onSubmit,
-                onCancel = yourSubmissionComponent::onCancel
-            )
-        }
-
     }
-
-//    CourseWorkContent(
-//        modifier = Modifier.widthIn(max = 960.dp),
-//        childrenResource = childrenResource,
-//        submissionResource = if (hasSubmission.takeValueIfSuccess() == true) submissionResource else null,
-//        allowEdit = allowEdit,
-//        onEditClick = component::onEditClick,
-//        onDeleteClick = component::onDeleteClick,
-//        onClose = backDispatcher::back
-
-//        onAttachmentAdd = {
-//            chooseMultipleFiles("Выбрать файлы") {
-//                yourSubmissionComponent.onFilesSelect(it.map(File::toOkioPath))
-//            }
-//        },
-//        onAttachmentClick = { component.onAttachmentClick(it) },
-//        onAttachmentRemove = yourSubmissionComponent::onAttachmentRemove,
-//        onSubmit = yourSubmissionComponent::onSubmit,
-//        onCancel = yourSubmissionComponent::onCancel,
-//        submissionExpanded = submissionExpanded,
-//        onSubmissionExpandChange = yourSubmissionComponent::onExpandChanged
-//    )
 }
-
 
 @Composable
 private fun CourseWorkContent(
-    modifier: Modifier = Modifier,
     childrenResource: Resource<List<CourseWorkComponent.Child>>,
-    submissionResource: Resource<SubmissionUiState>?,
-    allowEdit: Boolean,
-    onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit,
-    onClose: () -> Unit
-) {
-
-
-//    BottomSheetScaffold(
-//        sheetPeekHeight = topHeight.pxToDp(),
-//        scaffoldState = scaffoldState,
-//        sheetSwipeEnabled = offset != 0F,
-//        sheetContent = {
-//            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-//                submissionResource?.onSuccess { submission ->
-//                    SubmissionHeaderContent(
-//                        submission,
-//                        Modifier
-//                            .onGloballyPositioned { coordinates ->
-//                                headerHeight = coordinates.size.height.toFloat()
-//                            }
-//                            .padding(top = MaterialTheme.spacing.normal)
-//                    )
-//                    Box(Modifier.fillMaxHeight()) {
-//                        Column(Modifier.fillMaxHeight()) {
-//                            SubmissionSheetExpanded(
-//                                uiState = submission,
-//                                modifier = Modifier
-//                                    .height(screenHeight.pxToDp() + collapsedHeight.pxToDp())
-//                                    .alpha(transition)
-//                                    .clickable(enabled = false, onClick = {}),
-//                                onAttachmentAdd = onAttachmentAdd,
-//                                onAttachmentClick = onAttachmentClick,
-//                                onAttachmentRemove = onAttachmentRemove,
-//                                onSubmit = onSubmit,
-//                                onCancel = onCancel
-//                            )
-//                        }
-//
-//                        if (transition < 1F)
-//                            SubmissionCollapsedContent(
-//                                submission,
-//                                Modifier
-//                                    .clickable(enabled = false, onClick = {})
-//                                    .alpha(1 - transition)
-//                                    .onGloballyPositioned { coordinates ->
-//                                        collapsedHeight = coordinates.size.height.toFloat()
-//                                    },
-//                                onAttachmentAdd,
-//                                onSubmit,
-//                                onCancel
-//                            )
-//                    }
-//                }
-//            }
-//        },
-//        sheetDragHandle = null
-//    ) {
-//
-//    }
-}
-
-@Composable
-private fun CourseWorkBody(
-    childrenResource: Resource<List<CourseWorkComponent.Child>>,
+    submissionContent: @Composable () -> Unit,
     allowEdit: Boolean,
     selectedTab: Int,
     onTabSelect: (Int) -> Unit,
@@ -198,10 +98,7 @@ private fun CourseWorkBody(
 
     ResourceContent(resource = childrenResource) { children ->
         Column(Modifier.fillMaxSize()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onClose) {
-                    Icon(Icons.Default.ArrowBack, "pop")
-                }
+            CustomCenteredAppBar(navigationContent = { NavigationIconBack(onClose) }) {
                 if (children.size != 1) {
                     TabRow(
                         selectedTabIndex = selectedTab,
@@ -220,17 +117,20 @@ private fun CourseWorkBody(
                         }
                     }
                 }
-                Divider()
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
                 when (val child = children[selectedTab]) {
-                    is CourseWorkComponent.Child.Details -> CourseWorkDetailsScreen(
-                        component = child.component,
-                        allowEdit = allowEdit,
-                        onEditClick = onEditClick,
-                        onDeleteClick = onDeleteClick
-                    )
+                    is CourseWorkComponent.Child.Details -> Row {
+                        CourseWorkDetailsScreen(
+                            component = child.component,
+                            allowEdit = allowEdit,
+                            onEditClick = onEditClick,
+                            onDeleteClick = onDeleteClick
+                        )
+                        Spacer(Modifier.width(MaterialTheme.spacing.normal))
+                        submissionContent()
+                    }
 
                     is CourseWorkComponent.Child.Submissions -> {
                         CourseWorkSubmissionsScreen(child.component)
