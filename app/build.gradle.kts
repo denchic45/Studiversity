@@ -1,6 +1,9 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    kotlin("plugin.serialization") version "1.9.22"
+    kotlin("plugin.serialization")
+    kotlin("jvm")
+
+//    id("org.jetbrains.compose") version "1.6.0"
 }
 
 buildscript {
@@ -11,7 +14,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:8.2.1")
+        classpath("com.android.tools.build:gradle:8.2.2")
         classpath("app.cash.sqldelight:gradle-plugin:2.0.0-alpha05")
         classpath("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.9.22-1.0.17")
     }
@@ -29,8 +32,4 @@ allprojects {
 
         maven("https://packages.jetbrains.team/maven/p/kpm/public/")
     }
-}
-
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
 }

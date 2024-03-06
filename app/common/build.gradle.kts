@@ -1,6 +1,6 @@
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.5.12"
+    id("org.jetbrains.compose")
     id("com.android.library")
     kotlin("plugin.serialization") version "1.9.22"
     id("kotlin-parcelize")
@@ -8,8 +8,13 @@ plugins {
     id("app.cash.sqldelight")
 }
 
-val sqlDelightVersion = "2.0.0-alpha05"
+val sqlDelightVersion: String by project
+val ktorVersion: String by project
+val koinVersion: String by project
+val decomposeVersion: String by project
+
 kotlin {
+    jvmToolchain(17)
     androidTarget()
     jvm("desktop") {
         compilations.all {
@@ -18,10 +23,6 @@ kotlin {
     }
 
     sourceSets {
-        val ktorVersion = "2.3.1"
-        val koinVersion = "3.2.0"
-        val decomposeVersion = "2.0.0"
-
         val commonMain by getting {
             dependencies {
                 // Compose
@@ -50,7 +51,7 @@ kotlin {
                 // Decompose
                 api("com.arkivanov.decompose:decompose:$decomposeVersion")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
 
                 implementation("app.cash.sqldelight:runtime:$sqlDelightVersion")
                 implementation("app.cash.sqldelight:coroutines-extensions:$sqlDelightVersion")
@@ -72,7 +73,7 @@ kotlin {
                 implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
                 implementation("com.michael-bull.kotlin-result:kotlin-result-coroutines:1.1.17")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
             }
         }
         val commonTest by getting {
@@ -88,7 +89,7 @@ kotlin {
                 dependsOn(commonMain)
 
                 implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3")
 
                 implementation("app.cash.sqldelight:runtime-jvm:$sqlDelightVersion")
 
@@ -110,32 +111,32 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 dependsOn(commonJvmMain)
-                implementation("androidx.core:core-ktx:1.10.1")
+                implementation("androidx.core:core-ktx:1.12.0")
 
                 implementation("com.kizitonwose.calendar:compose:2.3.0")
 
-                implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+//                implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
 
                 implementation("com.arkivanov.decompose:extensions-android:$decomposeVersion")
 
                 implementation("io.ktor:ktor-client-android:$ktorVersion")
                 implementation("app.cash.sqldelight:android-driver:$sqlDelightVersion")
 
-                implementation("androidx.work:work-runtime-ktx:2.8.1")
+                implementation("androidx.work:work-runtime-ktx:2.9.0")
 
                 // Compose
                 val jetpackComposeVersion = "1.6.2"
                 api("androidx.compose.runtime:runtime:$jetpackComposeVersion")
                 implementation("androidx.compose.ui:ui:$jetpackComposeVersion")
-                implementation("androidx.activity:activity-compose:1.7.2")
+                implementation("androidx.activity:activity-compose:1.8.2")
                 // Tooling support (Previews, etc.)
                 implementation("androidx.compose.ui:ui-tooling:$jetpackComposeVersion")
                 // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
                 implementation("androidx.compose.foundation:foundation:$jetpackComposeVersion")
                 // Material Design
-                implementation("androidx.compose.material3:material3:1.1.1")
+                implementation("androidx.compose.material3:material3:1.2.0")
                 // Lifecycle
-                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
                 implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
                 implementation("com.airbnb.android:lottie-compose:6.0.0")
@@ -158,7 +159,7 @@ kotlin {
                 // Flow layout
                 implementation("com.google.accompanist:accompanist-flowlayout:0.27.0")
 
-                implementation("me.omico.lux:lux-androidx-compose-material3-pullrefresh")
+//                implementation("me.omico.lux:lux-androidx-compose-material3-pullrefresh")
             }
         }
         val androidUnitTest by getting {
@@ -181,7 +182,7 @@ kotlin {
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.1")
-                
+
                 implementation("media.kamel:kamel-image:0.7.0")
 
                 implementation("com.github.Dansoftowner:jSystemThemeDetector:3.6")

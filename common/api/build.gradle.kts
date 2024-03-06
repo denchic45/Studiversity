@@ -9,18 +9,11 @@ repositories {
     mavenCentral()
 }
 
-//tasks.withType<KotlinCompile> {
-//    kotlinOptions {
-//        jvmTarget = "17"
-//    }
-//}
-
 kotlin {
+    jvmToolchain(17)
     jvm {
         compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
+            kotlinOptions.jvmTarget = "17"
         }
     }
     sourceSets {
@@ -38,6 +31,11 @@ kotlin {
                 implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
             }
         }
+
+        val commonTest by getting {}
+
         val jvmMain by getting {}
+
+        val jvmTest by getting {}
     }
 }

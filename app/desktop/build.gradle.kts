@@ -2,18 +2,17 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.5.12"
+    id("org.jetbrains.compose")
     id("com.google.devtools.ksp")
 }
 
 group = "com.denchic45.studiversity"
 
 kotlin {
+    jvmToolchain(17)
     jvm {
         compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
+            kotlinOptions.jvmTarget = "17"
         }
         configurations.all {
             // some dependencies contains it, this causes an exception to initialize the Main dispatcher in desktop

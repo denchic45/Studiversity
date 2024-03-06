@@ -1,13 +1,21 @@
 pluginManagement {
+    val kotlinVersion: String by settings
+    val jetbrainsCompose: String by settings
+
     repositories {
         google()
         gradlePluginPortal()
         mavenCentral()
         maven("https://androidx.dev/storage/compose-compiler/repository/")
     }
+
     plugins {
-        id("org.jetbrains.kotlin.android") version "1.9.22"
-        id("org.jetbrains.kotlin.jvm") version "1.9.22"
+        kotlin("android") version kotlinVersion
+        kotlin("jvm") version kotlinVersion
+//        kotlin("multiplatform") version kotlinVersion
+        kotlin("plugin.serialization") version kotlinVersion
+        id("org.jetbrains.compose") version jetbrainsCompose
+
         id("com.android.library") version "7.4.1"
     }
 }
@@ -20,9 +28,3 @@ include(":desktop")
 
 include(":common:api")
 project(":common:api").projectDir = file("../common/api")
-
-includeBuild("common/libs/androidx-compose-material3-pullrefresh") {
-    dependencySubstitution {
-        substitute(module("me.omico.lux:lux-androidx-compose-material3-pullrefresh")).using(project(":library"))
-    }
-}
