@@ -22,7 +22,7 @@ class AttachmentRepository(private val bucket: BucketApi) {
         this.name = request.name
         this.type = AttachmentType.FILE
 //        this.path = getPathBy
-        this.ownerId = ownerId
+        this.resourceId = ownerId
 //        this.ownerType = ownerType
     }.also { dao ->
         AttachmentReferenceDao.new {
@@ -41,7 +41,7 @@ class AttachmentRepository(private val bucket: BucketApi) {
             this.name = "Link name" // TODO ставить реальное название
             this.type = AttachmentType.LINK
             this.url = link.url
-            this.ownerId = ownerId
+            this.resourceId = ownerId
 //            this.ownerType = ownerType
         }.also { dao ->
             AttachmentReferenceDao.new {
@@ -104,7 +104,7 @@ class AttachmentRepository(private val bucket: BucketApi) {
     suspend fun removeConsumer(attachmentId: UUID, consumerId: UUID): Boolean {
         val attachmentDao = AttachmentDao.findById(attachmentId)
         return attachmentDao?.apply {
-            if (attachmentDao.ownerId == consumerId)
+            if (attachmentDao.resourceId == consumerId)
                 remove(attachmentDao)
             else
                 AttachmentReferences.deleteWhere {
@@ -161,11 +161,11 @@ class AttachmentRepository(private val bucket: BucketApi) {
     }
 
     private fun removeByOwnerId(ownerId: UUID) {
-        Attachments.deleteWhere { Attachments.ownerId eq ownerId }
+        Attachments.deleteWhere { Attachments.resourceId eq ownerId }
     }
 
     private fun removeByOwnerIds(ownerIds: List<UUID>) {
-        Attachments.deleteWhere { ownerId inList ownerIds }
+        Attachments.deleteWhere { resourceId inList ownerIds }
     }
 
     suspend fun findAttachmentById(attachmentId: UUID): AttachmentResponse? {
@@ -187,6 +187,6 @@ class AttachmentRepository(private val bucket: BucketApi) {
     }
 
     fun checkIsOwner(ownerId: UUID, attachmentId: UUID): Boolean {
-        return AttachmentDao.findById(attachmentId)?.ownerId == ownerId
+        return AttachmentDao.findById(attachmentId)?.resourceId == ownerId
     }
 }

@@ -1,7 +1,6 @@
 package com.denchic45.studiversity.database.table
 
 
-
 import com.denchic45.stuiversity.api.course.element.model.AttachmentType
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -16,7 +15,7 @@ object Attachments : UUIDTable("attachment", "attachment_id") {
     val type = enumerationByName<AttachmentType>("type", 8)
 
     //    val path = text("path").nullable()
-    val ownerId = uuid("owner_id")
+    val resourceId = uuid("resource_id")
 //    val ownerType = enumerationByName<AttachmentOwner>("owner_type", 22)
 }
 
@@ -29,6 +28,6 @@ class AttachmentDao(id: EntityID<UUID>) : UUIDEntity(id) {
     var type by Attachments.type
 
     //    var path by Attachments.path
-    var ownerId by Attachments.ownerId
+    var resourceId by Attachments.resourceId
 //    var ownerType by Attachments.ownerType
 }

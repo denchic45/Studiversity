@@ -37,7 +37,7 @@ import okio.Path.Companion.toPath
 import java.util.UUID
 
 @Inject
-class AttachmentRepository constructor(
+class AttachmentRepository(
     override val networkService: NetworkService,
     private val attachmentLocalDataSource: AttachmentLocalDataSource,
     private val attachmentReferenceLocalDataSource: AttachmentReferenceLocalDataSource,
