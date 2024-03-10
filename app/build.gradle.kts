@@ -2,8 +2,7 @@
 plugins {
     kotlin("plugin.serialization")
     kotlin("jvm")
-
-//    id("org.jetbrains.compose") version "1.6.0"
+    id("com.google.devtools.ksp") version "1.9.22-1.0.17" apply false
 }
 
 buildscript {
@@ -14,9 +13,9 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:8.2.2")
+        val kotlinVersion: String by project
+        classpath("com.android.tools.build:gradle:8.2.0")
         classpath("app.cash.sqldelight:gradle-plugin:2.0.0-alpha05")
-        classpath("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.9.22-1.0.17")
     }
 }
 

@@ -23,7 +23,7 @@ android {
         unitTests.isIncludeAndroidResources = true
     }
     compileSdk = 34
-    buildToolsVersion = "30.0.3"
+    buildToolsVersion = "34.0.0"
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -55,7 +55,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs = listOf("-Xjvm-default=compatibility")
 
     }
     buildFeatures {
@@ -75,7 +74,7 @@ android {
 
 dependencies {
     implementation(project((":common")))
-    implementation("androidx.compose.runtime:runtime-tracing:1.0.0-alpha03")
+    implementation("androidx.compose.runtime:runtime-tracing:1.0.0-beta01")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     // support new language API

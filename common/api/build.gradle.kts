@@ -10,8 +10,8 @@ repositories {
 }
 
 kotlin {
-    jvmToolchain(17)
     jvm {
+        withJava()
         compilations.all {
             kotlinOptions.jvmTarget = "17"
         }
@@ -20,7 +20,6 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 // Ktor client
-                api("io.ktor:ktor-client-cio:$ktorVersion")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-client-auth:$ktorVersion")

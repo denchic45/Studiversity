@@ -2,7 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     id("com.android.library")
-    kotlin("plugin.serialization") version "1.9.22"
+    kotlin("plugin.serialization")
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
     id("app.cash.sqldelight")
@@ -14,7 +14,6 @@ val koinVersion: String by project
 val decomposeVersion: String by project
 
 kotlin {
-    jvmToolchain(17)
     androidTarget()
     jvm("desktop") {
         compilations.all {
@@ -47,7 +46,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-client-logging:$ktorVersion")
                 implementation("io.ktor:ktor-client-auth:$ktorVersion")
-
+                implementation("io.ktor:ktor-client-cio:$ktorVersion")
                 // Decompose
                 api("com.arkivanov.decompose:decompose:$decomposeVersion")
 
@@ -65,7 +64,7 @@ kotlin {
 
                 implementation("com.squareup.okio:okio:3.3.0")
 
-                implementation("me.tatarka.inject:kotlin-inject-runtime:0.6.1")
+                implementation("me.tatarka.inject:kotlin-inject-runtime:0.6.3")
 
                 implementation("com.darkrockstudios:mpfilepicker:1.1.0")
 
@@ -200,8 +199,8 @@ kotlin {
 
 dependencies {
     // kotlin-inject
-    add("kspAndroid", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
-    add("kspDesktop", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.1")
+    add("kspAndroid", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.3")
+    add("kspDesktop", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.3")
     // support new language API
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 }

@@ -9,7 +9,6 @@ plugins {
 group = "com.denchic45.studiversity"
 
 kotlin {
-    jvmToolchain(17)
     jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "17"

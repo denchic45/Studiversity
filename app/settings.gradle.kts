@@ -12,7 +12,7 @@ pluginManagement {
     plugins {
         kotlin("android") version kotlinVersion
         kotlin("jvm") version kotlinVersion
-//        kotlin("multiplatform") version kotlinVersion
+        kotlin("multiplatform") version kotlinVersion
         kotlin("plugin.serialization") version kotlinVersion
         id("org.jetbrains.compose") version jetbrainsCompose
 
