@@ -10,4 +10,3 @@ gradlew.bat
 .externalNativeBuild
 .cxx
 '.idea'
-/common/src/commonMain/kotlin/com/denchic45/studiversity/ApiKeys.kt
