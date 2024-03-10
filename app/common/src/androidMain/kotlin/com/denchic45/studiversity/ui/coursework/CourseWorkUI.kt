@@ -302,16 +302,18 @@ private fun CourseWorkBody(
     onPageSelect: (Int) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState()
 
-    LaunchedEffect(pagerState) {
-        // Collect from the pager state a snapshotFlow reading the currentPage
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            onPageSelect(page)
-        }
-    }
+
+
 
     ResourceContent(resource = childrenResource) { children ->
+        val pagerState = rememberPagerState(pageCount = children::size)
+        LaunchedEffect(pagerState) {
+            // Collect from the pager state a snapshotFlow reading the currentPage
+            snapshotFlow { pagerState.currentPage }.collect { page ->
+                onPageSelect(page)
+            }
+        }
         Column {
             if (children.size != 1) {
                 TabRow(
@@ -335,7 +337,7 @@ private fun CourseWorkBody(
                 }
 
             }
-            HorizontalPager(state = pagerState, pageCount = children.size) {
+            HorizontalPager(state = pagerState) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     when (val child = children[it]) {
                         is CourseWorkComponent.Child.Details -> CourseWorkDetailsScreen(child.component)

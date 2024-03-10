@@ -12,13 +12,15 @@ import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.studiversity.ui.main.AppNavigation
 import com.denchic45.studiversity.ui.main.MainComponent
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
+import com.denchic45.studiversity.ui.navigator.RootConfig
+import com.denchic45.studiversity.ui.navigator.RootNavigator
 import kotlinx.coroutines.flow.MutableStateFlow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class YourWorksComponent(
+class YourCourseWorksComponent(
     _yourUpcomingWorksComponent: (onWorkOpen: (UUID, UUID) -> Unit, ComponentContext) -> YourUpcomingWorksComponent,
     _yourOverdueWorksComponent: (onWorkOpen: (UUID, UUID) -> Unit, ComponentContext) -> YourOverdueWorksComponent,
     _yourSubmittedWorksComponent: (onWorkOpen: (UUID, UUID) -> Unit, ComponentContext) -> YourSubmittedWorksComponent,
@@ -36,7 +38,7 @@ class YourWorksComponent(
         topicId: UUID?,
         ComponentContext,
     ) -> CourseWorkEditorComponent,
-    private val appNavigation: AppNavigation,
+    private val rootNavigator: RootNavigator,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext, EmptyChildrenContainer {
@@ -69,16 +71,16 @@ class YourWorksComponent(
 //        }
 //    )
 
-    private fun createCourseWorkComponent(courseId: UUID, workId: UUID, context: ComponentContext) =
-        _courseWorkComponent(
-            { courseId, workId ->
-                appNavigation.push(MainComponent.Config.CourseWorkEditor(courseId, workId))
-            },
-            appNavigation::pop,
-            courseId,
-            workId,
-            context
-        )
+//    private fun createCourseWorkComponent(courseId: UUID, workId: UUID, context: ComponentContext) =
+//        _courseWorkComponent(
+//            { courseId, workId ->
+//                appNavigation.push(MainComponent.Config.CourseWorkEditor(courseId, workId))
+//            },
+//            appNavigation::pop,
+//            courseId,
+//            workId,
+//            context
+//        )
 
     val selectedTab = MutableStateFlow(0)
     val tabChildren = listOf(
@@ -103,7 +105,7 @@ class YourWorksComponent(
     )
 
     private fun onWorkOpen(courseId: UUID, workId: UUID) {
-        appNavigation.bringToFront(MainComponent.Config.CourseWork(courseId, workId))
+        rootNavigator.bringToFront(RootConfig.CourseWork(courseId, workId))
     }
 
     fun onTabSelect(position: Int) {

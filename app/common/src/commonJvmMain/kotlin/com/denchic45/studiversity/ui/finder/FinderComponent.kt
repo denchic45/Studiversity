@@ -3,13 +3,13 @@ package com.denchic45.studiversity.ui.finder
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.ui.course.CourseComponent
 import com.denchic45.studiversity.ui.model.UserItem
+import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.search.StudyGroupChooserComponent
 import com.denchic45.studiversity.ui.search.UserChooserComponent
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class FinderComponent(
@@ -33,18 +33,20 @@ class FinderComponent(
             (StudyGroupResponse) -> Unit,
             ComponentContext,
     ) -> StudyGroupChooserComponent,
-    profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
+    profileComponent: (RootNavigator, UUID, ComponentContext) -> ProfileComponent,
     studyGroupComponent: (
-        onCourseOpen: (UUID) -> Unit,
-        onStudyGroupOpen: (UUID) -> Unit,
         UUID,
+        rootNavigator: RootNavigator,
         ComponentContext,
     ) -> StudyGroupComponent,
     courseComponent: (
         onFinish: () -> Unit,
-        onStudyGroupOpen: (UUID) -> Unit, UUID,
+        rootNavigator: RootNavigator,
+        UUID,
         ComponentContext,
     ) -> CourseComponent,
+    @Assisted
+    rootNavigator: RootNavigator,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -68,24 +70,20 @@ class FinderComponent(
             when (config) {
                 is OverlayConfig.Profile -> OverlayChild.Profile(
                     profileComponent(
-                        { overlayNavigation.activate(OverlayConfig.StudyGroup(it)) },
+                        rootNavigator,
                         config.userId,
                         context
                     )
                 )
 
                 is OverlayConfig.StudyGroup -> OverlayChild.StudyGroup(
-                    studyGroupComponent(
-                        { overlayNavigation.activate(OverlayConfig.Course(it)) },
-                        { overlayNavigation.activate(OverlayConfig.StudyGroup(it)) },
-                        config.studyGroupId, context
-                    )
+                    studyGroupComponent(config.studyGroupId, rootNavigator, context)
                 )
 
                 is OverlayConfig.Course -> OverlayChild.Course(
                     courseComponent(
                         overlayNavigation::dismiss,
-                        { overlayNavigation.activate(OverlayConfig.StudyGroup(it)) },
+                        rootNavigator,
                         config.courseId,
                         context
                     )

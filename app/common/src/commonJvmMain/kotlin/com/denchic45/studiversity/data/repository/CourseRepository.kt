@@ -1,12 +1,6 @@
 package com.denchic45.studiversity.data.repository
 
-import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.CourseTopicLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.StudyGroupCourseLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.StudyGroupLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SubjectLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.*
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.mapper.toCourseEntity
@@ -20,12 +14,13 @@ import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.stuiversity.util.UUIDWrapper
 import com.denchic45.stuiversity.util.uuidOfMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CourseRepository(
@@ -54,6 +49,16 @@ class CourseRepository(
 
     suspend fun findById(courseId: UUID) = fetchResource {
         coursesApi.getById(courseId)
+    }
+
+    fun findBy(
+        memberId: UUIDWrapper? = null,
+        studyGroupId: UUID? = null,
+        subjectId: UUID? = null,
+        archived: Boolean,
+        query: String? = null,
+    ) = fetchResourceFlow {
+        coursesApi.getList(memberId, studyGroupId, subjectId, archived, query)
     }
 
     suspend fun findByMe() = fetchResource {

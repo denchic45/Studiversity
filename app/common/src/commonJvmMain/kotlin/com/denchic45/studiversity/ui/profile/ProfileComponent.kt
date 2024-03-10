@@ -5,12 +5,17 @@ import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.usecase.*
+import com.denchic45.studiversity.ui.main.AppNavigation
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
+import com.denchic45.studiversity.ui.navigator.RootConfig
+import com.denchic45.studiversity.ui.navigator.RootNavigator
+import com.denchic45.studiversity.ui.navigator.RootNavigatorComponent
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -29,12 +34,13 @@ class ProfileComponent(
     userPreferences: UserPreferences,
     observeUserUseCase: ObserveUserUseCase,
     findStudyGroupsUseCase: FindStudyGroupsUseCase,
+    findCoursesUseCase: FindCoursesUseCase,
     findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     private val updateAvatarUseCase: UpdateAvatarUseCase,
     private val removeAvatarUseCase: RemoveAvatarUseCase,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     @Assisted
-    private val onStudyGroupOpen: (UUID) -> Unit,
+    private val navigator: RootNavigator,
     @Assisted
     val userId: UUID,
     @Assisted
@@ -44,14 +50,12 @@ class ProfileComponent(
     private val componentScope = componentScope()
 
     private val userFlow = observeUserUseCase(userId).stateInResource(componentScope)
-
     private val userRole = findAssignedUserRolesInScopeUseCase(userId, null)
-
     private val studyGroups = findStudyGroupsUseCase(memberId = uuidOf(userId))
-
+    private val courses = findCoursesUseCase(memberId = uuidOf(userId))
     private val capabilities = userFlow.flatMapResourceFlow { profileUser ->
         checkUserCapabilitiesInScopeUseCase(
-            scopeId = profileUser.id,
+            scopeId = null,
             capabilities = listOf(Capability.WriteUser)
         )
     }
@@ -76,13 +80,15 @@ class ProfileComponent(
         userFlow,
         userRole,
         studyGroups,
+        courses,
         capabilities
-    ) { userRes, roleRes, studyGroupsRes, capabilitiesRes ->
+    ) { userRes, roleRes, studyGroupsRes, coursesRes, capabilitiesRes ->
         bindResources {
             val user = userRes.bind()
             user.toProfileViewState(
                 roleRes.bind().roles.single(),
                 studyGroupsRes.bind(),
+                coursesRes.bind(),
                 capabilitiesRes.bind().hasCapability(Capability.WriteUser),
                 userPreferences.id.toUUID() == user.id,
             )
@@ -108,7 +114,16 @@ class ProfileComponent(
 
 
     fun onStudyGroupClick(studyGroupId: UUID) {
-        onStudyGroupOpen(studyGroupId)
+        navigator.bringToFront(RootConfig.StudyGroup(studyGroupId))
+//        onStudyGroupOpen(studyGroupId)
+    }
+
+    fun onCourseClick(courseId: UUID) {
+        navigator.bringToFront(RootConfig.Course(courseId))
+    }
+
+    fun onMoreCourseClick() {
+        TODO("Show all courses by user")
     }
 
     fun onDialogClose() {
@@ -141,16 +156,25 @@ class ProfileComponent(
         }
     }
 
+
     @Parcelize
     sealed class OverlayConfig : Parcelable {
-        object AvatarDialog : OverlayConfig()
-        object FullAvatar : OverlayConfig()
-        object ImageChooser : OverlayConfig()
+        data object AvatarDialog : OverlayConfig() {
+            private fun readResolve(): Any = AvatarDialog
+        }
+
+        data object FullAvatar : OverlayConfig() {
+            private fun readResolve(): Any = FullAvatar
+        }
+
+        data object ImageChooser : OverlayConfig() {
+            private fun readResolve(): Any = ImageChooser
+        }
     }
 
     sealed class OverlayChild {
-        object AvatarDialog : OverlayChild()
-        object FullAvatar : OverlayChild()
-        object AvatarChooser : OverlayChild()
+        data object AvatarDialog : OverlayChild()
+        data object FullAvatar : OverlayChild()
+        data object AvatarChooser : OverlayChild()
     }
 }

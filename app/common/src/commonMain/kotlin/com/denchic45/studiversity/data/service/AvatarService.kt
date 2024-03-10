@@ -19,7 +19,6 @@ class AvatarService(private val client: HttpClient) {
 
     suspend fun generateAvatar(name: String, color: String = colors.random()) = client
         .get("https://avatars.abstractapi.com/v1/") {
-//            parameter("api_key", ApiKeys.avatarsApiKey)
             parameter("name", name)
             parameter("background_color", color)
             parameter("image_size", 192)

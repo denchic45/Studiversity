@@ -24,8 +24,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import com.denchic45.studiversity.ui.CardContent
+import com.denchic45.studiversity.ui.BlockContent
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.ScreenScaffold
 import com.denchic45.studiversity.ui.search.SearchState
 import com.denchic45.studiversity.ui.search.SearchableComponent
 import com.denchic45.studiversity.ui.theme.spacing
@@ -36,7 +37,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
     val childStack by component.childStack.subscribeAsState()
 
     Row {
-        ModalDrawerSheet(Modifier.requiredWidth(300.dp)) {
+        ModalDrawerSheet(Modifier.requiredWidth(300.dp).padding(end = MaterialTheme.spacing.normal)) {
             Column(Modifier.padding(MaterialTheme.spacing.normal)) {
                 AdminListItem(
                     title = "Расписания",
@@ -95,6 +96,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
                 )
             }
         }
+
 
         Children(component.childStack) {
             when (val child = it.instance) {
@@ -165,50 +167,45 @@ private fun <T> SearchContent(
     onAddClick: () -> Unit,
     itemContent: @Composable (T) -> Unit,
 ) {
-    Column(
-        modifier.fillMaxSize().padding(vertical = MaterialTheme.spacing.normal),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        var query by remember { mutableStateOf(component.query.value) }
-        Row(Modifier, verticalAlignment = Alignment.CenterVertically) {
-//            OutlinedTextField(
-//                value = query,
-//                onValueChange = {
-//                    query = it
-//                    component.onQueryChange(it)
-//                },
-//                leadingIcon = {
-//                    Icon(
-//                        imageVector = Icons.Outlined.Search,
-//                        contentDescription = "search"
-//                    )
-//                }
-//            )
-            ProvideTextStyle(value = MaterialTheme.typography.titleMedium) {
-                SearchBar(
-                    modifier = Modifier.width(456.dp).height(56.dp),
-                    query = query,
-                    onQueryChange = {
-                        query = it
-                        component.onQueryChange(it)
-                    },
-                    onSearch = {},
-                    active = false,
-                    onActiveChange = {},
-                    content = {},
-                    placeholder = { Text(placeholder) },
-                    leadingIcon = { Icon(Icons.Outlined.Search, null) }
+    ScreenScaffold(
+        topBar = {
+            var query by remember { mutableStateOf(component.query.value) }
+            Box(
+                Modifier.fillMaxWidth().padding(
+                    start = MaterialTheme.spacing.normal,
+                    end = MaterialTheme.spacing.normal,
+                    top = MaterialTheme.spacing.small,
+                    bottom = MaterialTheme.spacing.normal
                 )
-            }
-            Spacer(Modifier.width(MaterialTheme.spacing.normal))
-            Button(onClick = onAddClick) {
-                Icon(Icons.Outlined.Add, null)
-                Spacer(Modifier.width(MaterialTheme.spacing.small))
-                Text("Добавить")
+            ) {
+                ProvideTextStyle(value = MaterialTheme.typography.titleMedium) {
+                    SearchBar(
+                        modifier = Modifier.width(456.dp).align(Alignment.Center),
+                        query = query,
+                        onQueryChange = {
+                            query = it
+                            component.onQueryChange(it)
+                        },
+                        onSearch = {},
+                        active = false,
+                        onActiveChange = {},
+                        content = {},
+                        placeholder = { Text(placeholder) },
+                        leadingIcon = { Icon(Icons.Outlined.Search, null) }
+                    )
+                }
+                Spacer(Modifier.width(MaterialTheme.spacing.normal))
+                ExtendedFloatingActionButton(
+                    onClick = onAddClick, Modifier.align(Alignment.BottomEnd)
+                ) {
+                    Icon(Icons.Outlined.Add, null)
+                    Spacer(Modifier.width(MaterialTheme.spacing.small))
+                    Text("Добавить")
+                }
             }
         }
-
-        CardContent(Modifier.width(500.dp)) {
+    ) {
+        BlockContent(Modifier.fillMaxSize()) {
             SearchedItemsContent(component, keyItem, emptyQueryContent, emptyResultContent, itemContent)
         }
     }
@@ -234,7 +231,7 @@ fun <T> SearchedItemsContent(
                 if (items.isNotEmpty()) {
                     LazyColumn(
                         contentPadding = PaddingValues(
-                            top = 64.dp,
+                            top = MaterialTheme.spacing.normal,
                             bottom = MaterialTheme.spacing.medium
                         )
                     ) {

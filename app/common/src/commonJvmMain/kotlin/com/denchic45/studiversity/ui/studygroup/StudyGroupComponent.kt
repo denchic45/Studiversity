@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.resource.mapResource
@@ -14,6 +15,8 @@ import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUse
 import com.denchic45.studiversity.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.studiversity.ui.navigation.ChildrenContainer
 import com.denchic45.studiversity.ui.navigation.isActiveFlow
+import com.denchic45.studiversity.ui.navigator.RootConfig
+import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.ui.studygroup.courses.StudyGroupCoursesComponent
@@ -29,13 +32,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.shareIn
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 
 @Inject
 class StudyGroupComponent(
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
-    private val profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
+    private val profileComponent: (RootNavigator, UUID, ComponentContext) -> ProfileComponent,
     scopeMemberEditorComponent: (
         availableRoles: List<Role>,
         scopeId: UUID,
@@ -62,11 +65,9 @@ class StudyGroupComponent(
     studyGroupTimetableComponent: (UUID, ComponentContext) -> StudyGroupTimetableComponent,
     findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     @Assisted
-    private val onCourseOpen: (UUID) -> Unit,
-    @Assisted
-    private val onStudyGroupOpen: (UUID) -> Unit,
-    @Assisted
     private val studyGroupId: UUID,
+    @Assisted
+    private val rootNavigator: RootNavigator,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext, ChildrenContainer {
@@ -118,7 +119,7 @@ class StudyGroupComponent(
                 is OverlayConfig.Member -> {
                     OverlayChild.Member(
                         profileComponent(
-                            onStudyGroupOpen,
+                            rootNavigator,
                             config.memberId,
                             context
                         )
@@ -151,7 +152,7 @@ class StudyGroupComponent(
         ),
         TabChild.Courses(
             studyGroupCoursesComponent(
-                onCourseOpen,
+                { rootNavigator.bringToFront(RootConfig.Course(it)) },
                 studyGroupId,
                 componentContext.childContext("Courses")
             )

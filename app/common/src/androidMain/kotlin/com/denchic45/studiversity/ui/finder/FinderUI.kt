@@ -64,7 +64,7 @@ fun FinderContent(
     val activeChild = children[selectedTab]
 
     val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = children::size)
 
     LaunchedEffect(pagerState) {
         snapshotFlow(pagerState::currentPage).collect(onTabSelect)
@@ -116,8 +116,7 @@ fun FinderContent(
     }
     Divider()
     HorizontalPager(
-        state = pagerState,
-        pageCount = children.size,
+        state = pagerState
     ) {
         Box(modifier = Modifier.fillMaxHeight()) {
             when (activeChild) {

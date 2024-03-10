@@ -16,7 +16,7 @@ import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.ui.yourstudygroups.YourStudyGroupsComponent
 import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesComponent
-import com.denchic45.studiversity.ui.yourworks.YourWorksComponent
+import com.denchic45.studiversity.ui.yourworks.YourCourseWorksComponent
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*
@@ -25,21 +25,17 @@ import java.util.*
 @Inject
 class RootNavigatorComponent(
     yourTimetablesComponent: (onStudyGroupOpen: (UUID) -> Unit, ComponentContext) -> YourTimetablesComponent,
-    yourStudyGroupsComponent: (
-        onCourseOpen: (UUID) -> Unit,
-        onStudyGroupOpen: (UUID) -> Unit, ComponentContext,
-    ) -> YourStudyGroupsComponent,
-    profileComponent: ((UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
+    yourStudyGroupsComponent: (rootNavigator: RootNavigator, ComponentContext) -> YourStudyGroupsComponent,
+    profileComponent: (RootNavigator, UUID, ComponentContext) -> ProfileComponent,
     courseComponent: (
         onFinish: () -> Unit,
-        onStudyGroupOpen: (UUID) -> Unit,
+        rootNavigator: RootNavigator,
         UUID,
         ComponentContext,
     ) -> CourseComponent,
     studyGroupComponent: (
-        onCourseOpen: (UUID) -> Unit,
-        onStudyGroupOpen: (UUID) -> Unit,
         UUID,
+        rootNavigator: RootNavigator,
         ComponentContext,
     ) -> StudyGroupComponent,
     adminDashboardComponent: (StackNavigation<RootConfig>, ComponentContext) -> AdminDashboardComponent,
@@ -77,24 +73,20 @@ class RootNavigatorComponent(
 
                 is RootConfig.Profile -> RootChild.Profile(
                     profileComponent(
-                        { navigation.push(RootConfig.StudyGroup(it)) },
+                        navigation,
                         config.userId,
                         context
                     )
                 )
 
                 RootConfig.YourStudyGroups -> RootChild.YourStudyGroups(
-                    yourStudyGroupsComponent(
-                        { navigation.bringToFront(RootConfig.Course(it)) },
-                        { navigation.bringToFront(RootConfig.StudyGroup(it)) },
-                        context
-                    )
+                    yourStudyGroupsComponent(navigation, context)
                 )
 
                 is RootConfig.Course -> RootChild.Course(
                     courseComponent(
                         navigation::pop,
-                        { navigation.bringToFront(RootConfig.StudyGroup(it)) },
+                        navigation,
                         config.courseId,
                         context
                     )
@@ -102,14 +94,13 @@ class RootNavigatorComponent(
 
                 is RootConfig.StudyGroup -> RootChild.StudyGroup(
                     studyGroupComponent(
-                        { navigation.bringToFront(RootConfig.Course(it)) },
-                        { navigation.bringToFront(RootConfig.StudyGroup(it)) },
                         config.studyGroupId,
+                        navigation,
                         context
                     )
                 )
 
-                RootConfig.Works -> TODO()
+                RootConfig.YourCourseWorks -> TODO()
                 RootConfig.AdminDashboard -> RootChild.AdminDashboard(
                     adminDashboardComponent(navigation, context)
                 )
@@ -146,8 +137,8 @@ sealed interface RootConfig : Parcelable {
         private fun readResolve(): Any = YourStudyGroups
     }
 
-    data object Works : RootConfig {
-        private fun readResolve(): Any = Works
+    data object YourCourseWorks : RootConfig {
+        private fun readResolve(): Any = YourCourseWorks
     }
 
     data class Profile(val userId: UUID) : RootConfig
@@ -176,8 +167,8 @@ sealed interface RootChild {
         override val component: YourStudyGroupsComponent,
     ) : RootChild, ChildrenContainerChild
 
-    class YourWorks(
-        override val component: YourWorksComponent,
+    class YourCourseWorks(
+        override val component: YourCourseWorksComponent,
     ) : RootChild, ChildrenContainerChild
 
     class Profile(
@@ -202,3 +193,5 @@ sealed interface RootChild {
 
     class CourseWorkEditor(val component: CourseWorkEditorComponent) : RootChild
 }
+
+typealias RootNavigator = StackNavigator<RootConfig>

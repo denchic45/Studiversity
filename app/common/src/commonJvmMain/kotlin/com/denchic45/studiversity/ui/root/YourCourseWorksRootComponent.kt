@@ -8,9 +8,9 @@ import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class YourStudyGroupsRootComponent(
+class YourCourseWorksRootComponent(
     rootNavigatorComponent: (initialConfiguration: RootConfig, ComponentContext) -> RootNavigatorComponent,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
-    RootStackChildrenContainer by rootNavigatorComponent(RootConfig.YourStudyGroups, componentContext)
+    RootStackChildrenContainer by rootNavigatorComponent(RootConfig.YourCourseWorks, componentContext)

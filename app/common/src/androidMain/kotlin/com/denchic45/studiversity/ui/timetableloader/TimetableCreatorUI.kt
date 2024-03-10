@@ -13,19 +13,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FileOpen
 import androidx.compose.material.icons.outlined.ViewWeek
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -99,7 +87,11 @@ fun TimetableCreatorDialog(component: TimetableCreatorComponent, onDismissReques
     }
 
     val showWeekPicker by component.showWeekPicker.collectAsState()
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(selectableDates = object :SelectableDates {
+        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+            return  utcTimeMillis.toToLocalDateTime().dayOfWeek == WeekFields.of(Locale.getDefault()).firstDayOfWeek
+        }
+    })
     if (showWeekPicker)
         DatePickerDialog(
             onDismissRequest = component::onCancelWeekPicker,
@@ -118,11 +110,7 @@ fun TimetableCreatorDialog(component: TimetableCreatorComponent, onDismissReques
                 }
 
             }) {
-            DatePicker(state = datePickerState,
-                dateValidator = {
-                    it.toToLocalDateTime().dayOfWeek == WeekFields.of(Locale.getDefault()).firstDayOfWeek
-                }
-            )
+            DatePicker(state = datePickerState)
             datePickerState.selectedDateMillis?.let {
                 selectedDate = it.toToLocalDateTime().toLocalDate()
             }

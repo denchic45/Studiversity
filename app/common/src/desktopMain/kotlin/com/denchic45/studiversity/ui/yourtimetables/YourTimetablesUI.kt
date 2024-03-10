@@ -18,7 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.ui.Scaffold
+import com.denchic45.studiversity.ui.BlockContent
+import com.denchic45.studiversity.ui.ScreenScaffold
 import com.denchic45.studiversity.ui.components.ExposedDropdownMenuDefaults
 import com.denchic45.studiversity.ui.main.AppBarTitle
 import com.denchic45.studiversity.ui.main.CustomAppBar
@@ -36,7 +37,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
         val timetable by component.timetableState.collectAsState()
         val mondayDate by component.mondayDate.collectAsState()
 
-        Scaffold(
+        ScreenScaffold(
             topBar = {
                 CustomAppBar(
                     title = {
@@ -46,13 +47,16 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
                     },
                 )
             }) {
-            TimetableContent(
-                selectedDate = mondayDate,
-                timetableResource = timetable,
-                onTodayClick = component::onTodayClick,
-                onPreviousWeekClick = component::onPreviousWeekClick,
-                onNextWeekClick = component::onNextWeekClick
-            )
+            BlockContent {
+                TimetableContent(
+                    selectedDate = mondayDate,
+                    timetableResource = timetable,
+                    onTodayClick = component::onTodayClick,
+                    onPreviousWeekClick = component::onPreviousWeekClick,
+                    onNextWeekClick = component::onNextWeekClick
+                )
+            }
+
         }
     }
 }

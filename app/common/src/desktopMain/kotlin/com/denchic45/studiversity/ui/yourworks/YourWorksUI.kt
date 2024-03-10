@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.CardContent
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.Scaffold
+import com.denchic45.studiversity.ui.ScreenScaffold
 import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.main.AppBarTitle
@@ -57,12 +57,12 @@ import java.util.UUID
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun YourWorksScreen(component: YourWorksComponent) {
+fun YourWorksScreen(component: YourCourseWorksComponent) {
     val children = component.tabChildren
 //    val childSlot by component.childSlot.subscribeAsState()
     val coroutineScope = rememberCoroutineScope()
 
-    Scaffold(topBar = {
+    ScreenScaffold(topBar = {
         CustomAppBar(title = {
             AppBarTitle("Мои задания")
         })
@@ -103,15 +103,15 @@ fun YourWorksScreen(component: YourWorksComponent) {
                             contentAlignment = Alignment.TopCenter
                         ) {
                             when (val child = it) {
-                                is YourWorksComponent.TabChild.Upcoming -> {
+                                is YourCourseWorksComponent.TabChild.Upcoming -> {
                                     YourUpcomingWorksScreen(child.component)
                                 }
 
-                                is YourWorksComponent.TabChild.Overdue -> {
+                                is YourCourseWorksComponent.TabChild.Overdue -> {
                                     YourOverdueWorksScreen(child.component)
                                 }
 
-                                is YourWorksComponent.TabChild.Submitted -> {
+                                is YourCourseWorksComponent.TabChild.Submitted -> {
                                     YourSubmittedWorksScreen(child.component)
                                 }
                             }

@@ -13,9 +13,9 @@ import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.studiversity.ui.navigation.ChildrenContainer
+import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
-import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.studiversity.util.asFlow
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -31,27 +31,16 @@ import java.util.*
 
 @Inject
 class YourStudyGroupsComponent(
-
     private val appPreferences: AppPreferences,
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
     private val _studyGroupComponent: (
-        onCourseOpen: (UUID) -> Unit,
-        onStudyGroupOpen: (UUID) -> Unit,
         UUID,
+        rootNavigator: RootNavigator,
         ComponentContext,
     ) -> StudyGroupComponent,
-    private val studyGroupEditorComponent: (
-        onFinish: () -> Unit,
-        UUID?,
-        ComponentContext,
-    ) -> StudyGroupEditorComponent,
-//    @Assisted
-//    private val onStudyGroupEditorOpen: (UUID) -> Unit,
     @Assisted
-    onCourseOpen: (UUID) -> Unit,
-    @Assisted
-    onStudyGroupOpen: (UUID) -> Unit,
+    rootNavigator: RootNavigator,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext, ChildrenContainer {
@@ -64,9 +53,8 @@ class YourStudyGroupsComponent(
         source = studyGroupNavigation,
         childFactory = { config, componentContext ->
             _studyGroupComponent(
-                onCourseOpen,
-                onStudyGroupOpen,
                 config.studyGroupId,
+                rootNavigator,
                 componentContext
             )
         },

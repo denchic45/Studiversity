@@ -212,55 +212,6 @@ abstract class NetworkComponent(
     @LayerScope
     @Provides
     fun attachmentApi(client: HttpClient): AttachmentApi = AttachmentApiImpl(client)
-
-//    @LayerScope
-//    @Provides
-//    fun provideFirebaseHttpClient(
-//        httpClient: HttpClient,
-//        appPreferences: AppPreferences,
-//    ): FirebaseHttpClient = HttpClient {
-//        install(Logging) {
-//            level = LogLevel.ALL
-//        }
-//        install(ContentNegotiation) {
-//
-//            json(Json {
-//                prettyPrint = true
-//                isLenient = true
-//                ignoreUnknownKeys = true
-//                encodeDefaults = true
-//            })
-//        }
-//        install(Auth) {
-//            bearer {
-//                appPreferences.token?.let { token ->
-//                    appPreferences.refreshToken?.let { refreshToken ->
-//                        loadTokens {
-//                            BearerTokens(token, refreshToken)
-//                        }
-//                    }
-//                }
-//                refreshTokens {
-//                    val response: RefreshTokenResponse =
-//                        httpClient.submitForm(
-//                            url = "https://securetoken.googleapis.com/v1/token",
-//                            formParameters = Parameters.build {
-//                                append("grant_type", "refresh_token")
-//                                append("refresh_token", oldTokens?.refreshToken ?: "")
-//                            }) {
-//                            parameter("key", ApiKeys.firebaseApiKey)
-//                            markAsRefreshTokenRequest()
-//                        }.body()
-//
-//                    appPreferences.apply {
-//                        token = response.id_token
-//                        refreshToken = response.refresh_token
-//                    }
-//                    BearerTokens(response.id_token, response.refresh_token)
-//                }
-//            }
-//        }
-//    }
 }
 
 typealias GuestHttpClient = HttpClient

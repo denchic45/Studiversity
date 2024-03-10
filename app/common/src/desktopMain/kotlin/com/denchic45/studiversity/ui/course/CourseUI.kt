@@ -130,7 +130,6 @@ fun CourseContent(
                 sidebarChild.child?.instance?.let { sidebar ->
                     Box(Modifier.weight(1f)) {
                         when (sidebar) {
-                            is CourseComponent.SidebarChild.Profile -> TODO()
                             is CourseComponent.SidebarChild.ScopeMemberEditor -> TODO()
                         }
                     }

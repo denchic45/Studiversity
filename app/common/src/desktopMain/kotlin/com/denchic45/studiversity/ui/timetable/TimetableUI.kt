@@ -4,7 +4,6 @@ import androidx.compose.animation.*
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -42,21 +41,13 @@ fun TimetableScreen(component: YourTimetablesComponent) {
     val timetable by component.timetableState.collectAsState()
     val mondayDate by component.selectedDate.collectAsState()
 
-    Column {
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
-            elevation = CardDefaults.cardElevation(0.dp)
-        ) {
-            TimetableContent(
-                selectedDate = mondayDate,
-                timetableResource = timetable,
-                onTodayClick = component::onTodayClick,
-                onPreviousWeekClick = component::onPreviousWeekClick,
-                onNextWeekClick = component::onNextWeekClick
-            )
-        }
-    }
+    TimetableContent(
+        selectedDate = mondayDate,
+        timetableResource = timetable,
+        onTodayClick = component::onTodayClick,
+        onPreviousWeekClick = component::onPreviousWeekClick,
+        onNextWeekClick = component::onNextWeekClick
+    )
 }
 
 @Composable
@@ -69,63 +60,55 @@ fun TimetableContent(
 ) {
     val verticalScroll: ScrollState = rememberScrollState()
     val horizontalScroll: ScrollState = rememberScrollState()
+    BoxWithConstraints(Modifier) {
+        val modifierHorScroll =
+            if (maxWidth < 1000.dp)
+                Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
+            else Modifier
 
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(0.dp)
-    ) {
-        BoxWithConstraints(Modifier) {
-            val modifierHorScroll =
-                if (maxWidth < 1000.dp)
-                    Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
-                else Modifier
+        Column(Modifier.fillMaxWidth()) {
+            TimetableBar(
+                onTodayClick = onTodayClick,
+                onPreviousWeekClick = onPreviousWeekClick,
+                onNextWeekClick = onNextWeekClick,
+                selectedDate = selectedDate
+            )
 
-            Column(Modifier.fillMaxWidth()) {
-                TimetableBar(
-                    onTodayClick = onTodayClick,
-                    onPreviousWeekClick = onPreviousWeekClick,
-                    onNextWeekClick = onNextWeekClick,
-                    selectedDate = selectedDate
-                )
-
-                AnimatedContent(
-                    targetState = selectedDate,
-                    transitionSpec = {
-                        if (initialState > targetState) {
-                            (slideInHorizontally { -it / 6 } + fadeIn()) togetherWith slideOutHorizontally { it / 6 } + fadeOut()
-                        } else {
-                            (slideInHorizontally { it / 6 } + fadeIn()) togetherWith slideOutHorizontally { -it / 6 } + fadeOut()
-                        }
+            AnimatedContent(
+                targetState = selectedDate,
+                transitionSpec = {
+                    if (initialState > targetState) {
+                        (slideInHorizontally { -it / 6 } + fadeIn()) togetherWith slideOutHorizontally { it / 6 } + fadeOut()
+                    } else {
+                        (slideInHorizontally { it / 6 } + fadeIn()) togetherWith slideOutHorizontally { -it / 6 } + fadeOut()
                     }
-                ) { monday ->
-                    Column {
-                        Row {
-                            Box(
-                                Modifier.size(78.dp, 124.dp),
-                                contentAlignment = Alignment.BottomEnd
-                            ) {
-                                Divider(Modifier.width(1.dp).height(24.dp))
-                            }
-                            DaysOfWeekHeader(modifierHorScroll, monday)
+                }
+            ) { monday ->
+                Column {
+                    Row {
+                        Box(
+                            Modifier.size(78.dp, 124.dp),
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            Divider(Modifier.width(1.dp).height(24.dp))
                         }
-                        AnimatedContent(
-                            targetState = timetableResource,
-                            transitionSpec = { fadeIn() togetherWith fadeOut() }
-                        ) { timetableState ->
-                            Divider()
-                            Row {
-                                timetableState.onSuccess { state ->
-                                    LessonOrders(state, verticalScroll)
-                                    LessonCells(modifierHorScroll, verticalScroll, state)
-                                }.onLoading {
-                                    Box(
-                                        Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        LinearProgressIndicator()
-                                    }
+                        DaysOfWeekHeader(modifierHorScroll, monday)
+                    }
+                    AnimatedContent(
+                        targetState = timetableResource,
+                        transitionSpec = { fadeIn() togetherWith fadeOut() }
+                    ) { timetableState ->
+                        Divider()
+                        Row {
+                            timetableState.onSuccess { state ->
+                                LessonOrders(state, verticalScroll)
+                                LessonCells(modifierHorScroll, verticalScroll, state)
+                            }.onLoading {
+                                Box(
+                                    Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    LinearProgressIndicator()
                                 }
                             }
                         }

@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.ui.Scaffold
+import com.denchic45.studiversity.ui.ScreenScaffold
 import com.denchic45.studiversity.ui.components.ExposedDropdownMenuDefaults
 import com.denchic45.studiversity.ui.main.AppBarTitle
 import com.denchic45.studiversity.ui.main.CustomAppBar
@@ -27,7 +27,7 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
     val studyGroups by component.studyGroups.collectAsState()
     val childStudyGroup by component.childStudyGroup.subscribeAsState()
 
-    Scaffold(
+    ScreenScaffold(
         topBar = {
             CustomAppBar(
                 title = {

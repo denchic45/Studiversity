@@ -15,6 +15,7 @@ import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.navigator.RootConfig
+import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.search.UserChooserComponent
 import com.denchic45.studiversity.ui.uiTextOf
@@ -32,7 +33,7 @@ class UsersAdminComponent(
     userChooserComponent: (onSelect: (UserItem) -> Unit, ComponentContext) -> UserChooserComponent,
     userEditorComponent: (onFinish: () -> Unit, ComponentContext) -> UserEditorComponent,
     profileComponent: (
-        onStudyGroupOpen: (UUID) -> Unit,
+        RootNavigator,
         UUID, ComponentContext,
     ) -> ProfileComponent,
     @Assisted
@@ -55,7 +56,7 @@ class UsersAdminComponent(
 
                 is Config.Profile -> Child.Profile(
                     profileComponent(
-                        { rootNavigation.bringToFront(RootConfig.StudyGroup(it)) },
+                        rootNavigation,
                         config.userId,
                         context
                     )

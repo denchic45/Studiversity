@@ -122,8 +122,8 @@ fun ProfileScreen(component: ProfileComponent) {
                         }
 
                         ProfileComponent.OverlayChild.FullAvatar -> FullAvatarScreen(
-                            url = viewState.avatarUrl,
-                            allowUpdateAvatar = viewState.allowUpdateAvatar,
+                            url = viewState.user.avatarUrl,
+                            allowUpdateAvatar = viewState.self,
                             onDeleteClick = {}
                         )
 
@@ -230,7 +230,7 @@ fun ProfileContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
-                    model = profile.avatarUrl,
+                    model = profile.user.avatarUrl,
                     contentDescription = "user avatar",
                     modifier = Modifier
                         .size(56.dp)
@@ -239,7 +239,7 @@ fun ProfileContent(
                     contentScale = ContentScale.Crop
                 )
                 Spacer(Modifier.width(MaterialTheme.spacing.normal))
-                Text(profile.fullName, style = MaterialTheme.typography.titleMedium)
+                Text(profile.user.fullName, style = MaterialTheme.typography.titleMedium)
             }
             Divider(
                 Modifier
@@ -248,7 +248,7 @@ fun ProfileContent(
             )
             ProfileStudyGroups(profile.studyGroups, onStudyGroupClick)
 
-            profile.personalDate?.let { personalDate ->
+            profile.user.account.let { personalDate ->
                 ListItem(
                     leadingContent = {
                         Icon(Icons.Outlined.Email, null)

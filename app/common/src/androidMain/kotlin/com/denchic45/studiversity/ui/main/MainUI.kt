@@ -231,7 +231,7 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
 //                        )
                         }
 
-                        is SlotChild.YourProfile -> ProfileScreen(child.component)
+//                        is SlotChild.YourProfile -> ProfileScreen(child.component)
                         is SlotChild.Settings -> SettingsScreen(child.component)
                         is SlotChild.Schedule -> ScheduleScreen(child.component)
                     }
@@ -584,15 +584,17 @@ private fun ScreenContainer(
     Crossfade(modifier = Modifier.padding(paddingValues), targetState = stack.active) {
         println("children: ${it.instance}")
         when (val child = it.instance) {
-            is MainComponent.Child.YourStudyGroups -> RootStackScreen(child.component)
             is MainComponent.Child.YourTimetables -> RootStackScreen(child.component)
+            is MainComponent.Child.YourStudyGroups -> RootStackScreen(child.component)
+            is MainComponent.Child.YourWorks -> RootStackScreen(child.component)
             is MainComponent.Child.AdminDashboard -> RootStackScreen(child.component)
-            is MainComponent.Child.YourCourse -> CourseScreen(child.component)
-            is MainComponent.Child.Course -> CourseScreen(child.component)
-            is MainComponent.Child.StudyGroup -> StudyGroupScreen(child.component)
-            is MainComponent.Child.YourWorks -> YourWorksScreen(child.component)
-            is MainComponent.Child.CourseWork -> CourseWorkScreen(child.component)
-            is MainComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
+
+//            is MainComponent.Child.YourCourse -> CourseScreen(child.component)
+//            is MainComponent.Child.Course -> CourseScreen(child.component)
+//            is MainComponent.Child.StudyGroup -> StudyGroupScreen(child.component)
+
+//            is MainComponent.Child.CourseWork -> CourseWorkScreen(child.component)
+//            is MainComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
         }
     }
 //    }

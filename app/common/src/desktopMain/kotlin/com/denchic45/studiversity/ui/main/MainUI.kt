@@ -8,9 +8,11 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.HelpOutline
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.HelpOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -222,7 +224,7 @@ fun MainScreen(component: MainComponent) {
                                         }
                                         ListItem(
                                             headlineContent = { Text("Помощь") },
-                                            leadingContent = { Icon(Icons.AutoMirrored.Rounded.HelpOutline, null) },
+                                            leadingContent = { Icon(Icons.Rounded.HelpOutline, null) },
                                             modifier = Modifier.clickable {
                                                 showProfilePopup = false
 //                                                onHelpClick()
@@ -268,7 +270,7 @@ fun MainScreen(component: MainComponent) {
                         )
                     }
 
-                    HorizontalDivider(Modifier.width(48.dp).align(Alignment.CenterHorizontally))
+                    Divider(Modifier.width(48.dp).align(Alignment.CenterHorizontally))
 
                     NavigationRailItem(
                         icon = {
@@ -307,13 +309,8 @@ fun MainScreen(component: MainComponent) {
                 when (val child = childStack.active.instance) {
                     is MainComponent.Child.YourTimetables -> RootScreen(child.component)
                     is MainComponent.Child.YourStudyGroups -> RootScreen(child.component)
-                    is MainComponent.Child.YourWorks -> YourWorksScreen(child.component)
-                    is MainComponent.Child.StudyGroup -> StudyGroupScreen(child.component)
-                    is MainComponent.Child.Course -> CourseScreen(child.component)
+                    is MainComponent.Child.YourWorks -> RootScreen(child.component)
                     is MainComponent.Child.AdminDashboard -> RootScreen(child.component)
-                    is MainComponent.Child.YourCourse -> CourseScreen(child.component)
-                    is MainComponent.Child.CourseWork -> CourseWorkScreen(child.component)
-                    is MainComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
                 }
 
                 val overlay by component.childSlot.subscribeAsState()
@@ -328,7 +325,6 @@ fun MainScreen(component: MainComponent) {
                             )
                         }
 
-                        is SlotChild.YourProfile -> TODO("Open profile dialog")
                         is SlotChild.Settings -> SettingsDialog(
                             onCloseRequest = component::onDialogClose,
                             component = child.component
@@ -366,7 +362,7 @@ fun MainAppBar(
 //        if (showBackButton) {
         IconButton(onClick = onBackClick, enabled = showBackButton) {
             Icon(
-                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                imageVector = Icons.Rounded.ArrowBack,
                 contentDescription = "back"
             )
         }
@@ -379,6 +375,7 @@ fun MainAppBar(
 @Composable
 fun CustomAppBar(
     title: @Composable RowScope.() -> Unit,
+    navigationContent: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
@@ -386,6 +383,10 @@ fun CustomAppBar(
         modifier = modifier.height(80.dp).padding(end = 24.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        navigationContent?.let {
+            it()
+            Spacer(Modifier.width(MaterialTheme.spacing.normal))
+        }
         title()
         Spacer(Modifier.weight(1f))
         actions()
@@ -426,6 +427,6 @@ fun AppBarTitle(text: String) {
 @Composable
 fun NavigationIconBack(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
-        Icon(Icons.AutoMirrored.Filled.ArrowBack, "pop")
+        Icon(Icons.Filled.ArrowBack, "pop")
     }
 }

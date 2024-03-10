@@ -16,9 +16,8 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.*
-import androidx.compose.material3.DismissState
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -168,7 +167,7 @@ fun DayTimetableContent(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 private fun Periods(
     timetableState: TimetableState,
     isEdit: Boolean,
@@ -248,10 +247,10 @@ private fun Periods(
                         }
                         if (isEdit) {
                             val currentIndex by rememberUpdatedState(index)
-                            val dismissState = rememberDismissState(confirmValueChange = {
+                            val dismissState = rememberSwipeToDismissBoxState(confirmValueChange = {
                                 when (it) {
-                                    DismissValue.Default -> false
-                                    DismissValue.DismissedToStart -> {
+                                    SwipeToDismissBoxValue.Settled -> false
+                                    SwipeToDismissBoxValue.EndToStart -> {
                                         onRemovePeriodSwipe?.invoke(selectedDayOfWeek, currentIndex)
                                         true
                                     }
@@ -274,7 +273,7 @@ private fun Periods(
                                         state = dismissState,
                                         background = { SwipePeriodBackground(dismissState) },
                                         dismissContent = { periodListItem() },
-                                        directions = setOf(DismissDirection.EndToStart)
+                                        directions = setOf(SwipeToDismissBoxValue.EndToStart)
                                     )
                                 }
                             }
@@ -306,18 +305,18 @@ private fun Periods(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SwipePeriodBackground(dismissState: DismissState) {
+fun SwipePeriodBackground(dismissState: SwipeToDismissBoxState) {
     val color by animateColorAsState(
         when (dismissState.targetValue) {
-            DismissValue.Default -> Color.LightGray
-            DismissValue.DismissedToStart -> Color.Red
+            SwipeToDismissBoxValue.Settled -> Color.LightGray
+            SwipeToDismissBoxValue.EndToStart -> Color.Red
             else -> throw IllegalStateException()
         }
     )
     val alignment = Alignment.CenterEnd
     val icon = Icons.Outlined.Delete
     val scale by animateFloatAsState(
-        if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
+        if (dismissState.targetValue == SwipeToDismissBoxValue.Settled) 0.75f else 1f
     )
 
     Box(

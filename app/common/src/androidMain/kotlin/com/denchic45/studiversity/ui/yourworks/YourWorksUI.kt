@@ -9,6 +9,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.outlined.Task
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
@@ -36,7 +37,7 @@ import java.util.*
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun YourWorksScreen(component: YourWorksComponent) {
+fun YourWorksScreen(component: YourCourseWorksComponent) {
     val children = component.tabChildren
 //    val childSlot by component.childSlot.subscribeAsState()
     val coroutineScope = rememberCoroutineScope()
@@ -75,9 +76,9 @@ fun YourWorksScreen(component: YourWorksComponent) {
             HorizontalPager(state = pagerState) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     when (val child = children[it]) {
-                        is YourWorksComponent.TabChild.Upcoming -> YourUpcomingWorksScreen(child.component)
-                        is YourWorksComponent.TabChild.Overdue -> YourOverdueWorksScreen(child.component)
-                        is YourWorksComponent.TabChild.Submitted -> YourSubmittedWorksScreen(child.component)
+                        is YourCourseWorksComponent.TabChild.Upcoming -> YourUpcomingWorksScreen(child.component)
+                        is YourCourseWorksComponent.TabChild.Overdue -> YourOverdueWorksScreen(child.component)
+                        is YourCourseWorksComponent.TabChild.Submitted -> YourSubmittedWorksScreen(child.component)
                     }
                 }
             }

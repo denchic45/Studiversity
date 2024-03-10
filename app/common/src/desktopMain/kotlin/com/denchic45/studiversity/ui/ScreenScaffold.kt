@@ -1,24 +1,21 @@
 package com.denchic45.studiversity.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Scaffold(
+fun ScreenScaffold(
     topBar: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
-    Column {
+    Column(Modifier.fillMaxSize()) {
         topBar?.invoke()
-        Surface(
-            tonalElevation = (-1).dp,
-            color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
-        ) {
-            content()
-        }
+        content()
     }
 }

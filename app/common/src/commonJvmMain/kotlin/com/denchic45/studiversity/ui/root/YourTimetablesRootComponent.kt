@@ -16,7 +16,4 @@ class YourTimetablesRootComponent(
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext,
-    RootStackChildrenContainer by rootNavigatorComponent(
-        RootConfig.YourTimetables,
-        componentContext
-    )
+    RootStackChildrenContainer by rootNavigatorComponent(RootConfig.YourTimetables, componentContext)

@@ -9,6 +9,7 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.ui.navigation.StackChildrenContainer
 import com.denchic45.studiversity.ui.navigator.RootConfig
+import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.timetableloader.TimetableLoaderComponent
 import com.denchic45.studiversity.ui.timetablesearch.TimetableSearchComponent
@@ -43,7 +44,7 @@ class AdminDashboardComponent(
     roomsAdminComponent: (
         ComponentContext,
     ) -> RoomsAdminComponent,
-    profileComponent: (onStudyGroupOpen: (UUID) -> Unit, UUID, ComponentContext) -> ProfileComponent,
+    profileComponent: (RootNavigator, UUID, ComponentContext) -> ProfileComponent,
     @Assisted
     rootNavigation: StackNavigation<RootConfig>,
     @Assisted

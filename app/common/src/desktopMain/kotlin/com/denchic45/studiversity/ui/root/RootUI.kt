@@ -26,7 +26,7 @@ fun RootScreen(component: RootStackChildrenContainer) {
             is RootChild.Course -> CourseScreen(child.component)
             is RootChild.Profile -> ProfileScreen(child.component)
             is RootChild.AdminDashboard -> AdminDashboardScreen(child.component)
-            is RootChild.YourWorks -> YourWorksScreen(child.component)
+            is RootChild.YourCourseWorks -> YourWorksScreen(child.component)
             is RootChild.CourseEditor -> TODO()
             is RootChild.CourseWork -> TODO()
             is RootChild.CourseWorkEditor -> TODO()

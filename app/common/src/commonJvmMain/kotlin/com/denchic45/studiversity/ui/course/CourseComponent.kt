@@ -6,11 +6,7 @@ import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.bringToFront
-import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.resource.Resource
@@ -29,6 +25,8 @@ import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.studiversity.ui.navigation.ChildrenContainer
 import com.denchic45.studiversity.ui.navigation.isActiveFlow
+import com.denchic45.studiversity.ui.navigator.RootConfig
+import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.util.componentScope
@@ -36,14 +34,10 @@ import com.denchic45.stuiversity.api.course.element.model.CourseElementType
 import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.api.role.model.Role
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 
 @Inject
@@ -104,7 +98,7 @@ class CourseComponent(
         ComponentContext,
     ) -> CourseTimetableComponent,
     _profileComponent: (
-        onStudyGroupOpen: (UUID) -> Unit,
+        RootNavigator,
         UUID,
         ComponentContext,
     ) -> ProfileComponent,
@@ -118,7 +112,8 @@ class CourseComponent(
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
-    private val onStudyGroupOpen: (studyGroupId: UUID) -> Unit,
+    private val rootNavigator: RootNavigator,
+//    private val onStudyGroupOpen: (studyGroupId: UUID) -> Unit,
     @Assisted
     private val courseId: UUID,
     @Assisted
@@ -160,7 +155,7 @@ class CourseComponent(
 
     private val courseMembersComponent = _courseMembersComponent(
         courseId,
-        { sidebarNavigation.activate(SidebarConfig.Profile(it)) },
+        { rootNavigator.bringToFront(RootConfig.Profile(it)) },
         { sidebarNavigation.activate(SidebarConfig.ScopeMemberEditor(it)) },
         componentContext.childContext("Members")
     )
@@ -190,9 +185,9 @@ class CourseComponent(
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
-                is SidebarConfig.Profile -> SidebarChild.Profile(
-                    _profileComponent(onStudyGroupOpen, config.userId, context)
-                )
+//                is SidebarConfig.Profile -> SidebarChild.Profile(
+//                    _profileComponent(onStudyGroupOpen, config.userId, context)
+//                )
 
                 is SidebarConfig.ScopeMemberEditor -> SidebarChild.ScopeMemberEditor(
                     scopeMemberEditorComponent(
@@ -353,14 +348,14 @@ class CourseComponent(
     @Parcelize
     sealed class SidebarConfig : Parcelable {
 
-        data class Profile(val userId: UUID) : SidebarConfig()
+//        data class Profile(val userId: UUID) : SidebarConfig()
 
         data class ScopeMemberEditor(val memberId: UUID?) : SidebarConfig()
     }
 
     sealed class SidebarChild {
 
-        class Profile(val component: ProfileComponent) : SidebarChild()
+//        class Profile(val component: ProfileComponent) : SidebarChild()
 
         class ScopeMemberEditor(val component: ScopeMemberEditorComponent) : SidebarChild()
     }

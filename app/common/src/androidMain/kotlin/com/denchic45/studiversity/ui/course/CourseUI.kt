@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Assignment
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Error
@@ -95,7 +98,6 @@ fun CourseScreen(component: CourseComponent) {
 
     childSidebar.child?.let {
         when (val child = it.instance) {
-            is CourseComponent.SidebarChild.Profile -> ProfileScreen(child.component)
             is CourseComponent.SidebarChild.ScopeMemberEditor -> ScopeMemberEditorScreen(child.component)
         }
     } ?: run {
@@ -105,8 +107,7 @@ fun CourseScreen(component: CourseComponent) {
 
 @OptIn(
     ExperimentalMaterial3Api::class,
-    ExperimentalFoundationApi::class,
-    ExperimentalAnimationApi::class
+    ExperimentalFoundationApi::class
 )
 @Composable
 fun CourseContent(

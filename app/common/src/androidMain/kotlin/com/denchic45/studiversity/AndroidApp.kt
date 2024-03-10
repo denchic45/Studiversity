@@ -15,7 +15,7 @@ import kotlin.properties.Delegates
 var app: AndroidApp by Delegates.notNull()
     private set
 
-class AndroidApp : Application(), Configuration.Provider {
+class AndroidApp() : Application(), Configuration.Provider {
     val appComponent: AndroidAppComponent by lazy {
         AndroidAppComponent::class.create(
             this,
@@ -42,7 +42,6 @@ class AndroidApp : Application(), Configuration.Provider {
         app = this
     }
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder().setWorkerFactory(appComponent.workFactory).build()
-    }
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder().setWorkerFactory(appComponent.workFactory).build()
 }

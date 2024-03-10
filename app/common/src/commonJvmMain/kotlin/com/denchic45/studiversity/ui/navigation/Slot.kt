@@ -15,9 +15,7 @@ sealed interface SlotConfig : Parcelable {
         val onConfirm: () -> Unit
     ) : SlotConfig
 
-    data object YourProfile : SlotConfig {
-        private fun readResolve(): Any = YourProfile
-    }
+
 
     data object Schedule : SlotConfig {
         private fun readResolve(): Any = Schedule
@@ -33,8 +31,6 @@ sealed interface SlotChild {
     class Confirm(val config: SlotConfig.Confirm) : SlotChild
 
     class Schedule(val component: ScheduleComponent) : SlotChild
-
-    class YourProfile(val component: ProfileComponent) : SlotChild
 
     class Settings(val component: SettingsComponent) : SlotChild
 }
