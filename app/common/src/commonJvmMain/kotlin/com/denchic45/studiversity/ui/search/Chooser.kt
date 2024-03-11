@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.stateIn
 
 interface SearchableComponent<T> {
     val query: MutableStateFlow<String>
-//    val foundItems: StateFlow<Resource<List<T>>>
 
     val searchState: StateFlow<SearchState<T>>
 
@@ -41,12 +40,9 @@ abstract class ChooserComponent<T>(componentContext: ComponentContext) :
         }
         .stateIn(coroutineScope, SharingStarted.Lazily, Resource.Success(emptyList()))
 
-    final override val searchState: StateFlow<SearchState<T>> =
-        combine(query, foundItems) { query, items ->
-            if (query.isEmpty())
-                SearchState.EmptyQuery
-            else
-                SearchState.Result(items)
+    final override val searchState: StateFlow<SearchState<T>> = combine(query, foundItems) { query, items ->
+            if (query.isEmpty()) SearchState.EmptyQuery
+            else SearchState.Result(items)
         }.stateIn(coroutineScope, SharingStarted.Lazily, SearchState.EmptyQuery)
 
 
@@ -62,6 +58,6 @@ abstract class ChooserComponent<T>(componentContext: ComponentContext) :
 }
 
 sealed class SearchState<out T> {
-    object EmptyQuery : SearchState<Nothing>()
+    data object EmptyQuery : SearchState<Nothing>()
     data class Result<T>(val items: Resource<List<T>>) : SearchState<T>()
 }

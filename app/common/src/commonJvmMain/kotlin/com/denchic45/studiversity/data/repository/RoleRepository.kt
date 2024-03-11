@@ -5,10 +5,12 @@ import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.toResource
 import com.denchic45.stuiversity.api.role.CapabilityApi
 import com.denchic45.stuiversity.api.role.RoleApi
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.api.role.model.CheckCapabilitiesResponse
+import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.role.model.UserRolesResponse
 import com.denchic45.stuiversity.util.toUUID
 import com.denchic45.stuiversity.util.uuidOrMe
@@ -52,5 +54,9 @@ class RoleRepository(
             uuidOrMe(userId),
             scopeId ?: appPreferences.organizationId.toUUID()
         )
+    }
+
+    fun findAssignableRoles(roleId: Long): Flow<Resource<List<Role>>> = fetchResourceFlow {
+        roleApi.getAssignableRoles(roleId)
     }
 }

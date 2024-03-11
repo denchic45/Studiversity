@@ -15,11 +15,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.denchic45.studiversity.systemRoleName
 import com.denchic45.studiversity.ui.LocalAppBarMediator
+import com.denchic45.studiversity.ui.asString
 import com.denchic45.studiversity.ui.component.HeaderItemUI
 import com.denchic45.studiversity.ui.components.Spinner2
 import com.denchic45.studiversity.ui.components.dialog.AlertDialog
+import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
+import com.denchic45.stuiversity.api.role.model.Role
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,11 +87,12 @@ fun UserEditorDialog(
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 UserEditorContent(
                     state = state,
-                    component::onFirstNameType,
-                    component::onSurnameType,
-                    component::onPatronymicType,
-                    component::onGenderSelect,
-                    component::onEmailType
+                    onFirstNameType = component::onFirstNameType,
+                    onSurnameType = component::onSurnameType,
+                    onPatronymicType = component::onPatronymicType,
+                    onGenderSelect = component::onGenderSelect,
+                    onEmailType = component::onEmailType,
+                    onRoleSelect = component::onRoleSelect
                 )
             }
         },
@@ -105,6 +110,7 @@ private fun UserEditorContent(
     onPatronymicType: (String) -> Unit,
     onGenderSelect: (UserEditorComponent.GenderAction) -> Unit,
     onEmailType: (String) -> Unit,
+    onRoleSelect: (Role) -> Unit,
 ) {
     Column(Modifier.padding(horizontal = 16.dp)) {
         HeaderItemUI("Личные данные")
@@ -155,6 +161,44 @@ private fun UserEditorContent(
                 }
             }
         )
+
+        var rolesExpanded by remember { mutableStateOf(false) }
+
+        ExposedDropdownMenuBox(
+            expanded = rolesExpanded,
+            onExpandedChange = { rolesExpanded = it },
+            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.normal)
+        ) {
+            OutlinedTextField(
+                value = state.assignedRoles.joinToString(transform = Role::systemRoleName),
+                onValueChange = { },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                label = { Text("Раздел") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = rolesExpanded
+                    )
+                },
+                singleLine = true,
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+            )
+
+//            ExposedDropdownMenu(
+//                expanded = rolesExpanded,
+//                onDismissRequest = { rolesExpanded = false }) {
+//                state.foundTopics.forEach {
+//                    DropdownMenuItem(
+//                        text = { Text(it.title.asString()) },
+//                        onClick = {
+//                            onRoleSelect(it)
+//                            expanded = false
+//                        }
+//                    )
+//                }
+//            }
+        }
 
 //        Spinner(
 //            items = state.genders,

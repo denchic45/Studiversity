@@ -5,6 +5,7 @@ import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.role.Permission
 import com.denchic45.studiversity.feature.role.combinedPermission
+import com.denchic45.studiversity.feature.role.mapper.toRole
 import com.denchic45.studiversity.feature.role.mapper.toUserRolesResponse
 import com.denchic45.studiversity.feature.role.mapper.toUsersWithRoles
 import com.denchic45.stuiversity.api.role.model.*
@@ -13,8 +14,8 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -85,7 +86,7 @@ class RoleRepository {
         userId: UUID,
         scopeId: UUID,
         capabilityResource: String
-    ): Permission = UsersRolesScopes.slice(UsersRolesScopes.roleId).select(
+    ): Permission = UsersRolesScopes.select(UsersRolesScopes.roleId).where(
         UsersRolesScopes.userId eq userId
                 and (UsersRolesScopes.scopeId eq scopeId)
     ).map { usersRolesScopesRow ->
@@ -99,8 +100,8 @@ class RoleRepository {
     private fun findPermissionByRole(
         roleIds: List<Long>,
         capabilityResource: String
-    ) = RolesCapabilities.slice(RolesCapabilities.permission)
-        .select(
+    ) = RolesCapabilities.select(RolesCapabilities.permission)
+        .where(
             RolesCapabilities.roleId inList roleIds
                     and (RolesCapabilities.capabilityResource eq capabilityResource)
         ).map { rolesCapabilitiesRow -> rolesCapabilitiesRow[RolesCapabilities.permission] }
@@ -125,7 +126,6 @@ class RoleRepository {
         }
     }
 
-
     private fun existRoleAssignment(roleIds: List<Long>, assignRoleId: Long): Boolean {
         return RolesAssignments.exists {
             RolesAssignments.roleId inList roleIds and (RolesAssignments.assignableRoleId eq assignRoleId)
@@ -138,6 +138,11 @@ class RoleRepository {
                 .singleOrNull()?.let { Role(it.id.value, it.shortname) }
         }
     }
+
+    fun findAssignableRoles(roleId: Long) = RolesAssignments.innerJoin(Roles, { RolesAssignments.roleId }, { Roles.id })
+        .select(Roles.columns).where(RolesAssignments.assignableRoleId eq roleId)
+        .let(RoleDao.Companion::wrapRows)
+        .map(RoleDao::toRole)
 
     fun existUserByScope(userId: UUID, scopeId: UUID) = transaction {
         UsersRolesScopes.exists { UsersRolesScopes.userId eq userId and (UsersRolesScopes.scopeId eq scopeId) }

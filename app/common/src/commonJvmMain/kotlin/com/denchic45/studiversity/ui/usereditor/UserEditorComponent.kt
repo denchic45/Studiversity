@@ -7,9 +7,10 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
-import com.denchic45.studiversity.domain.resource.onFailure
-import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.usecase.AddUserUseCase
+import com.denchic45.studiversity.domain.usecase.FindAssignableRolesUseCase
+import com.denchic45.studiversity.domain.usecase.FindAssignedUserRolesInScopeUseCase
 import com.denchic45.studiversity.ui.model.MenuAction
 import com.denchic45.studiversity.uivalidator.Operator
 import com.denchic45.studiversity.uivalidator.condition.Condition
@@ -24,6 +25,7 @@ import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.model.Gender
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,6 +35,8 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class UserEditorComponent(
     private val addUserUseCase: AddUserUseCase,
+    private val findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
+    private val findAssignableRolesUseCase: FindAssignableRolesUseCase,
     @Assisted
     val onFinish: () -> Unit,
     @Assisted
@@ -69,6 +73,16 @@ class UserEditorComponent(
         GenderAction.Female,
         GenderAction.Undefined
     )
+
+    val yourSystemRoles = findAssignedUserRolesInScopeUseCase().stateInResource(componentScope)
+
+//    val assignableSystemRoles = yourSystemRoles.flatMapResourceFlow { userRoles ->
+//         combine()
+//               userRoles.roles.map { role ->
+//                   findAssignableRolesUseCase(role.id)
+//               }
+//    }
+
     val state = CreatableUserState(
         genders,
         listOf(RoleAction.TeacherPerson, RoleAction.StudentPerson, RoleAction.Moderator)
@@ -158,12 +172,12 @@ class UserEditorComponent(
         updateAllowSave()
     }
 
-    fun onRoleSelect(action: RoleAction) {
+    fun onRoleSelect(role: Role) {
         val assigned = state.assignedRoles
-        state.assignedRoles = if (action.role in assigned) {
-            assigned - action.role
+        state.assignedRoles = if (role in assigned) {
+            assigned - role
         } else {
-            assigned + action.role
+            assigned + role
         }
     }
 
@@ -205,7 +219,6 @@ class UserEditorComponent(
     }
 
     enum class RoleAction(val title: String, val role: Role) {
-        //        User("Пользователь", Role.User),
         TeacherPerson("Преподаватель", Role.TeacherPerson),
         StudentPerson("Учащийся", Role.StudentPerson),
         Moderator("Модератор", Role.Moderator)
