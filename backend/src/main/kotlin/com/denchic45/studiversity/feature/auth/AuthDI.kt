@@ -10,7 +10,6 @@ import org.koin.dsl.module
 
 private val useCaseModule = module {
     single { SignUpUseCase(get(), get()) }
-    single { SignUpUserManuallyUseCase(get(), get(), get(), get()) }
     single { SignInByEmailAndPasswordUseCase(get(), get()) }
     single { RefreshTokenUseCase(get(), get()) }
     single { RecoverPasswordUseCase(get(), get(), get()) }

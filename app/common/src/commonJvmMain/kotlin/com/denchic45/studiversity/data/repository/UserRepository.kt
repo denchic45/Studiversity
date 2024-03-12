@@ -14,15 +14,12 @@ import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.toResource
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.Account
-import com.denchic45.stuiversity.api.user.model.CreateUserRequest
-import com.denchic45.stuiversity.api.user.model.Gender
-import com.denchic45.stuiversity.api.user.model.UserResponse
+import com.denchic45.stuiversity.api.user.model.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class UserRepository(
@@ -46,6 +43,14 @@ class UserRepository(
         userPreferences.isGeneratedAvatar,
         Gender.valueOf(userPreferences.gender)
     )
+
+    fun findById(userId: UUID): Flow<Resource<UserResponse>> = fetchResourceFlow {
+        userApi.getById(userId)
+    }
+
+    suspend fun update(userId: UUID, request: UpdateUserRequest): Resource<UserResponse> = fetchResource {
+        userApi.update(userId, request)
+    }
 
     suspend fun updateAvatar(userId: UUID, request: CreateFileRequest): Resource<String> {
         return fetchResource { userApi.updateAvatar(userId, request) }.onSuccess {

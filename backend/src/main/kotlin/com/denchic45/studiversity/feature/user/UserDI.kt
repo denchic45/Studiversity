@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.user
 
-import com.denchic45.studiversity.config.config
+import com.denchic45.studiversity.feature.auth.usecase.AddUserUseCase
 import com.denchic45.studiversity.feature.user.account.usecase.*
 import com.denchic45.studiversity.feature.user.usecase.FindUserByIdUseCase
 import com.denchic45.studiversity.feature.user.usecase.RemoveUserUseCase
@@ -10,7 +10,7 @@ import org.koin.dsl.module
 private val useCaseModule = module {
     single { FindUserByIdUseCase(get(), get()) }
     single { RemoveUserUseCase(get(), get()) }
-
+    single { AddUserUseCase(get(), get(), get(), get()) }
     single { UpdateAccountPersonalUseCase(get(), get()) }
     single { UpdateEmailUseCase(get(), get()) }
     single { UpdatePasswordUseCase(get(), get()) }
@@ -20,7 +20,7 @@ private val useCaseModule = module {
 }
 
 private val repositoryModule = module {
-    single { UserRepository(config.organizationId, get()) }
+    single { UserRepository(get()) }
 }
 
 val userModule = module {

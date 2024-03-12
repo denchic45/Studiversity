@@ -8,25 +8,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.common.R
+import com.denchic45.studiversity.systemRoleName
 import com.denchic45.studiversity.ui.Sidebar
 import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar.AppBarContent
@@ -34,6 +23,7 @@ import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.component.HeaderItemUI
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
+import com.denchic45.stuiversity.api.role.model.Role
 
 
 @Composable
@@ -45,7 +35,7 @@ fun UserEditorSidebar(component: UserEditorComponent) {
 
 @Composable
 fun UserEditorScreen(component: UserEditorComponent) {
-    val state = remember { component.state }
+    val state = remember { component.editingState }
     val allowSave by component.allowSave.collectAsState()
 //    val appBarState = LocalAppBarState.current
 
@@ -95,12 +85,12 @@ fun UserEditorScreen(component: UserEditorComponent) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserEditorContent(
-    state: UserEditorComponent.CreatableUserState,
+    state: UserEditorComponent.EditingUser,
     onFirstNameType: (String) -> Unit,
     onSurnameType: (String) -> Unit,
     onPatronymicType: (String) -> Unit,
     onGenderSelect: (UserEditorComponent.GenderAction) -> Unit,
-    onRoleSelect: (UserEditorComponent.RoleAction) -> Unit,
+    onRoleSelect: (Role) -> Unit,
     onEmailType: (String) -> Unit,
     modifier: Modifier
 ) {
@@ -143,11 +133,11 @@ fun UserEditorContent(
             singleLine = true
         )
 
-        var expandedGenders by remember { mutableStateOf(false) }
+        var gendersExpanded by remember { mutableStateOf(false) }
 
         ExposedDropdownMenuBox(
-            expanded = expandedGenders,
-            onExpandedChange = { expandedGenders = !expandedGenders }
+            expanded = gendersExpanded,
+            onExpandedChange = { gendersExpanded = !gendersExpanded }
         ) {
             OutlinedTextField(
                 value = state.gender.title,
@@ -158,7 +148,7 @@ fun UserEditorContent(
                     .menuAnchor(),
                 label = { Text("Пол") },
                 trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedGenders)
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = gendersExpanded)
                 },
                 singleLine = true,
                 isError = state.genderMessage != null,
@@ -167,13 +157,13 @@ fun UserEditorContent(
             )
 
             ExposedDropdownMenu(
-                expanded = expandedGenders,
-                onDismissRequest = { expandedGenders = false }) {
+                expanded = gendersExpanded,
+                onDismissRequest = { gendersExpanded = false }) {
                 state.genders.forEach {
                     DropdownMenuItem(
                         text = { Text(it.title) },
                         onClick = {
-                            expandedGenders = false
+                            gendersExpanded = false
                             onGenderSelect(it)
                         }
                     )
@@ -200,11 +190,8 @@ fun UserEditorContent(
         ) {
             OutlinedTextField(
                 value = state.assignedRoles.let { assigned ->
-                    when {
-                        assigned.isEmpty() -> "Пользователь"
-                        assigned.size == 1 -> state.getRoleNameOf(assigned.single())
-                        else -> assigned.joinToString(transform = state::getRoleNameOf)
-                    }
+                    if (assigned.isEmpty()) "Пользователь"
+                    else assigned.joinToString(transform = Role::systemRoleName)
                 },
                 onValueChange = { },
                 readOnly = true,
@@ -222,11 +209,11 @@ fun UserEditorContent(
             ExposedDropdownMenu(
                 expanded = expandedRoles,
                 onDismissRequest = { expandedRoles = false }) {
-                state.roles.forEach {
+                state.assignableRoles.forEach {
                     DropdownMenuItem(
-                        text = { Text(it.title) },
+                        text = { Text(it.systemRoleName()) },
                         trailingIcon = {
-                            if (it.role in state.assignedRoles)
+                            if (it in state.assignedRoles)
                                 Icon(Icons.Default.Done, contentDescription = "role selected")
                         },
                         onClick = { onRoleSelect(it) }

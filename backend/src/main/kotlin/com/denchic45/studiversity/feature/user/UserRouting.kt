@@ -2,7 +2,8 @@ package com.denchic45.studiversity.feature.user
 
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.database.table.UserDao
-import com.denchic45.studiversity.feature.auth.usecase.SignUpUserManuallyUseCase
+import com.denchic45.studiversity.feature.auth.usecase.AddUserUseCase
+import com.denchic45.studiversity.feature.auth.usecase.UpdateUserUseCase
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.feature.user.account.usecase.ResetAvatarUseCase
 import com.denchic45.studiversity.feature.user.account.usecase.UpdateAvatarUseCase
@@ -11,8 +12,8 @@ import com.denchic45.studiversity.feature.user.usecase.RemoveUserUseCase
 import com.denchic45.studiversity.feature.user.usecase.SearchUsersUseCase
 import com.denchic45.studiversity.ktor.CommonErrors
 import com.denchic45.studiversity.ktor.currentUserId
+import com.denchic45.studiversity.ktor.getUserUuidByParameterOrMe
 import com.denchic45.studiversity.ktor.getUuidOrFail
-import com.denchic45.studiversity.util.tryToUUID
 import com.denchic45.studiversity.validation.require
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -35,7 +36,7 @@ fun Application.userRoutes() {
         authenticate("auth-jwt") {
             route("/users") {
                 val requireCapability: RequireCapabilityUseCase by inject()
-                val signUpUserManually: SignUpUserManuallyUseCase by inject()
+                val addUser: AddUserUseCase by inject()
                 val searchUsers: SearchUsersUseCase by inject()
 
                 get {
@@ -52,7 +53,7 @@ fun Application.userRoutes() {
                         capability = Capability.WriteUser,
                         scopeId = config.organizationId
                     )
-                    call.respond(HttpStatusCode.Created, signUpUserManually(call.receive()))
+                    call.respond(HttpStatusCode.Created, addUser(call.receive()))
                 }
                 userByIdRoute()
             }
@@ -64,16 +65,23 @@ private fun Route.userByIdRoute() {
     route("/{userId}") {
         val requireCapability: RequireCapabilityUseCase by inject()
         val findUserById: FindUserByIdUseCase by inject()
+        val updateUser: UpdateUserUseCase by inject()
         val removeUser: RemoveUserUseCase by inject()
 
         get {
-            val currentUserId = call.currentUserId()
-            val userId = when (val parameter = call.parameters.getOrFail("userId")) {
-                "me" -> currentUserId
-                else -> parameter.tryToUUID()
-            }
+            val userId = call.getUserUuidByParameterOrMe("userId")
             val user = findUserById(userId)
             call.respond(HttpStatusCode.OK, user)
+        }
+
+        put {
+            requireCapability(
+                userId = call.currentUserId(),
+                capability = Capability.WriteUser,
+                scopeId = config.organizationId
+            )
+            val userId = call.getUserUuidByParameterOrMe("userId")
+            updateUser(userId, call.receive())
         }
 
         delete {

@@ -8,7 +8,6 @@ import com.denchic45.studiversity.database.table.Users
 import com.denchic45.studiversity.feature.auth.model.MagicLinkToken
 import com.denchic45.studiversity.feature.auth.model.RefreshToken
 import com.denchic45.studiversity.feature.auth.model.UserByEmail
-import com.denchic45.studiversity.feature.role.ScopeType
 import com.denchic45.studiversity.feature.role.repository.AddScopeRepoExt
 import com.denchic45.stuiversity.api.account.model.UpdateAccountPersonalRequest
 import com.denchic45.stuiversity.api.account.model.UpdateEmailRequest
@@ -17,8 +16,8 @@ import com.denchic45.stuiversity.api.auth.AuthErrors
 import com.denchic45.stuiversity.api.auth.model.SignupRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
+import com.denchic45.stuiversity.api.user.model.UpdateUserRequest
 import com.denchic45.stuiversity.api.user.model.UserResponse
-import io.github.jan.supabase.storage.BucketApi
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -29,19 +28,14 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.mindrot.jbcrypt.BCrypt
-import java.io.File
 import java.time.Instant
 import java.util.*
 
-class UserRepository(
-    private val organizationId: UUID,
-    private val client: HttpClient
-) : AddScopeRepoExt {
-
+class UserRepository(private val client: HttpClient) : AddScopeRepoExt {
 
     suspend fun add(signupRequest: SignupRequest): UserResponse {
         val hashed: String = BCrypt.hashpw(signupRequest.password, BCrypt.gensalt())
-      return  add(signupRequest.toCreateUser(), hashed)
+        return add(signupRequest.toCreateUser(), hashed)
     }
 
     suspend fun add(user: CreateUserRequest, password: String): UserResponse {
@@ -68,15 +62,29 @@ class UserRepository(
         return Users.deleteWhere { Users.id eq userId } == 1
     }
 
-    fun update(userId: UUID, updateAccountPersonalRequest: UpdateAccountPersonalRequest) {
-        UserDao.findById(userId)!!.apply {
-            updateAccountPersonalRequest.firstName.ifPresent {
+    fun updateUser(userId: UUID, request: UpdateUserRequest) {
+        UserDao[userId].apply {
+            request.firstName.ifPresent {
                 firstName = it
             }
-            updateAccountPersonalRequest.surname.ifPresent {
+            request.surname.ifPresent {
                 surname = it
             }
-            updateAccountPersonalRequest.patronymic.ifPresent {
+            request.patronymic.ifPresent {
+                patronymic = it
+            }
+        }
+    }
+
+    fun updateAccount(userId: UUID, request: UpdateAccountPersonalRequest) {
+        UserDao[userId].apply {
+            request.firstName.ifPresent {
+                firstName = it
+            }
+            request.surname.ifPresent {
+                surname = it
+            }
+            request.patronymic.ifPresent {
                 patronymic = it
             }
         }
@@ -120,7 +128,7 @@ class UserRepository(
         return setAvatar(userId, CreateFileRequest("avatar.png", newImageBytes), true)
     }
 
-    fun update(userId: UUID, updatePasswordRequest: UpdatePasswordRequest) {
+    fun updateAccount(userId: UUID, updatePasswordRequest: UpdatePasswordRequest) {
         UserDao.findById(userId)!!.apply {
             if (!BCrypt.checkpw(updatePasswordRequest.oldPassword, password))
                 throw BadRequestException(AuthErrors.INVALID_PASSWORD)
@@ -128,7 +136,7 @@ class UserRepository(
         }
     }
 
-    fun update(userId: UUID, updateEmailRequest: UpdateEmailRequest) {
+    fun updateAccount(userId: UUID, updateEmailRequest: UpdateEmailRequest) {
         UserDao.findById(userId)!!.email = updateEmailRequest.email
     }
 

@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
@@ -17,9 +18,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.systemRoleName
 import com.denchic45.studiversity.ui.LocalAppBarMediator
-import com.denchic45.studiversity.ui.asString
 import com.denchic45.studiversity.ui.component.HeaderItemUI
-import com.denchic45.studiversity.ui.components.Spinner2
 import com.denchic45.studiversity.ui.components.dialog.AlertDialog
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
@@ -66,7 +65,7 @@ fun UserEditorDialog(
     component: UserEditorComponent,
     onDismissRequest: () -> Unit,
 ) {
-    val state = remember { component.state }
+    val state = remember { component.editingState }
     AlertDialog(
         modifier = Modifier.heightIn(max = 648.dp),
         title = {
@@ -83,7 +82,6 @@ fun UserEditorDialog(
         },
         onDismissRequest = onDismissRequest,
         text = {
-
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 UserEditorContent(
                     state = state,
@@ -104,7 +102,7 @@ fun UserEditorDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun UserEditorContent(
-    state: UserEditorComponent.CreatableUserState,
+    state: UserEditorComponent.EditingUser,
     onFirstNameType: (String) -> Unit,
     onSurnameType: (String) -> Unit,
     onPatronymicType: (String) -> Unit,
@@ -112,7 +110,7 @@ private fun UserEditorContent(
     onEmailType: (String) -> Unit,
     onRoleSelect: (Role) -> Unit,
 ) {
-    Column(Modifier.padding(horizontal = 16.dp)) {
+    Column(Modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
         HeaderItemUI("Личные данные")
         OutlinedTextField(
             value = state.firstName,
@@ -145,14 +143,32 @@ private fun UserEditorContent(
             placeholder = { Text("Отчество (необязательно)") },
             singleLine = true
         )
-        var expandedGenders by remember { mutableStateOf(false) }
+        var gendersExpanded by remember { mutableStateOf(false) }
 
-        Spinner2(
-            text = state.gender.title,
-            label = { Text("Пол") },
-            expanded = expandedGenders,
-            onExpandedChange = { expandedGenders = it },
-            itemsContent = {
+        ExposedDropdownMenuBox(
+            expanded = gendersExpanded,
+            onExpandedChange = { gendersExpanded = it },
+            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.normal)
+        ) {
+            OutlinedTextField(
+                value = state.gender.title,
+                onValueChange = { },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                label = { Text("Пол") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = gendersExpanded
+                    )
+                },
+                singleLine = true,
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+            )
+
+            ExposedDropdownMenu(
+                expanded = gendersExpanded,
+                onDismissRequest = { gendersExpanded = false }) {
                 state.genders.forEach {
                     DropdownMenuItem(
                         text = { Text(it.title) },
@@ -160,7 +176,7 @@ private fun UserEditorContent(
                     )
                 }
             }
-        )
+        }
 
         var rolesExpanded by remember { mutableStateOf(false) }
 
@@ -175,7 +191,7 @@ private fun UserEditorContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(),
-                label = { Text("Раздел") },
+                label = { Text("Роли") },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(
                         expanded = rolesExpanded
@@ -185,93 +201,37 @@ private fun UserEditorContent(
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
 
-//            ExposedDropdownMenu(
-//                expanded = rolesExpanded,
-//                onDismissRequest = { rolesExpanded = false }) {
-//                state.foundTopics.forEach {
-//                    DropdownMenuItem(
-//                        text = { Text(it.title.asString()) },
-//                        onClick = {
-//                            onRoleSelect(it)
-//                            expanded = false
-//                        }
-//                    )
-//                }
-//            }
+            ExposedDropdownMenu(
+                expanded = rolesExpanded,
+                onDismissRequest = { rolesExpanded = false }) {
+                state.assignableRoles.forEach {
+                    DropdownMenuItem(
+                        text = { Text(it.systemRoleName()) },
+                        trailingIcon = {
+                            if (it in state.assignedRoles)
+                                Icon(Icons.Default.Done, contentDescription = "role selected")
+                        },
+                        onClick = {
+                            onRoleSelect(it)
+                            rolesExpanded = false
+                        }
+                    )
+                }
+            }
         }
 
-//        Spinner(
-//            items = state.genders,
-//            onActionClick = onGenderSelect,
-//            Modifier.padding(top = 24.dp).fillMaxWidth(),
-//            expanded = expandedGenders,
-//            onExpandedChange = { expandedGenders = it },
-//            placeholder = "Пол",
-//            activeAction = state.gender
-//        )
-
-        HeaderItemUI("Вход в аккаунт")
-        OutlinedTextField(
-            value = state.email,
-            onValueChange = onEmailType,
-            Modifier.fillMaxWidth(),
-            label = { Text("Почта") },
-            leadingIcon = { Icon(painterResource("ic_email".toDrawablePath()), null) },
-            singleLine = true,
-            isError = state.emailMessage != null,
-            supportingText = { Text(state.emailMessage ?: "") }
-        )
-
-//            val password by component.passwordField.collectAsState()
-//            var passwordVisible by remember { mutableStateOf(false) }
-//            OutlinedTextField(
-//                value = password,
-//                onValueChange = component::onPasswordType,
-//                Modifier.padding(top = 4.dp).fillMaxWidth(),
-//                label = { Text("Пароль") },
-//                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-//                trailingIcon = {
-//                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-//                        Icon(
-//                            imageVector = if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
-//                            if (passwordVisible) "Hide password" else "Show password"
-//                        )
-//                    }
-//                },
-//                singleLine = true,
-//                isError = errorState.passwordMessage != null,
-//            )
-//            SupportingText(errorState.passwordMessage ?: "", true)
-
+        if (state.isNew) {
+            HeaderItemUI("Вход в аккаунт")
+            OutlinedTextField(
+                value = state.email,
+                onValueChange = onEmailType,
+                Modifier.fillMaxWidth(),
+                label = { Text("Почта") },
+                leadingIcon = { Icon(painterResource("ic_email".toDrawablePath()), null) },
+                singleLine = true,
+                isError = state.emailMessage != null,
+                supportingText = { Text(state.emailMessage ?: "") }
+            )
+        }
     }
-
-//        val groupVisibility by component.groupFieldVisibility.collectAsState()
-//        if (groupVisibility) {
-//            val groupHeader by component.groupField.collectAsState()
-//            androidx.compose.material.Divider(
-//                Modifier.padding(top = 24.dp).fillMaxWidth()
-//            )
-//            OutlinedTextField(
-//                value = groupHeader.name,
-//                onValueChange = component::onPasswordType,
-//                Modifier.padding(top = 16.dp).fillMaxWidth()
-//                    .clickable(onClick = component::onGroupClick),
-//                label = { Text("Группа") },
-//                colors = TextFieldDefaults.outlinedTextFieldColors(
-//                    disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-//                    disabledLabelColor = LocalContentColor.current.copy(LocalContentAlpha.current),
-//                    disabledBorderColor = MaterialTheme.colorScheme.outline
-//                ),
-//                trailingIcon = {
-//                    IconButton(onClick = component::onGroupClick) {
-//                        Icon(imageVector = Icons.Outlined.Link, "Select group")
-//                    }
-//                },
-//                enabled = false,
-//                singleLine = true,
-//                isError = errorState.groupMessage != null,
-//            )
-//        }
-//        SupportingText(errorState.groupMessage ?: "", true)
 }

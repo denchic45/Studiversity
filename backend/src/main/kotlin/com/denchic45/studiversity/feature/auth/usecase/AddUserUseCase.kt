@@ -10,7 +10,7 @@ import com.denchic45.studiversity.util.EmailSender
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import org.mindrot.jbcrypt.BCrypt
 
-class SignUpUserManuallyUseCase(
+class AddUserUseCase(
     private val suspendTransactionWorker: SuspendTransactionWorker,
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
