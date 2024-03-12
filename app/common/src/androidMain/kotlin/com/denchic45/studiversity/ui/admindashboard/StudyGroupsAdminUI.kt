@@ -6,24 +6,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.layout.AdaptiveMasterSidebarLayout
 import com.denchic45.studiversity.ui.search.SearchScreen
-import com.denchic45.studiversity.ui.search.StudyGroupListItem
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorScreen
+import com.denchic45.studiversity.ui.studygroups.StudyGroupListItem
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 
 @Composable

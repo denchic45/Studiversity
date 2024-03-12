@@ -90,7 +90,8 @@ fun UserEditorDialog(
                     onPatronymicType = component::onPatronymicType,
                     onGenderSelect = component::onGenderSelect,
                     onEmailType = component::onEmailType,
-                    onRoleSelect = component::onRoleSelect
+                    onRoleSelect = component::onRoleSelect,
+                    onRemoveUserClick = component::onRemoveUserClick
                 )
             }
         },
@@ -109,6 +110,7 @@ private fun UserEditorContent(
     onGenderSelect: (UserEditorComponent.GenderAction) -> Unit,
     onEmailType: (String) -> Unit,
     onRoleSelect: (Role) -> Unit,
+    onRemoveUserClick: () -> Unit
 ) {
     Column(Modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
         HeaderItemUI("Личные данные")
@@ -232,6 +234,25 @@ private fun UserEditorContent(
                 isError = state.emailMessage != null,
                 supportingText = { Text(state.emailMessage ?: "") }
             )
+        } else {
+            var confirmRemove by remember { mutableStateOf(false) }
+            OutlinedButton(onClick = { confirmRemove = true }) {
+                Text("Удалить")
+            }
+
+            if (confirmRemove)
+                AlertDialog(
+                    onDismissRequest = { confirmRemove = false },
+                    title = { Text("Удалить пользователя?") },
+                    text = { Text("Восстановить пользователя и его ") },
+                    confirmButton = {
+                        Button(onClick = {
+                            confirmRemove = false
+                            onRemoveUserClick()
+                        }) { Text("Да") }
+                    },
+                    dismissButton = { TextButton(onClick = { confirmRemove = false }) { Text("Отмена") } }
+                )
         }
     }
 }

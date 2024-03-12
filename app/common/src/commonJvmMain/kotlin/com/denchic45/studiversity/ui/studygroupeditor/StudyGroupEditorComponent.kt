@@ -94,17 +94,12 @@ class StudyGroupEditorComponent(
 
     val viewState = (studyGroupId?.let {
         findStudyGroupByIdUseCase(it).mapResource { response ->
-            fieldEditor.updateOldValues(
-                "name" to response.name,
-                "startAcademicYear" to response.academicYear.start,
-                "endAcademicYear" to response.academicYear.end,
-                "specialtyId" to response.specialty?.id
-            )
             editingState.apply {
                 name = response.name
                 specialty = response.specialty
                 startAcademicYear = response.academicYear.start
                 endAcademicYear = response.academicYear.end
+                fieldEditor.updateOldValues()
             }
         }
     } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
@@ -185,6 +180,10 @@ class StudyGroupEditorComponent(
                 }
             }
         }
+    }
+
+    fun onDismissClick() {
+        onFinish()
     }
 
     private fun updateAllowSave() {

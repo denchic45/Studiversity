@@ -6,7 +6,6 @@ import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -48,18 +47,11 @@ class UsersAdminComponent(
         childFactory = { config, context ->
             when (config) {
                 is Config.UserEditor -> Child.UserEditor(
-                    userEditorComponent(
-                        sidebarNavigation::dismiss,
-                        context
-                    )
+                    userEditorComponent(sidebarNavigation::dismiss, context)
                 )
 
                 is Config.Profile -> Child.Profile(
-                    profileComponent(
-                        rootNavigation,
-                        config.userId,
-                        context
-                    )
+                    profileComponent(rootNavigation, config.userId, context)
                 )
             }
         })

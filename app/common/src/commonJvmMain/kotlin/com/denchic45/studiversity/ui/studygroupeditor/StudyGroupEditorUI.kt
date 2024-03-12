@@ -11,7 +11,6 @@ import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudyGroupEditorContent(
     state: EditingStudyGroup,

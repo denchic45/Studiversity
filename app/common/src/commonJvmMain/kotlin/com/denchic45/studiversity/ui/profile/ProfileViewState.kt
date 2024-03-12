@@ -7,20 +7,18 @@ import com.denchic45.stuiversity.api.user.model.UserResponse
 
 data class ProfileViewState(
     val user: UserResponse,
-    val role: Role,
+    val roles: List<Role>,
 
     val studyGroups: List<StudyGroupResponse>,
-    val courses:List<CourseResponse>,
+    val courses: List<CourseResponse>,
 
     val self: Boolean,
     val allowEditConfidential: Boolean,
     val allowEditProfile: Boolean,
-) {
-    data class PersonalData(val email: String)
-}
+)
 
 fun UserResponse.toProfileViewState(
-    role: Role,
+    roles: List<Role>,
     studyGroups: List<StudyGroupResponse>,
     courses: List<CourseResponse>,
     allowEdit: Boolean,
@@ -32,5 +30,5 @@ fun UserResponse.toProfileViewState(
     self = self,
     allowEditConfidential = allowEdit,
     allowEditProfile = allowEdit,
-    role = role
+    roles = roles
 )

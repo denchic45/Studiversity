@@ -8,11 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,7 +19,7 @@ import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.search.StudyGroupChooserScreen
-import com.denchic45.studiversity.ui.search.StudyGroupListItem
+import com.denchic45.studiversity.ui.studygroups.StudyGroupListItem
 import com.denchic45.studiversity.ui.uiTextOf
 
 @Composable
@@ -48,10 +44,7 @@ fun CourseStudyGroupsScreen(component: CourseStudyGroupsComponent) {
                 items(studyGroups) {
                     StudyGroupListItem(item = it, trailingContent = {
                         IconButton(onClick = { component.onStudyGroupRemove(it) }) {
-                            Icon(
-                                Icons.Outlined.Delete,
-                                "delete study group"
-                            )
+                            Icon(Icons.Outlined.Delete, "delete study group")
                         }
                     })
                 }
@@ -60,10 +53,10 @@ fun CourseStudyGroupsScreen(component: CourseStudyGroupsComponent) {
     }
 
     childSlot.child?.let {
-        when(val child =it.instance) {
-            is CourseStudyGroupsComponent.Child.StudyGroupChooser -> StudyGroupChooserScreen(
-                child.component
-            )
+        when (val child = it.instance) {
+            is CourseStudyGroupsComponent.Child.StudyGroupChooser -> {
+                StudyGroupChooserScreen(child.component)
+            }
         }
     }
 

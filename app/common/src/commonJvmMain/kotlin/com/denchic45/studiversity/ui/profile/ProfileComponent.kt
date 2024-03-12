@@ -9,13 +9,16 @@ import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.preference.UserPreferences
-import com.denchic45.studiversity.domain.resource.*
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.bindResources
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.*
-import com.denchic45.studiversity.ui.main.AppNavigation
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.navigator.RootNavigator
-import com.denchic45.studiversity.ui.navigator.RootNavigatorComponent
+import com.denchic45.studiversity.ui.usercourses.UserCoursesComponent
+import com.denchic45.studiversity.ui.userstudygroups.UserStudyGroupsComponent
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -36,9 +39,11 @@ class ProfileComponent(
     findStudyGroupsUseCase: FindStudyGroupsUseCase,
     findCoursesUseCase: FindCoursesUseCase,
     findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
+    userCoursesComponent: (onResult: (UUID?) -> Unit, UUID, ComponentContext) -> UserCoursesComponent,
+    userStudyGroupsComponent: (onResult: (UUID?) -> Unit, UUID, ComponentContext) -> UserStudyGroupsComponent,
     private val updateAvatarUseCase: UpdateAvatarUseCase,
     private val removeAvatarUseCase: RemoveAvatarUseCase,
-    private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
+    checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     @Assisted
     private val navigator: RootNavigator,
     @Assisted
@@ -53,25 +58,36 @@ class ProfileComponent(
     private val userRole = findAssignedUserRolesInScopeUseCase(userId, null)
     private val studyGroups = findStudyGroupsUseCase(memberId = uuidOf(userId))
     private val courses = findCoursesUseCase(memberId = uuidOf(userId))
-    private val capabilities = userFlow.flatMapResourceFlow { profileUser ->
-        checkUserCapabilitiesInScopeUseCase(
-            scopeId = null,
-            capabilities = listOf(Capability.WriteUser)
-        )
-    }
+    private val capabilities = checkUserCapabilitiesInScopeUseCase(
+        scopeId = null,
+        capabilities = listOf(Capability.WriteUser)
+    )
 
-    val fullAvatarSize = MutableStateFlow(false)
+//    val fullAvatarSize = MutableStateFlow(false)
 
-    private val overlayNavigation = SlotNavigation<OverlayConfig>()
+    private val slotNavigation = SlotNavigation<SlotConfig>()
 
     val childSlot = childSlot(
-        source = overlayNavigation,
+        source = slotNavigation,
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
-                OverlayConfig.AvatarDialog -> OverlayChild.AvatarDialog
-                OverlayConfig.FullAvatar -> OverlayChild.FullAvatar
-                OverlayConfig.ImageChooser -> OverlayChild.AvatarChooser
+                SlotConfig.AvatarDialog -> SlotChild.AvatarDialog
+                SlotConfig.FullAvatar -> SlotChild.FullAvatar
+                SlotConfig.ImageChooser -> SlotChild.AvatarChooser
+                is SlotConfig.UserCourses -> SlotChild.UserCourses(
+                    userCoursesComponent({ courseId ->
+                        slotNavigation.dismiss()
+                        if (courseId != null) navigator.bringToFront(RootConfig.Course(courseId))
+                    }, config.userId, context)
+                )
+
+                is SlotConfig.UserStudyGroups -> SlotChild.UserStudyGroups(
+                    userStudyGroupsComponent({ studyGroupId ->
+                        slotNavigation.dismiss()
+                        if (studyGroupId != null) navigator.bringToFront(RootConfig.StudyGroup(studyGroupId))
+                    }, config.userId, context)
+                )
             }
         }
     )
@@ -86,11 +102,11 @@ class ProfileComponent(
         bindResources {
             val user = userRes.bind()
             user.toProfileViewState(
-                roleRes.bind().roles.single(),
-                studyGroupsRes.bind(),
-                coursesRes.bind(),
-                capabilitiesRes.bind().hasCapability(Capability.WriteUser),
-                userPreferences.id.toUUID() == user.id,
+                roles = roleRes.bind().roles,
+                studyGroups = studyGroupsRes.bind(),
+                courses = coursesRes.bind(),
+                allowEdit = capabilitiesRes.bind().hasCapability(Capability.WriteUser),
+                self = userPreferences.id.toUUID() == user.id,
             )
         }
     }.stateInResource(componentScope)
@@ -98,14 +114,14 @@ class ProfileComponent(
     fun onAvatarClick() {
         viewState.value.onSuccess { profile ->
             userFlow.value.onSuccess { user ->
-                overlayNavigation.activate(
+                slotNavigation.activate(
                     if (profile.self) {
                         if (user.generatedAvatar)
-                            OverlayConfig.ImageChooser
+                            SlotConfig.ImageChooser
                         else
-                            OverlayConfig.AvatarDialog
+                            SlotConfig.AvatarDialog
                     } else {
-                        OverlayConfig.FullAvatar
+                        SlotConfig.FullAvatar
                     }
                 )
             }
@@ -115,7 +131,6 @@ class ProfileComponent(
 
     fun onStudyGroupClick(studyGroupId: UUID) {
         navigator.bringToFront(RootConfig.StudyGroup(studyGroupId))
-//        onStudyGroupOpen(studyGroupId)
     }
 
     fun onCourseClick(courseId: UUID) {
@@ -123,23 +138,27 @@ class ProfileComponent(
     }
 
     fun onMoreCourseClick() {
-        TODO("Show all courses by user")
+        slotNavigation.activate(SlotConfig.UserCourses(userId))
+    }
+
+    fun onMoreStudyGroupsClick() {
+        slotNavigation.activate(SlotConfig.UserStudyGroups(userId))
     }
 
     fun onDialogClose() {
-        overlayNavigation.dismiss()
+        slotNavigation.dismiss()
     }
 
     fun onOpenAvatarClick() {
-        overlayNavigation.activate(OverlayConfig.FullAvatar)
+        slotNavigation.activate(SlotConfig.FullAvatar)
     }
 
     fun onUpdateAvatarClick() {
-        overlayNavigation.activate(OverlayConfig.ImageChooser)
+        slotNavigation.activate(SlotConfig.ImageChooser)
     }
 
     fun onRemoveAvatarClick() {
-        overlayNavigation.dismiss()
+        slotNavigation.dismiss()
         userFlow.value.onSuccess {
             componentScope.launch {
                 removeAvatarUseCase(it.id)
@@ -152,29 +171,35 @@ class ProfileComponent(
             componentScope.launch {
                 updateAvatarUseCase(it.id, CreateFileRequest(name, bytes))
             }
-            overlayNavigation.dismiss()
+            slotNavigation.dismiss()
         }
     }
 
 
     @Parcelize
-    sealed class OverlayConfig : Parcelable {
-        data object AvatarDialog : OverlayConfig() {
+    sealed class SlotConfig : Parcelable {
+        data object AvatarDialog : SlotConfig() {
             private fun readResolve(): Any = AvatarDialog
         }
 
-        data object FullAvatar : OverlayConfig() {
+        data object FullAvatar : SlotConfig() {
             private fun readResolve(): Any = FullAvatar
         }
 
-        data object ImageChooser : OverlayConfig() {
+        data object ImageChooser : SlotConfig() {
             private fun readResolve(): Any = ImageChooser
         }
+
+        data class UserCourses(val userId: UUID) : SlotConfig()
+
+        data class UserStudyGroups(val userId: UUID) : SlotConfig()
     }
 
-    sealed class OverlayChild {
-        data object AvatarDialog : OverlayChild()
-        data object FullAvatar : OverlayChild()
-        data object AvatarChooser : OverlayChild()
+    sealed class SlotChild {
+        data object AvatarDialog : SlotChild()
+        data object FullAvatar : SlotChild()
+        data object AvatarChooser : SlotChild()
+        class UserCourses(val component: UserCoursesComponent) : SlotChild()
+        class UserStudyGroups(val component: UserStudyGroupsComponent) : SlotChild()
     }
 }

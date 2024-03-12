@@ -1,15 +1,20 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -20,8 +25,22 @@ import io.kamel.image.asyncPainterResource
 
 @Composable
 fun UsersAdminScreen(component: UsersAdminComponent) {
-    AdminSearchScreen(component, UserItem::id) {
-        UserListItem(item = it, onClick = { component.onUserClick(it.id) })
+    val interactionSource = remember { MutableInteractionSource() }
+    AdminSearchScreen(component, UserItem::id) { userItem ->
+        UserListItem(
+            item = userItem,
+            onClick = { component.onUserClick(userItem.id) },
+            trailingContent = {
+                val isHovered by interactionSource.collectIsHoveredAsState()
+                if (isHovered)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = { component.onEditClick(userItem.id) }) {
+                            Icon(Icons.Outlined.Edit, null)
+                        }
+                    }
+            },
+            interactionSource = interactionSource
+        )
     }
 }
 
@@ -29,6 +48,8 @@ fun UsersAdminScreen(component: UsersAdminComponent) {
 private fun UserListItem(
     item: UserItem,
     onClick: () -> Unit,
+    trailingContent: (@Composable () -> Unit)? = null,
+    interactionSource: MutableInteractionSource = MutableInteractionSource(),
     modifier: Modifier = Modifier
 ) {
     item.apply {
@@ -47,9 +68,10 @@ private fun UserListItem(
                     contentScale = ContentScale.Crop
                 )
             },
+            trailingContent = trailingContent,
             modifier = modifier
                 .height(64.dp)
-                .clickable(onClick = onClick)
+                .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
         )
 //        Row(
 //            modifier = modifier

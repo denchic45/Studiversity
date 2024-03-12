@@ -5,8 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
@@ -17,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -30,6 +33,8 @@ import com.denchic45.studiversity.ui.main.NavigationIconBack
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
 import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.seiko.imageloader.rememberAsyncImagePainter
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -50,7 +55,7 @@ fun ProfileScreen(component: ProfileComponent) {
     ) {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             state.onSuccess { state ->
-                ProfileContent(state)
+                ProfileHeaderBlock(state, onStudyGroupClick = component::onStudyGroupClick, onMoreStudyGroupsClick = component::onMoreStudyGroupsClick)
                 Row {
                     Column(
                         Modifier.width(496.dp)
@@ -58,7 +63,14 @@ fun ProfileScreen(component: ProfileComponent) {
                                 end = MaterialTheme.spacing.normal,
                                 bottom = MaterialTheme.spacing.normal
                             )
-                    ) { }
+                    ) {
+                        state.roles.forEach {
+                            when (it) {
+                                Role.TeacherPerson -> {}
+                                Role.StudentPerson -> StudentInfoBlock()
+                            }
+                        }
+                    }
                     Column {
                         CoursesBlock(
                             courses = state.courses,
@@ -74,48 +86,85 @@ fun ProfileScreen(component: ProfileComponent) {
 }
 
 @Composable
-fun ProfileContent(state: ProfileViewState) {
+private fun StudentInfoBlock() {
+    BlockContent {
+        HeaderItemUI("Учебная деятельность")
+        Row {
+            StudentBlockElement(rememberVectorPainter(Icons.Outlined.CheckCircle), "Успеваемость")
+            StudentBlockElement(rememberVectorPainter(Icons.Outlined.HotelClass), "Оценки")
+            StudentBlockElement(rememberVectorPainter(Icons.Outlined.EmojiEvents), "Достижения")
+        }
+    }
+}
+
+
+@Composable
+private fun StudentBlockElement(painter: Painter, title: String) {
     Column {
-        BlockContent() {
-            Row(
-                Modifier.width(874.dp).height(232.dp).padding(horizontal = MaterialTheme.spacing.normal),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val user = state.user
-                KamelImage(
-                    resource = asyncPainterResource(user.avatarUrl),
-                    null,
-                    Modifier.size(168.dp).clip(CircleShape).background(Color.LightGray),
-                    contentScale = ContentScale.Crop,
+        Box(modifier = Modifier.size(112.dp).clip(RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
+            Image(painter, contentDescription = null)
+        }
+        Text(title, modifier = Modifier.padding(vertical = MaterialTheme.spacing.normal))
+    }
+}
 
-                    )
-                Spacer(Modifier.width(MaterialTheme.spacing.normal))
-                Column {
-                    Text(
-                        user.fullName,
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(vertical = MaterialTheme.spacing.small)
-                    )
-                    Text(
-                        state.role.systemRoleName(),
-                        Modifier.padding(bottom = MaterialTheme.spacing.small),
-                        style = MaterialTheme.typography.titleMedium
-                    )
+@Composable
+fun ProfileHeaderBlock(state: ProfileViewState, onStudyGroupClick: (UUID) -> Unit, onMoreStudyGroupsClick: () -> Unit) {
+    BlockContent {
+        Row(
+            Modifier.width(874.dp).height(232.dp).padding(horizontal = MaterialTheme.spacing.normal),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val user = state.user
+            KamelImage(
+                resource = asyncPainterResource(user.avatarUrl),
+                null,
+                Modifier.size(168.dp).clip(CircleShape).background(Color.LightGray),
+                contentScale = ContentScale.Crop,
 
-                    Row {
-                        Icon(
-                            Icons.Outlined.Email,
-                            null,
-                            modifier = Modifier.padding(end = MaterialTheme.spacing.small)
-                        )
-                        Text(state.user.account.email, style = MaterialTheme.typography.titleSmall)
+                )
+            Spacer(Modifier.width(MaterialTheme.spacing.normal))
+            Column {
+                Text(
+                    user.fullName,
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(vertical = MaterialTheme.spacing.small)
+                )
+                Text(
+                    state.roles.joinToString(transform = Role::systemRoleName),
+                    Modifier.padding(bottom = MaterialTheme.spacing.small),
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Row {
+                    Icon(
+                        Icons.Outlined.Email,
+                        null,
+                        Modifier.padding(end = MaterialTheme.spacing.small)
+                    )
+                    Text(state.user.account.email, style = MaterialTheme.typography.titleSmall)
+
+                    state.studyGroups.takeIf(List<StudyGroupResponse>::isNotEmpty)?.let { studyGroups ->
+                        Row(Modifier.clickable {
+                            if (studyGroups.size == 1) onStudyGroupClick(studyGroups.single().id)
+                            else onMoreStudyGroupsClick()
+                        }) {
+                            Icon(
+                                Icons.Outlined.Groups,
+                                null,
+                                Modifier.padding(end = MaterialTheme.spacing.small)
+                            )
+                            val studyGroupsText = studyGroups.singleOrNull()?.name ?: "${studyGroups.size} групп"
+                            Text(studyGroupsText, style = MaterialTheme.typography.titleSmall)
+                        }
                     }
+                }
 
-                    Spacer(Modifier.height(MaterialTheme.spacing.normal))
+                Spacer(Modifier.height(MaterialTheme.spacing.normal))
 
-                    FilledTonalButton(onClick = {}) {
-                        Text("Написать")
-                    }
+                FilledTonalButton(onClick = {}) {
+                    Text("Написать")
+                }
 
 //                        if (profile.studyGroups.size == 1) {
 //                            Row {
@@ -129,12 +178,10 @@ fun ProfileContent(state: ProfileViewState) {
 //                            Icon(Icons.Outlined.Groups, null)
 //                            Text("${profile.studyGroups.size} групп")
 //                        }
-                }
             }
         }
-        Spacer(Modifier.height(MaterialTheme.spacing.normal))
-
     }
+    Spacer(Modifier.height(MaterialTheme.spacing.normal))
 }
 
 @Composable

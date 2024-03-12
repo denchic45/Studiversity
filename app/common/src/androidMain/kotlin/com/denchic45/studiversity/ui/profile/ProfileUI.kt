@@ -11,38 +11,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Group
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,19 +34,20 @@ import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
 import com.denchic45.studiversity.ui.appbar.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
-import com.denchic45.studiversity.ui.search.StudyGroupListItem
+import com.denchic45.studiversity.ui.studygroups.StudyGroupListItem
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.uiTextOf
+import com.denchic45.studiversity.ui.usercourses.UserCoursesDialog
+import com.denchic45.studiversity.ui.userstudygroups.UserStudyGroupsDialog
 import com.denchic45.studiversity.util.toast
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import java.io.ByteArrayOutputStream
-import java.util.UUID
+import java.util.*
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(component: ProfileComponent) {
-
     val viewStateResource by component.viewState.collectAsState()
     val childSlot by component.childSlot.subscribeAsState()
 
@@ -86,8 +61,8 @@ fun ProfileScreen(component: ProfileComponent) {
             )
             viewStateResource.onSuccess { viewState ->
                 childSlot.child?.let {
-                    when (it.instance) {
-                        ProfileComponent.OverlayChild.AvatarDialog -> {
+                    when (val child = it.instance) {
+                        ProfileComponent.SlotChild.AvatarDialog -> {
                             AlertDialog(onDismissRequest = component::onDialogClose) {
                                 Column {
                                     ListItem(
@@ -101,35 +76,32 @@ fun ProfileScreen(component: ProfileComponent) {
                                         modifier = Modifier.clickable(onClick = component::onUpdateAvatarClick),
                                         headlineContent = { Text("Изменить фото") },
                                         leadingContent = {
-                                            Icon(
-                                                Icons.Outlined.Edit,
-                                                "update photo"
-                                            )
+                                            Icon(Icons.Outlined.Edit, "update photo")
                                         }
                                     )
                                     ListItem(
                                         modifier = Modifier.clickable(onClick = component::onRemoveAvatarClick),
                                         headlineContent = { Text("Удалить фото") },
                                         leadingContent = {
-                                            Icon(
-                                                Icons.Outlined.Delete,
-                                                "delete photo"
-                                            )
+                                            Icon(Icons.Outlined.Delete, "delete photo")
                                         }
                                     )
                                 }
                             }
                         }
 
-                        ProfileComponent.OverlayChild.FullAvatar -> FullAvatarScreen(
+                        ProfileComponent.SlotChild.FullAvatar -> FullAvatarScreen(
                             url = viewState.user.avatarUrl,
                             allowUpdateAvatar = viewState.self,
                             onDeleteClick = {}
                         )
 
-                        ProfileComponent.OverlayChild.AvatarChooser -> {
+                        ProfileComponent.SlotChild.AvatarChooser -> {
                             AvatarChooser(component::onNewAvatarSelect, component::onDialogClose)
                         }
+
+                        is ProfileComponent.SlotChild.UserCourses -> UserCoursesDialog(child.component)
+                        is ProfileComponent.SlotChild.UserStudyGroups -> UserStudyGroupsDialog(child.component)
                     }
                 }
             }
@@ -241,11 +213,7 @@ fun ProfileContent(
                 Spacer(Modifier.width(MaterialTheme.spacing.normal))
                 Text(profile.user.fullName, style = MaterialTheme.typography.titleMedium)
             }
-            Divider(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(MaterialTheme.spacing.small)
-            )
+            HorizontalDivider(Modifier.padding(MaterialTheme.spacing.small))
             ProfileStudyGroups(profile.studyGroups, onStudyGroupClick)
 
             profile.user.account.let { personalDate ->
@@ -257,10 +225,7 @@ fun ProfileContent(
                         Text(personalDate.email, style = MaterialTheme.typography.bodyLarge)
                     },
                     supportingContent = {
-                        Text(
-                            "Почта",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Text("Почта", style = MaterialTheme.typography.bodyMedium)
                     })
             }
         }
@@ -316,14 +281,14 @@ private fun ProfileStudyGroups(
 
             if (showStudyGroups)
                 AlertDialog(onDismissRequest = { showStudyGroups = false }) {
-                   Column {
-                       studyGroups.forEach {
-                           StudyGroupListItem(
-                               item = it,
-                               modifier = Modifier.clickable { onStudyGroupClick(it.id) }
-                           )
-                       }
-                   }
+                    Column {
+                        studyGroups.forEach {
+                            StudyGroupListItem(
+                                item = it,
+                                modifier = Modifier.clickable { onStudyGroupClick(it.id) }
+                            )
+                        }
+                    }
                 }
         }
     }

@@ -8,9 +8,8 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
 import com.denchic45.studiversity.domain.resource.*
-import com.denchic45.studiversity.domain.usecase.AddUserUseCase
-import com.denchic45.studiversity.domain.usecase.FindAssignableRolesUseCase
-import com.denchic45.studiversity.domain.usecase.FindAssignedUserRolesInScopeUseCase
+import com.denchic45.studiversity.domain.usecase.*
+import com.denchic45.studiversity.getOptProperty
 import com.denchic45.studiversity.ui.model.MenuAction
 import com.denchic45.studiversity.uivalidator.Operator
 import com.denchic45.studiversity.uivalidator.condition.Condition
@@ -23,20 +22,24 @@ import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.model.Gender
+import com.denchic45.stuiversity.api.user.model.UpdateUserRequest
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import java.util.*
 
 @Inject
 class UserEditorComponent(
+    private val findUserByIdUseCase: FindUserByIdUseCase,
     private val addUserUseCase: AddUserUseCase,
-    private val findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
-    private val findAssignableRolesUseCase: FindAssignableRolesUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
+    private val removeUserUseCase: RemoveUserUseCase,
+    findAssignableRolesByUserAndScopeUseCase: FindAssignableRolesByUserAndScopeUseCase,
+    @Assisted
+    private val userId: UUID?,
     @Assisted
     val onFinish: () -> Unit,
     @Assisted
@@ -48,7 +51,12 @@ class UserEditorComponent(
     val allowSave = MutableStateFlow(false)
 
     @Stable
-    class CreatableUserState(val genders: List<GenderAction>, val roles: List<RoleAction>) {
+    class EditingUser(val isNew: Boolean) {
+        val genders: List<GenderAction> = listOf(
+            GenderAction.Male,
+            GenderAction.Female,
+            GenderAction.Undefined
+        )
 
         var firstName by mutableStateOf("")
         var surname by mutableStateOf("")
@@ -57,55 +65,55 @@ class UserEditorComponent(
         var email by mutableStateOf("")
         var assignedRoles: List<Role> by mutableStateOf(emptyList())
 
-        fun getRoleNameOf(role: Role): String {
-            return roles.first { it.role == role }.title
-        }
+        var assignableRoles: List<Role> by mutableStateOf(emptyList())
 
         var firstNameMessage: String? by mutableStateOf(null)
         var surnameMessage: String? by mutableStateOf(null)
         var genderMessage: String? by mutableStateOf(null)
         var emailMessage: String? by mutableStateOf(null)
-
     }
 
-    private val genders: List<GenderAction> = listOf(
-        GenderAction.Male,
-        GenderAction.Female,
-        GenderAction.Undefined
-    )
 
-    val yourSystemRoles = findAssignedUserRolesInScopeUseCase().stateInResource(componentScope)
+    private val assignableSystemRoles = findAssignableRolesByUserAndScopeUseCase(null, null)
+        .stateInResource(componentScope)
 
-//    val assignableSystemRoles = yourSystemRoles.flatMapResourceFlow { userRoles ->
-//         combine()
-//               userRoles.roles.map { role ->
-//                   findAssignableRolesUseCase(role.id)
-//               }
-//    }
+    val editingState = EditingUser(userId == null)
 
-    val state = CreatableUserState(
-        genders,
-        listOf(RoleAction.TeacherPerson, RoleAction.StudentPerson, RoleAction.Moderator)
-    )
+    val viewState = (userId?.let {
+        findUserByIdUseCase(it).mapResource { response ->
+            editingState.apply {
+                firstName = response.firstName
+                surname = response.surname
+                patronymic = response.patronymic.orEmpty()
+                gender = when (response.gender) {
+                    Gender.UNKNOWN -> GenderAction.Undefined
+                    Gender.FEMALE -> GenderAction.Female
+                    Gender.MALE -> GenderAction.Male
+                }
+                fieldEditor.updateOldValues()
+            }
+        }
+    } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
 
     private val fieldEditor = FieldEditor(
         mapOf(
-            "firstName" to Field(state::firstName),
-            "surname" to Field(state::surname),
-            "patronymic" to Field(state::patronymic),
-            "gender" to Field(state::gender),
-            "email" to Field(state::email)
+            "firstName" to Field(editingState::firstName),
+            "surname" to Field(editingState::surname),
+            "patronymic" to Field(editingState::patronymic),
+            "gender" to Field(editingState::gender),
+            "email" to Field(editingState::email),
+            "roles" to Field(editingState::assignedRoles)
         )
     )
 
     private val emailValidator = ValueValidator(
-        value = state::email,
+        value = editingState::email,
         conditions = listOf(
             Condition(String::isNotEmpty).observable { isValid ->
-                state.emailMessage = getIfNot(isValid) { "Почта обязательна" }
+                editingState.emailMessage = getIfNot(isValid) { "Почта обязательна" }
             },
             Condition(String::isEmail).observable { isValid ->
-                state.emailMessage = getIfNot(isValid) { "Некоректная почта" }
+                editingState.emailMessage = getIfNot(isValid) { "Некоректная почта" }
             }
         ),
         operator = Operator.all()
@@ -114,70 +122,83 @@ class UserEditorComponent(
     private val validator = CompositeValidator(
         listOf(
             ValueValidator(
-                value = state::firstName,
+                value = editingState::firstName,
                 conditions = listOf(
                     Condition(String::isNotEmpty)
                         .observable { isValid ->
-                            state.firstNameMessage = getIfNot(isValid) { "Имя обязательно" }
+                            editingState.firstNameMessage = getIfNot(isValid) { "Имя обязательно" }
                         })
             ),
             ValueValidator(
-                value = state::surname,
+                value = editingState::surname,
                 conditions = listOf(Condition(String::isNotEmpty).observable { isValid ->
-                    state.surnameMessage = getIfNot(isValid) { "Фамилия обязательно" }
+                    editingState.surnameMessage = getIfNot(isValid) { "Фамилия обязательно" }
                 })
             ),
             ValueValidator(
-                value = state::gender,
+                value = editingState::gender,
                 conditions = listOf(Condition<GenderAction> { it != GenderAction.Undefined }.observable { isValid ->
-                    state.genderMessage = getIfNot(isValid) { "Пол обязателен" }
+                    editingState.genderMessage = getIfNot(isValid) { "Пол обязателен" }
                 })
             ),
 //            ValueValidator(
 //                value = state::assignedRoles,
-//                conditions = listOf(Condition<List<Role>> {it.isNotEmpty()}.observable {isValid->
+//                conditions = listOf(Condition<List<Role>> { it.isNotEmpty() }.observable { isValid ->
 //                    state.rolesMessage = getIfNot(isValid) { "Выберите хотя бы одну роль" }
 //                })
-//            )
+//            ),
             emailValidator
         )
     )
 
+    init {
+        assignableSystemRoles.onEach { assignableRoles ->
+            assignableRoles.onSuccess {
+                editingState.assignableRoles = it
+            }
+        }.launchIn(componentScope)
+    }
+
     fun onSaveClick() {
-        validator.validate()
         saveChanges()
     }
 
     fun onFirstNameType(firstName: String) {
-        state.firstName = firstName
+        editingState.firstName = firstName
         updateAllowSave()
     }
 
     fun onSurnameType(surname: String) {
-        state.surname = surname
+        editingState.surname = surname
         updateAllowSave()
     }
 
     fun onPatronymicType(patronymic: String) {
-        state.patronymic = patronymic
+        editingState.patronymic = patronymic
     }
 
     fun onEmailType(email: String) {
-        state.email = email
+        editingState.email = email
         updateAllowSave()
     }
 
     fun onGenderSelect(gender: GenderAction) {
-        state.gender = gender
+        editingState.gender = gender
         updateAllowSave()
     }
 
     fun onRoleSelect(role: Role) {
-        val assigned = state.assignedRoles
-        state.assignedRoles = if (role in assigned) {
+        val assigned = editingState.assignedRoles
+        editingState.assignedRoles = if (role in assigned) {
             assigned - role
         } else {
             assigned + role
+        }
+    }
+
+    fun onRemoveUserClick() {
+        componentScope.launch {
+            removeUserUseCase(userId!!).onSuccess { onFinish() }
         }
     }
 
@@ -188,39 +209,48 @@ class UserEditorComponent(
     private fun saveChanges() {
         componentScope.launch {
             validator.onValid {
-                addUserUseCase(
-                    CreateUserRequest(
-                        state.firstName,
-                        state.surname,
-                        state.patronymic,
-                        state.email,
-                        when (state.gender) {
-                            GenderAction.Undefined -> Gender.UNKNOWN
-                            GenderAction.Male -> Gender.MALE
-                            GenderAction.Female -> Gender.FEMALE
-                        },
-                        state.assignedRoles.map(Role::id)
+                val result = userId?.let {
+                    updateUserUseCase(
+                        userId,
+                        UpdateUserRequest(
+                            fieldEditor.getOptProperty("firstName"),
+                            fieldEditor.getOptProperty("surname"),
+                            fieldEditor.getOptProperty("patronymic"),
+                            fieldEditor.getOptProperty<GenderAction, Gender>("gender") { it.toGender() },
+                            fieldEditor.getOptProperty<List<Role>, List<Long>>("roles") { it.map(Role::id) }
+                        )
                     )
-                ).onSuccess {
+                } ?: addUserUseCase(
+                    CreateUserRequest(
+                        editingState.firstName,
+                        editingState.surname,
+                        editingState.patronymic,
+                        editingState.email,
+                        editingState.gender.toGender(),
+                        editingState.assignedRoles.map(Role::id)
+                    )
+                )
+                result.onSuccess {
                     withContext(Dispatchers.Main.immediate) {
                         onFinish()
                     }
-                }
-                    .onFailure { }
+                }.onFailure { }
             }
         }
     }
 
-    enum class GenderAction(override val title: String, override val iconName: String? = null) :
-        MenuAction {
+    private fun GenderAction.toGender() = when (this) {
+        GenderAction.Undefined -> Gender.UNKNOWN
+        GenderAction.Male -> Gender.MALE
+        GenderAction.Female -> Gender.FEMALE
+    }
+
+    enum class GenderAction(
+        override val title: String,
+        override val iconName: String? = null
+    ) : MenuAction {
         Undefined("Не выбран"),
         Male("Мужской"),
         Female("Женский")
-    }
-
-    enum class RoleAction(val title: String, val role: Role) {
-        TeacherPerson("Преподаватель", Role.TeacherPerson),
-        StudentPerson("Учащийся", Role.StudentPerson),
-        Moderator("Модератор", Role.Moderator)
     }
 }

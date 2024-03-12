@@ -21,7 +21,7 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class StudyGroupsAdminComponent(
@@ -45,11 +45,7 @@ class StudyGroupsAdminComponent(
         childFactory = { config, context ->
             when (config) {
                 is Config.StudyGroupEditor -> Child.StudyGroupEditor(
-                    studyGroupEditorComponent(
-                        { sidebarNavigation.dismiss() },
-                        config.studyGroupId,
-                        context
-                    )
+                    studyGroupEditorComponent({ sidebarNavigation.dismiss() }, config.studyGroupId, context)
                 )
             }
         })

@@ -5,16 +5,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.ui.appbar.hideAppBar
@@ -28,8 +20,6 @@ import com.denchic45.studiversity.ui.usereditor.UserEditorScreen
 
 @Composable
 fun UsersAdminScreen(component: UsersAdminComponent) {
-
-
     val childSlot by component.childSlot.subscribeAsState()
 
     AdaptiveMasterSidebarLayout(
@@ -43,13 +33,8 @@ fun UsersAdminScreen(component: UsersAdminComponent) {
 @Composable
 private fun UsersAdminDetailScreen(child: UsersAdminComponent.Child) {
     when (child) {
-        is UsersAdminComponent.Child.Profile -> {
-            ProfileScreen(child.component)
-        }
-
-        is UsersAdminComponent.Child.UserEditor -> {
-            UserEditorScreen(child.component)
-        }
+        is UsersAdminComponent.Child.Profile -> ProfileScreen(child.component)
+        is UsersAdminComponent.Child.UserEditor -> UserEditorScreen(child.component)
     }
 }
 
@@ -75,7 +60,6 @@ private fun UsersAdminMainScreen(component: UsersAdminComponent) {
                     ExpandableDropdownMenu(
                         expanded = expanded,
                         onExpandedChange = { expanded = it }) {
-
                         DropdownMenuItem(
                             text = { Text(text = "Удалить") },
                             leadingIcon = {

@@ -21,12 +21,10 @@ import com.denchic45.studiversity.domain.usecase.AddSubjectUseCase
 import com.denchic45.studiversity.domain.usecase.FindSubjectByIdUseCase
 import com.denchic45.studiversity.domain.usecase.UpdateSubjectUseCase
 import com.denchic45.studiversity.getOptProperty
-import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.subjecticons.SubjectIconsComponent
 import com.denchic45.studiversity.uivalidator.condition.Condition
 import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
-import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
@@ -45,7 +43,6 @@ class SubjectEditorComponent(
     private val findSubjectByIdUseCase: FindSubjectByIdUseCase,
     private val addSubjectUseCase: AddSubjectUseCase,
     private val updateSubjectUseCase: UpdateSubjectUseCase,
-    private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val subjectIconsComponent: (
         onSelect: (iconUrl: String?) -> Unit,
         ComponentContext
@@ -110,15 +107,11 @@ class SubjectEditorComponent(
 
     val viewState = (subjectId?.let {
         findSubjectByIdUseCase(it).mapResource { response ->
-            fieldEditor.updateOldValues(
-                "name" to response.name,
-                "shortname" to response.shortname,
-                "iconUrl" to response.iconUrl,
-            )
             editingState.apply {
                 name = response.name
                 shortname = response.shortname
                 iconUrl = response.iconUrl
+                fieldEditor.updateOldValues()
             }
         }
     } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
@@ -157,11 +150,6 @@ class SubjectEditorComponent(
         editingState.iconUrl = iconUrl
         updateAllowSave()
     }
-//    private fun findColorId(colorName: String): Int {
-//        return colorsNames.firstOrNull { name -> name == colorName }
-//            ?.let { it.value }
-//            ?: R.color.blue
-//    }
 
     fun onNameType(name: String) {
         editingState.name = name
