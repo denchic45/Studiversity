@@ -11,7 +11,7 @@ sealed interface UUIDWrapper {
             get() = uuid.toString()
     }
 
-    object Me : UUIDWrapper {
+    data object Me : UUIDWrapper {
         override val value = "me"
     }
 }

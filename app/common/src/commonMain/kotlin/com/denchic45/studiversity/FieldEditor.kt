@@ -25,6 +25,12 @@ class FieldEditor(private val fields: Map<String, Field<*>>) {
     fun <T> updateOldValueBy(name: String, oldValue: T) {
         field<T>(name).oldValue = oldValue
     }
+
+    fun updateOldValues() {
+        fields.forEach { (name, field) ->
+            updateOldValueBy(name, field.currentValue())
+        }
+    }
 }
 
 class Field<T>(val currentValue: () -> T) {

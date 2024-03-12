@@ -5,29 +5,21 @@ import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
+import com.denchic45.stuiversity.api.user.model.UpdateUserRequest
 import com.denchic45.stuiversity.api.user.model.UserResponse
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerAuthProvider
-import io.ktor.client.plugins.plugin
-import io.ktor.client.request.delete
-import io.ktor.client.request.forms.MultiPartFormDataContent
-import io.ktor.client.request.forms.formData
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.client.request.post
-import io.ktor.client.request.put
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.Headers
-import io.ktor.http.HttpHeaders
-import io.ktor.http.append
-import io.ktor.http.contentType
-import io.ktor.http.defaultForFilePath
-import java.util.UUID
+import io.ktor.client.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.auth.*
+import io.ktor.client.plugins.auth.providers.*
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.http.*
+import java.util.*
 
 interface UserApi {
     suspend fun create(createUserRequest: CreateUserRequest): ResponseResult<UserResponse>
+
+    suspend fun update(userId: UUID, request: UpdateUserRequest): ResponseResult<UserResponse>
 
     suspend fun getMe(): ResponseResult<UserResponse>
 
@@ -49,6 +41,13 @@ class UserApiImpl(private val client: HttpClient) : UserApi {
         return client.post("/users") {
             contentType(ContentType.Application.Json)
             setBody(createUserRequest)
+        }.toResult()
+    }
+
+    override suspend fun update(userId: UUID, request: UpdateUserRequest): ResponseResult<UserResponse> {
+        return client.put("/users/$userId") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
         }.toResult()
     }
 
