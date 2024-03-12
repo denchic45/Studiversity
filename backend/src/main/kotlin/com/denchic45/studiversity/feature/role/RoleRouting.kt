@@ -28,70 +28,80 @@ fun Application.rolesRoutes() {
 }
 
 private fun Route.userAssignedRolesRoute() {
-    route("/users/{id}/scopes/{scopeId}/roles") {
-        install(RequestValidation) {
-            validate<UpdateUserRolesRequest> {
-                buildValidationResult {
-                    condition(it.roleIds.isNotEmpty(), RoleErrors.NO_ROLE_ASSIGNMENT)
-                    condition(it.roleIds.hasNotDuplicates(), RoleErrors.ROLES_DUPLICATION)
+    route("/users/{id}/scopes/{scopeId}") {
+        val requireCapability: RequireCapabilityUseCase by inject()
+        val findAssignableRolesByUserAndScope: FindAssignableRolesByUserAndScopeUseCase by inject()
+
+        get("/assignable-roles") {
+            val userId = call.getUserUuidByParameterOrMe("id")
+            val scopeId = call.parameters.getUuidOrFail("scopeId")
+
+            requireCapability(call.currentUserId(), Capability.WriteAssignRoles, scopeId)
+            call.respond(findAssignableRolesByUserAndScope(userId, scopeId))
+        }
+        route("/roles") {
+            install(RequestValidation) {
+                validate<UpdateUserRolesRequest> {
+                    buildValidationResult {
+                        condition(it.roleIds.isNotEmpty(), RoleErrors.NO_ROLE_ASSIGNMENT)
+                        condition(it.roleIds.hasNotDuplicates(), RoleErrors.ROLES_DUPLICATION)
+                    }
                 }
             }
-        }
-        val requireCapability: RequireCapabilityUseCase by inject()
-        val requireAvailableRolesInScope: RequireAvailableRolesInScopeUseCase by inject()
-        val requirePermissionToAssignRoles: RequirePermissionToAssignRolesUseCase by inject()
-        val findAssignedUserRolesInScope: FindAssignedUserRolesInScopeUseCase by inject()
-        val putRoleToUserInScope: SetRoleToUserInScopeUseCase by inject()
-        val putRolesToUserInScope: PutRolesToUserInScopeUseCase by inject()
-        val removeRoleFromUserInScope: RemoveRoleFromUserInScopeUseCase by inject()
+            val requireAvailableRolesInScope: RequireAvailableRolesInScopeUseCase by inject()
+            val requirePermissionToAssignRoles: RequirePermissionToAssignRolesUseCase by inject()
+            val findAssignedUserRolesInScope: FindAssignedUserRolesInScopeUseCase by inject()
+            val putRoleToUserInScope: SetRoleToUserInScopeUseCase by inject()
+            val putRolesToUserInScope: PutRolesToUserInScopeUseCase by inject()
+            val removeRoleFromUserInScope: RemoveRoleFromUserInScopeUseCase by inject()
 
-        get {
-            val userId = call.getUserUuidByParameterOrMe("id")
-            val scopeId = call.parameters.getUuidOrFail("scopeId")
-            call.respond(HttpStatusCode.OK, findAssignedUserRolesInScope(userId, scopeId))
-        }
+            get {
+                val userId = call.getUserUuidByParameterOrMe("id")
+                val scopeId = call.parameters.getUuidOrFail("scopeId")
+                call.respond(HttpStatusCode.OK, findAssignedUserRolesInScope(userId, scopeId))
+            }
 
-        put {
-            val userId = call.getUserUuidByParameterOrMe("id")
-            val scopeId = call.parameters.getUuidOrFail("scopeId")
-            val currentUserId = call.currentUserId()
-            val roleIds = call.receive<List<Long>>()
-
-//            requireCapability(currentUserId, Capability.WriteAssignRoles, scopeId) // TODO: Вернуть потом
-            requireAvailableRolesInScope(roleIds, scopeId)
-            requirePermissionToAssignRoles(currentUserId, roleIds, scopeId)
-
-            putRolesToUserInScope(userId, roleIds, scopeId)
-            call.respond(HttpStatusCode.OK)
-        }
-
-        route("/{roleId}") {
             put {
-                val userId = call.parameters.getUuidOrFail("id")
-                val roleId = call.parameters.getOrFail("roleId").toLong()
+                val userId = call.getUserUuidByParameterOrMe("id")
                 val scopeId = call.parameters.getUuidOrFail("scopeId")
                 val currentUserId = call.currentUserId()
+                val roleIds = call.receive<List<Long>>()
 
-                requireCapability(currentUserId, Capability.WriteAssignRoles, scopeId)
+                requireCapability(currentUserId, Capability.WriteAssignRoles, scopeId) // TODO: Вернуть потом
+                requireAvailableRolesInScope(roleIds, scopeId)
+                requirePermissionToAssignRoles(currentUserId, roleIds, scopeId)
 
-                requireAvailableRolesInScope(listOf(roleId), scopeId)
-                requirePermissionToAssignRoles(currentUserId, listOf(roleId), scopeId)
-
-                putRoleToUserInScope(userId, roleId, scopeId)
+                putRolesToUserInScope(userId, roleIds, scopeId)
                 call.respond(HttpStatusCode.OK)
             }
-            delete {
-                val userId = call.parameters.getUuidOrFail("id")
-                val roleId = call.parameters.getOrFail("roleId").toLong()
-                val scopeId = call.parameters.getUuidOrFail("scopeId")
-                val currentUserId = call.currentUserId()
 
-                requireCapability(currentUserId, Capability.WriteAssignRoles, scopeId)
+            route("/{roleId}") {
+                put {
+                    val userId = call.parameters.getUuidOrFail("id")
+                    val roleId = call.parameters.getOrFail<Long>("roleId")
+                    val scopeId = call.parameters.getUuidOrFail("scopeId")
+                    val currentUserId = call.currentUserId()
 
-                requirePermissionToAssignRoles(currentUserId, listOf(roleId), scopeId)
+                    requireCapability(currentUserId, Capability.WriteAssignRoles, scopeId)
 
-                removeRoleFromUserInScope(userId, roleId, scopeId)
-                call.respond(HttpStatusCode.NoContent)
+                    requireAvailableRolesInScope(listOf(roleId), scopeId)
+                    requirePermissionToAssignRoles(currentUserId, listOf(roleId), scopeId)
+
+                    putRoleToUserInScope(userId, roleId, scopeId)
+                    call.respond(HttpStatusCode.OK)
+                }
+                delete {
+                    val userId = call.parameters.getUuidOrFail("id")
+                    val roleId = call.parameters.getOrFail("roleId").toLong()
+                    val scopeId = call.parameters.getUuidOrFail("scopeId")
+                    val currentUserId = call.currentUserId()
+
+                    requireCapability(currentUserId, Capability.WriteAssignRoles, scopeId)
+                    requirePermissionToAssignRoles(currentUserId, listOf(roleId), scopeId)
+
+                    removeRoleFromUserInScope(userId, roleId, scopeId)
+                    call.respond(HttpStatusCode.NoContent)
+                }
             }
         }
     }

@@ -21,6 +21,8 @@ interface RoleApi {
     suspend fun getUserRolesInScope(userId: UUIDWrapper, scopeId: UUID): ResponseResult<UserRolesResponse>
 
     suspend fun getAssignableRoles(roleId: Long): ResponseResult<List<Role>>
+
+    suspend fun getAssignableRolesByUserAndScope(userId: UUIDWrapper, scopeId: UUID): ResponseResult<List<Role>>
 }
 
 class RoleApiImpl(private val client: HttpClient) : RoleApi {
@@ -49,5 +51,9 @@ class RoleApiImpl(private val client: HttpClient) : RoleApi {
 
     override suspend fun getAssignableRoles(roleId: Long): ResponseResult<List<Role>> {
         return client.get("/roles/$roleId/assignable").toResult()
+    }
+
+    override suspend fun getAssignableRolesByUserAndScope(userId: UUIDWrapper, scopeId: UUID): ResponseResult<List<Role>> {
+        return client.get("/users/${userId.value}/scopes/$scopeId/assignable-roles").toResult()
     }
 }
