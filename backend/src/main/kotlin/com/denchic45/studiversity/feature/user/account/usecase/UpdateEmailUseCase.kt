@@ -10,6 +10,6 @@ class UpdateEmailUseCase(
     private val userRepository: UserRepository
 ) {
   suspend operator fun invoke(userId: UUID, updateEmailRequest: UpdateEmailRequest) = suspendTransactionWorker {
-        userRepository.update(userId, updateEmailRequest)
+        userRepository.updateAccount(userId, updateEmailRequest)
     }
 }

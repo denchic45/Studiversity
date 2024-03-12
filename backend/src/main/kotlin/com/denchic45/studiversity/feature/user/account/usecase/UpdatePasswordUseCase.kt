@@ -10,6 +10,6 @@ class UpdatePasswordUseCase(
     private val userRepository: UserRepository
 ) {
   suspend operator fun invoke(userId: UUID, updatePasswordRequest: UpdatePasswordRequest) = suspendTransactionWorker {
-        userRepository.update(userId, updatePasswordRequest)
+        userRepository.updateAccount(userId, updatePasswordRequest)
     }
 }
