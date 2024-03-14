@@ -1,9 +1,6 @@
 package com.denchic45.studiversity.feature.attachment
 
-import com.denchic45.studiversity.feature.attachment.usecase.AddAttachmentUseCase
-import com.denchic45.studiversity.feature.attachment.usecase.CheckOwnerAttachmentUseCase
-import com.denchic45.studiversity.feature.attachment.usecase.FindAttachmentUseCase
-import com.denchic45.studiversity.feature.attachment.usecase.RemoveAttachmentUseCase
+import com.denchic45.studiversity.feature.attachment.usecase.*
 import com.denchic45.studiversity.feature.course.work.submission.usecase.FindAttachmentsByReferenceUseCase
 import org.koin.dsl.module
 
@@ -14,4 +11,5 @@ val attachmentModule = module {
     single { FindAttachmentsByReferenceUseCase(get(), get()) }
     single { RemoveAttachmentUseCase(get(), get()) }
     single { CheckOwnerAttachmentUseCase(get(), get()) }
+    single { FindAttachmentResourceTypeByIdUseCase(get(), get()) }
 }

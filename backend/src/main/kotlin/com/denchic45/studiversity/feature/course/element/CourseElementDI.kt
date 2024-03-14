@@ -9,10 +9,7 @@ import com.denchic45.studiversity.feature.course.material.usecase.AddCourseMater
 import com.denchic45.studiversity.feature.course.material.usecase.FindCourseMaterialUseCase
 import com.denchic45.studiversity.feature.course.material.usecase.UpdateCourseMaterialUseCase
 import com.denchic45.studiversity.feature.course.work.CourseWorkRepository
-import com.denchic45.studiversity.feature.course.work.usecase.AddCourseWorkUseCase
-import com.denchic45.studiversity.feature.course.work.usecase.FindCourseWorkUseCase
-import com.denchic45.studiversity.feature.course.work.usecase.FindCourseWorksUseCase
-import com.denchic45.studiversity.feature.course.work.usecase.UpdateCourseWorkUseCase
+import com.denchic45.studiversity.feature.course.work.usecase.*
 import org.koin.dsl.module
 
 private val useCaseModule = module {
@@ -28,6 +25,8 @@ private val useCaseModule = module {
     single { AddCourseMaterialUseCase(get(), get()) }
     single { UpdateCourseMaterialUseCase(get(),get()) }
     single { FindCourseMaterialUseCase(get(),get()) }
+
+    single { RequireExistsCourseElementUseCase(get(),get()) }
 }
 
 private val repositoryModule = module {

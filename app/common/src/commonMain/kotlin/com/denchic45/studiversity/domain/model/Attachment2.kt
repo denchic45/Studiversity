@@ -15,11 +15,11 @@ data class FileAttachment2(
 ) : Attachment2
 
 sealed class FileState {
-    object Preview : FileState()
-    object Downloading : FileState()
-    object Downloaded : FileState()
+    data object Preview : FileState()
+    data object Downloading : FileState()
+    data object Downloaded : FileState()
 
-    object FailDownload : FileState()
+    data object FailDownload : FileState()
 }
 
 data class LinkAttachment2(override val id: UUID, val url: String) : Attachment2

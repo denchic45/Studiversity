@@ -101,7 +101,7 @@ class AttachmentRepository(private val bucket: BucketApi) {
 //            .map(ResultRow::toAttachment)
 //    }
 
-    suspend fun removeConsumer(attachmentId: UUID, consumerId: UUID): Boolean {
+    suspend fun removeReferenceByConsumer(attachmentId: UUID, consumerId: UUID): Boolean {
         val attachmentDao = AttachmentDao.findById(attachmentId)
         return attachmentDao?.apply {
             if (attachmentDao.resourceId == consumerId)
@@ -188,5 +188,9 @@ class AttachmentRepository(private val bucket: BucketApi) {
 
     fun checkIsOwner(ownerId: UUID, attachmentId: UUID): Boolean {
         return AttachmentDao.findById(attachmentId)?.resourceId == ownerId
+    }
+
+    fun findResourceTypeByAttachmentId(attachmentId: UUID): String {
+        return AttachmentDao[attachmentId].resourceType
     }
 }

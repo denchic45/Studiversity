@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.feature.course.work
 
+import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.course.element.generateOrderByCourseAndTopicId
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType

@@ -124,6 +124,10 @@ class CourseElementRepository {
             CourseElementDao.findById(workDao.id.value)!!.toWorkResponse(workDao)
         }
     }
+
+    fun isExists(elementId: UUID): Boolean {
+        return CourseElements.exists { CourseElements.id eq elementId }
+    }
 }
 
 fun generateOrderByCourseAndTopicId(courseId: UUID, topicId: UUID?) =

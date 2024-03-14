@@ -16,13 +16,7 @@ import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.entity.AppDatabase
 import com.denchic45.studiversity.entity.Attachment
 import com.denchic45.stuiversity.api.attachment.AttachmentApi
-import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
-import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
-import com.denchic45.stuiversity.api.course.element.model.AttachmentType
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
-import com.denchic45.stuiversity.api.course.element.model.FileAttachmentHeader
-import com.denchic45.stuiversity.api.course.element.model.LinkAttachmentHeader
+import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.material.CourseMaterialApi
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.submission.SubmissionsApi
@@ -34,7 +28,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import me.tatarka.inject.annotations.Inject
 import okio.Path.Companion.toPath
-import java.util.UUID
+import java.util.*
 
 @Inject
 class AttachmentRepository(
@@ -49,6 +43,16 @@ class AttachmentRepository(
     private val database: AppDatabase
 ) : NetworkServiceOwner {
 
+    fun observeByResource(
+        resourceType: String,
+        resourceId: UUID,
+    ): Flow<Resource<List<Attachment2>>> = observeResource(
+        query = getAttachmentsByReferenceId(resourceId).distinctUntilChanged(),
+        fetch = { attachmentApi.getByResourceId(resourceType, resourceId) },
+        saveFetch = { attachments -> saveAttachments(attachments, resourceId) }
+    )
+
+    @Deprecated(message = "")
     fun observeBySubmission(
         courseId: UUID,
         workId: UUID,
@@ -59,6 +63,7 @@ class AttachmentRepository(
         saveFetch = { attachments -> saveAttachments(attachments, submissionId) }
     )
 
+    @Deprecated(message = "")
     fun observeByCourseWork(
         courseId: UUID,
         workId: UUID,
@@ -73,6 +78,7 @@ class AttachmentRepository(
         saveFetch = { attachments -> saveAttachments(attachments, workId) }
     )
 
+    @Deprecated(message = "")
     fun observeByCourseMaterial(
         courseId: UUID,
         materialId: UUID,
@@ -162,6 +168,28 @@ class AttachmentRepository(
         }
     }
 
+    suspend fun addAttachmentToResource(
+        resourceType: String,
+        resourceId: UUID,
+        attachmentRequest: AttachmentRequest
+    ): Resource<AttachmentHeader> = fetchResource {
+        when (attachmentRequest) {
+            is CreateFileRequest -> attachmentApi.uploadFile(
+                resourceType,
+                resourceId,
+                attachmentRequest
+            )
+
+            is CreateLinkRequest -> attachmentApi.addLink(
+                resourceType,
+                resourceId,
+                attachmentRequest
+            )
+        }.onSuccess {
+            saveAttachment(it, resourceId)
+        }
+    }
+
     suspend fun addAttachmentToSubmission(
         courseId: UUID,
         workId: UUID,
@@ -169,14 +197,12 @@ class AttachmentRepository(
         attachmentRequest: AttachmentRequest
     ): Resource<AttachmentHeader> = fetchResource {
         when (attachmentRequest) {
-            is CreateFileRequest -> {
-                submissionsApi.uploadFile(
-                    courseId,
-                    workId,
-                    submissionId,
-                    attachmentRequest
-                )
-            }
+            is CreateFileRequest -> submissionsApi.uploadFile(
+                courseId,
+                workId,
+                submissionId,
+                attachmentRequest
+            )
 
             is CreateLinkRequest -> submissionsApi.addLink(
                 courseId,
@@ -195,13 +221,11 @@ class AttachmentRepository(
         request: AttachmentRequest
     ): Resource<AttachmentHeader> = fetchResource {
         when (request) {
-            is CreateFileRequest -> {
-                courseMaterialApi.uploadFile(
-                    courseId,
-                    materialId,
-                    request
-                )
-            }
+            is CreateFileRequest -> courseMaterialApi.uploadFile(
+                courseId,
+                materialId,
+                request
+            )
 
             is CreateLinkRequest -> courseMaterialApi.addLink(
                 courseId,
@@ -247,6 +271,12 @@ class AttachmentRepository(
             referenceId.toString()
         )
         attachmentStorage.delete(attachmentId)
+    }
+
+    suspend fun removeById(attachmentId: UUID): EmptyResource = fetchResource {
+        attachmentApi.delete(attachmentId).onSuccess {
+            attachmentStorage.delete(attachmentId)
+        }
     }
 
 //    suspend fun removeAttachmentByReferenceId(

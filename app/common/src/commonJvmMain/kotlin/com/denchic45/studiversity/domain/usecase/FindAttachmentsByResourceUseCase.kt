@@ -9,19 +9,18 @@ import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 @Inject
-class FindSubmissionAttachmentsUseCase(
+class FindAttachmentsByResourceUseCase(
     downloadService: DownloadsService,
     private val attachmentRepository: AttachmentRepository
 ) : FindAttachmentsUseCase(downloadService) {
 
     operator fun invoke(
-        courseId: UUID,
-        courseWorkId: UUID,
-        submissionId: UUID
+        resourceType: String,
+        resourceId: UUID
     ): Flow<Resource<List<Attachment2>>> {
         return observeAttachments(
-            attachmentRepository.observeBySubmission(courseId, courseWorkId, submissionId),
-            submissionId
+            attachmentRepository.observeByResource(resourceType, resourceId),
+            resourceId
         )
     }
 }

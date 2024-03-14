@@ -61,13 +61,14 @@ class SubmissionRepository {
         studentIds: List<UUID>
     ): List<SubmissionResponse> {
         return CourseWorks.leftJoin(
-                Submissions,
-                { CourseWorks.id },
-                { Submissions.courseWorkId })
-            .leftJoin(Grades,{Submissions.id},{ submissionId })
+            Submissions,
+            { CourseWorks.id },
+            { Submissions.courseWorkId })
+            .leftJoin(Grades, { Submissions.id }, { submissionId })
             .innerJoin(Users, { Submissions.authorId }, { Users.id })
-            .select(CourseWorks.id eq courseWorkId
-                    and (Submissions.authorId inList studentIds)
+            .select(
+                CourseWorks.id eq courseWorkId
+                        and (Submissions.authorId inList studentIds)
             )
             .map { row ->
                 row.getOrNull(Submissions.id)?.let { submissionId ->
@@ -87,7 +88,7 @@ class SubmissionRepository {
                             }
                         } ?: WorkSubmissionContent(emptyList()),
                         updatedAt = row[Submissions.updatedAt],
-                        grade =  row.getOrNull(Grades.value)?.let {
+                        grade = row.getOrNull(Grades.value)?.let {
                             GradeResponse(
                                 value = row[Grades.value],
                                 courseId = row[Grades.courseId].value,
@@ -126,6 +127,10 @@ class SubmissionRepository {
             state = SubmissionState.CANCELED_BY_AUTHOR
             updateAt = LocalDateTime.now()
         }.toResponse()
+    }
+
+    fun isExists(submissionId: UUID): Boolean {
+        return Submissions.exists { Submissions.id eq submissionId }
     }
 
     fun isAuthorBySubmissionId(submissionId: UUID, authorId: UUID): Boolean {

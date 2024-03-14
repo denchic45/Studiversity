@@ -9,12 +9,8 @@ import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.flatMapResourceFlow
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.resourceOf
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import java.util.UUID
+import kotlinx.coroutines.flow.*
+import java.util.*
 
 abstract class FindAttachmentsUseCase constructor(
     private val downloadService: DownloadsService,
@@ -23,7 +19,7 @@ abstract class FindAttachmentsUseCase constructor(
 
     protected fun observeAttachments(
         flow: Flow<Resource<List<Attachment2>>>,
-        ownerId:UUID
+        ownerId: UUID
     ): Flow<Resource<List<Attachment2>>> {
         println("OBSERVE_ATTACHMENTS: $flow")
         return flow.onEach {
@@ -32,7 +28,7 @@ abstract class FindAttachmentsUseCase constructor(
                 it.forEach { println("\t $it") }
             }
         }.flatMapResourceFlow { attachments ->
-            observeDownloadsFlow(attachments,ownerId).map { states ->
+            observeDownloadsFlow(attachments, ownerId).map { states ->
                 getAttachmentResource(attachments, states)
             }
         }
@@ -41,7 +37,7 @@ abstract class FindAttachmentsUseCase constructor(
     private fun getAttachmentResource(
         attachments: List<Attachment2>,
         states: Map<UUID, FileState>
-    ) = resourceOf(
+    ): Resource.Success<List<Attachment2>> = resourceOf(
         attachments.map { attachment ->
             when (attachment) {
                 is FileAttachment2 -> if (attachment.state == FileState.Preview)

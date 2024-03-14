@@ -1,55 +1,38 @@
 package com.denchic45.studiversity.ui.coursework.yourSubmission
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.backhandler.BackCallback
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.filterNotNullValue
-import com.denchic45.studiversity.domain.resource.flatMapResourceFlow
-import com.denchic45.studiversity.domain.resource.map
-import com.denchic45.studiversity.domain.resource.mapResource
-import com.denchic45.studiversity.domain.resource.onFailure
-import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.usecase.CancelSubmissionUseCase
-import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
-import com.denchic45.studiversity.domain.usecase.FindSubmissionAttachmentsUseCase
-import com.denchic45.studiversity.domain.usecase.FindYourSubmissionUseCase
-import com.denchic45.studiversity.domain.usecase.RemoveAttachmentFromSubmissionUseCase
-import com.denchic45.studiversity.domain.usecase.SubmitSubmissionUseCase
-import com.denchic45.studiversity.domain.usecase.UploadAttachmentToSubmissionUseCase
+import com.denchic45.studiversity.domain.resource.*
+import com.denchic45.studiversity.domain.usecase.*
+import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.coursework.SubmissionUiState
 import com.denchic45.studiversity.ui.coursework.toUiState
 import com.denchic45.studiversity.ui.model.toAttachmentItems
 import com.denchic45.studiversity.util.componentScope
+import com.denchic45.stuiversity.api.attachment.AttachmentResource
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.api.role.model.Capability
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import okio.Path
-import java.util.UUID
+import java.util.*
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Inject
 class YourSubmissionComponent(
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val findYourSubmissionUseCase: FindYourSubmissionUseCase,
     private val findSubmissionAttachmentsUseCase: FindSubmissionAttachmentsUseCase,
-    private val uploadAttachmentToSubmissionUseCase: UploadAttachmentToSubmissionUseCase,
-    private val removeAttachmentFromSubmissionUseCase: RemoveAttachmentFromSubmissionUseCase,
+//    private val uploadAttachmentToSubmissionUseCase: UploadAttachmentToSubmissionUseCase,
+//    private val removeAttachmentFromSubmissionUseCase: RemoveAttachmentFromSubmissionUseCase,
     private val submitSubmissionUseCase: SubmitSubmissionUseCase,
     private val cancelSubmissionUseCase: CancelSubmissionUseCase,
+    _attachmentsComponent: (String, UUID, ComponentContext) -> AttachmentsComponent,
     @Assisted
     private val courseId: UUID,
     @Assisted
@@ -64,7 +47,7 @@ class YourSubmissionComponent(
         capabilities = listOf(Capability.ReadSubmissions, Capability.SubmitSubmission)
     ).stateInResource(componentScope)
 
-     val hasSubmission = capabilities.mapResource {
+    val hasSubmission = capabilities.mapResource {
         it.hasCapability(Capability.SubmitSubmission)
     }.stateInResource(componentScope)
 
@@ -79,11 +62,21 @@ class YourSubmissionComponent(
 
     private val _updatedYourSubmission = MutableSharedFlow<Resource<SubmissionResponse>>()
 
-    private val _attachments = _observeYourSubmission
+    private val attachmentsComponentResource = _observeYourSubmission
         .filterNotNullValue()
-        .flatMapResourceFlow {
-            findSubmissionAttachmentsUseCase(courseId, workId, it.id)
-        }.shareIn(componentScope, SharingStarted.Lazily)
+        .mapResource {
+            _attachmentsComponent(AttachmentResource.SUBMISSION, it.id, componentContext.childContext("Attachments"))
+        }
+
+    private val attachmentComponentFlow = attachmentsComponentResource.filterSuccess().mapToValue()
+
+    private suspend fun attachmentComponent() = attachmentComponentFlow.first()
+
+//    private val _attachments = _observeYourSubmission
+//        .filterNotNullValue()
+//        .flatMapResourceFlow {
+//            findSubmissionAttachmentsUseCase(courseId, workId, it.id)
+//        }.shareIn(componentScope, SharingStarted.Lazily)
 
     val submission = MutableStateFlow<Resource<SubmissionUiState>>(Resource.Loading)
 
@@ -100,35 +93,30 @@ class YourSubmissionComponent(
         }
 
         componentScope.launch {
-            submission.emitAll(
-                combine(
-                    merge(_observeYourSubmission, _updatedYourSubmission),
-                    _attachments
-                ) { submissionRes, attachmentsRes ->
-                    submissionRes.mapResource { submission ->
-                        attachmentsRes.map { attachments ->
-                            submission.toUiState(attachments.toAttachmentItems())
-                        }
+            val combine = combine(
+                merge(_observeYourSubmission, _updatedYourSubmission),
+                attachmentComponentFlow
+            ) { submissionRes, attachmentsComponentFlow ->
+                attachmentsComponentFlow.attachments.flatMapResource { attachments ->
+                    submissionRes.map { submission ->
+                        submission.toUiState(attachments.toAttachmentItems())
                     }
                 }
-            )
+            }.flattenMerge()
+            submission.emitAll(combine)
         }
     }
 
     fun onFilesSelect(paths: List<Path>) {
-        submission.value.onSuccess { state ->
+        submission.value.onSuccess { submissionUiState ->
             componentScope.launch {
                 paths.map { path ->
-                    uploadAttachmentToSubmissionUseCase(
-                        courseId = courseId,
-                        workId = workId,
-                        submissionId = state.id,
-                        attachmentRequest = CreateFileRequest(path.toFile())
-                    ).onSuccess {
-                        println("success load: $it")
-                    }.onFailure {
-                        println("failed load: $it")
-                    }
+                    attachmentComponent().uploadAttachmentByResource(CreateFileRequest(path.toFile()))
+                        .onSuccess {
+                            println("success load: $it")
+                        }.onFailure {
+                            println("failed load: $it")
+                        }
                 }
             }
         }
@@ -137,7 +125,8 @@ class YourSubmissionComponent(
     fun onAttachmentRemove(attachmentId: UUID) {
         submission.value.onSuccess {
             componentScope.launch {
-                removeAttachmentFromSubmissionUseCase(attachmentId, courseId, workId, it.id)
+                attachmentComponent().removeAttachment(attachmentId) // TODO потом поменять способ удаления
+//                removeAttachmentFromSubmissionUseCase(attachmentId, courseId, workId, it.id)
             }
         }
     }

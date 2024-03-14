@@ -16,7 +16,7 @@ object Attachments : UUIDTable("attachment", "attachment_id") {
 
     //    val path = text("path").nullable()
     val resourceId = uuid("resource_id")
-//    val ownerType = enumerationByName<AttachmentOwner>("owner_type", 22)
+    val resourceType = text("resource_type")
 }
 
 class AttachmentDao(id: EntityID<UUID>) : UUIDEntity(id) {
@@ -29,5 +29,5 @@ class AttachmentDao(id: EntityID<UUID>) : UUIDEntity(id) {
 
     //    var path by Attachments.path
     var resourceId by Attachments.resourceId
-//    var ownerType by Attachments.ownerType
+    var resourceType by Attachments.resourceType
 }

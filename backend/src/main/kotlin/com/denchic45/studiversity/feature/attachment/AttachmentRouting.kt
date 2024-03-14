@@ -1,16 +1,16 @@
 package com.denchic45.studiversity.feature.attachment
 
-import com.denchic45.studiversity.feature.attachment.usecase.AddAttachmentUseCase
-import com.denchic45.studiversity.feature.attachment.usecase.FindAttachmentUseCase
-import com.denchic45.studiversity.feature.attachment.usecase.RemoveAttachmentReferenceUseCase
-import com.denchic45.studiversity.feature.attachment.usecase.RemoveAttachmentUseCase
+import com.denchic45.studiversity.feature.attachment.usecase.*
+import com.denchic45.studiversity.feature.course.usecase.RequireExistCourseUseCase
 import com.denchic45.studiversity.feature.course.work.submission.usecase.FindAttachmentsByReferenceUseCase
 import com.denchic45.studiversity.feature.course.work.submission.usecase.IsSubmissionAuthorUseCase
 import com.denchic45.studiversity.feature.course.work.submission.usecase.RequireSubmissionAuthorUseCase
+import com.denchic45.studiversity.feature.course.work.usecase.RequireExistsCourseElementUseCase
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.ktor.currentUserId
 import com.denchic45.studiversity.ktor.getUuid
 import com.denchic45.studiversity.ktor.getUuidOrFail
+import com.denchic45.stuiversity.api.attachment.AttachmentResource
 import com.denchic45.stuiversity.api.course.element.model.FileAttachmentResponse
 import com.denchic45.stuiversity.api.course.element.model.LinkAttachmentResponse
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -22,7 +22,9 @@ import io.ktor.server.plugins.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
+import io.ktor.util.pipeline.*
 import org.koin.ktor.ext.inject
+import java.util.*
 
 
 fun Application.configureAttachments() {
@@ -34,20 +36,38 @@ fun Application.configureAttachments() {
                 val requireSubmissionAuthor: RequireSubmissionAuthorUseCase by inject()
                 val addAttachmentUseCase: AddAttachmentUseCase by inject()
                 val findAttachmentsByReference: FindAttachmentsByReferenceUseCase by inject()
+                val findAttachmentResourceTypeById: FindAttachmentResourceTypeByIdUseCase by inject()
 
-                val attachmentResources = mapOf(
+                val requireExistSubmission: RequireExistCourseUseCase by inject()
+                val requireExistsCourseWork:RequireExistsCourseElementUseCase by inject()
+
+                val attachmentResourceRequirements = mapOf(
                     AttachmentResource.SUBMISSION to lazy {
-                        AttachmentResource.Submission(requireCapability, isSubmissionAuthor, requireSubmissionAuthor)
+                        AttachmentResourceRequirements.Submission(
+                            requireCapability,
+                            isSubmissionAuthor,
+                            requireSubmissionAuthor
+                        )
                     },
                     AttachmentResource.COURSE_WORK to lazy {
-                        AttachmentResource.CourseWork(requireCapability)
+                        AttachmentResourceRequirements.CourseWork(requireCapability)
                     }
                 )
 
-                post {
-                    (attachmentResources[call.parameters.getOrFail("attachment_resource")]
+                fun requireExistResourceByIdAndType(resourceType: String, resourceId: UUID) {
+                    when (resourceType) {
+                        AttachmentResource.SUBMISSION ->
+                    }
+                }
+
+                fun PipelineContext<Unit, ApplicationCall>.getAttachmentResourceRequirements(resourceType: String?): AttachmentResourceRequirements {
+                    val type = resourceType ?: call.parameters.getOrFail("resource_type")
+                    return (attachmentResourceRequirements[type]
                         ?: throw BadRequestException("UNKNOWN_ATTACHMENT_RESOURCE")).value
-                        .requireAccessToAdd(call)
+                }
+
+                post {
+                    getAttachmentResourceRequirements(null).requireAccessToAdd(call)
 
                     val resourceId = call.parameters.getUuidOrFail("resource_id")
                     val addedAttachment = addAttachmentUseCase(receiveAttachment(), resourceId)
@@ -55,9 +75,7 @@ fun Application.configureAttachments() {
                 }
 
                 get {
-                    (attachmentResources[call.parameters.getOrFail("attachment_resource")]
-                        ?: throw BadRequestException("UNKNOWN_ATTACHMENT_RESOURCE")).value
-                        .requireAccessToGet(call)
+                    getAttachmentResourceRequirements(null).requireAccessToGet(call)
 
                     val resourceId = call.parameters.getUuidOrFail("resource_id")
                     val attachments = findAttachmentsByReference(resourceId)
@@ -86,20 +104,24 @@ fun Application.configureAttachments() {
 
                             is LinkAttachmentResponse -> call.respond(HttpStatusCode.OK, response)
                         }
-
                     }
                     delete {
-                        (attachmentResources[call.parameters.getOrFail("attachment_resource")]
-                            ?: throw BadRequestException("UNKNOWN_ATTACHMENT_RESOURCE")).value
-                            .requireAccessToDelete(call)
-
                         val attachmentId = call.parameters.getUuidOrFail("attachmentId")
                         val resourceId = call.parameters.getUuid("resource_id")
+
+                        getAttachmentResourceRequirements(findAttachmentResourceTypeById(attachmentId))
+                            .requireAccessToDelete(call)
+
+//                        removeAttachment(attachmentId)
 
                         resourceId?.let { removeAttachmentReference(attachmentId, resourceId) }
                             ?: removeAttachment(attachmentId)
 
                         call.respond(HttpStatusCode.NoContent)
+                    }
+
+                    delete("/reference") {
+                        // TODO: реализовать удаление ссылки на attachment
                     }
                 }
             }
@@ -108,11 +130,8 @@ fun Application.configureAttachments() {
 }
 
 
-sealed interface AttachmentResource {
-    companion object {
-        const val SUBMISSION = "submission"
-        const val COURSE_WORK = "course_work"
-    }
+sealed interface AttachmentResourceRequirements {
+
 
     fun ApplicationCall.getResourceId() = parameters.getUuidOrFail("resource_id")
 
@@ -126,7 +145,7 @@ sealed interface AttachmentResource {
         private val requireCapability: RequireCapabilityUseCase,
         private val isSubmissionAuthor: IsSubmissionAuthorUseCase,
         private val requireSubmissionAuthor: RequireSubmissionAuthorUseCase
-    ) : AttachmentResource {
+    ) : AttachmentResourceRequirements {
         override fun requireAccessToAdd(call: ApplicationCall) {
             this@Submission.requireSubmissionAuthor(call.getResourceId(), call.currentUserId())
         }
@@ -148,7 +167,7 @@ sealed interface AttachmentResource {
 
     class CourseWork(
         private val requireCapability: RequireCapabilityUseCase,
-    ) : AttachmentResource {
+    ) : AttachmentResourceRequirements {
         override fun requireAccessToAdd(call: ApplicationCall) {
             this@CourseWork.requireCapability(
                 userId = call.currentUserId(),
