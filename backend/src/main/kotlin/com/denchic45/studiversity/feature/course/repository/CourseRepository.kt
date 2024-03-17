@@ -2,19 +2,20 @@ package com.denchic45.studiversity.feature.course.repository
 
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
+import com.denchic45.studiversity.feature.attachment.AttachmentFileStorage
 import com.denchic45.studiversity.feature.course.toResponse
 import com.denchic45.studiversity.feature.studygroup.mapper.toResponse
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import io.github.jan.supabase.storage.BucketApi
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import java.time.Instant
 import java.util.*
 
-class CourseRepository(private val bucket: BucketApi) {
+class CourseRepository(private val storage: AttachmentFileStorage) {
 
     fun add(request: CreateCourseRequest): CourseResponse {
         val dao = CourseDao.new {
@@ -184,9 +185,31 @@ class CourseRepository(private val bucket: BucketApi) {
         return CourseDao.findById(courseId)!!.archived
     }
 
-    suspend fun removeCourse(courseId: UUID) {
-        CourseDao.findById(courseId)!!.delete()
-        // todo использовать свое хранилище
-//        bucket.deleteRecursive("courses/$courseId")
+    fun removeCourse(courseId: UUID) {
+        removeAttachmentsByCourse(courseId)
+        CourseDao[courseId].delete()
+    }
+
+    private fun removeAttachmentsByCourse(courseId: UUID) {
+        val elementIds = CourseElements.select(CourseElements.id)
+            .where(CourseElements.courseId eq courseId)
+            .map { it[CourseElements.id].value }
+
+        val submissionIds = Submissions.select(Submissions.id)
+            .where(Submissions.courseWorkId inList elementIds)
+            .map { it[Submissions.id].value }
+
+        // TODO TEST: нужно найти и те файлы, чтобы заружены под этими ресурсами и те, что были загружены
+        //  под другими ресурсами, но ссылались на эти.
+        //  Первые файлы удаляются из хранилища.
+        //  У вторых файлов ужаляем ссылки на эти ресурсы, но их сами не удаляем.
+        val resourceIds = elementIds + submissionIds
+        val attachmentsByResourceIds = Attachments.select(Attachments.id)
+            .where(Attachments.resourceId inList resourceIds)
+            .map { it[Attachments.id].value }
+        Attachments.deleteWhere { Attachments.id inList attachmentsByResourceIds }
+        AttachmentReferences.deleteWhere { resourceId inList resourceIds }
+
+        storage.deleteAll(attachmentsByResourceIds)
     }
 }

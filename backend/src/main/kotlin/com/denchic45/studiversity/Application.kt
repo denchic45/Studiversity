@@ -35,7 +35,6 @@ import org.koin.ktor.ext.inject
 
 
 fun main() {
-
     startServer()
 }
 
@@ -54,7 +53,6 @@ fun restartServer() {
 
 @Suppress("unused")
 fun Application.module() = runBlocking {
-//    environment.config.propertyOrNull("database.url")
     logger.info { "starting started..." }
     install(PartialContent)
     install(AutoHeadResponse)

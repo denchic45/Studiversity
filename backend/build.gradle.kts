@@ -135,8 +135,10 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:dataframe:0.12.1")
 
+    implementation("com.squareup.okio:okio:3.9.0")
+
 //    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
-    implementation("io.github.oshai:kotlin-logging-jvm:4.0.0-beta-29")
+    implementation("io.github.oshai:kotlin-logging-jvm:6.0.3")
 
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.16")
 

@@ -115,7 +115,7 @@ private fun Route.userByIdRoute() {
                 val photoRequest = call.receiveMultipart().readPart()?.let { part ->
                     if (part is PartData.FileItem) {
                         val fileSourceName = part.originalFileName as String
-                        val fileBytes = part.streamProvider().readBytes()
+                        val fileBytes = part.streamProvider()
                         CreateFileRequest(fileSourceName, fileBytes)
                     } else throw BadRequestException(UserErrors.INVALID_AVATAR)
                 } ?: throw BadRequestException(UserErrors.INVALID_AVATAR)

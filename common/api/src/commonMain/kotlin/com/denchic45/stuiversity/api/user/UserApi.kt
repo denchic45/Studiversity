@@ -14,6 +14,7 @@ import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.util.*
 import java.util.*
 
 interface UserApi {
@@ -76,6 +77,7 @@ class UserApiImpl(private val client: HttpClient) : UserApi {
         }.toResult()
     }
 
+    @OptIn(InternalAPI::class)
     override suspend fun updateAvatar(
         userId: UUID,
         request: CreateFileRequest,
@@ -85,7 +87,7 @@ class UserApiImpl(private val client: HttpClient) : UserApi {
             setBody(
                 MultiPartFormDataContent(
                     formData {
-                        append("file", request.bytes, Headers.build {
+                        append("file", request.inputStream, Headers.build {
                             append(
                                 HttpHeaders.ContentType,
                                 ContentType.defaultForFilePath(request.name)

@@ -28,8 +28,8 @@ class CourseElementRepository {
             ?.let { CourseElementDao.findById(workId)?.toWorkResponse(it) }
     }
 
-    fun findCourseIdByElementId(elementId: UUID): UUID? {
-        return CourseElementDao.findById(elementId)?.course?.id?.value
+    fun findCourseIdByElementId(elementId: UUID): UUID {
+        return CourseElementDao[elementId].course.id.value
     }
 
     fun remove(courseId: UUID, elementId: UUID): Boolean = CourseElementDao

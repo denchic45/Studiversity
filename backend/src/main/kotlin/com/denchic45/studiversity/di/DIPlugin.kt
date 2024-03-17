@@ -20,6 +20,7 @@ import com.denchic45.studiversity.transaction.TransactionWorker
 import io.ktor.server.application.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import okio.FileSystem
 import org.koin.dsl.binds
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -27,6 +28,7 @@ import org.koin.logger.slf4jLogger
 
 val otherModule = module {
     single { CoroutineScope(SupervisorJob()) }
+    single { FileSystem.SYSTEM }
     single<DatabaseFactory> {
         DatabaseFactoryImpl(
             config.dbUrl,

@@ -124,8 +124,8 @@ class UserRepository(private val client: HttpClient) : AddScopeRepoExt {
             parameter("format", "png")
             parameter("size", 128)
         }.readBytes()
-
-        return setAvatar(userId, CreateFileRequest("avatar.png", newImageBytes), true)
+        return TODO()
+//        return setAvatar(userId, CreateFileRequest("avatar.png", newImageBytes), true)
     }
 
     fun updateAccount(userId: UUID, updatePasswordRequest: UpdatePasswordRequest) {

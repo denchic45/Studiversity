@@ -1,6 +1,5 @@
 package com.denchic45.studiversity.feature.course.work
 
-import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.course.element.generateOrderByCourseAndTopicId
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
@@ -8,9 +7,8 @@ import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import io.ktor.server.plugins.*
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.innerJoin
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.LocalDateTime
 import java.util.*
 
@@ -34,19 +32,15 @@ class CourseWorkRepository {
         return elementId
     }
 
-    fun update(
-        courseId: UUID,
-        workId: UUID,
-        request: UpdateCourseWorkRequest
-    ): CourseWorkResponse? {
-        val resultRow = CourseWorks.innerJoin(CourseElements, { CourseWorks.id }, { CourseElements.id })
-            .select { CourseElements.courseId eq courseId and (CourseElements.id eq workId) }.singleOrNull()
-        return resultRow?.let { row ->
-            val elementDao = CourseElementDao.wrapRow(row)
+    fun update(workId: UUID, request: UpdateCourseWorkRequest): CourseWorkResponse? {
+        val elementDao = CourseWorks.innerJoin(CourseElements, { CourseWorks.id }, { CourseElements.id })
+            .selectAll().where { CourseElements.id eq workId }.singleOrNull()
+            ?.let(CourseElementDao.Companion::wrapRow)
 
+        return elementDao?.let {
             elementDao.updatedAt = LocalDateTime.now()
 
-            val workDao = CourseWorkDao.wrapRow(row)
+            val workDao = CourseWorkDao[elementDao.id]
             request.name.ifPresent { elementDao.name = it }
             request.description.ifPresent { elementDao.description = it }
 

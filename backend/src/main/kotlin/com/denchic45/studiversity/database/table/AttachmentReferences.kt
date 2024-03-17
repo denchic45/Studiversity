@@ -14,12 +14,12 @@ object AttachmentReferences : LongIdTable("attachment_reference", "reference_id"
         onUpdate = ReferenceOption.CASCADE
     )
 
-    val consumerId = uuid("consumer_id")
+    val resourceId = uuid("resource_id")
 }
 
 class AttachmentReferenceDao(id: EntityID<Long>) : LongEntity(id) {
     companion object : LongEntityClass<AttachmentReferenceDao>(AttachmentReferences)
 
     var attachment by AttachmentDao referencedOn AttachmentReferences.attachmentId
-    var consumerId by AttachmentReferences.consumerId
+    var resourceId by AttachmentReferences.resourceId
 }

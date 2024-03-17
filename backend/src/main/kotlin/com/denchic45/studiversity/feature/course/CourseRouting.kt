@@ -1,12 +1,8 @@
 package com.denchic45.studiversity.feature.course
 
 import com.denchic45.studiversity.config.config
-import com.denchic45.studiversity.feature.course.element.courseElementRoutes
-import com.denchic45.studiversity.feature.course.material.courseMaterialsRoutes
 import com.denchic45.studiversity.feature.course.member.courseMembers
 import com.denchic45.studiversity.feature.course.usecase.*
-import com.denchic45.studiversity.feature.course.work.courseWorksRoutes
-import com.denchic45.studiversity.feature.course.work.courseWorksRoutes2
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.ktor.*
 import com.denchic45.studiversity.util.onlyDigits
@@ -74,7 +70,6 @@ fun Application.courseRoutes() {
                     parameters.append("member_id", call.currentUserId().toString())
                 }
             }
-            courseWorksRoutes2()
         }
     }
 }
@@ -139,9 +134,6 @@ private fun Route.courseByIdRoutes() {
         }
         courseMembers()
         courseStudyGroups()
-        courseElementRoutes()
-        courseWorksRoutes()
-        courseMaterialsRoutes()
     }
 }
 

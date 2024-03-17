@@ -12,7 +12,7 @@ class RemoveCourseElementUseCase(
 ) {
 
     suspend operator fun invoke(courseId: UUID, elementId: UUID) = suspendTransactionWorker.invoke {
-        attachmentRepository.removeByCourseElementId(elementId)
+        attachmentRepository.removeByResourceId(elementId)
         courseElementRepository.remove(courseId, elementId)
     }
 }

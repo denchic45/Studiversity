@@ -3,30 +3,16 @@ package com.denchic45.stuiversity.api.submission
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
-import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
-import com.denchic45.stuiversity.api.course.element.model.FileAttachmentHeader
-import com.denchic45.stuiversity.api.course.element.model.LinkAttachmentHeader
+import com.denchic45.stuiversity.api.course.element.model.*
 import com.denchic45.stuiversity.api.course.work.grade.GradeRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.util.orMe
-import io.ktor.client.HttpClient
-import io.ktor.client.request.delete
-import io.ktor.client.request.forms.MultiPartFormDataContent
-import io.ktor.client.request.forms.formData
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.client.request.post
-import io.ktor.client.request.put
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.Headers
-import io.ktor.http.HttpHeaders
-import io.ktor.http.append
-import io.ktor.http.contentType
-import io.ktor.http.defaultForFilePath
-import java.util.UUID
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.http.*
+import io.ktor.util.*
+import java.util.*
 
 interface SubmissionsApi {
     suspend fun getAllByCourseWorkId(
@@ -155,6 +141,7 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
             .toResult()
     }
 
+    @OptIn(InternalAPI::class)
     override suspend fun uploadFile(
         courseId: UUID,
         courseWorkId: UUID,
@@ -167,7 +154,7 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
             setBody(
                 MultiPartFormDataContent(
                     formData {
-                        append("file", request.bytes, Headers.build {
+                        append("file", request.inputStream, Headers.build {
                             append(
                                 HttpHeaders.ContentType,
                                 ContentType.defaultForFilePath(request.name)

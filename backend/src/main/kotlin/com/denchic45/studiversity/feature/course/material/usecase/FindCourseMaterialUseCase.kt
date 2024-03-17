@@ -10,7 +10,7 @@ class FindCourseMaterialUseCase(
     private val courseMaterialRepository: CourseMaterialRepository
 ) {
 
-    suspend operator fun invoke(workId: UUID) = suspendTransactionWorker {
-        courseMaterialRepository.findById(workId) ?: throw NotFoundException()
+    suspend operator fun invoke(materialId: UUID) = suspendTransactionWorker {
+        courseMaterialRepository.findById(materialId) ?: throw NotFoundException()
     }
 }

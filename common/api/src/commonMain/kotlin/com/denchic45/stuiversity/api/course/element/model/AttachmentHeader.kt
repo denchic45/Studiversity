@@ -20,7 +20,8 @@ sealed class AttachmentHeader {
 data class FileAttachmentHeader(
     @Serializable(UUIDSerializer::class)
     override val id: UUID,
-    val item: FileItem
+    val name: String,
+    val thumbnailUrl: String?
 ) : AttachmentHeader() {
     @OptIn(ExperimentalSerializationApi::class)
     @EncodeDefault
@@ -28,16 +29,12 @@ data class FileAttachmentHeader(
 }
 
 @Serializable
-data class FileItem(
-    val name: String,
-    val thumbnailUrl: String?
-)
-
-@Serializable
 data class LinkAttachmentHeader(
     @Serializable(UUIDSerializer::class)
     override val id: UUID,
-    val item: LinkAttachmentResponse
+    val url: String,
+    val name: String,
+    val thumbnailUrl: String?
 ) : AttachmentHeader() {
     @OptIn(ExperimentalSerializationApi::class)
     @EncodeDefault

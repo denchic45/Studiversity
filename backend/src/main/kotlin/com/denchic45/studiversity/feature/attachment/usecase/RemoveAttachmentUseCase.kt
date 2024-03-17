@@ -9,7 +9,7 @@ class RemoveAttachmentUseCase(
     private val suspendTransactionWorker: SuspendTransactionWorker,
     private val attachmentRepository: AttachmentRepository
 ) {
-    suspend operator fun invoke(attachmentId: UUID) = suspendTransactionWorker.invoke {
-        attachmentRepository.removeAttachment(attachmentId)
+    suspend operator fun invoke(attachmentId: UUID, resourceId: UUID) = suspendTransactionWorker.invoke {
+        attachmentRepository.removeReference(attachmentId, resourceId)
     }
 }

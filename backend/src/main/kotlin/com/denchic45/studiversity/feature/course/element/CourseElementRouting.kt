@@ -10,36 +10,41 @@ import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
 import com.denchic45.stuiversity.api.role.model.Capability
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
 
-fun Route.courseElementRoutes() {
-    route("/elements") {
-        val findCourseElementsByCourseId: FindCourseElementsByCourseIdUseCase by inject()
-        val requireCapability: RequireCapabilityUseCase by inject()
+fun Application.courseElementRoutes() {
+    routing {
+        authenticate("auth-jwt") {
+            route("courses/{courseId}/elements") {
+                val findCourseElementsByCourseId: FindCourseElementsByCourseIdUseCase by inject()
+                val requireCapability: RequireCapabilityUseCase by inject()
 
-        get {
-            val courseId = call.parameters.getUuidOrFail("courseId")
-            val sorting = call.request.queryParameters.getSortingBy(CourseElementsSorting)
+                get {
+                    val courseId = call.parameters.getUuidOrFail("courseId")
+                    val sorting = call.request.queryParameters.getSortingBy(CourseElementsSorting)
 
-            requireCapability(
-                userId = call.currentUserId(),
-                capability = Capability.ReadCourseElements,
-                scopeId = courseId
-            )
+                    requireCapability(
+                        userId = call.currentUserId(),
+                        capability = Capability.ReadCourseElements,
+                        scopeId = courseId
+                    )
 
-            val elements = findCourseElementsByCourseId(courseId, sorting)
-            call.respond(HttpStatusCode.OK, elements)
+                    val elements = findCourseElementsByCourseId(courseId, sorting)
+                    call.respond(HttpStatusCode.OK, elements)
+                }
+            }
+            courseElementById()
         }
-        courseElementById()
     }
 }
 
 fun Route.courseElementById() {
-    route("/{elementId}") {
+    route("course-elements/{elementId}") {
         val requireCapability: RequireCapabilityUseCase by inject()
         val findCourseElement: FindCourseElementUseCase by inject()
         val updateCourseElement: UpdateCourseElementUseCase by inject()
