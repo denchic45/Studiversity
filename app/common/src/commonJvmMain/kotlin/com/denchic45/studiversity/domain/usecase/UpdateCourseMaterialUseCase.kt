@@ -5,17 +5,16 @@ import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
 import com.denchic45.stuiversity.api.course.material.model.UpdateCourseMaterialRequest
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class UpdateCourseMaterialUseCase(
     private val courseMaterialRepository: CourseMaterialRepository,
 ) {
     suspend operator fun invoke(
-        courseId: UUID,
         materialId: UUID,
-        request: UpdateCourseMaterialRequest,
+        request: UpdateCourseMaterialRequest
     ): Resource<CourseMaterialResponse> {
-        return courseMaterialRepository.update(courseId, materialId, request)
+        return courseMaterialRepository.update(materialId, request)
     }
 }

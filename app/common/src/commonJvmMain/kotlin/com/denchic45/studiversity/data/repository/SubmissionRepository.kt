@@ -4,7 +4,7 @@ import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.stuiversity.api.submission.SubmissionsApi
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class SubmissionRepository(
@@ -12,53 +12,35 @@ class SubmissionRepository(
     private val submissionsApi: SubmissionsApi
 ) : NetworkServiceOwner {
     suspend fun findByWorkAndStudent(
-        courseId: UUID,
         workId: UUID,
-        studentId: UUID,
-    ) = fetchResource { submissionsApi.getByStudent(courseId, workId, studentId) }
+        studentId: UUID
+    ) = fetchResource { submissionsApi.getByStudent(workId, studentId) }
 
-    suspend fun submitSubmission(
-        courseId: UUID,
-        workId: UUID,
-        submissionId: UUID
-    ) = fetchResource {
-        submissionsApi.submitSubmission(courseId, workId, submissionId)
+    suspend fun submitSubmission(submissionId: UUID) = fetchResource {
+        submissionsApi.submitSubmission(submissionId)
     }
 
-    suspend fun cancelSubmission(
-        courseId: UUID,
-        workId: UUID,
-        submissionId: UUID
-    ) = fetchResource {
-        submissionsApi.cancelSubmission(courseId, workId, submissionId)
+    suspend fun cancelSubmission(submissionId: UUID) = fetchResource {
+        submissionsApi.cancelSubmission(submissionId)
     }
 
-    suspend fun gradeSubmission(
-        courseId: UUID,
-        workId: UUID,
-        submissionId: UUID,
-        grade: Int,
-    ) = fetchResource {
-        submissionsApi.gradeSubmission(courseId, workId, submissionId, grade)
+    suspend fun gradeSubmission(submissionId: UUID, grade: Int) = fetchResource {
+        submissionsApi.gradeSubmission(submissionId, grade)
     }
 
-    suspend fun removeSubmissionGrade(
-        courseId: UUID,
-        workId: UUID,
-        submissionId: UUID
-    ) = fetchResource {
-        submissionsApi.cancelGradeSubmission(courseId, workId, submissionId)
+    suspend fun removeSubmissionGrade(submissionId: UUID) = fetchResource {
+        submissionsApi.cancelGradeSubmission(submissionId)
     }
 
-    suspend fun findSubmissionsByWork(courseId: UUID, workId: UUID) = fetchResource {
-        submissionsApi.getAllByCourseWorkId(courseId, workId)
+    suspend fun findSubmissionsByWork(workId: UUID) = fetchResource {
+        submissionsApi.getAllByCourseWorkId(workId)
     }
 
     suspend fun findOwnSubmissionByWork(courseId: UUID, workId: UUID) = fetchResource {
         submissionsApi.getByStudent(courseId, workId)
     }
 
-    suspend fun findById(courseId: UUID, workId: UUID, submissionId: UUID) = fetchResource {
-        submissionsApi.getById(courseId, workId, submissionId)
+    suspend fun findById(submissionId: UUID) = fetchResource {
+        submissionsApi.getById(submissionId)
     }
 }

@@ -6,7 +6,7 @@ import com.denchic45.stuiversity.api.course.material.CourseMaterialApi
 import com.denchic45.stuiversity.api.course.material.model.CreateCourseMaterialRequest
 import com.denchic45.stuiversity.api.course.material.model.UpdateCourseMaterialRequest
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CourseMaterialRepository(
@@ -21,14 +21,13 @@ class CourseMaterialRepository(
     }
 
     suspend fun update(
-        courseId: UUID,
         materialId: UUID,
         request: UpdateCourseMaterialRequest,
     ) = fetchResource {
-        courseMaterialApi.update(courseId, materialId, request)
+        courseMaterialApi.update(materialId, request)
     }
 
-    suspend fun findById(courseId: UUID, materialId: UUID) = fetchResource {
-        courseMaterialApi.getById(courseId, materialId)
+    suspend fun findById(materialId: UUID) = fetchResource {
+        courseMaterialApi.getById(materialId)
     }
 }

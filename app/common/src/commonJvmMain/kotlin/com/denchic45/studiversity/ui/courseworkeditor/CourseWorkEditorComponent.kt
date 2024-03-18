@@ -8,24 +8,8 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
 import com.denchic45.studiversity.domain.model.FileState
-import com.denchic45.studiversity.domain.resource.EmptyResource
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.emptyResource
-import com.denchic45.studiversity.domain.resource.filterSuccess
-import com.denchic45.studiversity.domain.resource.map
-import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.domain.resource.resourceOf
-import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.resource.suspendBindResources
-import com.denchic45.studiversity.domain.usecase.AddCourseWorkUseCase
-import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
-import com.denchic45.studiversity.domain.usecase.FindCourseWorkAttachmentsUseCase
-import com.denchic45.studiversity.domain.usecase.FindCourseWorkUseCase
-import com.denchic45.studiversity.domain.usecase.ObserveCourseTopicsUseCase
-import com.denchic45.studiversity.domain.usecase.RemoveAttachmentFromCourseWorkUseCase
-import com.denchic45.studiversity.domain.usecase.UpdateCourseElementUseCase
-import com.denchic45.studiversity.domain.usecase.UpdateCourseWorkUseCase
-import com.denchic45.studiversity.domain.usecase.UploadAttachmentToCourseWorkUseCase
+import com.denchic45.studiversity.domain.resource.*
+import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.getOptProperty
 import com.denchic45.studiversity.ui.DropdownMenuItem
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
@@ -49,15 +33,7 @@ import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.util.optPropertyOf
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
@@ -65,7 +41,7 @@ import me.tatarka.inject.annotations.Inject
 import okio.Path
 import java.time.LocalDate
 import java.time.LocalTime
-import java.util.UUID
+import java.util.*
 
 
 @Inject
@@ -74,7 +50,7 @@ class CourseWorkEditorComponent(
     private val findCourseWorkUseCase: FindCourseWorkUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
-    private val uploadAttachmentToCourseWorkUseCase: UploadAttachmentToCourseWorkUseCase,
+    private val addAttachmentToCourseWorkUseCase: AddAttachmentToCourseWorkUseCase,
     private val downloadFileUseCase: DownloadFileUseCase,
     private val removeAttachmentFromCourseWorkUseCase: RemoveAttachmentFromCourseWorkUseCase,
     private val addCourseWorkUseCase: AddCourseWorkUseCase,
@@ -102,7 +78,7 @@ class CourseWorkEditorComponent(
     val attachmentItems2 = MutableStateFlow(resourceOf(listOf<AttachmentItem>()))
 
     private val _attachmentItems = workId?.let { id ->
-        findCourseWorkAttachmentsUseCase(courseId, id)
+        findCourseWorkAttachmentsUseCase(id)
     } ?: flowOf(resourceOf(emptyList()))
 
     private val addedAttachmentItems = MutableStateFlow<List<AttachmentItem>>(emptyList())
@@ -143,7 +119,7 @@ class CourseWorkEditorComponent(
 
     val viewState = (workId?.let { workId ->
         flow<Resource<EditingWork>> {
-            emit(findCourseWorkUseCase(courseId, workId).map { response ->
+            emit(findCourseWorkUseCase(workId).map { response ->
                 editingState.apply {
                     name = response.name
                     description = response.description ?: ""
@@ -179,7 +155,7 @@ class CourseWorkEditorComponent(
         // load existing attachments
         workId?.let {
             componentScope.launch {
-                findCourseWorkAttachmentsUseCase(courseId, it).first().onSuccess {
+                findCourseWorkAttachmentsUseCase(it).first().onSuccess {
                     attachmentItems2.update { it }
                 }
             }
@@ -321,7 +297,6 @@ class CourseWorkEditorComponent(
     private suspend fun saveUpdatedWork(): Resource<CourseWorkResponse> {
         return workId?.let { workId ->
             updateCourseWorkUseCase(
-                courseId = courseId,
                 workId = workId,
                 request = UpdateCourseWorkRequest(
                     name = fieldEditor.getOptProperty("name"),
@@ -349,11 +324,7 @@ class CourseWorkEditorComponent(
         val successfullyRemovedAttachmentIds = mutableListOf<UUID>()
         val res = suspendBindResources {
             removedAttachmentIds.value.forEach { attachmentId ->
-                removeAttachmentFromCourseWorkUseCase(
-                    courseId,
-                    workId!!,
-                    attachmentId
-                ).onSuccess {
+                removeAttachmentFromCourseWorkUseCase(workId!!, attachmentId).onSuccess {
                     successfullyRemovedAttachmentIds += attachmentId
                 }.bind()
             }
@@ -366,8 +337,7 @@ class CourseWorkEditorComponent(
         val successfullyAddedAttachmentIds = mutableListOf<UUID>()
         val res = suspendBindResources {
             addedAttachmentItems.value.forEach { item ->
-                uploadAttachmentToCourseWorkUseCase(
-                    courseId = courseId,
+                addAttachmentToCourseWorkUseCase(
                     workId = workId!!,
                     request = item.toRequest()
                 ).onSuccess {

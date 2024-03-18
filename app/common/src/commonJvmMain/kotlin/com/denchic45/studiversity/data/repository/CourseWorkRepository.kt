@@ -4,10 +4,6 @@ import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
-import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
@@ -15,7 +11,7 @@ import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.stuiversity.util.uuidOfMe
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CourseWorkRepository(
@@ -31,49 +27,25 @@ class CourseWorkRepository(
     }
 
     suspend fun update(
-        courseId: UUID,
         workId: UUID,
-        request: UpdateCourseWorkRequest,
+        request: UpdateCourseWorkRequest
     ) = fetchResource {
-        courseWorkApi.update(courseId, workId, request)
+        courseWorkApi.update(workId, request)
     }
 
-    suspend fun findById(courseId: UUID, workId: UUID) = fetchResource {
-        courseWorkApi.getById(courseId, workId)
+    suspend fun findById(workId: UUID) = fetchResource {
+        courseWorkApi.getById(workId)
     }
 
-    suspend fun addAttachment(
-        courseId: UUID,
-        workId: UUID,
-        request: AttachmentRequest,
-    ): Resource<AttachmentHeader> = fetchResource {
-        when (request) {
-            is CreateFileRequest -> courseWorkApi.uploadFileToWork(
-                courseId,
-                workId,
-                request
-            )
-
-            is CreateLinkRequest -> courseWorkApi.addLinkToWork(
-                courseId,
-                workId,
-                request
-            )
-        }
-    }
-
-    fun findUpcomingByYourAuthor(
-    ): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
+    fun findUpcomingByYourAuthor(): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
         courseWorkApi.getByAuthor(authorId = uuidOfMe(), late = false, submitted = false)
     }
 
-    fun findOverdueByYourAuthor(
-    ): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
+    fun findOverdueByYourAuthor(): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
         courseWorkApi.getByAuthor(authorId = uuidOfMe(), late = true, submitted = false)
     }
 
-    fun findSubmittedByYourAuthor(
-    ): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
+    fun findSubmittedByYourAuthor(): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
         courseWorkApi.getByAuthor(authorId = uuidOfMe(), submitted = true)
     }
 }

@@ -8,20 +8,8 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
 import com.denchic45.studiversity.domain.model.FileState
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.filterSuccess
-import com.denchic45.studiversity.domain.resource.map
-import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.domain.resource.resourceOf
-import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.usecase.AddCourseMaterialUseCase
-import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
-import com.denchic45.studiversity.domain.usecase.FindCourseMaterialAttachmentsUseCase
-import com.denchic45.studiversity.domain.usecase.FindCourseMaterialUseCase
-import com.denchic45.studiversity.domain.usecase.ObserveCourseTopicsUseCase
-import com.denchic45.studiversity.domain.usecase.RemoveAttachmentFromCourseMaterialUseCase
-import com.denchic45.studiversity.domain.usecase.UpdateCourseMaterialUseCase
-import com.denchic45.studiversity.domain.usecase.UploadAttachmentToCourseMaterialUseCase
+import com.denchic45.studiversity.domain.resource.*
+import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.getOptProperty
 import com.denchic45.studiversity.ui.DropdownMenuItem
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
@@ -41,21 +29,13 @@ import com.denchic45.stuiversity.api.course.material.model.CreateCourseMaterialR
 import com.denchic45.stuiversity.api.course.material.model.UpdateCourseMaterialRequest
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import okio.Path
-import java.util.UUID
+import java.util.*
 
 
 @Inject
@@ -63,7 +43,7 @@ class CourseMaterialEditorComponent(
     private val findCourseMaterialUseCase: FindCourseMaterialUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val findCourseMaterialAttachmentsUseCase: FindCourseMaterialAttachmentsUseCase,
-    private val uploadAttachmentToCourseMaterialUseCase: UploadAttachmentToCourseMaterialUseCase,
+    private val addAttachmentToCourseMaterialUseCase: AddAttachmentToCourseMaterialUseCase,
     private val downloadFileUseCase: DownloadFileUseCase,
     private val removeAttachmentFromCourseMaterialUseCase: RemoveAttachmentFromCourseMaterialUseCase,
     observeCourseTopicsUseCase: ObserveCourseTopicsUseCase,
@@ -89,7 +69,7 @@ class CourseMaterialEditorComponent(
     private val editingState = EditingMaterial()
 
     private val _attachmentItems = materialId?.let {
-        findCourseMaterialAttachmentsUseCase(courseId, materialId)
+        findCourseMaterialAttachmentsUseCase(materialId)
     } ?: flowOf(resourceOf(emptyList()))
     private val _addedAttachmentItems = MutableStateFlow<List<AttachmentItem>>(emptyList())
     private val removedAttachmentIds = MutableStateFlow(emptyList<UUID>())
@@ -129,7 +109,7 @@ class CourseMaterialEditorComponent(
 
     val viewState = (materialId?.let { materialId ->
         flow<Resource<EditingMaterial>> {
-            emit(findCourseMaterialUseCase(courseId, materialId).map { response ->
+            emit(findCourseMaterialUseCase(materialId).map { response ->
                 editingState.apply {
                     name = response.name
                     description = response.description ?: ""
@@ -242,14 +222,15 @@ class CourseMaterialEditorComponent(
             componentScope.launch {
                 val result = materialId?.let { materialId ->
                     updateCourseMaterialUseCase(
-                        courseId, materialId, UpdateCourseMaterialRequest(
+                        materialId,
+                        UpdateCourseMaterialRequest(
                             name = fieldEditor.getOptProperty("name"),
                             description = fieldEditor.getOptProperty("description"),
                             topicId = fieldEditor.getOptProperty("topicId")
                         )
                     ).onSuccess { material ->
                         removedAttachmentIds.value.map {
-                            removeAttachmentFromCourseMaterialUseCase(courseId, material.id, it)
+                            removeAttachmentFromCourseMaterialUseCase(material.id, it)
                         }
                         loadAddedAttachments(material)
                     }
@@ -278,8 +259,7 @@ class CourseMaterialEditorComponent(
         courseMaterial: CourseMaterialResponse,
     ) {
         _addedAttachmentItems.value.map { item ->
-            uploadAttachmentToCourseMaterialUseCase(
-                courseId = courseId,
+            addAttachmentToCourseMaterialUseCase(
                 materialId = courseMaterial.id,
                 request = item.toRequest()
             )

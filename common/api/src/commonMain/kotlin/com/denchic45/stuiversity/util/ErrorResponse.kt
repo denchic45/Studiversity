@@ -1,6 +1,5 @@
 package com.denchic45.stuiversity.util
 
-import io.ktor.http.*
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
@@ -28,9 +27,8 @@ data class CompositeError(
     override val reason: String = ValidationError.INVALID_REQUEST,
 ) : ErrorContent
 
-class ErrorResponseSerializer :
-    JsonContentPolymorphicSerializer<ErrorContent>(ErrorContent::class) {
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out ErrorContent> {
+class ErrorResponseSerializer : JsonContentPolymorphicSerializer<ErrorContent>(ErrorContent::class) {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<ErrorContent> {
         val jsonObject = element.jsonObject
         return when {
             jsonObject.contains("reasons") -> CompositeError.serializer()

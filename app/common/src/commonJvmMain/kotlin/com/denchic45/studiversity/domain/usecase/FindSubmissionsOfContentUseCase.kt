@@ -12,6 +12,6 @@ class FindCourseWorkSubmissionsUseCase(
 ) {
 
     suspend operator fun invoke(courseId: UUID, workId: UUID): Resource<List<SubmissionResponse>> {
-        return submissionRepository.findSubmissionsByWork(courseId, workId)
+        return submissionRepository.findSubmissionsByWork(workId)
     }
 }

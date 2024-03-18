@@ -4,13 +4,13 @@ import com.denchic45.studiversity.data.repository.CourseWorkRepository
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class FindCourseWorkUseCase(
     private val courseWorkRepository: CourseWorkRepository,
 ) {
-    suspend operator fun invoke(courseId: UUID, workId: UUID): Resource<CourseWorkResponse> {
-        return courseWorkRepository.findById(courseId, workId)
+    suspend operator fun invoke(workId: UUID): Resource<CourseWorkResponse> {
+        return courseWorkRepository.findById(workId)
     }
 }

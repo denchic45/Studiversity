@@ -32,9 +32,9 @@ class CourseWorkDetailsComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    val courseWork = flow { emit(findCourseWorkUseCase(courseId, elementId)) }
+    val courseWork = flow { emit(findCourseWorkUseCase(elementId)) }
         .stateInResource(componentScope, SharingStarted.Eagerly)
-    val attachments = findCourseWorkAttachmentsUseCase(courseId, elementId)
+    val attachments = findCourseWorkAttachmentsUseCase(elementId)
         .mapResource { it.toAttachmentItems() }
         .stateInResource(componentScope, SharingStarted.Eagerly)
 

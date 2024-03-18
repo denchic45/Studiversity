@@ -46,10 +46,10 @@ class SubmissionDetailsComponent(
     }.stateInResource(componentScope)
 
     private val submission = flow {
-        emit(findSubmissionByIdUseCase(courseId, workId, submissionId))
+        emit(findSubmissionByIdUseCase(submissionId))
     }.shareIn(componentScope, SharingStarted.Lazily, 1)
 
-    private val attachments = findSubmissionAttachmentsUseCase(courseId, workId, submissionId)
+    private val attachments = findSubmissionAttachmentsUseCase(submissionId)
         .shareIn(componentScope, SharingStarted.Lazily)
 
     private val submissionState = MutableStateFlow<Resource<SubmissionUiState>>(resourceOf())
@@ -95,7 +95,7 @@ class SubmissionDetailsComponent(
 
     fun onGrade(value: Int) {
         componentScope.launch {
-            gradeSubmissionUseCase(courseId, workId, submissionId, value)
+            gradeSubmissionUseCase(submissionId, value)
                 .onSuccess { response ->
                     submissionState.update { resource ->
                         resource.map { it.copy(grade = response.grade) }
@@ -106,7 +106,7 @@ class SubmissionDetailsComponent(
 
     fun onGradeCancel() {
         componentScope.launch {
-            cancelGradeSubmissionUseCase(courseId, workId, submissionId)
+            cancelGradeSubmissionUseCase(submissionId)
                 .onSuccess { submissionState.update { resource -> resource.map { it.copy(grade = null) } } }
         }
     }

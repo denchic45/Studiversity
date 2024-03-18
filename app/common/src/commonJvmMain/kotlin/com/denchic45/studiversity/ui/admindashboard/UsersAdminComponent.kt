@@ -30,7 +30,7 @@ class UsersAdminComponent(
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val removeUserUseCase: RemoveUserUseCase,
     userChooserComponent: (onSelect: (UserItem) -> Unit, ComponentContext) -> UserChooserComponent,
-    userEditorComponent: (onFinish: () -> Unit, ComponentContext) -> UserEditorComponent,
+    userEditorComponent: (UUID?, onFinish: () -> Unit, ComponentContext) -> UserEditorComponent,
     profileComponent: (
         RootNavigator,
         UUID, ComponentContext,
@@ -47,7 +47,7 @@ class UsersAdminComponent(
         childFactory = { config, context ->
             when (config) {
                 is Config.UserEditor -> Child.UserEditor(
-                    userEditorComponent(sidebarNavigation::dismiss, context)
+                    userEditorComponent(config.userId, sidebarNavigation::dismiss, context)
                 )
 
                 is Config.Profile -> Child.Profile(

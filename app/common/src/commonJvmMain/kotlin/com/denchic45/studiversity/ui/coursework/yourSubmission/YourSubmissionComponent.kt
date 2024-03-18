@@ -135,7 +135,7 @@ class YourSubmissionComponent(
         submission.value.onSuccess {
             componentScope.launch {
                 _updatedYourSubmission.emit(
-                    submitSubmissionUseCase(courseId, workId, it.id)
+                    submitSubmissionUseCase(it.id)
                 )
             }
         }
@@ -145,7 +145,7 @@ class YourSubmissionComponent(
         submission.value.onSuccess {
             componentScope.launch {
                 _updatedYourSubmission.emit(
-                    cancelSubmissionUseCase(courseId, workId, it.id)
+                    cancelSubmissionUseCase(it.id)
                 )
             }
         }

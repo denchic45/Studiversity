@@ -4,18 +4,13 @@ import com.denchic45.studiversity.data.repository.SubmissionRepository
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class FindSubmissionByIdUseCase(
     private val submissionRepository: SubmissionRepository,
 ) {
-    suspend operator fun invoke(
-        courseId: UUID,
-        workId: UUID,
-        submissionId: UUID,
-    ): Resource<SubmissionResponse> {
-        return submissionRepository.findById(courseId, workId, submissionId)
+    suspend operator fun invoke(submissionId: UUID): Resource<SubmissionResponse> {
+        return submissionRepository.findById(submissionId)
     }
-
 }

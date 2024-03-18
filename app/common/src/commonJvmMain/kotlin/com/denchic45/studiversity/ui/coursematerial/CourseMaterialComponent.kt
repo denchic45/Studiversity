@@ -57,7 +57,7 @@ class CourseMaterialComponent(
     private val componentScope = componentScope()
 
     private val observedCourseMaterial = flow {
-        emit(findCourseMaterialUseCase(courseId, elementId))
+        emit(findCourseMaterialUseCase( elementId))
     }.stateInResource(componentScope, SharingStarted.Eagerly)
 
     val courseMaterial = MutableStateFlow<Resource<CourseMaterialResponse>>(resourceOf())
@@ -73,12 +73,12 @@ class CourseMaterialComponent(
     fun onRefresh() {
         componentScope.launch {
             refreshing.update { true }
-            courseMaterial.update { findCourseMaterialUseCase(courseId, elementId) }
+            courseMaterial.update { findCourseMaterialUseCase( elementId) }
             refreshing.update { false }
         }
     }
 
-    val attachments = findCourseMaterialAttachmentsUseCase(courseId, elementId)
+    val attachments = findCourseMaterialAttachmentsUseCase( elementId)
         .mapResource { it.toAttachmentItems() }
         .stateInResource(componentScope, SharingStarted.Eagerly)
 

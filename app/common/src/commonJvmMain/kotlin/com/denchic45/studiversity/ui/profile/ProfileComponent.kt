@@ -169,7 +169,8 @@ class ProfileComponent(
     fun onNewAvatarSelect(name: String, bytes: ByteArray) {
         userFlow.value.onSuccess {
             componentScope.launch {
-                updateAvatarUseCase(it.id, CreateFileRequest(name, bytes))
+                TODO("Pass input stream")
+//                updateAvatarUseCase(it.id, CreateFileRequest(name, bytes))
             }
             slotNavigation.dismiss()
         }
