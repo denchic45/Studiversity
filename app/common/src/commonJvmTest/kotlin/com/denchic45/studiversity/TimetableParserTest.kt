@@ -22,10 +22,7 @@ import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.Account
-import com.denchic45.stuiversity.api.user.model.CreateUserRequest
-import com.denchic45.stuiversity.api.user.model.Gender
-import com.denchic45.stuiversity.api.user.model.UserResponse
+import com.denchic45.stuiversity.api.user.model.*
 import com.denchic45.stuiversity.util.UUIDWrapper
 import com.github.michaelbull.result.Ok
 import kotlinx.coroutines.runBlocking
@@ -113,6 +110,10 @@ class TimetableParserTest {
 
     private val userApi = object : UserApi {
         override suspend fun create(createUserRequest: CreateUserRequest): ResponseResult<UserResponse> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun update(userId: UUID, request: UpdateUserRequest): ResponseResult<UserResponse> {
             TODO("Not yet implemented")
         }
 

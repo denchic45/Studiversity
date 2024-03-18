@@ -14,13 +14,9 @@ class FindSubmissionAttachmentsUseCase(
     private val attachmentRepository: AttachmentRepository
 ) : FindAttachmentsUseCase(downloadService) {
 
-    operator fun invoke(
-        courseId: UUID,
-        courseWorkId: UUID,
-        submissionId: UUID
-    ): Flow<Resource<List<Attachment2>>> {
+    operator fun invoke(submissionId: UUID): Flow<Resource<List<Attachment2>>> {
         return observeAttachments(
-            attachmentRepository.observeBySubmission(courseId, courseWorkId, submissionId),
+            attachmentRepository.observeBySubmission(submissionId),
             submissionId
         )
     }

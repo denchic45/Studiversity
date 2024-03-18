@@ -4,12 +4,12 @@ import com.denchic45.studiversity.util.SystemDirs
 import com.denchic45.stuiversity.api.attachment.AttachmentApi
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.course.element.model.FileAttachmentResponse
-import com.github.michaelbull.result.map
 import com.github.michaelbull.result.onSuccess
 import me.tatarka.inject.annotations.Inject
 import okio.FileSystem
 import okio.Path
-import java.util.UUID
+import okio.source
+import java.util.*
 
 @Inject
 class AttachmentStorage(
@@ -25,32 +25,22 @@ class AttachmentStorage(
         FileSystem.SYSTEM.createDirectory(path)
     }
 
-    private suspend fun download(attachmentId: UUID): ResponseResult<FileAttachmentResponse?> {
-        return attachmentApi.getById(attachmentId).map {
-            if (it is FileAttachmentResponse) {
-                it
-            } else null
-        }
+    private suspend fun download(attachmentId: UUID): ResponseResult<FileAttachmentResponse> {
+        return attachmentApi.download(attachmentId)
     }
 
     suspend fun downloadAndSave(attachmentId: UUID): ResponseResult<FileAttachmentResponse?> {
         return download(attachmentId).onSuccess { fileAttachment ->
-            fileAttachment?.let {
-                fileSystem.createDirectory(getFilePathById(fileAttachment.id))
-                fileSystem.write(
-                    getFilePathByIdAndName(
-                        it.id,
-                        fileAttachment.name
-                    )
-                ) { write(it.bytes) }
+            fileSystem.createDirectory(getFilePathById(fileAttachment.id))
+            fileSystem.write(getFilePathByIdAndName(fileAttachment.id)) {
+                writeAll(fileAttachment.inputStream.source())
             }
         }
     }
 
     private fun getFilePathById(attachmentId: UUID) = path / attachmentId.toString()
 
-    fun getFilePathByIdAndName(attachmentId: UUID, name: String) =
-        path / attachmentId.toString() / name
+    fun getFilePathByIdAndName(attachmentId: UUID) = path / attachmentId.toString()
 
     fun delete(attachmentId: UUID) {
         fileSystem.deleteRecursively(getFilePathById(attachmentId))

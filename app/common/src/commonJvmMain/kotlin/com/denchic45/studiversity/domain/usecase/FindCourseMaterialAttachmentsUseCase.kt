@@ -6,22 +6,14 @@ import com.denchic45.studiversity.domain.model.Attachment2
 import com.denchic45.studiversity.domain.resource.Resource
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class FindCourseMaterialAttachmentsUseCase(
     private val attachmentRepository: AttachmentRepository,
     downloadService: DownloadsService,
 ) : FindAttachmentsUseCase(downloadService) {
-    operator fun invoke(
-        courseId: UUID,
-        materialId: UUID,
-    ): Flow<Resource<List<Attachment2>>> {
-        return observeAttachments(
-            attachmentRepository.observeByCourseMaterial(
-                courseId,
-                materialId
-            ), materialId
-        )
+    operator fun invoke(materialId: UUID, ): Flow<Resource<List<Attachment2>>> {
+        return observeAttachments(attachmentRepository.observeByCourseMaterial(materialId), materialId)
     }
 }

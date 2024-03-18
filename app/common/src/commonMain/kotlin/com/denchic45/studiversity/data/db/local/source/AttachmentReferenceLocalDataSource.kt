@@ -28,8 +28,8 @@ class AttachmentReferenceLocalDataSource(db: AppDatabase) {
         queries.delete(attachmentId, referenceId)
     }
 
-    suspend fun deleteByNotInIds(ids: List<String>, referenceId: String) =
+    suspend fun deleteByNotInIds(actualIds: List<String>, referenceId: String) =
         withContext(Dispatchers.IO) {
-            queries.deleteByNotContainsId(ids, referenceId)
+            queries.deleteByNotContainsId(actualIds, referenceId)
         }
 }

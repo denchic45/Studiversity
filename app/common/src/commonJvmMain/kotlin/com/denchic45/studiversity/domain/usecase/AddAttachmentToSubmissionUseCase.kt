@@ -5,18 +5,16 @@ import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
-class UploadAttachmentToSubmissionUseCase(
+class AddAttachmentToSubmissionUseCase(
     private val attachmentRepository: AttachmentRepository
 ) {
     suspend operator fun invoke(
-        courseId: UUID,
-        workId: UUID,
-        submissionId:UUID,
-        attachmentRequest: AttachmentRequest
+        submissionId: UUID,
+        request: AttachmentRequest
     ): Resource<AttachmentHeader> {
-        return attachmentRepository.addAttachmentToSubmission(courseId, workId,submissionId, attachmentRequest)
+        return attachmentRepository.addAttachmentToSubmission(submissionId, request)
     }
 }

@@ -28,7 +28,7 @@ fun Application.configureAttachments() {
                 val requireCapability: RequireCapabilityUseCase by inject()
                 val isSubmissionAuthor: IsSubmissionAuthorUseCase by inject()
                 val requireSubmissionAuthor: RequireSubmissionAuthorUseCase by inject()
-                val addAttachmentUseCase: AddAttachmentUseCase by inject()
+                val addAttachment: AddAttachmentUseCase by inject()
                 val findAttachmentsByReference: FindAttachmentsByResourceUseCase by inject()
                 val downloadAttachment: DownloadAttachmentUseCase by inject()
 
@@ -61,7 +61,7 @@ fun Application.configureAttachments() {
                     getAttachmentResourceRequirements(null).requireAccessToAdd(call)
 
                     val resourceId = call.parameters.getUuidOrFail("resource_id")
-                    val addedAttachment = addAttachmentUseCase(receiveAttachment(), resourceId)
+                    val addedAttachment = addAttachment(receiveAttachment(), resourceId)
                     call.respond(HttpStatusCode.Created, addedAttachment)
                 }
 

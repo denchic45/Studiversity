@@ -105,7 +105,7 @@ class CourseTopicsTest : KtorClientTest() {
 
         removeTopic(topic.id, RelatedTopicElements.CLEAR_TOPIC)
 
-        courseWorkApi.getById(course.id, courseWork.id).also(::assertResultIsOk).unwrap().apply {
+        courseWorkApi.getById(courseWork.id).also(::assertResultIsOk).unwrap().apply {
             assertNull(topicId, ::toString)
         }
     }

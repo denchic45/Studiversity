@@ -5,7 +5,7 @@ import com.denchic45.stuiversity.api.course.element.model.AttachmentType
 import com.denchic45.stuiversity.api.course.element.model.FileAttachmentHeader
 import com.denchic45.stuiversity.api.course.element.model.LinkAttachmentHeader
 
-fun AttachmentDao.toHeader() = when (type) {
+fun AttachmentDao.toAttachmentResponse() = when (type) {
     AttachmentType.FILE -> toFileAttachmentHeader()
     AttachmentType.LINK -> toLinkAttachmentHeader()
 }

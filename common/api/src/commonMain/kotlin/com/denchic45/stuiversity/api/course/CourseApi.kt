@@ -35,7 +35,7 @@ interface CoursesApi {
 
     suspend fun update(
         courseId: UUID,
-        updateCourseRequest: UpdateCourseRequest,
+        request: UpdateCourseRequest,
     ): ResponseResult<CourseResponse>
 
     suspend fun getStudyGroups(courseId: UUID): ResponseResult<List<StudyGroupResponse>>
@@ -87,11 +87,11 @@ class CourseApiImpl(private val client: HttpClient) : CoursesApi {
 
     override suspend fun update(
         courseId: UUID,
-        updateCourseRequest: UpdateCourseRequest,
+        request: UpdateCourseRequest,
     ): ResponseResult<CourseResponse> {
         return client.patch("/courses/$courseId") {
             contentType(ContentType.Application.Json)
-            setBody(updateCourseRequest)
+            setBody(request)
         }.toResult()
     }
 

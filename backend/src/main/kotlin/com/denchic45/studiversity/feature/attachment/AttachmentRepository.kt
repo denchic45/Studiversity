@@ -5,6 +5,7 @@ import com.denchic45.studiversity.database.table.AttachmentReferenceDao
 import com.denchic45.studiversity.database.table.AttachmentReferences
 import com.denchic45.studiversity.database.table.Attachments
 import com.denchic45.stuiversity.api.course.element.model.*
+import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -18,16 +19,13 @@ class AttachmentRepository(private val storage: AttachmentFileStorage) {
 
     fun addFileAttachment(
         request: CreateFileRequest,
-        ownerId: UUID
+        resourceId: UUID
     ): FileAttachmentHeader = AttachmentDao.new {
         this.name = request.name
         this.type = AttachmentType.FILE
-        this.resourceId = ownerId
+        this.resourceId = resourceId
     }.also { dao ->
-        AttachmentReferenceDao.new {
-            this.attachment = dao
-            this.resourceId = ownerId
-        }
+        addAttachmentReference(dao, resourceId)
         storage.writeFile(dao.id.value.toString(), request)
     }.toFileAttachmentHeader()
 
@@ -49,14 +47,14 @@ class AttachmentRepository(private val storage: AttachmentFileStorage) {
     // TODO: В будущем передавать также consumerType? чтобы проверить его наличие, напр:
     //  consumerType может быть SUBMISSION
 
-    fun addAttachmentReference(attachmentId: UUID, resourceId: UUID): Boolean {
-        val attachmentDao = AttachmentDao.findById(attachmentId) ?: return false
+    fun addAttachmentReference(attachmentId: UUID, resourceId: UUID): AttachmentHeader {
+        val attachmentDao = AttachmentDao.findById(attachmentId) ?: throw NotFoundException("ATTACHMENT_NOT_FOUND")
         addAttachmentReference(attachmentDao, resourceId)
-        return true
+        return attachmentDao.toAttachmentResponse()
     }
 
     private fun addAttachmentReference(dao: AttachmentDao, resourceId: UUID) {
-        AttachmentReferenceDao.new {
+     AttachmentReferenceDao.new {
             this.attachment = dao
             this.resourceId = resourceId
         }
@@ -127,7 +125,7 @@ class AttachmentRepository(private val storage: AttachmentFileStorage) {
             Attachments.innerJoin(AttachmentReferences, { Attachments.id }, { attachmentId })
                 .selectAll()
                 .where(Attachments.resourceId eq resourceId and (AttachmentReferences.resourceId eq resourceId))
-        ).map { (it).toHeader() }
+        ).map { (it).toAttachmentResponse() }
     }
 
     fun isFileExists(attachmentId: UUID): Boolean = storage.exists(attachmentId)

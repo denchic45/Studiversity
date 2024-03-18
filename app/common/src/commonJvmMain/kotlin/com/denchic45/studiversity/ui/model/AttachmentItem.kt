@@ -11,7 +11,7 @@ import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
 import com.eygraber.uri.Uri
 import okio.Path
-import java.util.UUID
+import java.util.*
 
 sealed interface AttachmentItem {
     val name: String
@@ -61,7 +61,7 @@ fun List<Attachment2>.toAttachmentItems(): List<AttachmentItem> {
 fun AttachmentItem.toRequest(): AttachmentRequest = when (this) {
     is AttachmentItem.FileAttachmentItem -> CreateFileRequest(
         name = name,
-        bytes = path.toFile().readBytes()
+        inputStream = path.toFile().inputStream()
     )
 
     is AttachmentItem.LinkAttachmentItem -> CreateLinkRequest(url)

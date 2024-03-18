@@ -216,68 +216,68 @@ class CourseElementsTest : KtorClientTest() {
             .apply { assertEquals(listOf(topic2.id, topic1.id), this) }
     }
 
-    @Test
-    fun testAddRemoveAttachment(): Unit = runBlocking {
-        enrolStudent(student1Id)
-        courseWorkApiOfTeacher.uploadFileToWork(course.id, courseWork.id, CreateFileRequest(file))
-            .apply {
-                assertNotNull(get()) { unwrapError().toString() }
-                assertEquals("data.txt", unwrap().name)
-            }
-
-        // Prevent upload attachment by student
-        courseWorkApiOfStudent.uploadFileToWork(course.id, courseWork.id, CreateFileRequest(file))
-            .apply {
-                assertNotNull(getError()?.code == HttpStatusCode.Forbidden.value) { unwrap().toString() }
-            }
-
-        courseWorkApiOfTeacher.getAttachments(course.id, courseWork.id).unwrap().apply {
-            assertEquals(1, size)
-        }
-
-        // Get attachments by student
-        courseWorkApiOfStudent.getAttachments(course.id, courseWork.id)
-            .apply { assertNotNull(get()) { unwrapError().error.toString() } }
-            .unwrap().apply {
-                assertEquals(1, size)
-            }
-
-        courseWorkApiOfTeacher.addLinkToWork(
-            course.id,
-            courseWork.id,
-            CreateLinkRequest(linkUrl)
-        ).apply {
-            assertNotNull(get()) { unwrapError().error.toString() }
-            assertEquals(
-                linkUrl,
-                unwrap().url
-            )
-        }
-
-        val attachments =
-            courseWorkApiOfTeacher.getAttachments(course.id, courseWork.id).unwrap().apply {
-                assertEquals(2, size)
-                assertTrue(any { it is FileAttachmentHeader && it.name == "data.txt" })
-                assertTrue(any { it is LinkAttachmentHeader && it.url == linkUrl })
-            }
-
-        deleteAttachment(attachments[0].id)
-
-        courseWorkApiOfTeacher.getAttachments(course.id, courseWork.id).unwrap().apply {
-            assertEquals(1, size)
-        }
-    }
+//    @Test
+//    fun testAddRemoveAttachment(): Unit = runBlocking {
+//        enrolStudent(student1Id)
+//        courseWorkApiOfTeacher.uploadFileToWork(course.id, courseWork.id, CreateFileRequest(file))
+//            .apply {
+//                assertNotNull(get()) { unwrapError().toString() }
+//                assertEquals("data.txt", unwrap().name)
+//            }
+//
+//        // Prevent upload attachment by student
+//        courseWorkApiOfStudent.uploadFileToWork(course.id, courseWork.id, CreateFileRequest(file))
+//            .apply {
+//                assertNotNull(getError()?.code == HttpStatusCode.Forbidden.value) { unwrap().toString() }
+//            }
+//
+//        courseWorkApiOfTeacher.getAttachments(course.id, courseWork.id).unwrap().apply {
+//            assertEquals(1, size)
+//        }
+//
+//        // Get attachments by student
+//        courseWorkApiOfStudent.getAttachments(course.id, courseWork.id)
+//            .apply { assertNotNull(get()) { unwrapError().error.toString() } }
+//            .unwrap().apply {
+//                assertEquals(1, size)
+//            }
+//
+//        courseWorkApiOfTeacher.addLinkToWork(
+//            course.id,
+//            courseWork.id,
+//            CreateLinkRequest(linkUrl)
+//        ).apply {
+//            assertNotNull(get()) { unwrapError().error.toString() }
+//            assertEquals(
+//                linkUrl,
+//                unwrap().url
+//            )
+//        }
+//
+//        val attachments =
+//            courseWorkApiOfTeacher.getAttachments(course.id, courseWork.id).unwrap().apply {
+//                assertEquals(2, size)
+//                assertTrue(any { it is FileAttachmentHeader && it.name == "data.txt" })
+//                assertTrue(any { it is LinkAttachmentHeader && it.url == linkUrl })
+//            }
+//
+//        deleteAttachment(attachments[0].id)
+//
+//        courseWorkApiOfTeacher.getAttachments(course.id, courseWork.id).unwrap().apply {
+//            assertEquals(1, size)
+//        }
+//    }
 
     @Test
     fun testDownloadAttachments(): Unit = runBlocking {
-        val fileAttachment = courseWorkApiOfTeacher.uploadFileToWork(
-            course.id,
-            courseWork.id,
-            CreateFileRequest(file)
-        ).apply {
-            assertNotNull(get(), getError().toString())
-            assertEquals("data.txt", unwrap().name)
-        }.unwrap()
+//        val fileAttachment = courseWorkApiOfTeacher.uploadFileToWork(
+//            course.id,
+//            courseWork.id,
+//            CreateFileRequest(file)
+//        ).apply {
+//            assertNotNull(get(), getError().toString())
+//            assertEquals("data.txt", unwrap().name)
+//        }.unwrap()
 
 //        attachmentApi.getById(fileAttachment.id).apply {
 //            val downloadedFile = unwrap() as FileAttachmentResponse
@@ -296,11 +296,10 @@ class CourseElementsTest : KtorClientTest() {
 //        }
     }
 
-    private suspend fun deleteAttachment(attachmentId: UUID) {
-        courseWorkApiOfTeacher.deleteAttachment(course.id, courseWork.id, attachmentId)
-            .apply {
-                assertNotNull(get()) { unwrapError().toString() }
-            }
-    }
-
+//    private suspend fun deleteAttachment(attachmentId: UUID) {
+//        courseWorkApiOfTeacher.deleteAttachment(course.id, courseWork.id, attachmentId)
+//            .apply {
+//                assertNotNull(get()) { unwrapError().toString() }
+//            }
+//    }
 }

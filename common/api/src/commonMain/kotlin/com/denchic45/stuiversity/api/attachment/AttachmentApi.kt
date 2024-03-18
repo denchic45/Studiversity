@@ -7,7 +7,9 @@ import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.course.element.model.*
 import io.ktor.client.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.util.*
 import java.util.*
 
 interface AttachmentApi {
@@ -25,14 +27,16 @@ interface AttachmentApi {
     suspend fun addLink(
         resource: String,
         resourceId: UUID,
-        link: CreateLinkRequest
+        request: CreateLinkRequest
     ): ResponseResult<LinkAttachmentHeader>
 
-    suspend fun download(
+    suspend fun addUploadedAttachment(
         resource: String,
         resourceId: UUID,
-        attachmentId: UUID
-    ): ResponseResult<FileAttachmentResponse>
+        request: UploadedAttachmentRequest
+    ): ResponseResult<AttachmentHeader>
+
+    suspend fun download(attachmentId: UUID): ResponseResult<FileAttachmentResponse>
 
     suspend fun delete(
         resource: String,
@@ -41,11 +45,7 @@ interface AttachmentApi {
 }
 
 class AttachmentApiImpl(private val client: HttpClient) : AttachmentApi {
-    override suspend fun download(
-        resource: String,
-        resourceId: UUID,
-        attachmentId: UUID
-    ): ResponseResult<FileAttachmentResponse> {
+    override suspend fun download(attachmentId: UUID): ResponseResult<FileAttachmentResponse> {
         return client.get("/attachments/$attachmentId").toFileAttachmentResponse()
     }
 
@@ -59,15 +59,28 @@ class AttachmentApiImpl(private val client: HttpClient) : AttachmentApi {
         }.toResult()
     }
 
+    @OptIn(InternalAPI::class)
     override suspend fun uploadFile(
         resource: String,
         resourceId: UUID,
         request: CreateFileRequest
     ): ResponseResult<FileAttachmentHeader> {
-        return client.post("/attachments") {
+        return client.post("$resource/$resourceId/attachments") {
             parameter("upload", "file")
-            parameter("resource_type", resource)
-            parameter("resource_id", resourceId)
+            contentType(ContentType.MultiPart.FormData)
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        append("file", request.inputStream, Headers.build {
+                            append(
+                                HttpHeaders.ContentType,
+                                ContentType.defaultForFilePath(request.name)
+                            )
+                            append(HttpHeaders.ContentDisposition, "filename=${request.name}")
+                        })
+                    }
+                )
+            )
             contentType(ContentType.Application.Json)
             setBody(request)
         }.toResult()
@@ -76,14 +89,24 @@ class AttachmentApiImpl(private val client: HttpClient) : AttachmentApi {
     override suspend fun addLink(
         resource: String,
         resourceId: UUID,
-        link: CreateLinkRequest
+        request: CreateLinkRequest
     ): ResponseResult<LinkAttachmentHeader> {
-        return client.post("/attachments") {
+        return client.post("$resource/$resourceId/attachments") {
             parameter("upload", "link")
-            parameter("resource_type", resource)
-            parameter("resource_id", resourceId)
             contentType(ContentType.Application.Json)
-            setBody(link)
+            setBody(request)
+        }.toResult()
+    }
+
+    override suspend fun addUploadedAttachment(
+        resource: String,
+        resourceId: UUID,
+        request: UploadedAttachmentRequest
+    ): ResponseResult<AttachmentHeader> {
+        return client.post("$resource/$resourceId/attachments") {
+            parameter("upload", "link")
+            contentType(ContentType.Application.Json)
+            setBody(request)
         }.toResult()
     }
 
@@ -92,10 +115,6 @@ class AttachmentApiImpl(private val client: HttpClient) : AttachmentApi {
         resourceId: UUID,
         attachmentId: UUID
     ): EmptyResponseResult {
-        return client.delete("/attachments").toResult()
+        return client.delete("$resource/$resourceId/attachments/$attachmentId").toResult()
     }
-
-//    override suspend fun delete(attachmentId: UUID): EmptyResponseResult {
-//        return client.delete("/attachments/$attachmentId").toResult()
-//    }
 }
