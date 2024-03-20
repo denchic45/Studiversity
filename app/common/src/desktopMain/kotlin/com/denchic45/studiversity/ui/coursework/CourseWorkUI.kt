@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.main.CustomCenteredAppBar
 import com.denchic45.studiversity.ui.main.NavigationIconBack
@@ -24,6 +25,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
 
     val backDispatcher = LocalBackDispatcher.current
 
+    val attachmentsComponent = remember { component.attachmentsComponent }
     val yourSubmissionComponent = component.yourSubmissionComponent
     val submissionResource by yourSubmissionComponent.submission.collectAsState()
     val hasSubmission by yourSubmissionComponent.hasSubmission.collectAsState()
@@ -41,6 +43,8 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
 //        yourSubmissionComponent.onFilesSelect(uris.map { it.getFile(context) })
 //    }
 
+
+
     val allowEdit by component.allowEditWork.collectAsState(initial = false)
 
     LaunchedEffect(Unit) {
@@ -52,35 +56,38 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
     var selectedTab by remember { mutableStateOf(0) }
 
     Row(Modifier.widthIn(max = 960.dp)) {
-        CourseWorkContent(
-            childrenResource = childrenResource,
-            submissionContent = {
-                if (hasSubmission.takeValueIfSuccess() == true) {
-                    SubmissionPanel(
-                        resource = submissionResource,
-                        onAttachmentAdd = {
-                            // TODO: use desktop file chooser
-                        },
-                        onAttachmentClick = component::onAttachmentClick,
-                        onAttachmentRemove = yourSubmissionComponent::onAttachmentRemove,
-                        onSubmit = yourSubmissionComponent::onSubmit,
-                        onCancel = yourSubmissionComponent::onCancel
-                    )
-                }
-            },
-            allowEdit = allowEdit,
-            selectedTab = selectedTab,
-            onTabSelect = { selectedTab = it },
-            onEditClick = component::onEditClick,
-            onDeleteClick = component::onDeleteClick,
-            onClose = backDispatcher::back
-        )
+        ResourceContent(childrenResource) { children->
+            CourseWorkLayout(
+                children = children,
+                submissionContent = {
+                    YourSubmissionBlock(yourSubmissionComponent)
+//                    if (hasSubmission.takeValueIfSuccess() == true) {
+//                        SubmissionPanel(
+//                            resource = submissionResource,
+//                            onAttachmentAdd = {
+//                                // TODO: use desktop file chooser
+//                            },
+//                            onAttachmentClick = component::onAttachmentClick,
+//                            onAttachmentRemove = yourSubmissionComponent::onAttachmentRemove,
+//                            onSubmit = yourSubmissionComponent::onSubmit,
+//                            onCancel = yourSubmissionComponent::onCancel
+//                        )
+//                    }
+                },
+                allowEdit = allowEdit,
+                selectedTab = selectedTab,
+                onTabSelect = { selectedTab = it },
+                onEditClick = component::onEditClick,
+                onDeleteClick = component::onDeleteClick,
+                onClose = backDispatcher::back
+            )
+        }
     }
 }
 
 @Composable
-private fun CourseWorkContent(
-    childrenResource: Resource<List<CourseWorkComponent.Child>>,
+private fun CourseWorkLayout(
+    children: List<CourseWorkComponent.Child>,
     submissionContent: @Composable () -> Unit,
     allowEdit: Boolean,
     selectedTab: Int,
@@ -96,7 +103,6 @@ private fun CourseWorkContent(
         }
     }
 
-    ResourceContent(resource = childrenResource) { children ->
         Column(Modifier.fillMaxSize()) {
             CustomCenteredAppBar(navigationContent = { NavigationIconBack(onClose) }) {
                 if (children.size != 1) {
@@ -138,7 +144,6 @@ private fun CourseWorkContent(
                 }
             }
         }
-    }
 }
 
 //@Composable

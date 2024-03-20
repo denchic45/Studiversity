@@ -14,8 +14,8 @@ class UploadAttachmentToResourceUseCase(
     suspend operator fun invoke(
         resourceType: String,
         resourceId: UUID,
-        attachmentRequest: AttachmentRequest
+        request: AttachmentRequest
     ): Resource<AttachmentHeader> {
-        return attachmentRepository.addAttachmentToResource(resourceType, resourceId, attachmentRequest)
+        return attachmentRepository.addAttachmentToResource(resourceType, resourceId, request)
     }
 }

@@ -172,81 +172,6 @@ class AttachmentRepository(
         request: AttachmentRequest
     ): Resource<AttachmentHeader> = addAttachmentToResource("work-submissions", submissionId, request)
 
-//    suspend fun addAttachmentToSubmission(
-//        courseId: UUID,
-//        workId: UUID,
-//        submissionId: UUID,
-//        attachmentRequest: AttachmentRequest
-//    ): Resource<AttachmentHeader> = fetchResource {
-//        when (attachmentRequest) {
-//            is CreateFileRequest -> submissionsApi.uploadFile(
-//                courseId,
-//                workId,
-//                submissionId,
-//                attachmentRequest
-//            )
-//
-//            is CreateLinkRequest -> submissionsApi.addLink(
-//                courseId,
-//                workId,
-//                submissionId,
-//                attachmentRequest
-//            )
-//        }.onSuccess {
-//            saveAttachment(it, submissionId)
-//        }
-//    }
-
-//    suspend fun addAttachmentToMaterial(
-//        courseId: UUID,
-//        materialId: UUID,
-//        request: AttachmentRequest
-//    ): Resource<AttachmentHeader> = fetchResource {
-//        when (request) {
-//            is CreateFileRequest -> courseMaterialApi.uploadFile(
-//                courseId,
-//                materialId,
-//                request
-//            )
-//
-//            is CreateLinkRequest -> courseMaterialApi.addLink(
-//                courseId,
-//                materialId,
-//                request
-//            )
-//        }.onSuccess {
-//            saveAttachment(it, materialId)
-//        }
-//    }
-
-//    suspend fun removeFromCourseWork(
-//        attachmentId: UUID,
-//        courseId: UUID,
-//        workId: UUID
-//    ): EmptyResource = fetchResource {
-//        courseWorkApi.deleteAttachment(courseId, workId, attachmentId)
-//            .onSuccess { removeAttachmentLocally(attachmentId, workId) }
-//    }
-
-//    suspend fun removeFromSubmission(
-//        attachmentId: UUID,
-//        courseId: UUID,
-//        workId: UUID,
-//        submissionId: UUID
-//    ): EmptyResource = fetchResource {
-//        submissionsApi.deleteAttachment(courseId, workId, submissionId, attachmentId)
-//            .onSuccess { removeAttachmentLocally(attachmentId, workId) }
-//    }
-
-//    suspend fun removeFromCourseMaterial(
-//        attachmentId: UUID,
-//        courseId: UUID,
-//        materialId: UUID
-//    ): EmptyResource = fetchResource {
-//        courseMaterialApi.deleteAttachment(courseId, materialId, attachmentId)
-//            .onSuccess { removeAttachmentLocally(attachmentId, materialId) }
-//    }
-
     private suspend fun removeAttachmentLocally(attachmentId: UUID, referenceId: UUID) {
         attachmentReferenceLocalDataSource.delete(
             attachmentId.toString(),
@@ -274,12 +199,4 @@ class AttachmentRepository(
     suspend fun removeFromSubmission(submissionId: UUID, attachmentId: UUID): EmptyResource {
         return removeFromResource("work-submissions", submissionId, attachmentId)
     }
-
-//    suspend fun removeAttachmentByReferenceId(
-//        courseId: UUID,
-//        workId: UUID, attachmentId: UUID,
-//    ) = fetchResource {
-//
-//        courseWorkApi.deleteAttachmentFromWork(courseId, workId, attachmentId)
-//    }
 }

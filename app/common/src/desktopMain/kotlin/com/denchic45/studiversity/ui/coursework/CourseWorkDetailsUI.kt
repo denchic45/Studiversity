@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsComponent
 import com.denchic45.studiversity.ui.model.AttachmentItem
@@ -146,6 +147,13 @@ fun CourseWorkHeader(
             }
         }
     }
+}
+
+@Composable
+fun CourseWorkAttachments(component: AttachmentsComponent) {
+    val attachments by component.attachments.collectAsState()
+
+
 }
 
 @Preview

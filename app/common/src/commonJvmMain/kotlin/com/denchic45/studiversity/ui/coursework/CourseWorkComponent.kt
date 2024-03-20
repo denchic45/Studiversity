@@ -2,14 +2,16 @@ package com.denchic45.studiversity.ui.coursework
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.denchic45.studiversity.domain.model.FileState
+import com.denchic45.studiversity.domain.model.Attachment2
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
+import com.denchic45.studiversity.domain.usecase.FindCourseWorkAttachmentsUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveCourseElementUseCase
+import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsComponent
@@ -21,6 +23,7 @@ import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -31,6 +34,7 @@ import java.util.*
 
 @Inject
 class CourseWorkComponent(
+    private val findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
     private val downloadFileUseCase: DownloadFileUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
@@ -50,6 +54,7 @@ class CourseWorkComponent(
         elementId: UUID,
         ComponentContext,
     ) -> YourSubmissionComponent,
+    attachmentsComponent: (attachments: Flow<Resource<List<Attachment2>>>) -> AttachmentsComponent,
     @Assisted
     private val onEditorOpen: (courseId: UUID, elementId: UUID?) -> Unit,
     @Assisted
@@ -57,7 +62,7 @@ class CourseWorkComponent(
     @Assisted
     private val courseId: UUID,
     @Assisted
-    private val elementId: UUID,
+    private val workId: UUID,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext, EmptyChildrenContainer {
@@ -77,13 +82,15 @@ class CourseWorkComponent(
 
     val yourSubmissionComponent = _yourSubmissionComponent(
         courseId,
-        elementId,
+        workId,
         componentContext.childContext("yourSubmission")
     )
 
+    val attachmentsComponent = attachmentsComponent(findCourseWorkAttachmentsUseCase(workId))
+
     private val courseWorkDetailsComponent = _courseWorkDetailsComponent(
         courseId,
-        elementId,
+        workId,
         childContext("details")
     )
 
@@ -105,7 +112,7 @@ class CourseWorkComponent(
                         Child.Submissions(
                             _courseWorkSubmissionsComponent(
                                 courseId,
-                                elementId,
+                                workId,
                                 childContext("submissions")
                             )
                         )
@@ -116,7 +123,7 @@ class CourseWorkComponent(
     }.stateInResource(componentScope)
 
     fun onEditClick() {
-        onEditorOpen(courseId, elementId)
+        onEditorOpen(courseId, workId)
     }
 
     fun onDeleteClick() {
@@ -129,7 +136,7 @@ class CourseWorkComponent(
 
         componentScope.launch {
             if (confirmDialogInteractor.receiveConfirm()) {
-                removeCourseElementUseCase(courseId, elementId).onSuccess {
+                removeCourseElementUseCase(courseId, workId).onSuccess {
                     withContext(Dispatchers.Main) {
                         onFinish()
                     }
@@ -138,22 +145,22 @@ class CourseWorkComponent(
         }
     }
 
-    fun onAttachmentClick(item: AttachmentItem) {
-        when (item) {
-            is AttachmentItem.FileAttachmentItem -> when (item.state) {
-                FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
-                FileState.Preview, FileState.FailDownload -> componentScope.launch {
-                    downloadFileUseCase(item.attachmentId)
-                }
-
-                else -> {}
-            }
-
-            is AttachmentItem.LinkAttachmentItem -> componentScope.launch {
-                openAttachment.emit(item)
-            }
-        }
-    }
+//    fun onAttachmentClick(item: AttachmentItem) {
+//        when (item) {
+//            is AttachmentItem.FileAttachmentItem -> when (item.state) {
+//                FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
+//                FileState.Preview, FileState.FailDownload -> componentScope.launch {
+//                    downloadFileUseCase(item.attachmentId)
+//                }
+//
+//                else -> {}
+//            }
+//
+//            is AttachmentItem.LinkAttachmentItem -> componentScope.launch {
+//                openAttachment.emit(item)
+//            }
+//        }
+//    }
 
     sealed class Child(val title: String) {
         class Details(val component: CourseWorkDetailsComponent) : Child("Задание")
