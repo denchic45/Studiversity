@@ -22,15 +22,14 @@ class AttachmentsComponent(
     @Assisted
     attachments: Flow<Resource<List<Attachment2>>>,
     @Assisted
-    private val onAddAttachment: (AttachmentRequest) -> Unit = {},
+    private val onAddAttachment: ((AttachmentRequest) -> Unit)?,
     @Assisted
-    private val onRemoveAttachment: (UUID) -> Unit = {},
+    private val onRemoveAttachment: ((UUID) -> Unit)?,
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
     val attachments = attachments.stateInResource(componentScope)
-
 
     val openAttachment = MutableSharedFlow<AttachmentItem>()
 
@@ -51,15 +50,11 @@ class AttachmentsComponent(
         }
     }
 
-//    suspend fun uploadAttachmentByResource(attachmentRequest: AttachmentRequest): Resource<AttachmentHeader> {
-//        return uploadAttachmentToResourceUseCase(resourceType, resourceId, attachmentRequest)
-//    }
-
     fun onRemoveClick(attachmentId: UUID) {
-
+        onRemoveAttachment?.invoke(attachmentId)
     }
 
     fun onAddAttachmentClick(request: AttachmentRequest) {
-        onAddAttachment(request)
+        onAddAttachment?.invoke(request)
     }
 }

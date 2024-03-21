@@ -3,6 +3,7 @@ package com.denchic45.studiversity.ui.coursework.yourSubmission
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.backhandler.BackCallback
+import com.denchic45.studiversity.domain.model.Attachment2
 import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
@@ -10,7 +11,7 @@ import com.denchic45.studiversity.ui.coursework.SubmissionUiState
 import com.denchic45.studiversity.ui.coursework.toUiState
 import com.denchic45.studiversity.ui.model.toAttachmentItems
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.attachment.AttachmentResource
+import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.api.role.model.Capability
@@ -26,13 +27,18 @@ import java.util.*
 @Inject
 class YourSubmissionComponent(
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
+    private val addAttachmentToSubmissionUseCase: AddAttachmentToSubmissionUseCase,
+    private val removeAttachmentFromSubmissionUseCase: RemoveAttachmentFromSubmissionUseCase,
     private val findYourSubmissionUseCase: FindYourSubmissionUseCase,
     private val findSubmissionAttachmentsUseCase: FindSubmissionAttachmentsUseCase,
-//    private val uploadAttachmentToSubmissionUseCase: UploadAttachmentToSubmissionUseCase,
-//    private val removeAttachmentFromSubmissionUseCase: RemoveAttachmentFromSubmissionUseCase,
     private val submitSubmissionUseCase: SubmitSubmissionUseCase,
     private val cancelSubmissionUseCase: CancelSubmissionUseCase,
-    _attachmentsComponent: (String, UUID, ComponentContext) -> AttachmentsComponent,
+    attachmentsComponent: (
+        attachments: Flow<Resource<List<Attachment2>>>,
+        onAddAttachment: ((AttachmentRequest) -> Unit)?,
+        onRemoveAttachment: ((UUID) -> Unit)?,
+        ComponentContext
+    ) -> AttachmentsComponent,
     @Assisted
     private val courseId: UUID,
     @Assisted
@@ -64,19 +70,16 @@ class YourSubmissionComponent(
 
     private val attachmentsComponentResource = _observeYourSubmission
         .filterNotNullValue()
-        .mapResource {
-            _attachmentsComponent(AttachmentResource.SUBMISSION, it.id, componentContext.childContext("Attachments"))
+        .mapResource { submission ->
+            attachmentsComponent(
+                findSubmissionAttachmentsUseCase(submission.id),
+                { componentScope.launch { addAttachmentToSubmissionUseCase(submission.id, it) } },
+                { componentScope.launch { removeAttachmentFromSubmissionUseCase(submission.id, it) } },
+                componentContext.childContext("Attachments")
+            )
         }
 
     private val attachmentComponentFlow = attachmentsComponentResource.filterSuccess().mapToValue()
-
-    private suspend fun attachmentComponent() = attachmentComponentFlow.first()
-
-//    private val _attachments = _observeYourSubmission
-//        .filterNotNullValue()
-//        .flatMapResourceFlow {
-//            findSubmissionAttachmentsUseCase(courseId, workId, it.id)
-//        }.shareIn(componentScope, SharingStarted.Lazily)
 
     val submission = MutableStateFlow<Resource<SubmissionUiState>>(Resource.Loading)
 
@@ -111,7 +114,7 @@ class YourSubmissionComponent(
         submission.value.onSuccess { submissionUiState ->
             componentScope.launch {
                 paths.map { path ->
-                    attachmentComponent().uploadAttachmentByResource(CreateFileRequest(path.toFile()))
+                    addAttachmentToSubmissionUseCase(submissionUiState.id, CreateFileRequest(path.toFile()))
                         .onSuccess {
                             println("success load: $it")
                         }.onFailure {
@@ -123,10 +126,9 @@ class YourSubmissionComponent(
     }
 
     fun onAttachmentRemove(attachmentId: UUID) {
-        submission.value.onSuccess {
+        submission.value.onSuccess { submission ->
             componentScope.launch {
-                attachmentComponent().removeAttachment(attachmentId) // TODO потом поменять способ удаления
-//                removeAttachmentFromSubmissionUseCase(attachmentId, courseId, workId, it.id)
+                removeAttachmentFromSubmissionUseCase(submission.id, attachmentId)
             }
         }
     }

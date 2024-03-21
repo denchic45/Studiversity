@@ -21,6 +21,7 @@ import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
+import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -54,7 +55,12 @@ class CourseWorkComponent(
         elementId: UUID,
         ComponentContext,
     ) -> YourSubmissionComponent,
-    attachmentsComponent: (attachments: Flow<Resource<List<Attachment2>>>) -> AttachmentsComponent,
+    attachmentsComponent: (
+        attachments: Flow<Resource<List<Attachment2>>>,
+        onAddAttachment: ((AttachmentRequest) -> Unit)?,
+        onRemoveAttachment: ((UUID) -> Unit)?,
+        ComponentContext
+    ) -> AttachmentsComponent,
     @Assisted
     private val onEditorOpen: (courseId: UUID, elementId: UUID?) -> Unit,
     @Assisted
@@ -86,7 +92,9 @@ class CourseWorkComponent(
         componentContext.childContext("yourSubmission")
     )
 
-    val attachmentsComponent = attachmentsComponent(findCourseWorkAttachmentsUseCase(workId))
+    val attachmentsComponent = attachmentsComponent(
+        findCourseWorkAttachmentsUseCase(workId), null, null, childContext("Attachments")
+    )
 
     private val courseWorkDetailsComponent = _courseWorkDetailsComponent(
         courseId,
