@@ -90,7 +90,8 @@ class AttachmentRepository(
         attachmentLocalDataSource.upsert(
             when (attachment) {
                 is FileAttachmentHeader -> Attachment(
-                    attachment_id = attachment.id.toString(),
+                    attachment_id = UUID.randomUUID().toString(),
+                    server_id = attachment.id.toString(),
                     attachment_name = attachment.name,
                     url = null,
                     thumbnail_url = null,
@@ -101,7 +102,8 @@ class AttachmentRepository(
                 )
 
                 is LinkAttachmentHeader -> Attachment(
-                    attachment_id = attachment.id.toString(),
+                    attachment_id = UUID.randomUUID().toString(),
+                    server_id = attachment.id.toString(),
                     attachment_name = attachment.name,
                     url = attachment.url,
                     thumbnail_url = attachment.thumbnailUrl,

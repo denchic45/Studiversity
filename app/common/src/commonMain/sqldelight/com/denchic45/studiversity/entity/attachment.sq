@@ -3,6 +3,7 @@ import kotlin.Boolean;
 
 CREATE TABLE attachment (
 attachment_id TEXT NOT NULL UNIQUE PRIMARY KEY,
+server_id TEXT NOT NULL UNIQUE,
 attachment_name TEXT NOT NULL,
 url TEXT,
 thumbnail_url TEXT,
@@ -15,7 +16,7 @@ sync INTEGER AS Boolean NOT NULL
 upsert:
 INSERT INTO attachment
 VALUES ?
-ON CONFLICT(attachment_id)
+ON CONFLICT(attachment_id, server_id)
 DO UPDATE SET
 attachment_name = excluded.attachment_name,
 url = excluded.url,
