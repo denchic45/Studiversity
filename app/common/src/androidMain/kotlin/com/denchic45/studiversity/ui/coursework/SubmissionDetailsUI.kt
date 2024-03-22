@@ -1,33 +1,14 @@
-package com.denchic45.studiversity.ui.coursework.submissiondetails
+package com.denchic45.studiversity.ui.coursework
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Attachment
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,10 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.denchic45.studiversity.domain.resource.onLoading
 import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.attachment.AttachmentListItem
+import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.component.HeaderItemUI
-import com.denchic45.studiversity.ui.coursework.SubmissionHeaderContent
-import com.denchic45.studiversity.ui.coursework.SubmissionUiState
+import com.denchic45.studiversity.ui.coursework.submissiondetails.SubmissionDetailsComponent
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.search.UserListItem
@@ -55,7 +37,7 @@ import com.denchic45.studiversity.util.AttachmentViewer
 import com.denchic45.studiversity.util.collectWithLifecycle
 import com.denchic45.studiversity.util.findActivity
 import com.denchic45.studiversity.util.rememberImeState
-import java.util.UUID
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,26 +45,13 @@ fun SubmissionDetailsScreen(
     component: SubmissionDetailsComponent,
     onDismissRequest: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val attachmentViewer by lazy {
-        AttachmentViewer(context.findActivity()) {
-            Toast.makeText(
-                context,
-                "Невозможно открыть файл на данном устройстве",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
+    val attachmentsComponent = remember { component.attachmentsComponent }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
 //    val uiStateResource by component.submissionState.collectAsState()
 //    val allowGrade by component.allowGradeSubmission.collectAsState()
     val uiStateResource by component.uiState.collectAsState()
-
-    component.openAttachment.collectWithLifecycle {
-        attachmentViewer.openAttachment(it)
-    }
 
     uiStateResource.onSuccess { uiState ->
         ModalBottomSheet(
@@ -98,7 +67,7 @@ fun SubmissionDetailsScreen(
                     },
                     modifier = Modifier.padding(vertical = MaterialTheme.spacing.normal)
                 )
-                SubmissionDetailsContent(uiState.first, component::onAttachmentClick)
+                SubmissionAttachments(attachmentsComponent)
                 Spacer(Modifier.height(MaterialTheme.spacing.normal))
                 if (uiState.second)
                     SubmissionGradeContent(
@@ -109,7 +78,7 @@ fun SubmissionDetailsScreen(
             }
         }
     }.onLoading {
-        AlertDialog(onDismissRequest = {}) {
+        BasicAlertDialog(onDismissRequest = {}) {
             Surface(
                 modifier = Modifier
                     .wrapContentWidth()
@@ -165,16 +134,38 @@ private fun SubmissionGradeContent(
 }
 
 @Composable
-fun SubmissionDetailsContent(
-    uiState: SubmissionUiState,
+fun SubmissionAttachments(component: AttachmentsComponent) {
+    val state by component.attachments.collectAsState()
+    val context = LocalContext.current
+    val attachmentViewer = remember {
+        AttachmentViewer(context.findActivity()) {
+            Toast.makeText(
+                context,
+                "Невозможно открыть файл на данном устройстве",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    component.openAttachment.collectWithLifecycle {
+        attachmentViewer.openAttachment(it)
+    }
+    ResourceContent(state) {
+        SubmissionAttachmentsContent(attachments = it, onAttachmentClick = component::onAttachmentClick)
+    }
+}
+
+@Composable
+fun SubmissionAttachmentsContent(
+    attachments: List<AttachmentItem>,
     onAttachmentClick: (AttachmentItem) -> Unit,
     onAttachmentRemove: ((attachmentId: UUID) -> Unit)? = null,
 ) {
     Column {
         HeaderItemUI(name = "Прикрепленные файлы")
-        if (uiState.attachments.isNotEmpty()) {
+        if (attachments.isNotEmpty()) {
             LazyRow(Modifier) {
-                items(uiState.attachments, key = { it.attachmentId.toString() }) { item ->
+                items(attachments, key = { it.attachmentId.toString() }) { item ->
                     Spacer(Modifier.width(MaterialTheme.spacing.normal))
                     AttachmentListItem(
                         item = item,

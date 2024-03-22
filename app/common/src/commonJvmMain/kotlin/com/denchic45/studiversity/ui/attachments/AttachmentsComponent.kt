@@ -4,9 +4,12 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.domain.model.Attachment2
 import com.denchic45.studiversity.domain.model.FileState
 import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
 import com.denchic45.studiversity.ui.model.AttachmentItem
+import com.denchic45.studiversity.ui.model.toAttachmentItems
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +32,7 @@ class AttachmentsComponent(
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
-    val attachments = attachments.stateInResource(componentScope)
+    val attachments = attachments.mapResource { it.toAttachmentItems() }.stateInResource(componentScope)
 
     val openAttachment = MutableSharedFlow<AttachmentItem>()
 
@@ -49,6 +52,9 @@ class AttachmentsComponent(
             }
         }
     }
+
+    fun isEmpty() = attachments.mapResource { it.isEmpty() }
+        .stateInResource(componentScope, initialValue = resourceOf(false))
 
     fun onRemoveClick(attachmentId: UUID) {
         onRemoveAttachment?.invoke(attachmentId)

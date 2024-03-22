@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.coursework.submissions
+package com.denchic45.studiversity.ui.coursework
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.ui.coursework.submissiondetails.SubmissionDetailsScreen
+import com.denchic45.studiversity.ui.coursework.submissions.CourseWorkSubmissionsComponent
 import com.denchic45.studiversity.ui.search.UserAvatarImage
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
@@ -80,7 +80,6 @@ private fun SubmissionsContent(
                     trailingContent = {
                         val updatedAt = submission.updatedAt?.toString("dd MMM")
                         val text = when (submission.state) {
-                            SubmissionState.NEW,
                             SubmissionState.CREATED -> "Не сдано"
 
                             SubmissionState.SUBMITTED -> "Сдано $updatedAt"

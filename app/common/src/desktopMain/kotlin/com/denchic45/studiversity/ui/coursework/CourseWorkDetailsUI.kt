@@ -1,20 +1,11 @@
 package com.denchic45.studiversity.ui.coursework
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -25,7 +16,6 @@ import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsComponent
-import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.theme.CommonAppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
@@ -35,7 +25,7 @@ import com.denchic45.stuiversity.util.toString
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.UUID
+import java.util.*
 
 
 @Composable
@@ -46,7 +36,18 @@ fun CourseWorkDetailsScreen(
     onDeleteClick: () -> Unit
 ) {
     val workResource by component.courseWork.collectAsState()
-    val attachmentsResource by component.attachments.collectAsState()
+    val attachmentsComponent = remember { component.attachmentsComponent }
+
+    TODO("create attachment viewer for desktop")
+//    val attachmentViewer by lazy {
+//        AttachmentViewer(context.findActivity()) {
+//            Toast.makeText(
+//                context,
+//                "Невозможно открыть файл на данном устройстве",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }
+//    }
 
 //    val attachmentViewer by lazy {
 //        AttachmentViewer(context.findActivity()) {
@@ -64,8 +65,7 @@ fun CourseWorkDetailsScreen(
 
     CourseWorkDetailsContent(
         workResource = workResource,
-        attachmentsResource = attachmentsResource,
-        onAttachmentClick = component::onAttachmentClick,
+        attachmentsContent = {},
         allowEdit = allowEdit,
         onEditClick = onEditClick,
         onDeleteClick = onDeleteClick
@@ -76,8 +76,7 @@ fun CourseWorkDetailsScreen(
 fun CourseWorkDetailsContent(
     workResource: Resource<CourseWorkResponse>,
     allowEdit: Boolean,
-    attachmentsResource: Resource<List<AttachmentItem>>,
-    onAttachmentClick: (item: AttachmentItem) -> Unit,
+    attachmentsContent: @Composable () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
@@ -93,6 +92,7 @@ fun CourseWorkDetailsContent(
                 onEditClick = onEditClick,
                 onDeleteClick = onDeleteClick
             )
+            attachmentsContent()
         }
     }
 }
@@ -178,8 +178,7 @@ fun CourseWorkDetailsPreview() {
                 )
             ),
             allowEdit = true,
-            attachmentsResource = resourceOf(),
-            onAttachmentClick = {},
+            attachmentsContent = {},
             onEditClick = {},
             onDeleteClick = {}
         )

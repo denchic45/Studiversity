@@ -1,19 +1,18 @@
 package com.denchic45.studiversity.ui.coursework.details
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.model.FileState
-import com.denchic45.studiversity.domain.resource.mapResource
+import com.arkivanov.decompose.childContext
+import com.denchic45.studiversity.domain.model.Attachment2
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
 import com.denchic45.studiversity.domain.usecase.FindCourseWorkAttachmentsUseCase
 import com.denchic45.studiversity.domain.usecase.FindCourseWorkUseCase
-import com.denchic45.studiversity.ui.model.AttachmentItem
-import com.denchic45.studiversity.ui.model.toAttachmentItems
+import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.util.componentScope
-import kotlinx.coroutines.flow.MutableSharedFlow
+import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*
@@ -22,9 +21,12 @@ import java.util.*
 class CourseWorkDetailsComponent(
     private val findCourseWorkUseCase: FindCourseWorkUseCase,
     findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
-    private val downloadFileUseCase: DownloadFileUseCase,
-    @Assisted
-    private val courseId: UUID,
+    attachmentsComponent: (
+        attachments: Flow<Resource<List<Attachment2>>>,
+        onAddAttachment: ((AttachmentRequest) -> Unit)?,
+        onRemoveAttachment: ((UUID) -> Unit)?,
+        ComponentContext
+    ) -> AttachmentsComponent,
     @Assisted
     private val elementId: UUID,
     @Assisted
@@ -34,23 +36,8 @@ class CourseWorkDetailsComponent(
 
     val courseWork = flow { emit(findCourseWorkUseCase(elementId)) }
         .stateInResource(componentScope, SharingStarted.Eagerly)
-    val attachments = findCourseWorkAttachmentsUseCase(elementId)
-        .mapResource { it.toAttachmentItems() }
-        .stateInResource(componentScope, SharingStarted.Eagerly)
 
-    val openAttachment = MutableSharedFlow<AttachmentItem>()
-
-    fun onAttachmentClick(item: AttachmentItem) {
-        componentScope.launch {
-            when (item) {
-                is AttachmentItem.FileAttachmentItem -> when (item.state) {
-                    FileState.Downloaded -> openAttachment.emit(item)
-                    FileState.FailDownload, FileState.Preview -> downloadFileUseCase(item.attachmentId)
-                    else -> {}
-                }
-
-                is AttachmentItem.LinkAttachmentItem -> openAttachment.emit(item)
-            }
-        }
-    }
+    val attachmentsComponent = attachmentsComponent(
+        findCourseWorkAttachmentsUseCase(elementId), null, null, childContext("Attachments")
+    )
 }

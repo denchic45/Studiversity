@@ -3,14 +3,15 @@ package com.denchic45.studiversity.domain.usecase
 import com.denchic45.studiversity.data.repository.SubmissionRepository
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
+import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
-class FindYourSubmissionUseCase(
+class ObserveYourSubmissionUseCase(
     private val submissionRepository: SubmissionRepository
 ) {
-    suspend operator fun invoke(courseId: UUID, workId: UUID): Resource<SubmissionResponse> {
+    operator fun invoke(courseId: UUID, workId: UUID): Flow<Resource<SubmissionResponse>> {
         return submissionRepository.findOwnSubmissionByWork(courseId, workId)
     }
 }

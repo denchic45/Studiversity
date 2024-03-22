@@ -9,10 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.main.CustomCenteredAppBar
 import com.denchic45.studiversity.ui.main.NavigationIconBack
@@ -22,13 +21,12 @@ import com.denchic45.studiversity.ui.theme.spacing
 @Composable
 fun CourseWorkScreen(component: CourseWorkComponent) {
     val childrenResource by component.children.collectAsState()
-
     val backDispatcher = LocalBackDispatcher.current
 
-    val attachmentsComponent = remember { component.attachmentsComponent }
-    val yourSubmissionComponent = component.yourSubmissionComponent
-    val submissionResource by yourSubmissionComponent.submission.collectAsState()
-    val hasSubmission by yourSubmissionComponent.hasSubmission.collectAsState()
+    val yourSubmissionComponent by component.yourSubmissionComponent.collectAsState()
+
+//    val submissionResource by yourSubmissionComponent.submission.collectAsState()
+//    val hasSubmission by yourSubmissionComponent.hasSubmission.collectAsState()
 
     var showFilePicker by remember { mutableStateOf(false) }
 
@@ -44,23 +42,24 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
 //    }
 
 
+    val allowEdit by component.allowEditWork.collectAsState()
 
-    val allowEdit by component.allowEditWork.collectAsState(initial = false)
-
-    LaunchedEffect(Unit) {
-        component.openAttachment.collect {
-            TODO("Open attachment")
-        }
-    }
+//    LaunchedEffect(Unit) {
+//        component.openAttachment.collect {
+//            TODO("Open attachment")
+//        }
+//    }
 
     var selectedTab by remember { mutableStateOf(0) }
 
     Row(Modifier.widthIn(max = 960.dp)) {
-        ResourceContent(childrenResource) { children->
+        ResourceContent(childrenResource) { children ->
             CourseWorkLayout(
                 children = children,
                 submissionContent = {
-                    YourSubmissionBlock(yourSubmissionComponent)
+                    yourSubmissionComponent.onSuccess { component ->
+                        component?.let { YourSubmissionBlock(it) }
+                    }
 //                    if (hasSubmission.takeValueIfSuccess() == true) {
 //                        SubmissionPanel(
 //                            resource = submissionResource,
@@ -74,7 +73,7 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
 //                        )
 //                    }
                 },
-                allowEdit = allowEdit,
+                allowEdit = allowEdit.takeValueIfSuccess() == true,
                 selectedTab = selectedTab,
                 onTabSelect = { selectedTab = it },
                 onEditClick = component::onEditClick,
@@ -103,47 +102,47 @@ private fun CourseWorkLayout(
         }
     }
 
-        Column(Modifier.fillMaxSize()) {
-            CustomCenteredAppBar(navigationContent = { NavigationIconBack(onClose) }) {
-                if (children.size != 1) {
-                    TabRow(
-                        selectedTabIndex = selectedTab,
-                        indicator = { tabPositions ->
-                            TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab]))
-                        },
-                        divider = {}
-                    ) {
-                        // Add tabs for all of our pages
-                        children.forEachIndexed { index, child ->
-                            Tab(
-                                text = { Text(child.title) },
-                                selected = selectedTab == index,
-                                onClick = { onTabSelect(index) },
-                            )
-                        }
-                    }
-                }
-            }
-
-            Box(modifier = Modifier.fillMaxSize()) {
-                when (val child = children[selectedTab]) {
-                    is CourseWorkComponent.Child.Details -> Row {
-                        CourseWorkDetailsScreen(
-                            component = child.component,
-                            allowEdit = allowEdit,
-                            onEditClick = onEditClick,
-                            onDeleteClick = onDeleteClick
+    Column(Modifier.fillMaxSize()) {
+        CustomCenteredAppBar(navigationContent = { NavigationIconBack(onClose) }) {
+            if (children.size != 1) {
+                TabRow(
+                    selectedTabIndex = selectedTab,
+                    indicator = { tabPositions ->
+                        TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab]))
+                    },
+                    divider = {}
+                ) {
+                    // Add tabs for all of our pages
+                    children.forEachIndexed { index, child ->
+                        Tab(
+                            text = { Text(child.title) },
+                            selected = selectedTab == index,
+                            onClick = { onTabSelect(index) },
                         )
-                        Spacer(Modifier.width(MaterialTheme.spacing.normal))
-                        submissionContent()
-                    }
-
-                    is CourseWorkComponent.Child.Submissions -> {
-                        CourseWorkSubmissionsScreen(child.component)
                     }
                 }
             }
         }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (val child = children[selectedTab]) {
+                is CourseWorkComponent.Child.Details -> Row {
+                    CourseWorkDetailsScreen(
+                        component = child.component,
+                        allowEdit = allowEdit,
+                        onEditClick = onEditClick,
+                        onDeleteClick = onDeleteClick
+                    )
+                    Spacer(Modifier.width(MaterialTheme.spacing.normal))
+                    submissionContent()
+                }
+
+                is CourseWorkComponent.Child.Submissions -> {
+                    CourseWorkSubmissionsScreen(child.component)
+                }
+            }
+        }
+    }
 }
 
 //@Composable

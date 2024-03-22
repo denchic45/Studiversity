@@ -1,14 +1,16 @@
 package com.denchic45.studiversity.ui.coursework.submissiondetails
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.model.FileState
+import com.arkivanov.decompose.childContext
+import com.denchic45.studiversity.domain.model.Attachment2
 import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.usecase.*
+import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.coursework.SubmissionUiState
 import com.denchic45.studiversity.ui.coursework.toUiState
-import com.denchic45.studiversity.ui.model.AttachmentItem
-import com.denchic45.studiversity.ui.model.toAttachmentItems
 import com.denchic45.studiversity.util.componentScope
+import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
+import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,11 +22,16 @@ import java.util.*
 @Inject
 class SubmissionDetailsComponent(
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
-    private val downloadFileUseCase: DownloadFileUseCase,
     private val findSubmissionByIdUseCase: FindSubmissionByIdUseCase,
     findSubmissionAttachmentsUseCase: FindSubmissionAttachmentsUseCase,
     private val gradeSubmissionUseCase: GradeSubmissionUseCase,
     private val cancelGradeSubmissionUseCase: CancelGradeSubmissionUseCase,
+    attachmentsComponent: (
+        attachments: Flow<Resource<List<Attachment2>>>,
+        onAddAttachment: ((AttachmentRequest) -> Unit)?,
+        onRemoveAttachment: ((UUID) -> Unit)?,
+        ComponentContext
+    ) -> AttachmentsComponent,
     @Assisted
     private val courseId: UUID,
     @Assisted
@@ -36,6 +43,10 @@ class SubmissionDetailsComponent(
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
+
+    val attachmentsComponent = attachmentsComponent(
+        findSubmissionAttachmentsUseCase(workId), null, null, childContext("Attachments")
+    )
 
     private val capabilities = checkUserCapabilitiesInScopeUseCase(
         scopeId = courseId, capabilities = listOf(Capability.GradeSubmission)
@@ -49,12 +60,8 @@ class SubmissionDetailsComponent(
         emit(findSubmissionByIdUseCase(submissionId))
     }.shareIn(componentScope, SharingStarted.Lazily, 1)
 
-    private val attachments = findSubmissionAttachmentsUseCase(submissionId)
-        .shareIn(componentScope, SharingStarted.Lazily)
 
     private val submissionState = MutableStateFlow<Resource<SubmissionUiState>>(resourceOf())
-
-    val openAttachment = MutableSharedFlow<AttachmentItem>()
 
     val uiState = combine(
         submissionState,
@@ -64,32 +71,7 @@ class SubmissionDetailsComponent(
 
     init {
         componentScope.launch {
-            submissionState.emitAll(
-                combine(submission, attachments) { submissionRes, attachmentsRes ->
-                    submissionRes.mapResource { submission ->
-                        attachmentsRes.map { attachments ->
-                            submission.toUiState(attachments.toAttachmentItems())
-                        }
-                    }
-                }
-            )
-        }
-    }
-
-    fun onAttachmentClick(item: AttachmentItem) {
-        when (item) {
-            is AttachmentItem.FileAttachmentItem -> when (item.state) {
-                FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
-                FileState.Preview, FileState.FailDownload -> componentScope.launch {
-                    downloadFileUseCase(item.attachmentId)
-                }
-
-                else -> {}
-            }
-
-            is AttachmentItem.LinkAttachmentItem -> componentScope.launch {
-                openAttachment.emit(item)
-            }
+            submissionState.emitAll(submission.mapResource(SubmissionResponse::toUiState))
         }
     }
 

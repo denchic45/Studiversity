@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.ui
 
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,7 +18,6 @@ fun CardContent(modifier: Modifier = Modifier, content: @Composable () -> Unit) 
         shape = RoundedCornerShape(16.dp),
         modifier = modifier.fillMaxHeight()
             .padding(end = MaterialTheme.spacing.normal, bottom = MaterialTheme.spacing.normal),
-//            .padding(MaterialTheme.spacing.medium),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
@@ -41,7 +41,7 @@ fun SurfaceContent(modifier: Modifier = Modifier, content: @Composable () -> Uni
 }
 
 @Composable
-fun BlockContent(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun BlockContent(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Surface(
         tonalElevation = (-1).dp,
         color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),

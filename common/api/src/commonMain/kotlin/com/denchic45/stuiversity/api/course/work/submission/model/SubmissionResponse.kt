@@ -9,14 +9,15 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Serializable(SubmissionSerializer::class)
-sealed class SubmissionResponse {
-    abstract val id: UUID
-    abstract val author: Author
-    abstract val state: SubmissionState
-    abstract val courseWorkId: UUID
-    abstract val content: SubmissionContent
-    abstract val updatedAt: LocalDateTime?
-    abstract val grade: GradeResponse?
+sealed interface SubmissionResponse {
+    val id: UUID
+    val author: Author
+    val state: SubmissionState
+    val courseWorkId: UUID
+    val content: SubmissionContent
+    val updatedAt: LocalDateTime?
+    val grade: GradeResponse?
+    val late: Boolean
 }
 
 @Serializable
@@ -31,7 +32,8 @@ data class WorkSubmissionResponse(
     @Serializable(LocalDateTimeSerializer::class)
     override val updatedAt: LocalDateTime?,
     override val grade: GradeResponse? = null,
-) : SubmissionResponse()
+    override val late: Boolean
+) : SubmissionResponse
 
 @Serializable(SubmissionContentSerializer::class)
 sealed interface SubmissionContent {
@@ -46,12 +48,11 @@ data class WorkSubmissionContent(
 }
 
 enum class SubmissionState {
-    NEW, CREATED, SUBMITTED, CANCELED_BY_AUTHOR;
+    CREATED, SUBMITTED, CANCELED_BY_AUTHOR;
 
     companion object {
 
         fun notSubmitted() = listOf(
-            NEW,
             CREATED,
             CANCELED_BY_AUTHOR
         )

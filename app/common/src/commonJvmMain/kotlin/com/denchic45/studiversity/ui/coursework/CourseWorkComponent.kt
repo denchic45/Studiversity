@@ -2,31 +2,21 @@ package com.denchic45.studiversity.ui.coursework
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.denchic45.studiversity.domain.model.Attachment2
-import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
-import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
-import com.denchic45.studiversity.domain.usecase.FindCourseWorkAttachmentsUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveCourseElementUseCase
-import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsComponent
 import com.denchic45.studiversity.ui.coursework.submissions.CourseWorkSubmissionsComponent
 import com.denchic45.studiversity.ui.coursework.yourSubmission.YourSubmissionComponent
-import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
@@ -35,32 +25,24 @@ import java.util.*
 
 @Inject
 class CourseWorkComponent(
-    private val findCourseWorkAttachmentsUseCase: FindCourseWorkAttachmentsUseCase,
-    private val downloadFileUseCase: DownloadFileUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val removeCourseElementUseCase: RemoveCourseElementUseCase,
-    _courseWorkDetailsComponent: (
-        courseId: UUID,
+    courseWorkDetailsComponent: (
         elementId: UUID,
         ComponentContext,
     ) -> CourseWorkDetailsComponent,
-    private val _courseWorkSubmissionsComponent: (
+    private val courseWorkSubmissionsComponent: (
         courseId: UUID,
         elementId: UUID,
         ComponentContext,
     ) -> CourseWorkSubmissionsComponent,
-    _yourSubmissionComponent: (
+    yourSubmissionComponent: (
         courseId: UUID,
-        elementId: UUID,
+        workId: UUID,
         ComponentContext,
     ) -> YourSubmissionComponent,
-    attachmentsComponent: (
-        attachments: Flow<Resource<List<Attachment2>>>,
-        onAddAttachment: ((AttachmentRequest) -> Unit)?,
-        onRemoveAttachment: ((UUID) -> Unit)?,
-        ComponentContext
-    ) -> AttachmentsComponent,
+
     @Assisted
     private val onEditorOpen: (courseId: UUID, elementId: UUID?) -> Unit,
     @Assisted
@@ -75,8 +57,6 @@ class CourseWorkComponent(
 
     private val componentScope = componentScope()
 
-    val openAttachment = MutableSharedFlow<AttachmentItem>()
-
     private val capabilities = checkUserCapabilitiesInScopeUseCase(
         scopeId = courseId,
         capabilities = listOf(
@@ -86,42 +66,36 @@ class CourseWorkComponent(
         )
     ).stateInResource(componentScope)
 
-    val yourSubmissionComponent = _yourSubmissionComponent(
-        courseId,
+    val yourSubmissionComponent = capabilities.mapResource {
+        if (it.hasCapability(Capability.SubmitSubmission))
+            yourSubmissionComponent(
+                courseId,
+                workId,
+                componentContext.childContext("YourSubmission")
+            )
+        else null
+    }.stateInResource(componentScope)
+
+    private val courseWorkDetailsComponent = courseWorkDetailsComponent(
         workId,
-        componentContext.childContext("yourSubmission")
+        childContext("Details")
     )
 
-    val attachmentsComponent = attachmentsComponent(
-        findCourseWorkAttachmentsUseCase(workId), null, null, childContext("Attachments")
-    )
-
-    private val courseWorkDetailsComponent = _courseWorkDetailsComponent(
-        courseId,
-        workId,
-        childContext("details")
-    )
-
-    val allowEditWork = capabilities.map {
-        when (it) {
-            is Resource.Success -> it.value.hasCapability(Capability.WriteCourseElements)
-            is Resource.Error,
-            Resource.Loading,
-            -> false
-        }
-    }
+    val allowEditWork = capabilities.mapResource {
+        it.hasCapability(Capability.WriteCourseElements)
+    }.stateInResource(componentScope)
 
     val children = capabilities.mapResource {
         buildList {
             withContext(Dispatchers.Main) {
-                add(Child.Details(courseWorkDetailsComponent))
+                add(Child.Details(this@CourseWorkComponent.courseWorkDetailsComponent))
                 it.ifHasCapability(Capability.ReadSubmissions) {
                     add(
                         Child.Submissions(
-                            _courseWorkSubmissionsComponent(
+                            courseWorkSubmissionsComponent(
                                 courseId,
                                 workId,
-                                childContext("submissions")
+                                childContext("Submissions")
                             )
                         )
                     )
@@ -152,23 +126,6 @@ class CourseWorkComponent(
             }
         }
     }
-
-//    fun onAttachmentClick(item: AttachmentItem) {
-//        when (item) {
-//            is AttachmentItem.FileAttachmentItem -> when (item.state) {
-//                FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
-//                FileState.Preview, FileState.FailDownload -> componentScope.launch {
-//                    downloadFileUseCase(item.attachmentId)
-//                }
-//
-//                else -> {}
-//            }
-//
-//            is AttachmentItem.LinkAttachmentItem -> componentScope.launch {
-//                openAttachment.emit(item)
-//            }
-//        }
-//    }
 
     sealed class Child(val title: String) {
         class Details(val component: CourseWorkDetailsComponent) : Child("Задание")
