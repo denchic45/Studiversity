@@ -3,10 +3,7 @@ package com.denchic45.studiversity.feature.course.topic
 import com.denchic45.studiversity.feature.course.topic.usecase.*
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.ktor.currentUserId
-import com.denchic45.studiversity.ktor.getEnumOrFail
 import com.denchic45.studiversity.ktor.getUuidOrFail
-import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
-import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
 import com.denchic45.stuiversity.api.role.model.Capability
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -14,52 +11,49 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
 
 
 fun Application.courseTopicRoutes() {
     routing {
         authenticate("auth-jwt") {
-            route("/course-topics") {
+            route("/course/{courseId}/topics") {
                 val requireCapability: RequireCapabilityUseCase by inject()
                 val addCourseTopic: AddCourseTopicUseCase by inject()
                 val findCourseTopicsByCourse: FindCourseTopicsByCourseUseCase by inject()
 
                 post {
-                    val currentUserId = call.currentUserId()
-                    val request = call.receive<CreateCourseTopicRequest>()
-
+                    val courseId = call.parameters.getUuidOrFail("courseId")
                     requireCapability(
-                        userId = currentUserId,
+                        userId = call.currentUserId(),
                         capability = Capability.WriteCourseTopics,
-                        scopeId = request.courseId
+                        scopeId = courseId
                     )
 
-                    val topic = addCourseTopic(request)
+                    val topic = addCourseTopic(courseId, call.receive())
                     call.respond(HttpStatusCode.Created, topic)
                 }
-
                 get {
-                    val currentUserId = call.currentUserId()
-                    val courseId = call.request.queryParameters.getUuidOrFail("course_id")
+                    val courseId = call.parameters.getUuidOrFail("courseId")
 
 //                    requireCapability(
-//                        userId = currentUserId,
+//                        userId = call.currentUserId(),
 //                        capability = Capability.ReadOtherCourse,
 //                        scopeId = courseId
 //                    )
 
                     val topics = findCourseTopicsByCourse(courseId)
-                    call.respond(HttpStatusCode.OK, topics)
+                    call.respond(topics)
                 }
-                courseTopicById()
             }
+            courseTopicById()
         }
     }
 }
 
 private fun Route.courseTopicById() {
-    route("/{topicId}") {
+    route("/course-topics/{topicId}") {
         val requireCapability: RequireCapabilityUseCase by inject()
         val updateCourseTopic: UpdateCourseTopicUseCase by inject()
         val reorderCourseTopic: ReorderCourseTopicUseCase by inject()
@@ -68,63 +62,59 @@ private fun Route.courseTopicById() {
         val removeCourseTopic: RemoveCourseTopicUseCase by inject()
 
         get {
-            val currentUserId = call.currentUserId()
             val topicId = call.parameters.getUuidOrFail("topicId")
             val courseId = findCourseIdByTopicId(topicId)
 
 //            requireCapability(
-//                userId = currentUserId,
+//                userId = call.currentUserId(),
 //                capability = Capability.ReadOtherCourse,
 //                scopeId = courseId
 //            )
 
             val topic = findCourseTopic(courseId, topicId)
-            call.respond(HttpStatusCode.OK, topic)
+            call.respond(topic)
         }
         patch {
-            val currentUserId = call.currentUserId()
             val topicId = call.parameters.getUuidOrFail("topicId")
             val courseId = findCourseIdByTopicId(topicId)
 
             requireCapability(
-                userId = currentUserId,
+                userId = call.currentUserId(),
                 capability = Capability.WriteCourseTopics,
                 scopeId = courseId
             )
 
             val topic = updateCourseTopic(courseId, topicId, call.receive())
-            call.respond(HttpStatusCode.OK, topic)
+            call.respond(topic)
         }
         delete {
-            val currentUserId = call.currentUserId()
             val topicId = call.parameters.getUuidOrFail("topicId")
             val courseId = findCourseIdByTopicId(topicId)
 
-            val relatedTopicElements = call.parameters.getEnumOrFail<RelatedTopicElements>("elements")
+            val withElements = call.parameters.getOrFail<Boolean>("with_elements")
 
             requireCapability(
-                userId = currentUserId,
+                userId = call.currentUserId(),
                 capability = Capability.WriteCourseTopics,
                 scopeId = courseId
             )
 
-            removeCourseTopic(courseId, topicId, relatedTopicElements)
+            removeCourseTopic(courseId, topicId, withElements)
 
             call.respond(HttpStatusCode.NoContent)
         }
         put("/order") {
-            val currentUserId = call.currentUserId()
             val topicId = call.parameters.getUuidOrFail("topicId")
             val courseId = findCourseIdByTopicId(topicId)
 
             requireCapability(
-                userId = currentUserId,
+                userId = call.currentUserId(),
                 capability = Capability.WriteCourseTopics,
                 scopeId = courseId
             )
 
-            val response = reorderCourseTopic(topicId, call.receive())
-            call.respond(response)
+            val topic = reorderCourseTopic(topicId, call.receive())
+            call.respond(topic)
         }
     }
 }

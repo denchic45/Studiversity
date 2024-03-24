@@ -12,7 +12,7 @@ import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
-import org.jetbrains.exposed.sql.javatime.CurrentDate
+import java.time.LocalDate
 import java.util.*
 
 class CourseElementRepository {
@@ -32,18 +32,15 @@ class CourseElementRepository {
         return CourseElementDao[elementId].course.id.value
     }
 
-    fun remove(courseId: UUID, elementId: UUID): Boolean = CourseElementDao
-        .find(CourseElements.courseId eq courseId and (CourseElements.id eq elementId))
+    fun remove(elementId: UUID): Boolean = CourseElementDao
+        .find(CourseElements.id eq elementId)
         .singleOrNull()?.apply {
             decreaseElementsOrdersByTopicIdAndGreaterOrder(topic?.id?.value, order)
         }?.delete() != null
 
-    fun findMaxGradeByWorkId(workId: UUID): Short {
-        return CourseWorkDao.findById(workId)!!.maxGrade
-    }
 
     fun findTypeByElementId(elementId: UUID): CourseElementType? {
-        return CourseElements.select(CourseElements.id eq elementId)
+        return CourseElements.selectAll().where(CourseElements.id eq elementId)
             .singleOrNull()?.let { it[CourseElements.type] }
     }
 
@@ -52,17 +49,18 @@ class CourseElementRepository {
     }
 
     fun update(
-        courseId: UUID,
         elementId: UUID,
         request: UpdateCourseElementRequest
     ): CourseElementResponse {
-        val courseElementDao = CourseElementDao.findById(elementId)!!
+        val courseElementDao = CourseElementDao[elementId]
 
         request.topicId.ifPresent { topicId ->
             if (topicId != null && CourseTopicDao.findById(topicId)?.courseId != courseElementDao.course.id.value)
                 throw BadRequestException(CourseElementErrors.TOPIC_FROM_ANOTHER_COURSE)
+
             decreaseElementsOrdersByTopicIdAndGreaterOrder(courseElementDao.topic?.id?.value, courseElementDao.order)
-            courseElementDao.order = generateOrderByCourseAndTopicId(courseId, topicId)
+
+            courseElementDao.order = generateOrderByCourseAndTopicId(findCourseIdByElementId(elementId), topicId)
             courseElementDao.topic = topicId?.let { CourseTopicDao.findById(it) }
         }
 
@@ -70,20 +68,22 @@ class CourseElementRepository {
     }
 
     private fun decreaseElementsOrdersByTopicIdAndGreaterOrder(topicId: UUID?, order: Int) {
-        CourseElements.update(where = { CourseElements.topicId eq topicId and (CourseElements.order greater order) }) {
+        CourseElements.update(where = {
+            CourseElements.topicId eq topicId and (CourseElements.order greater order)
+        }) {
             it[CourseElements.order] = CourseElements.order - 1
         }
     }
 
     private fun getElementDetailsByIdAndType(elementId: UUID, type: CourseElementType): CourseElementDetails {
         return when (type) {
-            CourseElementType.WORK -> CourseWorkDao.findById(elementId)!!.toElementDetails()
+            CourseElementType.WORK -> CourseWorkDao[elementId].toElementDetails()
             CourseElementType.MATERIAL -> CourseMaterial
         }
     }
 
     fun findElementsByCourseId(courseId: UUID, sorting: List<CourseElementsSorting>?): List<CourseElementResponse> {
-        val query = CourseElements.select(CourseElements.courseId eq courseId)
+        val query = CourseElements.selectAll().where(CourseElements.courseId eq courseId)
         sorting?.forEach {
             when (it) {
                 is CourseElementsSorting.TopicId -> {
@@ -102,14 +102,12 @@ class CourseElementRepository {
 
     fun findByAuthor(authorId: UUID, late: Boolean?, submitted: Boolean?): List<CourseWorkResponse> {
         val query = CourseWorks.innerJoin(Submissions, { CourseWorks.id }, { courseWorkId })
-            .select(Submissions.authorId eq authorId).orderBy(CourseWorks.dueDate)
-
+            .selectAll().where(Submissions.authorId eq authorId).orderBy(CourseWorks.dueDate)
+        val currentDate = LocalDate.now()
         late?.let {
             query.andWhere {
-                if (late)
-                    CourseWorks.dueDate less CurrentDate
-                else
-                    CourseWorks.dueDate greater CurrentDate or (CourseWorks.dueDate eq null)
+                if (late) CourseWorks.dueDate lessEq currentDate
+                else CourseWorks.dueDate greater currentDate or (CourseWorks.dueDate eq null)
             }
         }
         submitted?.let {
@@ -121,7 +119,7 @@ class CourseElementRepository {
             }
         }
         return CourseWorkDao.wrapRows(query).map { workDao ->
-            CourseElementDao.findById(workDao.id.value)!!.toWorkResponse(workDao)
+            CourseElementDao[workDao.id.value].toWorkResponse(workDao)
         }
     }
 
@@ -130,5 +128,6 @@ class CourseElementRepository {
     }
 }
 
-fun generateOrderByCourseAndTopicId(courseId: UUID, topicId: UUID?) =
-    CourseElementDao.getMaxOrderByCourseIdAndTopicId(courseId, topicId) + 1
+fun generateOrderByCourseAndTopicId(courseId: UUID, topicId: UUID?): Int {
+    return CourseElementDao.getMaxOrderByCourseIdAndTopicId(courseId, topicId) + 1
+}

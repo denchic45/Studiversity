@@ -11,8 +11,8 @@ class RemoveCourseElementUseCase(
     private val attachmentRepository: AttachmentRepository
 ) {
 
-    suspend operator fun invoke(courseId: UUID, elementId: UUID) = suspendTransactionWorker.invoke {
+    suspend operator fun invoke(elementId: UUID) = suspendTransactionWorker.invoke {
         attachmentRepository.removeByResourceId(elementId)
-        courseElementRepository.remove(courseId, elementId)
+        courseElementRepository.remove(elementId)
     }
 }

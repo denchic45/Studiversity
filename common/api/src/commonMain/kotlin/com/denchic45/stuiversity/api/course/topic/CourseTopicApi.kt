@@ -7,21 +7,13 @@ import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
 import com.denchic45.stuiversity.api.course.topic.model.ReorderCourseTopicRequest
 import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
-import io.ktor.client.HttpClient
-import io.ktor.client.request.delete
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.client.request.patch
-import io.ktor.client.request.post
-import io.ktor.client.request.put
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import kotlinx.serialization.Serializable
-import java.util.UUID
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import java.util.*
 
 interface CourseTopicApi {
-    suspend fun create(request: CreateCourseTopicRequest): ResponseResult<CourseTopicResponse>
+    suspend fun create(courseId: UUID, request: CreateCourseTopicRequest): ResponseResult<CourseTopicResponse>
 
     suspend fun update(
         topicId: UUID,
@@ -37,20 +29,15 @@ interface CourseTopicApi {
 
     suspend fun getList(courseId: UUID): ResponseResult<List<CourseTopicResponse>>
 
-    suspend fun delete(
-        topicId: UUID,
-        relatedTopicElements: RelatedTopicElements
-    ): EmptyResponseResult
+    suspend fun delete(topicId: UUID, withElements: Boolean): EmptyResponseResult
 }
-
-@Serializable
-enum class RelatedTopicElements { DELETE, CLEAR_TOPIC }
 
 class CourseTopicApiImpl(private val client: HttpClient) : CourseTopicApi {
     override suspend fun create(
+        courseId: UUID,
         request: CreateCourseTopicRequest
     ): ResponseResult<CourseTopicResponse> {
-        return client.post("/course-topics") {
+        return client.post("/course/$courseId/topics") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.toResult()
@@ -83,17 +70,15 @@ class CourseTopicApiImpl(private val client: HttpClient) : CourseTopicApi {
     }
 
     override suspend fun getList(courseId: UUID): ResponseResult<List<CourseTopicResponse>> {
-        return client.get("/course-topics") {
-            parameter("course_id", courseId)
-        }.toResult()
+        return client.get("/course/$courseId/topics").toResult()
     }
 
     override suspend fun delete(
         topicId: UUID,
-        relatedTopicElements: RelatedTopicElements
+        withElements: Boolean
     ): EmptyResponseResult {
         return client.delete("/course-topics/$topicId") {
-            parameter("elements", relatedTopicElements)
+            parameter("with_elements", withElements)
         }.toResult()
     }
 }

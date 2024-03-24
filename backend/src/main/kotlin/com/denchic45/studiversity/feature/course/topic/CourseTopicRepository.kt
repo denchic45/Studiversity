@@ -5,7 +5,6 @@ import com.denchic45.studiversity.database.table.CourseElements
 import com.denchic45.studiversity.database.table.CourseTopicDao
 import com.denchic45.studiversity.database.table.CourseTopics
 import com.denchic45.studiversity.logger.logger
-import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
 import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
@@ -19,9 +18,9 @@ import java.util.*
 
 class CourseTopicRepository {
 
-    fun add(request: CreateCourseTopicRequest): CourseTopicResponse {
+    fun add(courseId: UUID, request: CreateCourseTopicRequest): CourseTopicResponse {
         return CourseTopicDao.new {
-            this.courseId = request.courseId
+            this.courseId = courseId
             this.name = request.name
             this.order = generateOrderByCourseId(courseId)
         }.toResponse()
@@ -67,14 +66,11 @@ class CourseTopicRepository {
     ) = CourseTopicDao.find(CourseTopics.id eq topicId and (CourseTopics.courseId eq courseId))
         .singleOrNull()
 
-    fun remove(courseId: UUID, topicId: UUID, relatedTopicElements: RelatedTopicElements): Unit? {
-        when (relatedTopicElements) {
-            RelatedTopicElements.DELETE -> {}
-            RelatedTopicElements.CLEAR_TOPIC -> {
-                CourseElements.update(where = { CourseElements.topicId eq topicId }) {
-                    it[CourseElements.topicId] = null
-                    it[order] = order + CourseElementDao.getMaxOrderByCourseIdAndTopicId(courseId, null)
-                }
+    fun remove(courseId: UUID, topicId: UUID, withElements: Boolean): Unit? {
+        if (!withElements) {
+            CourseElements.update(where = { CourseElements.topicId eq topicId }) {
+                it[CourseElements.topicId] = null
+                it[order] = order + CourseElementDao.getMaxOrderByCourseIdAndTopicId(courseId, null)
             }
         }
         return getById(topicId, courseId)?.delete()

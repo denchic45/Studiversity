@@ -5,7 +5,9 @@ import com.denchic45.studiversity.feature.course.element.usecase.FindCourseEleme
 import com.denchic45.studiversity.feature.course.element.usecase.RemoveCourseElementUseCase
 import com.denchic45.studiversity.feature.course.element.usecase.UpdateCourseElementUseCase
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
-import com.denchic45.studiversity.ktor.*
+import com.denchic45.studiversity.ktor.currentUserId
+import com.denchic45.studiversity.ktor.getSortingBy
+import com.denchic45.studiversity.ktor.getUuidOrFail
 import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
 import com.denchic45.stuiversity.api.role.model.Capability
 import io.ktor.http.*
@@ -49,43 +51,42 @@ fun Route.courseElementById() {
         val findCourseElement: FindCourseElementUseCase by inject()
         val updateCourseElement: UpdateCourseElementUseCase by inject()
         val removeCourseElement: RemoveCourseElementUseCase by inject()
+        val courseElementRepository: CourseElementRepository by inject()
 
         get {
-            val courseId = call.parameters.getUuidOrFail("courseId")
+            val elementId = call.parameters.getUuidOrFail("elementId")
 
             requireCapability(
                 userId = call.currentUserId(),
                 capability = Capability.ReadCourseElements,
-                scopeId = courseId
+                scopeId = courseElementRepository.findCourseIdByElementId(elementId)
             )
 
-            val element = findCourseElement(call.parameters.getUuidOrFail("elementId"))
+
+            val element = findCourseElement(elementId)
             call.respond(HttpStatusCode.OK, element)
         }
         patch {
-            val courseId = call.parameters.getUuidOrFail("courseId")
             val elementId = call.parameters.getUuidOrFail("elementId")
 
             requireCapability(
                 userId = call.currentUserId(),
                 capability = Capability.WriteCourse,
-                scopeId = courseId
+                scopeId = courseElementRepository.findCourseIdByElementId(elementId)
             )
 
-            val element = updateCourseElement(courseId, elementId, call.receive())
+            val element = updateCourseElement(elementId, call.receive())
             call.respond(HttpStatusCode.OK, element)
         }
         delete {
-            val currentUserId = call.currentUserId()
-            val courseId = call.parameters.getUuidOrFail("courseId")
-            val workId = call.parameters.getUuidOrFail("elementId")
+            val elementId = call.parameters.getUuidOrFail("elementId")
 
             requireCapability(
-                userId = currentUserId,
+                userId = call.currentUserId(),
                 capability = Capability.DeleteCourseElements,
-                scopeId = courseId
+                scopeId = courseElementRepository.findCourseIdByElementId(elementId)
             )
-            removeCourseElement(courseId, workId)
+            removeCourseElement(elementId)
             call.respond(HttpStatusCode.NoContent)
         }
     }
