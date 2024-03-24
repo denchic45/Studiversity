@@ -45,7 +45,7 @@ class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
         workId: UUID,
         userId: UUID?
     ): ResponseResult<SubmissionResponse> {
-        return client.get("/course-works/$workId/submissionsByStudentId/${userId.orMe}")
+        return client.get("/course-works/$workId/submissions-by-student/${userId.orMe}")
             .toResult()
     }
 

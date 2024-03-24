@@ -67,7 +67,7 @@ fun Route.courseElementById() {
             val elementId = call.parameters.getUuidOrFail("elementId")
 
             requireCapability(
-                userId = call.jwtPrincipal().payload.claimId,
+                userId = call.currentUserId(),
                 capability = Capability.WriteCourse,
                 scopeId = courseId
             )
@@ -76,7 +76,7 @@ fun Route.courseElementById() {
             call.respond(HttpStatusCode.OK, element)
         }
         delete {
-            val currentUserId = call.jwtPrincipal().payload.claimId
+            val currentUserId = call.currentUserId()
             val courseId = call.parameters.getUuidOrFail("courseId")
             val workId = call.parameters.getUuidOrFail("elementId")
 

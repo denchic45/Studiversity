@@ -44,7 +44,7 @@ package com.denchic45.studiversity.feature.membership
 //                        val requireCapability: RequireCapabilityUseCase by inject()
 //                        post("/sync") {
 //                            requireCapability(
-//                                call.jwtPrincipal().payload.claimId,
+//                                call.currentUserId(),
 //                                Capability.WriteMembership,
 //                                config.organizationId
 //                            )
@@ -82,7 +82,7 @@ package com.denchic45.studiversity.feature.membership
 //            }
 //        }
 //        post {
-//            val currentUserId = call.jwtPrincipal().payload.claimId
+//            val currentUserId = call.currentUserId()
 //            val scopeId = call.parameters["scopeId"]!!.toUUID()
 //
 //            val result = when (call.request.queryParameters["action"]!!) {

@@ -32,7 +32,7 @@ fun Application.courseWorkRoutes() {
                 val body: CreateCourseWorkRequest = call.receive()
                 val courseId = call.parameters.getOrFail("courseId").toUUID()
                 requireCapability(
-                    userId = call.jwtPrincipal().payload.claimId,
+                    userId = call.currentUserId(),
                     capability = Capability.WriteCourseElements,
                     scopeId = courseId
                 )
@@ -66,7 +66,7 @@ private fun Route.courseWorkById() {
         get {
             val workId = call.parameters.getUuidOrFail("workId")
             requireCapability(
-                userId = call.jwtPrincipal().payload.claimId,
+                userId = call.currentUserId(),
                 capability = Capability.ReadCourseElements,
                 scopeId = courseElementRepository.findCourseIdByElementId(workId)
             )
@@ -78,7 +78,7 @@ private fun Route.courseWorkById() {
         patch {
             val workId = call.parameters.getUuidOrFail("workId")
             requireCapability(
-                userId = call.jwtPrincipal().payload.claimId,
+                userId = call.currentUserId(),
                 capability = Capability.WriteCourseElements,
                 scopeId = courseElementRepository.findCourseIdByElementId(workId)
             )

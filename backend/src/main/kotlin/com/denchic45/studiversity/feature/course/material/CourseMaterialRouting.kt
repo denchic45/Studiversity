@@ -36,7 +36,7 @@ fun Application.courseMaterialRoutes() {
                     val body = call.receive<CreateCourseMaterialRequest>()
                     val courseId = call.parameters.getOrFail("courseId").toUUID()
                     requireCapability(
-                        userId = call.jwtPrincipal().payload.claimId,
+                        userId = call.currentUserId(),
                         capability = Capability.WriteCourseElements,
                         scopeId = courseId
                     )
@@ -62,7 +62,7 @@ private fun Route.courseMaterialById() {
             val courseId = courseElementRepository.findCourseIdByElementId(materialId)
 
             requireCapability(
-                userId = call.jwtPrincipal().payload.claimId,
+                userId = call.currentUserId(),
                 capability = Capability.ReadCourseElements,
                 scopeId = courseId
             )
@@ -74,7 +74,7 @@ private fun Route.courseMaterialById() {
             val materialId = call.parameters.getUuidOrFail("materialId")
             val courseId = courseElementRepository.findCourseIdByElementId(materialId)
             requireCapability(
-                userId = call.jwtPrincipal().payload.claimId,
+                userId = call.currentUserId(),
                 capability = Capability.WriteCourseElements,
                 scopeId = courseId
             )

@@ -50,7 +50,7 @@ fun Application.subjectRoutes() {
 
                 post {
                     requireCapability(
-                        call.jwtPrincipal().payload.claimId,
+                        call.currentUserId(),
                         Capability.WriteSubject,
                         config.organizationId
                     )
@@ -109,7 +109,7 @@ fun Route.subjectByIdRoute() {
             val id = call.parameters.getUuidOrFail("id")
 
             requireCapability(
-                call.jwtPrincipal().payload.claimId,
+                call.currentUserId(),
                 Capability.WriteSubject,
                 config.organizationId
             )
@@ -123,7 +123,7 @@ fun Route.subjectByIdRoute() {
             val id = call.parameters["id"]!!.toUUID()
 
             requireCapability(
-                call.jwtPrincipal().payload.claimId,
+                call.currentUserId(),
                 Capability.WriteSubject,
                 config.organizationId
             )

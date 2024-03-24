@@ -7,7 +7,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
 sealed interface Resource<out T> {
-    object Loading : Resource<Nothing>
+    data object Loading : Resource<Nothing>
     data class Success<T>(val value: T) : Resource<T>
     data class Error(val failure: Failure) : Resource<Nothing>
 }
