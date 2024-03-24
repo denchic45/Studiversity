@@ -1,9 +1,12 @@
-package com.denchic45.stuiversity.api.course.work.submission.model
+package com.denchic45.stuiversity.api.submission.model
 
 import com.denchic45.stuiversity.api.course.element.model.CourseElementType
-import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonContentPolymorphicSerializer
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 
 object SubmissionSerializer :
     JsonContentPolymorphicSerializer<SubmissionResponse>(SubmissionResponse::class) {

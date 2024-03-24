@@ -1,6 +1,12 @@
 package com.denchic45.studiversity.data.repository
 
-import com.denchic45.studiversity.data.db.local.source.*
+import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.CourseTopicLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.StudyGroupCourseLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.StudyGroupLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.SubjectLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.mapper.toCourseEntity
@@ -14,13 +20,13 @@ import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
-import com.denchic45.stuiversity.util.UUIDWrapper
-import com.denchic45.stuiversity.util.uuidOfMe
+import com.denchic45.stuiversity.util.UserId
+import com.denchic45.stuiversity.util.userIdOfMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class CourseRepository(
@@ -52,7 +58,7 @@ class CourseRepository(
     }
 
     fun findBy(
-        memberId: UUIDWrapper? = null,
+        memberId: UserId? = null,
         studyGroupId: UUID? = null,
         subjectId: UUID? = null,
         archived: Boolean,
@@ -62,7 +68,7 @@ class CourseRepository(
     }
 
     suspend fun findByMe() = fetchResource {
-        coursesApi.getList(memberId = uuidOfMe())
+        coursesApi.getList(memberId = userIdOfMe())
     }
 
 //    fun findContentByCourseId(courseId: String): Flow<List<DomainModel>> = flow {

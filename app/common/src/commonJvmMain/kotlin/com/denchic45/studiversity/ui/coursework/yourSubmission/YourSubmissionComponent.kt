@@ -3,21 +3,38 @@ package com.denchic45.studiversity.ui.coursework.yourSubmission
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.denchic45.studiversity.domain.model.Attachment2
-import com.denchic45.studiversity.domain.resource.*
-import com.denchic45.studiversity.domain.usecase.*
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.filterNotNullValue
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.onFailure
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.stateInResource
+import com.denchic45.studiversity.domain.usecase.AddAttachmentToSubmissionUseCase
+import com.denchic45.studiversity.domain.usecase.CancelSubmissionUseCase
+import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
+import com.denchic45.studiversity.domain.usecase.FindSubmissionAttachmentsUseCase
+import com.denchic45.studiversity.domain.usecase.ObserveYourSubmissionUseCase
+import com.denchic45.studiversity.domain.usecase.RemoveAttachmentFromSubmissionUseCase
+import com.denchic45.studiversity.domain.usecase.SubmitSubmissionUseCase
 import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.coursework.SubmissionUiState
 import com.denchic45.studiversity.ui.coursework.toUiState
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
-import kotlinx.coroutines.flow.*
+import com.denchic45.stuiversity.api.submission.model.SubmissionResponse
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import okio.Path
-import java.util.*
+import java.util.UUID
 
 
 @Inject
@@ -55,7 +72,14 @@ class YourSubmissionComponent(
             attachmentsComponent(
                 findSubmissionAttachmentsUseCase(submission.id),
                 { componentScope.launch { addAttachmentToSubmissionUseCase(submission.id, it) } },
-                { componentScope.launch { removeAttachmentFromSubmissionUseCase(submission.id, it) } },
+                {
+                    componentScope.launch {
+                        removeAttachmentFromSubmissionUseCase(
+                            submission.id,
+                            it
+                        )
+                    }
+                },
                 componentContext.childContext("Attachments")
             )
         }.stateInResource(componentScope)
@@ -86,7 +110,10 @@ class YourSubmissionComponent(
         submission.value.onSuccess { submissionUiState ->
             componentScope.launch {
                 paths.map { path ->
-                    addAttachmentToSubmissionUseCase(submissionUiState.id, CreateFileRequest(path.toFile()))
+                    addAttachmentToSubmissionUseCase(
+                        submissionUiState.id,
+                        CreateFileRequest(path.toFile())
+                    )
                         .onSuccess {
                             println("success load: $it")
                         }.onFailure {

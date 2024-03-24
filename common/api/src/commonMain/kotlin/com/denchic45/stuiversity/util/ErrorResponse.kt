@@ -28,7 +28,7 @@ data class CompositeError(
 ) : ErrorContent
 
 class ErrorResponseSerializer : JsonContentPolymorphicSerializer<ErrorContent>(ErrorContent::class) {
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<ErrorContent> {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out ErrorContent> {
         val jsonObject = element.jsonObject
         return when {
             jsonObject.contains("reasons") -> CompositeError.serializer()

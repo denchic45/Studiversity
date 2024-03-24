@@ -13,24 +13,28 @@ import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.bindResources
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.usecase.*
+import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
+import com.denchic45.studiversity.domain.usecase.FindAssignedUserRolesInScopeUseCase
+import com.denchic45.studiversity.domain.usecase.FindCoursesUseCase
+import com.denchic45.studiversity.domain.usecase.FindStudyGroupsUseCase
+import com.denchic45.studiversity.domain.usecase.ObserveUserUseCase
+import com.denchic45.studiversity.domain.usecase.RemoveAvatarUseCase
+import com.denchic45.studiversity.domain.usecase.UpdateAvatarUseCase
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.usercourses.UserCoursesComponent
 import com.denchic45.studiversity.ui.userstudygroups.UserStudyGroupsComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.role.model.Capability
 import com.denchic45.stuiversity.util.toUUID
-import com.denchic45.stuiversity.util.uuidOf
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.denchic45.stuiversity.util.userIdOf
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class ProfileComponent(
@@ -56,8 +60,8 @@ class ProfileComponent(
 
     private val userFlow = observeUserUseCase(userId).stateInResource(componentScope)
     private val userRole = findAssignedUserRolesInScopeUseCase(userId, null)
-    private val studyGroups = findStudyGroupsUseCase(memberId = uuidOf(userId))
-    private val courses = findCoursesUseCase(memberId = uuidOf(userId))
+    private val studyGroups = findStudyGroupsUseCase(memberId = userIdOf(userId))
+    private val courses = findCoursesUseCase(memberId = userIdOf(userId))
     private val capabilities = checkUserCapabilitiesInScopeUseCase(
         scopeId = null,
         capabilities = listOf(Capability.WriteUser)

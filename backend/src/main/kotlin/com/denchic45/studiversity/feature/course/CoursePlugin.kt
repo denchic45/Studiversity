@@ -5,6 +5,7 @@ import com.denchic45.studiversity.feature.course.material.courseMaterialRoutes
 import com.denchic45.studiversity.feature.course.subject.subjectRoutes
 import com.denchic45.studiversity.feature.course.topic.courseTopicRoutes
 import com.denchic45.studiversity.feature.course.work.courseWorkRoutes
+import com.denchic45.studiversity.feature.course.work.submission.submissionRoutes
 import io.ktor.server.application.*
 
 @Suppress("unused")
@@ -13,8 +14,10 @@ fun Application.configureCourses() {
     courseTopicRoutes()
 
     courseElementRoutes()
-    courseWorkRoutes()
     courseMaterialRoutes()
+    courseWorkRoutes()
+    submissionRoutes()
+
 
     subjectRoutes()
 }

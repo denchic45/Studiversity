@@ -5,11 +5,15 @@ import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.role.model.UserRolesResponse
-import com.denchic45.stuiversity.util.UUIDWrapper
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import java.util.*
+import com.denchic45.stuiversity.util.UserId
+import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import java.util.UUID
 
 interface RoleApi {
     suspend fun assignRoleToUserInScope(userId: UUID, scopeId: UUID, roleId: Long): EmptyResponseResult
@@ -18,11 +22,17 @@ interface RoleApi {
 
     suspend fun deleteRoleFromUserInScope(userId: UUID, scopeId: UUID, roleId: Long): EmptyResponseResult
 
-    suspend fun getUserRolesInScope(userId: UUIDWrapper, scopeId: UUID): ResponseResult<UserRolesResponse>
+    suspend fun getUserRolesInScope(
+        userId: UserId,
+        scopeId: UUID
+    ): ResponseResult<UserRolesResponse>
 
     suspend fun getAssignableRoles(roleId: Long): ResponseResult<List<Role>>
 
-    suspend fun getAssignableRolesByUserAndScope(userId: UUIDWrapper, scopeId: UUID): ResponseResult<List<Role>>
+    suspend fun getAssignableRolesByUserAndScope(
+        userId: UserId,
+        scopeId: UUID
+    ): ResponseResult<List<Role>>
 }
 
 class RoleApiImpl(private val client: HttpClient) : RoleApi {
@@ -45,7 +55,10 @@ class RoleApiImpl(private val client: HttpClient) : RoleApi {
         return client.delete("/users/$userId/scopes/$scopeId/roles/$roleId").toResult()
     }
 
-    override suspend fun getUserRolesInScope(userId: UUIDWrapper, scopeId: UUID): ResponseResult<UserRolesResponse> {
+    override suspend fun getUserRolesInScope(
+        userId: UserId,
+        scopeId: UUID
+    ): ResponseResult<UserRolesResponse> {
         return client.get("/users/${userId.value}/scopes/$scopeId/roles").toResult()
     }
 
@@ -53,7 +66,10 @@ class RoleApiImpl(private val client: HttpClient) : RoleApi {
         return client.get("/roles/$roleId/assignable").toResult()
     }
 
-    override suspend fun getAssignableRolesByUserAndScope(userId: UUIDWrapper, scopeId: UUID): ResponseResult<List<Role>> {
+    override suspend fun getAssignableRolesByUserAndScope(
+        userId: UserId,
+        scopeId: UUID
+    ): ResponseResult<List<Role>> {
         return client.get("/users/${userId.value}/scopes/$scopeId/assignable-roles").toResult()
     }
 }

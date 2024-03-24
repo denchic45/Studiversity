@@ -4,10 +4,10 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindStudyGroupsUseCase
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.util.uuidOf
+import com.denchic45.stuiversity.util.userIdOf
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class UserStudyGroupsComponent(
@@ -21,7 +21,8 @@ class UserStudyGroupsComponent(
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
-    val studyGroupsByUser = findStudyGroupsUseCase(memberId = uuidOf(userId)).stateInResource(componentScope)
+    val studyGroupsByUser =
+        findStudyGroupsUseCase(memberId = userIdOf(userId)).stateInResource(componentScope)
 
     fun onCourseClick(id: UUID) {
         onResult(id)

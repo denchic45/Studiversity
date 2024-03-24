@@ -1,15 +1,15 @@
 package com.denchic45.studiversity.ui.coursework
 
 import com.denchic45.stuiversity.api.course.work.grade.GradeResponse
-import com.denchic45.stuiversity.api.course.work.submission.model.Author
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import com.denchic45.stuiversity.api.submission.model.SubmissionAuthor
+import com.denchic45.stuiversity.api.submission.model.SubmissionResponse
+import com.denchic45.stuiversity.api.submission.model.SubmissionState
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 data class SubmissionUiState(
     val id: UUID,
-    val author: Author,
+    val author: SubmissionAuthor,
     val grade: GradeResponse?,
     val state: SubmissionState,
     val updatedAt: LocalDateTime?,

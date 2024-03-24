@@ -5,11 +5,16 @@ import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
 import com.denchic45.stuiversity.api.course.material.model.CreateCourseMaterialRequest
 import com.denchic45.stuiversity.api.course.material.model.UpdateCourseMaterialRequest
-import com.denchic45.stuiversity.util.UUIDWrapper
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import java.util.*
+import com.denchic45.stuiversity.util.UserId
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import java.util.UUID
 
 interface CourseMaterialApi {
     suspend fun create(
@@ -25,7 +30,7 @@ interface CourseMaterialApi {
     suspend fun getById(materialId: UUID): ResponseResult<CourseMaterialResponse>
 
     suspend fun getByAuthor(
-        authorId: UUIDWrapper,
+        authorId: UserId,
         late: Boolean? = null,
         submitted: Boolean? = null
     ): ResponseResult<List<CourseMaterialResponse>>
@@ -59,7 +64,7 @@ class CourseMaterialApiImpl(private val client: HttpClient) : CourseMaterialApi 
     }
 
     override suspend fun getByAuthor(
-        authorId: UUIDWrapper,
+        authorId: UserId,
         late: Boolean?,
         submitted: Boolean?
     ): ResponseResult<List<CourseMaterialResponse>> {

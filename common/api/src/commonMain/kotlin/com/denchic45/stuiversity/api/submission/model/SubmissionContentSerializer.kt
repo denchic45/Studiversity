@@ -1,4 +1,4 @@
-package com.denchic45.stuiversity.api.course.work.submission.model
+package com.denchic45.stuiversity.api.submission.model
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer

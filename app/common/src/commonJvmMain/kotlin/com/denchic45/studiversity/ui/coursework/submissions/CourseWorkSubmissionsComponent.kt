@@ -10,10 +10,10 @@ import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.usecase.FindCourseWorkSubmissionsUseCase
+import com.denchic45.studiversity.domain.usecase.FindWorkSubmissionsUseCase
 import com.denchic45.studiversity.ui.coursework.submissiondetails.SubmissionDetailsComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
+import com.denchic45.stuiversity.api.submission.model.SubmissionByAuthor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -25,7 +25,7 @@ import java.util.UUID
 
 @Inject
 class CourseWorkSubmissionsComponent(
-    private val findCourseWorkSubmissionsUseCase: FindCourseWorkSubmissionsUseCase,
+    private val findWorkSubmissionsUseCase: FindWorkSubmissionsUseCase,
     private val _submissionDetailsComponent: (
         courseId: UUID,
         elementId: UUID,
@@ -41,11 +41,11 @@ class CourseWorkSubmissionsComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
- private   val observedSubmissions = flow {
-        emit(findCourseWorkSubmissionsUseCase(courseId, elementId))
+    private val observedSubmissions = flow {
+        emit(findWorkSubmissionsUseCase(elementId))
     }.stateInResource(componentScope)
 
-    val submissions = MutableStateFlow<Resource<List<SubmissionResponse>>>(resourceOf())
+    val submissions = MutableStateFlow<Resource<List<SubmissionByAuthor>>>(resourceOf())
 
     val refreshing = MutableStateFlow(false)
 
@@ -74,12 +74,12 @@ class CourseWorkSubmissionsComponent(
     fun onRefresh() {
         componentScope.launch {
             refreshing.update { true }
-            submissions.update { findCourseWorkSubmissionsUseCase(courseId, elementId) }
+            submissions.update { findWorkSubmissionsUseCase(elementId) }
             refreshing.update { false }
         }
     }
 
-    fun onSubmissionClick(submissionId: UUID) {
+    fun onStudentClick(submissionId: UUID) {
         overlayNavigation.activate(SubmissionConfig(submissionId))
     }
 

@@ -6,11 +6,17 @@ import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
-import com.denchic45.stuiversity.util.UUIDWrapper
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import java.util.*
+import com.denchic45.stuiversity.util.UserId
+import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import java.util.UUID
 
 interface StudyGroupApi {
     suspend fun create(createStudyGroupRequest: CreateStudyGroupRequest): ResponseResult<StudyGroupResponse>
@@ -18,7 +24,7 @@ interface StudyGroupApi {
     suspend fun getById(studyGroupId: UUID): ResponseResult<StudyGroupResponse>
 
     suspend fun getList(
-        memberId: UUIDWrapper? = null,
+        memberId: UserId? = null,
         roleId: Long? = null,
         specialtyId: UUID? = null,
         academicYear: Int? = null,
@@ -52,7 +58,7 @@ class StudyGroupApiImpl(private val client: HttpClient) : StudyGroupApi {
     }
 
     override suspend fun getList(
-        memberId: UUIDWrapper?,
+        memberId: UserId?,
         roleId: Long?,
         specialtyId: UUID?,
         academicYear: Int?,

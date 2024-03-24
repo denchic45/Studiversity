@@ -12,8 +12,8 @@ import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import com.denchic45.stuiversity.api.submission.model.SubmissionResponse
+import com.denchic45.stuiversity.api.submission.model.SubmissionState
 import com.denchic45.stuiversity.api.membership.MembershipApi
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.submission.SubmissionsApi
@@ -138,7 +138,7 @@ class SubmissionsTest : KtorClientTest() {
                 assertEquals(2, response.size)
                 assertAllStatesIsNew(response)
             }
-        val ownSubmission = submissions.first { it.author.id == student1Id }
+        val ownSubmission = submissions.first { it.submissionAuthor.id == student1Id }
 
         // get submission by another user (maybe teacher)
         submissionsApiOfTeacher.getById(ownSubmission.id).apply {
@@ -178,7 +178,7 @@ class SubmissionsTest : KtorClientTest() {
                 assertEquals(2, response.size)
                 assertAllStatesIsNew(response)
             }
-        val ownSubmission = submissions.first { it.author.id == student1Id }
+        val ownSubmission = submissions.first { it.submissionAuthor.id == student1Id }
         // get submission by owner student
         submissionsApiOfStudent.getById(ownSubmission.id)
             .apply {

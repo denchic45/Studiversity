@@ -12,10 +12,10 @@ import com.denchic45.stuiversity.api.role.model.CheckCapabilitiesResponse
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.role.model.UserRolesResponse
 import com.denchic45.stuiversity.util.toUUID
-import com.denchic45.stuiversity.util.uuidOrMe
+import com.denchic45.stuiversity.util.userIdOrMe
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class RoleRepository(
@@ -50,7 +50,7 @@ class RoleRepository(
         scopeId: UUID?,
     ): Flow<Resource<UserRolesResponse>> = fetchResourceFlow {
         roleApi.getUserRolesInScope(
-            uuidOrMe(userId),
+            userIdOrMe(userId),
             scopeId ?: appPreferences.organizationId.toUUID()
         )
     }
@@ -60,6 +60,9 @@ class RoleRepository(
     }
 
     fun findAssignableRolesByUserAndScope(userId: UUID?, scopeId: UUID?) = fetchResourceFlow {
-        roleApi.getAssignableRolesByUserAndScope(uuidOrMe(userId), scopeId ?: appPreferences.organizationId.toUUID())
+        roleApi.getAssignableRolesByUserAndScope(
+            userIdOrMe(userId),
+            scopeId ?: appPreferences.organizationId.toUUID()
+        )
     }
 }

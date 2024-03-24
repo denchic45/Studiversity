@@ -13,7 +13,7 @@ import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.stuiversity.api.timetable.TimetableApi
 import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting
 import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
-import com.denchic45.stuiversity.util.UUIDWrapper
+import com.denchic45.stuiversity.util.UserId
 import com.denchic45.stuiversity.util.toUUID
 import kotlinx.coroutines.flow.flow
 import me.tatarka.inject.annotations.Inject
@@ -53,7 +53,7 @@ class TimetableRepository(
         weekOfYear: String,
         studyGroupIds: List<UUID>? = null,
         courseIds: List<UUID>? = null,
-        memberIds: List<UUIDWrapper>? = null,
+        memberIds: List<UserId>? = null,
         roomIds: List<UUID>? = null,
         sorting: List<PeriodsSorting> = emptyList(),
     ) = fetchResource {

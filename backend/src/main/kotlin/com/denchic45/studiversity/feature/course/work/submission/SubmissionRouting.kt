@@ -55,8 +55,6 @@ fun Route.submissionByIdRoute() {
         val requireSubmissionAuthor: RequireSubmissionAuthorUseCase by inject()
         val isSubmissionAuthor: IsSubmissionAuthorUseCase by inject()
 
-
-
         get {
             val currentUserId = call.jwtPrincipal().payload.claimId
             val submission = findSubmission(
@@ -81,6 +79,7 @@ fun Route.submissionByIdRoute() {
             val addAttachment: AddAttachmentUseCase by inject()
             val findAttachments: FindAttachmentsByResourceUseCase by inject()
             val removeAttachment: RemoveAttachmentUseCase by inject()
+
             post {
                 val submissionId = call.parameters.getUuidOrFail("submissionId")
 
@@ -112,33 +111,39 @@ fun Route.submissionByIdRoute() {
         route("/grade") {
             val setGradeSubmission: SetGradeSubmissionUseCase by inject()
             val cancelGradeSubmission: CancelGradeSubmissionUseCase by inject()
+            val submissionRepository: SubmissionRepository by inject()
+
             put {
                 val currentUserId = call.jwtPrincipal().payload.claimId
-                val courseId = call.parameters.getUuidOrFail("courseId")
-                val workId = call.parameters.getUuidOrFail("workId")
-                val submissionId = call.parameters.getUuidOrFail("submissionId")
-
-                requireCapability(
-                    userId = currentUserId,
-                    capability = Capability.GradeSubmission,
-                    scopeId = courseId
-                )
-                val body = call.receive<GradeRequest>()
-                val submission = setGradeSubmission(
-                    grade = SubmissionGradeRequest(body.value, courseId, currentUserId, submissionId)
-                )
-                call.respond(HttpStatusCode.OK, submission)
-            }
-            delete {
-                val currentUserId = call.jwtPrincipal().payload.claimId
-                val courseId = call.parameters.getUuidOrFail("courseId")
+//                val courseId = call.parameters.getUuidOrFail("courseId")
 //                val workId = call.parameters.getUuidOrFail("workId")
                 val submissionId = call.parameters.getUuidOrFail("submissionId")
 
                 requireCapability(
                     userId = currentUserId,
                     capability = Capability.GradeSubmission,
-                    scopeId = courseId
+                    scopeId = submissionRepository.findCourseIdBySubmissionId(submissionId)
+                )
+                val body = call.receive<GradeRequest>()
+                val submission = setGradeSubmission(
+                    grade = SubmissionGradeRequest(
+                        value = body.value,
+                        submissionId = submissionId,
+                        gradedBy = currentUserId
+                    )
+                )
+                call.respond(HttpStatusCode.OK, submission)
+            }
+            delete {
+                val currentUserId = call.jwtPrincipal().payload.claimId
+//                val courseId = call.parameters.getUuidOrFail("courseId")
+//                val workId = call.parameters.getUuidOrFail("workId")
+                val submissionId = call.parameters.getUuidOrFail("submissionId")
+
+                requireCapability(
+                    userId = currentUserId,
+                    capability = Capability.GradeSubmission,
+                    scopeId = submissionRepository.findCourseIdBySubmissionId(submissionId)
                 )
 
                 cancelGradeSubmission(submissionId)
@@ -183,9 +188,9 @@ fun Route.submissionByStudentIdRoute() {
             call.getUserUuidByParameterOrMe("studentId"),
             currentUserId
         )
+
         val isOwnSubmission = submission.author.id == currentUserId
-        if (isOwnSubmission)
-            call.respond(HttpStatusCode.OK, submission)
+        if (isOwnSubmission) call.respond(HttpStatusCode.OK, submission)
         else {
             requireCapability(
                 userId = currentUserId,

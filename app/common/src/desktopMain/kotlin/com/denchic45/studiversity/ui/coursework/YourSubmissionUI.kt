@@ -1,9 +1,19 @@
 package com.denchic45.studiversity.ui.coursework
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,8 +26,8 @@ import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.coursework.yourSubmission.YourSubmissionComponent
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
-import com.denchic45.stuiversity.util.UUIDWrapper
+import com.denchic45.stuiversity.api.submission.model.SubmissionState
+import com.denchic45.stuiversity.util.UserId
 
 @Composable
 fun YourSubmissionBlock(component: YourSubmissionComponent) {
@@ -105,7 +115,7 @@ fun SubmissionAttachments(
     attachments: List<AttachmentItem>,
     onAttachmentAdd: () -> Unit,
     onAttachmentClick: (AttachmentItem) -> Unit,
-    onAttachmentRemove: (attachmentId: UUIDWrapper.UUID) -> Unit,
+    onAttachmentRemove: (attachmentId: UserId.Id) -> Unit,
 ) {
 
 }

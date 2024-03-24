@@ -14,7 +14,6 @@ class FindSubmissionsByWorkUseCase(
 
     suspend operator fun invoke(courseId: UUID, courseWorkId: UUID) = suspendTransactionWorker {
         submissionRepository.findByWorkId(
-            courseId,
             courseWorkId,
             roleRepository.findUsersIdsByScopeIdAndRoleId(courseId, Role.Student.id)
         )

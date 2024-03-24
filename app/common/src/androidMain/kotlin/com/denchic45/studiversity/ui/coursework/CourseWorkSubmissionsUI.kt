@@ -26,8 +26,8 @@ import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.coursework.submissions.CourseWorkSubmissionsComponent
 import com.denchic45.studiversity.ui.search.UserAvatarImage
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import com.denchic45.stuiversity.api.submission.model.SubmissionByAuthor
+import com.denchic45.stuiversity.api.submission.model.SubmissionState
 import com.denchic45.stuiversity.util.toString
 
 
@@ -55,45 +55,47 @@ fun CourseWorkSubmissionsScreen(component: CourseWorkSubmissionsComponent) {
 
 @Composable
 private fun SubmissionsContent(
-    submissionsResource: Resource<List<SubmissionResponse>>,
+    submissionsResource: Resource<List<SubmissionByAuthor>>,
     component: CourseWorkSubmissionsComponent
 ) {
-    submissionsResource.onSuccess { submissions ->
+    submissionsResource.onSuccess {
         LazyColumn {
-            items(submissions, key = { it.id }) { submission ->
+            items(it, key = { it.author.id }) { submissionByAuthor ->
                 ListItem(
                     modifier = Modifier
-                        .clickable { component.onSubmissionClick(submission.id) }
+                        .clickable { component.onStudentClick(submissionByAuthor.author.id) }
                         .padding(vertical = MaterialTheme.spacing.small),
                     leadingContent = {
-                        UserAvatarImage(url = submission.author.avatarUrl)
+                        UserAvatarImage(url = submissionByAuthor.author.avatarUrl)
                     },
                     headlineContent = {
                         Row {
                             Text(
-                                submission.author.fullName,
+                                submissionByAuthor.author.fullName,
                                 modifier = Modifier.weight(1f),
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
                     },
                     trailingContent = {
-                        val updatedAt = submission.updatedAt?.toString("dd MMM")
-                        val text = when (submission.state) {
-                            SubmissionState.CREATED -> "Не сдано"
+                        submissionByAuthor.submission?.let { submission ->
+                            val updatedAt = submission.updatedAt?.toString("dd MMM")
+                            val text = when (submission.state) {
+                                SubmissionState.CREATED -> "Не сдано"
 
-                            SubmissionState.SUBMITTED -> "Сдано $updatedAt"
-                            SubmissionState.CANCELED_BY_AUTHOR -> "Отменено $updatedAt"
-                        }
-                        submission.grade?.let {
-                            Column(horizontalAlignment = Alignment.End) {
-                                Text(
-                                    text = it.value.toString(),
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(text = text)
+                                SubmissionState.SUBMITTED -> "Сдано $updatedAt"
+                                SubmissionState.CANCELED_BY_AUTHOR -> "Отменено $updatedAt"
                             }
-                        } ?: Text(text = text, style = MaterialTheme.typography.titleMedium)
+                            submission.grade?.let {
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = it.value.toString(),
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text(text = text)
+                                }
+                            } ?: Text(text = text, style = MaterialTheme.typography.titleMedium)
+                        }
                     }
                 )
             }

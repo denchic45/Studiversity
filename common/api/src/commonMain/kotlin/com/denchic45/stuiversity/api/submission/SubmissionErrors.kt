@@ -1,4 +1,4 @@
-package com.denchic45.stuiversity.api.course.work.submission
+package com.denchic45.stuiversity.api.submission
 
 object SubmissionErrors {
     const val TEXT_DISABLED = "TEXT_DISABLED"

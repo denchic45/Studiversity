@@ -1,4 +1,4 @@
-package com.denchic45.stuiversity.api.course.work.submission.model
+package com.denchic45.stuiversity.api.submission.model
 
 import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
 import com.denchic45.stuiversity.api.course.work.grade.GradeResponse
@@ -6,12 +6,12 @@ import com.denchic45.stuiversity.util.LocalDateTimeSerializer
 import com.denchic45.stuiversity.util.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Serializable(SubmissionSerializer::class)
 sealed interface SubmissionResponse {
     val id: UUID
-    val author: Author
+    val author: SubmissionAuthor
     val state: SubmissionState
     val courseWorkId: UUID
     val content: SubmissionContent
@@ -24,7 +24,7 @@ sealed interface SubmissionResponse {
 data class WorkSubmissionResponse(
     @Serializable(UUIDSerializer::class)
     override val id: UUID,
-    override val author: Author,
+    override val author: SubmissionAuthor,
     override val state: SubmissionState,
     @Serializable(UUIDSerializer::class)
     override val courseWorkId: UUID,
@@ -62,7 +62,7 @@ enum class SubmissionState {
 fun SubmissionResponse.submitted() = state !in SubmissionState.notSubmitted()
 
 @Serializable
-data class Author(
+data class SubmissionAuthor(
     @Serializable(UUIDSerializer::class)
     val id: UUID,
     val firstName: String,

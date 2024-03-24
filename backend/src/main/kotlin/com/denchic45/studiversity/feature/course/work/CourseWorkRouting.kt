@@ -90,6 +90,7 @@ private fun Route.courseWorkById() {
             val addAttachment: AddAttachmentUseCase by inject()
             val findAttachments: FindAttachmentsByResourceUseCase by inject()
             val removeAttachment: RemoveAttachmentUseCase by inject()
+            
             post {
                 val workId = call.parameters.getUuidOrFail("workId")
                 requireCapability(

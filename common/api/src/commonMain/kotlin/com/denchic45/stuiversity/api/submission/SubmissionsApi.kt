@@ -4,17 +4,26 @@ import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
 import com.denchic45.stuiversity.api.course.work.grade.GradeRequest
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionResponse
+import com.denchic45.stuiversity.api.submission.model.SubmissionByAuthor
+import com.denchic45.stuiversity.api.submission.model.SubmissionResponse
 import com.denchic45.stuiversity.util.orMe
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import java.util.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import java.util.UUID
 
 interface SubmissionsApi {
-    suspend fun getAllByCourseWorkId(workId: UUID): ResponseResult<List<SubmissionResponse>>
+    suspend fun getAllByCourseWorkId(workId: UUID): ResponseResult<List<SubmissionByAuthor>>
 
-    suspend fun getByStudent(workId: UUID, userId: UUID? = null): ResponseResult<SubmissionResponse>
+    suspend fun getByStudent(
+        workId: UUID,
+        userId: UUID? = null
+    ): ResponseResult<SubmissionResponse>
 
     suspend fun getById(submissionId: UUID): ResponseResult<SubmissionResponse>
 
@@ -28,7 +37,7 @@ interface SubmissionsApi {
 }
 
 class SubmissionsApiImpl(private val client: HttpClient) : SubmissionsApi {
-    override suspend fun getAllByCourseWorkId(workId: UUID): ResponseResult<List<SubmissionResponse>> {
+    override suspend fun getAllByCourseWorkId(workId: UUID): ResponseResult<List<SubmissionByAuthor>> {
         return client.get("/course-works/${workId}/submissions").toResult()
     }
 

@@ -4,16 +4,50 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Comment
-import androidx.compose.material3.*
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -37,7 +71,7 @@ import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.OpenMultipleAnyDocuments
 import com.denchic45.studiversity.util.getFile
-import com.denchic45.stuiversity.api.course.work.submission.model.SubmissionState
+import com.denchic45.stuiversity.api.submission.model.SubmissionState
 import com.denchic45.stuiversity.util.toString
 import kotlinx.coroutines.launch
 
@@ -91,7 +125,11 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
                         }
 
                         val transition =
-                            calcPercentOf(0.2F, 0.8F, maxOf(0.2F, minOf(submissionMeasurement.difference, 0.8F)))
+                            calcPercentOf(
+                                0.2F,
+                                0.8F,
+                                maxOf(0.2F, minOf(submissionMeasurement.difference, 0.8F))
+                            )
 
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             submissionResource.onSuccess { submission ->
@@ -99,7 +137,8 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
                                     submission,
                                     Modifier
                                         .onGloballyPositioned { coordinates ->
-                                            submissionMeasurement.headerHeight = coordinates.size.height.toFloat()
+                                            submissionMeasurement.headerHeight =
+                                                coordinates.size.height.toFloat()
                                         }
                                         .padding(top = MaterialTheme.spacing.normal)
                                 )
@@ -126,7 +165,8 @@ fun CourseWorkScreen(component: CourseWorkComponent) {
                                     if (transition < 1F)
                                         SubmissionCollapsedContent(
                                             submission = submission,
-                                            attachmentIsEmpty = attachmentsIsEmpty.takeValueIfSuccess() ?: true,
+                                            attachmentIsEmpty = attachmentsIsEmpty.takeValueIfSuccess()
+                                                ?: true,
                                             modifier = Modifier
                                                 .clickable(enabled = false, onClick = {})
                                                 .alpha(1 - transition)
@@ -295,7 +335,9 @@ private fun CourseWorkContent(
                 Box(modifier = Modifier.fillMaxSize()) {
                     when (val child = children[it]) {
                         is CourseWorkComponent.Child.Details -> CourseWorkDetailsScreen(child.component)
-                        is CourseWorkComponent.Child.Submissions -> CourseWorkSubmissionsScreen(child.component)
+                        is CourseWorkComponent.Child.Submissions -> CourseWorkSubmissionsScreen(
+                            child.component
+                        )
                     }
                 }
             }

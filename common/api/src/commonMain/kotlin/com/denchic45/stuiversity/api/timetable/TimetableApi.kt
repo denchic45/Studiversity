@@ -3,15 +3,24 @@ package com.denchic45.stuiversity.api.timetable
 import com.denchic45.stuiversity.api.common.EmptyResponseResult
 import com.denchic45.stuiversity.api.common.ResponseResult
 import com.denchic45.stuiversity.api.common.toResult
-import com.denchic45.stuiversity.api.timetable.model.*
-import com.denchic45.stuiversity.util.UUIDWrapper
+import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting
+import com.denchic45.stuiversity.api.timetable.model.PutTimetableOfDayRequest
+import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
+import com.denchic45.stuiversity.api.timetable.model.TimetableOfDayResponse
+import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import com.denchic45.stuiversity.util.UserId
 import com.denchic45.stuiversity.util.parametersOf
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.UUID
 
 interface TimetableApi {
     suspend fun putTimetable(
@@ -23,7 +32,7 @@ interface TimetableApi {
         weekOfYear: String,
         studyGroupIds: List<UUID>? = null,
         courseIds: List<UUID>? = null,
-        memberIds: List<UUIDWrapper>? = null,
+        memberIds: List<UserId>? = null,
         roomIds: List<UUID>? = null,
         sorting: List<PeriodsSorting> = listOf(),
     ): ResponseResult<TimetableResponse>
@@ -120,7 +129,7 @@ class TimetableApiImpl(private val client: HttpClient) : TimetableApi {
         weekOfYear: String,
         studyGroupIds: List<UUID>?,
         courseIds: List<UUID>?,
-        memberIds: List<UUIDWrapper>?,
+        memberIds: List<UserId>?,
         roomIds: List<UUID>?,
         sorting: List<PeriodsSorting>,
     ): ResponseResult<TimetableResponse> = client.get("/timetables/$weekOfYear") {

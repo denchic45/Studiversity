@@ -23,7 +23,7 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.*
-import com.denchic45.stuiversity.util.UUIDWrapper
+import com.denchic45.stuiversity.util.UserId
 import com.github.michaelbull.result.Ok
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -74,7 +74,7 @@ class TimetableParserTest {
         }
 
         override suspend fun getList(
-            memberId: UUIDWrapper?,
+            memberId: UserId?,
             roleId: Long?,
             specialtyId: UUID?,
             academicYear: Int?,
@@ -172,7 +172,7 @@ class TimetableParserTest {
         }
 
         override suspend fun getList(
-            memberId: UUIDWrapper?,
+            memberId: UserId?,
             studyGroupId: UUID?,
             subjectId: UUID?,
             archived: Boolean?,

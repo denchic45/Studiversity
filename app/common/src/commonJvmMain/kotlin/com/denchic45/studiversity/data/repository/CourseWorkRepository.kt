@@ -8,10 +8,10 @@ import com.denchic45.stuiversity.api.course.work.CourseWorkApi
 import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
-import com.denchic45.stuiversity.util.uuidOfMe
+import com.denchic45.stuiversity.util.userIdOfMe
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class CourseWorkRepository(
@@ -38,14 +38,14 @@ class CourseWorkRepository(
     }
 
     fun findUpcomingByYourAuthor(): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
-        courseWorkApi.getByAuthor(authorId = uuidOfMe(), late = false, submitted = false)
+        courseWorkApi.getByAuthor(authorId = userIdOfMe(), late = false, submitted = false)
     }
 
     fun findOverdueByYourAuthor(): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
-        courseWorkApi.getByAuthor(authorId = uuidOfMe(), late = true, submitted = false)
+        courseWorkApi.getByAuthor(authorId = userIdOfMe(), late = true, submitted = false)
     }
 
     fun findSubmittedByYourAuthor(): Flow<Resource<List<CourseWorkResponse>>> = fetchResourceFlow {
-        courseWorkApi.getByAuthor(authorId = uuidOfMe(), submitted = true)
+        courseWorkApi.getByAuthor(authorId = userIdOfMe(), submitted = true)
     }
 }

@@ -23,10 +23,10 @@ import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
 import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
-import com.denchic45.stuiversity.util.UUIDWrapper
+import com.denchic45.stuiversity.util.UserId
 import com.denchic45.stuiversity.util.toUUID
-import com.denchic45.stuiversity.util.uuidOf
-import com.denchic45.stuiversity.util.uuidOfMe
+import com.denchic45.stuiversity.util.userIdOf
+import com.denchic45.stuiversity.util.userIdOfMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -36,7 +36,7 @@ import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 
 @Inject
-class StudyGroupRepository constructor(
+class StudyGroupRepository(
     override val studyGroupLocalDataSource: StudyGroupLocalDataSource,
     override val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val appPreferences: AppPreferences,
@@ -79,7 +79,7 @@ class StudyGroupRepository constructor(
 //    }
 
     suspend fun findByCurator(userId: UUID) = fetchResource {
-        studyGroupApi.getList(memberId = uuidOf(userId), Role.Curator.id)
+        studyGroupApi.getList(memberId = userIdOf(userId), Role.Curator.id)
     }
 
 //    fun findGroupByCuratorId(userId: String): Flow<Group?> {
@@ -126,7 +126,7 @@ class StudyGroupRepository constructor(
         }
 
     fun findBy(
-        memberId: UUIDWrapper? = null,
+        memberId: UserId? = null,
         roleId: Long? = null,
         specialtyId: UUID? = null,
         academicYear: Int? = null,
@@ -231,7 +231,7 @@ class StudyGroupRepository constructor(
 
     // TODO: Make observable
     fun findByMe(): Flow<Resource<List<StudyGroupResponse>>> {
-        return fetchResourceFlow { studyGroupApi.getList(memberId = uuidOfMe()) }
+        return fetchResourceFlow { studyGroupApi.getList(memberId = userIdOfMe()) }
             .onEach { resource ->
                 resource.onSuccess { responses ->
                     appPreferences.yourStudyGroups =
