@@ -2,6 +2,7 @@ package com.denchic45.studiversity.feature.user
 
 import com.denchic45.studiversity.feature.auth.usecase.AddUserUseCase
 import com.denchic45.studiversity.feature.user.account.usecase.*
+import com.denchic45.studiversity.feature.user.usecase.FindUserAvatarUseCase
 import com.denchic45.studiversity.feature.user.usecase.FindUserByIdUseCase
 import com.denchic45.studiversity.feature.user.usecase.RemoveUserUseCase
 import com.denchic45.studiversity.feature.user.usecase.SearchUsersUseCase
@@ -17,6 +18,7 @@ private val useCaseModule = module {
     single { SearchUsersUseCase(get(), get()) }
     single { UpdateAvatarUseCase(get(), get()) }
     single { ResetAvatarUseCase(get(), get()) }
+    single { FindUserAvatarUseCase(get()) }
 }
 
 private val repositoryModule = module {

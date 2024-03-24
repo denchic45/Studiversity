@@ -33,17 +33,6 @@ class UserRepository(
         userApi.getList(text)
     }
 
-    fun findSelf() = UserResponse(
-        UUID.fromString(userPreferences.id),
-        userPreferences.firstName,
-        userPreferences.surname,
-        userPreferences.patronymic,
-        Account(userPreferences.email),
-        userPreferences.avatarUrl,
-        userPreferences.isGeneratedAvatar,
-        Gender.valueOf(userPreferences.gender)
-    )
-
     fun findById(userId: UUID): Flow<Resource<UserResponse>> = fetchResourceFlow {
         userApi.getById(userId)
     }

@@ -31,7 +31,10 @@ import org.mindrot.jbcrypt.BCrypt
 import java.time.Instant
 import java.util.*
 
-class UserRepository(private val client: HttpClient) : AddScopeRepoExt {
+class UserRepository(
+    private val client: HttpClient,
+    private val avatarService: AvatarService
+) : AddScopeRepoExt {
 
     suspend fun add(signupRequest: SignupRequest): UserResponse {
         val hashed: String = BCrypt.hashpw(signupRequest.password, BCrypt.gensalt())
@@ -49,7 +52,7 @@ class UserRepository(private val client: HttpClient) : AddScopeRepoExt {
             generatedAvatar = false
             gender = user.gender
         }.apply {
-            avatarUrl = generateAvatar(id.value)
+            avatarUrl = avatarService.generateAvatar(id.value)
         }.toUserResponse()
 //            .apply { addScope(id, ScopeType.User, organizationId) }
     }
@@ -90,44 +93,6 @@ class UserRepository(private val client: HttpClient) : AddScopeRepoExt {
         }
     }
 
-    private suspend fun setAvatar(userId: UUID, request: CreateFileRequest, generated: Boolean): String {
-//        val newPath = "avatars/$userId.${File(request.name).extension}"
-//        bucket.upload(newPath, request.bytes)
-//        return bucket.publicUrl(newPath).also {
-//            UserDao.findById(userId)!!.apply {
-//                avatarUrl = it
-//                generatedAvatar = generated
-//            }
-//        }
-        return ""
-    }
-
-    suspend fun updateAvatar(userId: UUID, request: CreateFileRequest) {
-        deleteAvatar(userId)
-        setAvatar(userId, request, false)
-    }
-
-    suspend fun resetAvatar(userId: UUID) {
-        deleteAvatar(userId)
-        generateAvatar(userId)
-    }
-
-    private suspend fun deleteAvatar(userId: UUID) {
-//        val name = bucket.list(prefix = "avatars") { search = userId.toString() }.single().name
-//        bucket.delete("avatars/$name")
-    }
-
-    private suspend fun generateAvatar(userId: UUID): String {
-        val newImageBytes = client.get("https://ui-avatars.com/api") {
-            parameter("name", UserDao.findById(userId)!!.firstName[0])
-            parameter("background", "random")
-            parameter("format", "png")
-            parameter("size", 128)
-        }.readBytes()
-        return TODO()
-//        return setAvatar(userId, CreateFileRequest("avatar.png", newImageBytes), true)
-    }
-
     fun updateAccount(userId: UUID, updatePasswordRequest: UpdatePasswordRequest) {
         UserDao.findById(userId)!!.apply {
             if (!BCrypt.checkpw(updatePasswordRequest.oldPassword, password))
@@ -162,8 +127,9 @@ class UserRepository(private val client: HttpClient) : AddScopeRepoExt {
     }
 
     fun findRefreshToken(refreshToken: String): RefreshToken? {
-        val expiredTokens = RefreshTokens.select(RefreshTokens.expireAt less Instant.now()).limit(100)
-            .map { it[RefreshTokens.id] }
+        val expiredTokens =
+            RefreshTokens.select(RefreshTokens.expireAt less Instant.now()).limit(100)
+                .map { it[RefreshTokens.id] }
         RefreshTokens.deleteWhere { RefreshTokens.id inList expiredTokens }
         return RefreshTokens.select(RefreshTokens.token eq refreshToken)
             .singleOrNull()?.let {

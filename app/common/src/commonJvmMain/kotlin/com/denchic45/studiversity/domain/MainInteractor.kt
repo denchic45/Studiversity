@@ -2,9 +2,8 @@ package com.denchic45.studiversity.domain
 
 import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.repository.StudyGroupRepository
-import com.denchic45.studiversity.data.repository.UserRepository
 import com.denchic45.studiversity.data.service.AuthService
-import com.denchic45.studiversity.data.service.UserService
+import com.denchic45.studiversity.data.service.AccountService
 import com.denchic45.studiversity.domain.resource.NotFound
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.filterSuccess
@@ -26,21 +25,18 @@ class MainInteractor(
     private val coroutineScope: CoroutineScope,
     private val studyGroupRepository: StudyGroupRepository,
     private val authService: AuthService,
-    private val userService: UserService,
-    private val userRepository: UserRepository,
+    private val accountService: AccountService,
     private val appPreferences: AppPreferences,
 ) {
     val listenAuthState: Flow<Boolean> = authService.observeIsAuthenticated
 
-    fun observeThisUser(): Flow<Resource<UserResponse>> = userService.observeCurrentUser
+    fun observeThisUser(): Flow<Resource<UserResponse>> = accountService.observeCurrentUser
         .shareIn(coroutineScope, SharingStarted.Lazily)
 
 
     fun observeHasStudyGroups(): Flow<Boolean> = studyGroupRepository.findByMe()
         .filterSuccess()
         .map { it.value.isNotEmpty() }
-
-    fun findThisUser() = userRepository.findSelf()
 
 
     suspend fun startListeners() {
