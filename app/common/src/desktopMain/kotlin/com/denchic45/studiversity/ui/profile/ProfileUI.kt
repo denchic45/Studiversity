@@ -55,7 +55,11 @@ fun ProfileScreen(component: ProfileComponent) {
     ) {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             state.onSuccess { state ->
-                ProfileHeaderBlock(state, onStudyGroupClick = component::onStudyGroupClick, onMoreStudyGroupsClick = component::onMoreStudyGroupsClick)
+                ProfileHeaderBlock(
+                    state = state,
+                    onStudyGroupClick = component::onStudyGroupClick,
+                    onMoreStudyGroupsClick = component::onMoreStudyGroupsClick
+                )
                 Row {
                     Column(
                         Modifier.width(496.dp)
@@ -101,7 +105,10 @@ private fun StudentInfoBlock() {
 @Composable
 private fun StudentBlockElement(painter: Painter, title: String) {
     Column {
-        Box(modifier = Modifier.size(112.dp).clip(RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier.size(112.dp).clip(RoundedCornerShape(8.dp)),
+            contentAlignment = Alignment.Center
+        ) {
             Image(painter, contentDescription = null)
         }
         Text(title, modifier = Modifier.padding(vertical = MaterialTheme.spacing.normal))
@@ -109,10 +116,15 @@ private fun StudentBlockElement(painter: Painter, title: String) {
 }
 
 @Composable
-fun ProfileHeaderBlock(state: ProfileViewState, onStudyGroupClick: (UUID) -> Unit, onMoreStudyGroupsClick: () -> Unit) {
+fun ProfileHeaderBlock(
+    state: ProfileViewState,
+    onStudyGroupClick: (UUID) -> Unit,
+    onMoreStudyGroupsClick: () -> Unit
+) {
     BlockContent {
         Row(
-            Modifier.width(874.dp).height(232.dp).padding(horizontal = MaterialTheme.spacing.normal),
+            Modifier.width(874.dp).height(232.dp)
+                .padding(horizontal = MaterialTheme.spacing.normal),
             verticalAlignment = Alignment.CenterVertically
         ) {
             val user = state.user
@@ -121,8 +133,7 @@ fun ProfileHeaderBlock(state: ProfileViewState, onStudyGroupClick: (UUID) -> Uni
                 null,
                 Modifier.size(168.dp).clip(CircleShape).background(Color.LightGray),
                 contentScale = ContentScale.Crop,
-
-                )
+            )
             Spacer(Modifier.width(MaterialTheme.spacing.normal))
             Column {
                 Text(
@@ -144,20 +155,22 @@ fun ProfileHeaderBlock(state: ProfileViewState, onStudyGroupClick: (UUID) -> Uni
                     )
                     Text(state.user.account.email, style = MaterialTheme.typography.titleSmall)
 
-                    state.studyGroups.takeIf(List<StudyGroupResponse>::isNotEmpty)?.let { studyGroups ->
-                        Row(Modifier.clickable {
-                            if (studyGroups.size == 1) onStudyGroupClick(studyGroups.single().id)
-                            else onMoreStudyGroupsClick()
-                        }) {
-                            Icon(
-                                Icons.Outlined.Groups,
-                                null,
-                                Modifier.padding(end = MaterialTheme.spacing.small)
-                            )
-                            val studyGroupsText = studyGroups.singleOrNull()?.name ?: "${studyGroups.size} групп"
-                            Text(studyGroupsText, style = MaterialTheme.typography.titleSmall)
+                    state.studyGroups.takeIf(List<StudyGroupResponse>::isNotEmpty)
+                        ?.let { studyGroups ->
+                            Row(Modifier.clickable {
+                                if (studyGroups.size == 1) onStudyGroupClick(studyGroups.single().id)
+                                else onMoreStudyGroupsClick()
+                            }) {
+                                Icon(
+                                    Icons.Outlined.Groups,
+                                    null,
+                                    Modifier.padding(end = MaterialTheme.spacing.small)
+                                )
+                                val studyGroupsText =
+                                    studyGroups.singleOrNull()?.name ?: "${studyGroups.size} групп"
+                                Text(studyGroupsText, style = MaterialTheme.typography.titleSmall)
+                            }
                         }
-                    }
                 }
 
                 Spacer(Modifier.height(MaterialTheme.spacing.normal))
@@ -258,7 +271,12 @@ fun ProfileSideBar(
                     headlineContent = {
                         Text(personalDate.email, style = MaterialTheme.typography.bodyLarge)
                     },
-                    supportingContent = { Text("Почта", style = MaterialTheme.typography.bodyMedium) })
+                    supportingContent = {
+                        Text(
+                            "Почта",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    })
             }
         }
     }

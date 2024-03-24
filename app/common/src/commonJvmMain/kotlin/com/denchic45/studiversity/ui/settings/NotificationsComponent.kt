@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.notifications
+package com.denchic45.studiversity.ui.settings
 
 import com.arkivanov.decompose.ComponentContext
 import me.tatarka.inject.annotations.Assisted
