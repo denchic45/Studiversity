@@ -12,7 +12,6 @@ import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.studiversity.util.copy
 import com.denchic45.studiversity.util.swap
-import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
 import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
@@ -71,7 +70,7 @@ class CourseTopicsComponent(
     fun onTopicAdd(name: String) {
         if (name.isEmpty()) return
         componentScope.launch {
-            addCourseTopicUseCase(CreateCourseTopicRequest(courseId, name))
+            addCourseTopicUseCase(courseId, CreateCourseTopicRequest(name))
         }
     }
 
@@ -93,11 +92,7 @@ class CourseTopicsComponent(
     fun onTopicRemove(position: Int) {
         topics.value.onSuccess { list ->
             componentScope.launch {
-                removeCourseTopicUseCase(
-                    courseId,
-                    list[position].id,
-                    RelatedTopicElements.CLEAR_TOPIC
-                )
+                removeCourseTopicUseCase(list[position].id, false)
             }
         }
     }

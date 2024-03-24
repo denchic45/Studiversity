@@ -11,7 +11,6 @@ import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
-import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
 import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
@@ -48,8 +47,8 @@ class CourseTopicRepository(
         )
     }
 
-    suspend fun add(request: CreateCourseTopicRequest) = fetchResource {
-        courseTopicApi.create(request)
+    suspend fun add(courseId: UUID, request: CreateCourseTopicRequest) = fetchResource {
+        courseTopicApi.create(courseId, request)
     }.onSuccess {
         courseTopicLocalDataSource.upsert(it.toEntity())
     }
@@ -62,11 +61,10 @@ class CourseTopicRepository(
     }
 
     suspend fun remove(
-        courseId: UUID,
         topicId: UUID,
-        relatedTopicElements: RelatedTopicElements,
+        withElements: Boolean,
     ) = fetchResource {
-        courseTopicApi.delete(topicId, relatedTopicElements)
+        courseTopicApi.delete(topicId, withElements)
     }.onSuccess {
         courseTopicLocalDataSource.deleteById(topicId.toString())
     }
