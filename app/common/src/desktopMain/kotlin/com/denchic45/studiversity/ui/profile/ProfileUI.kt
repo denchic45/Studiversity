@@ -27,7 +27,7 @@ import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.systemRoleName
 import com.denchic45.studiversity.ui.BlockContent
 import com.denchic45.studiversity.ui.ScreenScaffold
-import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.main.NavigationIconBack
 import com.denchic45.studiversity.ui.theme.spacing
@@ -92,7 +92,7 @@ fun ProfileScreen(component: ProfileComponent) {
 @Composable
 private fun StudentInfoBlock() {
     BlockContent {
-        HeaderItemUI("Учебная деятельность")
+        HeaderItem("Учебная деятельность")
         Row {
             StudentBlockElement(rememberVectorPainter(Icons.Outlined.CheckCircle), "Успеваемость")
             StudentBlockElement(rememberVectorPainter(Icons.Outlined.HotelClass), "Оценки")
@@ -204,7 +204,7 @@ fun CoursesBlock(
     onMoreCoursesClick: () -> Unit
 ) {
     BlockContent(Modifier.clickable(onClick = onMoreCoursesClick)) {
-        HeaderItemUI("Курсы")
+        HeaderItem("Курсы")
         courses.forEach { course ->
             ListItem(
                 headlineContent = { Text(course.name) },

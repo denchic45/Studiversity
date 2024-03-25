@@ -38,10 +38,11 @@ class UserEditorComponent(
     private val updateUserUseCase: UpdateUserUseCase,
     private val removeUserUseCase: RemoveUserUseCase,
     findAssignableRolesByUserAndScopeUseCase: FindAssignableRolesByUserAndScopeUseCase,
+    findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     @Assisted
     private val userId: UUID?,
     @Assisted
-    val onFinish: () -> Unit,
+   private val onFinish: () -> Unit,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -50,34 +51,13 @@ class UserEditorComponent(
 
     val allowSave = MutableStateFlow(false)
 
-    @Stable
-    class EditingUser(val isNew: Boolean) {
-        val genders: List<GenderAction> = listOf(
-            GenderAction.Male,
-            GenderAction.Female,
-            GenderAction.Undefined
-        )
 
-        var firstName by mutableStateOf("")
-        var surname by mutableStateOf("")
-        var patronymic by mutableStateOf("")
-        var gender by mutableStateOf(GenderAction.Undefined)
-        var email by mutableStateOf("")
-        var assignedRoles: List<Role> by mutableStateOf(emptyList())
-
-        var assignableRoles: List<Role> by mutableStateOf(emptyList())
-
-        var firstNameMessage: String? by mutableStateOf(null)
-        var surnameMessage: String? by mutableStateOf(null)
-        var genderMessage: String? by mutableStateOf(null)
-        var emailMessage: String? by mutableStateOf(null)
-    }
 
 
     private val assignableSystemRoles = findAssignableRolesByUserAndScopeUseCase(null, null)
         .stateInResource(componentScope)
 
-    val editingState = EditingUser(userId == null)
+    val editingState = EditingUserState(userId == null)
 
     val viewState = (userId?.let {
         findUserByIdUseCase(it).mapResource { response ->
@@ -245,6 +225,10 @@ class UserEditorComponent(
         GenderAction.Female -> Gender.FEMALE
     }
 
+    fun onClose() {
+        onFinish()
+    }
+
     enum class GenderAction(
         override val title: String,
         override val iconName: String? = null
@@ -253,4 +237,27 @@ class UserEditorComponent(
         Male("Мужской"),
         Female("Женский")
     }
+}
+
+@Stable
+class EditingUserState(val isNew: Boolean) {
+    val genders: List<UserEditorComponent.GenderAction> = listOf(
+        UserEditorComponent.GenderAction.Male,
+        UserEditorComponent.GenderAction.Female,
+        UserEditorComponent.GenderAction.Undefined
+    )
+
+    var firstName by mutableStateOf("")
+    var surname by mutableStateOf("")
+    var patronymic by mutableStateOf("")
+    var gender by mutableStateOf(UserEditorComponent.GenderAction.Undefined)
+    var email by mutableStateOf("")
+    var assignedRoles: List<Role> by mutableStateOf(emptyList())
+
+    var assignableRoles: List<Role> by mutableStateOf(emptyList())
+
+    var firstNameMessage: String? by mutableStateOf(null)
+    var surnameMessage: String? by mutableStateOf(null)
+    var genderMessage: String? by mutableStateOf(null)
+    var emailMessage: String? by mutableStateOf(null)
 }

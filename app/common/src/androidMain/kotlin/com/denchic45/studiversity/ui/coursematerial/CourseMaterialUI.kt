@@ -24,7 +24,7 @@ import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.attachment.AttachmentListItem
-import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.uiTextOf
@@ -108,7 +108,7 @@ private fun CourseMaterialContent(
             }
             attachmentsResource.onSuccess { attachments ->
                 if (attachments.isNotEmpty()) {
-                    HeaderItemUI(
+                    HeaderItem(
                         name = "Прикрепленные файлы",
                     )
                     LazyRow(contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.normal)) {

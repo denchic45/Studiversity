@@ -19,13 +19,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.ui.model.UserItem
+import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
+import com.denchic45.studiversity.ui.usereditor.UserEditorDialog
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 
 @Composable
 fun UsersAdminScreen(component: UsersAdminComponent) {
     val interactionSource = remember { MutableInteractionSource() }
+    val childSlot by component.childSlot.subscribeAsState()
+
+    childSlot.child?.let {
+        when (val child = it.instance) {
+            is UsersAdminComponent.Child.Profile -> TODO()
+            is UsersAdminComponent.Child.UserEditor -> UserEditorDialog(child.component)
+        }
+    }
+
     AdminSearchScreen(component, UserItem::id) { userItem ->
         UserListItem(
             item = userItem,

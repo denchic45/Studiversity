@@ -67,7 +67,7 @@ import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.asString
 import com.denchic45.studiversity.ui.attachment.AttachmentListItem
-import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.theme.AppTheme
 import com.denchic45.studiversity.ui.theme.spacing
@@ -243,7 +243,7 @@ fun CourseWorkEditorContent(
 
                 attachmentsResource.onSuccess { attachmentItems ->
                     if (attachmentItems.isNotEmpty()) {
-                        HeaderItemUI(name = "Прикрепленные файлы")
+                        HeaderItem(name = "Прикрепленные файлы")
                         LazyRow {
                             itemsIndexed(
                                 items = attachmentItems,

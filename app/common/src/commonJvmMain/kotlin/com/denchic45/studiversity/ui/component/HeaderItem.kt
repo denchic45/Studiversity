@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.ui.theme.spacing
 
 @Composable
-fun HeaderItemUI(
+fun HeaderItem(
     name: String,
     horizontalPadding: Dp = MaterialTheme.spacing.normal,
     modifier: Modifier = Modifier

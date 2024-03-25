@@ -23,7 +23,7 @@ import com.denchic45.studiversity.scopedRoleName
 import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
-import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.ui.search.UserChooserScreen
 import com.denchic45.studiversity.ui.search.UserListItem
@@ -90,7 +90,7 @@ fun ScopeMemberEditorContent(
         )
 
 //        Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
-        HeaderItemUI("Назначить роли")
+        HeaderItem("Назначить роли")
 
         LazyColumn {
             items(state.availableRoles) { role ->

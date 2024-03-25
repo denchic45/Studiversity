@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.model.GroupMembers
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.components.UserListItem
 import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.studygroup.members.StudyGroupMembersComponent
@@ -181,7 +181,7 @@ fun MemberList(
     ) {
 
         curator?.let {
-            item { HeaderItemUI("Куратор") }
+            item { HeaderItem("Куратор") }
 
             item {
                 UserListItem(
@@ -193,7 +193,7 @@ fun MemberList(
             }
         }
 
-        item { HeaderItemUI("Студенты") }
+        item { HeaderItem("Студенты") }
 
         items(students) {
             StudentListItem(

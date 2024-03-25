@@ -20,7 +20,7 @@ import com.denchic45.studiversity.ui.Sidebar
 import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
-import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.stuiversity.api.role.model.Role
@@ -97,7 +97,7 @@ fun UserEditorContent(
     Column(
         modifier.padding(horizontal = 16.dp)
     ) {
-        HeaderItemUI("Личные данные")
+        HeaderItem("Личные данные")
         OutlinedTextField(
             value = state.firstName,
             onValueChange = onFirstNameType,
@@ -171,7 +171,7 @@ fun UserEditorContent(
             }
         }
 
-        HeaderItemUI("Вход в аккаунт")
+        HeaderItem("Вход в аккаунт")
         OutlinedTextField(
             value = state.email,
             onValueChange = onEmailType,
@@ -183,10 +183,10 @@ fun UserEditorContent(
             supportingText = { Text(text = state.emailMessage ?: "") }
         )
 
-        var expandedRoles by remember { mutableStateOf(false) }
+        var rolesExpanded by remember { mutableStateOf(false) }
         ExposedDropdownMenuBox(
-            expanded = expandedRoles,
-            onExpandedChange = { expandedRoles = !expandedRoles }
+            expanded = rolesExpanded,
+            onExpandedChange = { rolesExpanded = !rolesExpanded }
         ) {
             OutlinedTextField(
                 value = state.assignedRoles.let { assigned ->
@@ -200,15 +200,15 @@ fun UserEditorContent(
                     .menuAnchor(),
                 label = { Text("Роли") },
                 trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedRoles)
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = rolesExpanded)
                 },
                 singleLine = true,
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
 
             ExposedDropdownMenu(
-                expanded = expandedRoles,
-                onDismissRequest = { expandedRoles = false }) {
+                expanded = rolesExpanded,
+                onDismissRequest = { rolesExpanded = false }) {
                 state.assignableRoles.forEach {
                     DropdownMenuItem(
                         text = { Text(it.systemRoleName()) },

@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.model.StudyGroupCourseItem
 import com.denchic45.studiversity.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.studiversity.ui.theme.DesktopAppTheme
@@ -37,7 +37,7 @@ fun StudyGroupCoursesScreen(studyGroupCoursesComponent: StudyGroupCoursesCompone
 fun StudyGroupCourses(list: List<StudyGroupCourseItem>) {
     Column {
         Spacer(Modifier.height(8.dp))
-        HeaderItemUI("${list.size} курс(ов)")
+        HeaderItem("${list.size} курс(ов)")
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),

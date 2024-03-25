@@ -32,7 +32,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.theme.spacing
 
@@ -99,7 +99,7 @@ fun LessonDetailsEditorContent(
                 }
             )
         }
-        HeaderItemUI("Преподаватели")
+        HeaderItem("Преподаватели")
         Row(
             Modifier
                 .fillMaxWidth()

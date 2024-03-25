@@ -24,7 +24,7 @@ import com.denchic45.studiversity.domain.model.FileState
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.attachment.AttachmentListItem
-import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsComponent
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.theme.AppTheme
@@ -122,7 +122,7 @@ fun CourseWorkAttachments(
 ) {
     attachmentsResource.onSuccess { attachments ->
         if (attachments.isNotEmpty()) {
-            HeaderItemUI(name = "Прикрепленные файлы", horizontalPadding = 0.dp)
+            HeaderItem(name = "Прикрепленные файлы", horizontalPadding = 0.dp)
             LazyRow {
                 items(attachments, key = { it.attachmentId }) {
                     AttachmentListItem(item = it, onClick = { onAttachmentClick(it) })

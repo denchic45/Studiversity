@@ -27,7 +27,7 @@ import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.attachment.AttachmentListItem
 import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
-import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.coursework.submissiondetails.SubmissionDetailsComponent
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.model.UserItem
@@ -162,7 +162,7 @@ fun SubmissionAttachmentsContent(
     onAttachmentRemove: ((attachmentId: UUID) -> Unit)? = null,
 ) {
     Column {
-        HeaderItemUI(name = "Прикрепленные файлы")
+        HeaderItem(name = "Прикрепленные файлы")
         if (attachments.isNotEmpty()) {
             LazyRow(Modifier) {
                 items(attachments, key = { it.attachmentId.toString() }) { item ->

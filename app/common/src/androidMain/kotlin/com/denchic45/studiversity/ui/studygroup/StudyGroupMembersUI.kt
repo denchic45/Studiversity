@@ -23,7 +23,7 @@ import com.denchic45.studiversity.domain.model.GroupMembers
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
-import com.denchic45.studiversity.ui.component.HeaderItemUI
+import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.studygroup.members.StudyGroupMembersComponent
@@ -117,7 +117,7 @@ fun StudyGroupMembersContent(
 
     LazyColumn(contentPadding = PaddingValues(bottom = MaterialTheme.spacing.medium)) {
         members.curator?.let { userItem ->
-            item { HeaderItemUI(name = "Куратор") }
+            item { HeaderItem(name = "Куратор") }
             item(key = members.curator.id) {
                 UserListItem(
                     item = members.curator,
@@ -130,7 +130,7 @@ fun StudyGroupMembersContent(
         }
         if (members.students.isNotEmpty()) {
             item {
-                HeaderItemUI(name = "Студенты")
+                HeaderItem(name = "Студенты")
             }
             items(members.students, key = { it.id }) {
                 UserListItem(
