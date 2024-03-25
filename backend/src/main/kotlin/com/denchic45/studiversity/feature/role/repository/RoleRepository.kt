@@ -6,8 +6,6 @@ import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.role.Permission
 import com.denchic45.studiversity.feature.role.combinedPermission
 import com.denchic45.studiversity.feature.role.mapper.toRole
-import com.denchic45.studiversity.feature.role.mapper.toUserRolesResponse
-import com.denchic45.studiversity.feature.role.mapper.toUsersWithRoles
 import com.denchic45.stuiversity.api.role.model.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -44,12 +42,6 @@ class RoleRepository {
                     (UsersRolesScopes.roleId eq roleId) and
                     (UsersRolesScopes.scopeId eq scopeId)
         }
-    }
-
-    private fun getUserRoleIdsByScope(userId: UUID, scopeId: UUID): List<Long> {
-        return UserRoleScopeDao.find(
-            UsersRolesScopes.userId eq userId and (UsersRolesScopes.scopeId eq scopeId)
-        ).map { it.roleId.value }
     }
 
     fun findCapabilitiesByUserIdAndScopeId(
@@ -120,7 +112,7 @@ class RoleRepository {
 
     private fun existPermissionRoleByUserAndScopeId(userId: UUID, assignRoleId: Long, scopeId: UUID): Boolean {
         return ScopeDao.findById(scopeId)!!.path.any { segmentScopeId ->
-            getUserRoleIdsByScope(userId, segmentScopeId).any { roleId ->
+            getUserRoleIdsInScope(userId, segmentScopeId).any { roleId ->
                 existRoleAssignment(RoleDao.findParentRoleIdsByRoleId(roleId) + roleId, assignRoleId)
             }
         }
@@ -144,25 +136,30 @@ class RoleRepository {
         .let(RoleDao::wrapRows)
         .map(RoleDao::toRole)
 
-    fun findAssignableRolesByUserAndScope(userId: UUID, scopeId: UUID) = RolesAssignments
-        .innerJoin(Roles, { RolesAssignments.roleId }, { Roles.id })
-        .innerJoin(UsersRolesScopes, { Roles.id }, { roleId })
-        .select(Roles.columns)
-        .where(UsersRolesScopes.scopeId eq scopeId and (UsersRolesScopes.userId eq userId))
-        .let(RoleDao::wrapRows)
-        .map(RoleDao::toRole)
+    fun findAssignableRolesByUserAndScope(userId: UUID, scopeId: UUID): List<Role> {
+        val scopeType = ScopeDao[scopeId].type
+        val userRolesInScope = getUserRoleIdsInScope(userId, scopeId)
+
+        return RolesAssignments
+            .innerJoin(Roles, { assignableRoleId }, { Roles.id })
+            .select(Roles.columns)
+            .where(RolesAssignments.roleId inList userRolesInScope and (Roles.scopeTypeId eq scopeType.id))
+//            .where(UsersRolesScopes.scopeId eq scopeId and (UsersRolesScopes.userId eq userId))
+            .let(RoleDao::wrapRows)
+            .map(RoleDao::toRole)
+    }
 
     fun existUserByScope(userId: UUID, scopeId: UUID) = transaction {
         UsersRolesScopes.exists { UsersRolesScopes.userId eq userId and (UsersRolesScopes.scopeId eq scopeId) }
     }
 
     fun findUserRolesByScopeId(userId: UUID, scopeId: UUID): UserRolesResponse {
-        val result = UserRoleScopeDao.find(
-            UsersRolesScopes.userId eq userId
-                    and (UsersRolesScopes.scopeId eq scopeId)
-        )
+        val result = getUserRoleIdsInScope(userId, scopeId)
         return when {
-            !result.empty() -> result.toUserRolesResponse(userId)
+            result.isNotEmpty() -> UserRolesResponse(
+                userId = userId,
+                roles = result.map { RoleDao[it].toRole() }
+            )
 
             UserDao.isExistById(userId) && scopeId == config.organizationId -> {
                 UserRolesResponse(userId, listOf(Role.User))
@@ -172,13 +169,31 @@ class RoleRepository {
         }
     }
 
+    private fun getUserRoleIdsInScope(userId: UUID, scopeId: UUID): List<Long> {
+        return UsersRolesScopes.select(UsersRolesScopes.roleId)
+            .where(UsersRolesScopes.userId eq userId and (UsersRolesScopes.scopeId eq scopeId))
+            .map { it[UsersRolesScopes.roleId].value }
+    }
+
     fun findUsersByScopeId(scopeId: UUID): List<UserWithRolesResponse> = transaction {
-        UserRoleScopeDao.find(UsersRolesScopes.scopeId eq scopeId).toUsersWithRoles()
+        UsersRolesScopes.select(UsersRolesScopes.userId)
+            .where(UsersRolesScopes.scopeId eq scopeId)
+            .groupBy { it[UsersRolesScopes.userId].value }
+            .map { (userId, rows) ->
+                val userDao = UserDao[userId]
+                UserWithRolesResponse(id = userId,
+                    firstName = userDao.firstName,
+                    surname = userDao.surname,
+                    patronymic = userDao.patronymic,
+                    roles = rows.map { RoleDao[it[UsersRolesScopes.roleId]].toRole() }
+                )
+            }
     }
 
     fun findUsersIdsByScopeIdAndRoleId(scopeId: UUID, roleId: Long): List<UUID> {
-        return UserRoleScopeDao.find(UsersRolesScopes.scopeId eq scopeId and (UsersRolesScopes.roleId eq roleId))
-            .map { it.userId.value }
+        return UsersRolesScopes.select(UsersRolesScopes.userId)
+            .where(UsersRolesScopes.scopeId eq scopeId and (UsersRolesScopes.roleId eq roleId))
+            .map { it[UsersRolesScopes.userId].value }
     }
 
     fun addUserRolesInScope(userId: UUID, roles: List<Long>, scopeId: UUID) {
@@ -226,9 +241,10 @@ class RoleRepository {
                 (UsersRolesScopes.userId eq userId)
     } > 0
 
-    private fun removeUserRolesFromScope(userId: UUID, roleIds: List<Long>, scopeId: UUID) = UsersRolesScopes.deleteWhere {
-        UsersRolesScopes.scopeId eq scopeId and (UsersRolesScopes.userId eq userId) and (roleId inList roleIds)
-    }
+    private fun removeUserRolesFromScope(userId: UUID, roleIds: List<Long>, scopeId: UUID) =
+        UsersRolesScopes.deleteWhere {
+            UsersRolesScopes.scopeId eq scopeId and (UsersRolesScopes.userId eq userId) and (roleId inList roleIds)
+        }
 
 
     fun removeRoleByUserAndScope(userId: UUID, roleId: Long, scopeId: UUID) {
