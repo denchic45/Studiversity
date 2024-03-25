@@ -17,12 +17,12 @@ private val useCaseModule = module {
     single { UpdatePasswordUseCase(get(), get()) }
     single { SearchUsersUseCase(get(), get()) }
     single { UpdateAvatarUseCase(get(), get()) }
-    single { ResetAvatarUseCase(get(), get()) }
+    single { ResetAvatarUseCase(get()) }
     single { FindUserAvatarUseCase(get()) }
 }
 
 private val repositoryModule = module {
-    single { UserRepository(get()) }
+    single { UserRepository(get(), get()) }
 }
 
 val userModule = module {

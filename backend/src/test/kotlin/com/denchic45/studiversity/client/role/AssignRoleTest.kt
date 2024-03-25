@@ -11,7 +11,7 @@ import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.model.Gender
 import com.denchic45.stuiversity.api.user.model.UserResponse
-import com.denchic45.stuiversity.util.uuidOf
+import com.denchic45.stuiversity.util.userIdOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -49,13 +49,13 @@ class AssignRoleTest : KtorClientTest() {
 
         roleApi.assignRoleToUserInScope(user.id, organizationId, Role.Moderator.id).assertedResultIsOk()
 
-        roleApi.getUserRolesInScope(uuidOf(user.id), organizationId).unwrapAsserted().apply {
+        roleApi.getUserRolesInScope(userIdOf(user.id), organizationId).unwrapAsserted().apply {
             assertEquals(listOf(Role.Moderator), this.roles)
         }
 
         roleApi.deleteRoleFromUserInScope(user.id, organizationId, Role.Moderator.id).assertedResultIsOk()
 
-        roleApi.getUserRolesInScope(uuidOf(user.id), organizationId).unwrapAsserted().apply {
+        roleApi.getUserRolesInScope(userIdOf(user.id), organizationId).unwrapAsserted().apply {
             assertEquals(emptyList<Role>(), this.roles)
         }
     }

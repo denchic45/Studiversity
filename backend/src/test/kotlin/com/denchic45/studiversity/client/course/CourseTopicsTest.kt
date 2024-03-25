@@ -10,7 +10,6 @@ import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementReq
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
 import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
-import com.denchic45.stuiversity.api.course.topic.RelatedTopicElements
 import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
 import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
 import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
@@ -86,7 +85,7 @@ class CourseTopicsTest : KtorClientTest() {
 
         assertEquals("Updated Topic", updatedTopic.name)
 
-        removeTopic(topic.id, RelatedTopicElements.DELETE)
+        removeTopic(topic.id, true)
     }
 
     @Test
@@ -103,7 +102,7 @@ class CourseTopicsTest : KtorClientTest() {
             )
         ).also(::assertResultIsOk).unwrap().apply { assertEquals(topic.id, topicId) }
 
-        removeTopic(topic.id, RelatedTopicElements.CLEAR_TOPIC)
+        removeTopic(topic.id, false)
 
         courseWorkApi.getById(courseWork.id).also(::assertResultIsOk).unwrap().apply {
             assertNull(topicId, ::toString)
@@ -176,7 +175,7 @@ class CourseTopicsTest : KtorClientTest() {
             ).apply { assertEquals(topic.id, get()?.topicId) { unwrapError().error.toString() } }
         }.unwrap()
 
-        removeTopic(topic.id, RelatedTopicElements.CLEAR_TOPIC)
+        removeTopic(topic.id, false)
 
         // Check updated order in two elements
         courseElementsApi.getById(course.id, elemWithTopic1.id).apply {
@@ -270,11 +269,11 @@ class CourseTopicsTest : KtorClientTest() {
             }
     }
 
-    private suspend fun removeTopic(topicId: UUID, relatedTopicElements: RelatedTopicElements) {
-        courseTopicApi.delete(topicId, relatedTopicElements).also(::assertResultIsOk)
+    private suspend fun removeTopic(topicId: UUID, withElements: Boolean) {
+        courseTopicApi.delete(topicId, withElements).also(::assertResultIsOk)
     }
 }
 
 suspend fun CourseTopicApi.createTopic(courseId: UUID, name: String = "My Topic"): CourseTopicResponse {
-    return create(CreateCourseTopicRequest(courseId, name)).also(::assertResultIsOk).unwrap()
+    return create(courseId, CreateCourseTopicRequest(name)).also(::assertResultIsOk).unwrap()
 }

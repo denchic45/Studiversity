@@ -21,15 +21,12 @@ data class SmtpConf(
     val password: String
 )
 
-data class SupabaseConf(val url: String, val key: String)
-
 //data class Config(
 //    val initialized: Boolean,
 //    val organization: OrganizationConf,
 //    val jwt: JwtConf,
 //    val database: DatabaseConf,
-//    val smtp: SmtpConf,
-//    val supabase: SupabaseConf
+//    val smtp: SmtpConf
 //)
 
 //val config: Config

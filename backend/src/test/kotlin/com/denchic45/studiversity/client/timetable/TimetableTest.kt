@@ -16,7 +16,7 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.TimetableApi
 import com.denchic45.stuiversity.api.timetable.model.*
 import com.denchic45.stuiversity.util.toUUID
-import com.denchic45.stuiversity.util.uuidOf
+import com.denchic45.stuiversity.util.userIdOf
 import com.github.michaelbull.result.unwrap
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -167,7 +167,7 @@ class TimetableTest : KtorClientTest() {
         val request2 = timetableForStudyGroup2()
         putTimetable(request2)
 
-        val response = timetableApi.getTimetable(weekOfYear, memberIds = listOf(uuidOf(teacher1Id)))
+        val response = timetableApi.getTimetable(weekOfYear, memberIds = listOf(userIdOf(teacher1Id)))
             .also(::assertResultIsOk).unwrap()
 
         val expectedTimetableResponse = TimetableResponse(

@@ -57,10 +57,7 @@ fun Route.submissionByIdRoute() {
 
         get {
             val currentUserId = call.currentUserId()
-            val submission = findSubmission(
-                call.parameters.getUuidOrFail("submissionId"),
-                currentUserId
-            )
+            val submission = findSubmission(call.parameters.getUuidOrFail("submissionId"))
 
             val isOwnSubmission = submission.author.id == currentUserId
             if (isOwnSubmission) call.respond(HttpStatusCode.OK, submission)

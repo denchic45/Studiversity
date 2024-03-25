@@ -13,7 +13,7 @@ import com.denchic45.studiversity.feature.course.work.usecase.*
 import org.koin.dsl.module
 
 private val useCaseModule = module {
-    single { AddCourseWorkUseCase(get(), get(), get(), get()) }
+    single { AddCourseWorkUseCase(get(), get()) }
     single { FindCourseElementUseCase(get(), get()) }
     single { FindCourseWorkUseCase(get(), get()) }
     single { RemoveCourseElementUseCase(get(), get(), get()) }

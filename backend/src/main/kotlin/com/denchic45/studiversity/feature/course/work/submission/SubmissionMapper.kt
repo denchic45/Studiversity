@@ -15,7 +15,7 @@ import java.time.LocalTime
 fun SubmissionDao.toResponse() = when (courseWork.type) {
     CourseWorkType.ASSIGNMENT -> WorkSubmissionResponse(
         id = id.value,
-        submissionAuthor = author.toAuthor(),
+        author = author.toAuthor(),
         state = state,
         courseWorkId = courseWork.id.value,
         content = content?.let { Json.decodeFromString(it) } ?: WorkSubmissionContent(emptyList()),

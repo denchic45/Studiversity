@@ -13,9 +13,8 @@ import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 
-// TODO: Использовать свое хранилище вместо supabase
-class AttachmentRepository(private val storage: AttachmentFileStorage) {
 
+class AttachmentRepository(private val storage: AttachmentFileStorage) {
 
     fun addFileAttachment(
         request: CreateFileRequest,
@@ -54,7 +53,7 @@ class AttachmentRepository(private val storage: AttachmentFileStorage) {
     }
 
     private fun addAttachmentReference(dao: AttachmentDao, resourceId: UUID) {
-     AttachmentReferenceDao.new {
+        AttachmentReferenceDao.new {
             this.attachment = dao
             this.resourceId = resourceId
         }

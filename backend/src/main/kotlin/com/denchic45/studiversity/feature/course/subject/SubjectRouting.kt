@@ -3,10 +3,7 @@ package com.denchic45.studiversity.feature.course.subject
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.course.subject.usecase.*
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
-import com.denchic45.studiversity.ktor.CommonErrors
-import com.denchic45.studiversity.ktor.claimId
-import com.denchic45.studiversity.ktor.getUuidOrFail
-import com.denchic45.studiversity.ktor.jwtPrincipal
+import com.denchic45.studiversity.ktor.*
 import com.denchic45.studiversity.util.onlyDigits
 import com.denchic45.studiversity.validation.buildValidationResult
 import com.denchic45.studiversity.validation.require
