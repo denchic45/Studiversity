@@ -6,19 +6,14 @@ val logbackVersion: String by project
 val exposedVersion: String by project
 val h2Version: String by project
 val koinVersion: String by project
-val supabaseVersion: String by project
 
 plugins {
     application
     kotlin("jvm")
-    id("io.ktor.plugin") version "2.1.3"
+    id("io.ktor.plugin") version "2.3.3"
     kotlin("plugin.serialization")
 
     id("org.jetbrains.kotlinx.dataframe") version "0.12.1"
-
-    // Shadow plugin - enable support for building our UberJar
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-    war
 }
 
 group = "com.denchic45.studiversity"
@@ -45,37 +40,6 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks {
-    val shadowJarTask = named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
-        // explicitly configure the filename of the resulting UberJar
-        val uberJarFileName = "studiversity-backend.jar"
-        archiveFileName.set(uberJarFileName)
-
-        // Appends entries in META-INF/services resources into a single resource. For example, if there are several
-        // META-INF/services/org.apache.maven.project.ProjectBuilder resources spread across many JARs the individual
-        // entries will all be concatenated into a single META-INF/services/org.apache.maven.project.ProjectBuilder
-        // resource packaged into the resultant JAR produced by the shading process -
-        // Effectively ensures we bring along all the necessary bits from Jetty
-        mergeServiceFiles()
-
-        // As per the App Engine java11 standard environment requirements listed here:
-        // https://cloud.google.com/appengine/docs/standard/java11/runtime
-        // Your Jar must contain a Main-Class entry in its META-INF/MANIFEST.MF metadata file
-        manifest {
-            attributes(mapOf("Main-Class" to application.mainClass.get()))
-        }
-    }
-
-    // because we're using shadowJar, this task has limited value
-    named("jar") {
-        enabled = false
-    }
-
-    // update the `assemble` task to ensure the creation of a brand new UberJar using the shadowJar task
-    named("assemble") {
-        dependsOn(shadowJarTask)
-    }
-}
 dependencies {
 //    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":common:api"))
@@ -113,10 +77,6 @@ dependencies {
 
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
 
-    // Supabase
-    implementation("io.github.jan-tennert.supabase:realtime-kt:$supabaseVersion")
-    implementation("io.github.jan-tennert.supabase:storage-kt:$supabaseVersion")
-
     // Koin
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
@@ -137,14 +97,11 @@ dependencies {
 
     implementation("com.squareup.okio:okio:3.9.0")
 
-//    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("io.github.oshai:kotlin-logging-jvm:6.0.3")
 
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.16")
 
     implementation("net.harawata:appdirs:1.2.1")
-
-//    implementation("org.slf4j:slf4j-simple:2.0.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
