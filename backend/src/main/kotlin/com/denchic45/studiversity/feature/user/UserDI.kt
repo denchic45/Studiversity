@@ -26,5 +26,6 @@ private val repositoryModule = module {
 }
 
 val userModule = module {
+    single { AvatarService(get()) }
     includes(useCaseModule, repositoryModule)
 }

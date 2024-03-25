@@ -15,7 +15,7 @@ class SearchStudyGroupsUseCase(
         roleId: Long?,
         specialtyId: UUID?,
         academicYear: Int?
-    ): List<Any> = suspendTransactionWorker {
+    ) = suspendTransactionWorker {
         studyGroupRepository.find(query?.searchable(), memberId, roleId, specialtyId, academicYear)
     }
 }
