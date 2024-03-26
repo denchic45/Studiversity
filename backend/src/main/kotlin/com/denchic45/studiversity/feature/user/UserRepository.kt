@@ -1,26 +1,21 @@
 package com.denchic45.studiversity.feature.user
 
 import com.denchic45.studiversity.database.exists
-import com.denchic45.studiversity.database.table.MagicLinks
-import com.denchic45.studiversity.database.table.RefreshTokens
-import com.denchic45.studiversity.database.table.UserDao
-import com.denchic45.studiversity.database.table.Users
+import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.auth.model.MagicLinkToken
 import com.denchic45.studiversity.feature.auth.model.RefreshToken
 import com.denchic45.studiversity.feature.auth.model.UserByEmail
 import com.denchic45.studiversity.feature.role.repository.AddScopeRepoExt
+import com.denchic45.studiversity.feature.user.account.model.VerificationToken
 import com.denchic45.stuiversity.api.account.model.UpdateAccountPersonalRequest
 import com.denchic45.stuiversity.api.account.model.UpdateEmailRequest
 import com.denchic45.stuiversity.api.account.model.UpdatePasswordRequest
 import com.denchic45.stuiversity.api.auth.AuthErrors
 import com.denchic45.stuiversity.api.auth.model.SignupRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
 import com.denchic45.stuiversity.api.user.model.CreateUserRequest
 import com.denchic45.stuiversity.api.user.model.UpdateUserRequest
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -176,4 +171,16 @@ class UserRepository(
                 or (Users.surname.lowerCase() like "$query%")
                 or (Users.patronymic.lowerCase() like "$query%")
     ).map(UserDao::toUserResponse)
+
+    fun findToken(token: String): VerificationToken? {
+        return VerificationTokens.selectAll().where(VerificationTokens.secret eq token)
+            .singleOrNull()?.let {
+                VerificationToken(
+                    secret = token,
+                    userId = it[VerificationTokens.userId].value,
+                    action = it[VerificationTokens.action],
+                    expired = it[VerificationTokens.expireAt].isBefore(Instant.now())
+                )
+            }
+    }
 }
