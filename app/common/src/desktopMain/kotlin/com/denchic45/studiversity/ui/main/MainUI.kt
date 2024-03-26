@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.HelpOutline
 import androidx.compose.material3.*
@@ -31,24 +30,17 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleC
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
-import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.AppBarMediator
 import com.denchic45.studiversity.ui.LocalAppBarMediator
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.confirm.ConfirmDialog
-import com.denchic45.studiversity.ui.course.CourseScreen
-import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
-import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.studiversity.ui.navigation.SlotChild
 import com.denchic45.studiversity.ui.root.RootScreen
 import com.denchic45.studiversity.ui.schedule.ScheduleScreen
 import com.denchic45.studiversity.ui.settings.SettingsDialog
-import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
 import com.denchic45.studiversity.ui.theme.DesktopApp
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
-import com.denchic45.studiversity.ui.yourworks.YourWorksScreen
-import com.denchic45.stuiversity.api.user.model.UserResponse
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import java.awt.Toolkit
@@ -93,15 +85,6 @@ fun MainScreen(component: MainComponent) {
         val userInfo by component.userInfo.collectAsState()
 
         Column {
-//            MainAppBar(
-//                userInfo = userInfo,
-//                showBackButton = false,
-//                onBackClick = component::onBackClick,
-//                onHelpClick = {},
-//                onNotificationsClick = {},
-//                onSettingsClick = component::onSettingsClick
-//            )
-
             Row {
                 NavigationRail(
                     header = {
@@ -270,18 +253,6 @@ fun MainScreen(component: MainComponent) {
                         )
                     }
 
-                    Divider(Modifier.width(48.dp).align(Alignment.CenterHorizontally))
-
-                    NavigationRailItem(
-                        icon = {
-                            Icon(
-                                painter = painterResource("ic_time".toDrawablePath()),
-                                contentDescription = "schedule"
-                            )
-                        },
-                        selected = false,
-                        onClick = {}
-                    )
                     if (availableScreens.adminDashboard) {
                         NavigationRailItem(
                             icon = {
@@ -339,36 +310,6 @@ fun MainScreen(component: MainComponent) {
                 }
             }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MainAppBar(
-    userInfo: Resource<UserResponse>,
-    showBackButton: Boolean,
-    onBackClick: () -> Unit,
-    onHelpClick: () -> Unit,
-    onNotificationsClick: () -> Unit,
-    onSettingsClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .padding(horizontal = MaterialTheme.spacing.normal),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-//        if (showBackButton) {
-        IconButton(onClick = onBackClick, enabled = showBackButton) {
-            Icon(
-                imageVector = Icons.Rounded.ArrowBack,
-                contentDescription = "back"
-            )
-        }
-//        }
-        Spacer(Modifier.weight(1f))
-
     }
 }
 

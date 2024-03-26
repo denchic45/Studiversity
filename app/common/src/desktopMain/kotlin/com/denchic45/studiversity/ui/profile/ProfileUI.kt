@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.systemRoleName
 import com.denchic45.studiversity.ui.BlockContent
@@ -34,7 +35,6 @@ import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.role.model.Role
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.seiko.imageloader.rememberAsyncImagePainter
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -155,7 +155,7 @@ fun ProfileHeaderBlock(
                     )
                     Text(state.user.account.email, style = MaterialTheme.typography.titleSmall)
 
-                    state.studyGroups.takeIf(List<StudyGroupResponse>::isNotEmpty)
+                    state.studyGroups.takeIf(List<StudyGroupItem>::isNotEmpty)
                         ?.let { studyGroups ->
                             Row(Modifier.clickable {
                                 if (studyGroups.size == 1) onStudyGroupClick(studyGroups.single().id)

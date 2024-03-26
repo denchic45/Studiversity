@@ -42,7 +42,7 @@ class UserEditorComponent(
     @Assisted
     private val userId: UUID?,
     @Assisted
-   private val onFinish: () -> Unit,
+    private val onFinish: () -> Unit,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -50,8 +50,6 @@ class UserEditorComponent(
     private val componentScope = componentScope()
 
     val allowSave = MutableStateFlow(false)
-
-
 
 
     private val assignableSystemRoles = findAssignableRolesByUserAndScopeUseCase(null, null)
@@ -120,15 +118,11 @@ class UserEditorComponent(
                 conditions = listOf(Condition<GenderAction> { it != GenderAction.Undefined }.observable { isValid ->
                     editingState.genderMessage = getIfNot(isValid) { "Пол обязателен" }
                 })
-            ),
-//            ValueValidator(
-//                value = state::assignedRoles,
-//                conditions = listOf(Condition<List<Role>> { it.isNotEmpty() }.observable { isValid ->
-//                    state.rolesMessage = getIfNot(isValid) { "Выберите хотя бы одну роль" }
-//                })
-//            ),
-            emailValidator
-        )
+            )
+        ).let { validators ->
+            if (editingState.isNew) validators + emailValidator
+            else validators
+        }
     )
 
     init {
@@ -143,21 +137,21 @@ class UserEditorComponent(
         saveChanges()
     }
 
-    fun onFirstNameType(firstName: String) {
+    fun onFirstNameChange(firstName: String) {
         editingState.firstName = firstName
         updateAllowSave()
     }
 
-    fun onSurnameType(surname: String) {
+    fun onSurnameChange(surname: String) {
         editingState.surname = surname
         updateAllowSave()
     }
 
-    fun onPatronymicType(patronymic: String) {
+    fun onPatronymicChange(patronymic: String) {
         editingState.patronymic = patronymic
     }
 
-    fun onEmailType(email: String) {
+    fun onEmailChange(email: String) {
         editingState.email = email
         updateAllowSave()
     }

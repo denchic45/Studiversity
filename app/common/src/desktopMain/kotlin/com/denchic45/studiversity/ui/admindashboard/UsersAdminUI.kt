@@ -21,7 +21,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.ui.model.UserItem
-import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.ui.usereditor.UserEditorDialog
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -38,7 +37,12 @@ fun UsersAdminScreen(component: UsersAdminComponent) {
         }
     }
 
-    AdminSearchScreen(component, UserItem::id) { userItem ->
+    AdminSearchScreen(
+        component = component,
+        keyItem = UserItem::id,
+        searchPlaceholder = "Найти пользователя",
+        fabText = "Создать пользователя"
+    ) { userItem ->
         UserListItem(
             item = userItem,
             onClick = { component.onUserClick(userItem.id) },

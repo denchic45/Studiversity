@@ -1,15 +1,14 @@
 package com.denchic45.studiversity.ui.coursestudygroups
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.ChildSlot
-import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
-import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.domain.model.StudyGroupItem
+import com.denchic45.studiversity.domain.model.toItem
 import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.domain.usecase.AttachStudyGroupsToCourseUseCase
@@ -24,7 +23,7 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CourseStudyGroupsComponent(
@@ -32,7 +31,7 @@ class CourseStudyGroupsComponent(
     private val attachStudyGroupsToCourseUseCase: AttachStudyGroupsToCourseUseCase,
     private val detachStudyGroupsToCourseUseCase: DetachStudyGroupsToCourseUseCase,
     private val studyGroupChooserComponent: (
-            (StudyGroupResponse) -> Unit,
+            (StudyGroupItem) -> Unit,
             ComponentContext,
     ) -> StudyGroupChooserComponent,
     @Assisted
@@ -56,32 +55,34 @@ class CourseStudyGroupsComponent(
         }
     )
 
-    val studyGroups = MutableStateFlow<Resource<List<StudyGroupResponse>>>(resourceOf())
+    val studyGroups = MutableStateFlow<Resource<List<StudyGroupItem>>>(resourceOf())
 
     init {
         componentScope.launch {
-            studyGroups.emitAll(findAttachedStudyGroupsByCourseIdUseCase(courseId))
+            studyGroups.emitAll(findAttachedStudyGroupsByCourseIdUseCase(courseId).mapResource {
+                it.map(StudyGroupResponse::toItem)
+            })
         }
     }
 
-    private fun onStudyGroupAdd(studyGroupResponse: StudyGroupResponse) {
+    private fun onStudyGroupAdd(item: StudyGroupItem) {
         overlayNavigation.dismiss()
         componentScope.launch {
-            attachStudyGroupsToCourseUseCase(courseId, studyGroupResponse.id).last()
+            attachStudyGroupsToCourseUseCase(courseId, item.id).last()
                 .onSuccess {
                     studyGroups.value.onSuccess {
-                        studyGroups.value = resourceOf(it + studyGroupResponse)
+                        studyGroups.value = resourceOf(it + item)
                     }
                 }
         }
     }
 
-    fun onStudyGroupRemove(studyGroupResponse: StudyGroupResponse) {
+    fun onStudyGroupRemove(item: StudyGroupItem) {
         componentScope.launch {
-            detachStudyGroupsToCourseUseCase(courseId, studyGroupResponse.id).last()
+            detachStudyGroupsToCourseUseCase(courseId, item.id).last()
                 .onSuccess {
                     studyGroups.value.onSuccess {
-                        studyGroups.value = resourceOf(it - studyGroupResponse)
+                        studyGroups.value = resourceOf(it - item)
                     }
                 }
         }

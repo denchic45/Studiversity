@@ -7,23 +7,13 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
-import com.denchic45.studiversity.domain.*
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.filterSuccess
-import com.denchic45.studiversity.domain.resource.mapResource
-import com.denchic45.studiversity.domain.resource.onFailure
-import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.usecase.AddStudyGroupUseCase
-import com.denchic45.studiversity.domain.usecase.FindSpecialtyByContainsNameUseCase
-import com.denchic45.studiversity.domain.usecase.FindStudyGroupByIdUseCase
-import com.denchic45.studiversity.domain.usecase.UpdateStudyGroupUseCase
+import com.denchic45.studiversity.domain.resource.*
+import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.getOptProperty
 import com.denchic45.studiversity.uivalidator.condition.Condition
 import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.uivalidator.validator.observable
-import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
@@ -40,12 +30,14 @@ import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Inject
 class StudyGroupEditorComponent(
     private val findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     private val findSpecialtyByContainsNameUseCase: FindSpecialtyByContainsNameUseCase,
     private val addStudyGroupUseCase: AddStudyGroupUseCase,
     private val updateStudyGroupUseCase: UpdateStudyGroupUseCase,
+    private val removeStudyGroupUseCase: RemoveStudyGroupUseCase,
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
@@ -56,10 +48,8 @@ class StudyGroupEditorComponent(
     private val componentScope = componentScope()
 
     val isNew = studyGroupId == null
-
-    private val editingState = EditingStudyGroup()
+    private val editingState = EditingStudyGroup(isNew)
     val allowSave = MutableStateFlow(false)
-    val inputState = InputState()
 
     private val fieldEditor = FieldEditor(
         mapOf(
@@ -75,19 +65,19 @@ class StudyGroupEditorComponent(
                 value = editingState::name,
                 conditions = listOf(Condition(String::isNotEmpty))
             ).observable { valid ->
-                inputState.nameMessage = "Имя обязательно".takeUnless { valid }
+                editingState.nameMessage = "Имя обязательно".takeUnless { valid }
             },
             ValueValidator(
                 value = editingState::startAcademicYear,
                 conditions = listOf(Condition { it != 0 })
             ).observable { valid ->
-                inputState.startYearMessage = "Год начала обязателен".takeUnless { valid }
+                editingState.startYearMessage = "Год начала обязателен".takeUnless { valid }
             },
             ValueValidator(
                 value = editingState::endAcademicYear,
                 conditions = listOf(Condition { it != 0 })
             ).observable { valid ->
-                inputState.endYearMessage = "Год окончания обязателен".takeUnless { valid }
+                editingState.endYearMessage = "Год окончания обязателен".takeUnless { valid }
             },
         )
     )
@@ -104,38 +94,41 @@ class StudyGroupEditorComponent(
         }
     } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
 
-    val searchSpecialtiesText = MutableStateFlow("")
+    private val specialtyQuery = MutableStateFlow("")
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val searchedSpecialties = searchSpecialtiesText.filter(String::isNotEmpty)
-        .flatMapLatest(findSpecialtyByContainsNameUseCase::invoke)
-        .filterSuccess()
-        .map { it.value }
+    init {
+        specialtyQuery.filter(String::isNotEmpty)
+            .flatMapLatest(findSpecialtyByContainsNameUseCase::invoke)
+            .onEach { resource -> resource.onSuccess { editingState.foundSpecialties = it } }
+            .launchIn(componentScope)
+    }
 
-    fun onNameType(name: String) {
+    fun onNameChange(name: String) {
         editingState.name = name
         updateAllowSave()
     }
 
-    fun onSpecialtySelect(specialty: SpecialtyResponse?) {
-        searchSpecialtiesText.value = ""
-        editingState.specialty = specialty
-        updateAllowSave()
-    }
-
-    fun onSpecialtyNameType(text: String) {
-        searchSpecialtiesText.update { text }
-        updateAllowSave()
-    }
-
-    fun onStartYearType(startYear: Int) {
+    fun onStartYearChange(startYear: Int) {
         editingState.startAcademicYear = startYear
         updateAllowSave()
     }
 
 
-    fun onEndYearType(endYear: Int) {
+    fun onEndYearChange(endYear: Int) {
         editingState.endAcademicYear = endYear
+        updateAllowSave()
+    }
+
+    fun onSpecialtyQueryChange(text: String) {
+        editingState.specialtyQuery = text
+        specialtyQuery.update { text }
+        updateAllowSave()
+    }
+
+    fun onSpecialtySelect(specialty: SpecialtyResponse?) {
+        specialtyQuery.value = ""
+        editingState.specialtyQuery = ""
+        editingState.specialty = specialty
         updateAllowSave()
     }
 
@@ -190,19 +183,25 @@ class StudyGroupEditorComponent(
         allowSave.update { fieldEditor.hasChanges() }
     }
 
-    @Stable
-    class InputState {
-        var nameMessage: String? by mutableStateOf(null)
-        var startYearMessage: String? by mutableStateOf(null)
-        var endYearMessage: String? by mutableStateOf(null)
+    fun onRemoveStudyGroupClick() {
+        componentScope.launch {
+            removeStudyGroupUseCase(studyGroupId!!).onSuccess { onFinish() }
+        }
     }
 }
 
 @Stable
-class EditingStudyGroup {
+class EditingStudyGroup(val isNew: Boolean) {
     var name: String by mutableStateOf("")
     var specialty: SpecialtyResponse? by mutableStateOf(null)
     var startAcademicYear: Int by mutableStateOf(0)
     var endAcademicYear: Int by mutableStateOf(0)
+
+    var specialtyQuery: String by mutableStateOf("")
+    var foundSpecialties: List<SpecialtyResponse> by mutableStateOf(emptyList())
+
+    var nameMessage: String? by mutableStateOf(null)
+    var startYearMessage: String? by mutableStateOf(null)
+    var endYearMessage: String? by mutableStateOf(null)
 }
 

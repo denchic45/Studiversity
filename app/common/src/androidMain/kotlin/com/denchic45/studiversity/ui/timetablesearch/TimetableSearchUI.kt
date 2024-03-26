@@ -18,12 +18,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.isContainer
+import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.common.R
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
@@ -38,7 +39,6 @@ import com.denchic45.studiversity.ui.timetable.getMonthTitle
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -99,7 +99,7 @@ fun TimetableSearchScreen(
                 timetableResource = timetableResource,
                 onQueryType = component::onQueryType,
                 onDateSelect = component::onDateSelect,
-                onGroupSelect = component::onGroupSelect,
+                onStudyGroupSelect = component::onStudyGroupSelect,
                 onAddPeriodClick = component::onAddPeriodClick,
                 onEditPeriodClick = component::onEditPeriodClick,
                 onMovePeriodDrag = component::onMovePeriodDrag,
@@ -118,7 +118,7 @@ fun TimetableSearchContent(
     timetableResource: Resource<TimetableState>,
     onQueryType: (String) -> Unit,
     onDateSelect: (LocalDate) -> Unit,
-    onGroupSelect: (StudyGroupResponse) -> Unit,
+    onStudyGroupSelect: (StudyGroupItem) -> Unit,
     onAddPeriodClick: (DayOfWeek) -> Unit,
     onEditPeriodClick: (DayOfWeek, Int) -> Unit,
     onMovePeriodDrag: (DayOfWeek, Int, Int) -> Unit,
@@ -127,7 +127,7 @@ fun TimetableSearchContent(
     Surface {
         var active by remember { mutableStateOf(false) }
         Box(modifier = Modifier
-            .semantics { isContainer = true }
+            .semantics { isTraversalGroup = true }
             .zIndex(1f)
             .fillMaxWidth()) {
             SearchBar(
@@ -156,7 +156,7 @@ fun TimetableSearchContent(
                                 item = it,
                                 modifier = Modifier.clickable {
                                     active = false
-                                    onGroupSelect(it)
+                                    onStudyGroupSelect(it)
                                 }
                             )
                         }

@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.ui.profile
 
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.stuiversity.api.course.model.CourseResponse
 import com.denchic45.stuiversity.api.role.model.Role
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
@@ -9,7 +10,7 @@ data class ProfileViewState(
     val user: UserResponse,
     val roles: List<Role>,
 
-    val studyGroups: List<StudyGroupResponse>,
+    val studyGroups: List<StudyGroupItem>,
     val courses: List<CourseResponse>,
 
     val self: Boolean,
@@ -19,7 +20,7 @@ data class ProfileViewState(
 
 fun UserResponse.toProfileViewState(
     roles: List<Role>,
-    studyGroups: List<StudyGroupResponse>,
+    studyGroups: List<StudyGroupItem>,
     courses: List<CourseResponse>,
     allowEdit: Boolean,
     self: Boolean

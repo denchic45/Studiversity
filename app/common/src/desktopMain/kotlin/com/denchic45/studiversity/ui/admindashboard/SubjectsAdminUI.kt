@@ -6,7 +6,12 @@ import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 
 @Composable
 fun SubjectsAdminScreen(component: SubjectsAdminComponent) {
-    AdminSearchScreen(component, SubjectResponse::id) {
+    AdminSearchScreen(
+        component,
+        SubjectResponse::id,
+        searchPlaceholder = "Найти предмет",
+        fabText = "Создать предмет"
+    ) {
         Text(it.name)
     }
 }

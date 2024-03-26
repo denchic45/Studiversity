@@ -2,60 +2,43 @@ package com.denchic45.studiversity.ui.usereditor
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.systemRoleName
-import com.denchic45.studiversity.ui.LocalAppBarMediator
 import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.theme.DesktopAppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
 import com.denchic45.stuiversity.api.role.model.Role
 
+@Composable
+fun TitleAlertDialog(text: String, onClose: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+    ) {
+        Text(text)
+        Spacer(Modifier.weight(1f))
+        IconButton(onClose) {
+            Icon(Icons.Rounded.Close, "")
+        }
+    }
+}
 
 @Composable
 fun UserEditorDialog(component: UserEditorComponent) {
@@ -65,27 +48,21 @@ fun UserEditorDialog(component: UserEditorComponent) {
         AlertDialog(
             modifier = Modifier.heightIn(max = 648.dp),
             title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                ) {
-                    Text("Создать пользователя")
-                    Spacer(Modifier.weight(1f))
-                    IconButton(component::onClose) {
-                        Icon(Icons.Rounded.Close, "")
-                    }
-                }
+                TitleAlertDialog(
+                    text = if (it.isNew) "Создать пользователя" else "Изменить пользователя",
+                    onClose = component::onClose
+                )
             },
             onDismissRequest = component::onClose,
             text = {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     UserEditorContent(
                         state = it,
-                        onFirstNameType = component::onFirstNameType,
-                        onSurnameType = component::onSurnameType,
-                        onPatronymicType = component::onPatronymicType,
+                        onFirstNameType = component::onFirstNameChange,
+                        onSurnameType = component::onSurnameChange,
+                        onPatronymicType = component::onPatronymicChange,
                         onGenderSelect = component::onGenderSelect,
-                        onEmailType = component::onEmailType,
+                        onEmailType = component::onEmailChange,
                         onRoleSelect = component::onRoleSelect,
                         onRemoveUserClick = component::onRemoveUserClick
                     )
@@ -258,17 +235,6 @@ private fun UserEditorContent(
                     .clip(MaterialTheme.shapes.medium)
                     .clickable { confirmRemove = true }
             )
-//            FilledTonalButton(
-//                onClick = { confirmRemove = true },
-//                colors = ButtonDefaults.filledTonalButtonColors(
-//                    contentColor = MaterialTheme.colorScheme.error,
-//                    containerColor = MaterialTheme.colorScheme.errorContainer
-//                ),
-//                modifier = Modifier
-//                    .padding(MaterialTheme.spacing.normal)
-//            ) {
-//                Text("Удалить")
-//            }
             if (confirmRemove)
                 AlertDialog(
                     onDismissRequest = { confirmRemove = false },
@@ -277,7 +243,7 @@ private fun UserEditorContent(
                     text = {
                         Text(
                             """
-                                Удалятся все данные, связанные с данным пользователем.
+                                Удалятся все данные, связанные с пользователем.
                                 Восстановить пользователя будет невозможно.
                             """.trimIndent()
                         )

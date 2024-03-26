@@ -6,25 +6,23 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.Divider
-import androidx.compose.material.TabRow
-import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.isContainer
+import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.zIndex
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.search.SearchedItemsContent
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.studygroups.StudyGroupListItem
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.launch
 
 @Composable
@@ -61,7 +59,7 @@ fun FinderContent(
     }
 
     Box(modifier = Modifier
-        .semantics { isContainer = true }
+        .semantics { isTraversalGroup = true }
         .zIndex(1f)
         .fillMaxWidth()) {
         SearchBar(
@@ -81,7 +79,7 @@ fun FinderContent(
     }
     TabRow(
         selectedTabIndex = pagerState.currentPage,
-        backgroundColor = Color.Transparent,
+        containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.primary,
         indicator = { tabPositions -> TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab])) },
         divider = {}) {
@@ -119,7 +117,7 @@ fun FinderContent(
 
                 is FinderComponent.TabChild.StudyGroups -> SearchedItemsContent(
                     component = activeChild.component,
-                    keyItem = StudyGroupResponse::id,
+                    keyItem = StudyGroupItem::id,
                     null,
                     null,
                 ) { StudyGroupListItem(it) }

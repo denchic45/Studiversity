@@ -71,12 +71,12 @@ fun UserEditorScreen(component: UserEditorComponent) {
     Surface {
         UserEditorContent(
             state = state,
-            onFirstNameType = component::onFirstNameType,
-            onSurnameType = component::onSurnameType,
-            onPatronymicType = component::onPatronymicType,
+            onFirstNameType = component::onFirstNameChange,
+            onSurnameType = component::onSurnameChange,
+            onPatronymicType = component::onPatronymicChange,
             onGenderSelect = component::onGenderSelect,
             onRoleSelect = component::onRoleSelect,
-            onEmailType = component::onEmailType,
+            onEmailType = component::onEmailChange,
             modifier = Modifier.verticalScroll(scrollState)
         )
     }
@@ -85,7 +85,7 @@ fun UserEditorScreen(component: UserEditorComponent) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserEditorContent(
-    state: UserEditorComponent.EditingUser,
+    state: EditingUserState,
     onFirstNameType: (String) -> Unit,
     onSurnameType: (String) -> Unit,
     onPatronymicType: (String) -> Unit,

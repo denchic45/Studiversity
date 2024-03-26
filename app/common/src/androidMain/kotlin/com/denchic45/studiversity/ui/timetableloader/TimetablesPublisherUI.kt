@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.hideAppBar
@@ -101,7 +102,7 @@ fun TimetablesPublisherScreen(
 private fun TimetablePublisherContent(
     publishState: TimetablesPublisherComponent.PublishState,
     isEdit: Boolean,
-    studyGroups: List<StudyGroupResponse>,
+    studyGroups: List<StudyGroupItem>,
     pagerState: PagerState,
     editors: List<TimetableEditorComponent>,
     selectedDate: LocalDate,
@@ -231,7 +232,7 @@ private fun TimetablePublisherContent(
                         onClick = onStudyGroupChoose
                     )
                 }
-                Divider()
+                HorizontalDivider()
                 HorizontalPager(
                     state = pagerState
                 ) { position ->

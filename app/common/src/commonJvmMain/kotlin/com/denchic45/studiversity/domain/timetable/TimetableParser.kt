@@ -1,5 +1,7 @@
 package com.denchic45.studiversity.domain.timetable
 
+import com.denchic45.studiversity.domain.model.StudyGroupItem
+import com.denchic45.studiversity.domain.model.toItem
 import com.denchic45.studiversity.domain.timetable.model.TimetableParserResult
 import com.denchic45.stuiversity.api.course.CoursesApi
 import com.denchic45.stuiversity.api.course.model.CourseResponse
@@ -8,16 +10,7 @@ import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.stuiversity.api.room.RoomApi
 import com.denchic45.stuiversity.api.room.model.RoomResponse
 import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.timetable.model.EventDetails
-import com.denchic45.stuiversity.api.timetable.model.EventResponse
-import com.denchic45.stuiversity.api.timetable.model.LessonDetails
-import com.denchic45.stuiversity.api.timetable.model.LessonResponse
-import com.denchic45.stuiversity.api.timetable.model.PeriodMember
-import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
-import com.denchic45.stuiversity.api.timetable.model.StudyGroupNameResponse
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
-import com.denchic45.stuiversity.api.timetable.model.toPeriodMember
+import com.denchic45.stuiversity.api.timetable.model.*
 import com.denchic45.stuiversity.api.user.UserApi
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import com.denchic45.stuiversity.util.DateTimePatterns
@@ -32,8 +25,7 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell
 import java.io.InputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 import kotlin.random.Random
 
 @Inject
@@ -58,7 +50,7 @@ class TimetableParser(
     private var currentRow = 0
     private var studyGroupColumn = 1
     private var currentDayOfWeek = 0
-    private lateinit var currentStudyGroup: StudyGroupResponse
+    private lateinit var currentStudyGroup: StudyGroupItem
 
     private val cachedCourses = mutableMapOf<String, CourseResponse>()
     private val cachedCoursesByStudyGroup = mutableMapOf<Pair<String, UUID>, CourseResponse>()
@@ -90,12 +82,12 @@ class TimetableParser(
             )
 
             val groupsCount = groupsCells.size
-            val timetables = mutableListOf<Pair<StudyGroupResponse, TimetableResponse>>()
+            val timetables = mutableListOf<Pair<StudyGroupItem, TimetableResponse>>()
             for (i in 0 until groupsCount) {
                 val studyGroupName = groupsCells[i].text
                 studyGroupApi.getList(query = studyGroupName)
                     .unwrap().firstOrNull { it.name == studyGroupName }?.let { studyGroup ->
-                        currentStudyGroup = studyGroup
+                        currentStudyGroup = studyGroup.toItem()
                         groupRow = getCellByGroupName(groupsCells, currentStudyGroup.name)?.tableRow
                             ?.let {
                                 val indexOfRow = table.rows.indexOf(it)

@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.layout.AdaptiveMasterSidebarLayout
@@ -21,7 +22,7 @@ import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 @Composable
 fun StudyGroupsAdminScreen(component: StudyGroupsAdminComponent) {
 
-    val childSidebar by component.childSidebar.subscribeAsState()
+    val childSidebar by component.childSlot.subscribeAsState()
 
     AdaptiveMasterSidebarLayout(
         masterContent = { StudyGroupsAdminMainScreen(component) },
@@ -54,7 +55,7 @@ private fun StudyGroupsAdminMainScreen(component: StudyGroupsAdminComponent) {
         Box(Modifier.padding(paddingValues)) {
             SearchScreen(
                 component = component.chooserComponent,
-                keyItem = StudyGroupResponse::id,
+                keyItem = StudyGroupItem::id,
                 placeholder = "Поиск групп"
             ) { item ->
                 StudyGroupListItem(item = item, trailingContent = {

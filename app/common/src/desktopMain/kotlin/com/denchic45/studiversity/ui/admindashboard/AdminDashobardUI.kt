@@ -140,16 +140,17 @@ fun <T> AdminSearchScreen(
     keyItem: (T) -> Any,
     emptyQueryContent: (@Composable () -> Unit)? = { StartSearch() },
     emptyResultContent: (@Composable () -> Unit)? = { EmptySearch() },
-    placeholder: String = "Поиск",
+    searchPlaceholder: String = "Поиск",
+    fabText:String = "Создать",
     itemContent: @Composable (T) -> Unit,
 ) {
     SearchContent(
         component.chooserComponent,
         keyItem,
-        Modifier,
         emptyQueryContent,
         emptyResultContent,
-        placeholder,
+        searchPlaceholder,
+        fabText,
         component::onAddClick,
         itemContent
     )
@@ -160,10 +161,10 @@ fun <T> AdminSearchScreen(
 private fun <T> SearchContent(
     component: SearchableComponent<T>,
     keyItem: (T) -> Any,
-    modifier: Modifier,
-    emptyQueryContent: @Composable (() -> Unit)?,
-    emptyResultContent: @Composable (() -> Unit)?,
+    emptyQueryContent: @Composable() (() -> Unit)?,
+    emptyResultContent: @Composable() (() -> Unit)?,
     placeholder: String,
+    fabText: String,
     onAddClick: () -> Unit,
     itemContent: @Composable (T) -> Unit,
 ) {
@@ -200,7 +201,7 @@ private fun <T> SearchContent(
                 ) {
                     Icon(Icons.Outlined.Add, null)
                     Spacer(Modifier.width(MaterialTheme.spacing.small))
-                    Text("Добавить")
+                    Text(fabText)
                 }
             }
         }

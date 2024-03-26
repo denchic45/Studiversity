@@ -2,16 +2,12 @@ package com.denchic45.studiversity.ui.timetableloader
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.slot.ChildSlot
-import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
-import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.data.repository.MetaRepository
-import com.denchic45.studiversity.domain.model.toItem
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
@@ -31,27 +27,22 @@ import com.denchic45.studiversity.ui.timetable.state.toLocalDateOfWeekOfYear
 import com.denchic45.studiversity.ui.timetable.state.toTimetableState
 import com.denchic45.studiversity.ui.timetableeditor.TimetableEditorComponent
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.time.DayOfWeek
-import java.util.UUID
+import java.util.*
 
 @Inject
 class TimetablesPublisherComponent(
     metaRepository: MetaRepository,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val studyGroupChooserComponent: (
-            (StudyGroupResponse) -> Unit,
+            (StudyGroupItem) -> Unit,
             ComponentContext,
     ) -> StudyGroupChooserComponent,
     private val periodEditorComponent: (
@@ -68,7 +59,7 @@ class TimetablesPublisherComponent(
     @Assisted
     private val weekOfYear: String,
     @Assisted
-    _studyGroupTimetables: List<Pair<StudyGroupResponse, TimetableResponse>>,
+    studyGroupTimetables: List<Pair<StudyGroupItem, TimetableResponse>>,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
@@ -111,7 +102,7 @@ class TimetablesPublisherComponent(
     private val bellSchedule = metaRepository.observeBellSchedule
         .shareIn(componentScope, SharingStarted.Lazily, 1)
 
-    val studyGroups = MutableStateFlow(_studyGroupTimetables.map { it.first })
+    val studyGroups = MutableStateFlow(studyGroupTimetables.map { it.first })
 
     val editorComponents = MutableStateFlow(emptyList<TimetableEditorComponent>())
 
@@ -124,7 +115,7 @@ class TimetablesPublisherComponent(
     init {
         componentScope.launch {
             val bellSchedule = bellSchedule.first()
-            editorComponents.value = _studyGroupTimetables.map {
+            editorComponents.value = studyGroupTimetables.map {
                 createDayTimetableEditorComponent(
                     timetable = it.second.toTimetableState(
                         yearWeek = weekOfYear,
@@ -147,9 +138,9 @@ class TimetablesPublisherComponent(
         )
     }
 
-    private fun onAddStudyGroup(studyGroupResponse: StudyGroupResponse) {
+    private fun onAddStudyGroup(item: StudyGroupItem) {
         componentScope.launch {
-            studyGroups.update { it + studyGroupResponse }
+            studyGroups.update { it + item }
 
             val dayTimetableEditorComponent = createDayTimetableEditorComponent(
                 timetable = TimetableState(
@@ -164,7 +155,7 @@ class TimetablesPublisherComponent(
                     ),
                     bellSchedule = bellSchedule.first()
                 ),
-                studyGroupId = studyGroupResponse.id,
+                studyGroupId = item.id,
             )
             editorComponents.update { components ->
                 components + dayTimetableEditorComponent
@@ -212,7 +203,7 @@ class TimetablesPublisherComponent(
             ) { it?.let { currentEditor.onAddPeriod(dayOfWeek, it) } })
     }
 
-    private val selectedStudyGroupItem get() = studyGroups.value[selectedGroup.value].toItem()
+    private val selectedStudyGroupItem get() = studyGroups.value[selectedGroup.value]
 
     fun onEditPeriodClick(dayOfWeek: DayOfWeek, periodPosition: Int) {
         overlayNavigation.activate(OverlayConfig.PeriodEditor(

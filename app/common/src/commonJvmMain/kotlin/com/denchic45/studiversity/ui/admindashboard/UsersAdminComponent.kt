@@ -41,13 +41,13 @@ class UsersAdminComponent(
     componentContext: ComponentContext
 ) : ComponentContext by componentContext, SearchableAdminComponent<UserItem> {
     private val componentScope = componentScope()
-    private val sidebarNavigation = SlotNavigation<Config>()
-    val childSlot = childSlot(source = sidebarNavigation,
+    private val slotNavigation = SlotNavigation<Config>()
+    val childSlot = childSlot(source = slotNavigation,
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
                 is Config.UserEditor -> Child.UserEditor(
-                    userEditorComponent(config.userId, sidebarNavigation::dismiss, context)
+                    userEditorComponent(config.userId, slotNavigation::dismiss, context)
                 )
 
                 is Config.Profile -> Child.Profile(
@@ -59,11 +59,11 @@ class UsersAdminComponent(
     override val chooserComponent = userChooserComponent(::onSelect, componentContext)
 
     override fun onSelect(item: UserItem) {
-        sidebarNavigation.activate(Config.Profile(item.id))
+        slotNavigation.activate(Config.Profile(item.id))
     }
 
     override fun onEditClick(id: UUID) {
-        sidebarNavigation.activate(Config.UserEditor(id))
+        slotNavigation.activate(Config.UserEditor(id))
     }
 
     override fun onRemoveClick(id: UUID) {
@@ -81,7 +81,7 @@ class UsersAdminComponent(
     }
 
     override fun onAddClick() {
-        sidebarNavigation.activate(Config.UserEditor(null))
+        slotNavigation.activate(Config.UserEditor(null))
     }
 
     fun onUserClick(userId: UUID) {

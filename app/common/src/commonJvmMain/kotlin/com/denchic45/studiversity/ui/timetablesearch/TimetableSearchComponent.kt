@@ -9,11 +9,9 @@ import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.model.toItem
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.resourceOf
-import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.resource.success
+import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.Window
@@ -43,7 +41,7 @@ import java.util.*
 class TimetableSearchComponent(
     private val putTimetableUseCase: PutTimetableUseCase,
     private val findStudyGroupByContainsNameUseCase: FindStudyGroupByContainsNameUseCase,
-    _timetableFinderComponent: (
+    timetableFinderComponent: (
         StateFlow<String>,
         Flow<TimetableOwner>,
         ComponentContext,
@@ -65,13 +63,13 @@ class TimetableSearchComponent(
 
     private val owner = MutableStateFlow<TimetableOwner.StudyGroup?>(null)
 
-    private val timetableFinderComponent = _timetableFinderComponent(
+    private val timetableFinderComponent = timetableFinderComponent(
         selectedWeekOfYear,
         owner.filterNotNull(),
         componentContext.childContext("TimetableFinder")
     )
 
-    private val actualTimetable = timetableFinderComponent.timetableStateResource
+    private val actualTimetable = this.timetableFinderComponent.timetableStateResource
         .shareIn(componentScope, SharingStarted.Lazily)
 
     val state = TimetableFinderState()
@@ -153,8 +151,8 @@ class TimetableSearchComponent(
             }
         }
         componentScope.launch {
-            foundStudyGroups.collect {
-                state.foundGroups = it
+            foundStudyGroups.collect { resource ->
+                state.foundGroups = resource.map { it.map(StudyGroupResponse::toItem) }
             }
         }
     }
@@ -181,10 +179,10 @@ class TimetableSearchComponent(
         query.update { queryText }
     }
 
-    fun onGroupSelect(response: StudyGroupResponse) {
-        state.selectedStudyGroup = response
-        state.query = response.name
-        owner.update { TimetableOwner.StudyGroup(response.id) }
+    fun onStudyGroupSelect(item: StudyGroupItem) {
+        state.selectedStudyGroup = item
+        state.query = item.name
+        owner.update { TimetableOwner.StudyGroup(item.id) }
     }
 
     fun onAddPeriodClick(dayOfWeek: DayOfWeek) {
@@ -248,7 +246,7 @@ class TimetableSearchComponent(
             })
     }
 
-    private val selectedStudyGroupItem get() = state.selectedStudyGroup!!.toItem()
+    private val selectedStudyGroupItem get() = state.selectedStudyGroup!!
 
     fun onRemovePeriodSwipe(dayOfWeek: DayOfWeek, periodPosition: Int) {
         dayTimetableEditorComponent!!.onRemovePeriod(dayOfWeek, periodPosition)
@@ -259,7 +257,9 @@ class TimetableSearchComponent(
     }
 
     @Parcelize
-    object TimetableEditorConfig : Parcelable
+    object TimetableEditorConfig : Parcelable {
+        private fun readResolve(): Any = TimetableEditorConfig
+    }
 
     class TimetableEditorChild(val component: TimetableEditorComponent)
 
@@ -278,6 +278,6 @@ class TimetableSearchComponent(
 
 class TimetableFinderState {
     var query by mutableStateOf("")
-    var foundGroups: Resource<List<StudyGroupResponse>> by mutableStateOf(resourceOf(emptyList()))
-    var selectedStudyGroup by mutableStateOf<StudyGroupResponse?>(null)
+    var foundGroups: Resource<List<StudyGroupItem>> by mutableStateOf(resourceOf(emptyList()))
+    var selectedStudyGroup by mutableStateOf<StudyGroupItem?>(null)
 }

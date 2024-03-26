@@ -1,12 +1,28 @@
 package com.denchic45.studiversity.ui.admindashboard
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import androidx.compose.runtime.getValue
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.denchic45.studiversity.domain.model.StudyGroupItem
+import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorDialog
+import com.denchic45.studiversity.ui.studygroups.StudyGroupListItem
 
 @Composable
 fun StudyGroupsAdminScreen(component: StudyGroupsAdminComponent) {
-    AdminSearchScreen(component, StudyGroupResponse::id) {
-        Text(it.name)
+    val childSlot by component.childSlot.subscribeAsState()
+
+    childSlot.child?.let {
+        when (val child = it.instance) {
+            is StudyGroupsAdminComponent.Child.StudyGroupEditor -> StudyGroupEditorDialog(child.component)
+        }
+    }
+
+    AdminSearchScreen(
+        component,
+        StudyGroupItem::id,
+        searchPlaceholder = "Найти группу",
+        fabText = "Создать группу"
+    ) {
+        StudyGroupListItem(it)
     }
 }

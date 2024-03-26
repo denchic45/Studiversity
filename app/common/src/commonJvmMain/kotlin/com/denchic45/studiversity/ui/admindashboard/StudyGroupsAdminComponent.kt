@@ -1,14 +1,13 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
-import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.usecase.RemoveStudyGroupUseCase
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
@@ -17,7 +16,6 @@ import com.denchic45.studiversity.ui.search.StudyGroupChooserComponent
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -27,35 +25,34 @@ import java.util.*
 class StudyGroupsAdminComponent(
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val removeStudyGroupUseCase: RemoveStudyGroupUseCase,
-    studyGroupChooserComponent: (onSelect: (StudyGroupResponse) -> Unit, ComponentContext) -> StudyGroupChooserComponent,
+    studyGroupChooserComponent: (onSelect: (StudyGroupItem) -> Unit, ComponentContext) -> StudyGroupChooserComponent,
     studyGroupEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> StudyGroupEditorComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
     @Assisted
     componentContext: ComponentContext
-) : ComponentContext by componentContext, SearchableAdminComponent<StudyGroupResponse> {
-
+) : ComponentContext by componentContext, SearchableAdminComponent<StudyGroupItem> {
     private val componentScope = componentScope()
 
     override val chooserComponent = studyGroupChooserComponent(::onSelect, componentContext)
 
-    private val sidebarNavigation = SlotNavigation<Config>()
-    val childSidebar = childSlot(source = sidebarNavigation,
+    private val slotNavigation = SlotNavigation<Config>()
+    val childSlot: Value<ChildSlot<Config, Child>> = childSlot(source = slotNavigation,
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
                 is Config.StudyGroupEditor -> Child.StudyGroupEditor(
-                    studyGroupEditorComponent({ sidebarNavigation.dismiss() }, config.studyGroupId, context)
+                    studyGroupEditorComponent({ slotNavigation.dismiss() }, config.studyGroupId, context)
                 )
             }
         })
 
-    override fun onSelect(item: StudyGroupResponse) {
+    override fun onSelect(item: StudyGroupItem) {
         rootNavigation.bringToFront(RootConfig.StudyGroup(item.id))
     }
 
     override fun onEditClick(id: UUID) {
-        sidebarNavigation.activate(Config.StudyGroupEditor(id))
+        slotNavigation.activate(Config.StudyGroupEditor(id))
     }
 
     override fun onRemoveClick(id: UUID) {
@@ -73,7 +70,7 @@ class StudyGroupsAdminComponent(
     }
 
     override fun onAddClick() {
-        sidebarNavigation.activate(Config.StudyGroupEditor(null))
+        slotNavigation.activate(Config.StudyGroupEditor(null))
     }
 
     @Parcelize

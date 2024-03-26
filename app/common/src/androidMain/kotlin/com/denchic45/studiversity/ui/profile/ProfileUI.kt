@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.ResourceContent
@@ -235,7 +236,7 @@ fun ProfileContent(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun ProfileStudyGroups(
-    studyGroups: List<StudyGroupResponse>,
+    studyGroups: List<StudyGroupItem>,
     onStudyGroupClick: (UUID) -> Unit,
 ) {
     when (studyGroups.size) {

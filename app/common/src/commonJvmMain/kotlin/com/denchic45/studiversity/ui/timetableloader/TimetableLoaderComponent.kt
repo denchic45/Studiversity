@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.timetable.model.TimetableParserResult
 import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
@@ -20,7 +21,7 @@ class TimetableLoaderComponent(
     ) -> TimetableCreatorComponent,
     private val timetablesPublisherComponent: (
         String,
-        List<Pair<StudyGroupResponse, TimetableResponse>>,
+        List<Pair<StudyGroupItem, TimetableResponse>>,
         ComponentContext,
     ) -> TimetablesPublisherComponent,
     @Assisted
@@ -75,7 +76,7 @@ class TimetableLoaderComponent(
         @Parcelize
         class Publisher(
             val weekOfYear: String,
-            val studyGroupTimetables: List<Pair<StudyGroupResponse, TimetableResponse>>,
+            val studyGroupTimetables: List<Pair<StudyGroupItem, TimetableResponse>>,
         ) : TimetableLoaderConfig() {
             @Suppress("unused")
             private fun readResolve(): Any = Publisher(weekOfYear, studyGroupTimetables)
