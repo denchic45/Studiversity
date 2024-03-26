@@ -10,6 +10,6 @@ class UpdateAccountPersonalUseCase(
     private val userRepository: UserRepository
 ) {
   suspend operator fun invoke(userId: UUID, updateAccountPersonalRequest: UpdateAccountPersonalRequest) = suspendTransactionWorker {
-        userRepository.updateAccount(userId, updateAccountPersonalRequest)
+        userRepository.updatePersonal(userId, updateAccountPersonalRequest)
     }
 }

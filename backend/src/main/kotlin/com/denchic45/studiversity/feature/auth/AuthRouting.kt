@@ -51,28 +51,23 @@ fun Route.tokenRoute() {
     }
 }
 
-fun Route.recoverRoute() {
+fun Route.recoverPasswordRoute() {
     val recoverPassword: RecoverPasswordUseCase by inject()
-    post("/recover") {
-        recoverPassword(call.receive(), url {
-            host = call.request.host()
-            port = call.request.port()
-            path("auth", "reset")
-        }
-        )
+    val checkConfirmCode: CheckConfirmCodeUseCase by inject()
+    val updateRecoveredPassword: UpdateRecoveredPasswordUseCase by inject()
+
+    post("/recover-password") {
+        recoverPassword(call.receiveText())
         call.respond(HttpStatusCode.Accepted)
     }
-}
+    post("/password") {
+        val code = call.request.queryParameters.getOrFail("code")
+        if (!checkConfirmCode(code)) {
+            call.respond(HttpStatusCode.Gone)
+            return@post
+        }
 
-fun Route.resetRoute() {
-    val checkMagicLinkToken: CheckMagicLinkTokenUseCase by inject()
-    post("/recover") {
-        checkMagicLinkToken(call.request.queryParameters.getOrFail("token"))
-        call.respondText(
-            """
-                
-        """.trimIndent(),
-            ContentType.Text.Html
-        )
+        updateRecoveredPassword(code, call.receiveText())
+        call.respond(HttpStatusCode.OK)
     }
 }

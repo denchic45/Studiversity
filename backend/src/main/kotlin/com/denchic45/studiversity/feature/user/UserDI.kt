@@ -13,7 +13,7 @@ private val useCaseModule = module {
     single { RemoveUserUseCase(get(), get()) }
     single { AddUserUseCase(get(), get(), get(), get()) }
     single { UpdateAccountPersonalUseCase(get(), get()) }
-    single { UpdateEmailUseCase(get(), get()) }
+    single { UpdateEmailUseCase(get(), get(), get(),get()) }
     single { UpdatePasswordUseCase(get(), get()) }
     single { SearchUsersUseCase(get(), get()) }
     single { UpdateAvatarUseCase(get(), get()) }
@@ -23,6 +23,7 @@ private val useCaseModule = module {
 
 private val repositoryModule = module {
     single { UserRepository(get(), get()) }
+    single { TokenRepository() }
 }
 
 val userModule = module {

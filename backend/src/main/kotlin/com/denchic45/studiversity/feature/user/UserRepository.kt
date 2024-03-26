@@ -1,14 +1,11 @@
 package com.denchic45.studiversity.feature.user
 
 import com.denchic45.studiversity.database.exists
-import com.denchic45.studiversity.database.table.*
-import com.denchic45.studiversity.feature.auth.model.MagicLinkToken
-import com.denchic45.studiversity.feature.auth.model.RefreshToken
+import com.denchic45.studiversity.database.table.UserDao
+import com.denchic45.studiversity.database.table.Users
 import com.denchic45.studiversity.feature.auth.model.UserByEmail
 import com.denchic45.studiversity.feature.role.repository.AddScopeRepoExt
-import com.denchic45.studiversity.feature.user.account.model.VerificationToken
 import com.denchic45.stuiversity.api.account.model.UpdateAccountPersonalRequest
-import com.denchic45.stuiversity.api.account.model.UpdateEmailRequest
 import com.denchic45.stuiversity.api.account.model.UpdatePasswordRequest
 import com.denchic45.stuiversity.api.auth.AuthErrors
 import com.denchic45.stuiversity.api.auth.model.SignupRequest
@@ -17,13 +14,12 @@ import com.denchic45.stuiversity.api.user.model.UpdateUserRequest
 import com.denchic45.stuiversity.api.user.model.UserResponse
 import io.ktor.client.*
 import io.ktor.server.plugins.*
-import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.lowerCase
+import org.jetbrains.exposed.sql.or
 import org.mindrot.jbcrypt.BCrypt
-import java.time.Instant
 import java.util.*
 
 class UserRepository(
@@ -31,21 +27,21 @@ class UserRepository(
     private val avatarService: AvatarService
 ) : AddScopeRepoExt {
 
-    suspend fun add(signupRequest: SignupRequest): UserResponse {
+    fun add(signupRequest: SignupRequest): UserResponse {
         val hashed: String = BCrypt.hashpw(signupRequest.password, BCrypt.gensalt())
         return add(signupRequest.toCreateUser(), hashed)
     }
 
-    suspend fun add(user: CreateUserRequest, password: String): UserResponse {
+    fun add(request: CreateUserRequest, password: String): UserResponse {
         return UserDao.new {
-            firstName = user.firstName
-            surname = user.surname
-            patronymic = user.patronymic
-            email = user.email
+            firstName = request.firstName
+            surname = request.surname
+            patronymic = request.patronymic
+            email = request.email
             this.password = password
             avatarUrl = ""
             generatedAvatar = false
-            gender = user.gender
+            gender = request.gender
         }.apply {
             avatarUrl = avatarService.generateAvatar(id.value)
         }.toUserResponse()
@@ -74,7 +70,7 @@ class UserRepository(
         }
     }
 
-    fun updateAccount(userId: UUID, request: UpdateAccountPersonalRequest) {
+    fun updatePersonal(userId: UUID, request: UpdateAccountPersonalRequest) {
         UserDao[userId].apply {
             request.firstName.ifPresent {
                 firstName = it
@@ -88,16 +84,20 @@ class UserRepository(
         }
     }
 
-    fun updateAccount(userId: UUID, updatePasswordRequest: UpdatePasswordRequest) {
-        UserDao.findById(userId)!!.apply {
-            if (!BCrypt.checkpw(updatePasswordRequest.oldPassword, password))
-                throw BadRequestException(AuthErrors.INVALID_PASSWORD)
-            password = BCrypt.hashpw(updatePasswordRequest.newPassword, BCrypt.gensalt())
+    fun updateRecoveredPassword(userId: UUID, password: String) {
+        UserDao[userId].password = BCrypt.hashpw(password, BCrypt.gensalt())
+    }
+
+    fun updatePassword(userId: UUID, request: UpdatePasswordRequest) {
+        UserDao[userId].apply {
+            if (!BCrypt.checkpw(request.oldPassword, password))
+                throw BadRequestException(AuthErrors.INVALID_OLD_PASSWORD)
+            password = BCrypt.hashpw(request.newPassword, BCrypt.gensalt())
         }
     }
 
-    fun updateAccount(userId: UUID, updateEmailRequest: UpdateEmailRequest) {
-        UserDao.findById(userId)!!.email = updateEmailRequest.email
+    fun updateEmail(userId: UUID, email: String) {
+        UserDao[userId].email = email
     }
 
     fun findUserByEmail(email: String): UserResponse? {
@@ -109,78 +109,15 @@ class UserRepository(
             ?.let { UserByEmail(it.id.value, it.email, it.password) }
     }
 
-    fun addToken(createRefreshToken: RefreshToken): String {
-        return RefreshTokens.insert {
-            it[userId] = createRefreshToken.userId
-            it[token] = createRefreshToken.token
-            it[expireAt] = createRefreshToken.expireAt
-        }[RefreshTokens.token]
-    }
 
     fun existByEmail(email: String): Boolean {
         return Users.exists { Users.email eq email }
     }
 
-    fun findRefreshToken(refreshToken: String): RefreshToken? {
-        val expiredTokens =
-            RefreshTokens.select(RefreshTokens.expireAt less Instant.now()).limit(100)
-                .map { it[RefreshTokens.id] }
-        RefreshTokens.deleteWhere { RefreshTokens.id inList expiredTokens }
-        return RefreshTokens.select(RefreshTokens.token eq refreshToken)
-            .singleOrNull()?.let {
-                RefreshToken(
-                    it[RefreshTokens.userId].value,
-                    it[RefreshTokens.token],
-                    it[RefreshTokens.expireAt]
-                )
-            }
-    }
-
-    fun removeRefreshToken(refreshToken: String) {
-        RefreshTokens.deleteWhere { token eq refreshToken }
-    }
-
-    fun addMagicLink(magicLinkToken: MagicLinkToken): String {
-        return MagicLinks.insert {
-            it[token] = magicLinkToken.token
-            it[userId] = magicLinkToken.userId
-            it[expireAt] = magicLinkToken.expireAt
-        }[MagicLinks.token]
-    }
-
-    fun removeMagicLink(token: String) {
-        MagicLinks.deleteWhere { this.token eq token }
-    }
-
-    fun findMagicLinkByToken(token: String): MagicLinkToken? {
-        val expiredTokens = MagicLinks.select(MagicLinks.expireAt less Instant.now()).limit(100)
-            .map { it[MagicLinks.id] }
-        MagicLinks.deleteWhere { MagicLinks.id inList expiredTokens }
-
-        return MagicLinks.select(MagicLinks.token eq token).singleOrNull()?.let {
-            MagicLinkToken(
-                userId = it[MagicLinks.userId].value,
-                token = it[MagicLinks.token],
-                expireAt = it[MagicLinks.expireAt]
-            )
-        }
-    }
 
     fun find(query: String): List<UserResponse> = UserDao.find(
         Users.firstName.lowerCase() like "$query%"
                 or (Users.surname.lowerCase() like "$query%")
                 or (Users.patronymic.lowerCase() like "$query%")
     ).map(UserDao::toUserResponse)
-
-    fun findToken(token: String): VerificationToken? {
-        return VerificationTokens.selectAll().where(VerificationTokens.secret eq token)
-            .singleOrNull()?.let {
-                VerificationToken(
-                    secret = token,
-                    userId = it[VerificationTokens.userId].value,
-                    action = it[VerificationTokens.action],
-                    expired = it[VerificationTokens.expireAt].isBefore(Instant.now())
-                )
-            }
-    }
 }

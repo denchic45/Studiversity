@@ -1,10 +1,12 @@
 package com.denchic45.studiversity.feature.user.account.routing
 
-import com.denchic45.studiversity.feature.user.account.usecase.ConfirmAccountActionUseCase
+import com.denchic45.studiversity.feature.user.account.usecase.ConfirmEmailUseCase
+import com.denchic45.studiversity.ktor.getUuidOrFail
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
 
 fun Application.accountRoutes() {
@@ -16,11 +18,13 @@ fun Application.accountRoutes() {
             }
         }
 
-        val confirmAccountAction: ConfirmAccountActionUseCase by inject()
+        val confirmEmail: ConfirmEmailUseCase by inject()
 
-        get("/account-confirm") {
-            val token = call.request.queryParameters.getOrFail("token")
-
+        get("/email-confirmation") {
+            val token = call.request.queryParameters.getUuidOrFail("token")
+            if (confirmEmail(token))
+                call.respond(HttpStatusCode.OK)
+            else call.respond(HttpStatusCode.Gone)
         }
     }
 }

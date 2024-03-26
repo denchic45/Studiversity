@@ -3,6 +3,7 @@ package com.denchic45.studiversity.feature.auth
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.denchic45.studiversity.config.config
+import com.denchic45.studiversity.feature.auth.usecase.CheckConfirmCodeUseCase
 import com.denchic45.studiversity.util.isEmail
 import com.denchic45.studiversity.util.respondWithError
 import com.denchic45.studiversity.validation.ValidationResultBuilder
@@ -15,7 +16,10 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.requestvalidation.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.util.*
+import org.koin.ktor.ext.inject
 
 fun Application.configureAuth() {
 
@@ -43,6 +47,8 @@ fun Application.configureAuth() {
 
     routing {
         route("/auth") {
+            val checkConfirmationCode: CheckConfirmCodeUseCase by inject()
+
             install(RequestValidation) {
                 validate<SignupRequest> { login ->
                     val password = login.password
@@ -54,8 +60,13 @@ fun Application.configureAuth() {
             }
             signupRoute()
             tokenRoute()
-            recoverRoute()
-            resetRoute()
+            recoverPasswordRoute()
+
+            get("/confirmation-code") {
+                val code = call.request.queryParameters.getOrFail("code")
+                if (checkConfirmationCode(code)) call.respond(HttpStatusCode.OK)
+                else call.respond(HttpStatusCode.Gone)
+            }
         }
     }
 }

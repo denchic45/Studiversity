@@ -15,7 +15,7 @@ fun setupDatabase() = transaction {
     // add tables
     SchemaUtils.createMissingTablesAndColumns(
         // user tables
-        Users, UsersRolesScopes, Roles, Scopes, Capabilities, // 5
+        Users, UsersRolesScopes, Roles, Scopes, Capabilities, VerificationTokens, ConfirmCodes, // 7
 //        RolesScopes,
         RolesCapabilities, RolesAssignments, ScopeTypes, RefreshTokens, MagicLinks, // 5
         // study group tables
