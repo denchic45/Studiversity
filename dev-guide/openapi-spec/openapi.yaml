@@ -1,0 +1,847 @@
+openapi: 3.1.0
+info:
+  title: Studiversity
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/
+    description: local server
+paths:
+  /auth/token:
+    post:
+      tags:
+        - Authorization
+      parameters:
+        - name: grant_type
+          in: query
+          description: Grand type
+          required: true
+          schema:
+            type: string
+            enum: [ password, refresh_token ]
+      responses:
+        '200':
+          description: Получение токена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignInResponse"
+  /signup:
+    post:
+      tags:
+        - Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '200':
+          description: Successfully registration
+  /users:
+    get:
+      summary: Query users
+      tags:
+        - Users
+      parameters:
+        - name: q
+          in: query
+          description: Query text
+          required: true
+          schema:
+            type: string
+            example: ivan ivanov
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Create a user
+      tags:
+        - Users
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+  /users/{userId}:
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The user ID
+    get:
+      summary: Get a user by ID
+      tags:
+        - Users
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      summary: Delete a user by ID
+      tags:
+        - Users
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '204':
+          description: The resource was deleted successfully.
+  /studygroups:
+    get:
+      summary: Query study groups
+      tags:
+        - Study groups
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: q
+          in: query
+          description: Query text
+          schema:
+            type: string
+            example: PCS-6132
+        - name: member_id
+          in: query
+          description: The member ID
+          schema:
+            type: string
+            format: uuid
+        - name: role_id
+          in: query
+          description: The role ID
+          schema:
+            type: integer
+            format: int64
+        - name: specialty_id
+          in: query
+          description: The specialty ID
+          schema:
+            type: string
+            format: uuid
+        - name: academic_year
+          in: query
+          description: The academic year
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Create study sroup
+      tags:
+        - Study groups
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyGroup'
+
+  /studygroups/{studyGroupId}:
+    parameters:
+      - in: path
+        name: studyGroupId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The study group ID
+    get:
+      summary: Get a study group by ID
+      tags:
+        - Study groups
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroup'
+    patch:
+      summary: Partial update study group
+      tags:
+        - Study groups
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyGroup'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroup'
+    delete:
+      summary: Delete a study group by ID
+      tags:
+        - Study groups
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '204':
+          description: The resource was deleted successfully.
+  /courses:
+    get:
+      summary: Query courses
+      tags:
+        - Courses
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: q
+          in: query
+          description: Query text
+          schema:
+            type: string
+            example: Mathematics by PCS-6132
+        - name: member_id
+          in: query
+          description: The member ID
+          schema:
+            type: string
+            format: uuid
+        - name: role_id
+          in: query
+          description: The role ID
+          schema:
+            type: integer
+            format: int64
+        - name: study_group_id
+          in: query
+          description: The study group ID
+          schema:
+            type: string
+            format: uuid
+        - name: subject_id
+          in: query
+          description: The subject ID
+          schema:
+            type: string
+            format: uuid
+        - name: archived
+          in: query
+          description: Is archived
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Create courses
+      tags:
+        - Courses
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+  /courses/{courseId}:
+    parameters:
+      - in: path
+        name: courseId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The course ID
+    get:
+      summary: Get a course by ID
+      tags:
+        - Courses
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+    patch:
+      summary: Partial update course
+      tags:
+        - Courses
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+    delete:
+      summary: Delete a course by ID
+      tags:
+        - Courses
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '204':
+          description: The resource was deleted successfully.
+  /courses/{courseId}/archived:
+    parameters:
+      - in: path
+        name: courseId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The course ID
+    put:
+      summary: Archive course
+      tags:
+        - Courses
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Unarchive course
+      tags:
+        - Courses
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '204':
+          description: The resource was deleted successfully.
+  /courses/{courseId}/studygroups:
+    parameters:
+      - in: path
+        name: courseId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The course ID
+    get:
+      summary: Get attached study groups to a course
+      tags:
+        - Course study groups
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudyGroup'
+  /courses/{courseId}/studygroups/{studyGroupId}:
+    parameters:
+      - in: path
+        name: courseId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The course ID
+      - in: path
+        name: studyGroupId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The study group ID
+    put:
+      summary: Attach study groups to a course
+      tags:
+        - Course study groups
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Detach study groups from a course
+      tags:
+        - Course study groups
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '204':
+          description: The resource was deleted successfully.
+  /courses/{courseId}/elements:
+    parameters:
+      - in: path
+        name: courseId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The course ID
+    get:
+      summary: Get course elements
+      tags:
+        - Course elements
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseElement'
+  /courses/{courseId}/elements/{elementId}:
+    parameters:
+      - in: path
+        name: courseId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The course ID
+      - in: path
+        name: elementId
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: The course element ID
+    get:
+      summary: Get course element by ID
+      tags:
+        - Course elements
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseElement'
+  /timetables{weekOfYear}:
+    parameters:
+      - in: path
+        name: weekOfYear
+        required: true
+        schema:
+          type: string
+        description: The week of year
+    get:
+      summary: Get a timetable by week of year
+      tags:
+        - Timetables
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: study_group_id
+          in: query
+          description: The study group IDs
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+              collectionFormat: multi
+        - name: member_id
+          in: query
+          description: The member IDs. Can be 'me'
+          schema:
+            type: array
+            items:
+              type: string
+              collectionFormat: multi
+        - name: course_id
+          in: query
+          description: The course IDs
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+              collectionFormat: multi
+        - name: room_id
+          in: query
+          description: The room IDs
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+              collectionFormat: multi
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Timetable'
+    put:
+      summary: Set timetable of week
+      tags:
+        - Timetables
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutTimetable'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Timetable'
+    delete:
+      summary: Delete timetable of week
+      tags:
+        - Timetables
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '204':
+          description: The resource was deleted successfully.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+      description: 'note: non-oauth scopes are not defined at the securityScheme level'
+  schemas:
+    SignInResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwic3ViIjoiY2ExZmRmNWQtMmNiOC00NzU1LWI5YjctYTFiNWE3NzJiMTFjIiwiZXhwIjoxNjg2NjcxOTUxfQ.Lq1Sqp5bbP2-31FaoPqzy9XK0eQSHX2_3pnOA6MRjYE
+        refreshToken:
+          type: string
+          example: 77bdd9c0-21d6-4400-bdbe-be0ac4d28720
+        organizationId:
+          type: string
+          example: b3e226b3-2d90-4197-bb65-976ab7595f31
+    SignupRequest:
+      type: object
+      required:
+        - firstName
+        - surname
+      properties:
+        firstName:
+          type: string
+          example: Andrew
+        surname:
+          type: string
+          example: Ivanov
+        patronymic:
+          type: string
+          example: Ivanovich
+        gender:
+          type: string
+          enum: [ MALE, FEMALE ]
+        email:
+          type: string
+          example: ivan@mail.ru
+        password:
+          type: string
+          example: hbfFVDNdsf.*)3M83f4
+    CreateUserRequest:
+      type: object
+      required:
+        - firstName
+        - surname
+        - patronymic
+        - email
+        - gender
+      properties:
+        firstName:
+          type: string
+          example: Andrew
+        surname:
+          type: string
+          example: Ivanov
+        patronymic:
+          type: string
+          example: Ivanovich
+        email:
+          type: string
+          example: ivan@mail.ru
+        gender:
+          type: string
+          enum: [ MALE, FEMALE ]
+        roleIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          example: [ 2, 3 ]
+    User:
+      type: object
+      required:
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+          example: Andrew
+        surname:
+          type: string
+          example: Ivanov
+        patronymic:
+          type: string
+          example: Ivanovich
+        gender:
+          type: string
+          enum: [ MALE, FEMALE ]
+        account:
+          type: object
+          properties:
+            email:
+              type: string
+              example: ivan@mail.ru
+        avatarUrl:
+          type: string
+        generatedAvatar:
+          type: boolean
+    StudyGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        academicYear:
+          type: object
+          properties:
+            start:
+              type: integer
+              format: int64
+            end:
+              type: integer
+              format: int64
+        specialty:
+          $ref: '#/components/schemas/Specialty'
+    StudyGroupName:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    Specialty:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        shortname:
+          type: string
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        subject:
+          $ref: '#/components/schemas/Subject'
+    Subject:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        shortname:
+          type: string
+        iconUrl:
+          type: string
+    CourseElement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        courseId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        topicId:
+          type: string
+          format: uuid
+        order:
+          type: integer
+          format: int
+        details:
+          $ref: '#/components/schemas/CourseElementDetails'
+    CourseElementDetails:
+      oneOf:
+        - $ref: '#/components/schemas/CourseWorkDetails'
+        - $ref: '#/components/schemas/CourseMaterialDetails'
+      discriminator: type
+      required:
+        - type
+    CourseWorkDetails:
+    CourseMaterialDetails:
+    PutTimetable:
+      type: object
+      properties:
+        studyGroupId:
+          type: string
+          format: uuid
+        monday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        tuesday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        wednesday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        thursday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        friday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        saturday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+    Timetable:
+      type: object
+      properties:
+        weekOfYear:
+          type: string
+        monday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        tuesday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        wednesday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        thursday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        friday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        saturday:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+    Period:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        date:
+          type: string
+          fomat: date
+        studyGroup:
+          $ref: '#/components/schemas/StudyGroupName'
+        details:
+          $ref: '#/components/schemas/PeriodDetials'
+    PeriodDetials:
+      oneOf:
+        - $ref: '#/components/schemas/LessonDetails'
+        - $ref: '#/components/schemas/EventDetails'
+      discriminator: periodType
+      required:
+        - periodType
+
+    LessonDetails:
+      type: object
+      properties:
+        periodType:
+          type: string
+        course:
+          $ref: '#/components/schemas/Course'
+    EventDetails:
+      type: object
+      properties:
+        periodType:
+          type: string
+        name:
+          type: string
+        color:
+          type: string
+        iconUrl:
+          type: string
