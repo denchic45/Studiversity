@@ -5,10 +5,10 @@ import com.denchic45.studiversity.database.table.CourseElementDao
 import com.denchic45.studiversity.database.table.CourseElements
 import com.denchic45.studiversity.database.table.CourseTopicDao
 import com.denchic45.studiversity.feature.course.element.generateOrderByCourseAndTopicId
-import com.denchic45.stuiversity.api.course.element.model.CourseElementType
-import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
-import com.denchic45.stuiversity.api.course.material.model.CreateCourseMaterialRequest
-import com.denchic45.stuiversity.api.course.material.model.UpdateCourseMaterialRequest
+import com.denchic45.studiversity.api.course.element.model.CourseElementType
+import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
+import com.denchic45.studiversity.api.course.material.model.CreateCourseMaterialRequest
+import com.denchic45.studiversity.api.course.material.model.UpdateCourseMaterialRequest
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and

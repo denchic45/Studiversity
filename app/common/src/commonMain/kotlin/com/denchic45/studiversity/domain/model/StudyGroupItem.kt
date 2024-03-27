@@ -2,8 +2,8 @@ package com.denchic45.studiversity.domain.model
 
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.timetable.model.StudyGroupNameResponse
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.timetable.model.StudyGroupNameResponse
 import java.util.UUID
 
 @Parcelize

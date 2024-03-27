@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.ui.coursework
 
-import com.denchic45.stuiversity.api.course.work.grade.GradeResponse
-import com.denchic45.stuiversity.api.submission.model.SubmissionAuthor
-import com.denchic45.stuiversity.api.submission.model.SubmissionResponse
-import com.denchic45.stuiversity.api.submission.model.SubmissionState
+import com.denchic45.studiversity.api.course.work.grade.GradeResponse
+import com.denchic45.studiversity.api.submission.model.SubmissionAuthor
+import com.denchic45.studiversity.api.submission.model.SubmissionResponse
+import com.denchic45.studiversity.api.submission.model.SubmissionState
 import java.time.LocalDateTime
 import java.util.UUID
 

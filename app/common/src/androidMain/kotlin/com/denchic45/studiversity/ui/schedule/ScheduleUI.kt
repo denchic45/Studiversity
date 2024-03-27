@@ -21,7 +21,7 @@ import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.stuiversity.util.toLocalTime
+import com.denchic45.studiversity.util.toLocalTime
 
 
 @Composable

@@ -18,10 +18,10 @@ import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsComponent
 import com.denchic45.studiversity.ui.theme.CommonAppTheme
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
-import com.denchic45.stuiversity.util.DateTimePatterns
-import com.denchic45.stuiversity.util.toString
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.studiversity.api.course.work.model.CourseWorkType
+import com.denchic45.studiversity.util.DateTimePatterns
+import com.denchic45.studiversity.util.toString
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime

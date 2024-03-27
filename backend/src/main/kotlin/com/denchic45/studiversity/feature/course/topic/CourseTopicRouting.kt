@@ -4,7 +4,7 @@ import com.denchic45.studiversity.feature.course.topic.usecase.*
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.ktor.currentUserId
 import com.denchic45.studiversity.ktor.getUuidOrFail
-import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.role.model.Capability
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

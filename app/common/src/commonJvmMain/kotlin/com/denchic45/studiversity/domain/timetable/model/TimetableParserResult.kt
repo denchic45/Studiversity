@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.domain.timetable.model
 
 import com.denchic45.studiversity.domain.model.StudyGroupItem
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import com.denchic45.studiversity.api.timetable.model.TimetableResponse
 
 data class TimetableParserResult(
     val weekOfYear: String,

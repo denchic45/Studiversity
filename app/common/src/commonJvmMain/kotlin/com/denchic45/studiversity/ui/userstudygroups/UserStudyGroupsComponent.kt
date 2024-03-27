@@ -6,8 +6,8 @@ import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindStudyGroupsUseCase
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.util.userIdOf
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.util.userIdOf
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*

@@ -10,10 +10,10 @@ import com.denchic45.studiversity.data.observeResource
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
-import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
-import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
-import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
+import com.denchic45.studiversity.api.course.topic.CourseTopicApi
+import com.denchic45.studiversity.api.course.topic.model.CourseTopicResponse
+import com.denchic45.studiversity.api.course.topic.model.CreateCourseTopicRequest
+import com.denchic45.studiversity.api.course.topic.model.UpdateCourseTopicRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject

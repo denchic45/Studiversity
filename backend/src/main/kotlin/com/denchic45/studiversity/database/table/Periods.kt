@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.database.table
 
-import com.denchic45.stuiversity.api.timetable.model.PeriodType
+import com.denchic45.studiversity.api.timetable.model.PeriodType
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

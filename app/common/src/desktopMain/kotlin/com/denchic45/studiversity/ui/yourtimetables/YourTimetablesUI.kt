@@ -25,7 +25,7 @@ import com.denchic45.studiversity.ui.main.AppBarTitle
 import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.TimetableContent
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 
 
 @Composable

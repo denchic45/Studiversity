@@ -1,15 +1,15 @@
 package com.denchic45.studiversity.client.course
 
 import com.denchic45.studiversity.KtorClientTest
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.membership.model.ManualJoinMemberRequest
-import com.denchic45.stuiversity.api.membership.model.ScopeMember
-import com.denchic45.stuiversity.api.role.model.Role
-import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
-import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.membership.model.ManualJoinMemberRequest
+import com.denchic45.studiversity.api.membership.model.ScopeMember
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.api.studygroup.model.AcademicYear
+import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.util.toUUID
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*

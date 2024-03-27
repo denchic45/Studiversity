@@ -23,7 +23,7 @@ import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.studiversity.api.role.model.Role
 
 
 @Composable

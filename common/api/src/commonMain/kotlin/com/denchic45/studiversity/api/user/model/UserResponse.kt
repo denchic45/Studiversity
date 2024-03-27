@@ -1,0 +1,21 @@
+package com.denchic45.studiversity.api.user.model
+
+import com.denchic45.studiversity.util.UUIDSerializer
+import kotlinx.serialization.Serializable
+import java.util.*
+
+@Serializable
+data class UserResponse(
+    @Serializable(UUIDSerializer::class)
+    val id: UUID,
+    val firstName: String,
+    val surname: String,
+    val patronymic: String?,
+    val account: Account,
+    val avatarUrl: String,
+    val generatedAvatar: Boolean,
+    val gender: Gender,
+) {
+    val fullName: String
+        get() = "$firstName  $surname"
+}

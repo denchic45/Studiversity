@@ -2,18 +2,15 @@ package com.denchic45.studiversity
 
 import com.denchic45.studiversity.client.di.apiModule
 import com.denchic45.studiversity.util.unwrapAsserted
-import com.denchic45.stuiversity.api.auth.AuthApi
-import com.denchic45.stuiversity.api.auth.model.RefreshTokenRequest
-import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest
+import com.denchic45.studiversity.api.auth.AuthApi
+import com.denchic45.studiversity.api.auth.model.RefreshTokenRequest
+import com.denchic45.studiversity.api.auth.model.SignInByEmailPasswordRequest
 import com.github.michaelbull.result.onSuccess
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.engine.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.testing.*

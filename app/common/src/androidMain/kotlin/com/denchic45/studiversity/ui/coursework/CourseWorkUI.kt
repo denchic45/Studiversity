@@ -71,8 +71,8 @@ import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.OpenMultipleAnyDocuments
 import com.denchic45.studiversity.util.getFile
-import com.denchic45.stuiversity.api.submission.model.SubmissionState
-import com.denchic45.stuiversity.util.toString
+import com.denchic45.studiversity.api.submission.model.SubmissionState
+import com.denchic45.studiversity.util.toString
 import kotlinx.coroutines.launch
 
 @Composable

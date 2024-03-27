@@ -1,29 +1,29 @@
 package com.denchic45.studiversity
 
 import com.denchic45.studiversity.domain.timetable.TimetableParser
-import com.denchic45.stuiversity.api.common.EmptyResponseResult
-import com.denchic45.stuiversity.api.common.ResponseResult
-import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
-import com.denchic45.stuiversity.api.course.subject.SubjectApi
-import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
-import com.denchic45.stuiversity.api.room.RoomApi
-import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
-import com.denchic45.stuiversity.api.room.model.RoomResponse
-import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
-import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
-import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
-import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
-import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.*
-import com.denchic45.stuiversity.util.UserId
+import com.denchic45.studiversity.api.common.EmptyResponseResult
+import com.denchic45.studiversity.api.common.ResponseResult
+import com.denchic45.studiversity.api.course.CourseApi
+import com.denchic45.studiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.studiversity.api.course.subject.SubjectApi
+import com.denchic45.studiversity.api.course.subject.model.CreateSubjectRequest
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.course.subject.model.UpdateSubjectRequest
+import com.denchic45.studiversity.api.room.RoomApi
+import com.denchic45.studiversity.api.room.model.CreateRoomRequest
+import com.denchic45.studiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.api.room.model.UpdateRoomRequest
+import com.denchic45.studiversity.api.studygroup.StudyGroupApi
+import com.denchic45.studiversity.api.studygroup.model.AcademicYear
+import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.studiversity.api.user.UserApi
+import com.denchic45.studiversity.api.user.model.*
+import com.denchic45.studiversity.util.UserId
 import com.github.michaelbull.result.Ok
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -162,7 +162,7 @@ class TimetableParserTest {
         }
     }
 
-    private val courseApi = object : CoursesApi {
+    private val courseApi = object : CourseApi {
         override suspend fun create(createCourseRequest: CreateCourseRequest): ResponseResult<CourseResponse> {
             TODO("Not yet implemented")
         }

@@ -2,10 +2,10 @@ package com.denchic45.studiversity.client.room
 
 import com.denchic45.studiversity.KtorClientTest
 import com.denchic45.studiversity.util.assertResultIsOk
-import com.denchic45.stuiversity.api.room.RoomApi
-import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
-import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
-import com.denchic45.stuiversity.util.OptionalProperty
+import com.denchic45.studiversity.api.room.RoomApi
+import com.denchic45.studiversity.api.room.model.CreateRoomRequest
+import com.denchic45.studiversity.api.room.model.UpdateRoomRequest
+import com.denchic45.studiversity.util.OptionalProperty
 import com.github.michaelbull.result.unwrap
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test

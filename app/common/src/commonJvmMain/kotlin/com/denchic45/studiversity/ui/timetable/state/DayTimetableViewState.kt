@@ -2,7 +2,7 @@ package com.denchic45.studiversity.ui.timetable.state
 
 import com.denchic45.studiversity.data.service.model.BellSchedule
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
-import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
+import com.denchic45.studiversity.api.timetable.model.PeriodResponse
 import java.time.LocalDate
 import kotlin.math.max
 

@@ -3,20 +3,20 @@ package com.denchic45.studiversity.client.timetable
 import com.denchic45.studiversity.KtorClientTest
 import com.denchic45.studiversity.util.UNKNOWN_LONG_ID
 import com.denchic45.studiversity.util.assertResultIsOk
-import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.room.RoomApi
-import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
-import com.denchic45.stuiversity.api.room.model.RoomResponse
-import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
-import com.denchic45.stuiversity.api.studygroup.model.AcademicYear
-import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.timetable.TimetableApi
-import com.denchic45.stuiversity.api.timetable.model.*
-import com.denchic45.stuiversity.util.toUUID
-import com.denchic45.stuiversity.util.userIdOf
+import com.denchic45.studiversity.api.course.CourseApi
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.room.RoomApi
+import com.denchic45.studiversity.api.room.model.CreateRoomRequest
+import com.denchic45.studiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.api.studygroup.StudyGroupApi
+import com.denchic45.studiversity.api.studygroup.model.AcademicYear
+import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.timetable.TimetableApi
+import com.denchic45.studiversity.api.timetable.model.*
+import com.denchic45.studiversity.util.toUUID
+import com.denchic45.studiversity.util.userIdOf
 import com.github.michaelbull.result.unwrap
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -31,7 +31,7 @@ import java.time.format.DateTimeFormatter
 class TimetableTest : KtorClientTest() {
 
     private val studyGroupApi: StudyGroupApi by inject { parametersOf(client) }
-    private val courseApi: CoursesApi by inject { parametersOf(client) }
+    private val courseApi: CourseApi by inject { parametersOf(client) }
     private val timetableApi: TimetableApi by inject { parametersOf(client) }
     private val roomApi: RoomApi by inject { parametersOf(client) }
 

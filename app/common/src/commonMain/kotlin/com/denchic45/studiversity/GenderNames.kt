@@ -1,6 +1,6 @@
 package com.denchic45.studiversity
 
-import com.denchic45.stuiversity.api.user.model.Gender
+import com.denchic45.studiversity.api.user.model.Gender
 
 fun Gender.displayName() = when(this) {
     Gender.UNKNOWN -> "Неизвестно"

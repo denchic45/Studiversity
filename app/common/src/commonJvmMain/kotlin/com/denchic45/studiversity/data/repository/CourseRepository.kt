@@ -16,12 +16,12 @@ import com.denchic45.studiversity.data.observeResource
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
-import com.denchic45.stuiversity.util.UserId
-import com.denchic45.stuiversity.util.userIdOfMe
+import com.denchic45.studiversity.api.course.CourseApi
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.studiversity.util.UserId
+import com.denchic45.studiversity.util.userIdOfMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -38,23 +38,23 @@ class CourseRepository(
     override val courseTopicLocalDataSource: CourseTopicLocalDataSource,
     override val studyGroupCourseLocalDataSource: StudyGroupCourseLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
-    private val coursesApi: CoursesApi,
+    private val courseApi: CourseApi,
 ) : NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
     FindByContainsNameRepository<CourseResponse> {
 
     override fun findByContainsName(text: String): Flow<Resource<List<CourseResponse>>> {
-        return fetchResourceFlow { coursesApi.search(text) }
+        return fetchResourceFlow { courseApi.search(text) }
     }
 
     fun observeById(courseId: UUID) = observeResource(
         query = courseLocalDataSource.observeById(courseId.toString())
             .map { it.toCourseResponse() },
-        observe = { flow { emit(coursesApi.getById(courseId)) } },
+        observe = { flow { emit(courseApi.getById(courseId)) } },
         saveObserved = { saveCourse(it) }
     )
 
     suspend fun findById(courseId: UUID) = fetchResource {
-        coursesApi.getById(courseId)
+        courseApi.getById(courseId)
     }
 
     fun findBy(
@@ -64,11 +64,11 @@ class CourseRepository(
         archived: Boolean,
         query: String? = null,
     ) = fetchResourceFlow {
-        coursesApi.getList(memberId, studyGroupId, subjectId, archived, query)
+        courseApi.getList(memberId, studyGroupId, subjectId, archived, query)
     }
 
     suspend fun findByMe() = fetchResource {
-        coursesApi.getList(memberId = userIdOfMe())
+        courseApi.getList(memberId = userIdOfMe())
     }
 
 //    fun findContentByCourseId(courseId: String): Flow<List<DomainModel>> = flow {
@@ -139,11 +139,11 @@ class CourseRepository(
 //    }
 
     suspend fun findByStudyGroupId(studyGroupId: UUID) = fetchResource {
-        coursesApi.getList(studyGroupId = studyGroupId)
+        courseApi.getList(studyGroupId = studyGroupId)
     }
 
     private suspend fun getAndSaveCoursesByGroupIdRemotely(studyGroupId: UUID) {
-        fetchResource { coursesApi.getList(studyGroupId = studyGroupId) }
+        fetchResource { courseApi.getList(studyGroupId = studyGroupId) }
             .onSuccess {
                 studyGroupCourseLocalDataSource.deleteByGroup(studyGroupId.toString())
                 saveCourses(it)
@@ -172,13 +172,13 @@ class CourseRepository(
 //    }
 
     suspend fun add(request: CreateCourseRequest) = fetchResource {
-        coursesApi.create(request)
+        courseApi.create(request)
     }
 
     suspend fun update(
         courseId: UUID,
         request: UpdateCourseRequest,
-    ) = fetchResource { coursesApi.update(courseId, request) }
+    ) = fetchResource { courseApi.update(courseId, request) }
 
 //    private suspend fun getLastContentOrderByCourseIdAndSectionId(
 //        courseId: String,
@@ -206,15 +206,15 @@ class CourseRepository(
 
 
     suspend fun archiveCourse(courseId: UUID) = fetchResource {
-        coursesApi.setArchive(courseId)
+        courseApi.setArchive(courseId)
     }
 
     suspend fun unarchiveCourse(courseId: UUID) = fetchResource {
-        coursesApi.unarchive(courseId)
+        courseApi.unarchive(courseId)
     }
 
     suspend fun removeCourse(courseId: UUID) = fetchResource {
-        coursesApi.delete(courseId)
+        courseApi.delete(courseId)
     }
 }
 

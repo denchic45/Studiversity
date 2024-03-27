@@ -19,8 +19,8 @@ import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.model.toAttachmentItems
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
-import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
+import com.denchic45.studiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

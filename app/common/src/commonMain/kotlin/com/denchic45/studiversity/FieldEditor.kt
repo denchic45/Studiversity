@@ -1,7 +1,7 @@
 package com.denchic45.studiversity
 
-import com.denchic45.stuiversity.util.OptionalProperty
-import com.denchic45.stuiversity.util.optPropertyOf
+import com.denchic45.studiversity.util.OptionalProperty
+import com.denchic45.studiversity.util.optPropertyOf
 
 class FieldEditor(private val fields: Map<String, Field<*>>) {
 

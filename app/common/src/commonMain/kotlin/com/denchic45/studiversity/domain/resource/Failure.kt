@@ -1,13 +1,13 @@
 package com.denchic45.studiversity.domain.resource
 
-import com.denchic45.stuiversity.util.ErrorResponse
+import com.denchic45.studiversity.util.ErrorResponse
 import io.ktor.http.HttpStatusCode
 
 sealed class Failure
-object NoConnection : Failure()
-object Forbidden : Failure()
-object NotFound : Failure()
-object ServerError : Failure()
+data object NoConnection : Failure()
+data object Forbidden : Failure()
+data object NotFound : Failure()
+data object ServerError : Failure()
 class ClientError(val response: ErrorResponse) : Failure()
 class Cause(val throwable: Throwable) : Failure()
 

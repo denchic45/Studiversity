@@ -2,10 +2,10 @@ package com.denchic45.studiversity.feature.course.work
 
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.course.element.generateOrderByCourseAndTopicId
-import com.denchic45.stuiversity.api.course.element.model.CourseElementType
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
-import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
+import com.denchic45.studiversity.api.course.element.model.CourseElementType
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.studiversity.api.course.work.model.CreateCourseWorkRequest
+import com.denchic45.studiversity.api.course.work.model.UpdateCourseWorkRequest
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.selectAll

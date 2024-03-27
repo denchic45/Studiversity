@@ -32,8 +32,8 @@ import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.util.AttachmentViewer
 import com.denchic45.studiversity.util.collectWithLifecycle
 import com.denchic45.studiversity.util.findActivity
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.studiversity.api.course.work.model.CourseWorkType
 import okio.Path.Companion.toPath
 import java.time.LocalDate
 import java.time.LocalDateTime

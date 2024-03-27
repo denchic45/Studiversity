@@ -2,9 +2,9 @@ package com.denchic45.studiversity.data.repository
 
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.stuiversity.api.course.element.CourseElementsApi
-import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
-import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
+import com.denchic45.studiversity.api.course.element.CourseElementsApi
+import com.denchic45.studiversity.api.course.element.model.UpdateCourseElementRequest
+import com.denchic45.studiversity.api.course.topic.CourseTopicApi
 import com.github.michaelbull.result.coroutines.binding.binding
 import com.github.michaelbull.result.map
 import kotlinx.coroutines.async

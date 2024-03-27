@@ -1,9 +1,8 @@
 package com.denchic45.studiversity.ktor
 
 import com.denchic45.studiversity.util.tryToUUID
-import com.denchic45.stuiversity.api.common.Sorting
-import com.denchic45.stuiversity.api.common.SortingClass
-import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
+import com.denchic45.studiversity.api.common.Sorting
+import com.denchic45.studiversity.api.common.SortingClass
 import io.ktor.http.*
 import io.ktor.server.plugins.*
 import io.ktor.server.util.*

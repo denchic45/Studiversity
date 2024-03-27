@@ -3,9 +3,9 @@ package com.denchic45.studiversity.data.mapper
 
 import com.denchic45.studiversity.entity.Course
 import com.denchic45.studiversity.entity.CourseWithSubject
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.util.toUUID
 
 fun CourseResponse.toCourseEntity() = Course(
     course_id = id.toString(),

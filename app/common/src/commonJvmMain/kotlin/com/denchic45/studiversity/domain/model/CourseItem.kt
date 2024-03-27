@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.domain.model
 
-import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CourseResponse
 import java.util.UUID
 
 data class CourseItem(

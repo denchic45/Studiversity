@@ -3,12 +3,12 @@ package com.denchic45.studiversity.client.course
 import com.denchic45.studiversity.KtorClientTest
 import com.denchic45.studiversity.util.assertedResultIsOk
 import com.denchic45.studiversity.util.unwrapAsserted
-import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.subject.SubjectApi
-import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.course.CourseApi
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.course.subject.SubjectApi
+import com.denchic45.studiversity.api.course.subject.model.CreateSubjectRequest
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 
 class SearchCoursesTest : KtorClientTest() {
     private val subjectApi: SubjectApi by inject { parametersOf(client) }
-    private val courseApi: CoursesApi by inject { parametersOf(client) }
+    private val courseApi: CourseApi by inject { parametersOf(client) }
 
     private lateinit var subject: SubjectResponse
     private lateinit var course: CourseResponse

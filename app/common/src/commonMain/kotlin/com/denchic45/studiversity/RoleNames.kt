@@ -1,6 +1,6 @@
 package com.denchic45.studiversity
 
-import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.studiversity.api.role.model.Role
 
 fun Role.scopedRoleName() = when (this) {
     Role.User -> "Студент"

@@ -1,7 +1,6 @@
 package com.denchic45.studiversity.util
 
-import com.denchic45.stuiversity.api.GeneralErrors
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.GeneralErrors
 import io.ktor.server.plugins.*
 import java.util.*
 

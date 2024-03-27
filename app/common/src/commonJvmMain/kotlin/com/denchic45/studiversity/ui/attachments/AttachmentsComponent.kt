@@ -11,7 +11,7 @@ import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.model.toAttachmentItems
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
+import com.denchic45.studiversity.api.course.element.model.AttachmentRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch

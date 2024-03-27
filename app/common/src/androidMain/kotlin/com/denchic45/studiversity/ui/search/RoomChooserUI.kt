@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.common.R
-import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.api.room.model.RoomResponse
 
 @Composable
 fun RoomChooserScreen(component: RoomChooserComponent) {

@@ -13,7 +13,7 @@ import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindWorkSubmissionsUseCase
 import com.denchic45.studiversity.ui.coursework.submissiondetails.SubmissionDetailsComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.submission.model.SubmissionByAuthor
+import com.denchic45.studiversity.api.submission.model.SubmissionByAuthor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow

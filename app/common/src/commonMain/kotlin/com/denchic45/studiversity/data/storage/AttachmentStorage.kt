@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.data.storage
 
 import com.denchic45.studiversity.util.SystemDirs
-import com.denchic45.stuiversity.api.attachment.AttachmentApi
-import com.denchic45.stuiversity.api.common.ResponseResult
-import com.denchic45.stuiversity.api.course.element.model.FileAttachmentResponse
+import com.denchic45.studiversity.api.attachment.AttachmentApi
+import com.denchic45.studiversity.api.common.ResponseResult
+import com.denchic45.studiversity.api.course.element.model.FileAttachmentResponse
 import com.github.michaelbull.result.onSuccess
 import me.tatarka.inject.annotations.Inject
 import okio.FileSystem

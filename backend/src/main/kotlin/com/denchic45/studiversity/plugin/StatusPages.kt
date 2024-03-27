@@ -4,8 +4,8 @@ import com.denchic45.studiversity.ktor.ConflictException
 import com.denchic45.studiversity.ktor.ForbiddenException
 import com.denchic45.studiversity.util.respondWithError
 import com.denchic45.studiversity.util.respondWithErrors
-import com.denchic45.stuiversity.util.ErrorInfo
-import com.denchic45.stuiversity.util.toErrors
+import com.denchic45.studiversity.util.ErrorInfo
+import com.denchic45.studiversity.util.toErrors
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*

@@ -20,8 +20,8 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
-import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
+import com.denchic45.studiversity.api.room.model.CreateRoomRequest
+import com.denchic45.studiversity.api.room.model.UpdateRoomRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch

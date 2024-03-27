@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.timetable.usecase
 
 import com.denchic45.studiversity.feature.timetable.TimetableRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting
+import com.denchic45.studiversity.api.timetable.model.PeriodsSorting
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder

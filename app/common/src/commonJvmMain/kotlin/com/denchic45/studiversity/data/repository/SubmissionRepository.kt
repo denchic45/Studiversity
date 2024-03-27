@@ -3,7 +3,7 @@ package com.denchic45.studiversity.data.repository
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.stuiversity.api.submission.SubmissionsApi
+import com.denchic45.studiversity.api.submission.SubmissionsApi
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 

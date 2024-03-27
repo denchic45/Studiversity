@@ -4,10 +4,10 @@ import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.stuiversity.api.specialty.SpecialtyApi
-import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
-import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
-import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
+import com.denchic45.studiversity.api.specialty.SpecialtyApi
+import com.denchic45.studiversity.api.specialty.model.CreateSpecialtyRequest
+import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.studiversity.api.specialty.model.UpdateSpecialtyRequest
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 

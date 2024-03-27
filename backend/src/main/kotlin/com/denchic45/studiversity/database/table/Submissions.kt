@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.database.table
 
 
-import com.denchic45.stuiversity.api.submission.model.SubmissionState
+import com.denchic45.studiversity.api.submission.model.SubmissionState
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

@@ -1,0 +1,42 @@
+package com.denchic45.studiversity.api.course.element.model
+
+import com.denchic45.studiversity.util.UUIDSerializer
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
+import java.util.*
+
+enum class AttachmentType { FILE, LINK }
+
+enum class AttachmentOwner { SUBMISSION, COURSE_ELEMENT }
+
+@Serializable(AttachmentHeaderSerializer::class)
+sealed class AttachmentHeader {
+    abstract val id: UUID
+    abstract val type: AttachmentType
+}
+
+@Serializable
+data class FileAttachmentHeader(
+    @Serializable(UUIDSerializer::class)
+    override val id: UUID,
+    val name: String,
+    val thumbnailUrl: String?
+) : AttachmentHeader() {
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val type: AttachmentType = AttachmentType.FILE
+}
+
+@Serializable
+data class LinkAttachmentHeader(
+    @Serializable(UUIDSerializer::class)
+    override val id: UUID,
+    val url: String,
+    val name: String,
+    val thumbnailUrl: String?
+) : AttachmentHeader() {
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault
+    override val type: AttachmentType = AttachmentType.LINK
+}

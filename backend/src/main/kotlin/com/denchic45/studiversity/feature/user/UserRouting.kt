@@ -16,8 +16,8 @@ import com.denchic45.studiversity.ktor.currentUserId
 import com.denchic45.studiversity.ktor.getUserUuidByParameterOrMe
 import com.denchic45.studiversity.ktor.getUuidOrFail
 import com.denchic45.studiversity.validation.require
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.denchic45.stuiversity.api.user.AvatarErrors
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.user.AvatarErrors
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*

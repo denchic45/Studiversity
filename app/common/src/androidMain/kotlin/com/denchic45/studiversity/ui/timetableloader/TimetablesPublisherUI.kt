@@ -30,7 +30,7 @@ import com.denchic45.studiversity.ui.search.StudyGroupChooserScreen
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.DayTimetableContent
 import com.denchic45.studiversity.ui.timetableeditor.TimetableEditorComponent
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
 

@@ -2,8 +2,8 @@ package com.denchic45.studiversity.feature.course.work.submission.usecase
 
 import com.denchic45.studiversity.feature.course.work.submission.SubmissionRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.course.work.grade.SubmissionGradeRequest
-import com.denchic45.stuiversity.api.submission.SubmissionErrors
+import com.denchic45.studiversity.api.course.work.grade.SubmissionGradeRequest
+import com.denchic45.studiversity.api.submission.SubmissionErrors
 import io.ktor.server.plugins.*
 
 class SetGradeSubmissionUseCase(

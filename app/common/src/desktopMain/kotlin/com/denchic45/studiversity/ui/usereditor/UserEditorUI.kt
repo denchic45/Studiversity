@@ -24,7 +24,7 @@ import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.theme.DesktopAppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
-import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.studiversity.api.role.model.Role
 
 @Composable
 fun TitleAlertDialog(text: String, onClose: () -> Unit) {

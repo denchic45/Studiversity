@@ -49,9 +49,9 @@ import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.search.CourseChooserScreen
 import com.denchic45.studiversity.ui.search.UserChooserScreen
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.room.model.RoomResponse
-import com.denchic45.stuiversity.util.DateTimePatterns
-import com.denchic45.stuiversity.util.toString
+import com.denchic45.studiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.util.DateTimePatterns
+import com.denchic45.studiversity.util.toString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

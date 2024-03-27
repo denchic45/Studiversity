@@ -14,7 +14,7 @@ import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.courses.CourseListItem
 import com.denchic45.studiversity.ui.search.SearchScreen
-import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CourseResponse
 
 @Composable
 fun CoursesAdminScreen(component: CoursesAdminComponent) {

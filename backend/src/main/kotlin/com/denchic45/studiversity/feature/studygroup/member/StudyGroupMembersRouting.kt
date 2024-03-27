@@ -10,9 +10,9 @@ import com.denchic45.studiversity.feature.studygroup.member.usecase.RemoveStudyG
 import com.denchic45.studiversity.ktor.currentUserId
 import com.denchic45.studiversity.ktor.getSortingBy
 import com.denchic45.studiversity.ktor.getUuidOrFail
-import com.denchic45.stuiversity.api.member.CreateMemberRequest
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.denchic45.stuiversity.api.studygroup.member.StudyGroupMemberSorting
+import com.denchic45.studiversity.api.member.CreateMemberRequest
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.studygroup.member.StudyGroupMemberSorting
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*

@@ -39,7 +39,7 @@ import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.LocalAppBarMediator
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CourseResponse
 
 @Composable
 fun CourseScreen(component: CourseComponent) {

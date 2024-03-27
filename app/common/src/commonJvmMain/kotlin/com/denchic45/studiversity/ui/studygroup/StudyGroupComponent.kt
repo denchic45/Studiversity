@@ -24,8 +24,8 @@ import com.denchic45.studiversity.ui.studygroup.members.StudyGroupMembersCompone
 import com.denchic45.studiversity.ui.studygroup.timetable.StudyGroupTimetableComponent
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.role.model.Role
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

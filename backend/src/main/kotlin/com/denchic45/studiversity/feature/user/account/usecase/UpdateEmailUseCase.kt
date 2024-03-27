@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.feature.user.account.usecase
 
+import com.denchic45.studiversity.api.auth.AuthErrors
 import com.denchic45.studiversity.feature.user.TokenRepository
 import com.denchic45.studiversity.feature.user.UserRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
@@ -14,8 +15,9 @@ class UpdateEmailUseCase(
     private val emailSender: EmailSender
 ) {
     suspend operator fun invoke(userId: UUID, email: String, url: String) = suspendTransactionWorker {
-        val generatedToken = tokenRepository.generateVerificationToken(userId, email, 1800)
         val user = userRepository.findById(userId) ?: throw NotFoundException()
+        if (user.account.email == email) throw BadRequestException(AuthErrors.OLD_EMAIL_ENTERED)
+        val generatedToken = tokenRepository.generateVerificationToken(userId, email, 1800)
         emailSender.sendSimpleEmail(
             email,
             "Подтверждение почты",

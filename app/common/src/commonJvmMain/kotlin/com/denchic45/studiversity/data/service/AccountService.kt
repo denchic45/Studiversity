@@ -1,28 +1,22 @@
 package com.denchic45.studiversity.data.service
 
+import com.denchic45.studiversity.api.account.AccountApi
+import com.denchic45.studiversity.api.account.model.UpdateAccountPersonalRequest
+import com.denchic45.studiversity.api.account.model.UpdatePasswordRequest
+import com.denchic45.studiversity.api.common.EmptyResponseResult
+import com.denchic45.studiversity.api.user.UserApi
+import com.denchic45.studiversity.api.user.model.Account
+import com.denchic45.studiversity.api.user.model.Gender
+import com.denchic45.studiversity.api.user.model.UserResponse
 import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.preference.UserPreferences
-import com.denchic45.studiversity.domain.resource.NotFound
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.mapResource
-import com.denchic45.studiversity.domain.resource.resourceOf
-import com.denchic45.stuiversity.api.account.AccountApi
-import com.denchic45.stuiversity.api.account.model.UpdateAccountPersonalRequest
-import com.denchic45.stuiversity.api.common.EmptyResponseResult
-import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.Account
-import com.denchic45.stuiversity.api.user.model.Gender
-import com.denchic45.stuiversity.api.user.model.UserResponse
+import com.denchic45.studiversity.domain.resource.*
 import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class AccountService(
@@ -85,5 +79,13 @@ class AccountService(
         return accountApi.updatePersonal(request).onSuccess {
             userApi.getMe().onSuccess(::saveUserPreference)
         }
+    }
+
+    suspend fun updatePassword(request: UpdatePasswordRequest): EmptyResource {
+        return accountApi.updatePassword(request).toResource()
+    }
+
+    suspend fun updateEmail(email: String): EmptyResource {
+        return accountApi.updateEmail(email).toResource()
     }
 }

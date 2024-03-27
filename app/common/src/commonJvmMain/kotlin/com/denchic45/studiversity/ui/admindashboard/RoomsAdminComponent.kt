@@ -14,7 +14,7 @@ import com.denchic45.studiversity.ui.roomeditor.RoomEditorComponent
 import com.denchic45.studiversity.ui.search.RoomChooserComponent
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.api.room.model.RoomResponse
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject

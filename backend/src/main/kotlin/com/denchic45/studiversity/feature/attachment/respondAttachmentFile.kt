@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.attachment
 
-import com.denchic45.stuiversity.api.course.element.model.FileAttachmentResponse
+import com.denchic45.studiversity.api.course.element.model.FileAttachmentResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*

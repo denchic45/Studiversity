@@ -5,10 +5,10 @@ import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
-import com.denchic45.stuiversity.api.timetable.model.EventRequest
-import com.denchic45.stuiversity.api.timetable.model.LessonRequest
-import com.denchic45.stuiversity.api.timetable.model.PeriodRequest
-import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
+import com.denchic45.studiversity.api.timetable.model.EventRequest
+import com.denchic45.studiversity.api.timetable.model.LessonRequest
+import com.denchic45.studiversity.api.timetable.model.PeriodRequest
+import com.denchic45.studiversity.api.timetable.model.PutTimetableRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Assisted

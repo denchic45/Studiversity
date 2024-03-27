@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.CourseTopicRepository
-import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
+import com.denchic45.studiversity.api.course.topic.model.CreateCourseTopicRequest
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 

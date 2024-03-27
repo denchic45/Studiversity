@@ -26,9 +26,9 @@ import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.coursework.submissions.CourseWorkSubmissionsComponent
 import com.denchic45.studiversity.ui.search.UserAvatarImage
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.submission.model.SubmissionByAuthor
-import com.denchic45.stuiversity.api.submission.model.SubmissionState
-import com.denchic45.stuiversity.util.toString
+import com.denchic45.studiversity.api.submission.model.SubmissionByAuthor
+import com.denchic45.studiversity.api.submission.model.SubmissionState
+import com.denchic45.studiversity.util.toString
 
 
 @OptIn(ExperimentalMaterialApi::class)

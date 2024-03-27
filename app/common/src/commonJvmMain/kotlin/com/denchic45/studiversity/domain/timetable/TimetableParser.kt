@@ -3,20 +3,20 @@ package com.denchic45.studiversity.domain.timetable
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.model.toItem
 import com.denchic45.studiversity.domain.timetable.model.TimetableParserResult
-import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.subject.SubjectApi
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.stuiversity.api.room.RoomApi
-import com.denchic45.stuiversity.api.room.model.RoomResponse
-import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
-import com.denchic45.stuiversity.api.timetable.model.*
-import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.UserResponse
-import com.denchic45.stuiversity.util.DateTimePatterns
-import com.denchic45.stuiversity.util.Dates
-import com.denchic45.stuiversity.util.toLocalDate
-import com.denchic45.stuiversity.util.toString
+import com.denchic45.studiversity.api.course.CourseApi
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.subject.SubjectApi
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.room.RoomApi
+import com.denchic45.studiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.api.studygroup.StudyGroupApi
+import com.denchic45.studiversity.api.timetable.model.*
+import com.denchic45.studiversity.api.user.UserApi
+import com.denchic45.studiversity.api.user.model.UserResponse
+import com.denchic45.studiversity.util.DateTimePatterns
+import com.denchic45.studiversity.util.Dates
+import com.denchic45.studiversity.util.toLocalDate
+import com.denchic45.studiversity.util.toString
 import com.github.michaelbull.result.unwrap
 import me.tatarka.inject.annotations.Inject
 import org.apache.poi.xwpf.usermodel.XWPFDocument
@@ -32,7 +32,7 @@ import kotlin.random.Random
 class TimetableParser(
     private val studyGroupApi: StudyGroupApi,
     private val userApi: UserApi,
-    private val courseApi: CoursesApi,
+    private val courseApi: CourseApi,
     private val subjectApi: SubjectApi,
     private val roomApi: RoomApi
 ) {

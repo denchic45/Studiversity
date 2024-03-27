@@ -2,10 +2,10 @@ package com.denchic45.studiversity.feature.attachment.usecase
 
 import com.denchic45.studiversity.feature.attachment.AttachmentRepository
 import com.denchic45.studiversity.transaction.TransactionWorker
-import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
-import com.denchic45.stuiversity.api.course.element.model.UploadedAttachmentRequest
+import com.denchic45.studiversity.api.course.element.model.AttachmentRequest
+import com.denchic45.studiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.studiversity.api.course.element.model.CreateLinkRequest
+import com.denchic45.studiversity.api.course.element.model.UploadedAttachmentRequest
 import java.util.*
 
 class AddAttachmentUseCase(

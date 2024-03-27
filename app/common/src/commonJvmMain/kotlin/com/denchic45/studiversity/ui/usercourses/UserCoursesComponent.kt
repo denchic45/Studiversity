@@ -4,7 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindCoursesUseCase
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.util.userIdOf
+import com.denchic45.studiversity.util.userIdOf
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID

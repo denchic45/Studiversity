@@ -5,10 +5,10 @@ import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.attachment.AttachmentFileStorage
 import com.denchic45.studiversity.feature.course.toResponse
 import com.denchic45.studiversity.feature.studygroup.mapper.toResponse
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList

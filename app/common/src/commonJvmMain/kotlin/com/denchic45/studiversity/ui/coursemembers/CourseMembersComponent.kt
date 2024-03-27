@@ -13,7 +13,7 @@ import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.studiversity.util.map
-import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.role.model.Capability
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted

@@ -4,7 +4,7 @@ import com.denchic45.studiversity.database.distinctOn
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.user.toUserResponse
-import com.denchic45.stuiversity.api.user.model.UserResponse
+import com.denchic45.studiversity.api.user.model.UserResponse
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList

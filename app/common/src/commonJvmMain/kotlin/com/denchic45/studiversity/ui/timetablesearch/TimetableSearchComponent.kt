@@ -28,7 +28,7 @@ import com.denchic45.studiversity.ui.timetable.state.TimetableState
 import com.denchic45.studiversity.ui.timetableeditor.TimetableEditorComponent
 import com.denchic45.studiversity.util.asFlow
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

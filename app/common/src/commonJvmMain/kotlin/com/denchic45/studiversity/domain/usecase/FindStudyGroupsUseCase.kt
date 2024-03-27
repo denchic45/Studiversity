@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.StudyGroupRepository
-import com.denchic45.stuiversity.util.UserId
+import com.denchic45.studiversity.util.UserId
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 

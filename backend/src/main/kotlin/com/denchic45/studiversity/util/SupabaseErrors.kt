@@ -1,8 +1,5 @@
 package com.denchic45.studiversity.util
 
-import com.denchic45.stuiversity.util.CompositeError
-import com.denchic45.stuiversity.util.ErrorInfo
-import com.denchic45.stuiversity.util.ErrorResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*

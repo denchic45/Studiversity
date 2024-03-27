@@ -6,7 +6,7 @@ import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.role.Permission
 import com.denchic45.studiversity.feature.role.combinedPermission
 import com.denchic45.studiversity.feature.role.mapper.toRole
-import com.denchic45.stuiversity.api.role.model.*
+import com.denchic45.studiversity.api.role.model.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList

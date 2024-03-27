@@ -15,18 +15,18 @@ import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.member.MembersApi
-import com.denchic45.stuiversity.api.role.RoleApi
-import com.denchic45.stuiversity.api.role.model.Role
-import com.denchic45.stuiversity.api.studygroup.StudyGroupApi
-import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
-import com.denchic45.stuiversity.util.UserId
-import com.denchic45.stuiversity.util.toUUID
-import com.denchic45.stuiversity.util.userIdOf
-import com.denchic45.stuiversity.util.userIdOfMe
+import com.denchic45.studiversity.api.course.CourseApi
+import com.denchic45.studiversity.api.member.MembersApi
+import com.denchic45.studiversity.api.role.RoleApi
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.api.studygroup.StudyGroupApi
+import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.studiversity.util.UserId
+import com.denchic45.studiversity.util.toUUID
+import com.denchic45.studiversity.util.userIdOf
+import com.denchic45.studiversity.util.userIdOfMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -49,7 +49,7 @@ class StudyGroupRepository(
     override val courseTopicLocalDataSource: CourseTopicLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val studyGroupApi: StudyGroupApi,
-    private val courseApi: CoursesApi,
+    private val courseApi: CourseApi,
     private val membersApi: MembersApi,
     private val roleApi: RoleApi,
 ) : NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,

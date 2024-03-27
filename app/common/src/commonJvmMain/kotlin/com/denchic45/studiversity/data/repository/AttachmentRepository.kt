@@ -15,9 +15,9 @@ import com.denchic45.studiversity.domain.resource.EmptyResource
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.entity.AppDatabase
 import com.denchic45.studiversity.entity.Attachment
-import com.denchic45.stuiversity.api.attachment.AttachmentApi
-import com.denchic45.stuiversity.api.course.element.model.*
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.attachment.AttachmentApi
+import com.denchic45.studiversity.api.course.element.model.*
+import com.denchic45.studiversity.util.toUUID
 import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

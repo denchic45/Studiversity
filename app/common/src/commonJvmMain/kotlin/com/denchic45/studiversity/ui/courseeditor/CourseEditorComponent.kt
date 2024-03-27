@@ -31,10 +31,10 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.model.UpdateCourseRequest
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.stuiversity.util.optPropertyOf
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.util.optPropertyOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow

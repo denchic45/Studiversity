@@ -20,9 +20,9 @@ import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.coursework.SubmissionUiState
 import com.denchic45.studiversity.ui.coursework.toUiState
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.submission.model.SubmissionResponse
+import com.denchic45.studiversity.api.course.element.model.AttachmentRequest
+import com.denchic45.studiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.studiversity.api.submission.model.SubmissionResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

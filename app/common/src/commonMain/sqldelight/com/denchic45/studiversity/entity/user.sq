@@ -1,4 +1,4 @@
-import com.denchic45.stuiversity.api.user.model.Gender;
+import com.denchic45.studiversity.api.user.model.Gender;
 import kotlin.Boolean;
 
 CREATE TABLE IF NOT EXISTS user (

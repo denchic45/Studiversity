@@ -50,8 +50,8 @@ import com.denchic45.studiversity.ui.main.AppBarTitle
 import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.util.toString
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.studiversity.util.toString
 import kotlinx.coroutines.launch
 import java.util.UUID
 

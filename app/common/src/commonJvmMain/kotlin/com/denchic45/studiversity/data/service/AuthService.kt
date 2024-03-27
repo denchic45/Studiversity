@@ -8,9 +8,9 @@ import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.toResource
 import com.denchic45.studiversity.util.SystemDirs
 import com.denchic45.studiversity.util.databasePath
-import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest
-import com.denchic45.stuiversity.api.auth.model.SignInResponse
-import com.denchic45.stuiversity.api.common.toResult
+import com.denchic45.studiversity.api.auth.model.SignInByEmailPasswordRequest
+import com.denchic45.studiversity.api.auth.model.SignInResponse
+import com.denchic45.studiversity.api.common.toResult
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider

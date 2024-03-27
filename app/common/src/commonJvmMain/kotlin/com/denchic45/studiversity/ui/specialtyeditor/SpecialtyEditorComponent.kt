@@ -22,8 +22,8 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
-import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
+import com.denchic45.studiversity.api.specialty.model.CreateSpecialtyRequest
+import com.denchic45.studiversity.api.specialty.model.UpdateSpecialtyRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch

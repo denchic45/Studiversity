@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.util
 
-import com.denchic45.stuiversity.api.common.ResponseResult
+import com.denchic45.studiversity.api.common.ResponseResult
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.github.michaelbull.result.unwrap

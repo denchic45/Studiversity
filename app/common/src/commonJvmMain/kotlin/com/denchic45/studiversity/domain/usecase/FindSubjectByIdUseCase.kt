@@ -2,7 +2,7 @@ package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.SubjectRepository
 import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID

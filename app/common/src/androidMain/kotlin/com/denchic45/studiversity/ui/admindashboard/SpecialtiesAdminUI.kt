@@ -23,7 +23,7 @@ import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.search.SearchScreen
 import com.denchic45.studiversity.ui.search.SpecialtyListItem
 import com.denchic45.studiversity.ui.specialtyeditor.SpecialtyEditorDialog
-import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 
 @Composable
 fun SpecialtiesAdminScreen(component: SpecialtiesAdminComponent) {

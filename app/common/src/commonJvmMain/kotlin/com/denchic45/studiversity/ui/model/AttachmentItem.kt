@@ -6,9 +6,9 @@ import com.denchic45.studiversity.domain.model.FileState
 import com.denchic45.studiversity.domain.model.LinkAttachment2
 import com.denchic45.studiversity.util.Files
 import com.denchic45.studiversity.util.getExtension
-import com.denchic45.stuiversity.api.course.element.model.AttachmentRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.element.model.CreateLinkRequest
+import com.denchic45.studiversity.api.course.element.model.AttachmentRequest
+import com.denchic45.studiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.studiversity.api.course.element.model.CreateLinkRequest
 import com.eygraber.uri.Uri
 import okio.Path
 import java.util.*

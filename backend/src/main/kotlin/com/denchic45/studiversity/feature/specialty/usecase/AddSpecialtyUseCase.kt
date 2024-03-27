@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.specialty.usecase
 
 import com.denchic45.studiversity.feature.specialty.SpecialtyRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
+import com.denchic45.studiversity.api.specialty.model.CreateSpecialtyRequest
 
 class AddSpecialtyUseCase(
     private val suspendTransactionWorker: SuspendTransactionWorker,

@@ -2,22 +2,22 @@ package com.denchic45.studiversity.client.course
 
 import com.denchic45.studiversity.KtorClientTest
 import com.denchic45.studiversity.util.assertResultIsOk
-import com.denchic45.stuiversity.api.attachment.AttachmentApi
-import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.element.CourseElementsApi
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.work.CourseWorkApi
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
-import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
-import com.denchic45.stuiversity.api.submission.model.SubmissionResponse
-import com.denchic45.stuiversity.api.submission.model.SubmissionState
-import com.denchic45.stuiversity.api.membership.MembershipApi
-import com.denchic45.stuiversity.api.role.model.Role
-import com.denchic45.stuiversity.api.submission.SubmissionsApi
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.attachment.AttachmentApi
+import com.denchic45.studiversity.api.course.CourseApi
+import com.denchic45.studiversity.api.course.element.CourseElementsApi
+import com.denchic45.studiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.course.work.CourseWorkApi
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.studiversity.api.course.work.model.CourseWorkType
+import com.denchic45.studiversity.api.course.work.model.CreateCourseWorkRequest
+import com.denchic45.studiversity.api.submission.model.SubmissionResponse
+import com.denchic45.studiversity.api.submission.model.SubmissionState
+import com.denchic45.studiversity.api.membership.MembershipApi
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.api.submission.SubmissionsApi
+import com.denchic45.studiversity.util.toUUID
 import com.github.michaelbull.result.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
@@ -52,7 +52,7 @@ class SubmissionsTest : KtorClientTest() {
 
     private val submissionsApiOfStudent: SubmissionsApi by inject { parametersOf(studentClient) }
     private val submissionsApiOfTeacher: SubmissionsApi by inject { parametersOf(teacherClient) }
-    private val coursesApi: CoursesApi by inject { parametersOf(client) }
+    private val CourseApi: CourseApi by inject { parametersOf(client) }
     private val attachmentApi: AttachmentApi by inject { parametersOf(client) }
     private val courseElementsApi: CourseElementsApi by inject { parametersOf(client) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(client) }
@@ -60,15 +60,15 @@ class SubmissionsTest : KtorClientTest() {
 
 
     override fun setup(): Unit = runBlocking {
-        course = coursesApi.create(CreateCourseRequest("Test course for submissions")).apply {
+        course = CourseApi.create(CreateCourseRequest("Test course for submissions")).apply {
             assertNotNull(get()) { unwrapError().error.toString() }
         }.unwrap()
         enrolTeacher(teacher1Id)
     }
 
     override fun cleanup(): Unit = runBlocking {
-        coursesApi.setArchive(course.id)
-        coursesApi.delete(course.id)
+        CourseApi.setArchive(course.id)
+        CourseApi.delete(course.id)
     }
 
     @BeforeEach

@@ -16,7 +16,7 @@ import com.denchic45.studiversity.domain.usecase.DetachStudyGroupsToCourseUseCas
 import com.denchic45.studiversity.domain.usecase.FindAttachedStudyGroupsByCourseIdUseCase
 import com.denchic45.studiversity.ui.search.StudyGroupChooserComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.last

@@ -12,7 +12,7 @@ import com.denchic45.studiversity.domain.resource.onFailure
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.CheckDomainUseCase
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.OrganizationResponse
+import com.denchic45.studiversity.api.OrganizationResponse
 import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import kotlinx.coroutines.Dispatchers

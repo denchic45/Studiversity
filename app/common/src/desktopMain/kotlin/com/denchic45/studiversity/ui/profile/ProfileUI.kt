@@ -33,8 +33,8 @@ import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.main.NavigationIconBack
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.role.model.Role
 import com.seiko.imageloader.rememberAsyncImagePainter
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource

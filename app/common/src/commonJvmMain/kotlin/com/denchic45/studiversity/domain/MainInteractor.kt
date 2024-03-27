@@ -10,8 +10,8 @@ import com.denchic45.studiversity.domain.resource.filterSuccess
 import com.denchic45.studiversity.domain.resource.map
 import com.denchic45.studiversity.domain.resource.onFailure
 import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.stuiversity.api.user.model.UserResponse
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.user.model.UserResponse
+import com.denchic45.studiversity.util.toUUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted

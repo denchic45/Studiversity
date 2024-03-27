@@ -5,9 +5,9 @@ import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.role.mapper.toRole
 import com.denchic45.studiversity.feature.user.toUserResponse
 import com.denchic45.studiversity.util.toSqlSortOrder
-import com.denchic45.stuiversity.api.common.SortOrder
-import com.denchic45.stuiversity.api.member.ScopeMember
-import com.denchic45.stuiversity.api.studygroup.member.StudyGroupMemberSorting
+import com.denchic45.studiversity.api.common.SortOrder
+import com.denchic45.studiversity.api.member.ScopeMember
+import com.denchic45.studiversity.api.studygroup.member.StudyGroupMemberSorting
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.util.*

@@ -32,7 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.displayName
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.user.model.Gender
+import com.denchic45.studiversity.api.user.model.Gender
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 

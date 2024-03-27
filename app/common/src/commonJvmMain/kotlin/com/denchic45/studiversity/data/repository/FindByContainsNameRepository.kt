@@ -6,7 +6,7 @@ import com.denchic45.studiversity.data.service.withHasNetwork
 import com.denchic45.studiversity.domain.model.DomainModel
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.toResource
-import com.denchic45.stuiversity.api.common.ResponseResult
+import com.denchic45.studiversity.api.common.ResponseResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

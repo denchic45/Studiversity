@@ -2,8 +2,8 @@ package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.SpecialtyRepository
 import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
-import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
+import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.studiversity.api.specialty.model.UpdateSpecialtyRequest
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 

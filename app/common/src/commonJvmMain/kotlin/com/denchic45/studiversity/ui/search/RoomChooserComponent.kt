@@ -3,7 +3,7 @@ package com.denchic45.studiversity.ui.search
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.usecase.FindRoomByContainsNameUseCase
-import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.api.room.model.RoomResponse
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject

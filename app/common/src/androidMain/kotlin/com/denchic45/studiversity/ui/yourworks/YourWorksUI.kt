@@ -30,8 +30,8 @@ import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.util.toString
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.studiversity.util.toString
 import kotlinx.coroutines.launch
 import java.util.*
 

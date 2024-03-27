@@ -2,8 +2,8 @@ package com.denchic45.studiversity.feature.course.material.usecase
 
 import com.denchic45.studiversity.feature.course.material.CourseMaterialRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
-import com.denchic45.stuiversity.api.course.material.model.CreateCourseMaterialRequest
+import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
+import com.denchic45.studiversity.api.course.material.model.CreateCourseMaterialRequest
 import io.ktor.server.plugins.*
 import java.util.*
 

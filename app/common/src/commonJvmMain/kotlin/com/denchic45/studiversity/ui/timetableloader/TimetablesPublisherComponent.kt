@@ -27,7 +27,7 @@ import com.denchic45.studiversity.ui.timetable.state.toLocalDateOfWeekOfYear
 import com.denchic45.studiversity.ui.timetable.state.toTimetableState
 import com.denchic45.studiversity.ui.timetableeditor.TimetableEditorComponent
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import com.denchic45.studiversity.api.timetable.model.TimetableResponse
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.*

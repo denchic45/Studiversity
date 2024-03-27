@@ -18,10 +18,10 @@ import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.usercourses.UserCoursesComponent
 import com.denchic45.studiversity.ui.userstudygroups.UserStudyGroupsComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.util.toUUID
-import com.denchic45.stuiversity.util.userIdOf
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.util.toUUID
+import com.denchic45.studiversity.util.userIdOf
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch

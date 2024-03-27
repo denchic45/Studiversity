@@ -7,7 +7,7 @@ import com.denchic45.studiversity.feature.user.UserRepository
 import com.denchic45.studiversity.logger.logger
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.studiversity.util.EmailSender
-import com.denchic45.stuiversity.api.user.model.CreateUserRequest
+import com.denchic45.studiversity.api.user.model.CreateUserRequest
 import org.mindrot.jbcrypt.BCrypt
 
 class AddUserUseCase(

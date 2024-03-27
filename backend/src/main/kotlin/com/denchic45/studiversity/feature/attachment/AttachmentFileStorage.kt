@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.attachment
 
-import com.denchic45.stuiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.studiversity.api.course.element.model.CreateFileRequest
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer

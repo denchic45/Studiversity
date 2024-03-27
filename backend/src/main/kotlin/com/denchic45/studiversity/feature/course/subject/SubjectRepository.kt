@@ -4,9 +4,9 @@ import com.denchic45.studiversity.database.table.CourseDao
 import com.denchic45.studiversity.database.table.Courses
 import com.denchic45.studiversity.database.table.SubjectDao
 import com.denchic45.studiversity.database.table.Subjects
-import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
+import com.denchic45.studiversity.api.course.subject.model.CreateSubjectRequest
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.course.subject.model.UpdateSubjectRequest
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction

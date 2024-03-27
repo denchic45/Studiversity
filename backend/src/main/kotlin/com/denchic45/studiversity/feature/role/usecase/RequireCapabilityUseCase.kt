@@ -3,7 +3,7 @@ package com.denchic45.studiversity.feature.role.usecase
 import com.denchic45.studiversity.feature.role.repository.RoleRepository
 import com.denchic45.studiversity.ktor.ForbiddenException
 import com.denchic45.studiversity.transaction.DatabaseTransactionWorker
-import com.denchic45.stuiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.role.model.Capability
 import java.util.*
 
 class RequireCapabilityUseCase(

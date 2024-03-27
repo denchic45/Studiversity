@@ -10,7 +10,7 @@ import com.denchic45.studiversity.domain.resource.loadingResource
 import com.denchic45.studiversity.domain.resource.onFailure
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.toResource
-import com.denchic45.stuiversity.api.common.ResponseResult
+import com.denchic45.studiversity.api.common.ResponseResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow

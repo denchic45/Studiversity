@@ -10,7 +10,7 @@
 //import com.denchic45.studiversity.domain.model.ContentType
 //import com.denchic45.studiversity.domain.model.CourseContent
 //import com.denchic45.studiversity.domain.model.Task
-//import com.denchic45.stuiversity.util.toDate
+//import com.denchic45.studiversity.util.toDate
 //import com.denchic45.studiversity.util.toJsonString
 //import com.google.gson.GsonBuilder
 //import kotlinx.serialization.decodeFromString

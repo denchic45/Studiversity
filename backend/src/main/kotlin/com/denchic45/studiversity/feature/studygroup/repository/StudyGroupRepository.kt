@@ -3,9 +3,9 @@ package com.denchic45.studiversity.feature.studygroup.repository
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.studygroup.mapper.toResponse
-import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.Instant

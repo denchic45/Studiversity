@@ -4,7 +4,7 @@ import com.denchic45.studiversity.feature.user.TokenRepository
 import com.denchic45.studiversity.feature.user.UserRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.studiversity.util.EmailSender
-import com.denchic45.stuiversity.api.auth.AuthErrors
+import com.denchic45.studiversity.api.auth.AuthErrors
 import io.ktor.server.plugins.*
 
 class RecoverPasswordUseCase(

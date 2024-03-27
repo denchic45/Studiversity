@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.attachment.usecase
 
 import com.denchic45.studiversity.feature.attachment.AttachmentRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.course.element.model.AttachmentHeader
+import com.denchic45.studiversity.api.course.element.model.AttachmentHeader
 import java.util.*
 
 class FindAttachmentsByResourceUseCase(

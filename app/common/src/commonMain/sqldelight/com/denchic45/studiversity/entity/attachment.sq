@@ -1,4 +1,4 @@
-import com.denchic45.stuiversity.api.course.element.model.AttachmentType;
+import com.denchic45.studiversity.api.course.element.model.AttachmentType;
 import kotlin.Boolean;
 
 CREATE TABLE attachment (

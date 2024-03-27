@@ -24,10 +24,10 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
-import com.denchic45.stuiversity.api.course.material.model.CreateCourseMaterialRequest
-import com.denchic45.stuiversity.api.course.material.model.UpdateCourseMaterialRequest
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
+import com.denchic45.studiversity.api.course.material.model.CreateCourseMaterialRequest
+import com.denchic45.studiversity.api.course.material.model.UpdateCourseMaterialRequest
+import com.denchic45.studiversity.util.toUUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

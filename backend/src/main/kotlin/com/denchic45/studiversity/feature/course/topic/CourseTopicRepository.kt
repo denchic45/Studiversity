@@ -5,9 +5,9 @@ import com.denchic45.studiversity.database.table.CourseElements
 import com.denchic45.studiversity.database.table.CourseTopicDao
 import com.denchic45.studiversity.database.table.CourseTopics
 import com.denchic45.studiversity.logger.logger
-import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
-import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
-import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
+import com.denchic45.studiversity.api.course.topic.model.CourseTopicResponse
+import com.denchic45.studiversity.api.course.topic.model.CreateCourseTopicRequest
+import com.denchic45.studiversity.api.course.topic.model.UpdateCourseTopicRequest
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus

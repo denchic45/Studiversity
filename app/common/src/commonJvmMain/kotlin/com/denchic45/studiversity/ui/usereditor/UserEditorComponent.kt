@@ -19,10 +19,10 @@ import com.denchic45.studiversity.uivalidator.isEmail
 import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.role.model.Role
-import com.denchic45.stuiversity.api.user.model.CreateUserRequest
-import com.denchic45.stuiversity.api.user.model.Gender
-import com.denchic45.stuiversity.api.user.model.UpdateUserRequest
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.api.user.model.CreateUserRequest
+import com.denchic45.studiversity.api.user.model.Gender
+import com.denchic45.studiversity.api.user.model.UpdateUserRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

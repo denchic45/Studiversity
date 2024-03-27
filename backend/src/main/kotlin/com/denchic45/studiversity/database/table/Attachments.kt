@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.database.table
 
 
-import com.denchic45.stuiversity.api.course.element.model.AttachmentType
+import com.denchic45.studiversity.api.course.element.model.AttachmentType
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

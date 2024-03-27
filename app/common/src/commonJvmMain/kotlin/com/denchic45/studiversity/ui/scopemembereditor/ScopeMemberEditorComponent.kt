@@ -19,7 +19,7 @@ import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.ui.search.UserChooserComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.studiversity.api.role.model.Role
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

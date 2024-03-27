@@ -3,7 +3,7 @@ package com.denchic45.studiversity.util
 import com.denchic45.studiversity.firebasemultiplatform.api.ArrayValue
 import com.denchic45.studiversity.firebasemultiplatform.api.MapValue
 import com.denchic45.studiversity.firebasemultiplatform.api.Value
-import com.denchic45.stuiversity.util.Dates
+import com.denchic45.studiversity.util.Dates
 import kotlinx.serialization.json.*
 import java.util.*
 

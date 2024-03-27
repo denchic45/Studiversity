@@ -31,7 +31,7 @@ import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.AttachmentViewer
 import com.denchic45.studiversity.util.collectWithLifecycle
 import com.denchic45.studiversity.util.findActivity
-import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
+import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

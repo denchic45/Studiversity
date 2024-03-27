@@ -1,9 +1,9 @@
 package com.denchic45.studiversity.data.mapper
 
 import com.denchic45.studiversity.entity.User
-import com.denchic45.stuiversity.api.user.model.Account
-import com.denchic45.stuiversity.api.user.model.UserResponse
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.user.model.Account
+import com.denchic45.studiversity.api.user.model.UserResponse
+import com.denchic45.studiversity.util.toUUID
 
 
 //fun UserResponse.toUser() = User(

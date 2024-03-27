@@ -3,7 +3,7 @@ package com.denchic45.studiversity.feature.course.subject.usecase
 import com.denchic45.studiversity.feature.course.subject.SubjectRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.studiversity.util.searchable
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 
 class SearchSubjectsUseCase(
     private val suspendTransactionWorker: SuspendTransactionWorker,

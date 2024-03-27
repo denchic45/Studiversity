@@ -9,10 +9,10 @@ import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.stuiversity.api.course.subject.SubjectApi
-import com.denchic45.stuiversity.api.course.subject.model.CreateSubjectRequest
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
+import com.denchic45.studiversity.api.course.subject.SubjectApi
+import com.denchic45.studiversity.api.course.subject.model.CreateSubjectRequest
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.course.subject.model.UpdateSubjectRequest
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 

@@ -5,10 +5,10 @@ import com.denchic45.studiversity.database.table.RefreshTokens
 import com.denchic45.studiversity.util.assertedResultIsError
 import com.denchic45.studiversity.util.assertedResultIsOk
 import com.denchic45.studiversity.util.unwrapAsserted
-import com.denchic45.stuiversity.api.auth.model.SignupRequest
-import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.Gender
-import com.denchic45.stuiversity.api.user.model.UserResponse
+import com.denchic45.studiversity.api.auth.model.SignupRequest
+import com.denchic45.studiversity.api.user.UserApi
+import com.denchic45.studiversity.api.user.model.Gender
+import com.denchic45.studiversity.api.user.model.UserResponse
 import io.ktor.client.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking

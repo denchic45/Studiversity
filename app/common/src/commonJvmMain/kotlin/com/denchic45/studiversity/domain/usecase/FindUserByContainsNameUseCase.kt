@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.UserRepository
-import com.denchic45.stuiversity.api.user.model.UserResponse
+import com.denchic45.studiversity.api.user.model.UserResponse
 import me.tatarka.inject.annotations.Inject
 
 @Inject

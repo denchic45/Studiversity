@@ -10,11 +10,11 @@ import com.denchic45.studiversity.data.fetchObservingResource
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.stuiversity.api.timetable.TimetableApi
-import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting
-import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
-import com.denchic45.stuiversity.util.UserId
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.timetable.TimetableApi
+import com.denchic45.studiversity.api.timetable.model.PeriodsSorting
+import com.denchic45.studiversity.api.timetable.model.PutTimetableRequest
+import com.denchic45.studiversity.util.UserId
+import com.denchic45.studiversity.util.toUUID
 import kotlinx.coroutines.flow.flow
 import me.tatarka.inject.annotations.Inject
 import java.time.LocalDate

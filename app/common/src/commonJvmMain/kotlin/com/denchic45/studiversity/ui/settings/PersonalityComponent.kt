@@ -15,8 +15,8 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.uivalidator.validator.observable
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.account.model.UpdateAccountPersonalRequest
-import com.denchic45.stuiversity.api.user.model.Gender
+import com.denchic45.studiversity.api.account.model.UpdateAccountPersonalRequest
+import com.denchic45.studiversity.api.user.model.Gender
 import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted

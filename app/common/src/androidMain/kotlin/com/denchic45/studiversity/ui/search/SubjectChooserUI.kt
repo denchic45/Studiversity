@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 
 @Composable
 fun SubjectChooserScreen(component: SubjectChooserComponent) {

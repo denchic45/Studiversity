@@ -26,10 +26,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.util.getFile
-import com.denchic45.stuiversity.util.DateTimePatterns
-import com.denchic45.stuiversity.util.toString
-import com.denchic45.stuiversity.util.toToLocalDateTime
-import com.denchic45.stuiversity.util.withDayOfWeek
+import com.denchic45.studiversity.util.DateTimePatterns
+import com.denchic45.studiversity.util.toString
+import com.denchic45.studiversity.util.toToLocalDateTime
+import com.denchic45.studiversity.util.withDayOfWeek
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.WeekFields

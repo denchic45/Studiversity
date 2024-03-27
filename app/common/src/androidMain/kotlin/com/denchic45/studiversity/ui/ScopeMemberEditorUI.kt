@@ -27,7 +27,7 @@ import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.ui.search.UserChooserScreen
 import com.denchic45.studiversity.ui.search.UserListItem
-import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.studiversity.api.role.model.Role
 
 
 @Composable

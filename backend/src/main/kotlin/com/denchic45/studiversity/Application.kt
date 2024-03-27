@@ -19,8 +19,8 @@ import com.denchic45.studiversity.plugin.configureSerialization
 import com.denchic45.studiversity.plugin.configureStatusPages
 import com.denchic45.studiversity.setup.configureSetup
 import com.denchic45.studiversity.setup.onInitialized
-import com.denchic45.stuiversity.api.OrganizationResponse
-import com.denchic45.stuiversity.api.Pong
+import com.denchic45.studiversity.api.OrganizationResponse
+import com.denchic45.studiversity.api.Pong
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*

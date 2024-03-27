@@ -3,7 +3,7 @@ package com.denchic45.studiversity.feature.studygroup.member.usecase
 import com.denchic45.studiversity.feature.role.repository.RoleRepository
 import com.denchic45.studiversity.feature.studygroup.member.StudyGroupMemberRepository
 import com.denchic45.studiversity.transaction.TransactionWorker
-import com.denchic45.stuiversity.api.studygroup.member.StudyGroupMemberSorting
+import com.denchic45.studiversity.api.studygroup.member.StudyGroupMemberSorting
 import java.util.*
 
 class FindStudyGroupMembersUseCase(

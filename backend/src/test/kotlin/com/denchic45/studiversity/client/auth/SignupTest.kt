@@ -3,9 +3,9 @@ package com.denchic45.studiversity.client.auth
 import com.denchic45.studiversity.KtorClientTest
 import com.denchic45.studiversity.util.assertResultIsError
 import com.denchic45.studiversity.util.assertResultIsOk
-import com.denchic45.stuiversity.api.auth.model.SignupRequest
-import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.Gender
+import com.denchic45.studiversity.api.auth.model.SignupRequest
+import com.denchic45.studiversity.api.user.UserApi
+import com.denchic45.studiversity.api.user.model.Gender
 import com.github.michaelbull.result.unwrap
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test

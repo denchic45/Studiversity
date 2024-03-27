@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.role.usecase
 
 import com.denchic45.studiversity.feature.role.RoleErrors
 import com.denchic45.studiversity.feature.role.repository.RoleRepository
-import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.studiversity.api.role.model.Role
 import io.ktor.server.plugins.*
 
 class FindRolesByNamesUseCase(private val roleRepository: RoleRepository) {

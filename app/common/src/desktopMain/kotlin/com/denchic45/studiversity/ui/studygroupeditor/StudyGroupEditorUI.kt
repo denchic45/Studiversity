@@ -7,9 +7,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.theme.CommonAppTheme
-import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
 import java.util.*
 
 @Composable

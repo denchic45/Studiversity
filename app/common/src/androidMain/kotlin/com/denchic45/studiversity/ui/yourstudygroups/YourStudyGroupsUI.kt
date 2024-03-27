@@ -19,7 +19,7 @@ import com.denchic45.studiversity.ui.studygroup.StudyGroupContent
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorScreen
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 
 
 @Composable

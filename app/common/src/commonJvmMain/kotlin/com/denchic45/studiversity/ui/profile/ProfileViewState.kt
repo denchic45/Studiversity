@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.ui.profile
 
 import com.denchic45.studiversity.domain.model.StudyGroupItem
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.role.model.Role
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.stuiversity.api.user.model.UserResponse
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.user.model.UserResponse
 
 data class ProfileViewState(
     val user: UserResponse,

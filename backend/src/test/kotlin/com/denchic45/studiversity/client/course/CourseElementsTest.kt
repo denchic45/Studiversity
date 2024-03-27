@@ -2,37 +2,34 @@ package com.denchic45.studiversity.client.course
 
 import com.denchic45.studiversity.KtorClientTest
 import com.denchic45.studiversity.util.assertResultIsOk
-import com.denchic45.stuiversity.api.attachment.AttachmentApi
-import com.denchic45.stuiversity.api.auth.model.SignupRequest
-import com.denchic45.stuiversity.api.common.SortOrder
-import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.element.CourseElementsApi
-import com.denchic45.stuiversity.api.course.element.model.*
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
-import com.denchic45.stuiversity.api.course.work.CourseWorkApi
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
-import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
-import com.denchic45.stuiversity.api.membership.MembershipApi
-import com.denchic45.stuiversity.api.role.model.Role
-import com.denchic45.stuiversity.api.user.UserApi
-import com.denchic45.stuiversity.api.user.model.Gender
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.attachment.AttachmentApi
+import com.denchic45.studiversity.api.auth.model.SignupRequest
+import com.denchic45.studiversity.api.common.SortOrder
+import com.denchic45.studiversity.api.course.CourseApi
+import com.denchic45.studiversity.api.course.element.CourseElementsApi
+import com.denchic45.studiversity.api.course.element.model.*
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.course.topic.CourseTopicApi
+import com.denchic45.studiversity.api.course.work.CourseWorkApi
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.studiversity.api.course.work.model.CourseWorkType
+import com.denchic45.studiversity.api.course.work.model.CreateCourseWorkRequest
+import com.denchic45.studiversity.api.membership.MembershipApi
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.api.user.UserApi
+import com.denchic45.studiversity.api.user.model.Gender
+import com.denchic45.studiversity.util.toUUID
 import com.github.michaelbull.result.*
-import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.parameter.parametersOf
 import org.koin.test.inject
 import java.io.File
 import java.util.*
-import kotlin.test.assertTrue
 
 class CourseElementsTest : KtorClientTest() {
 
@@ -77,7 +74,7 @@ class CourseElementsTest : KtorClientTest() {
 
     private val student1Id by lazy { runBlocking { userApi.getBySurname("Васильев") }.unwrap().first().id }
 
-    private val coursesApi: CoursesApi by inject { parametersOf(client) }
+    private val CourseApi: CourseApi by inject { parametersOf(client) }
     private val courseElementsApi: CourseElementsApi by inject { parametersOf(client) }
     private val courseTopicApi: CourseTopicApi by inject { parametersOf(teacherClient) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(teacherClient) }
@@ -91,14 +88,14 @@ class CourseElementsTest : KtorClientTest() {
     private lateinit var courseWork: CourseWorkResponse
 
     override fun setup(): Unit = runBlocking {
-        course = coursesApi.create(CreateCourseRequest("Test course"))
+        course = CourseApi.create(CreateCourseRequest("Test course"))
             .apply { assertResultIsOk(this) }.unwrap()
         enrolTeacher(teacher1Id)
     }
 
     override fun cleanup(): Unit = runBlocking {
-        coursesApi.setArchive(course.id)
-        coursesApi.delete(course.id)
+        CourseApi.setArchive(course.id)
+        CourseApi.delete(course.id)
     }
 
     @BeforeEach

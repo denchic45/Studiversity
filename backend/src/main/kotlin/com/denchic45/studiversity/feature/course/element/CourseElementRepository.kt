@@ -4,10 +4,10 @@ import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.course.work.toWorkResponse
 import com.denchic45.studiversity.util.toSqlSortOrder
-import com.denchic45.stuiversity.api.course.element.CourseElementErrors
-import com.denchic45.stuiversity.api.course.element.model.*
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.api.submission.model.SubmissionState
+import com.denchic45.studiversity.api.course.element.CourseElementErrors
+import com.denchic45.studiversity.api.course.element.model.*
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.studiversity.api.submission.model.SubmissionState
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

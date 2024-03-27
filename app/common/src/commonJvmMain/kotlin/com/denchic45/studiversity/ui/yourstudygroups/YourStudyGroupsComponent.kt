@@ -18,8 +18,8 @@ import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponen
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.util.asFlow
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.util.toUUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*

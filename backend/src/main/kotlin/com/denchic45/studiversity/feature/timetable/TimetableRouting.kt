@@ -6,9 +6,9 @@ import com.denchic45.studiversity.feature.timetable.usecase.*
 import com.denchic45.studiversity.ktor.currentUserId
 import com.denchic45.studiversity.ktor.getSortingBy
 import com.denchic45.studiversity.ktor.getUuidOrFail
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.denchic45.stuiversity.api.timetable.model.PeriodsSorting
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.timetable.model.PeriodsSorting
+import com.denchic45.studiversity.util.toUUID
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

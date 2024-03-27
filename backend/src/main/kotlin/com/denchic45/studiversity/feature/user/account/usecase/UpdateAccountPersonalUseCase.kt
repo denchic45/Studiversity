@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.user.account.usecase
 
 import com.denchic45.studiversity.feature.user.UserRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.account.model.UpdateAccountPersonalRequest
+import com.denchic45.studiversity.api.account.model.UpdateAccountPersonalRequest
 import java.util.*
 
 class UpdateAccountPersonalUseCase(

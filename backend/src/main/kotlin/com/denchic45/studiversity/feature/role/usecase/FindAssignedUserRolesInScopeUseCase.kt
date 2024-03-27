@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.role.usecase
 
 import com.denchic45.studiversity.feature.role.repository.RoleRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.role.model.UserRolesResponse
+import com.denchic45.studiversity.api.role.model.UserRolesResponse
 import java.util.*
 
 class FindAssignedUserRolesInScopeUseCase(

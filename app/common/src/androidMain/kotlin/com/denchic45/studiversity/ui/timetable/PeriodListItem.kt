@@ -46,7 +46,7 @@ import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.theme.AppTheme
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.api.room.model.RoomResponse
 import java.util.UUID
 
 @Composable

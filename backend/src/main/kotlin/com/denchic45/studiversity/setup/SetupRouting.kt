@@ -12,8 +12,8 @@ import com.denchic45.studiversity.setup.model.DatabaseSetupRequest
 import com.denchic45.studiversity.setup.model.OrganizationSetupRequest
 import com.denchic45.studiversity.setup.model.SetupErrors
 import com.denchic45.studiversity.util.respondWithError
-import com.denchic45.stuiversity.api.role.model.Role
-import com.denchic45.stuiversity.util.ErrorInfo
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.util.ErrorInfo
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -26,7 +26,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.ktor.ext.inject
 import java.sql.SQLException
 import java.util.*
-import com.denchic45.stuiversity.api.user.model.UserResponse
 
 
 private var initializationCallback: (() -> Unit)? = null

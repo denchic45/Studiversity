@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.database.table
 
-import com.denchic45.stuiversity.api.timetable.model2.ClassRecurrenceType
-import com.denchic45.stuiversity.api.timetable.model2.ClassType
+import com.denchic45.studiversity.api.timetable.model2.ClassRecurrenceType
+import com.denchic45.studiversity.api.timetable.model2.ClassType
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.data.mapper
 
 import com.denchic45.studiversity.entity.Subject
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.util.toUUID
 
 fun Subject.toResponse() = SubjectResponse(
     id = subject_id.toUUID(),

@@ -3,23 +3,23 @@ package com.denchic45.studiversity.client.course
 import com.denchic45.studiversity.KtorClientTest
 import com.denchic45.studiversity.util.assertResultIsOk
 import com.denchic45.studiversity.util.unwrapAsserted
-import com.denchic45.stuiversity.api.course.CoursesApi
-import com.denchic45.stuiversity.api.course.element.CourseElementsApi
-import com.denchic45.stuiversity.api.course.element.model.CourseElementsSorting
-import com.denchic45.stuiversity.api.course.element.model.UpdateCourseElementRequest
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
-import com.denchic45.stuiversity.api.course.topic.CourseTopicApi
-import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
-import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
-import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
-import com.denchic45.stuiversity.api.course.work.CourseWorkApi
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkType
-import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
-import com.denchic45.stuiversity.api.membership.MembershipApi
-import com.denchic45.stuiversity.api.role.model.Role
-import com.denchic45.stuiversity.util.OptionalProperty
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.course.CourseApi
+import com.denchic45.studiversity.api.course.element.CourseElementsApi
+import com.denchic45.studiversity.api.course.element.model.CourseElementsSorting
+import com.denchic45.studiversity.api.course.element.model.UpdateCourseElementRequest
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.course.topic.CourseTopicApi
+import com.denchic45.studiversity.api.course.topic.model.CourseTopicResponse
+import com.denchic45.studiversity.api.course.topic.model.CreateCourseTopicRequest
+import com.denchic45.studiversity.api.course.topic.model.UpdateCourseTopicRequest
+import com.denchic45.studiversity.api.course.work.CourseWorkApi
+import com.denchic45.studiversity.api.course.work.model.CourseWorkType
+import com.denchic45.studiversity.api.course.work.model.CreateCourseWorkRequest
+import com.denchic45.studiversity.api.membership.MembershipApi
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.util.OptionalProperty
+import com.denchic45.studiversity.util.toUUID
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.unwrap
 import com.github.michaelbull.result.unwrapError
@@ -40,7 +40,7 @@ class CourseTopicsTest : KtorClientTest() {
 
     private val teacherClient by lazy { createAuthenticatedClient("stefan@gmail.com", "FSg54g45dg") }
 
-    private val coursesApi: CoursesApi by inject { parametersOf(client) }
+    private val CourseApi: CourseApi by inject { parametersOf(client) }
     private val courseTopicApi: CourseTopicApi by inject { parametersOf(teacherClient) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(teacherClient) }
     private val courseElementsApi: CourseElementsApi by inject { parametersOf(teacherClient) }
@@ -48,15 +48,15 @@ class CourseTopicsTest : KtorClientTest() {
 
     @BeforeEach
     fun init(): Unit = runBlocking {
-        course = coursesApi.create(CreateCourseRequest("Test course for topics"))
+        course = CourseApi.create(CreateCourseRequest("Test course for topics"))
             .also(::assertResultIsOk).unwrap()
         enrolTeacher(teacher1Id)
     }
 
     @AfterEach
     fun tearDown(): Unit = runBlocking {
-        coursesApi.setArchive(course.id)
-        coursesApi.delete(course.id)
+        CourseApi.setArchive(course.id)
+        CourseApi.delete(course.id)
     }
 
     private suspend fun enrolTeacher(userId: UUID) {

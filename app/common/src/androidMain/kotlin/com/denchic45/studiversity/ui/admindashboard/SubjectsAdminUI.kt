@@ -23,7 +23,7 @@ import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.search.SearchScreen
 import com.denchic45.studiversity.ui.search.SubjectListItem
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 
 @Composable
 fun SubjectsAdminScreen(component: SubjectsAdminComponent) {

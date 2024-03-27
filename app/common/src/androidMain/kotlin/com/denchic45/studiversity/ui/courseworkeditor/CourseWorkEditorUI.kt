@@ -77,8 +77,8 @@ import com.denchic45.studiversity.util.OpenMultipleAnyDocuments
 import com.denchic45.studiversity.util.collectWithLifecycle
 import com.denchic45.studiversity.util.findActivity
 import com.denchic45.studiversity.util.getFile
-import com.denchic45.stuiversity.util.Dates
-import com.denchic45.stuiversity.util.toString
+import com.denchic45.studiversity.util.Dates
+import com.denchic45.studiversity.util.toString
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime

@@ -29,8 +29,8 @@ import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
 import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesComponent
-import com.denchic45.stuiversity.util.DateTimePatterns
-import com.denchic45.stuiversity.util.toString
+import com.denchic45.studiversity.util.DateTimePatterns
+import com.denchic45.studiversity.util.toString
 import com.seiko.imageloader.rememberAsyncImagePainter
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

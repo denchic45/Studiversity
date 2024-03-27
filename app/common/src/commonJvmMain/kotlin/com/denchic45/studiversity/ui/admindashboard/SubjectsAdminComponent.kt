@@ -16,7 +16,7 @@ import com.denchic45.studiversity.ui.search.SubjectChooserComponent
 import com.denchic45.studiversity.ui.subjecteditor.SubjectEditorComponent
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject

@@ -37,7 +37,7 @@ import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.periodeditor.TransparentTextField
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
+import com.denchic45.studiversity.api.course.topic.model.CourseTopicResponse
 
 @Composable
 fun CourseTopicsScreen(component: CourseTopicsComponent) {

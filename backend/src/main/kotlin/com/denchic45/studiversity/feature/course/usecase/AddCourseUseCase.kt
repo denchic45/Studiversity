@@ -7,8 +7,8 @@ import com.denchic45.studiversity.feature.course.repository.CourseRepository
 import com.denchic45.studiversity.feature.role.ScopeType
 import com.denchic45.studiversity.feature.role.repository.ScopeRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
 
 class AddCourseUseCase(
     private val suspendTransactionWorker: SuspendTransactionWorker,

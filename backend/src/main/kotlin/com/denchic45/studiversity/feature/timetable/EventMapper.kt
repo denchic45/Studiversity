@@ -4,7 +4,7 @@ import com.denchic45.studiversity.database.table.PeriodDao
 import com.denchic45.studiversity.database.table.UserDao
 import com.denchic45.studiversity.feature.course.toResponse
 import com.denchic45.studiversity.feature.room.toResponse
-import com.denchic45.stuiversity.api.timetable.model.*
+import com.denchic45.studiversity.api.timetable.model.*
 
 fun PeriodDao.toResponse() = when (type) {
     PeriodType.LESSON -> LessonResponse(

@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.feature.course.subject.usecase
 
 import com.denchic45.studiversity.feature.course.subject.SubjectRepository
-import com.denchic45.stuiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.stuiversity.api.course.subject.model.UpdateSubjectRequest
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.course.subject.model.UpdateSubjectRequest
 import io.ktor.server.plugins.*
 import java.util.*
 

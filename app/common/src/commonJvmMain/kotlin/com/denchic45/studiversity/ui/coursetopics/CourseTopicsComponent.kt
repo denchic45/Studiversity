@@ -12,10 +12,10 @@ import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.studiversity.util.copy
 import com.denchic45.studiversity.util.swap
-import com.denchic45.stuiversity.api.course.topic.model.CourseTopicResponse
-import com.denchic45.stuiversity.api.course.topic.model.CreateCourseTopicRequest
-import com.denchic45.stuiversity.api.course.topic.model.UpdateCourseTopicRequest
-import com.denchic45.stuiversity.util.optPropertyOf
+import com.denchic45.studiversity.api.course.topic.model.CourseTopicResponse
+import com.denchic45.studiversity.api.course.topic.model.CreateCourseTopicRequest
+import com.denchic45.studiversity.api.course.topic.model.UpdateCourseTopicRequest
+import com.denchic45.studiversity.util.optPropertyOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch

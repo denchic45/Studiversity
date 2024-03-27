@@ -7,9 +7,9 @@ import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.ui.model.toUserItem
-import com.denchic45.stuiversity.api.timetable.model.EventDetails
-import com.denchic45.stuiversity.api.timetable.model.LessonDetails
-import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
+import com.denchic45.studiversity.api.timetable.model.EventDetails
+import com.denchic45.studiversity.api.timetable.model.LessonDetails
+import com.denchic45.studiversity.api.timetable.model.PeriodResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder

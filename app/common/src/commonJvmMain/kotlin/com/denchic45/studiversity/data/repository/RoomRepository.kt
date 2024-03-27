@@ -4,10 +4,10 @@ import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.stuiversity.api.room.RoomApi
-import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
-import com.denchic45.stuiversity.api.room.model.RoomResponse
-import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
+import com.denchic45.studiversity.api.room.RoomApi
+import com.denchic45.studiversity.api.room.model.CreateRoomRequest
+import com.denchic45.studiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.api.room.model.UpdateRoomRequest
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID

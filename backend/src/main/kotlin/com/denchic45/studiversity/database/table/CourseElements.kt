@@ -3,7 +3,7 @@ package com.denchic45.studiversity.database.table
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.expression.NowTimestamp
 
-import com.denchic45.stuiversity.api.course.element.model.CourseElementType
+import com.denchic45.studiversity.api.course.element.model.CourseElementType
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

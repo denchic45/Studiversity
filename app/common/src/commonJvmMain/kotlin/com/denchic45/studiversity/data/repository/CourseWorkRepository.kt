@@ -4,11 +4,11 @@ import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.stuiversity.api.course.work.CourseWorkApi
-import com.denchic45.stuiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.stuiversity.api.course.work.model.CreateCourseWorkRequest
-import com.denchic45.stuiversity.api.course.work.model.UpdateCourseWorkRequest
-import com.denchic45.stuiversity.util.userIdOfMe
+import com.denchic45.studiversity.api.course.work.CourseWorkApi
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.studiversity.api.course.work.model.CreateCourseWorkRequest
+import com.denchic45.studiversity.api.course.work.model.UpdateCourseWorkRequest
+import com.denchic45.studiversity.util.userIdOfMe
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID

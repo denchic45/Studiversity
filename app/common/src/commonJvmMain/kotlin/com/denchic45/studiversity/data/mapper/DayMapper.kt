@@ -5,10 +5,10 @@
 //import com.denchic45.studiversity.data.db.remote.model.DayMap
 //import com.denchic45.studiversity.domain.model.EventsOfDay
 //import com.denchic45.studiversity.util.*
-//import com.denchic45.stuiversity.util.DatePatterns
-//import com.denchic45.stuiversity.util.toDate
-//import com.denchic45.stuiversity.util.toLocalDate
-//import com.denchic45.stuiversity.util.toString
+//import com.denchic45.studiversity.util.DatePatterns
+//import com.denchic45.studiversity.util.toDate
+//import com.denchic45.studiversity.util.toLocalDate
+//import com.denchic45.studiversity.util.toString
 //import java.util.*
 //
 //fun DayMap.mapToEntity() = DayEntity(

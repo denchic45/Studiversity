@@ -2,9 +2,9 @@ package com.denchic45.studiversity.feature.room
 
 import com.denchic45.studiversity.database.table.RoomDao
 import com.denchic45.studiversity.database.table.Rooms
-import com.denchic45.stuiversity.api.room.model.CreateRoomRequest
-import com.denchic45.stuiversity.api.room.model.RoomResponse
-import com.denchic45.stuiversity.api.room.model.UpdateRoomRequest
+import com.denchic45.studiversity.api.room.model.CreateRoomRequest
+import com.denchic45.studiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.api.room.model.UpdateRoomRequest
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.or

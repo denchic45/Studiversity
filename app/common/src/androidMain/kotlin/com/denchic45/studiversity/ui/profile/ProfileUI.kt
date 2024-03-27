@@ -41,7 +41,7 @@ import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.ui.usercourses.UserCoursesDialog
 import com.denchic45.studiversity.ui.userstudygroups.UserStudyGroupsDialog
 import com.denchic45.studiversity.util.toast
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import java.io.ByteArrayOutputStream
 import java.util.*
 

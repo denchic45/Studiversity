@@ -33,7 +33,7 @@ import com.denchic45.studiversity.ui.schedule.ScheduleComponent
 import com.denchic45.studiversity.ui.settings.SettingsComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.studiversity.api.role.model.Role
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted

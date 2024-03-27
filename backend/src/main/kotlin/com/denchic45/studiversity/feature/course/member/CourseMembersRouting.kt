@@ -10,9 +10,9 @@ import com.denchic45.studiversity.feature.role.usecase.RequirePermissionToAssign
 import com.denchic45.studiversity.ktor.currentUserId
 import com.denchic45.studiversity.ktor.getUuidOrFail
 import com.denchic45.studiversity.util.respondWithError
-import com.denchic45.stuiversity.api.member.CreateMemberRequest
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.denchic45.stuiversity.util.ErrorInfo
+import com.denchic45.studiversity.api.member.CreateMemberRequest
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.util.ErrorInfo
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*

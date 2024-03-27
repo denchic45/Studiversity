@@ -3,10 +3,10 @@ package com.denchic45.studiversity.client.specialty
 import com.denchic45.studiversity.KtorClientTest
 import com.denchic45.studiversity.util.assertResultIsOk
 import com.denchic45.studiversity.util.unwrapAsserted
-import com.denchic45.stuiversity.api.specialty.SpecialtyApi
-import com.denchic45.stuiversity.api.specialty.model.CreateSpecialtyRequest
-import com.denchic45.stuiversity.api.specialty.model.UpdateSpecialtyRequest
-import com.denchic45.stuiversity.util.optPropertyOf
+import com.denchic45.studiversity.api.specialty.SpecialtyApi
+import com.denchic45.studiversity.api.specialty.model.CreateSpecialtyRequest
+import com.denchic45.studiversity.api.specialty.model.UpdateSpecialtyRequest
+import com.denchic45.studiversity.util.optPropertyOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.koin.core.parameter.parametersOf

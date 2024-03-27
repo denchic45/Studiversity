@@ -4,8 +4,8 @@ import com.denchic45.studiversity.feature.auth.model.RefreshToken
 import com.denchic45.studiversity.feature.user.TokenRepository
 import com.denchic45.studiversity.feature.user.UserRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.auth.AuthErrors
-import com.denchic45.stuiversity.api.auth.model.RefreshTokenRequest
+import com.denchic45.studiversity.api.auth.AuthErrors
+import com.denchic45.studiversity.api.auth.model.RefreshTokenRequest
 import io.ktor.server.plugins.*
 import java.time.LocalDateTime
 import java.time.ZoneOffset

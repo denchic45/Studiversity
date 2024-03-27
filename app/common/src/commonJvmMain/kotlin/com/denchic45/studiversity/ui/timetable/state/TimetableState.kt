@@ -8,8 +8,8 @@ import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
 import com.denchic45.studiversity.domain.timetable.model.Window
 import com.denchic45.studiversity.util.copy
 import com.denchic45.studiversity.util.swap
-import com.denchic45.stuiversity.api.timetable.model.PeriodResponse
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import com.denchic45.studiversity.api.timetable.model.PeriodResponse
+import com.denchic45.studiversity.api.timetable.model.TimetableResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder

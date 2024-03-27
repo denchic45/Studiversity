@@ -17,7 +17,7 @@ import com.denchic45.studiversity.ui.layout.AdaptiveMasterSidebarLayout
 import com.denchic45.studiversity.ui.search.SearchScreen
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorScreen
 import com.denchic45.studiversity.ui.studygroups.StudyGroupListItem
-import com.denchic45.stuiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 
 @Composable
 fun StudyGroupsAdminScreen(component: StudyGroupsAdminComponent) {

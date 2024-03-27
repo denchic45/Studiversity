@@ -9,8 +9,8 @@ import com.denchic45.studiversity.entity.DayEntity
 import com.denchic45.studiversity.entity.EventEntity
 import com.denchic45.studiversity.entity.EventEntityQueries
 import com.denchic45.studiversity.entity.EventWithSubjectAndGroupAndTeachers
-import com.denchic45.stuiversity.util.DateTimePatterns
-import com.denchic45.stuiversity.util.toString
+import com.denchic45.studiversity.util.DateTimePatterns
+import com.denchic45.studiversity.util.toString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

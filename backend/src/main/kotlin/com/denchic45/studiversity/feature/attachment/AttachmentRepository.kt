@@ -4,7 +4,7 @@ import com.denchic45.studiversity.database.table.AttachmentDao
 import com.denchic45.studiversity.database.table.AttachmentReferenceDao
 import com.denchic45.studiversity.database.table.AttachmentReferences
 import com.denchic45.studiversity.database.table.Attachments
-import com.denchic45.stuiversity.api.course.element.model.*
+import com.denchic45.studiversity.api.course.element.model.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and

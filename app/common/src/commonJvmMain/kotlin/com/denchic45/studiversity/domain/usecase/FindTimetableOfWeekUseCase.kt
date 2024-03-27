@@ -2,8 +2,8 @@ package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.TimetableRepository
 import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
-import com.denchic45.stuiversity.util.userIdOrMe
+import com.denchic45.studiversity.api.timetable.model.TimetableResponse
+import com.denchic45.studiversity.util.userIdOrMe
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID
 

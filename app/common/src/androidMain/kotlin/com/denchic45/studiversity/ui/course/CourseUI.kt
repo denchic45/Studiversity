@@ -50,7 +50,7 @@ import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CourseResponse
 import kotlinx.coroutines.launch
 
 

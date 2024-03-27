@@ -13,7 +13,7 @@ import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.ui.timetable.TimetableFinderComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerComponent
 import com.denchic45.studiversity.ui.timetable.TimetableOwnerDelegate
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.util.toUUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

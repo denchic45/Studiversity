@@ -2,11 +2,11 @@ package com.denchic45.studiversity.feature.course.work.submission
 
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
-import com.denchic45.stuiversity.api.course.work.grade.SubmissionGradeRequest
-import com.denchic45.stuiversity.api.submission.model.SubmissionByAuthor
-import com.denchic45.stuiversity.api.submission.model.SubmissionContent
-import com.denchic45.stuiversity.api.submission.model.SubmissionResponse
-import com.denchic45.stuiversity.api.submission.model.SubmissionState
+import com.denchic45.studiversity.api.course.work.grade.SubmissionGradeRequest
+import com.denchic45.studiversity.api.submission.model.SubmissionByAuthor
+import com.denchic45.studiversity.api.submission.model.SubmissionContent
+import com.denchic45.studiversity.api.submission.model.SubmissionResponse
+import com.denchic45.studiversity.api.submission.model.SubmissionState
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

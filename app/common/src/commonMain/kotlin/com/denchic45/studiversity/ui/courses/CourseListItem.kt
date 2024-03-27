@@ -7,7 +7,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CourseResponse
 
 @Composable
 fun CourseListItem(

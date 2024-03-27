@@ -2,8 +2,8 @@ package com.denchic45.studiversity.data.repository
 
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.stuiversity.api.member.MembersApi
-import com.denchic45.stuiversity.api.membership.MembershipApi
+import com.denchic45.studiversity.api.member.MembersApi
+import com.denchic45.studiversity.api.membership.MembershipApi
 import com.github.michaelbull.result.map
 import me.tatarka.inject.annotations.Inject
 import java.util.UUID

@@ -2,16 +2,18 @@ package com.denchic45.studiversity.feature.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.denchic45.studiversity.api.auth.AuthErrors
+import com.denchic45.studiversity.api.auth.model.SignInResponse
+import com.denchic45.studiversity.api.auth.model.SignupRequest
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.auth.usecase.*
 import com.denchic45.studiversity.ktor.ForbiddenException
-import com.denchic45.stuiversity.api.auth.AuthErrors
-import com.denchic45.stuiversity.api.auth.model.SignInResponse
-import com.denchic45.stuiversity.api.auth.model.SignupRequest
-import com.denchic45.stuiversity.util.toDate
+import com.denchic45.studiversity.util.toDate
+import com.denchic45.studiversity.validation.buildValidationResult
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
+import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -56,6 +58,13 @@ fun Route.recoverPasswordRoute() {
     val checkConfirmCode: CheckConfirmCodeUseCase by inject()
     val updateRecoveredPassword: UpdateRecoveredPasswordUseCase by inject()
 
+    install(RequestValidation) {
+        validate<String> {
+            buildValidationResult {
+                addPasswordConditions(it)
+            }
+        }
+    }
     post("/recover-password") {
         recoverPassword(call.receiveText())
         call.respond(HttpStatusCode.Accepted)

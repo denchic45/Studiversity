@@ -2,15 +2,13 @@ package com.denchic45.studiversity.feature.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.denchic45.studiversity.api.auth.AuthErrors
+import com.denchic45.studiversity.api.auth.model.SignupRequest
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.auth.usecase.CheckConfirmCodeUseCase
-import com.denchic45.studiversity.util.isEmail
-import com.denchic45.studiversity.util.respondWithError
+import com.denchic45.studiversity.util.*
 import com.denchic45.studiversity.validation.ValidationResultBuilder
 import com.denchic45.studiversity.validation.buildValidationResult
-import com.denchic45.stuiversity.api.auth.AuthErrors
-import com.denchic45.stuiversity.api.auth.model.SignupRequest
-import com.denchic45.stuiversity.util.ErrorInfo
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -74,8 +72,9 @@ fun Application.configureAuth() {
 fun ValidationResultBuilder.addPasswordConditions(password: String) {
     condition(password.length >= 6, AuthErrors.PASSWORD_MUST_CONTAIN_AT_LEAST_6_CHARACTERS)
     condition(
-        password.contains("(?=.*[a-z])(?=.*[A-Z])".toRegex()),
-        AuthErrors.PASSWORD_MUST_CONTAIN_UPPER_AND_LOWER_CASE_CHARACTERS
+        password.containsUpperAndLowerCaseChars(),
+        AuthErrors.PASSWORD_MUST_CONTAIN_UPPER_AND_LOWER_CASE_CHARS
     )
-    condition(password.contains("[0-9]".toRegex()), AuthErrors.PASSWORD_MUST_CONTAIN_DIGITS)
+    condition(password.containsLatinChars(), AuthErrors.PASSWORD_MUST_CONTAIN_LATIN_CHARS)
+    condition(password.containsDigits(), AuthErrors.PASSWORD_MUST_CONTAIN_DIGITS)
 }

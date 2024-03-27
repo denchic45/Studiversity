@@ -7,8 +7,8 @@ import com.denchic45.studiversity.entity.EventEntity
 import com.denchic45.studiversity.entity.EventMember
 import com.denchic45.studiversity.entity.Subject
 import com.denchic45.studiversity.entity.User
-import com.denchic45.stuiversity.util.DateTimePatterns
-import com.denchic45.stuiversity.util.toString
+import com.denchic45.studiversity.util.DateTimePatterns
+import com.denchic45.studiversity.util.toString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject

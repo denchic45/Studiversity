@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.feature.schedule
 
-import com.denchic45.stuiversity.api.schedule.model.Period
-import com.denchic45.stuiversity.api.schedule.model.Schedule
+import com.denchic45.studiversity.api.schedule.model.Period
+import com.denchic45.studiversity.api.schedule.model.Schedule
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*

@@ -8,9 +8,8 @@ import com.denchic45.studiversity.ktor.getUuid
 import com.denchic45.studiversity.ktor.getUuidOrFail
 import com.denchic45.studiversity.validation.buildValidationResult
 import com.denchic45.studiversity.validation.require
-import com.denchic45.stuiversity.api.studygroup.model.CreateStudyGroupRequest
-import com.denchic45.stuiversity.api.studygroup.model.UpdateStudyGroupRequest
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
+import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

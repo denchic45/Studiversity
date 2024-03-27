@@ -2,7 +2,7 @@ package com.denchic45.studiversity.database.table
 
 import com.denchic45.studiversity.database.exists
 
-import com.denchic45.stuiversity.api.user.model.Gender
+import com.denchic45.studiversity.api.user.model.Gender
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

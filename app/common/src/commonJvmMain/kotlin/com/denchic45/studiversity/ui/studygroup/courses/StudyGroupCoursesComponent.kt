@@ -6,7 +6,7 @@ import com.denchic45.studiversity.domain.resource.map
 import com.denchic45.studiversity.domain.usecase.FindCoursesByGroupUseCase
 import com.denchic45.studiversity.ui.model.toGroupCourseItem
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CourseResponse
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn

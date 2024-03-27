@@ -2,7 +2,7 @@ package com.denchic45.studiversity.feature.course.usecase
 
 import com.denchic45.studiversity.feature.course.repository.CourseRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CourseResponse
 import io.ktor.server.plugins.*
 import java.util.*
 

@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.data.mapper
 
 import com.denchic45.studiversity.entity.Specialty
-import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.studiversity.util.toUUID
 
 fun Specialty.toResponse() = SpecialtyResponse(
     id = specialty_id.toUUID(),

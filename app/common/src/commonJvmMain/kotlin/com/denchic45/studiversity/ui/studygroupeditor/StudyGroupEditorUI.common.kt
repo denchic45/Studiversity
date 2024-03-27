@@ -13,7 +13,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.stuiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 
 
 @OptIn(ExperimentalMaterial3Api::class)

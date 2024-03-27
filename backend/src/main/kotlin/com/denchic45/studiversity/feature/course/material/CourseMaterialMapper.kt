@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.feature.course.material
 
 import com.denchic45.studiversity.database.table.CourseElementDao
-import com.denchic45.stuiversity.api.course.material.model.CourseMaterialResponse
+import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
 
 fun CourseElementDao.toMaterialResponse(): CourseMaterialResponse {
     return CourseMaterialResponse(

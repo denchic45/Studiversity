@@ -28,8 +28,8 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.uivalidator.validator.observable
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.course.model.CourseResponse
-import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.room.model.RoomResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter

@@ -23,7 +23,7 @@ import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.roomeditor.RoomEditorDialog
 import com.denchic45.studiversity.ui.search.RoomListItem
 import com.denchic45.studiversity.ui.search.SearchScreen
-import com.denchic45.stuiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.api.room.model.RoomResponse
 
 @Composable
 fun RoomsAdminScreen(component: RoomsAdminComponent) {

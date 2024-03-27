@@ -3,7 +3,7 @@ package com.denchic45.studiversity.feature.course.work.submission.usecase
 import com.denchic45.studiversity.feature.course.work.submission.SubmissionRepository
 import com.denchic45.studiversity.feature.role.repository.RoleRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.studiversity.api.role.model.Role
 import java.util.*
 
 class FindSubmissionsByWorkUseCase(

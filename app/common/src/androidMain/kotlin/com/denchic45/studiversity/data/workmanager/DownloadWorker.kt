@@ -13,7 +13,7 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.data.storage.AttachmentStorage
-import com.denchic45.stuiversity.util.toUUID
+import com.denchic45.studiversity.util.toUUID
 import com.github.michaelbull.result.fold
 
 class DownloadWorker(

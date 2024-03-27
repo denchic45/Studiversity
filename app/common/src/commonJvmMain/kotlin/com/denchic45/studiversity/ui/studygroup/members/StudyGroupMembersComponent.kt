@@ -16,8 +16,8 @@ import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.stuiversity.api.role.model.Capability
-import com.denchic45.stuiversity.api.role.model.Role
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.role.model.Role
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

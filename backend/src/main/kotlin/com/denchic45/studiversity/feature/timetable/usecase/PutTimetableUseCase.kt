@@ -2,8 +2,8 @@ package com.denchic45.studiversity.feature.timetable.usecase
 
 import com.denchic45.studiversity.feature.timetable.TimetableRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.timetable.model.PutTimetableRequest
-import com.denchic45.stuiversity.api.timetable.model.TimetableResponse
+import com.denchic45.studiversity.api.timetable.model.PutTimetableRequest
+import com.denchic45.studiversity.api.timetable.model.TimetableResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder

@@ -4,8 +4,8 @@ import com.denchic45.studiversity.feature.auth.model.RefreshToken
 import com.denchic45.studiversity.feature.user.TokenRepository
 import com.denchic45.studiversity.feature.user.UserRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
-import com.denchic45.stuiversity.api.auth.AuthErrors
-import com.denchic45.stuiversity.api.auth.model.SignInByEmailPasswordRequest
+import com.denchic45.studiversity.api.auth.AuthErrors
+import com.denchic45.studiversity.api.auth.model.SignInByEmailPasswordRequest
 import io.ktor.server.plugins.*
 import org.mindrot.jbcrypt.BCrypt
 import java.time.LocalDateTime
