@@ -1,8 +1,10 @@
 package com.denchic45.studiversity.api.account
 
+import com.denchic45.studiversity.api.account.model.AccountEmailResponse
 import com.denchic45.studiversity.api.account.model.UpdateAccountPersonalRequest
 import com.denchic45.studiversity.api.account.model.UpdatePasswordRequest
 import com.denchic45.studiversity.api.common.EmptyResponseResult
+import com.denchic45.studiversity.api.common.ResponseResult
 import com.denchic45.studiversity.api.common.toResult
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -14,9 +16,12 @@ interface AccountApi {
     suspend fun updateEmail(email: String): EmptyResponseResult
 
     suspend fun updatePassword(request: UpdatePasswordRequest): EmptyResponseResult
+
+    suspend fun getEmail(): ResponseResult<AccountEmailResponse>
 }
 
 class AccountApiImpl(private val client: HttpClient) : AccountApi {
+
     override suspend fun updatePersonal(request: UpdateAccountPersonalRequest): EmptyResponseResult {
         return client.post("/account/personal") {
             contentType(ContentType.Application.Json)
@@ -36,5 +41,9 @@ class AccountApiImpl(private val client: HttpClient) : AccountApi {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.toResult()
+    }
+
+    override suspend fun getEmail(): ResponseResult<AccountEmailResponse> {
+        return client.get("/account/email").toResult()
     }
 }
