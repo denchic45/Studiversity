@@ -1,6 +1,7 @@
 package com.denchic45.studiversity.data.service
 
 import com.denchic45.studiversity.api.account.AccountApi
+import com.denchic45.studiversity.api.account.model.AccountEmailResponse
 import com.denchic45.studiversity.api.account.model.UpdateAccountPersonalRequest
 import com.denchic45.studiversity.api.account.model.UpdatePasswordRequest
 import com.denchic45.studiversity.api.common.EmptyResponseResult
@@ -87,5 +88,9 @@ class AccountService(
 
     suspend fun updateEmail(email: String): EmptyResource {
         return accountApi.updateEmail(email).toResource()
+    }
+
+    suspend fun findEmail(): Resource<AccountEmailResponse> {
+        return accountApi.getEmail().toResource()
     }
 }

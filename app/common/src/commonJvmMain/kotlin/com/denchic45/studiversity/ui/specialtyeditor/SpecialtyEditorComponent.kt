@@ -16,7 +16,6 @@ import com.denchic45.studiversity.domain.usecase.FindSpecialtyByIdUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveSpecialtyUseCase
 import com.denchic45.studiversity.domain.usecase.UpdateSpecialtyUseCase
 import com.denchic45.studiversity.getOptProperty
-import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.uivalidator.condition.Condition
 import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
@@ -38,7 +37,6 @@ class SpecialtyEditorComponent(
     private val addSpecialtyUseCase: AddSpecialtyUseCase,
     private val updateSpecialtyUseCase: UpdateSpecialtyUseCase,
     private val removeSpecialtyUseCase: RemoveSpecialtyUseCase,
-    private val confirmDialogInteractor: ConfirmDialogInteractor,
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
@@ -80,8 +78,8 @@ class SpecialtyEditorComponent(
         )
     )
 
-//    fun onDeleteClick() {
-//        componentScope.launch {
+    fun onRemoveClick() {
+        componentScope.launch {
 //            confirmDialogInteractor.set(
 //                ConfirmState(
 //                    uiTextOf("Удалить несколько предметов группы"),
@@ -93,8 +91,13 @@ class SpecialtyEditorComponent(
 //                    onFinish()
 //                }
 //            }
-//        }
-//    }
+
+            removeSpecialtyUseCase(specialtyId!!).onSuccess {
+                onFinish()
+            }
+
+        }
+    }
 
     fun onNameType(typedName: String) {
         editingState.apply {

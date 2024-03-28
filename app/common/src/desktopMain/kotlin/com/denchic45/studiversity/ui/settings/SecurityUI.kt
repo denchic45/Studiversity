@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.ui.settings
 
-
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +24,7 @@ fun SecurityScreen(component: SecurityComponent) {
     val childSlot by component.childSlot.subscribeAsState()
 
     childSlot.child?.let {
-        when(val child = it.instance) {
+        when (val child = it.instance) {
             is SecurityComponent.Child.UpdateEmail -> UpdateEmailDialog(child.component)
             is SecurityComponent.Child.UpdatePassword -> UpdatePasswordDialog(child.component)
         }
@@ -34,10 +34,11 @@ fun SecurityScreen(component: SecurityComponent) {
     Column {
         ListItem(
             headlineContent = { Text("Почта") },
-            supportingContent = { Text(state.email) },
+            supportingContent = { Text(if (state.needToConfirm) state.email else "требует подтверждения через почту") },
             modifier = Modifier.padding(horizontal = MaterialTheme.spacing.normal)
                 .clip(MaterialTheme.shapes.medium)
-                .clickable (onClick = component::onUpdateEmailClick)
+                .clickable(onClick = component::onUpdateEmailClick)
+                .let { if (state.needToConfirm) it.background(MaterialTheme.colorScheme.tertiaryContainer) else it }
         )
         Spacer(Modifier.height(MaterialTheme.spacing.normal))
         ListItem(
@@ -45,7 +46,7 @@ fun SecurityScreen(component: SecurityComponent) {
             supportingContent = { Text("Изменить") },
             modifier = Modifier.padding(horizontal = MaterialTheme.spacing.normal)
                 .clip(MaterialTheme.shapes.medium)
-                .clickable (onClick = component::onUpdatePasswordClick)
+                .clickable(onClick = component::onUpdatePasswordClick)
         )
     }
 }

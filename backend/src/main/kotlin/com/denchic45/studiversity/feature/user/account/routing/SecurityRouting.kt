@@ -34,17 +34,18 @@ fun Route.securityRoute() {
         updatePassword(call.currentUserId(), call.receive())
         call.respond(HttpStatusCode.OK)
     }
-    post("/email") {
-        val email = call.receiveText()
-        if (!email.isEmail()) throw BadRequestException(AuthErrors.INVALID_EMAIL)
-        updateEmail(
-            userId = call.currentUserId(),
-            email = email,
-            url = url {
-                host = call.request.host()
-                port = call.request.port()
-                path("email-confirmation")
-            })
-        call.respond(HttpStatusCode.OK)
+    route("/email") {
+            val email = call.receiveText()
+            if (!email.isEmail()) throw BadRequestException(AuthErrors.INVALID_EMAIL)
+            updateEmail(
+                userId = call.currentUserId(),
+                email = email,
+                url = url {
+                    host = call.request.host()
+                    port = call.request.port()
+                    path("email-confirmation")
+                })
+            call.respond(HttpStatusCode.OK)
+
     }
 }

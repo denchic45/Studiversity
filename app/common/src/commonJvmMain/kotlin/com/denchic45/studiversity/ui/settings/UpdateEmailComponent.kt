@@ -1,12 +1,11 @@
 package com.denchic45.studiversity.ui.settings
 
-
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.api.auth.AuthErrors
+import com.denchic45.studiversity.api.account.AccountErrors
 import com.denchic45.studiversity.domain.resource.ClientError
 import com.denchic45.studiversity.domain.resource.onFailure
 import com.denchic45.studiversity.domain.resource.onSuccess
@@ -21,7 +20,7 @@ import me.tatarka.inject.annotations.Inject
 class UpdateEmailComponent(
     private val updateEmailUseCase: UpdateEmailUseCase,
     @Assisted
-    private val onFinish: () -> Unit,
+    private val onFinish: (success: Boolean) -> Unit,
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
@@ -37,13 +36,13 @@ class UpdateEmailComponent(
         componentScope.launch {
             updateEmailUseCase(state.email)
                 .onSuccess {
-                    onFinish()
+                    onFinish(true)
                 }
                 .onFailure {
                     state.emailMessage = when (val error = it) {
                         is ClientError -> when (error.response.error.reason) {
-                            AuthErrors.INVALID_EMAIL -> "Введена некорректная почта"
-                            AuthErrors.OLD_EMAIL_ENTERED -> "Введите новую почту"
+                            AccountErrors.INVALID_EMAIL -> "Введена некорректная почта"
+                            AccountErrors.OLD_EMAIL_ENTERED -> "Введите новую почту"
                             else -> "Неизвестная ошибка"
                         }
 
@@ -54,12 +53,12 @@ class UpdateEmailComponent(
     }
 
     fun onDismissRequest() {
-        onFinish()
+        onFinish(false)
     }
 }
 
 @Stable
 class UpdateEmailState {
-    var email: String by mutableStateOf("")
+    var email by mutableStateOf("")
     var emailMessage: String? by mutableStateOf(null)
 }

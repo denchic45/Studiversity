@@ -64,7 +64,7 @@ fun UserEditorDialog(component: UserEditorComponent) {
                         onGenderSelect = component::onGenderSelect,
                         onEmailType = component::onEmailChange,
                         onRoleSelect = component::onRoleSelect,
-                        onRemoveUserClick = component::onRemoveUserClick
+                        onRemoveClick = component::onRemoveUserClick
                     )
                 }
             },
@@ -84,7 +84,7 @@ private fun UserEditorContent(
     onGenderSelect: (UserEditorComponent.GenderAction) -> Unit,
     onEmailType: (String) -> Unit,
     onRoleSelect: (Role) -> Unit,
-    onRemoveUserClick: () -> Unit
+    onRemoveClick: () -> Unit
 ) {
     Column {
         HeaderItem("Личные данные")
@@ -251,7 +251,7 @@ private fun UserEditorContent(
                     confirmButton = {
                         FilledTonalButton(onClick = {
                             confirmRemove = false
-                            onRemoveUserClick()
+                            onRemoveClick()
                         }) { Text("Удалить") }
                     },
                     dismissButton = {
