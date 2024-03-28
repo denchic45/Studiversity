@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.feature.user
 
+import com.denchic45.studiversity.api.account.AccountErrors
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.UserDao
 import com.denchic45.studiversity.database.table.Users
@@ -91,7 +92,7 @@ class UserRepository(
     fun updatePassword(userId: UUID, request: UpdatePasswordRequest) {
         UserDao[userId].apply {
             if (!BCrypt.checkpw(request.oldPassword, password))
-                throw BadRequestException(AuthErrors.INVALID_OLD_PASSWORD)
+                throw BadRequestException(AccountErrors.INVALID_OLD_PASSWORD)
             password = BCrypt.hashpw(request.newPassword, BCrypt.gensalt())
         }
     }

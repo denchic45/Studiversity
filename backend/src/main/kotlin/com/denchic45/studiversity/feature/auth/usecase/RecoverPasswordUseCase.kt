@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.feature.auth.usecase
 
+import com.denchic45.studiversity.api.account.AccountErrors
 import com.denchic45.studiversity.feature.user.TokenRepository
 import com.denchic45.studiversity.feature.user.UserRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
@@ -14,7 +15,7 @@ class RecoverPasswordUseCase(
     private val emailSender: EmailSender
 ) {
     suspend operator fun invoke(email: String) = suspendTransactionWorker {
-        val user = userRepository.findUserByEmail(email) ?: throw BadRequestException(AuthErrors.INVALID_EMAIL)
+        val user = userRepository.findUserByEmail(email) ?: throw BadRequestException(AccountErrors.INVALID_EMAIL)
         val code = tokenRepository.generateCode(user.id, 600)
 
         emailSender.sendSimpleEmail(

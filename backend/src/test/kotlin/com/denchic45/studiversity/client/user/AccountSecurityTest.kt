@@ -6,6 +6,7 @@ import com.denchic45.studiversity.util.assertedResultIsOk
 import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.studiversity.util.unwrapAssertedError
 import com.denchic45.studiversity.api.account.AccountApi
+import com.denchic45.studiversity.api.account.AccountErrors
 import com.denchic45.studiversity.api.account.model.UpdatePasswordRequest
 import com.denchic45.studiversity.api.auth.AuthErrors
 import com.denchic45.studiversity.api.auth.model.SignInByEmailPasswordRequest
@@ -56,7 +57,7 @@ class AccountSecurityTest : KtorClientTest() {
     fun testUpdateEmail(): Unit = runBlocking {
         // Wrong email
         accountApi.updateEmail("another.mail.ru").unwrapAssertedError().apply {
-            assertEquals(listOf(AuthErrors.INVALID_EMAIL), (error as? CompositeError)?.reasons)
+            assertEquals(listOf(AccountErrors.INVALID_EMAIL), (error as? CompositeError)?.reasons)
         }
 
         accountApi.updateEmail("another@mail.ru").assertedResultIsOk()

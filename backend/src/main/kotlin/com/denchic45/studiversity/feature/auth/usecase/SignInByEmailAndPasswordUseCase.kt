@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.feature.auth.usecase
 
+import com.denchic45.studiversity.api.account.AccountErrors
 import com.denchic45.studiversity.feature.auth.model.RefreshToken
 import com.denchic45.studiversity.feature.user.TokenRepository
 import com.denchic45.studiversity.feature.user.UserRepository
@@ -19,9 +20,9 @@ class SignInByEmailAndPasswordUseCase(
 ) {
     suspend operator fun invoke(signInByEmailPasswordRequest: SignInByEmailPasswordRequest) = suspendTransactionWorker {
         val userByEmail = userRepository.findEmailPasswordByEmail(signInByEmailPasswordRequest.email)
-            ?: throw BadRequestException(AuthErrors.INVALID_EMAIL)
+            ?: throw BadRequestException(AccountErrors.INVALID_EMAIL)
         if (!BCrypt.checkpw(signInByEmailPasswordRequest.password, userByEmail.password))
-            throw BadRequestException(AuthErrors.INVALID_PASSWORD)
+            throw BadRequestException(AccountErrors.INVALID_PASSWORD)
 
         userByEmail.id to tokenRepository.addRefreshToken(
             RefreshToken(

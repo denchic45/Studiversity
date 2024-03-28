@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.feature.user.account.routing
 
+import com.denchic45.studiversity.api.account.AccountErrors
 import com.denchic45.studiversity.api.account.model.UpdatePasswordRequest
 import com.denchic45.studiversity.api.auth.AuthErrors
 import com.denchic45.studiversity.feature.auth.addPasswordConditions
@@ -35,17 +36,18 @@ fun Route.securityRoute() {
         call.respond(HttpStatusCode.OK)
     }
     route("/email") {
-            val email = call.receiveText()
-            if (!email.isEmail()) throw BadRequestException(AuthErrors.INVALID_EMAIL)
-            updateEmail(
-                userId = call.currentUserId(),
-                email = email,
-                url = url {
-                    host = call.request.host()
-                    port = call.request.port()
-                    path("email-confirmation")
-                })
-            call.respond(HttpStatusCode.OK)
-
+         post {
+             val email = call.receiveText()
+             if (!email.isEmail()) throw BadRequestException(AccountErrors.INVALID_EMAIL)
+             updateEmail(
+                 userId = call.currentUserId(),
+                 email = email,
+                 url = url {
+                     host = call.request.host()
+                     port = call.request.port()
+                     path("email-confirmation")
+                 })
+             call.respond(HttpStatusCode.OK)
+         }
     }
 }

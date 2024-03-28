@@ -2,6 +2,7 @@ package com.denchic45.studiversity.feature.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.denchic45.studiversity.api.account.AccountErrors
 import com.denchic45.studiversity.api.auth.AuthErrors
 import com.denchic45.studiversity.api.auth.model.SignupRequest
 import com.denchic45.studiversity.config.config
@@ -52,7 +53,7 @@ fun Application.configureAuth() {
                     val password = login.password
                     buildValidationResult {
                         addPasswordConditions(password)
-                        condition(login.email.isEmail(), AuthErrors.INVALID_EMAIL)
+                        condition(login.email.isEmail(), AccountErrors.INVALID_EMAIL)
                     }
                 }
             }
@@ -70,11 +71,11 @@ fun Application.configureAuth() {
 }
 
 fun ValidationResultBuilder.addPasswordConditions(password: String) {
-    condition(password.length >= 6, AuthErrors.PASSWORD_MUST_CONTAIN_AT_LEAST_6_CHARACTERS)
+    condition(password.length >= 6, AccountErrors.PASSWORD_MUST_CONTAIN_AT_LEAST_6_CHARACTERS)
     condition(
         password.containsUpperAndLowerCaseChars(),
-        AuthErrors.PASSWORD_MUST_CONTAIN_UPPER_AND_LOWER_CASE_CHARS
+        AccountErrors.PASSWORD_MUST_CONTAIN_UPPER_AND_LOWER_CASE_CHARS
     )
-    condition(password.containsLatinChars(), AuthErrors.PASSWORD_MUST_CONTAIN_LATIN_CHARS)
-    condition(password.containsDigits(), AuthErrors.PASSWORD_MUST_CONTAIN_DIGITS)
+    condition(password.containsLatinChars(), AccountErrors.PASSWORD_MUST_CONTAIN_LATIN_CHARS)
+    condition(password.containsDigits(), AccountErrors.PASSWORD_MUST_CONTAIN_DIGITS)
 }
