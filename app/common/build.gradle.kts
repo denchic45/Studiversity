@@ -10,8 +10,11 @@ plugins {
 
 val sqlDelightVersion: String by project
 val ktorVersion: String by project
-val koinVersion: String by project
+//val koinVersion: String by project
+val kotlinInjectVersion: String by project
 val decomposeVersion: String by project
+val jetpackComposeVersion: String by project
+val jetbrainsComposeVersion: String by project
 
 kotlin {
     androidTarget()
@@ -56,7 +59,7 @@ kotlin {
                 implementation("app.cash.sqldelight:coroutines-extensions:$sqlDelightVersion")
                 implementation("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
 
-                implementation("io.insert-koin:koin-core:$koinVersion")
+//                implementation("io.insert-koin:koin-core:$koinVersion")
 
                 // Settings
                 implementation("com.russhwolf:multiplatform-settings:1.0.0")
@@ -64,7 +67,7 @@ kotlin {
 
                 implementation("com.squareup.okio:okio:3.3.0")
 
-                implementation("me.tatarka.inject:kotlin-inject-runtime:0.6.3")
+                implementation("me.tatarka.inject:kotlin-inject-runtime:$kotlinInjectVersion")
 
                 implementation("com.darkrockstudios:mpfilepicker:1.1.0")
 
@@ -104,7 +107,6 @@ kotlin {
         val commonJvmTest by creating {
             dependencies {
                 dependsOn(commonTest)
-//                implementation("com.github.skebir:prettytable:v1.0")
             }
         }
         val androidMain by getting {
@@ -114,8 +116,6 @@ kotlin {
 
                 implementation("com.kizitonwose.calendar:compose:2.3.0")
 
-//                implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
-
                 implementation("com.arkivanov.decompose:extensions-android:$decomposeVersion")
 
                 implementation("io.ktor:ktor-client-android:$ktorVersion")
@@ -124,7 +124,6 @@ kotlin {
                 implementation("androidx.work:work-runtime-ktx:2.9.0")
 
                 // Compose
-                val jetpackComposeVersion = "1.6.2"
                 api("androidx.compose.runtime:runtime:$jetpackComposeVersion")
                 implementation("androidx.compose.ui:ui:$jetpackComposeVersion")
                 implementation("androidx.activity:activity-compose:1.8.2")
@@ -157,8 +156,6 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.1")
                 // Flow layout
                 implementation("com.google.accompanist:accompanist-flowlayout:0.27.0")
-
-//                implementation("me.omico.lux:lux-androidx-compose-material3-pullrefresh")
             }
         }
         val androidUnitTest by getting {

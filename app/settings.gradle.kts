@@ -1,6 +1,6 @@
 pluginManagement {
     val kotlinVersion: String by settings
-    val jetbrainsCompose: String by settings
+    val jetbrainsComposeVersion: String by settings
 
     repositories {
         google()
@@ -14,7 +14,7 @@ pluginManagement {
         kotlin("jvm") version kotlinVersion
         kotlin("multiplatform") version kotlinVersion
         kotlin("plugin.serialization") version kotlinVersion
-        id("org.jetbrains.compose") version jetbrainsCompose
+        id("org.jetbrains.compose") version jetbrainsComposeVersion
 
         id("com.android.library") version "7.4.1"
     }
