@@ -7,7 +7,10 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.api.account.AccountErrors
 import com.denchic45.studiversity.api.account.model.UpdatePasswordRequest
-import com.denchic45.studiversity.domain.resource.*
+import com.denchic45.studiversity.domain.resource.ClientError
+import com.denchic45.studiversity.domain.resource.ServerError
+import com.denchic45.studiversity.domain.resource.onFailure
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.UpdatePasswordUseCase
 import com.denchic45.studiversity.uivalidator.condition.Condition
 import com.denchic45.studiversity.uivalidator.condition.observable
@@ -88,7 +91,7 @@ class UpdatePasswordComponent(
         componentScope.launch {
             updatePasswordUseCase(UpdatePasswordRequest(state.oldPassword, state.newPassword))
                 .onSuccess {
-                    onFinish()
+                    onFinish(true)
                 }.onFailure {
                     state.resultMessage = when (it) {
                         is ClientError -> when (it.response.error.reason) {
@@ -111,7 +114,7 @@ class UpdatePasswordComponent(
     }
 
     fun onDismissRequest() {
-        onFinish()
+        onFinish(false)
     }
 
     companion object ErrorMessages {
@@ -132,5 +135,5 @@ class UpdatePasswordState {
     var newPasswordMessage: String? by mutableStateOf(null)
     var repeatedNewPasswordMessage: String? by mutableStateOf(null)
 
-    val resultMessage by mutableStateOf("")
+    var resultMessage by mutableStateOf("")
 }

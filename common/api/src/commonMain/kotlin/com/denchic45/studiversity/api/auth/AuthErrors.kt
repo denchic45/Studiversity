@@ -6,5 +6,4 @@ object AuthErrors {
 
     const val INVALID_GRANT = "INVALID_GRANT"
     const val INVALID_REFRESH_TOKEN = "INVALID_REFRESH_TOKEN"
-
 }

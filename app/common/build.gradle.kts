@@ -34,7 +34,7 @@ kotlin {
                 api(compose.material3)
                 api(compose.materialIconsExtended)
 
-                implementation(project(":common:api"))
+//                implementation(project(":common:api"))
 
                 // Compose
                 implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
@@ -75,7 +75,10 @@ kotlin {
                 implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.17")
                 implementation("com.michael-bull.kotlin-result:kotlin-result-coroutines:1.1.17")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+
+
+                implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
             }
         }
         val commonTest by getting {
@@ -91,7 +94,7 @@ kotlin {
                 dependsOn(commonMain)
 
                 implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0")
 
                 implementation("app.cash.sqldelight:runtime-jvm:$sqlDelightVersion")
 
@@ -101,7 +104,6 @@ kotlin {
                 implementation("net.harawata:appdirs:1.2.1")
 
                 api("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
-                implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
             }
         }
         val commonJvmTest by creating {
@@ -132,7 +134,7 @@ kotlin {
                 // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
                 implementation("androidx.compose.foundation:foundation:$jetpackComposeVersion")
                 // Material Design
-                implementation("androidx.compose.material3:material3:1.2.0")
+                implementation("androidx.compose.material3:material3:1.2.1")
                 // Lifecycle
                 implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
@@ -148,12 +150,12 @@ kotlin {
                 implementation("io.coil-kt:coil-compose:2.2.2")
                 implementation("io.coil-kt:coil-svg:2.3.0")
 
-                implementation("androidx.recyclerview:recyclerview:1.3.0")
+                implementation("androidx.recyclerview:recyclerview:1.3.2")
 
                 implementation("com.google.android.play:core:1.10.3")
                 implementation("com.google.android.play:core-ktx:1.8.1")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
                 // Flow layout
                 implementation("com.google.accompanist:accompanist-flowlayout:0.27.0")
             }
@@ -177,7 +179,7 @@ kotlin {
                 // Decompose
                 api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.0")
 
                 implementation("media.kamel:kamel-image:0.7.0")
 
@@ -199,7 +201,7 @@ dependencies {
     add("kspAndroid", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.3")
     add("kspDesktop", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.6.3")
     // support new language API
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
 
 android {

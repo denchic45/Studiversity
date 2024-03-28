@@ -14,7 +14,7 @@ buildscript {
 
     dependencies {
         val kotlinVersion: String by project
-        classpath("com.android.tools.build:gradle:8.2.0")
+        classpath("com.android.tools.build:gradle:8.2.2")
         classpath("app.cash.sqldelight:gradle-plugin:2.0.0-alpha05")
     }
 }

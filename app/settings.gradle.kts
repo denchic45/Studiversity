@@ -26,5 +26,5 @@ include(":android")
 include(":common")
 include(":desktop")
 
-include(":common:api")
-project(":common:api").projectDir = file("../common/api")
+//include(":common:api")
+//project(":common:api").projectDir = file("../common/api")
