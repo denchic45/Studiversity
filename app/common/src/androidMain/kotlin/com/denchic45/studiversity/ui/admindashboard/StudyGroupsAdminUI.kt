@@ -13,11 +13,10 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
+import com.denchic45.studiversity.ui.component.StudyGroupListItem
 import com.denchic45.studiversity.ui.layout.AdaptiveMasterSidebarLayout
 import com.denchic45.studiversity.ui.search.SearchScreen
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorScreen
-import com.denchic45.studiversity.ui.studygroups.StudyGroupListItem
-import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 
 @Composable
 fun StudyGroupsAdminScreen(component: StudyGroupsAdminComponent) {

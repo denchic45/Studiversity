@@ -9,10 +9,10 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.usecase.RemoveUserUseCase
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
-import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.profile.ProfileComponent
@@ -85,7 +85,6 @@ class UsersAdminComponent(
     }
 
     fun onUserClick(userId: UUID) {
-//        sidebarNavigation.activate(Config.Profile(userId))
         rootNavigation.push(RootConfig.Profile(userId))
     }
 

@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.denchic45.studiversity.ui.model.UserItem
+import coil3.compose.AsyncImage
+import com.denchic45.studiversity.domain.model.UserItem
 
 @Composable
 fun UserChooserScreen(component: UserChooserComponent) {

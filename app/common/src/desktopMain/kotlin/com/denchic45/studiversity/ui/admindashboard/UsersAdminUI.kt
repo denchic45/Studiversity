@@ -20,7 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import com.denchic45.studiversity.ui.model.UserItem
+import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.ui.usereditor.UserEditorDialog
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource

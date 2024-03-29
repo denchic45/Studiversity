@@ -1,32 +1,26 @@
-package com.denchic45.studiversity.ui.courses
+package com.denchic45.studiversity.ui.component
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.School
+import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.domain.model.StudyGroupItem
 
 @Composable
-fun CourseListItem(
-    item: CourseResponse,
+fun StudyGroupListItem(
+    item: StudyGroupItem,
     modifier: Modifier = Modifier,
     trailingContent: (@Composable () -> Unit)? = null
 ) {
     ListItem(
         headlineContent = { Text(item.name) },
-        supportingContent = if (item.archived) {
-            { Text("В архиве") }
-        } else null,
         leadingContent = {
-            Icon(
-                imageVector = Icons.Outlined.School,
-                contentDescription = "course icon"
-            )
+            Icon(imageVector = Icons.Outlined.Group, contentDescription = "group icon")
         },
         trailingContent = trailingContent,
-        modifier = modifier
+        modifier = modifier,
     )
 }

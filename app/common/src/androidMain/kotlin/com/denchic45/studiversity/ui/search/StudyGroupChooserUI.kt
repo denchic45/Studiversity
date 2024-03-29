@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.ui.search
 
 import androidx.compose.runtime.Composable
-import com.denchic45.studiversity.ui.studygroups.StudyGroupListItem
+import com.denchic45.studiversity.ui.component.StudyGroupListItem
 
 @Composable
 fun StudyGroupChooserScreen(

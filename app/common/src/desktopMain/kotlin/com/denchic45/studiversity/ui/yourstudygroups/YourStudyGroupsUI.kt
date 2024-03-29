@@ -8,16 +8,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.ScreenScaffold
-import com.denchic45.studiversity.ui.components.ExposedDropdownMenuDefaults
 import com.denchic45.studiversity.ui.main.AppBarTitle
 import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupContent
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import java.util.*
 
 
@@ -75,6 +74,7 @@ fun YourStudyGroupScreen(component: StudyGroupComponent) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StudyGroupSpinner(
     groups: List<StudyGroupResponse>,
@@ -95,7 +95,7 @@ private fun StudyGroupSpinner(
             }
 
             DropdownMenu(
-                expanded = expanded,
+                expanded = showList,
                 onDismissRequest = { expanded = false }) {
                 groups.forEach { group ->
                     DropdownMenuItem(

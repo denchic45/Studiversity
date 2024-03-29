@@ -3,7 +3,6 @@ package com.denchic45.studiversity.ui.periodeditor
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
-import com.denchic45.studiversity.domain.model.toItem
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
@@ -23,7 +22,7 @@ class LessonDetailsEditorComponent(
 
     fun onCourseChoose() {
         overlayNavigation.activate(PeriodEditorComponent.OverlayConfig.CourseChooser {
-            it.let { details.course = it.toItem() }
+            it.let { details.course = it }
         })
     }
 }

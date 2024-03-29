@@ -1,15 +1,15 @@
 package com.denchic45.studiversity.ui.timetable.state
 
-import com.denchic45.studiversity.data.service.model.BellSchedule
-import com.denchic45.studiversity.domain.model.StudyGroupItem
-import com.denchic45.studiversity.domain.model.toItem
-import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
-import com.denchic45.studiversity.domain.timetable.model.PeriodItem
-import com.denchic45.studiversity.domain.timetable.model.Window
-import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.api.timetable.model.EventDetails
 import com.denchic45.studiversity.api.timetable.model.LessonDetails
 import com.denchic45.studiversity.api.timetable.model.PeriodResponse
+import com.denchic45.studiversity.data.service.model.BellSchedule
+import com.denchic45.studiversity.domain.model.StudyGroupItem
+import com.denchic45.studiversity.domain.model.toItem
+import com.denchic45.studiversity.domain.model.toUserItem
+import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
+import com.denchic45.studiversity.domain.timetable.model.PeriodItem
+import com.denchic45.studiversity.domain.timetable.model.Window
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder

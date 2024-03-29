@@ -4,28 +4,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.BlockContent
 import com.denchic45.studiversity.ui.ScreenScaffold
-import com.denchic45.studiversity.ui.components.ExposedDropdownMenuDefaults
 import com.denchic45.studiversity.ui.main.AppBarTitle
 import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.TimetableContent
-import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 
 
 @Composable
@@ -41,9 +31,9 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
             topBar = {
                 CustomAppBar(
                     title = {
-                            AppBarTitle("Расписание")
-                            Spacer(Modifier.width(MaterialTheme.spacing.normal))
-                            TimetablesSpinner(groups, selectedTimetable, component)
+                        AppBarTitle("Расписание")
+                        Spacer(Modifier.width(MaterialTheme.spacing.normal))
+                        TimetablesSpinner(groups, selectedTimetable, component)
                     },
                 )
             }) {
@@ -61,6 +51,7 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TimetablesSpinner(
     resource: Resource<List<StudyGroupResponse>>,
@@ -82,7 +73,7 @@ private fun TimetablesSpinner(
                 }
 
                 DropdownMenu(
-                    expanded = expanded,
+                    expanded = showList,
                     onDismissRequest = { expanded = false }) {
                     DropdownMenuItem(
                         text = { Text("Мое расписание") },

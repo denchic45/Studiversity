@@ -11,8 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.courses.CourseListItem
-import com.denchic45.studiversity.ui.studygroups.StudyGroupListItem
+import com.denchic45.studiversity.ui.component.StudyGroupListItem
 
 @Composable
 fun UserCoursesScreen(component: UserStudyGroupsComponent) {

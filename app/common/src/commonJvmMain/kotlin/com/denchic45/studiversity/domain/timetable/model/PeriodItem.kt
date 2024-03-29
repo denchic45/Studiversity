@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.domain.timetable.model
 
+import com.denchic45.studiversity.api.room.model.RoomResponse
 import com.denchic45.studiversity.domain.model.CourseItem
 import com.denchic45.studiversity.domain.model.StudyGroupItem
-import com.denchic45.studiversity.ui.model.UserItem
-import com.denchic45.studiversity.api.room.model.RoomResponse
-import java.util.UUID
+import com.denchic45.studiversity.domain.model.UserItem
+import java.util.*
 import kotlin.random.Random
 
 sealed interface PeriodSlot {

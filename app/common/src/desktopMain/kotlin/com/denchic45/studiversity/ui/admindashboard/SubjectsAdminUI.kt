@@ -7,8 +7,8 @@ import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 @Composable
 fun SubjectsAdminScreen(component: SubjectsAdminComponent) {
     AdminSearchScreen(
-        component,
-        SubjectResponse::id,
+        component = component,
+        keyItem = SubjectResponse::id,
         searchPlaceholder = "Найти предмет",
         fabText = "Создать предмет"
     ) {

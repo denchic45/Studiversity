@@ -1,6 +1,8 @@
 package com.denchic45.studiversity.ui.coursemembers
 
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.domain.model.toUserItem
 import com.denchic45.studiversity.domain.resource.map
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.stateInResource
@@ -9,16 +11,14 @@ import com.denchic45.studiversity.domain.usecase.FindMembersByScopeUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveMemberFromScopeUseCase
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
-import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.studiversity.util.map
-import com.denchic45.studiversity.api.role.model.Capability
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CourseMembersComponent(

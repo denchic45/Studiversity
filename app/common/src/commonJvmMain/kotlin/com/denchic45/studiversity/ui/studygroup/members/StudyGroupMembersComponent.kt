@@ -1,33 +1,24 @@
 package com.denchic45.studiversity.ui.studygroup.members
 
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.domain.model.GroupMembers
+import com.denchic45.studiversity.domain.model.toUserItem
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.usecase.AssignUserRoleInScopeUseCase
-import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
-import com.denchic45.studiversity.domain.usecase.FindGroupMembersUseCase
-import com.denchic45.studiversity.domain.usecase.RemoveMemberFromScopeUseCase
-import com.denchic45.studiversity.domain.usecase.RemoveUserRoleFromScopeUseCase
+import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
-import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.role.model.Capability
-import com.denchic45.studiversity.api.role.model.Role
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class StudyGroupMembersComponent(

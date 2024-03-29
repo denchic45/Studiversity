@@ -1,10 +1,8 @@
-package com.denchic45.studiversity.ui.model
+package com.denchic45.studiversity.domain.model
 
-import com.denchic45.studiversity.domain.model.GroupMember
-import com.denchic45.studiversity.domain.model.GroupMembers
 import com.denchic45.studiversity.api.timetable.model.PeriodMember
 import com.denchic45.studiversity.api.user.model.UserResponse
-import java.util.UUID
+import java.util.*
 
 data class UserItem(
     override val id: UUID,

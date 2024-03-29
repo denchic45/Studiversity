@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.push
+import com.denchic45.studiversity.domain.model.CourseItem
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.ArchiveCourseUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveCourseUseCase
@@ -14,11 +15,10 @@ import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.search.CourseChooserComponent
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.course.model.CourseResponse
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CoursesAdminComponent(
@@ -26,20 +26,19 @@ class CoursesAdminComponent(
     private val archiveCourseUseCase: ArchiveCourseUseCase,
     private val unarchiveCourseUseCase: UnarchiveCourseUseCase,
     private val removeCourseUseCase: RemoveCourseUseCase,
-    courseChooserComponent: (onSelect: (CourseResponse) -> Unit, ComponentContext) -> CourseChooserComponent,
+    courseChooserComponent: (onSelect: (CourseItem) -> Unit, ComponentContext) -> CourseChooserComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
-    SearchableAdminComponent<CourseResponse> {
+    SearchableAdminComponent<CourseItem> {
 
     private val componentScope = componentScope()
 
-    override val chooserComponent: CourseChooserComponent =
-        courseChooserComponent(::onSelect, componentContext)
+    override val chooserComponent: CourseChooserComponent = courseChooserComponent(::onSelect, componentContext)
 
-    override fun onSelect(item: CourseResponse) {
+    override fun onSelect(item: CourseItem) {
         rootNavigation.bringToFront(RootConfig.Course(item.id))
     }
 

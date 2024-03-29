@@ -1,7 +1,6 @@
 package com.denchic45.studiversity.domain.model
 
-import com.denchic45.studiversity.ui.model.UserItem
-import java.util.UUID
+import java.util.*
 
 data class GroupMembers(
     val groupId: UUID,

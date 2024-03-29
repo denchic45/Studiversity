@@ -10,7 +10,6 @@ plugins {
 
 val sqlDelightVersion: String by project
 val ktorVersion: String by project
-//val koinVersion: String by project
 val kotlinInjectVersion: String by project
 val decomposeVersion: String by project
 val jetpackComposeVersion: String by project
@@ -43,6 +42,13 @@ kotlin {
                 implementation("androidx.compose.material3:material3-window-size-class:1.1.1")
                 implementation("androidx.window:window:1.1.0")
 
+                // Coil
+                val coil3Version = "3.0.0-alpha06"
+                implementation("io.coil-kt.coil3:coil:$coil3Version")
+                implementation("io.coil-kt.coil3:coil-network-ktor:$coil3Version")
+//                implementation("io.coil-kt:coil-compose:2.6.0")
+                implementation("io.coil-kt.coil3:coil-compose:$coil3Version")
+
                 // Ktor
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
@@ -58,8 +64,6 @@ kotlin {
                 implementation("app.cash.sqldelight:runtime:$sqlDelightVersion")
                 implementation("app.cash.sqldelight:coroutines-extensions:$sqlDelightVersion")
                 implementation("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
-
-//                implementation("io.insert-koin:koin-core:$koinVersion")
 
                 // Settings
                 implementation("com.russhwolf:multiplatform-settings:1.0.0")
@@ -147,7 +151,7 @@ kotlin {
                 // Cropper
                 implementation("com.github.SmartToolFactory:Compose-Cropper:0.4.0")
                 // Coil
-                implementation("io.coil-kt:coil-compose:2.2.2")
+//                implementation("io.coil-kt:coil-compose:2.2.2")
                 implementation("io.coil-kt:coil-svg:2.3.0")
 
                 implementation("androidx.recyclerview:recyclerview:1.3.2")

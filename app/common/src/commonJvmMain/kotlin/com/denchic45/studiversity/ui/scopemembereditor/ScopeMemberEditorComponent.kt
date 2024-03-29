@@ -1,39 +1,28 @@
 package com.denchic45.studiversity.ui.scopemembereditor
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.ChildSlot
-import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
-import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.domain.model.UserItem
+import com.denchic45.studiversity.domain.model.toUserItem
 import com.denchic45.studiversity.domain.resource.ifSuccess
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.domain.usecase.AddMemberToScopeManuallyUseCase
 import com.denchic45.studiversity.domain.usecase.AssignRolesToUserInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindMemberByScopeIdAndMemberIdUseCase
-import com.denchic45.studiversity.ui.model.UserItem
-import com.denchic45.studiversity.ui.model.toUserItem
 import com.denchic45.studiversity.ui.search.UserChooserComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.role.model.Role
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class ScopeMemberEditorComponent(

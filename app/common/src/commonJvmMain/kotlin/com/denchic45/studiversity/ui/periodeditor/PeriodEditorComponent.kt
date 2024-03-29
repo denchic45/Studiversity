@@ -14,13 +14,14 @@ import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.room.model.RoomResponse
 import com.denchic45.studiversity.domain.model.CourseItem
 import com.denchic45.studiversity.domain.model.StudyGroupItem
+import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.usecase.FindRoomByContainsNameUseCase
-import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.search.CourseChooserComponent
 import com.denchic45.studiversity.ui.search.UserChooserComponent
 import com.denchic45.studiversity.uivalidator.condition.Condition
@@ -28,8 +29,6 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.uivalidator.validator.observable
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.course.model.CourseResponse
-import com.denchic45.studiversity.api.room.model.RoomResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
@@ -43,7 +42,7 @@ import kotlin.random.Random
 @Inject
 class PeriodEditorComponent(
     private val findRoomByContainsNameUseCase: FindRoomByContainsNameUseCase,
-    private val courseChooserComponent: (onFinish: (CourseResponse) -> Unit, ComponentContext) -> CourseChooserComponent,
+    private val courseChooserComponent: (onFinish: (CourseItem) -> Unit, ComponentContext) -> CourseChooserComponent,
     private val userChooserComponent: (onFinish: (UserItem) -> Unit, ComponentContext) -> UserChooserComponent,
     private val eventDetailsEditorComponent: (EditingPeriod, ComponentContext) -> EventDetailsEditorComponent,
     private val lessonDetailsEditorComponent: (EditingPeriod, SlotNavigation<OverlayConfig>, ComponentContext) -> LessonDetailsEditorComponent,
@@ -248,7 +247,7 @@ class PeriodEditorComponent(
 
     @Parcelize
     sealed class OverlayConfig : Parcelable {
-        data class CourseChooser(val onFinish: (CourseResponse) -> Unit) : OverlayConfig()
+        data class CourseChooser(val onFinish: (CourseItem) -> Unit) : OverlayConfig()
 
         data class UserChooser(val onSelect: (UserItem) -> Unit) : OverlayConfig()
     }
@@ -262,9 +261,13 @@ class PeriodEditorComponent(
     @Parcelize
     sealed class DetailsConfig : Parcelable {
 
-        object Event : DetailsConfig()
+        data object Event : DetailsConfig() {
+            private fun readResolve(): Any = Event
+        }
 
-        object Lesson : DetailsConfig()
+        data object Lesson : DetailsConfig() {
+            private fun readResolve(): Any = Lesson
+        }
     }
 
     sealed class DetailsChild {

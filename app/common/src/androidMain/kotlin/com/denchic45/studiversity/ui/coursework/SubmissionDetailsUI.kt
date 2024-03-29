@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.resource.onLoading
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.ResourceContent
@@ -30,7 +31,6 @@ import com.denchic45.studiversity.ui.attachments.AttachmentsComponent
 import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.coursework.submissiondetails.SubmissionDetailsComponent
 import com.denchic45.studiversity.ui.model.AttachmentItem
-import com.denchic45.studiversity.ui.model.UserItem
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.util.AttachmentViewer

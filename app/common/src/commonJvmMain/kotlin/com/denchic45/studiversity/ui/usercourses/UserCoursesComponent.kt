@@ -1,13 +1,16 @@
 package com.denchic45.studiversity.ui.usercourses
 
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.domain.model.toItem
+import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.FindCoursesUseCase
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.studiversity.util.userIdOf
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class UserCoursesComponent(
@@ -21,8 +24,9 @@ class UserCoursesComponent(
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
-    val coursesByUser =
-        findCoursesUseCase(memberId = userIdOf(userId)).stateInResource(componentScope)
+    val coursesByUser = findCoursesUseCase(memberId = userIdOf(userId))
+        .mapResource { it.map(CourseResponse::toItem) }
+        .stateInResource(componentScope)
 
     fun onCourseClick(id: UUID) {
         onResult(id)

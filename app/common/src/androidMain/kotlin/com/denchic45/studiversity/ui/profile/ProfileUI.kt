@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.resource.Resource
@@ -35,13 +35,12 @@ import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
 import com.denchic45.studiversity.ui.appbar.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
-import com.denchic45.studiversity.ui.studygroups.StudyGroupListItem
+import com.denchic45.studiversity.ui.component.StudyGroupListItem
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.ui.usercourses.UserCoursesDialog
 import com.denchic45.studiversity.ui.userstudygroups.UserStudyGroupsDialog
 import com.denchic45.studiversity.util.toast
-import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import java.io.ByteArrayOutputStream
 import java.util.*
 

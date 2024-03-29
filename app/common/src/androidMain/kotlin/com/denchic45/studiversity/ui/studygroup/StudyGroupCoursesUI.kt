@@ -2,13 +2,7 @@ package com.denchic45.studiversity.ui.studygroup
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -25,14 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import coil3.compose.SubcomposeAsyncImage
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.model.StudyGroupCourseItem
 import com.denchic45.studiversity.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.studiversity.ui.theme.spacing
-import java.util.UUID
+import java.util.*
 
 @Composable
 fun StudyGroupCoursesScreen(component: StudyGroupCoursesComponent) {

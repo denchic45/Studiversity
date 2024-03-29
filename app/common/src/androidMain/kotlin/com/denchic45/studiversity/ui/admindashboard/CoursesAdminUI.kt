@@ -10,11 +10,11 @@ import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import com.denchic45.studiversity.domain.model.CourseItem
 import com.denchic45.studiversity.ui.appbar.hideAppBar
+import com.denchic45.studiversity.ui.component.CourseListItem
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
-import com.denchic45.studiversity.ui.courses.CourseListItem
 import com.denchic45.studiversity.ui.search.SearchScreen
-import com.denchic45.studiversity.api.course.model.CourseResponse
 
 @Composable
 fun CoursesAdminScreen(component: CoursesAdminComponent) {
@@ -30,7 +30,7 @@ fun CoursesAdminScreen(component: CoursesAdminComponent) {
         Box(Modifier.padding(it)) {
             SearchScreen(
                 component = component.chooserComponent,
-                keyItem = CourseResponse::id,
+                keyItem = CourseItem::id,
                 placeholder = "Поиск курсов"
             ) { item ->
                 CourseListItem(item = item, trailingContent = {

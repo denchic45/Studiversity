@@ -8,7 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.courses.CourseListItem
+import com.denchic45.studiversity.ui.component.CourseListItem
 
 @Composable
 fun UserCoursesDialog(component: UserCoursesComponent) {
