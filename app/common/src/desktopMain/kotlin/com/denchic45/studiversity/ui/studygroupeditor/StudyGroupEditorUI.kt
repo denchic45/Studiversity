@@ -9,17 +9,28 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.theme.CommonAppTheme
 import java.util.*
 
 @Composable
 fun StudyGroupEditorDialog(component: StudyGroupEditorComponent) {
     val resource by component.viewState.collectAsState()
+    val allowSave by component.allowSave.collectAsState()
+    val needToConfirmToDismiss by component.needToConfirmToDismiss.collectAsState()
+
+    ConfirmDialog(
+        show = needToConfirmToDismiss,
+        title = "Не сохранять изменения?",
+        confirmText = "Да",
+        onConfirm = component::onDismissRequest,
+        onDismiss = component::onCancelDismiss
+    )
 
     resource.onSuccess { state ->
         AlertDialog(
-            onDismissRequest = component::onDismissClick,
-            title = { Text(if (state.isNew) "Создать группу" else "Изменить пользователя") },
+            onDismissRequest = component::onDismissRequest,
+            title = { Text(if (state.isNew) "Создать группу" else "Изменить группу") },
             text = {
                 StudyGroupEditorContent(
                     state = state,
@@ -32,10 +43,10 @@ fun StudyGroupEditorDialog(component: StudyGroupEditorComponent) {
                 )
             },
             confirmButton = {
-                TextButton(component::onSaveClick) { Text("Сохранить") }
+                TextButton(component::onSaveClick, enabled = allowSave) { Text("Сохранить") }
             },
             dismissButton = {
-                TextButton({ component.onDismissClick() }) { Text("Отмена") }
+                TextButton({ component.onDismissRequest() }) { Text("Отмена") }
             }
         )
     }
@@ -52,7 +63,7 @@ fun StudyGroupEditorPreview() {
                 this.startAcademicYear = 2023
                 this.endAcademicYear = 2027
             },
-            {}, {}, {}, {}, {},{}
+            {}, {}, {}, {}, {}, {}
         )
     }
 }

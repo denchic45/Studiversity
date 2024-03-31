@@ -27,12 +27,10 @@ import io.kamel.image.asyncPainterResource
 
 @Composable
 fun UsersAdminScreen(component: UsersAdminComponent) {
-    val interactionSource = remember { MutableInteractionSource() }
     val childSlot by component.childSlot.subscribeAsState()
 
     childSlot.child?.let {
         when (val child = it.instance) {
-            is UsersAdminComponent.Child.Profile -> TODO()
             is UsersAdminComponent.Child.UserEditor -> UserEditorDialog(child.component)
         }
     }
@@ -42,15 +40,15 @@ fun UsersAdminScreen(component: UsersAdminComponent) {
         keyItem = UserItem::id,
         searchPlaceholder = "Найти пользователя",
         fabText = "Создать пользователя"
-    ) { userItem ->
+    ) { item ->
+        val interactionSource = remember { MutableInteractionSource() }
         UserListItem(
-            item = userItem,
-            onClick = { component.onUserClick(userItem.id) },
+            item = item,
             trailingContent = {
                 val isHovered by interactionSource.collectIsHoveredAsState()
                 if (isHovered)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { component.onEditClick(userItem.id) }) {
+                        IconButton(onClick = { component.onEditClick(item.id) }) {
                             Icon(Icons.Outlined.Edit, null)
                         }
                     }
@@ -63,7 +61,7 @@ fun UsersAdminScreen(component: UsersAdminComponent) {
 @Composable
 private fun UserListItem(
     item: UserItem,
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
     trailingContent: (@Composable () -> Unit)? = null,
     interactionSource: MutableInteractionSource = MutableInteractionSource(),
     modifier: Modifier = Modifier

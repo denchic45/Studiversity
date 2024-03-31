@@ -6,8 +6,11 @@ import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.domain.model.toItem
 import com.denchic45.studiversity.domain.resource.*
@@ -18,8 +21,6 @@ import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.usercourses.UserCoursesComponent
 import com.denchic45.studiversity.ui.userstudygroups.UserStudyGroupsComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.role.model.Capability
-import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.util.toUUID
 import com.denchic45.studiversity.util.userIdOf
 import kotlinx.coroutines.flow.StateFlow
@@ -145,6 +146,10 @@ class ProfileComponent(
 
     fun onDialogClose() {
         slotNavigation.dismiss()
+    }
+
+    fun onBack() {
+        navigator.pop()
     }
 
     fun onOpenAvatarClick() {

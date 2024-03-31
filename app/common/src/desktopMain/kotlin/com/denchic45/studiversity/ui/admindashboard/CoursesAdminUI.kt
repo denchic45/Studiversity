@@ -60,8 +60,8 @@ private fun CourseListItem(
                 indication = rememberRipple(color = MaterialTheme.colorScheme.secondary),
                 enabled = true,
                 onClick = { onClick() }
-            ).padding(horizontal = 16.dp), trailingContent = {
-
+            ).padding(horizontal = 16.dp),
+        trailingContent = {
             if (isHovered) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = { onEditClick() }) {

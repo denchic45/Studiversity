@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.systemRoleName
@@ -33,8 +35,6 @@ import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.main.NavigationIconBack
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
-import com.denchic45.studiversity.api.course.model.CourseResponse
-import com.denchic45.studiversity.api.role.model.Role
 import com.seiko.imageloader.rememberAsyncImagePainter
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -48,7 +48,7 @@ fun ProfileScreen(component: ProfileComponent) {
     ScreenScaffold(
         topBar = {
             CustomAppBar(
-                navigationContent = { NavigationIconBack(onClick = {}) },
+                navigationContent = { NavigationIconBack(onClick = component::onBack) },
                 title = { Text("Профиль") }
             )
         }

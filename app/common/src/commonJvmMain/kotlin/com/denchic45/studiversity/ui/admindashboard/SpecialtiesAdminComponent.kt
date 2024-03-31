@@ -1,13 +1,12 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
-import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.studiversity.domain.usecase.RemoveSpecialtyUseCase
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
@@ -16,11 +15,10 @@ import com.denchic45.studiversity.ui.search.SpecialtyChooserComponent
 import com.denchic45.studiversity.ui.specialtyeditor.SpecialtyEditorComponent
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class SpecialtiesAdminComponent(
@@ -40,14 +38,15 @@ class SpecialtiesAdminComponent(
     override val chooserComponent: SpecialtyChooserComponent =
         specialtyChooserComponent(::onSelect, componentContext)
 
-    private val overlayNavigation = SlotNavigation<Config>()
-    val childSlot = childSlot(source = overlayNavigation,
+    private val slotNavigation = SlotNavigation<Config>()
+    val childSlot: Value<ChildSlot<Config, Child>> = childSlot(
+        source = slotNavigation,
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
                 is Config.SpecialtyEditor -> Child.SpecialtyEditor(
                     specialtyEditorComponent(
-                        overlayNavigation::dismiss,
+                        slotNavigation::dismiss,
                         config.specialtyId,
                         context
                     )
@@ -60,11 +59,11 @@ class SpecialtiesAdminComponent(
     }
 
     override fun onAddClick() {
-        overlayNavigation.activate(Config.SpecialtyEditor(null))
+        slotNavigation.activate(Config.SpecialtyEditor(null))
     }
 
     override fun onEditClick(id: UUID) {
-        overlayNavigation.activate(Config.SpecialtyEditor(id))
+        slotNavigation.activate(Config.SpecialtyEditor(id))
     }
 
     override fun onRemoveClick(id: UUID) {

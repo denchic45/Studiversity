@@ -7,10 +7,13 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.api.user.model.CreateUserRequest
+import com.denchic45.studiversity.api.user.model.Gender
+import com.denchic45.studiversity.api.user.model.UpdateUserRequest
 import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.getOptProperty
-import com.denchic45.studiversity.ui.model.MenuAction
 import com.denchic45.studiversity.uivalidator.Operator
 import com.denchic45.studiversity.uivalidator.condition.Condition
 import com.denchic45.studiversity.uivalidator.condition.observable
@@ -19,10 +22,6 @@ import com.denchic45.studiversity.uivalidator.isEmail
 import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.role.model.Role
-import com.denchic45.studiversity.api.user.model.CreateUserRequest
-import com.denchic45.studiversity.api.user.model.Gender
-import com.denchic45.studiversity.api.user.model.UpdateUserRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -50,7 +49,7 @@ class UserEditorComponent(
     private val componentScope = componentScope()
 
     val allowSave = MutableStateFlow(false)
-
+    val needToConfirmToDismiss = MutableStateFlow(false)
 
     private val assignableSystemRoles = findAssignableRolesByUserAndScopeUseCase(null, null)
         .stateInResource(componentScope)
@@ -58,20 +57,23 @@ class UserEditorComponent(
     val editingState = EditingUserState(userId == null)
 
     val viewState = (userId?.let {
-        findUserByIdUseCase(it).mapResource { response ->
+        findUserByIdUseCase(it).flatMapResourceFlow { response ->
             editingState.apply {
                 firstName = response.firstName
                 surname = response.surname
                 patronymic = response.patronymic.orEmpty()
-                gender = when (response.gender) {
-                    Gender.UNKNOWN -> GenderAction.Undefined
-                    Gender.FEMALE -> GenderAction.Female
-                    Gender.MALE -> GenderAction.Male
-                }
+                gender = response.gender
+            }
+            findAssignedUserRolesInScopeUseCase(userId)
+        }.mapResource {
+            editingState.apply {
+                assignedRoles = it.roles
+
                 fieldEditor.updateOldValues()
             }
         }
     } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
+
 
     private val fieldEditor = FieldEditor(
         mapOf(
@@ -115,7 +117,7 @@ class UserEditorComponent(
             ),
             ValueValidator(
                 value = editingState::gender,
-                conditions = listOf(Condition<GenderAction> { it != GenderAction.Undefined }.observable { isValid ->
+                conditions = listOf(Condition<Gender> { it != Gender.UNKNOWN }.observable { isValid ->
                     editingState.genderMessage = getIfNot(isValid) { "Пол обязателен" }
                 })
             )
@@ -156,7 +158,7 @@ class UserEditorComponent(
         updateAllowSave()
     }
 
-    fun onGenderSelect(gender: GenderAction) {
+    fun onGenderSelect(gender: Gender) {
         editingState.gender = gender
         updateAllowSave()
     }
@@ -172,7 +174,11 @@ class UserEditorComponent(
 
     fun onRemoveUserClick() {
         componentScope.launch {
-            removeUserUseCase(userId!!).onSuccess { onFinish() }
+            removeUserUseCase(userId!!).onSuccess {
+                withContext(Dispatchers.Main) {
+                    onFinish()
+                }
+            }
         }
     }
 
@@ -190,7 +196,7 @@ class UserEditorComponent(
                             fieldEditor.getOptProperty("firstName"),
                             fieldEditor.getOptProperty("surname"),
                             fieldEditor.getOptProperty("patronymic"),
-                            fieldEditor.getOptProperty<GenderAction, Gender>("gender") { it.toGender() },
+                            fieldEditor.getOptProperty("gender"),
                             fieldEditor.getOptProperty<List<Role>, List<Long>>("roles") { it.map(Role::id) }
                         )
                     )
@@ -200,7 +206,7 @@ class UserEditorComponent(
                         editingState.surname,
                         editingState.patronymic,
                         editingState.email,
-                        editingState.gender.toGender(),
+                        editingState.gender,
                         editingState.assignedRoles.map(Role::id)
                     )
                 )
@@ -213,38 +219,23 @@ class UserEditorComponent(
         }
     }
 
-    private fun GenderAction.toGender() = when (this) {
-        GenderAction.Undefined -> Gender.UNKNOWN
-        GenderAction.Male -> Gender.MALE
-        GenderAction.Female -> Gender.FEMALE
+    fun onDismissRequest() {
+        if (fieldEditor.hasChanges() && !needToConfirmToDismiss.value)
+            needToConfirmToDismiss.value = true
+        else onFinish()
     }
 
-    fun onClose() {
-        onFinish()
-    }
-
-    enum class GenderAction(
-        override val title: String,
-        override val iconName: String? = null
-    ) : MenuAction {
-        Undefined("Не выбран"),
-        Male("Мужской"),
-        Female("Женский")
+    fun onCancelDismiss() {
+        needToConfirmToDismiss.value = false
     }
 }
 
 @Stable
 class EditingUserState(val isNew: Boolean) {
-    val genders: List<UserEditorComponent.GenderAction> = listOf(
-        UserEditorComponent.GenderAction.Male,
-        UserEditorComponent.GenderAction.Female,
-        UserEditorComponent.GenderAction.Undefined
-    )
-
     var firstName by mutableStateOf("")
     var surname by mutableStateOf("")
     var patronymic by mutableStateOf("")
-    var gender by mutableStateOf(UserEditorComponent.GenderAction.Undefined)
+    var gender by mutableStateOf(Gender.UNKNOWN)
     var email by mutableStateOf("")
     var assignedRoles: List<Role> by mutableStateOf(emptyList())
 

@@ -232,11 +232,6 @@ fun MainScreen(component: MainComponent) {
                         selected = activeChild is MainComponent.Child.YourTimetables,
                         onClick = component::onTimetableClick
                     )
-                    NavigationRailItem(
-                        icon = { Icon(painterResource("ic_study_group".toDrawablePath()), null) },
-                        selected = activeChild is MainComponent.Child.YourStudyGroups,
-                        onClick = component::onStudyGroupsClick
-                    )
 
                     if (availableScreens.yourWorks) {
                         NavigationRailItem(
@@ -250,6 +245,13 @@ fun MainScreen(component: MainComponent) {
                             onClick = {
                                 component.onWorksClick()
                             }
+                        )
+                    }
+                    if (availableScreens.yourStudyGroups) {
+                        NavigationRailItem(
+                            icon = { Icon(painterResource("ic_study_group".toDrawablePath()), null) },
+                            selected = activeChild is MainComponent.Child.YourStudyGroups,
+                            onClick = component::onStudyGroupsClick
                         )
                     }
 

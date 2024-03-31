@@ -1,9 +1,32 @@
 package com.denchic45.studiversity.ui.confirm
 
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import com.denchic45.studiversity.ui.components.dialog.AlertDialog
+
+@Composable
+fun ConfirmDialog(
+    show: Boolean,
+    title: String,
+    text: String? = null,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    confirmText: String = "OK",
+    dismissText: String = "Отмена",
+    icon: (@Composable () -> Unit)? = null
+) {
+    if (show)
+        ConfirmDialog(
+            title = title,
+            text = text,
+            onConfirm = onConfirm,
+            onDismiss = onDismiss,
+            confirmText = confirmText,
+            dismissText = dismissText,
+            icon = icon
+        )
+}
 
 @Composable
 fun ConfirmDialog(

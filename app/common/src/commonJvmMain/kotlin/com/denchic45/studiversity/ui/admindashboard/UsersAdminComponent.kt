@@ -1,12 +1,10 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
-import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.model.UserItem
@@ -42,16 +40,13 @@ class UsersAdminComponent(
 ) : ComponentContext by componentContext, SearchableAdminComponent<UserItem> {
     private val componentScope = componentScope()
     private val slotNavigation = SlotNavigation<Config>()
-    val childSlot = childSlot(source = slotNavigation,
+    val childSlot: Value<ChildSlot<Config, Child>> = childSlot(
+        source = slotNavigation,
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
                 is Config.UserEditor -> Child.UserEditor(
                     userEditorComponent(config.userId, slotNavigation::dismiss, context)
-                )
-
-                is Config.Profile -> Child.Profile(
-                    profileComponent(rootNavigation, config.userId, context)
                 )
             }
         })
@@ -59,7 +54,7 @@ class UsersAdminComponent(
     override val chooserComponent = userChooserComponent(::onSelect, componentContext)
 
     override fun onSelect(item: UserItem) {
-        slotNavigation.activate(Config.Profile(item.id))
+        rootNavigation.push(RootConfig.Profile(item.id))
     }
 
     override fun onEditClick(id: UUID) {
@@ -84,20 +79,12 @@ class UsersAdminComponent(
         slotNavigation.activate(Config.UserEditor(null))
     }
 
-    fun onUserClick(userId: UUID) {
-        rootNavigation.push(RootConfig.Profile(userId))
-    }
-
     @Parcelize
     sealed interface Config : Parcelable {
         data class UserEditor(val userId: UUID?) : Config
-
-        data class Profile(val userId: UUID) : Config
     }
 
     sealed interface Child {
         class UserEditor(val component: UserEditorComponent) : Child
-
-        class Profile(val component: ProfileComponent) : Child
     }
 }

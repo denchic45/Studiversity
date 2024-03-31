@@ -3,63 +3,19 @@ package com.denchic45.studiversity.ui.main
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.SpaceDashboard
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalAbsoluteTonalElevation
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -80,19 +36,13 @@ import com.denchic45.studiversity.ui.appbar.NavigationIcon
 import com.denchic45.studiversity.ui.appbar.expandAppBar
 import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
-import com.denchic45.studiversity.ui.course.CourseScreen
-import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
-import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.studiversity.ui.get
 import com.denchic45.studiversity.ui.getPainter
 import com.denchic45.studiversity.ui.navigation.SlotChild
-import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.root.RootStackScreen
 import com.denchic45.studiversity.ui.schedule.ScheduleScreen
 import com.denchic45.studiversity.ui.settings.SettingsScreen
-import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.studiversity.ui.yourworks.YourWorksScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.seiko.imageloader.rememberAsyncImagePainter
 import kotlinx.coroutines.CoroutineScope
@@ -270,7 +220,6 @@ fun MediumMainScreen(
 
         Row {
             val instance = stack.active.instance
-            if (instance is MainComponent.PrimaryChild) {
                 val availableScreens by component.availableScreens.collectAsState()
                 NavigationRail(header = {
                     Spacer(modifier = Modifier.height(1.dp))
@@ -306,7 +255,6 @@ fun MediumMainScreen(
                         )
                     }
                 }
-            }
 
             Scaffold(topBar = { TopBarContent(activity, drawerState) }) {
                 ScreenContainer(paddingValues = it, stack = stack)
@@ -364,7 +312,7 @@ private fun DrawerContent(
                     )
                 }
             }
-            Divider(Modifier.padding(vertical = 4.dp))
+            HorizontalDivider(Modifier.padding(vertical = 4.dp))
 
             if (availableScreens.yourWorks) {
                 NavigationDrawerItem(

@@ -7,6 +7,10 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
+import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.studiversity.api.studygroup.model.AcademicYear
+import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
+import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.getOptProperty
@@ -14,12 +18,8 @@ import com.denchic45.studiversity.uivalidator.condition.Condition
 import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.uivalidator.validator.observable
-import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
-import com.denchic45.studiversity.api.studygroup.model.AcademicYear
-import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
-import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.denchic45.studiversity.util.OptionalProperty
+import com.denchic45.studiversity.util.componentScope
 import com.denchic45.studiversity.util.optPropertyOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,9 +47,9 @@ class StudyGroupEditorComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    val isNew = studyGroupId == null
-    private val editingState = EditingStudyGroup(isNew)
+    private val editingState = EditingStudyGroup(studyGroupId == null)
     val allowSave = MutableStateFlow(false)
+    val needToConfirmToDismiss = MutableStateFlow(false)
 
     private val fieldEditor = FieldEditor(
         mapOf(
@@ -175,9 +175,16 @@ class StudyGroupEditorComponent(
         }
     }
 
-    fun onDismissClick() {
-        onFinish()
+    fun onDismissRequest() {
+        if (fieldEditor.hasChanges() && !needToConfirmToDismiss.value)
+            needToConfirmToDismiss.value = true
+        else onFinish()
     }
+
+    fun onCancelDismiss() {
+        needToConfirmToDismiss.value = false
+    }
+
 
     private fun updateAllowSave() {
         allowSave.update { fieldEditor.hasChanges() }

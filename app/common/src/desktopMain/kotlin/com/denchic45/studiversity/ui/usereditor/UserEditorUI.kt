@@ -18,13 +18,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.api.user.model.Gender
+import com.denchic45.studiversity.displayName
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.systemRoleName
 import com.denchic45.studiversity.ui.component.HeaderItem
+import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.theme.DesktopAppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
-import com.denchic45.studiversity.api.role.model.Role
 
 @Composable
 fun TitleAlertDialog(text: String, onClose: () -> Unit) {
@@ -43,6 +46,16 @@ fun TitleAlertDialog(text: String, onClose: () -> Unit) {
 @Composable
 fun UserEditorDialog(component: UserEditorComponent) {
     val state by component.viewState.collectAsState()
+    val allowSave by component.allowSave.collectAsState()
+    val needToConfirmToDismiss by component.needToConfirmToDismiss.collectAsState()
+
+    ConfirmDialog(
+        show = needToConfirmToDismiss,
+        title = "Не сохранять изменения?",
+        confirmText = "Да",
+        onConfirm = component::onDismissRequest,
+        onDismiss = component::onCancelDismiss
+    )
 
     state.onSuccess {
         AlertDialog(
@@ -50,26 +63,26 @@ fun UserEditorDialog(component: UserEditorComponent) {
             title = {
                 TitleAlertDialog(
                     text = if (it.isNew) "Создать пользователя" else "Изменить пользователя",
-                    onClose = component::onClose
+                    onClose = component::onDismissRequest
                 )
             },
-            onDismissRequest = component::onClose,
+            onDismissRequest = component::onDismissRequest,
             text = {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     UserEditorContent(
                         state = it,
-                        onFirstNameType = component::onFirstNameChange,
-                        onSurnameType = component::onSurnameChange,
-                        onPatronymicType = component::onPatronymicChange,
+                        onFirstNameChange = component::onFirstNameChange,
+                        onSurnameChange = component::onSurnameChange,
+                        onPatronymicChange = component::onPatronymicChange,
                         onGenderSelect = component::onGenderSelect,
-                        onEmailType = component::onEmailChange,
+                        onEmailChange = component::onEmailChange,
                         onRoleSelect = component::onRoleSelect,
                         onRemoveClick = component::onRemoveUserClick
                     )
                 }
             },
-            confirmButton = { TextButton(component::onSaveClick) { Text("Сохранить") } },
-            dismissButton = { TextButton(component::onClose) { Text("Отмена") } }
+            confirmButton = { TextButton(component::onSaveClick, enabled = allowSave) { Text("Сохранить") } },
+            dismissButton = { TextButton(component::onDismissRequest) { Text("Отмена") } }
         )
     }
 }
@@ -78,11 +91,11 @@ fun UserEditorDialog(component: UserEditorComponent) {
 @Composable
 private fun UserEditorContent(
     state: EditingUserState,
-    onFirstNameType: (String) -> Unit,
-    onSurnameType: (String) -> Unit,
-    onPatronymicType: (String) -> Unit,
-    onGenderSelect: (UserEditorComponent.GenderAction) -> Unit,
-    onEmailType: (String) -> Unit,
+    onFirstNameChange: (String) -> Unit,
+    onSurnameChange: (String) -> Unit,
+    onPatronymicChange: (String) -> Unit,
+    onGenderSelect: (Gender) -> Unit,
+    onEmailChange: (String) -> Unit,
     onRoleSelect: (Role) -> Unit,
     onRemoveClick: () -> Unit
 ) {
@@ -94,7 +107,7 @@ private fun UserEditorContent(
         ) {
             OutlinedTextField(
                 value = state.firstName,
-                onValueChange = onFirstNameType,
+                onValueChange = onFirstNameChange,
                 modifier = Modifier.weight(1f),
                 label = { Text("Имя") },
                 singleLine = true,
@@ -105,7 +118,7 @@ private fun UserEditorContent(
 
             OutlinedTextField(
                 value = state.surname,
-                onValueChange = onSurnameType,
+                onValueChange = onSurnameChange,
                 modifier = Modifier.weight(1f),
                 label = { Text("Фамилия") },
                 singleLine = true,
@@ -121,7 +134,7 @@ private fun UserEditorContent(
         ) {
             OutlinedTextField(
                 value = state.patronymic,
-                onValueChange = onPatronymicType,
+                onValueChange = onPatronymicChange,
                 modifier = Modifier.weight(1f),
                 label = { Text("Отчество") },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
@@ -136,7 +149,7 @@ private fun UserEditorContent(
                 modifier = Modifier.weight(1f)
             ) {
                 OutlinedTextField(
-                    value = state.gender.title,
+                    value = state.gender.displayName(),
                     onValueChange = { },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -149,18 +162,27 @@ private fun UserEditorContent(
                     },
                     singleLine = true,
                     supportingText = { Text(state.genderMessage ?: "") },
+                    isError = state.genderMessage != null,
                     colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                 )
 
                 ExposedDropdownMenu(
                     expanded = gendersExpanded,
                     onDismissRequest = { gendersExpanded = false }) {
-                    state.genders.forEach {
-                        DropdownMenuItem(
-                            text = { Text(it.title) },
-                            onClick = { onGenderSelect(it) },
-                        )
-                    }
+                    DropdownMenuItem(
+                        text = { Text(Gender.FEMALE.displayName()) },
+                        onClick = {
+                            gendersExpanded = false
+                            onGenderSelect(Gender.FEMALE)
+                        },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(Gender.MALE.displayName()) },
+                        onClick = {
+                            gendersExpanded = false
+                            onGenderSelect(Gender.MALE)
+                        },
+                    )
                 }
             }
         }
@@ -177,11 +199,10 @@ private fun UserEditorContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(),
+                readOnly = true,
                 label = { Text("Роли") },
                 trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(
-                        expanded = rolesExpanded
-                    )
+                    ExposedDropdownMenuDefaults.TrailingIcon(rolesExpanded)
                 },
                 singleLine = true,
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
@@ -198,8 +219,8 @@ private fun UserEditorContent(
                                 Icon(Icons.Default.Done, contentDescription = "role selected")
                         },
                         onClick = {
-                            onRoleSelect(it)
                             rolesExpanded = false
+                            onRoleSelect(it)
                         }
                     )
                 }
@@ -210,7 +231,7 @@ private fun UserEditorContent(
             HeaderItem("Вход в аккаунт")
             OutlinedTextField(
                 value = state.email,
-                onValueChange = onEmailType,
+                onValueChange = onEmailChange,
                 Modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.normal),
                 label = { Text("Почта") },
                 leadingIcon = { Icon(painterResource("ic_email".toDrawablePath()), null) },
@@ -273,7 +294,7 @@ fun UserEditorPreview() {
                 firstName = "Козлов"
                 surname = "Даниил"
                 patronymic = "Васильевич"
-                gender = UserEditorComponent.GenderAction.Male
+                gender = Gender.MALE
                 email = "danil@mail.ru"
             },
             {}, {}, {}, {}, {}, {}, {}

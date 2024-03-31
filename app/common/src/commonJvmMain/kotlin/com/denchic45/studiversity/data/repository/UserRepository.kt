@@ -1,5 +1,10 @@
 package com.denchic45.studiversity.data.repository
 
+import com.denchic45.studiversity.api.course.element.model.CreateFileRequest
+import com.denchic45.studiversity.api.user.UserApi
+import com.denchic45.studiversity.api.user.model.CreateUserRequest
+import com.denchic45.studiversity.api.user.model.UpdateUserRequest
+import com.denchic45.studiversity.api.user.model.UserResponse
 import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
@@ -12,9 +17,6 @@ import com.denchic45.studiversity.domain.resource.EmptyResource
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.toResource
-import com.denchic45.studiversity.api.course.element.model.CreateFileRequest
-import com.denchic45.studiversity.api.user.UserApi
-import com.denchic45.studiversity.api.user.model.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -37,7 +39,7 @@ class UserRepository(
         userApi.getById(userId)
     }
 
-    suspend fun update(userId: UUID, request: UpdateUserRequest): Resource<UserResponse> = fetchResource {
+    suspend fun update(userId: UUID, request: UpdateUserRequest): EmptyResource = fetchResource {
         userApi.update(userId, request)
     }
 

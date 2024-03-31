@@ -112,7 +112,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
                 is AdminDashboardComponent.Child.Users -> UsersAdminScreen(child.component)
                 is AdminDashboardComponent.Child.StudyGroups -> StudyGroupsAdminScreen(child.component)
                 is AdminDashboardComponent.Child.Subjects -> SubjectsAdminScreen(child.component)
-                is AdminDashboardComponent.Child.Specialties -> TODO()
+                is AdminDashboardComponent.Child.Specialties -> SpecialtiesAdminScreen(child.component)
                 is AdminDashboardComponent.Child.Rooms -> TODO()
             }
         }
