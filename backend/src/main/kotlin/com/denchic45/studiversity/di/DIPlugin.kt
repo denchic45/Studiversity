@@ -17,6 +17,7 @@ import com.denchic45.studiversity.transaction.DatabaseSuspendedTransactionWorker
 import com.denchic45.studiversity.transaction.DatabaseTransactionWorker
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.studiversity.transaction.TransactionWorker
+import com.denchic45.studiversity.util.EmailSender
 import io.ktor.server.application.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -38,15 +39,15 @@ val otherModule = module {
             config.dbPassword,
         )
     }
-//    single {
-//        EmailSender(
-//            config.smtp.host,
-//            config.smtp.port,
-//            config.smtp.ssl,
-//            config.smtp.username,
-//            config.smtp.password,
-//        )
-//    }
+    single {
+        EmailSender(
+            config.smtpHost,
+            config.smtpPort,
+            config.smtpSsl,
+            config.smtpUsername,
+            config.smtpPassword,
+        )
+    }
 
     factory { DatabaseTransactionWorker() } binds arrayOf(TransactionWorker::class)
 

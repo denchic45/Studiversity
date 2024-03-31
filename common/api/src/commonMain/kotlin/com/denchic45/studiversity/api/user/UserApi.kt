@@ -20,7 +20,7 @@ import java.util.*
 interface UserApi {
     suspend fun create(createUserRequest: CreateUserRequest): ResponseResult<UserResponse>
 
-    suspend fun update(userId: UUID, request: UpdateUserRequest): ResponseResult<UserResponse>
+    suspend fun update(userId: UUID, request: UpdateUserRequest): EmptyResponseResult
 
     suspend fun getMe(): ResponseResult<UserResponse>
 
@@ -45,7 +45,7 @@ class UserApiImpl(private val client: HttpClient) : UserApi {
         }.toResult()
     }
 
-    override suspend fun update(userId: UUID, request: UpdateUserRequest): ResponseResult<UserResponse> {
+    override suspend fun update(userId: UUID, request: UpdateUserRequest): EmptyResponseResult {
         return client.put("/users/$userId") {
             contentType(ContentType.Application.Json)
             setBody(request)

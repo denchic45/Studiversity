@@ -6,6 +6,6 @@ import org.jetbrains.exposed.sql.ReferenceOption
 
 object RefreshTokens : LongIdTable("refresh_token") {
     val token = text("token")
-    val userId = reference("user_id", Users, onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE)
+    val userId = reference("user_id", Users, onDelete = ReferenceOption.CASCADE)
     val expireAt = timestampWithTimeZone("expire_at")
 }

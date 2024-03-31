@@ -1,9 +1,8 @@
 package com.denchic45.studiversity.database.table
 
+import com.denchic45.studiversity.api.course.element.model.CourseElementType
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.expression.NowTimestamp
-
-import com.denchic45.studiversity.api.course.element.model.CourseElementType
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -17,18 +16,8 @@ import org.jetbrains.exposed.sql.select
 import java.util.*
 
 object CourseElements : UUIDTable("course_element", "course_element_id") {
-    val courseId = reference(
-        name = "course_id",
-        foreign = Courses,
-        onDelete = ReferenceOption.CASCADE,
-        onUpdate = ReferenceOption.CASCADE
-    )
-    val topicId = reference(
-        name = "topic_id",
-        foreign = CourseTopics,
-        onDelete = ReferenceOption.CASCADE,
-        onUpdate = ReferenceOption.CASCADE
-    ).nullable()
+    val courseId = reference("course_id", Courses, onDelete = ReferenceOption.CASCADE)
+    val topicId = reference("topic_id", CourseTopics, onDelete = ReferenceOption.CASCADE).nullable()
     val name = text("element_name")
     val description = text("description").nullable()
     val order = integer("element_order")

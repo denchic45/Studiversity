@@ -56,6 +56,11 @@ fun Application.configureAuth() {
                         condition(login.email.isEmail(), AccountErrors.INVALID_EMAIL)
                     }
                 }
+                validate<String> {
+                    buildValidationResult {
+                        addPasswordConditions(it)
+                    }
+                }
             }
             signupRoute()
             tokenRoute()

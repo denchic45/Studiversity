@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.Column
 import java.util.*
 
 object Scopes : UUIDTable("scope", "instance_id") {
-    val type: Column<EntityID<Long>> = reference("type", ScopeTypes.id)
+    val type: Column<EntityID<Long>> = reference("type", ScopeTypes)
     val path = text("path")
 }
 

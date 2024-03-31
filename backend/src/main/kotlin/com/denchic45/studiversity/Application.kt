@@ -1,5 +1,7 @@
 package com.denchic45.studiversity
 
+import com.denchic45.studiversity.api.OrganizationResponse
+import com.denchic45.studiversity.api.Pong
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.database.DatabaseFactory
 import com.denchic45.studiversity.di.configureDI
@@ -19,8 +21,8 @@ import com.denchic45.studiversity.plugin.configureSerialization
 import com.denchic45.studiversity.plugin.configureStatusPages
 import com.denchic45.studiversity.setup.configureSetup
 import com.denchic45.studiversity.setup.onInitialized
-import com.denchic45.studiversity.api.OrganizationResponse
-import com.denchic45.studiversity.api.Pong
+import com.denchic45.studiversity.setup.setupDatabase
+import com.denchic45.studiversity.util.EmailSender
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -40,10 +42,13 @@ fun main() {
 
 private lateinit var engine: ApplicationEngine
 
+val connector: EngineConnectorConfig
+    get() = engine.environment.connectors.first()
+
 private fun startServer() {
     logger.info { "starting server..." }
     engine = embeddedServer(factory = Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-        .start(wait = true)
+    engine.start(wait = true)
 }
 
 fun restartServer() {
@@ -69,6 +74,7 @@ fun Application.module() = runBlocking {
     configureStatusPages()
     if (config.initialized) {
         configureServer()
+        setupDatabase()
     } else {
         configureSetup()
         onInitialized(::configureServer)

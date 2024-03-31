@@ -8,7 +8,7 @@ class EmailSender(
     private val port: Int,
     private val ssl: Boolean,
     private val userName: String,
-    private val password: String = "qpiebzputrqpxydm",
+    private val password: String,
 ) {
     fun sendSimpleEmail(emailAddress: String, emailSubject: String, message: String) {
         try {
@@ -22,6 +22,7 @@ class EmailSender(
                 setMsg(message)
                 addTo(emailAddress)
             }.send()
+            println("Successful send email")
         } catch (ex: Exception) {
             println("Unable to send email")
             println(ex)

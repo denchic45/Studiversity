@@ -11,10 +11,12 @@ import java.util.*
 object Grades : LongIdTable("grade", "grade_id") {
     val courseId = reference("course_id", Courses, onDelete = ReferenceOption.CASCADE)
     val studentId = reference("student_id", Users, onDelete = ReferenceOption.CASCADE)
-    val gradedBy = reference("graded_by", Users, onDelete = ReferenceOption.SET_NULL).nullable()
+    val gradedBy = reference("graded_by", Users, onDelete = ReferenceOption.SET_NULL)
+        .nullable()
     val value = integer("value")
     val submissionId: Column<EntityID<UUID>?> =
-        reference("submission_id", Submissions, onDelete = ReferenceOption.SET_NULL).nullable()
+        reference("submission_id", Submissions, onDelete = ReferenceOption.SET_NULL)
+            .nullable()
 }
 
 class GradeDao(id: EntityID<Long>) : LongEntity(id) {

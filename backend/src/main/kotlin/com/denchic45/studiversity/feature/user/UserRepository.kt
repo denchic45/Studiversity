@@ -1,18 +1,17 @@
 package com.denchic45.studiversity.feature.user
 
 import com.denchic45.studiversity.api.account.AccountErrors
+import com.denchic45.studiversity.api.account.model.UpdateAccountPersonalRequest
+import com.denchic45.studiversity.api.account.model.UpdatePasswordRequest
+import com.denchic45.studiversity.api.auth.model.SignupRequest
+import com.denchic45.studiversity.api.user.model.CreateUserRequest
+import com.denchic45.studiversity.api.user.model.UpdateUserRequest
+import com.denchic45.studiversity.api.user.model.UserResponse
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.UserDao
 import com.denchic45.studiversity.database.table.Users
 import com.denchic45.studiversity.feature.auth.model.UserByEmail
 import com.denchic45.studiversity.feature.role.repository.AddScopeRepoExt
-import com.denchic45.studiversity.api.account.model.UpdateAccountPersonalRequest
-import com.denchic45.studiversity.api.account.model.UpdatePasswordRequest
-import com.denchic45.studiversity.api.auth.AuthErrors
-import com.denchic45.studiversity.api.auth.model.SignupRequest
-import com.denchic45.studiversity.api.user.model.CreateUserRequest
-import com.denchic45.studiversity.api.user.model.UpdateUserRequest
-import com.denchic45.studiversity.api.user.model.UserResponse
 import io.ktor.client.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -20,6 +19,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 import java.util.*
 
@@ -44,7 +44,7 @@ class UserRepository(
             generatedAvatar = false
             gender = request.gender
         }.apply {
-            avatarUrl = avatarService.generateAvatar(id.value)
+            avatarUrl = avatarService.generateAvatar(id.value, request.firstName)
         }.toUserResponse()
 //            .apply { addScope(id, ScopeType.User, organizationId) }
     }
@@ -121,4 +121,8 @@ class UserRepository(
                 or (Users.surname.lowerCase() like "$query%")
                 or (Users.patronymic.lowerCase() like "$query%")
     ).map(UserDao::toUserResponse)
+
+    fun findUserNameById(userId: UUID): String = transaction {
+        UserDao.find(Users.id eq userId).single().firstName
+    }
 }

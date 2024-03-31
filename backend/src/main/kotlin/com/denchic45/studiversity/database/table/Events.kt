@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.ReferenceOption
 
 object Events : IdTable<Long>("event") {
     override val id: Column<EntityID<Long>> = long("period_id").autoIncrement().entityId()
-        .references(Periods.id, onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE)
+        .references(Periods.id, onDelete = ReferenceOption.CASCADE)
     override val primaryKey = PrimaryKey(id)
     val name = text("event_name")
     val color = text("color")

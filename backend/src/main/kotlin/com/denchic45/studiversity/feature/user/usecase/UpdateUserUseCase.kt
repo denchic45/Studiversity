@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.feature.auth.usecase
+package com.denchic45.studiversity.feature.user.usecase
 
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.role.repository.RoleRepository

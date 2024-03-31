@@ -58,13 +58,6 @@ fun Route.recoverPasswordRoute() {
     val checkConfirmCode: CheckConfirmCodeUseCase by inject()
     val updateRecoveredPassword: UpdateRecoveredPasswordUseCase by inject()
 
-    install(RequestValidation) {
-        validate<String> {
-            buildValidationResult {
-                addPasswordConditions(it)
-            }
-        }
-    }
     post("/recover-password") {
         recoverPassword(call.receiveText())
         call.respond(HttpStatusCode.Accepted)

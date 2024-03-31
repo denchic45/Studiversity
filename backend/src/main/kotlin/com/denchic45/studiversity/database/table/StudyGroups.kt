@@ -7,11 +7,12 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import java.util.*
 
 object StudyGroups : UUIDTable("study_group", "study_group_id") {
     val name = text("group_name")
-    val specialtyId = optReference("specialty_id", Specialties.id)
+    val specialtyId = optReference("specialty_id", Specialties, onDelete = ReferenceOption.SET_NULL)
     val createdAt = timestampWithTimeZone("created_at").defaultExpression(NowTimestamp())
     val updatedAt = timestampWithTimeZone("updated_at").nullable()
     val startAcademicYear = integer("start_academic_year")

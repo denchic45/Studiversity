@@ -1,11 +1,12 @@
 package com.denchic45.studiversity.database.table
 
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 object UsersRolesScopes : Table("user_role_scope") {
-    val userId = reference("user_id", Users)
-    val roleId = reference("role_id", Roles)
-    val scopeId = reference("scope_id", Scopes)
+    val userId = reference("user_id", Users, onDelete = ReferenceOption.CASCADE)
+    val roleId = reference("role_id", Roles, onDelete = ReferenceOption.CASCADE)
+    val scopeId = reference("scope_id", Scopes, onDelete = ReferenceOption.CASCADE)
 
     init {
         uniqueIndex("user_role_scope_un", userId, roleId, scopeId)

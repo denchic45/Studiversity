@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 
 object ScopeTypes : LongIdTable("scope_type", "scope_type_id") {
     val name = text("scope_type_name")
-    val parent = reference("parent_type", ScopeTypes.id).nullable()
+    val parent = reference("parent_type", ScopeTypes).nullable()
 }
 
 class ScopeTypeDao(id: EntityID<Long>) : LongEntity(id) {

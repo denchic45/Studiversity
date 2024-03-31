@@ -9,10 +9,10 @@ import org.jetbrains.exposed.sql.ReferenceOption
 
 object Lessons : IdTable<Long>("lesson") {
     override val id: Column<EntityID<Long>> = long("period_id").autoIncrement().entityId()
-        .references(Periods.id, onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.CASCADE)
+        .references(Periods.id, onDelete = ReferenceOption.CASCADE)
     override val primaryKey = PrimaryKey(id)
     val courseId = reference(
-        "course_id", Courses.id,
+        "course_id", Courses,
         onDelete = ReferenceOption.CASCADE,
         onUpdate = ReferenceOption.CASCADE
     )

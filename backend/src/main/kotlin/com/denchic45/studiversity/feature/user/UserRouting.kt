@@ -1,23 +1,19 @@
 package com.denchic45.studiversity.feature.user
 
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.user.AvatarErrors
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.database.table.UserDao
 import com.denchic45.studiversity.feature.auth.usecase.AddUserUseCase
-import com.denchic45.studiversity.feature.auth.usecase.UpdateUserUseCase
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.feature.user.account.usecase.ResetAvatarUseCase
 import com.denchic45.studiversity.feature.user.account.usecase.UpdateAvatarUseCase
-import com.denchic45.studiversity.feature.user.usecase.FindUserAvatarUseCase
-import com.denchic45.studiversity.feature.user.usecase.FindUserByIdUseCase
-import com.denchic45.studiversity.feature.user.usecase.RemoveUserUseCase
-import com.denchic45.studiversity.feature.user.usecase.SearchUsersUseCase
+import com.denchic45.studiversity.feature.user.usecase.*
 import com.denchic45.studiversity.ktor.CommonErrors
 import com.denchic45.studiversity.ktor.currentUserId
 import com.denchic45.studiversity.ktor.getUserUuidByParameterOrMe
 import com.denchic45.studiversity.ktor.getUuidOrFail
 import com.denchic45.studiversity.validation.require
-import com.denchic45.studiversity.api.role.model.Capability
-import com.denchic45.studiversity.api.user.AvatarErrors
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -83,6 +79,7 @@ private fun Route.userByIdRoute() {
             )
             val userId = call.getUserUuidByParameterOrMe("userId")
             updateUser(userId, call.receive())
+            call.respond(HttpStatusCode.OK)
         }
 
         delete {

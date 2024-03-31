@@ -23,16 +23,8 @@ object Classes : LongIdTable("period", "period_id") {
         onDelete = ReferenceOption.SET_NULL,
         onUpdate = ReferenceOption.SET_NULL
     )
-    val studyGroupId = reference(
-        "study_group_id", StudyGroups,
-        onDelete = ReferenceOption.CASCADE,
-        onUpdate = ReferenceOption.CASCADE
-    )
-    val courseId = reference(
-        "course_id", Courses.id,
-        onDelete = ReferenceOption.CASCADE,
-        onUpdate = ReferenceOption.CASCADE
-    )
+    val studyGroupId = reference("study_group_id", StudyGroups, onDelete = ReferenceOption.CASCADE)
+    val courseId = reference("course_id", Courses, onDelete = ReferenceOption.CASCADE)
     val type = enumerationByName<ClassType>("class_type", 10)
 }
 
@@ -48,7 +40,6 @@ class ClassDao(id: EntityID<Long>) : LongEntity(id) {
 
 //    val members by ClassMemberDao referrersOn ClassesMembers.classId
 }
-
 
 
 fun Expression<String>.toDate(format: String = "YYYY-MM-DD") =

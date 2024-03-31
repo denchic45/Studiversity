@@ -6,12 +6,17 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.CurrentTimestamp
 import java.util.*
 
 object Courses : UUIDTable("course", "course_id") {
     val name = text("course_name")
-    val subjectId = optReference("subject_id", Subjects)
+    val subjectId = optReference(
+        "subject_id", Subjects,
+        onDelete = ReferenceOption.SET_NULL,
+        onUpdate = ReferenceOption.SET_NULL
+    )
     val archived = bool("archived").default(false)
     val createdAt = timestampWithTimeZone("created_at").defaultExpression(CurrentTimestamp())
     val updatedAt = timestampWithTimeZone("updated_at").nullable()

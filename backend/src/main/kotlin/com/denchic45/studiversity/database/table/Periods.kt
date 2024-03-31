@@ -13,14 +13,9 @@ object Periods : LongIdTable("period", "period_id") {
     val order = integer("period_order")
     val roomId = optReference(
         "room_id", Rooms,
-        onDelete = ReferenceOption.SET_NULL,
-        onUpdate = ReferenceOption.SET_NULL
+        onDelete = ReferenceOption.SET_NULL
     )
-    val studyGroupId = reference(
-        "study_group_id", StudyGroups,
-        onDelete = ReferenceOption.CASCADE,
-        onUpdate = ReferenceOption.CASCADE
-    )
+    val studyGroupId = reference("study_group_id", StudyGroups, onDelete = ReferenceOption.CASCADE)
     val type = enumerationByName<PeriodType>("period_type", 10)
 }
 

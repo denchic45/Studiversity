@@ -8,20 +8,24 @@ import kotlin.reflect.KProperty
 val dataFile: File = File("").absoluteFile
 
 val configFile = dataFile.resolve("config.properties")
-    .apply { if (!exists()) {
-        createNewFile()
-        writeText("""
+    .apply {
+        if (!exists()) {
+            createNewFile()
+            writeText(
+                """
             jwtSecret=${UUID.randomUUID()}
             jwtRealm=sub
             jwtAudience=authenticated
-        """.trimIndent())
-    } }
+        """.trimIndent()
+            )
+        }
+    }
 
 val config by lazy { Configuration() }
 
 class Configuration {
     private val properties = Properties().apply { load(configFile.inputStream()) }
-    private fun <T> property(key: String? = null, defValue: T? = null) =
+    private fun property(key: String? = null, defValue: String? = null) =
         DefaultConfigPropertyDelegate(properties, key, defValue)
 
     private fun <T : Any> property(key: String? = null, defValue: String? = null, map: (String) -> T) =
@@ -38,9 +42,15 @@ class Configuration {
     var organizationId: UUID by property(map = UUID::fromString)
     var organizationName: String by property()
 
-    var selfRegister: Boolean by property()
+    var selfRegister: Boolean by property(map = String::toBoolean)
 
     var initialized: Boolean by property(map = String::toBoolean)
+
+    var smtpHost: String by property()
+    var smtpPort: Int by property(map = String::toInt)
+    var smtpSsl: Boolean by property(map = String::toBoolean)
+    var smtpUsername: String by property()
+    var smtpPassword: String by property()
 }
 
 fun Configuration.database(url: String, user: String, password: String) {

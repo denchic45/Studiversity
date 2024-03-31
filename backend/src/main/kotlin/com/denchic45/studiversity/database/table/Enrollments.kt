@@ -4,10 +4,12 @@ import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.ReferenceOption
 
 object Enrollments : LongIdTable("enrollment", "enrollment_id") {
-    val courseId = reference("course_id", Courses.id)
+    val courseId = reference(
+        "course_id", Courses.id, onDelete = ReferenceOption.CASCADE
+    )
     val type = enumerationByName<EnrollmentType>("type", 16)
 }
 

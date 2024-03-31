@@ -1,11 +1,11 @@
 package com.denchic45.studiversity.feature.studygroup.repository
 
-import com.denchic45.studiversity.database.exists
-import com.denchic45.studiversity.database.table.*
-import com.denchic45.studiversity.feature.studygroup.mapper.toResponse
 import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.studiversity.database.exists
+import com.denchic45.studiversity.database.table.*
+import com.denchic45.studiversity.feature.studygroup.mapper.toResponse
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.Instant
@@ -48,7 +48,7 @@ class StudyGroupRepository {
         specialtyId: UUID?,
         academicYear: Int?
     ): List<StudyGroupResponse> {
-        val query = StudyGroups.selectAll()
+        val query = StudyGroups.leftJoin(Specialties, { this.specialtyId }, { id }).selectAll()
         q?.let {
             query.andWhere {
                 StudyGroups.name.lowerCase().trim() like "%$q%" or
@@ -64,17 +64,15 @@ class StudyGroupRepository {
             query.andWhere { UsersRolesScopes.roleId eq it }
         }
         specialtyId?.let {
-            query.adjustColumnSet {
-                innerJoin(Specialties, { StudyGroups.specialtyId }, { Specialties.id })
-            }
-                .andWhere { Specialties.id eq it }
+            query.andWhere { Specialties.id eq it }
         }
         academicYear?.let {
             query.andWhere {
                 (StudyGroups.startAcademicYear - StudyGroups.endAcademicYear) eq it
             }
         }
-        return StudyGroupDao.wrapRows(query).map(StudyGroupDao::toResponse)
+        return StudyGroupDao.wrapRows(query)
+            .map(StudyGroupDao::toResponse)
     }
 
     fun remove(id: UUID) = StudyGroups.deleteWhere { StudyGroups.id eq id }.run { this != 0 }
