@@ -12,8 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.denchic45.studiversity.domain.model.CourseItem
 import com.denchic45.studiversity.ui.appbar.hideAppBar
-import com.denchic45.studiversity.ui.component.CourseListItem
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
+import com.denchic45.studiversity.ui.course.CourseListItem
 import com.denchic45.studiversity.ui.search.SearchScreen
 
 @Composable

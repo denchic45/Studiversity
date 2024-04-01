@@ -1,19 +1,19 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.model.CourseItem
-import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.ArchiveCourseUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveCourseUseCase
 import com.denchic45.studiversity.domain.usecase.UnarchiveCourseUseCase
-import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
-import com.denchic45.studiversity.ui.confirm.ConfirmState
+import com.denchic45.studiversity.ui.courseeditor.CourseEditorComponent
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.search.CourseChooserComponent
-import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
@@ -22,11 +22,17 @@ import java.util.*
 
 @Inject
 class CoursesAdminComponent(
-    private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val archiveCourseUseCase: ArchiveCourseUseCase,
     private val unarchiveCourseUseCase: UnarchiveCourseUseCase,
     private val removeCourseUseCase: RemoveCourseUseCase,
-    courseChooserComponent: (onSelect: (CourseItem) -> Unit, ComponentContext) -> CourseChooserComponent,
+    courseChooserComponent: (
+        onSelect: (CourseItem) -> Unit,
+        ComponentContext
+    ) -> CourseChooserComponent,
+    courseEditorComponent: (
+        onFinish: () -> Unit,
+        UUID?, ComponentContext
+    ) -> CourseEditorComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
     @Assisted
@@ -36,6 +42,18 @@ class CoursesAdminComponent(
 
     private val componentScope = componentScope()
 
+    private val slotNavigation = SlotNavigation<Config>()
+    val childSlot: Value<ChildSlot<Config, Child>> = childSlot(
+        source = slotNavigation,
+        handleBackButton = true,
+        childFactory = { config, context ->
+            when (config) {
+                is Config.CourseEditor -> Child.CourseEditor(
+                    courseEditorComponent(slotNavigation::dismiss, config.courseId, context)
+                )
+            }
+        })
+
     override val chooserComponent: CourseChooserComponent = courseChooserComponent(::onSelect, componentContext)
 
     override fun onSelect(item: CourseItem) {
@@ -43,58 +61,37 @@ class CoursesAdminComponent(
     }
 
     override fun onAddClick() {
-        rootNavigation.push(RootConfig.CourseEditor(null))
+        slotNavigation.activate(Config.CourseEditor(null))
     }
 
     override fun onEditClick(id: UUID) {
-        rootNavigation.push(RootConfig.CourseEditor(id))
+        slotNavigation.activate(Config.CourseEditor(id))
     }
 
     fun onArchiveClick(id: UUID) {
         componentScope.launch {
-            chooserComponent.foundItems.value.onSuccess { courses ->
-                val confirm = confirmDialogInteractor.confirmRequest(
-                    ConfirmState(
-                        uiTextOf("Архивировать курс \"${courses.find { it.id == id }?.name}\"?"),
-                        uiTextOf("Курсы, находящиеся в архиве, недоступны для преподавателей и учащихся. Чтобы они могли работать с таким курсом, его нужно восстановить. Этот курс будет перемещен в архив.")
-                    )
-                )
-                if (confirm) {
-                    archiveCourseUseCase(id)
-                }
-            }
+            archiveCourseUseCase(id)
         }
     }
 
     fun onUnarchiveClick(id: UUID) {
         componentScope.launch {
-            chooserComponent.foundItems.value.onSuccess { courses ->
-                val confirm = confirmDialogInteractor.confirmRequest(
-                    ConfirmState(
-                        uiTextOf("Восстановить курс \"${courses.find { it.id == id }?.name}\"?"),
-                        uiTextOf("Курс вновь будет доступен для преподавателей и учащихся, также будет отображаться в меню приложения.")
-                    )
-                )
-                if (confirm) {
-                    unarchiveCourseUseCase(id)
-                }
-            }
+            unarchiveCourseUseCase(id)
         }
     }
 
     override fun onRemoveClick(id: UUID) {
         componentScope.launch {
-            chooserComponent.foundItems.value.onSuccess { courses ->
-                val confirm = confirmDialogInteractor.confirmRequest(
-                    ConfirmState(
-                        uiTextOf("Удалить курс \"${courses.find { it.id == id }?.name}\"?"),
-                        uiTextOf("Вы лишитесь доступа ко всем элементам этого курса. Это действие нельзя отменить.")
-                    )
-                )
-                if (confirm) {
-                    removeCourseUseCase(id)
-                }
-            }
+            removeCourseUseCase(id)
         }
+    }
+
+    @Parcelize
+    sealed interface Config : Parcelable {
+        data class CourseEditor(val courseId: UUID?) : Config
+    }
+
+    sealed interface Child {
+        class CourseEditor(val component: CourseEditorComponent) : Child
     }
 }

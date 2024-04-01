@@ -8,12 +8,9 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.studiversity.domain.usecase.RemoveSpecialtyUseCase
-import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
-import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.search.SpecialtyChooserComponent
 import com.denchic45.studiversity.ui.specialtyeditor.SpecialtyEditorComponent
-import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
@@ -22,7 +19,6 @@ import java.util.*
 
 @Inject
 class SpecialtiesAdminComponent(
-    private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val removeSpecialtyUseCase: RemoveSpecialtyUseCase,
     specialtyChooserComponent: (onSelect: (SpecialtyResponse) -> Unit, ComponentContext) -> SpecialtyChooserComponent,
     specialtyEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> SpecialtyEditorComponent,
@@ -68,15 +64,7 @@ class SpecialtiesAdminComponent(
 
     override fun onRemoveClick(id: UUID) {
         componentScope.launch {
-            val confirm = confirmDialogInteractor.confirmRequest(
-                ConfirmState(
-                    uiTextOf("Удалить специальность?"),
-                    uiTextOf("Группы с данной специальностью по-прежнему будут доступны. Восстановить специальность будет невозможно.")
-                )
-            )
-            if (confirm) {
-                removeSpecialtyUseCase(id)
-            }
+            removeSpecialtyUseCase(id)
         }
     }
 

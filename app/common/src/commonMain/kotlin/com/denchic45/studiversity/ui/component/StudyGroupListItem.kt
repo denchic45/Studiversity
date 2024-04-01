@@ -27,7 +27,8 @@ fun StudyGroupListItem(
             Icon(imageVector = Icons.Outlined.Group, contentDescription = "group icon")
         },
         trailingContent = trailingContent,
-        modifier = modifier.height(64.dp)
-            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick),
+        modifier = modifier
+            .height(64.dp)
+            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
     )
 }

@@ -1,10 +1,7 @@
 package com.denchic45.studiversity.ui.specialtyeditor
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
@@ -17,19 +14,20 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.denchic45.studiversity.ui.LoadingDialog
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.component.TitleAlertDialog
 import com.denchic45.studiversity.ui.theme.spacing
 
 
 @Composable
 fun SpecialtyEditorDialog(component: SpecialtyEditorComponent) {
-    val viewStateResource by component.viewState.collectAsState()
+    val viewStateResource by component.stateResource.collectAsState()
     ResourceContent(
         resource = viewStateResource,
         onLoading = {
-            LoadingDialog(onDismissRequest = component::onCloseClick)
+            LoadingDialog(onDismissRequest = component::onDismissRequest)
         }) { state ->
         AlertDialog(
-            onDismissRequest = component::onCloseClick,
+            onDismissRequest = component::onDismissRequest,
             confirmButton = {
                 TextButton(
                     enabled = state.allowSave,
@@ -37,16 +35,19 @@ fun SpecialtyEditorDialog(component: SpecialtyEditorComponent) {
                 ) { Text("Сохранить") }
             },
             dismissButton = {
-                TextButton(onClick = component::onCloseClick) { Text("Отмена") }
+                TextButton(onClick = component::onDismissRequest) { Text("Отмена") }
             },
             title = {
-                Text(if (state.isNew) "Создать специальность" else "Редактировать специальности")
+                TitleAlertDialog(
+                    text = if (state.isNew) "Создать специальность" else "Изменить специальность",
+                    onClose = component::onDismissRequest
+                )
             },
             text = {
                 SpecialtyEditorContent(
                     state = state,
-                    onNameChange = component::onNameType,
-                    onShortnameChange = component::onShortnameType,
+                    onNameChange = component::onNameChange,
+                    onShortnameChange = component::onShortnameChange,
                     onRemoveClick = component::onRemoveClick
                 )
             }
@@ -74,13 +75,14 @@ fun SpecialtyEditorContent(
             onValueChange = onNameChange,
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             placeholder = { Text("Название") },
-            modifier = Modifier.focusRequester(focusRequester)
+            modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
         OutlinedTextField(
             value = state.shortname,
             onValueChange = onShortnameChange,
-            placeholder = { Text("Дополнительное название") }
+            placeholder = { Text("Дополнительное название") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         if (!state.isNew) {

@@ -13,12 +13,15 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
+import com.denchic45.studiversity.api.course.subject.model.CreateSubjectRequest
+import com.denchic45.studiversity.api.course.subject.model.UpdateSubjectRequest
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.AddSubjectUseCase
 import com.denchic45.studiversity.domain.usecase.FindSubjectByIdUseCase
+import com.denchic45.studiversity.domain.usecase.RemoveSubjectUseCase
 import com.denchic45.studiversity.domain.usecase.UpdateSubjectUseCase
 import com.denchic45.studiversity.getOptProperty
 import com.denchic45.studiversity.ui.subjecticons.SubjectIconsComponent
@@ -26,8 +29,6 @@ import com.denchic45.studiversity.uivalidator.condition.Condition
 import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.course.subject.model.CreateSubjectRequest
-import com.denchic45.studiversity.api.course.subject.model.UpdateSubjectRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -42,6 +43,7 @@ import java.util.*
 class SubjectEditorComponent(
     private val findSubjectByIdUseCase: FindSubjectByIdUseCase,
     private val addSubjectUseCase: AddSubjectUseCase,
+    private val removeSubjectUseCase: RemoveSubjectUseCase,
     private val updateSubjectUseCase: UpdateSubjectUseCase,
     private val subjectIconsComponent: (
         onSelect: (iconUrl: String?) -> Unit,
@@ -54,13 +56,6 @@ class SubjectEditorComponent(
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
-
-    @Stable
-    class EditableSubjectState {
-        var name by mutableStateOf("")
-        var shortname by mutableStateOf("")
-        var iconUrl by mutableStateOf<String?>(null)
-    }
 
     private val overlayNavigation = SlotNavigation<SubjectIcons>()
     val childSlot = childSlot(
@@ -80,9 +75,10 @@ class SubjectEditorComponent(
 
     private val componentScope = componentScope()
 
-    private val editingState = EditableSubjectState()
+//    val isNew = subjectId == null
 
-    val isNew: Boolean = subjectId == null
+    private val editingState = EditingSubjectState(subjectId == null)
+
     val allowSave = MutableStateFlow(false)
 
     private val fieldEditor = FieldEditor(
@@ -168,4 +164,21 @@ class SubjectEditorComponent(
     fun onCancel() {
         onFinish()
     }
+
+    fun onRemoveClick() {
+        componentScope.launch {
+            removeSubjectUseCase(subjectId!!).onSuccess {
+                withContext(Dispatchers.Main) {
+                    onFinish()
+                }
+            }
+        }
+    }
+}
+
+@Stable
+class EditingSubjectState(val isNew: Boolean) {
+    var name by mutableStateOf("")
+    var shortname by mutableStateOf("")
+    var iconUrl by mutableStateOf<String?>(null)
 }

@@ -22,8 +22,8 @@ interface StackChildrenContainer<C : Any, T : Any> : ChildrenContainer {
     }
 }
 
-interface OverlayChildrenContainer<C : Any, T : Any> : ChildrenContainer {
-    val overlayNavigation: SlotNavigation<C>
+interface SlotChildrenContainer<C : Any, T : Any> : ChildrenContainer {
+    val slotNavigation: SlotNavigation<C>
 
     val childSlot: Value<ChildSlot<C, T>>
 

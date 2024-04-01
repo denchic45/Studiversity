@@ -9,12 +9,9 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.usecase.RemoveStudyGroupUseCase
-import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
-import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.search.StudyGroupChooserComponent
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorComponent
-import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
@@ -23,7 +20,6 @@ import java.util.*
 
 @Inject
 class StudyGroupsAdminComponent(
-    private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val removeStudyGroupUseCase: RemoveStudyGroupUseCase,
     studyGroupChooserComponent: (onSelect: (StudyGroupItem) -> Unit, ComponentContext) -> StudyGroupChooserComponent,
     studyGroupEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> StudyGroupEditorComponent,
@@ -57,15 +53,7 @@ class StudyGroupsAdminComponent(
 
     override fun onRemoveClick(id: UUID) {
         componentScope.launch {
-            val confirm = confirmDialogInteractor.confirmRequest(
-                ConfirmState(
-                    uiTextOf("Удалить группу?"),
-                    uiTextOf("Все участники лишатся доступа к данной группе. Восстановить группу будет невозможно.")
-                )
-            )
-            if (confirm) {
-                removeStudyGroupUseCase(id)
-            }
+            removeStudyGroupUseCase(id)
         }
     }
 

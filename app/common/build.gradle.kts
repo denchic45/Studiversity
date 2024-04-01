@@ -56,8 +56,10 @@ kotlin {
                 implementation("io.ktor:ktor-client-logging:$ktorVersion")
                 implementation("io.ktor:ktor-client-auth:$ktorVersion")
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
+
                 // Decompose
-                api("com.arkivanov.decompose:decompose:$decomposeVersion")
+                implementation("com.arkivanov.decompose:decompose:$decomposeVersion")
+                implementation("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
 
@@ -179,9 +181,6 @@ kotlin {
                 implementation("org.jetbrains.jewel:jewel-int-ui-decorated-window:0.15.0")
 
                 implementation("app.cash.sqldelight:sqlite-driver:$sqlDelightVersion")
-
-                // Decompose
-                api("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.0")
 

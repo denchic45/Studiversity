@@ -6,28 +6,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
-import com.denchic45.studiversity.ui.SubjectEditorDialog
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.search.SearchScreen
-import com.denchic45.studiversity.ui.search.SubjectListItem
-import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.ui.subject.SubjectListItem
+import com.denchic45.studiversity.ui.subjecteditor.SubjectEditorDialog
 
 @Composable
 fun SubjectsAdminScreen(component: SubjectsAdminComponent) {
-
     val childSlot by component.childSlot.subscribeAsState()
     SubjectsAdminMainScreen(component)
     childSlot.child?.let {
@@ -47,7 +38,7 @@ private fun SubjectsAdminDetailScreen(child: SubjectsAdminComponent.Child) {
 @Composable
 private fun SubjectsAdminMainScreen(component: SubjectsAdminComponent) {
     hideAppBar()
-        Scaffold(
+    Scaffold(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = component::onAddClick,

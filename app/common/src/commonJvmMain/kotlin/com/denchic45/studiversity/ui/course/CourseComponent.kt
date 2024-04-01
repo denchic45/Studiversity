@@ -9,6 +9,10 @@ import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.course.element.model.CourseElementType
+import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
@@ -30,10 +34,6 @@ import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.course.element.model.CourseElementType
-import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
-import com.denchic45.studiversity.api.role.model.Capability
-import com.denchic45.studiversity.api.role.model.Role
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject

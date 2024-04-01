@@ -9,13 +9,8 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.usecase.RemoveUserUseCase
-import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
-import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.navigator.RootConfig
-import com.denchic45.studiversity.ui.navigator.RootNavigator
-import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.search.UserChooserComponent
-import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.ui.usereditor.UserEditorComponent
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
@@ -25,14 +20,9 @@ import java.util.*
 
 @Inject
 class UsersAdminComponent(
-    private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val removeUserUseCase: RemoveUserUseCase,
     userChooserComponent: (onSelect: (UserItem) -> Unit, ComponentContext) -> UserChooserComponent,
     userEditorComponent: (UUID?, onFinish: () -> Unit, ComponentContext) -> UserEditorComponent,
-    profileComponent: (
-        RootNavigator,
-        UUID, ComponentContext,
-    ) -> ProfileComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
     @Assisted
@@ -63,15 +53,7 @@ class UsersAdminComponent(
 
     override fun onRemoveClick(id: UUID) {
         componentScope.launch {
-            val confirm = confirmDialogInteractor.confirmRequest(
-                ConfirmState(
-                    uiTextOf("Удалить пользователя?"),
-                    uiTextOf("Удалятся все данные, связанные с данным пользователем. Восстановить пользователя будет невозможно.")
-                )
-            )
-            if (confirm) {
-                removeUserUseCase(id)
-            }
+            removeUserUseCase(id)
         }
     }
 

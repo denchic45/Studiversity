@@ -9,10 +9,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -23,25 +21,14 @@ import com.denchic45.studiversity.api.user.model.Gender
 import com.denchic45.studiversity.displayName
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.systemRoleName
+import com.denchic45.studiversity.ui.component.DeleteListItem
 import com.denchic45.studiversity.ui.component.HeaderItem
-import com.denchic45.studiversity.ui.confirm.ConfirmDialog
+import com.denchic45.studiversity.ui.component.TitleAlertDialog
+import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
 import com.denchic45.studiversity.ui.theme.DesktopAppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.theme.toDrawablePath
-
-@Composable
-fun TitleAlertDialog(text: String, onClose: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-    ) {
-        Text(text)
-        Spacer(Modifier.weight(1f))
-        IconButton(onClose) {
-            Icon(Icons.Rounded.Close, "")
-        }
-    }
-}
+import com.denchic45.studiversity.ui.user.RemoveUserConfirmDialog
 
 @Composable
 fun UserEditorDialog(component: UserEditorComponent) {
@@ -49,10 +36,8 @@ fun UserEditorDialog(component: UserEditorComponent) {
     val allowSave by component.allowSave.collectAsState()
     val needToConfirmToDismiss by component.needToConfirmToDismiss.collectAsState()
 
-    ConfirmDialog(
+    DismissChangesConfirmDialog(
         show = needToConfirmToDismiss,
-        title = "Не сохранять изменения?",
-        confirmText = "Да",
         onConfirm = component::onDismissRequest,
         onDismiss = component::onCancelDismiss
     )
@@ -77,7 +62,7 @@ fun UserEditorDialog(component: UserEditorComponent) {
                         onGenderSelect = component::onGenderSelect,
                         onEmailChange = component::onEmailChange,
                         onRoleSelect = component::onRoleSelect,
-                        onRemoveClick = component::onRemoveUserClick
+                        onRemoveClick = component::onRemoveClick
                     )
                 }
             },
@@ -240,7 +225,14 @@ private fun UserEditorContent(
                 supportingText = { Text(state.emailMessage ?: "") }
             )
         } else {
-            var confirmRemove by remember { mutableStateOf(false) }
+            var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+            DeleteListItem(
+                title = "Удалить пользователя",
+                text = "Восстановление будет невозможно",
+                onClick = { showDeleteConfirmation = true },
+                modifier = Modifier.padding(top = MaterialTheme.spacing.normal)
+            )
 
             ListItem(
                 headlineContent = { Text("Удалить пользователя") },
@@ -252,33 +244,19 @@ private fun UserEditorContent(
                         tint = MaterialTheme.colorScheme.error
                     )
                 },
-                modifier = Modifier.padding(top = MaterialTheme.spacing.normal)
+                modifier = Modifier
                     .clip(MaterialTheme.shapes.medium)
-                    .clickable { confirmRemove = true }
+                    .clickable { showDeleteConfirmation = true }
             )
-            if (confirmRemove)
-                AlertDialog(
-                    onDismissRequest = { confirmRemove = false },
-                    icon = { Icon(Icons.Outlined.Delete, null) },
-                    title = { Text("Удалить пользователя?") },
-                    text = {
-                        Text(
-                            """
-                                Удалятся все данные, связанные с пользователем.
-                                Восстановить пользователя будет невозможно.
-                            """.trimIndent()
-                        )
+
+            if (showDeleteConfirmation)
+                RemoveUserConfirmDialog(
+                    onConfirm = {
+                        showDeleteConfirmation = false
+                        onRemoveClick()
                     },
-                    confirmButton = {
-                        FilledTonalButton(onClick = {
-                            confirmRemove = false
-                            onRemoveClick()
-                        }) { Text("Удалить") }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = {
-                            confirmRemove = false
-                        }) { Text("Отмена") }
+                    onDismiss = {
+                        showDeleteConfirmation = false
                     }
                 )
         }

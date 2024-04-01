@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.ui.search
 
 import androidx.compose.runtime.Composable
-import com.denchic45.studiversity.ui.component.CourseListItem
+import com.denchic45.studiversity.ui.course.CourseListItem
 
 @Composable
 fun CourseChooserScreen(component: CourseChooserComponent) {

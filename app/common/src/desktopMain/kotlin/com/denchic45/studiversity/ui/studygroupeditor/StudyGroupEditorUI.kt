@@ -9,7 +9,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.ui.confirm.ConfirmDialog
+import com.denchic45.studiversity.ui.component.TitleAlertDialog
+import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
 import com.denchic45.studiversity.ui.theme.CommonAppTheme
 import java.util.*
 
@@ -19,10 +20,8 @@ fun StudyGroupEditorDialog(component: StudyGroupEditorComponent) {
     val allowSave by component.allowSave.collectAsState()
     val needToConfirmToDismiss by component.needToConfirmToDismiss.collectAsState()
 
-    ConfirmDialog(
+    DismissChangesConfirmDialog(
         show = needToConfirmToDismiss,
-        title = "Не сохранять изменения?",
-        confirmText = "Да",
         onConfirm = component::onDismissRequest,
         onDismiss = component::onCancelDismiss
     )
@@ -30,7 +29,12 @@ fun StudyGroupEditorDialog(component: StudyGroupEditorComponent) {
     resource.onSuccess { state ->
         AlertDialog(
             onDismissRequest = component::onDismissRequest,
-            title = { Text(if (state.isNew) "Создать группу" else "Изменить группу") },
+            title = {
+                TitleAlertDialog(
+                    text = if (state.isNew) "Создать группу" else "Изменить группу",
+                    onClose = component::onDismissRequest
+                )
+            },
             text = {
                 StudyGroupEditorContent(
                     state = state,

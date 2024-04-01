@@ -47,7 +47,8 @@ class StudyGroupEditorComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    private val editingState = EditingStudyGroup(studyGroupId == null)
+    val isNew = studyGroupId == null
+    private val editingState = EditingStudyGroup(isNew)
     val allowSave = MutableStateFlow(false)
     val needToConfirmToDismiss = MutableStateFlow(false)
 
@@ -211,4 +212,3 @@ class EditingStudyGroup(val isNew: Boolean) {
     var startYearMessage: String? by mutableStateOf(null)
     var endYearMessage: String? by mutableStateOf(null)
 }
-

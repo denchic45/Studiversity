@@ -172,7 +172,7 @@ class UserEditorComponent(
         }
     }
 
-    fun onRemoveUserClick() {
+    fun onRemoveClick() {
         componentScope.launch {
             removeUserUseCase(userId!!).onSuccess {
                 withContext(Dispatchers.Main) {

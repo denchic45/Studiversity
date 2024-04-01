@@ -7,6 +7,8 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
+import com.denchic45.studiversity.api.specialty.model.CreateSpecialtyRequest
+import com.denchic45.studiversity.api.specialty.model.UpdateSpecialtyRequest
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.onSuccess
@@ -19,17 +21,15 @@ import com.denchic45.studiversity.getOptProperty
 import com.denchic45.studiversity.uivalidator.condition.Condition
 import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
-import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.specialty.model.CreateSpecialtyRequest
-import com.denchic45.studiversity.api.specialty.model.UpdateSpecialtyRequest
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class SpecialtyEditorComponent(
@@ -47,17 +47,15 @@ class SpecialtyEditorComponent(
 
     private val componentScope = componentScope()
 
+    val needToConfirmToDismiss = MutableStateFlow(false)
     private val editingState = EditingSpecialty(specialtyId == null)
 
-    val viewState = (specialtyId?.let {
+    val stateResource = (specialtyId?.let {
         findSpecialtyByIdUseCase(it).mapResource { response ->
-            fieldEditor.updateOldValues(
-                "name" to response.name,
-                "shortname" to response.shortname
-            )
             editingState.apply {
                 name = response.name
                 shortname = response.shortname ?: ""
+                fieldEditor.updateOldValues()
             }
         }
     } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
@@ -99,7 +97,7 @@ class SpecialtyEditorComponent(
         }
     }
 
-    fun onNameType(typedName: String) {
+    fun onNameChange(typedName: String) {
         editingState.apply {
             name = typedName
             updateSaveEnabled()
@@ -110,15 +108,21 @@ class SpecialtyEditorComponent(
         editingState.allowSave = validator.validate() && fieldEditor.hasChanges()
     }
 
-    fun onShortnameType(typedName: String) {
+    fun onShortnameChange(typedName: String) {
         editingState.apply {
             shortname = typedName
             updateSaveEnabled()
         }
     }
 
-    fun onCloseClick() {
-        onFinish()
+    fun onDismissRequest() {
+        if (fieldEditor.hasChanges() && !needToConfirmToDismiss.value)
+            needToConfirmToDismiss.value = true
+        else onFinish()
+    }
+
+    fun onCancelDismiss() {
+        needToConfirmToDismiss.value = false
     }
 
     fun onSaveClick() {

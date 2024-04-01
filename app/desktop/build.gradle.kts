@@ -4,9 +4,12 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     id("com.google.devtools.ksp")
+
 }
 
 group = "com.denchic45.studiversity"
+
+val decomposeVersion: String by project
 
 kotlin {
     jvm {
@@ -26,6 +29,10 @@ kotlin {
             dependencies {
                 implementation(project(":common"))
                 implementation(compose.desktop.currentOs)
+
+                // Decompose
+                implementation("com.arkivanov.decompose:decompose:$decomposeVersion")
+                implementation("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
             }
         }
     }

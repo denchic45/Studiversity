@@ -1,6 +1,5 @@
 package com.denchic45.studiversity
 
-import com.denchic45.studiversity.domain.timetable.TimetableParser
 import com.denchic45.studiversity.api.common.EmptyResponseResult
 import com.denchic45.studiversity.api.common.ResponseResult
 import com.denchic45.studiversity.api.course.CourseApi
@@ -23,6 +22,7 @@ import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.denchic45.studiversity.api.user.UserApi
 import com.denchic45.studiversity.api.user.model.*
+import com.denchic45.studiversity.domain.timetable.TimetableParser
 import com.denchic45.studiversity.util.UserId
 import com.github.michaelbull.result.Ok
 import kotlinx.coroutines.runBlocking
@@ -113,7 +113,7 @@ class TimetableParserTest {
             TODO("Not yet implemented")
         }
 
-        override suspend fun update(userId: UUID, request: UpdateUserRequest): ResponseResult<UserResponse> {
+        override suspend fun update(userId: UUID, request: UpdateUserRequest): EmptyResponseResult {
             TODO("Not yet implemented")
         }
 
@@ -187,7 +187,7 @@ class TimetableParserTest {
 
         override suspend fun update(
             courseId: UUID,
-            updateCourseRequest: UpdateCourseRequest,
+            request: UpdateCourseRequest,
         ): ResponseResult<CourseResponse> {
             TODO("Not yet implemented")
         }

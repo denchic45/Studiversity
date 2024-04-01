@@ -8,23 +8,19 @@ import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.studiversity.domain.usecase.RemoveSubjectUseCase
-import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
-import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.search.SubjectChooserComponent
 import com.denchic45.studiversity.ui.subjecteditor.SubjectEditorComponent
-import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class SubjectsAdminComponent(
-    private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val removeSubjectUseCase: RemoveSubjectUseCase,
     subjectChooserComponent: (onSelect: (SubjectResponse) -> Unit, ComponentContext) -> SubjectChooserComponent,
     subjectEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> SubjectEditorComponent,
@@ -70,13 +66,7 @@ class SubjectsAdminComponent(
 
     override fun onRemoveClick(id: UUID) {
         componentScope.launch {
-            val confirmState = ConfirmState(
-                uiTextOf("Удалить предмет?"),
-                uiTextOf("Восстановить предмет будет невозможно.")
-            )
-            if (confirmDialogInteractor.confirmRequest(confirmState)) {
-                removeSubjectUseCase(id)
-            }
+            removeSubjectUseCase(id)
         }
     }
 

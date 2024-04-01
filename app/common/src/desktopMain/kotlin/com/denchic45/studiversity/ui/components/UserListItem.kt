@@ -24,24 +24,6 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import java.util.*
 
-@Composable
-fun UserListItem(
-    item: UserItem,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    com.denchic45.studiversity.ui.component.UserListItem(
-        item = item,
-        avatarContent = {
-            KamelImage(
-                resource = asyncPainterResource(item.avatarUrl),
-                null,
-                Modifier.size(40.dp).clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
-        }
-    )
-}
 
 @Composable
 fun UserListItem(

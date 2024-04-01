@@ -14,7 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.denchic45.studiversity.api.role.model.Role
+import com.denchic45.studiversity.api.user.model.Gender
 import com.denchic45.studiversity.common.R
+import com.denchic45.studiversity.displayName
 import com.denchic45.studiversity.systemRoleName
 import com.denchic45.studiversity.ui.Sidebar
 import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
@@ -23,7 +26,6 @@ import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.studiversity.api.role.model.Role
 
 
 @Composable
@@ -71,12 +73,12 @@ fun UserEditorScreen(component: UserEditorComponent) {
     Surface {
         UserEditorContent(
             state = state,
-            onFirstNameType = component::onFirstNameChange,
-            onSurnameType = component::onSurnameChange,
-            onPatronymicType = component::onPatronymicChange,
+            onFirstNameChange = component::onFirstNameChange,
+            onSurnameChange = component::onSurnameChange,
+            onPatronymicChange = component::onPatronymicChange,
             onGenderSelect = component::onGenderSelect,
             onRoleSelect = component::onRoleSelect,
-            onEmailType = component::onEmailChange,
+            onEmailChange = component::onEmailChange,
             modifier = Modifier.verticalScroll(scrollState)
         )
     }
@@ -86,12 +88,12 @@ fun UserEditorScreen(component: UserEditorComponent) {
 @Composable
 fun UserEditorContent(
     state: EditingUserState,
-    onFirstNameType: (String) -> Unit,
-    onSurnameType: (String) -> Unit,
-    onPatronymicType: (String) -> Unit,
-    onGenderSelect: (UserEditorComponent.GenderAction) -> Unit,
+    onFirstNameChange: (String) -> Unit,
+    onSurnameChange: (String) -> Unit,
+    onPatronymicChange: (String) -> Unit,
+    onGenderSelect: (Gender) -> Unit,
     onRoleSelect: (Role) -> Unit,
-    onEmailType: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -100,7 +102,7 @@ fun UserEditorContent(
         HeaderItem("Личные данные")
         OutlinedTextField(
             value = state.firstName,
-            onValueChange = onFirstNameType,
+            onValueChange = onFirstNameChange,
             Modifier.fillMaxWidth(),
             label = { Text("Имя") },
             singleLine = true,
@@ -110,7 +112,7 @@ fun UserEditorContent(
         )
         OutlinedTextField(
             value = state.surname,
-            onValueChange = onSurnameType,
+            onValueChange = onSurnameChange,
             Modifier
                 .padding(top = 4.dp)
                 .fillMaxWidth(),
@@ -122,7 +124,7 @@ fun UserEditorContent(
         )
         OutlinedTextField(
             value = state.patronymic,
-            onValueChange = onPatronymicType,
+            onValueChange = onPatronymicChange,
             modifier = Modifier
                 .padding(top = 4.dp)
                 .fillMaxWidth(),
@@ -140,7 +142,7 @@ fun UserEditorContent(
             onExpandedChange = { gendersExpanded = !gendersExpanded }
         ) {
             OutlinedTextField(
-                value = state.gender.title,
+                value = state.gender.displayName(),
                 onValueChange = { },
                 readOnly = true,
                 modifier = Modifier
@@ -159,22 +161,28 @@ fun UserEditorContent(
             ExposedDropdownMenu(
                 expanded = gendersExpanded,
                 onDismissRequest = { gendersExpanded = false }) {
-                state.genders.forEach {
-                    DropdownMenuItem(
-                        text = { Text(it.title) },
-                        onClick = {
-                            gendersExpanded = false
-                            onGenderSelect(it)
-                        }
-                    )
-                }
+
+                DropdownMenuItem(
+                    text = { Text(Gender.FEMALE.displayName()) },
+                    onClick = {
+                        gendersExpanded = false
+                        onGenderSelect(Gender.FEMALE)
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text(Gender.MALE.displayName()) },
+                    onClick = {
+                        gendersExpanded = false
+                        onGenderSelect(Gender.MALE)
+                    }
+                )
             }
         }
 
         HeaderItem("Вход в аккаунт")
         OutlinedTextField(
             value = state.email,
-            onValueChange = onEmailType,
+            onValueChange = onEmailChange,
             Modifier.fillMaxWidth(),
             label = { Text("Почта") },
             leadingIcon = { Icon(painterResource(R.drawable.ic_email), null) },

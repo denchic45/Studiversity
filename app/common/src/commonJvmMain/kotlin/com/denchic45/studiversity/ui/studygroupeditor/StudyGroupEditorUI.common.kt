@@ -1,19 +1,17 @@
 package com.denchic45.studiversity.ui.studygroupeditor
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.studiversity.ui.component.DeleteListItem
+import com.denchic45.studiversity.ui.studygroup.RemoveStudyGroupConfirmDialog
+import com.denchic45.studiversity.ui.theme.spacing
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -115,46 +113,21 @@ fun StudyGroupEditorContent(
         }
 
         if (!state.isNew) {
-            var confirmRemove by remember { mutableStateOf(false) }
+            var showDeleteConfirmation by remember { mutableStateOf(false) }
 
-            ListItem(
-                headlineContent = { Text("Удалить группу") },
-                supportingContent = { Text("Восстановление будет невозможно") },
-                leadingContent = {
-                    Icon(
-                        Icons.Outlined.Delete,
-                        null,
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                },
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
-                    .clickable { confirmRemove = true }
+            DeleteListItem(
+                title = "Удалить группу",
+                text = "Восстановление будет невозможно",
+                onClick = { showDeleteConfirmation = true }
             )
-            if (confirmRemove)
-                AlertDialog(
-                    onDismissRequest = { confirmRemove = false },
-                    icon = { Icon(Icons.Outlined.Delete, null) },
-                    title = { Text("Удалить группу?") },
-                    text = {
-                        Text(
-                            """
-                                Удалятся все данные, связанные с группой.
-                                Восстановить группу будет невозможно.
-                            """.trimIndent()
-                        )
+
+            if (showDeleteConfirmation)
+                RemoveStudyGroupConfirmDialog(
+                    onConfirm = {
+                        showDeleteConfirmation = false
+                        onRemoveStudyGroupClick()
                     },
-                    confirmButton = {
-                        FilledTonalButton(onClick = {
-                            confirmRemove = false
-                            onRemoveStudyGroupClick()
-                        }) { Text("Удалить") }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = {
-                            confirmRemove = false
-                        }) { Text("Отмена") }
-                    }
+                    onDismiss = { showDeleteConfirmation = false }
                 )
         }
     }

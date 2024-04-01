@@ -13,7 +13,6 @@ import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.layout.AdaptiveMasterSidebarLayout
-import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.search.SearchScreen
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.usereditor.UserEditorScreen
@@ -33,7 +32,6 @@ fun UsersAdminScreen(component: UsersAdminComponent) {
 @Composable
 private fun UsersAdminDetailScreen(child: UsersAdminComponent.Child) {
     when (child) {
-        is UsersAdminComponent.Child.Profile -> ProfileScreen(child.component)
         is UsersAdminComponent.Child.UserEditor -> UserEditorScreen(child.component)
     }
 }
