@@ -13,6 +13,6 @@ class UpdateStudyGroupUseCase(
 ) {
   suspend operator fun invoke(id: UUID, request: UpdateStudyGroupRequest) = suspendTransactionWorker {
         studyGroupRepository.update(id, request)
-            .takeIf { it != null } ?: throw NotFoundException(StudyGroupErrors.GROUP_DOES_NOT_EXIST)
+            .takeIf { it != null } ?: throw NotFoundException(StudyGroupErrors.STUDY_GROUP_DOES_NOT_EXIST)
     }
 }

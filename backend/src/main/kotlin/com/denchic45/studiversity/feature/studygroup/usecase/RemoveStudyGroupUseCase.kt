@@ -15,7 +15,7 @@ class RemoveStudyGroupUseCase(
   suspend operator fun invoke(id: UUID) = suspendTransactionWorker {
         groupRepository.remove(id).apply {
             if (!this)
-                throw NotFoundException(StudyGroupErrors.GROUP_DOES_NOT_EXIST)
+                throw NotFoundException(StudyGroupErrors.STUDY_GROUP_DOES_NOT_EXIST)
             scopeRepository.remove(id)
         }
     }
