@@ -7,8 +7,11 @@ import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
@@ -24,8 +27,6 @@ import com.denchic45.studiversity.ui.studygroup.members.StudyGroupMembersCompone
 import com.denchic45.studiversity.ui.studygroup.timetable.StudyGroupTimetableComponent
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.role.model.Capability
-import com.denchic45.studiversity.api.role.model.Role
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -83,17 +84,17 @@ class StudyGroupComponent(
         .mapResource { it.hasCapability(Capability.WriteStudyGroup) }
         .stateInResource(componentScope)
 
-    private val sidebarNavigation = SlotNavigation<OverlayConfig>()
+    private val slotNavigation = SlotNavigation<OverlayConfig>()
 
     val childSidebar = childSlot(
-        source = sidebarNavigation,
+        source = slotNavigation,
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
                 is OverlayConfig.StudyGroupEditor -> {
                     SlotChild.StudyGroupEditor(
                         studyGroupEditorComponent(
-                            sidebarNavigation::dismiss,
+                            slotNavigation::dismiss,
                             config.studyGroupId,
                             context
                         )
@@ -116,7 +117,7 @@ class StudyGroupComponent(
                             listOf(Role.Curator, Role.Student, Role.Headman),
                             studyGroupId,
                             config.memberId,
-                            { sidebarNavigation.dismiss() },
+                            { slotNavigation.dismiss() },
                             context
                         )
                     )
@@ -128,8 +129,8 @@ class StudyGroupComponent(
     val childTabs = listOf(
         TabChild.Members(
             studyGroupMembersComponent(
-                { sidebarNavigation.activate(OverlayConfig.Member(it)) },
-                { sidebarNavigation.activate(OverlayConfig.ScopeMemberEditor(it)) },
+                { slotNavigation.activate(OverlayConfig.Member(it)) },
+                { slotNavigation.activate(OverlayConfig.ScopeMemberEditor(it)) },
                 studyGroupId,
                 componentContext.childContext("Members")
             )
@@ -158,15 +159,15 @@ class StudyGroupComponent(
     }
 
     fun onEditClick() {
-        sidebarNavigation.activate(OverlayConfig.StudyGroupEditor(studyGroupId))
+        slotNavigation.activate(OverlayConfig.StudyGroupEditor(studyGroupId))
     }
 
     fun onAddMemberClick() {
-        sidebarNavigation.activate(OverlayConfig.ScopeMemberEditor(null))
+        slotNavigation.activate(OverlayConfig.ScopeMemberEditor(null))
     }
 
     fun onSidebarClose() {
-        sidebarNavigation.dismiss()
+        slotNavigation.dismiss()
     }
 
     @Parcelize
@@ -195,5 +196,9 @@ class StudyGroupComponent(
 
     override fun hasChildrenFlow(): Flow<Boolean> {
         return childSidebar.isActiveFlow()
+    }
+
+    fun onBack() {
+        rootNavigator.pop()
     }
 }

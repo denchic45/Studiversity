@@ -16,10 +16,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
+import com.denchic45.studiversity.ui.BlockContent
 import com.denchic45.studiversity.ui.ScreenScaffold
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.main.AppBarTitle
 import com.denchic45.studiversity.ui.main.CustomAppBar
+import com.denchic45.studiversity.ui.main.NavigationIconBack
 import com.denchic45.studiversity.ui.profile.ProfileSideBar
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorDialog
 import com.denchic45.studiversity.ui.theme.spacing
@@ -29,7 +31,7 @@ import com.denchic45.studiversity.ui.theme.spacing
 fun StudyGroupScreen(component: StudyGroupComponent) {
     val studyGroupResource by component.studyGroup.collectAsState()
     val selectedTab by component.selectedTab.collectAsState()
-    val childSidebar by component.childSidebar.subscribeAsState()
+    val childSlot by component.childSidebar.subscribeAsState()
     val allowEdit by component.allowEdit.collectAsState()
 
     ScreenScaffold(topBar = {
@@ -38,6 +40,7 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
                 AppBarTitle(studyGroupResource.takeValueIfSuccess()?.let { "Группа ${it.name}" }.orEmpty())
                 Spacer(Modifier.width(MaterialTheme.spacing.normal))
             },
+            navigationContent = { NavigationIconBack(component::onBack) },
             actions = {
                 if (allowEdit.takeValueIfSuccess() == true)
                     IconButton(onClick = component::onEditClick) {
@@ -46,13 +49,15 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
             }
         )
     }) {
-        StudyGroupContent(
-            selectedTab = selectedTab,
-            children = component.childTabs,
-            sidebarChild = childSidebar.child?.instance,
-            onTabSelect = component::onTabSelect,
-            onSidebarClose = component::onSidebarClose
-        )
+        BlockContent {
+            StudyGroupContent(
+                selectedTab = selectedTab,
+                children = component.childTabs,
+                sidebarChild = childSlot.child?.instance,
+                onTabSelect = component::onTabSelect,
+                onSidebarClose = component::onSidebarClose
+            )
+        }
     }
 }
 

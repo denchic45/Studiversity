@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.ui.admindashboard
 
+import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.ui.studygroup.RemoveStudyGroupConfirmDialog
@@ -56,6 +58,8 @@ fun StudyGroupsAdminScreen(component: StudyGroupsAdminComponent) {
                         Icon(Icons.Outlined.Edit, null)
                     }
                 }
-        }, interactionSource = interactionSource)
+        },
+            modifier = Modifier.hoverable(interactionSource)
+        )
     }
 }

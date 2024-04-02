@@ -4,6 +4,7 @@ import com.denchic45.studiversity.feature.attachment.usecase.*
 import org.koin.dsl.module
 
 val attachmentModule = module {
+    single { AttachmentFileStorage(get()) }
     single { AttachmentRepository(get()) }
     single { AddAttachmentUseCase(get(), get()) }
     single { FindAttachmentsByResourceUseCase(get(), get()) }
