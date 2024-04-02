@@ -30,35 +30,28 @@ class AvatarService(private val fileSystem: FileSystem) {
         setAvatar(userId, inputStream, extension)
     }
 
-    fun setAvatar(userId: UUID, inputStream: InputStream, extension: String) {
-        val userDir = userDir(userId)
-        fileSystem.createDirectory(userDir, mustCreate = false)
-        fileSystem.write(userDir / "original.$extension") { writeAll(inputStream.source()) }
+
+    fun resetAvatar(userId: UUID, firstName: String, surname: String) {
+        deleteAvatar(userId)
+        generateAvatar(userId, firstName, surname)
     }
 
-
-    fun resetAvatar(userId: UUID, name: String) {
-        deleteAvatar(userId)
-        generateAvatar(userId, name)
+    fun generateAvatar(userId: UUID, firstName: String, surname: String): String {
+        return generateAndSet(userId, "${firstName[0]}${surname[0]}")
     }
 
     fun deleteAvatar(userId: UUID) {
         fileSystem.deleteRecursively(userDir(userId))
     }
 
-    fun generateAvatar(userId: UUID, name: String): String {
-//        val newImageBytes = client.get("https://ui-avatars.com/api") {
-//            parameter("name", UserDao.findById(userId)!!.firstName[0])
-//            parameter("background", "random")
-//            parameter("format", "png")
-//            parameter("size", 128)
-//        }.readBytes()
-        return generate(userId, name)
-//        return setAvatar(userId, CreateFileRequest("avatar.png", newImageBytes), true)
+    private fun setAvatar(userId: UUID, inputStream: InputStream, extension: String) {
+        val userDir = userDir(userId)
+        fileSystem.createDirectory(userDir)
+        fileSystem.write(userDir / "original.$extension") { writeAll(inputStream.source()) }
     }
 
     @Throws(IOException::class)
-    fun generate(
+    fun generateAndSet(
         userId: UUID,
         name: String
     ): String {
