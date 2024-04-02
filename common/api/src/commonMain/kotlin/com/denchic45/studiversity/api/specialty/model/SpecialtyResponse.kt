@@ -9,5 +9,6 @@ data class SpecialtyResponse(
     @Serializable(UUIDSerializer::class)
     val id: UUID,
     val name: String,
-    val shortname: String?
+    val shortname: String?,
+    val code: String?
 )

@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.feature.specialty
 
-import com.denchic45.studiversity.database.table.Specialties
-import com.denchic45.studiversity.database.table.SpecialtyDao
 import com.denchic45.studiversity.api.specialty.model.CreateSpecialtyRequest
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.studiversity.api.specialty.model.UpdateSpecialtyRequest
+import com.denchic45.studiversity.database.table.Specialties
+import com.denchic45.studiversity.database.table.SpecialtyDao
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.or
@@ -12,21 +12,19 @@ import java.util.*
 
 class SpecialtyRepository {
 
-    fun add(createSpecialtyRequest: CreateSpecialtyRequest): SpecialtyResponse {
+    fun add(request: CreateSpecialtyRequest): SpecialtyResponse {
         return SpecialtyDao.new {
-            name = createSpecialtyRequest.name
-            shortname = createSpecialtyRequest.shortname
+            name = request.name
+            shortname = request.shortname
+            code = request.code
         }.toResponse()
     }
 
-    fun update(id: UUID, updateSpecialtyRequest: UpdateSpecialtyRequest): SpecialtyResponse? {
+    fun update(id: UUID, request: UpdateSpecialtyRequest): SpecialtyResponse? {
         return SpecialtyDao.findById(id)?.apply {
-            updateSpecialtyRequest.name.ifPresent {
-                name = it
-            }
-            updateSpecialtyRequest.shortname.ifPresent {
-                shortname = it
-            }
+            request.name.ifPresent { name = it }
+            request.shortname.ifPresent { shortname = it }
+            request.code.ifPresent { code = it }
         }?.toResponse()
     }
 

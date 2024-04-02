@@ -8,7 +8,8 @@ import java.util.*
 
 object Specialties : UUIDTable("specialty", "specialty_id") {
     val name = text("specialty_name")
-    val shortname = text("shortname").default("")
+    val shortname = text("shortname").nullable()
+    val code = text("code").nullable()
 }
 
 class SpecialtyDao(id: EntityID<UUID>) : UUIDEntity(id) {
@@ -16,4 +17,5 @@ class SpecialtyDao(id: EntityID<UUID>) : UUIDEntity(id) {
 
     var name by Specialties.name
     var shortname by Specialties.shortname
+    var code by Specialties.code
 }

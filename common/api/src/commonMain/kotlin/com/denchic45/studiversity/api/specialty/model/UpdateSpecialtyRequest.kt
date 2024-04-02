@@ -9,5 +9,7 @@ data class UpdateSpecialtyRequest(
     @Serializable(OptionalPropertySerializer::class)
     val name: OptionalProperty<String> = OptionalProperty.NotPresent,
     @Serializable(OptionalPropertySerializer::class)
-    val shortname: OptionalProperty<String> = OptionalProperty.NotPresent
+    val shortname: OptionalProperty<String> = OptionalProperty.NotPresent,
+    @Serializable(OptionalPropertySerializer::class)
+    val code: OptionalProperty<String?> = OptionalProperty.NotPresent
 )

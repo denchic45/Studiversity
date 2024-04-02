@@ -1,12 +1,12 @@
 package com.denchic45.studiversity.client.specialty
 
 import com.denchic45.studiversity.KtorClientTest
-import com.denchic45.studiversity.util.assertResultIsOk
-import com.denchic45.studiversity.util.assertedResultIsOk
-import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.studiversity.api.specialty.SpecialtyApi
 import com.denchic45.studiversity.api.specialty.model.CreateSpecialtyRequest
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.studiversity.util.assertResultIsOk
+import com.denchic45.studiversity.util.assertedResultIsOk
+import com.denchic45.studiversity.util.unwrapAsserted
 import com.github.michaelbull.result.unwrap
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -26,7 +26,7 @@ class SearchSpecialtiesTest : KtorClientTest() {
 
     @BeforeEach
     fun init(): Unit = runBlocking {
-        specialty = specialtyApi.create(CreateSpecialtyRequest(expectedName, expectedShortname))
+        specialty = specialtyApi.create(CreateSpecialtyRequest(expectedName, expectedShortname, null))
             .unwrapAsserted()
     }
 

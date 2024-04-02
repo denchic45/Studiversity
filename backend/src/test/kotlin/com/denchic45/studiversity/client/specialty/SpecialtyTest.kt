@@ -1,12 +1,12 @@
 package com.denchic45.studiversity.client.specialty
 
 import com.denchic45.studiversity.KtorClientTest
-import com.denchic45.studiversity.util.assertResultIsOk
-import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.studiversity.api.specialty.SpecialtyApi
 import com.denchic45.studiversity.api.specialty.model.CreateSpecialtyRequest
 import com.denchic45.studiversity.api.specialty.model.UpdateSpecialtyRequest
+import com.denchic45.studiversity.util.assertResultIsOk
 import com.denchic45.studiversity.util.optPropertyOf
+import com.denchic45.studiversity.util.unwrapAsserted
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.koin.core.parameter.parametersOf
@@ -20,7 +20,7 @@ class SpecialtyTest : KtorClientTest() {
     @Test
     fun test(): Unit = runBlocking {
         val createdSpecialty =
-            specialtyApi.create(CreateSpecialtyRequest("Программирование в компьютерных системах", "ПКС"))
+            specialtyApi.create(CreateSpecialtyRequest("Программирование в компьютерных системах", "ПКС", null))
                 .unwrapAsserted().apply {
                     assertEquals("Программирование в компьютерных системах", name)
                     assertEquals("ПКС", shortname)
