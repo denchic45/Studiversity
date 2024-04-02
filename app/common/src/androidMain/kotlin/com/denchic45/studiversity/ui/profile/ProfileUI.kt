@@ -29,7 +29,6 @@ import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
@@ -48,22 +47,22 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(component: ProfileComponent) {
-    val viewStateResource by component.viewState.collectAsState()
+    val stateResource by component.stateResource.collectAsState()
     val childSlot by component.childSlot.subscribeAsState()
 
     Surface {
         Box(modifier = Modifier.fillMaxSize()) {
             updateAppBarState(AppBarContent())
             ProfileContent(
-                viewStateResource,
+                stateResource,
                 component::onAvatarClick,
                 component::onStudyGroupClick
             )
-            viewStateResource.onSuccess { viewState ->
+            ResourceContent(resource = stateResource) { state ->
                 childSlot.child?.let {
                     when (val child = it.instance) {
                         ProfileComponent.SlotChild.AvatarDialog -> {
-                            AlertDialog(onDismissRequest = component::onDialogClose) {
+                            BasicAlertDialog(onDismissRequest = component::onDialogClose) {
                                 Column {
                                     ListItem(
                                         modifier = Modifier.clickable(onClick = component::onOpenAvatarClick),
@@ -91,8 +90,8 @@ fun ProfileScreen(component: ProfileComponent) {
                         }
 
                         ProfileComponent.SlotChild.FullAvatar -> FullAvatarScreen(
-                            url = viewState.user.avatarUrl,
-                            allowUpdateAvatar = viewState.self,
+                            url = state.user.avatarUrl,
+                            allowUpdateAvatar = state.self,
                             onDeleteClick = {}
                         )
 
@@ -189,7 +188,7 @@ fun FullAvatarScreen(
 
 @Composable
 fun ProfileContent(
-    viewState: Resource<ProfileViewState>,
+    viewState: Resource<ProfileState>,
     onAvatarClick: () -> Unit,
     onStudyGroupClick: (UUID) -> Unit,
 ) {
@@ -280,7 +279,7 @@ private fun ProfileStudyGroups(
             }
 
             if (showStudyGroups)
-                AlertDialog(onDismissRequest = { showStudyGroups = false }) {
+                BasicAlertDialog(onDismissRequest = { showStudyGroups = false }) {
                     Column {
                         studyGroups.forEach {
                             StudyGroupListItem(

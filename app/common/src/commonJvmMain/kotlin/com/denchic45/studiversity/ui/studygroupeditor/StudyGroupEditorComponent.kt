@@ -83,7 +83,7 @@ class StudyGroupEditorComponent(
         )
     )
 
-    val viewState = (studyGroupId?.let {
+    val stateResource = (studyGroupId?.let {
         findStudyGroupByIdUseCase(it).mapResource { response ->
             editingState.apply {
                 name = response.name

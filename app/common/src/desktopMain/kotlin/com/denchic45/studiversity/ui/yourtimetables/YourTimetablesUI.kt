@@ -46,7 +46,6 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
                     onNextWeekClick = component::onNextWeekClick
                 )
             }
-
         }
     }
 }

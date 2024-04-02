@@ -15,14 +15,24 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.denchic45.studiversity.ui.LoadingDialog
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.TitleAlertDialog
+import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
+import com.denchic45.studiversity.ui.specialty.RemoveSpecialtyConfirmDialog
 import com.denchic45.studiversity.ui.theme.spacing
 
 
 @Composable
 fun SpecialtyEditorDialog(component: SpecialtyEditorComponent) {
-    val viewStateResource by component.stateResource.collectAsState()
+    val stateResource by component.stateResource.collectAsState()
+    val needToConfirmToDismiss by component.needToConfirmToDismiss.collectAsState()
+
+    DismissChangesConfirmDialog(
+        show = needToConfirmToDismiss,
+        onConfirm = component::onDismissRequest,
+        onDismiss = component::onCancelDismiss
+    )
+
     ResourceContent(
-        resource = viewStateResource,
+        resource = stateResource,
         onLoading = {
             LoadingDialog(onDismissRequest = component::onDismissRequest)
         }) { state ->
@@ -47,6 +57,7 @@ fun SpecialtyEditorDialog(component: SpecialtyEditorComponent) {
                 SpecialtyEditorContent(
                     state = state,
                     onNameChange = component::onNameChange,
+                    onCodeChange = component::onCodeChange,
                     onShortnameChange = component::onShortnameChange,
                     onRemoveClick = component::onRemoveClick
                 )
@@ -57,8 +68,9 @@ fun SpecialtyEditorDialog(component: SpecialtyEditorComponent) {
 
 @Composable
 fun SpecialtyEditorContent(
-    state: SpecialtyEditorComponent.EditingSpecialty,
+    state: EditingSpecialty,
     onNameChange: (String) -> Unit,
+    onCodeChange: (String) -> Unit,
     onShortnameChange: (String) -> Unit,
     onRemoveClick: () -> Unit
 ) {
@@ -69,7 +81,7 @@ fun SpecialtyEditorContent(
     }
 
     Column {
-        Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
+//        Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
         OutlinedTextField(
             value = state.name,
             onValueChange = onNameChange,
@@ -78,15 +90,23 @@ fun SpecialtyEditorContent(
             modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
-        OutlinedTextField(
-            value = state.shortname,
-            onValueChange = onShortnameChange,
-            placeholder = { Text("Дополнительное название") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        Row {
+            OutlinedTextField(
+                value = state.code,
+                onValueChange = onCodeChange,
+                placeholder = { Text("Код") },
+                modifier = Modifier.weight(1f)
+            )
+            OutlinedTextField(
+                value = state.shortname,
+                onValueChange = onShortnameChange,
+                placeholder = { Text("Краткое название") },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         if (!state.isNew) {
-            var confirmRemove by remember { mutableStateOf(false) }
+            var showConfirmDeletion by remember { mutableStateOf(false) }
 
             ListItem(
                 headlineContent = { Text("Удалить специальность") },
@@ -100,33 +120,19 @@ fun SpecialtyEditorContent(
                 },
                 modifier = Modifier.padding(top = MaterialTheme.spacing.normal)
                     .clip(MaterialTheme.shapes.medium)
-                    .clickable { confirmRemove = true }
+                    .clickable { showConfirmDeletion = true }
             )
-            if (confirmRemove)
-                AlertDialog(
-                    onDismissRequest = { confirmRemove = false },
-                    icon = { Icon(Icons.Outlined.Delete, null) },
-                    title = { Text("Удалить пользователя?") },
-                    text = {
-                        Text(
-                            """
-                                Удалятся все группы, с данной специальностью.
-                                Восстановить пользователя будет невозможно.
-                            """.trimIndent()
-                        )
+            if (showConfirmDeletion)
+                RemoveSpecialtyConfirmDialog(
+                    onConfirm = {
+                        showConfirmDeletion = false
+                        onRemoveClick()
                     },
-                    confirmButton = {
-                        FilledTonalButton(onClick = {
-                            confirmRemove = false
-                            onRemoveClick()
-                        }) { Text("Удалить") }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = {
-                            confirmRemove = false
-                        }) { Text("Отмена") }
+                    onDismiss = {
+                        showConfirmDeletion = false
                     }
                 )
+
         }
     }
 }

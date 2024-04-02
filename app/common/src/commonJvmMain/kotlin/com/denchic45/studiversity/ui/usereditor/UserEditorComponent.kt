@@ -56,7 +56,7 @@ class UserEditorComponent(
 
     val editingState = EditingUserState(userId == null)
 
-    val viewState = (userId?.let {
+    val stateResource = (userId?.let {
         findUserByIdUseCase(it).flatMapResourceFlow { response ->
             editingState.apply {
                 firstName = response.firstName

@@ -18,6 +18,6 @@ class ScheduleComponent(
 
     private val componentScope = componentScope()
 
-    val schedule = metaRepository.observeBellSchedule.map(::resourceOf)
+    val scheduleResource = metaRepository.observeBellSchedule.map(::resourceOf)
         .stateInResource(componentScope)
 }

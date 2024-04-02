@@ -83,22 +83,6 @@ class StudyGroupComponent(
         .mapResource { it.hasCapability(Capability.WriteStudyGroup) }
         .stateInResource(componentScope)
 
-//    val appBarState = MutableStateFlow(
-//        AppBarState(
-//            title = uiTextOf("Ваши группы"),
-//            onDropdownMenuItemClick = {
-//                it.title.onString { action ->
-//                    when (action) {
-//                        "Редактировать" -> {
-//                            selectedStudyGroup.value.onSuccess {
-//                                onStudyGroupEditClick(it.id)
-//                            }
-//                        }
-//                    }
-//                }
-//            })
-//    )
-
     private val sidebarNavigation = SlotNavigation<OverlayConfig>()
 
     val childSidebar = childSlot(
@@ -107,7 +91,7 @@ class StudyGroupComponent(
         childFactory = { config, context ->
             when (config) {
                 is OverlayConfig.StudyGroupEditor -> {
-                    OverlayChild.StudyGroupEditor(
+                    SlotChild.StudyGroupEditor(
                         studyGroupEditorComponent(
                             sidebarNavigation::dismiss,
                             config.studyGroupId,
@@ -117,7 +101,7 @@ class StudyGroupComponent(
                 }
 
                 is OverlayConfig.Member -> {
-                    OverlayChild.Member(
+                    SlotChild.Member(
                         profileComponent(
                             rootNavigator,
                             config.memberId,
@@ -127,7 +111,7 @@ class StudyGroupComponent(
                 }
 
                 is OverlayConfig.ScopeMemberEditor -> {
-                    OverlayChild.ScopeMemberEditor(
+                    SlotChild.ScopeMemberEditor(
                         scopeMemberEditorComponent(
                             listOf(Role.Curator, Role.Student, Role.Headman),
                             studyGroupId,
@@ -169,29 +153,6 @@ class StudyGroupComponent(
 
     val selectedTab = MutableStateFlow(0)
 
-//    init {
-//        lifecycle.subscribe(onResume = {
-//            selectedStudyGroup.onEach { resource ->
-//                resource.onSuccess { selectedStudyGroup ->
-//                    appBarState.update {
-//                        it.copy(
-//                            title = uiTextOf(selectedStudyGroup.name),
-//                            dropdown = resource.let {
-//                                listOf(DropdownMenuItem("edit", uiTextOf("Редактировать")))
-//                            },
-//                            onDropdownMenuItemClick = {
-//                                when (it.id) {
-//                                    "edit" -> componentScope.launch {
-//                                        selectedStudyGroup.id.toString()
-//                                    }
-//                                }
-//                            })
-//                    }
-//                }
-//            }.launchIn(componentScope)
-//        })
-//    }
-
     fun onTabSelect(position: Int) {
         selectedTab.value = position
     }
@@ -217,13 +178,13 @@ class StudyGroupComponent(
         data class ScopeMemberEditor(val memberId: UUID?) : OverlayConfig()
     }
 
-    sealed class OverlayChild {
+    sealed class SlotChild {
 
-        class StudyGroupEditor(val component: StudyGroupEditorComponent) : OverlayChild()
+        class StudyGroupEditor(val component: StudyGroupEditorComponent) : SlotChild()
 
-        class Member(val component: ProfileComponent) : OverlayChild()
+        class Member(val component: ProfileComponent) : SlotChild()
 
-        class ScopeMemberEditor(val component: ScopeMemberEditorComponent) : OverlayChild()
+        class ScopeMemberEditor(val component: ScopeMemberEditorComponent) : SlotChild()
     }
 
     sealed class TabChild(val title: String) {

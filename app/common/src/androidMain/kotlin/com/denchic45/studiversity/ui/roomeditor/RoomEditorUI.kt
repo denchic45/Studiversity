@@ -25,9 +25,9 @@ import com.denchic45.studiversity.ui.theme.spacing
 
 @Composable
 fun RoomEditorDialog(component: RoomEditorComponent) {
-    val viewStateResource by component.viewState.collectAsState()
+    val stateResource by component.stateResource.collectAsState()
     ResourceContent(
-        resource = viewStateResource,
+        resource = stateResource,
         onLoading = {
             LoadingDialog(onDismissRequest = component::onCloseClick)
         }) { state ->
@@ -47,9 +47,9 @@ fun RoomEditorDialog(component: RoomEditorComponent) {
             },
             text = {
                 RoomEditorContent(
-                    viewState = state,
-                    onNameType = component::onNameType,
-                    onShortnameType = component::onShortnameType
+                    state = state,
+                    onNameChange = component::onNameChange,
+                    onShortnameChange = component::onShortnameChange
                 )
             }
         )
@@ -58,9 +58,9 @@ fun RoomEditorDialog(component: RoomEditorComponent) {
 
 @Composable
 fun RoomEditorContent(
-    viewState: RoomEditorComponent.EditingRoom,
-    onNameType: (String) -> Unit,
-    onShortnameType: (String) -> Unit
+    state: EditingRoom,
+    onNameChange: (String) -> Unit,
+    onShortnameChange: (String) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
 
@@ -71,16 +71,16 @@ fun RoomEditorContent(
     Column {
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
         OutlinedTextField(
-            value = viewState.name,
-            onValueChange = onNameType,
+            value = state.name,
+            onValueChange = onNameChange,
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             placeholder = { Text("Название") },
             modifier = Modifier.focusRequester(focusRequester)
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
         OutlinedTextField(
-            value = viewState.shortname,
-            onValueChange = onShortnameType,
+            value = state.shortname,
+            onValueChange = onShortnameChange,
             placeholder = { Text("Дополнительное название") }
         )
     }

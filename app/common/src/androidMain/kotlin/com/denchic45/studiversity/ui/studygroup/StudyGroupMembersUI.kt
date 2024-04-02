@@ -39,11 +39,11 @@ fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
         StudyGroupMembersContent(
             members = it,
             allowEditMembers = allowEditMembers.takeValueIfSuccess() ?: false,
-            onMemberClick = component::onMemberSelect,
-            onMemberEditClick = component::onMemberEditClick,
-            onMemberRemoveClick = component::onMemberRemoveClick,
+            onMemberClick = component::onMemberClick,
+            onMemberEditClick = component::onEditMemberClick,
+            onMemberRemoveClick = component::onRemoveMemberClick,
             onMemberSetHeadmanClick = component::onMemberSetHeadmanClick,
-            onMemberRemoveHeadmanClick = component::onMemberRemoveHeadmanClick,
+            onMemberRemoveHeadmanClick = component::onRemoveHeadmanClick,
         )
     }
 }

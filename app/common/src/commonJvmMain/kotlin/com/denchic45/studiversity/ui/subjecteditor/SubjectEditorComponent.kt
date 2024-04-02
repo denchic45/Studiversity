@@ -75,11 +75,9 @@ class SubjectEditorComponent(
 
     private val componentScope = componentScope()
 
-//    val isNew = subjectId == null
-
     private val editingState = EditingSubjectState(subjectId == null)
-
     val allowSave = MutableStateFlow(false)
+    val needToConfirmToDismiss = MutableStateFlow(false)
 
     private val fieldEditor = FieldEditor(
         mapOf(
@@ -101,7 +99,7 @@ class SubjectEditorComponent(
         )
     )
 
-    val viewState = (subjectId?.let {
+    val stateResource = (subjectId?.let {
         findSubjectByIdUseCase(it).mapResource { response ->
             editingState.apply {
                 name = response.name
@@ -147,12 +145,12 @@ class SubjectEditorComponent(
         updateAllowSave()
     }
 
-    fun onNameType(name: String) {
+    fun onNameChange(name: String) {
         editingState.name = name
         updateAllowSave()
     }
 
-    fun onShortnameType(shortname: String) {
+    fun onShortnameChange(shortname: String) {
         editingState.shortname = shortname
         updateAllowSave()
     }
@@ -161,8 +159,14 @@ class SubjectEditorComponent(
         overlayNavigation.activate(SubjectIcons)
     }
 
-    fun onCancel() {
-        onFinish()
+    fun onDismissRequest() {
+        if (fieldEditor.hasChanges() && !needToConfirmToDismiss.value)
+            needToConfirmToDismiss.value = true
+        else onFinish()
+    }
+
+    fun onCancelDismiss() {
+        needToConfirmToDismiss.value = false
     }
 
     fun onRemoveClick() {

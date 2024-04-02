@@ -41,9 +41,9 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
                 val childSidebar by studyGroupComponent.childSidebar.subscribeAsState()
                 showSpinner = childSidebar.child == null
                 when (val child = childSidebar.child?.instance) {
-                    is StudyGroupComponent.OverlayChild.Member -> ProfileScreen(child.component)
+                    is StudyGroupComponent.SlotChild.Member -> ProfileScreen(child.component)
 
-                    is StudyGroupComponent.OverlayChild.StudyGroupEditor -> {
+                    is StudyGroupComponent.SlotChild.StudyGroupEditor -> {
                         StudyGroupEditorScreen(child.component)
                     }
 
@@ -69,7 +69,7 @@ fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
 
                     }
 
-                    is StudyGroupComponent.OverlayChild.ScopeMemberEditor -> {
+                    is StudyGroupComponent.SlotChild.ScopeMemberEditor -> {
                         ScopeMemberEditorScreen(child.component)
                     }
                 }

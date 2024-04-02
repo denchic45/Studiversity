@@ -12,7 +12,7 @@ import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
 
 @Composable
 fun CourseEditorDialog(component: CourseEditorComponent) {
-    val stateResource by component.viewState.collectAsState()
+    val stateResource by component.stateResource.collectAsState()
     val allowSave by component.allowSave.collectAsState()
     val needToConfirmToDismiss by component.needToConfirmToDismiss.collectAsState()
 
@@ -22,17 +22,17 @@ fun CourseEditorDialog(component: CourseEditorComponent) {
         onDismiss = component::onCancelDismiss
     )
 
-    ResourceContent(stateResource) {
+    ResourceContent(stateResource) { state ->
         AlertDialog(onDismissRequest = component::onDismissRequest,
             title = {
                 TitleAlertDialog(
-                    text = if (it.isNew) "Создать курс" else "Изменить курс",
+                    text = if (state.isNew) "Создать курс" else "Изменить курс",
                     onClose = component::onDismissRequest
                 )
             },
             text = {
                 CourseEditorContent(
-                    state = it,
+                    state = state,
                     onNameChange = component::onNameChange,
                     onSubjectChoose = component::onSubjectChoose,
                     onSubjectClose = component::onSubjectClose

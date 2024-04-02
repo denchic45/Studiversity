@@ -55,6 +55,7 @@ class SpecialtyEditorComponent(
             editingState.apply {
                 name = response.name
                 shortname = response.shortname ?: ""
+                code = response.code ?: ""
                 fieldEditor.updateOldValues()
             }
         }
@@ -72,53 +73,42 @@ class SpecialtyEditorComponent(
     private val fieldEditor = FieldEditor(
         mapOf(
             "name" to Field(editingState::name),
-            "shortname" to Field(editingState::shortname)
+            "shortname" to Field(editingState::shortname),
+            "code" to Field(editingState::code)
         )
     )
 
     fun onRemoveClick() {
         componentScope.launch {
-//            confirmDialogInteractor.set(
-//                ConfirmState(
-//                    uiTextOf("Удалить несколько предметов группы"),
-//                    uiTextOf("Вы уверены?")
-//                )
-//            )
-//            if (confirmDialogInteractor.receiveConfirm()) {
-//                removeSpecialtyUseCase(specialtyId!!).onSuccess {
-//                    onFinish()
-//                }
-//            }
-
             removeSpecialtyUseCase(specialtyId!!).onSuccess {
                 onFinish()
             }
-
         }
     }
 
-    fun onNameChange(typedName: String) {
-        editingState.apply {
-            name = typedName
-            updateSaveEnabled()
-        }
+    fun onNameChange(text: String) {
+        editingState.name = text
+        updateAllowSave()
     }
 
-    private fun updateSaveEnabled() {
-        editingState.allowSave = validator.validate() && fieldEditor.hasChanges()
+    fun onShortnameChange(text: String) {
+        editingState.shortname = text
+        updateAllowSave()
     }
 
-    fun onShortnameChange(typedName: String) {
-        editingState.apply {
-            shortname = typedName
-            updateSaveEnabled()
-        }
+    fun onCodeChange(text: String) {
+        editingState.code = text
+        updateAllowSave()
     }
 
     fun onDismissRequest() {
         if (fieldEditor.hasChanges() && !needToConfirmToDismiss.value)
             needToConfirmToDismiss.value = true
         else onFinish()
+    }
+
+    private fun updateAllowSave() {
+        editingState.allowSave = validator.validate() && fieldEditor.hasChanges()
     }
 
     fun onCancelDismiss() {
@@ -135,15 +125,14 @@ class SpecialtyEditorComponent(
 
     private suspend fun saveChanges() {
         val result = if (editingState.isNew) {
-            addSpecialtyUseCase(
-                CreateSpecialtyRequest(editingState.name, editingState.shortname)
-            )
+            addSpecialtyUseCase(CreateSpecialtyRequest(editingState.name, editingState.shortname, editingState.code))
         } else {
             updateSpecialtyUseCase(
                 specialtyId!!,
                 UpdateSpecialtyRequest(
                     fieldEditor.getOptProperty("name"),
-                    fieldEditor.getOptProperty("shortname")
+                    fieldEditor.getOptProperty("shortname"),
+                    fieldEditor.getOptProperty("code")
                 )
             )
         }
@@ -151,12 +140,13 @@ class SpecialtyEditorComponent(
             result.onSuccess { onFinish() }
         }
     }
+}
 
-    @Stable
-    class EditingSpecialty(isNew: Boolean) {
-        var name by mutableStateOf("")
-        var shortname by mutableStateOf("")
-        var allowSave by mutableStateOf(false)
-        var isNew by mutableStateOf(isNew)
-    }
+@Stable
+class EditingSpecialty(isNew: Boolean) {
+    var name by mutableStateOf("")
+    var shortname by mutableStateOf("")
+    var code by mutableStateOf("")
+    var allowSave by mutableStateOf(false)
+    var isNew by mutableStateOf(isNew)
 }

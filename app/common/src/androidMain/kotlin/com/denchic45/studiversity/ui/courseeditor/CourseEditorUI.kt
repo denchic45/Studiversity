@@ -10,7 +10,6 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar.AppBarContent
-import com.denchic45.studiversity.ui.appbar.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.search.SubjectChooserScreen
 import com.denchic45.studiversity.ui.uiIconOf
@@ -20,11 +19,9 @@ import java.util.*
 
 @Composable
 fun CourseEditorScreen(component: CourseEditorComponent) {
-    val resource by component.viewState.collectAsState()
+    val resource by component.stateResource.collectAsState()
     val navigation by component.childSlot.subscribeAsState()
     val allowSave by component.allowSave.collectAsState()
-
-    val appBarState = LocalAppBarState.current
 
     when (val child = navigation.child?.instance) {
         is CourseEditorComponent.DialogChild.SubjectChooser -> {
@@ -45,20 +42,7 @@ fun CourseEditorScreen(component: CourseEditorComponent) {
                     )
                 )
             )
-//            LaunchedEffect(allowSave) {
-//                appBarState.animateUpdate {
-//                    content = AppBarContent(
-//                        title = uiTextOf(if (component.isNew) "Новый курс" else "Редактировать курс"),
-//                        actionItems = listOf(
-//                            ActionMenuItem2(
-//                                icon = uiIconOf(Icons.Default.Done),
-//                                enabled = allowSave,
-//                                onClick = component::onSaveClick
-//                            )
-//                        )
-//                    )
-//                }
-//            }
+
             ResourceContent(resource = resource) { state ->
                 CourseEditorContent(
                     state = state,

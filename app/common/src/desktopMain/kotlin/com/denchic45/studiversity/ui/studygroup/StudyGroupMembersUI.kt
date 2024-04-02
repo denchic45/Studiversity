@@ -16,7 +16,7 @@ import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.HeaderItem
-import com.denchic45.studiversity.ui.components.UserListItem
+import com.denchic45.studiversity.ui.component.UserListItem
 import com.denchic45.studiversity.ui.studygroup.members.StudyGroupMembersComponent
 import com.denchic45.studiversity.ui.theme.toDrawablePath
 import java.util.*
@@ -27,9 +27,7 @@ fun SelectableStudyGroupMembersScreen(
     component: StudyGroupMembersComponent,
     selectedItemId: UUID?,
 ) {
-    StudyGroupMemberScreen(component, selectedItemId, onMemberSelect = {
-        component.onMemberSelect(it)
-    })
+    StudyGroupMemberScreen(component, selectedItemId, component::onMemberClick)
 }
 
 @Composable
@@ -39,17 +37,15 @@ private fun StudyGroupMemberScreen(
     onMemberSelect: (UUID) -> Unit,
 ) {
     val members by component.members.collectAsState()
-    StudyGroupMemberContent(members, onMemberSelect = {
-        onMemberSelect(it)
-    }, component, selectedItemId)
+    StudyGroupMemberContent(members, onMemberSelect, selectedItemId, component)
 }
 
 @Composable
 private fun StudyGroupMemberContent(
     members: Resource<GroupMembers>,
-    onMemberSelect: (UUID) -> Unit,
-    component: StudyGroupMembersComponent,
+    onClick: (UUID) -> Unit,
     selectedItemId: UUID?,
+    component: StudyGroupMembersComponent,
 ) {
     ResourceContent(members) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
@@ -59,13 +55,12 @@ private fun StudyGroupMemberContent(
                 students = it.students,
                 selectedItemId = selectedItemId,
                 actions = actions,
-                onClick = { onMemberSelect(it) },
+                onClick = onClick,
                 onExpandActions = component::onMemberActionsExpand,
-                onMemberClick = component::onMemberSelect,
-                onMemberEditClick = component::onMemberEditClick,
-                onMemberRemoveClick = component::onMemberRemoveClick,
+                onMemberEditClick = component::onEditMemberClick,
+                onMemberRemoveClick = component::onRemoveMemberClick,
                 onMemberSetHeadmanClick = component::onMemberSetHeadmanClick,
-                onMemberRemoveHeadmanClick = component::onMemberRemoveHeadmanClick,
+                onMemberRemoveHeadmanClick = component::onRemoveHeadmanClick,
                 onDismissActions = component::onDismissActions
             )
         }
@@ -86,15 +81,13 @@ private fun StudentListItem(
     onDismissActions: () -> Unit,
 ) {
     val interactionSource = remember(::MutableInteractionSource)
-
-    val hovered by interactionSource.collectIsHoveredAsState()
-
+    val isHovered by interactionSource.collectIsHoveredAsState()
     var expanded by remember { mutableStateOf(false) }
 
     UserListItem(
         item = userItem,
         onClick = onClick,
-        actionsVisible = expanded || hovered,
+        actionsVisible = expanded || isHovered,
         selected = selected,
         interactionSource = interactionSource
     ) {
@@ -155,7 +148,6 @@ fun MemberList(
     onClick: (UUID) -> Unit,
     onExpandActions: (memberId: UUID) -> Unit,
     actions: Pair<List<StudyGroupMembersComponent.MemberAction>, UUID>?,
-    onMemberClick: (UUID) -> Unit,
     onMemberEditClick: (UUID) -> Unit,
     onMemberRemoveClick: (UUID) -> Unit,
     onMemberSetHeadmanClick: (UUID) -> Unit,

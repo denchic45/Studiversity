@@ -20,7 +20,6 @@ import com.denchic45.studiversity.ui.theme.spacing
 
 @Composable
 fun SecurityScreen(component: SecurityComponent) {
-
     val childSlot by component.childSlot.subscribeAsState()
 
     childSlot.child?.let {

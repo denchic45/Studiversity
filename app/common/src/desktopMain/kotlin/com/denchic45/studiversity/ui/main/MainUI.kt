@@ -36,7 +36,7 @@ import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.navigation.SlotChild
 import com.denchic45.studiversity.ui.root.RootScreen
-import com.denchic45.studiversity.ui.schedule.ScheduleScreen
+import com.denchic45.studiversity.ui.schedule.ScheduleDialog
 import com.denchic45.studiversity.ui.settings.SettingsDialog
 import com.denchic45.studiversity.ui.theme.DesktopApp
 import com.denchic45.studiversity.ui.theme.spacing
@@ -206,6 +206,14 @@ fun MainScreen(component: MainComponent) {
                                             }
                                         }
                                         ListItem(
+                                            headlineContent = { Text("Расписание") },
+                                            leadingContent = { Icon(Icons.Outlined.Schedule, null) },
+                                            modifier = Modifier.clickable(onClick = {
+                                                showProfilePopup = false
+                                                component.onScheduleClick()
+                                            })
+                                        )
+                                        ListItem(
                                             headlineContent = { Text("Помощь") },
                                             leadingContent = { Icon(Icons.Rounded.HelpOutline, null) },
                                             modifier = Modifier.clickable {
@@ -304,9 +312,7 @@ fun MainScreen(component: MainComponent) {
                         )
 
                         is SlotChild.Schedule -> {
-                            DropdownMenu(true, onDismissRequest = component::onDialogClose) {
-                                ScheduleScreen(child.component)
-                            }
+                            ScheduleDialog(child.component, onDismissRequest = component::onDialogClose)
                         }
                     }
                 }

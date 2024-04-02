@@ -9,31 +9,25 @@ import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.domain.MainInteractor
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.domain.usecase.FindAssignedUserRolesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindYourCoursesUseCase
-import com.denchic45.studiversity.ui.course.CourseComponent
-import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
-import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.studiversity.ui.navigation.ChildrenContainerChild
 import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
 import com.denchic45.studiversity.ui.navigation.SlotChild
 import com.denchic45.studiversity.ui.navigation.SlotConfig
 import com.denchic45.studiversity.ui.navigator.RootConfig
-import com.denchic45.studiversity.ui.navigator.RootNavigator
-import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.root.AdminDashboardRootComponent
 import com.denchic45.studiversity.ui.root.YourCourseWorksRootComponent
 import com.denchic45.studiversity.ui.root.YourStudyGroupsRootComponent
 import com.denchic45.studiversity.ui.root.YourTimetablesRootComponent
 import com.denchic45.studiversity.ui.schedule.ScheduleComponent
 import com.denchic45.studiversity.ui.settings.SettingsComponent
-import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.role.model.Role
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
@@ -46,29 +40,8 @@ class MainComponent(
     findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootComponent,
     yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootComponent,
-    profileComponent: (RootNavigator, UUID, ComponentContext) -> ProfileComponent,
     scheduleComponent: (ComponentContext) -> ScheduleComponent,
-    courseComponent: (
-        onFinish: () -> Unit,
-        rootNavigator: RootNavigator,
-        UUID,
-        ComponentContext,
-    ) -> CourseComponent,
     adminDashboardRootComponent: (ComponentContext) -> AdminDashboardRootComponent,
-    courseWorkComponent: (
-        onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
-        onFinish: () -> Unit,
-        courseId: UUID,
-        elementId: UUID,
-        ComponentContext,
-    ) -> CourseWorkComponent,
-    courseWorkEditorComponent: (
-        onFinish: () -> Unit,
-        courseId: UUID,
-        workId: UUID?,
-        topicId: UUID?,
-        ComponentContext,
-    ) -> CourseWorkEditorComponent,
     yourCourseWorksRootComponent: (ComponentContext) -> YourCourseWorksRootComponent,
     settingsComponent: (ComponentContext) -> SettingsComponent,
     interactor: MainInteractor,
@@ -85,11 +58,6 @@ class MainComponent(
         initialConfiguration = Config.YourTimetables,
         childFactory = { config, context ->
             when (config) {
-//                is Config.YourProfile -> Child.YourProfile(profileComponent(
-//                    stack.value.active.instance,
-//                    userInfo.value.ifSuccess { it.id } ?: error("Id required"),
-//                    context
-//                ))
                 is Config.YourTimetables -> Child.YourTimetables(
                     yourTimetablesRootComponent(context)
                 )
@@ -99,47 +67,6 @@ class MainComponent(
                 )
 
                 Config.YourCourseWorks -> Child.YourWorks(yourCourseWorksRootComponent(context))
-//                is Config.StudyGroup -> Child.StudyGroup(
-//                    studyGroupComponent(
-//                        { navigation.bringToFront(Config.Course(it)) },
-//                        { navigation.bringToFront(Config.StudyGroup(it)) },
-//                        config.studyGroupId,
-//                        context
-//                    )
-//                )
-
-//                is Config.Course -> Child.Course(
-//                    courseComponent(
-//                        navigation::pop,
-//                        { navigation.bringToFront(Config.StudyGroup(it)) },
-//                        config.courseId,
-//                        context
-//                    )
-//                )
-
-//                is Config.YourCourse -> Child.YourCourse(
-//                    courseComponent(
-//                        navigation::pop,
-//                        { navigation.bringToFront(Config.StudyGroup(it)) },
-//                        config.courseId,
-//                        context
-//                    )
-//                )
-
-//                is Config.CourseWork -> Child.CourseWork(
-//                    courseWorkComponent({ courseId, workId ->
-//                        navigation.push(
-//                            Config.CourseWorkEditor(
-//                                courseId,
-//                                workId
-//                            )
-//                        )
-//                    }, {}, config.courseId, config.workId, context)
-//                )
-
-//                is Config.CourseWorkEditor -> Child.CourseWorkEditor(
-//                    courseWorkEditorComponent({}, config.courseId, config.workId, null, context)
-//                )
 
                 Config.AdminDashboard -> Child.AdminDashboard(
                     adminDashboardRootComponent(context)
@@ -206,7 +133,6 @@ class MainComponent(
 
     init {
         componentScope.launch { interactor.startListeners() }
-//        coroutineScope.launch { mainInteractor.observeHasGroup() }
     }
 
     fun onTimetableClick() {
@@ -223,14 +149,12 @@ class MainComponent(
         slotNavigation.dismiss()
     }
 
-    private val currnetStackNavigation: StackNavigation<RootConfig>
+    private val currentStackNavigation: StackNavigation<RootConfig>
         get() = stack.active.instance.component.navigation
 
     fun onProfileClick() {
-//        navigation.bringToFront(Config.YourProfile)
-
         userInfo.value.onSuccess {
-            currnetStackNavigation.bringToFront(RootConfig.Profile(it.id))
+            currentStackNavigation.bringToFront(RootConfig.Profile(it.id))
         }
 
     }
@@ -246,8 +170,7 @@ class MainComponent(
 
     fun onCourseClick(courseId: UUID) {
         onDialogClose()
-        currnetStackNavigation.bringToFront(RootConfig.Course(courseId))
-//        navigation.bringToFront(Config.Course(courseId))
+        currentStackNavigation.bringToFront(RootConfig.Course(courseId))
     }
 
     fun onAdminDashboardClick() {
@@ -271,10 +194,6 @@ class MainComponent(
     @Parcelize
     sealed interface Config : Parcelable {
 
-//        data object YourProfile : Config {
-//            private fun readResolve(): Any = YourProfile
-//        }
-
         data object YourTimetables : Config {
             private fun readResolve(): Any = YourTimetables
         }
@@ -286,16 +205,6 @@ class MainComponent(
         data object YourCourseWorks : Config {
             private fun readResolve(): Any = YourCourseWorks
         }
-
-//        data class StudyGroup(val studyGroupId: UUID) : Config
-
-//        data class Course(val courseId: UUID) : Config
-
-//        data class YourCourse(val courseId: UUID) : Config
-
-//        data class CourseWork(val courseId: UUID, val workId: UUID) : Config
-
-//        data class CourseWorkEditor(val courseId: UUID, val workId: UUID?) : Config
 
         data object AdminDashboard : Config {
             private fun readResolve(): Any = AdminDashboard
@@ -310,8 +219,6 @@ class MainComponent(
 
     sealed interface Child : PrimaryChild {
 
-//        class YourProfile(val component: ProfileComponent) : Child
-
         class YourTimetables(
             override val component: YourTimetablesRootComponent,
         ) : Child, ChildrenContainerChild, PrimaryChild
@@ -323,26 +230,6 @@ class MainComponent(
         class YourWorks(
             override val component: YourCourseWorksRootComponent,
         ) : Child, ExtraChild
-
-//        class StudyGroup(
-//            override val component: StudyGroupComponent,
-//        ) : Child, ChildrenContainerChild, ExtraChild
-
-//        class Course(
-//            val component: CourseComponent,
-//        ) : Child, ExtraChild
-
-//        class YourCourse(
-//            override val component: CourseComponent,
-//        ) : Child, ChildrenContainerChild, ExtraChild
-
-//        class CourseWork(
-//            val component: CourseWorkComponent
-//        ) : Child, ExtraChild
-
-//        class CourseWorkEditor(
-//            val component: CourseWorkEditorComponent
-//        ) : Child, ExtraChild
 
         class AdminDashboard(
             override val component: AdminDashboardRootComponent,

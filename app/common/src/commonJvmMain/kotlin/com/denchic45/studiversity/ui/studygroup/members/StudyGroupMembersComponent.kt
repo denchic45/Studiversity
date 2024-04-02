@@ -68,16 +68,16 @@ class StudyGroupMembersComponent(
 
     val memberActions = MutableStateFlow<Pair<List<MemberAction>, UUID>?>(null)
 
-    fun onMemberSelect(memberId: UUID) {
+    fun onMemberClick(memberId: UUID) {
         onMemberOpen(memberId)
     }
 
-    fun onMemberEditClick(memberId: UUID) {
+    fun onEditMemberClick(memberId: UUID) {
         onMemberEdit(memberId)
     }
 
 
-    fun onMemberRemoveClick(memberId: UUID) {
+    fun onRemoveMemberClick(memberId: UUID) {
         componentScope.launch {
             if (confirmDialogInteractor.confirmRequest(
                     ConfirmState(
@@ -101,7 +101,7 @@ class StudyGroupMembersComponent(
         }
     }
 
-    fun onMemberRemoveHeadmanClick(memberId: UUID) {
+    fun onRemoveHeadmanClick(memberId: UUID) {
         componentScope.launch {
             removeUserRoleFromScopeUseCase(
                 memberId,

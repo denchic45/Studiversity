@@ -43,7 +43,7 @@ import java.util.*
 
 @Composable
 fun ProfileScreen(component: ProfileComponent) {
-    val state by component.viewState.collectAsState()
+    val state by component.stateResource.collectAsState()
 
     ScreenScaffold(
         topBar = {
@@ -117,7 +117,7 @@ private fun StudentBlockElement(painter: Painter, title: String) {
 
 @Composable
 fun ProfileHeaderBlock(
-    state: ProfileViewState,
+    state: ProfileState,
     onStudyGroupClick: (UUID) -> Unit,
     onMoreStudyGroupsClick: () -> Unit
 ) {
@@ -232,7 +232,7 @@ fun ProfileSideBar(
     profileComponent: ProfileComponent,
     onCloseClick: () -> Unit,
 ) {
-    val profileViewState by profileComponent.viewState.collectAsState()
+    val stateResource by profileComponent.stateResource.collectAsState()
     Column(modifier) {
         TopAppBar(
             title = {},
@@ -249,7 +249,7 @@ fun ProfileSideBar(
 //)
             )
         )
-        profileViewState.onSuccess { profile ->
+        stateResource.onSuccess { profile ->
             val user = profile.user
             ProfileHeader(user.avatarUrl, user.fullName)
 //            if (profile.groupInfo != null) {

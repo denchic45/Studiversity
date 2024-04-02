@@ -17,7 +17,7 @@ import com.denchic45.studiversity.ui.uiTextOf
 
 @Composable
 fun StudyGroupEditorScreen(component: StudyGroupEditorComponent) {
-    val stateResource by component.viewState.collectAsState()
+    val stateResource by component.stateResource.collectAsState()
     val allowSave by component.allowSave.collectAsState()
     val isNew = component.isNew
 

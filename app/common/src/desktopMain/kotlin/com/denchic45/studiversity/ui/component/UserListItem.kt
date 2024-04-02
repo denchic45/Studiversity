@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.components
+package com.denchic45.studiversity.ui.component
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background

@@ -95,7 +95,7 @@ fun SettingsDialog(onCloseRequest: () -> Unit, component: SettingsComponent) {
                         }
 
                         is SettingsComponent.OverlayChild.Security -> {
-
+                            SecurityScreen(child.component)
                         }
 
                         is SettingsComponent.OverlayChild.Notifications -> TODO()

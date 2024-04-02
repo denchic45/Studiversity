@@ -116,7 +116,7 @@ class CourseEditorComponent(
         )
     )
 
-    val viewState = (courseId?.let {
+    val stateResource = (courseId?.let {
         flow<Resource<EditingCourse>> {
             emit(findCourseByIdUseCase(it).map { response ->
                 editingState.apply {

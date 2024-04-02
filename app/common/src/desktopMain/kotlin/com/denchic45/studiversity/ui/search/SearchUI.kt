@@ -75,33 +75,3 @@ private fun <T> SearchContent(
         SearchedItemsContent(component, keyItem, emptyQueryContent, emptyResultContent, itemContent)
     }
 }
-
-//@Composable
-//fun <T> SearchedItemsContent(
-//    keyItem: (T) -> Any,
-//    component: SearchableComponent<T>,
-//    itemContent: @Composable (T) -> Unit,
-//) {
-//    val itemsResource: Resource<List<T>> by component.foundItems.collectAsState()
-//    itemsResource.onSuccess {
-//        LazyColumn(
-//            contentPadding = PaddingValues(
-//                top = 64.dp,
-//                bottom = MaterialTheme.spacing.medium
-//            )
-//        ) {
-//            items(it, key = keyItem) {
-//                Box(modifier = Modifier.clickable { component.onItemClick(it) }) {
-//                    itemContent(it)
-//                }
-//            }
-//        }
-//    }.onLoading {
-//        Box(
-//            modifier = Modifier.fillMaxSize(),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            CircularProgressIndicator()
-//        }
-//    }
-//}

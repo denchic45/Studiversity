@@ -3,6 +3,8 @@ package com.denchic45.studiversity.ui.studygroup
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
@@ -13,11 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import com.denchic45.studiversity.domain.resource.onLoading
-import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.ui.LocalAppBarMediator
+import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
+import com.denchic45.studiversity.ui.ScreenScaffold
 import com.denchic45.studiversity.ui.component.TabIndicator
+import com.denchic45.studiversity.ui.main.AppBarTitle
+import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.profile.ProfileSideBar
+import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorDialog
+import com.denchic45.studiversity.ui.theme.spacing
 
 
 @Composable
@@ -27,29 +32,35 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
     val childSidebar by component.childSidebar.subscribeAsState()
     val allowEdit by component.allowEdit.collectAsState()
 
-    val appBarMediator = LocalAppBarMediator.current
-    studyGroupResource.onSuccess {
-        appBarMediator.title = "Группа ${it.name}"
-    }.onLoading {
-        appBarMediator.title = "Группа"
+    ScreenScaffold(topBar = {
+        CustomAppBar(
+            title = {
+                AppBarTitle(studyGroupResource.takeValueIfSuccess()?.let { "Группа ${it.name}" }.orEmpty())
+                Spacer(Modifier.width(MaterialTheme.spacing.normal))
+            },
+            actions = {
+                if (allowEdit.takeValueIfSuccess() == true)
+                    IconButton(onClick = component::onEditClick) {
+                        Icon(Icons.Outlined.Edit, null)
+                    }
+            }
+        )
+    }) {
+        StudyGroupContent(
+            selectedTab = selectedTab,
+            children = component.childTabs,
+            sidebarChild = childSidebar.child?.instance,
+            onTabSelect = component::onTabSelect,
+            onSidebarClose = component::onSidebarClose
+        )
     }
-
-
-    StudyGroupContent(
-        selectedTab = selectedTab,
-        children = component.childTabs,
-        sidebarChild = childSidebar.child?.instance,
-        onTabSelect = component::onTabSelect,
-        onSidebarClose = component::onSidebarClose
-    )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun StudyGroupContent(
     selectedTab: Int,
     children: List<StudyGroupComponent.TabChild>,
-    sidebarChild: StudyGroupComponent.OverlayChild?,
+    sidebarChild: StudyGroupComponent.SlotChild?,
     onTabSelect: (Int) -> Unit,
     onSidebarClose: () -> Unit,
 ) {
@@ -98,7 +109,7 @@ fun StudyGroupContent(
                                     is StudyGroupComponent.TabChild.Members -> {
                                         SelectableStudyGroupMembersScreen(
                                             component = child.component,
-                                            selectedItemId = (sidebarChild as? StudyGroupComponent.OverlayChild.Member)?.component?.userId
+                                            selectedItemId = (sidebarChild as? StudyGroupComponent.SlotChild.Member)?.component?.userId
                                         )
                                     }
 
@@ -129,14 +140,14 @@ fun StudyGroupContent(
             ) {
                 Box(Modifier.fillMaxWidth(1f)) {
                     when (val child = it) {
-                        is StudyGroupComponent.OverlayChild.Member -> ProfileSideBar(
+                        is StudyGroupComponent.SlotChild.Member -> ProfileSideBar(
                             Modifier,
                             child.component,
                             onSidebarClose
                         )
 
-                        is StudyGroupComponent.OverlayChild.StudyGroupEditor -> TODO()
-                        is StudyGroupComponent.OverlayChild.ScopeMemberEditor -> TODO()
+                        is StudyGroupComponent.SlotChild.StudyGroupEditor -> StudyGroupEditorDialog(child.component)
+                        is StudyGroupComponent.SlotChild.ScopeMemberEditor -> TODO()
                     }
                 }
             }

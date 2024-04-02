@@ -14,22 +14,34 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.ui.LoadingDialog
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.DeleteListItem
+import com.denchic45.studiversity.ui.component.TitleAlertDialog
+import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
 import com.denchic45.studiversity.ui.subject.RemoveSubjectConfirmDialog
 import com.denchic45.studiversity.ui.theme.spacing
 
 @Composable
 fun SubjectEditorDialog(component: SubjectEditorComponent) {
-    val viewStateResource by component.viewState.collectAsState()
+    val stateResource by component.stateResource.collectAsState()
     val allowSave by component.allowSave.collectAsState()
+    val needToConfirmToDismiss by component.needToConfirmToDismiss.collectAsState()
+
+    DismissChangesConfirmDialog(
+        show = needToConfirmToDismiss,
+        onConfirm = component::onDismissRequest,
+        onDismiss = component::onCancelDismiss
+    )
 
     ResourceContent(
-        resource = viewStateResource,
-        onLoading = { LoadingDialog(onDismissRequest = component::onCancel) }
+        resource = stateResource,
+        onLoading = { LoadingDialog(onDismissRequest = component::onDismissRequest) }
     ) { state ->
         AlertDialog(
-            onDismissRequest = component::onCancel,
+            onDismissRequest = component::onDismissRequest,
             title = {
-                Text(text = if (state.isNew) "Новый предмет" else "Редактировать предмет")
+                TitleAlertDialog(
+                    text = if (state.isNew) "Новый предмет" else "Изменить предмет",
+                    onClose = component::onDismissRequest
+                )
             },
             text = {
                 SubjectEditorContent(
@@ -55,8 +67,8 @@ fun SubjectEditorDialog(component: SubjectEditorComponent) {
 //                                .clickable(onClick = component::onIconClick)
 //                        )
                     },
-                    onNameChange = component::onNameType,
-                    onShortnameChange = component::onShortnameType,
+                    onNameChange = component::onNameChange,
+                    onShortnameChange = component::onShortnameChange,
                     onRemoveClick = component::onRemoveClick
                 )
             },
@@ -66,7 +78,7 @@ fun SubjectEditorDialog(component: SubjectEditorComponent) {
                 }
             },
             dismissButton = {
-                TextButton(onClick = component::onCancel) {
+                TextButton(onClick = component::onDismissRequest) {
                     Text("Отменить")
                 }
             }

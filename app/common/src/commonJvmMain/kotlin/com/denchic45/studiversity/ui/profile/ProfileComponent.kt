@@ -91,7 +91,7 @@ class ProfileComponent(
         }
     )
 
-    val viewState: StateFlow<Resource<ProfileViewState>> = combine(
+    val stateResource: StateFlow<Resource<ProfileState>> = combine(
         userFlow,
         userRole,
         studyGroups,
@@ -100,7 +100,7 @@ class ProfileComponent(
     ) { userRes, roleRes, studyGroupsRes, coursesRes, capabilitiesRes ->
         bindResources {
             val user = userRes.bind()
-            user.toProfileViewState(
+            user.toProfileState(
                 roles = roleRes.bind().roles,
                 studyGroups = studyGroupsRes.bind(),
                 courses = coursesRes.bind(),
@@ -111,7 +111,7 @@ class ProfileComponent(
     }.stateInResource(componentScope)
 
     fun onAvatarClick() {
-        viewState.value.onSuccess { profile ->
+        stateResource.value.onSuccess { profile ->
             userFlow.value.onSuccess { user ->
                 slotNavigation.activate(
                     if (profile.self) {

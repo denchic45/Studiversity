@@ -32,7 +32,7 @@ import com.denchic45.studiversity.ui.user.RemoveUserConfirmDialog
 
 @Composable
 fun UserEditorDialog(component: UserEditorComponent) {
-    val state by component.viewState.collectAsState()
+    val stateResource by component.stateResource.collectAsState()
     val allowSave by component.allowSave.collectAsState()
     val needToConfirmToDismiss by component.needToConfirmToDismiss.collectAsState()
 
@@ -42,7 +42,7 @@ fun UserEditorDialog(component: UserEditorComponent) {
         onDismiss = component::onCancelDismiss
     )
 
-    state.onSuccess {
+    stateResource.onSuccess {
         AlertDialog(
             modifier = Modifier.heightIn(max = 648.dp),
             title = {

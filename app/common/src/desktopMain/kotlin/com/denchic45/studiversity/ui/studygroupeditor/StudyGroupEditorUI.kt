@@ -16,7 +16,7 @@ import java.util.*
 
 @Composable
 fun StudyGroupEditorDialog(component: StudyGroupEditorComponent) {
-    val resource by component.viewState.collectAsState()
+    val stateResource by component.stateResource.collectAsState()
     val allowSave by component.allowSave.collectAsState()
     val needToConfirmToDismiss by component.needToConfirmToDismiss.collectAsState()
 
@@ -26,7 +26,7 @@ fun StudyGroupEditorDialog(component: StudyGroupEditorComponent) {
         onDismiss = component::onCancelDismiss
     )
 
-    resource.onSuccess { state ->
+    stateResource.onSuccess { state ->
         AlertDialog(
             onDismissRequest = component::onDismissRequest,
             title = {
@@ -63,7 +63,12 @@ fun StudyGroupEditorPreview() {
         StudyGroupEditorContent(
             state = EditingStudyGroup(false).apply {
                 this.name = "ПО-45б"
-                this.specialty = SpecialtyResponse(UUID.randomUUID(), "Программная инженерия", shortname = "ПО")
+                this.specialty = SpecialtyResponse(
+                    id = UUID.randomUUID(),
+                    name = "Программная инженерия",
+                    shortname = "ПО",
+                    code = null
+                )
                 this.startAcademicYear = 2023
                 this.endAcademicYear = 2027
             },

@@ -47,7 +47,7 @@ class RoomEditorComponent(
 
     private val editingState = EditingRoom(roomId == null)
 
-    val viewState = (roomId?.let {
+    val stateResource = (roomId?.let {
         findRoomByIdUseCase(it).mapResource { response ->
             fieldEditor.updateOldValues(
                 "name" to response.name,
@@ -76,22 +76,19 @@ class RoomEditorComponent(
         )
     )
 
-    fun onNameType(typedName: String) {
-        editingState.apply {
-            name = typedName
-            updateSaveEnabled()
-        }
+    fun onNameChange(text: String) {
+        editingState.name = text
+        updateSaveEnabled()
+
     }
 
     private fun updateSaveEnabled() {
         editingState.allowSave = validator.validate() && fieldEditor.hasChanges()
     }
 
-    fun onShortnameType(typedName: String) {
-        editingState.apply {
-            shortname = typedName
-            updateSaveEnabled()
-        }
+    fun onShortnameChange(text: String) {
+        editingState.shortname = text
+        updateSaveEnabled()
     }
 
     fun onCloseClick() {
@@ -124,12 +121,12 @@ class RoomEditorComponent(
             result.onSuccess { onFinish() }
         }
     }
+}
 
-    @Stable
-    class EditingRoom(val isNew: Boolean) {
-        var name by mutableStateOf("")
-        var shortname by mutableStateOf("")
+@Stable
+class EditingRoom(val isNew: Boolean) {
+    var name by mutableStateOf("")
+    var shortname by mutableStateOf("")
 
-        var allowSave by mutableStateOf(false)
-    }
+    var allowSave by mutableStateOf(false)
 }

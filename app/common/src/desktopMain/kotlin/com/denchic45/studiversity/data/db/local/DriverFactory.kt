@@ -19,14 +19,14 @@ actual class DriverFactory {
         val url = "jdbc:sqlite:${databaseFile.absolutePath}"
         val driver = JdbcSqliteDriver(url, Properties())
         val exists = system.exists(databasePath)
-        println("Exists: $exists")
-        println("path: $databasePath")
+        println("Database exists: $exists")
+        println("Database path: $databasePath")
         if (!exists) {
             GlobalScope.launch {
                 AppDatabase.Schema.create(driver)
             }
         }
-        println("version: ${AppDatabase.Schema.version}")
+        println("Database version: ${AppDatabase.Schema.version}")
 
         driver
     }

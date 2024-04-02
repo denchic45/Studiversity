@@ -45,9 +45,9 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
 
     childSidebar.child.let {
         when (val child = it?.instance) {
-            is StudyGroupComponent.OverlayChild.Member -> ProfileScreen(child.component)
-            is StudyGroupComponent.OverlayChild.StudyGroupEditor -> StudyGroupEditorScreen(child.component)
-            is StudyGroupComponent.OverlayChild.ScopeMemberEditor -> {
+            is StudyGroupComponent.SlotChild.Member -> ProfileScreen(child.component)
+            is StudyGroupComponent.SlotChild.StudyGroupEditor -> StudyGroupEditorScreen(child.component)
+            is StudyGroupComponent.SlotChild.ScopeMemberEditor -> {
                 ScopeMemberEditorScreen(child.component)
             }
             null -> {
