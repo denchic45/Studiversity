@@ -31,8 +31,8 @@ import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.component.IconTitleBox
-import com.denchic45.studiversity.ui.component.StudyGroupListItem
 import com.denchic45.studiversity.ui.periodeditor.PeriodEditorScreen
+import com.denchic45.studiversity.ui.studygroup.StudyGroupListItem
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.DayTimetableContent
 import com.denchic45.studiversity.ui.timetable.getMonthTitle

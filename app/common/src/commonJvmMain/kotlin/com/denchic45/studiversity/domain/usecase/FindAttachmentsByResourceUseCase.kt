@@ -2,8 +2,8 @@ package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.repository.AttachmentRepository
 import com.denchic45.studiversity.data.service.DownloadsService
-import com.denchic45.studiversity.domain.model.Attachment2
 import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.ui.model.AttachmentItem
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 import java.util.*
@@ -17,7 +17,7 @@ class FindAttachmentsByResourceUseCase(
     operator fun invoke(
         resourceType: String,
         resourceId: UUID
-    ): Flow<Resource<List<Attachment2>>> {
+    ): Flow<Resource<List<AttachmentItem>>> {
         return observeAttachments(
             attachmentRepository.observeByResource(resourceType, resourceId),
             resourceId

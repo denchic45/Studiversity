@@ -19,10 +19,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.zIndex
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.model.UserItem
-import com.denchic45.studiversity.ui.component.StudyGroupListItem
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.search.SearchedItemsContent
 import com.denchic45.studiversity.ui.search.UserListItem
+import com.denchic45.studiversity.ui.studygroup.StudyGroupListItem
 import kotlinx.coroutines.launch
 
 @Composable
@@ -102,7 +102,7 @@ fun FinderContent(
             )
         }
     }
-    Divider()
+    HorizontalDivider()
     HorizontalPager(
         state = pagerState
     ) {

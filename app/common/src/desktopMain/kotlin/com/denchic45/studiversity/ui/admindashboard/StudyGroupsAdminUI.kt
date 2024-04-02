@@ -12,8 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.model.StudyGroupItem
-import com.denchic45.studiversity.ui.component.StudyGroupListItem
 import com.denchic45.studiversity.ui.studygroup.RemoveStudyGroupConfirmDialog
+import com.denchic45.studiversity.ui.studygroup.StudyGroupListItem
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorDialog
 import java.util.*
 

@@ -20,20 +20,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.domain.model.FileState
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.studiversity.api.course.work.model.CourseWorkType
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.attachment.AttachmentListItem
 import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsComponent
 import com.denchic45.studiversity.ui.model.AttachmentItem
+import com.denchic45.studiversity.ui.model.FileState
 import com.denchic45.studiversity.ui.theme.AppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.util.AttachmentViewer
 import com.denchic45.studiversity.util.collectWithLifecycle
 import com.denchic45.studiversity.util.findActivity
-import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.studiversity.api.course.work.model.CourseWorkType
 import okio.Path.Companion.toPath
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -124,7 +124,7 @@ fun CourseWorkAttachments(
         if (attachments.isNotEmpty()) {
             HeaderItem(name = "Прикрепленные файлы", horizontalPadding = 0.dp)
             LazyRow {
-                items(attachments, key = { it.attachmentId }) {
+                items(attachments, key = { it.id }) {
                     AttachmentListItem(item = it, onClick = { onAttachmentClick(it) })
                 }
             }
@@ -186,9 +186,9 @@ fun CourseWorkDetailsPreview() {
                     CourseWorkAttachments(Resource.Success(
                         listOf(
                             AttachmentItem.FileAttachmentItem(
-                                attachmentId = UUID.randomUUID(),
+                                id = UUID.randomUUID(),
                                 name = "image",
-                                previewUrl = null,
+                                thumbnailUrl = null,
                                 path = "image.png".toPath(),
                                 state = FileState.Preview
                             )

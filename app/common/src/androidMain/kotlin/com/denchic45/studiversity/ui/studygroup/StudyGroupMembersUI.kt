@@ -19,16 +19,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.common.R
-import com.denchic45.studiversity.domain.model.GroupMembers
+import com.denchic45.studiversity.domain.model.StudyGroupMembers
+import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.component.IconTitleBox
+import com.denchic45.studiversity.ui.search.UserAvatarImage
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.studygroup.members.StudyGroupMembersComponent
 import com.denchic45.studiversity.ui.theme.spacing
-import java.util.UUID
+import java.util.*
 
 @Composable
 fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
@@ -50,7 +52,7 @@ fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
 
 @Composable
 fun StudyGroupMembersContent(
-    members: GroupMembers,
+    members: StudyGroupMembers,
     allowEditMembers: Boolean,
     onMemberClick: (UUID) -> Unit,
     onMemberEditClick: (UUID) -> Unit,
@@ -92,7 +94,8 @@ fun StudyGroupMembersContent(
                                 text = { Text("Назначить старостой") },
                                 onClick = {
                                     expanded = false
-                                    onMemberSetHeadmanClick(memberId) }
+                                    onMemberSetHeadmanClick(memberId)
+                                }
                             )
                         }
                     }
@@ -116,16 +119,13 @@ fun StudyGroupMembersContent(
         }
 
     LazyColumn(contentPadding = PaddingValues(bottom = MaterialTheme.spacing.medium)) {
-        members.curator?.let { userItem ->
-            item { HeaderItem(name = "Куратор") }
-            item(key = members.curator.id) {
-                UserListItem(
-                    item = members.curator,
-                    modifier = Modifier.clickable { onMemberClick(userItem.id) },
-                    trailingContent = {
-                        memberTrailingContent(members.curator.id, false)
-                    }
-                )
+        members.curators.takeIf(List<UserItem>::isNotEmpty)?.let { curators ->
+            item { HeaderItem(if (curators.size == 1) "Куратор" else "Кураторы") }
+            items(curators) {
+                com.denchic45.studiversity.ui.user.UserListItem(
+                    item = it,
+                    avatarContent = { UserAvatarImage(it.avatarUrl) },
+                    onClick = { onMemberClick(it.id) })
             }
         }
         if (members.students.isNotEmpty()) {

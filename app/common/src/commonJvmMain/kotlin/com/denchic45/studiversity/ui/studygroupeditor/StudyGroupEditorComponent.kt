@@ -15,6 +15,7 @@ import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.getOptProperty
 import com.denchic45.studiversity.uivalidator.condition.Condition
+import com.denchic45.studiversity.uivalidator.condition.observable
 import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.uivalidator.validator.observable
@@ -70,16 +71,31 @@ class StudyGroupEditorComponent(
             },
             ValueValidator(
                 value = editingState::startAcademicYear,
-                conditions = listOf(Condition { it != 0 })
-            ).observable { valid ->
-                editingState.startYearMessage = "Год начала обязателен".takeUnless { valid }
-            },
+                conditions = listOf(
+                    Condition<Int> { it != 0 }
+                        .observable { valid ->
+                            editingState.startYearMessage = "Год начала обязателен".takeUnless { valid }
+                        },
+                    Condition<Int> { it >= 200 }
+                        .observable { valid ->
+                            editingState.startYearMessage = "Введен недопустимый год".takeUnless { valid }
+                        }
+                )
+            ),
             ValueValidator(
                 value = editingState::endAcademicYear,
-                conditions = listOf(Condition { it != 0 })
-            ).observable { valid ->
-                editingState.endYearMessage = "Год окончания обязателен".takeUnless { valid }
-            },
+                conditions = listOf(
+                    Condition<Int> { it != 0 }
+                        .observable { valid ->
+                            editingState.endYearMessage = "Год окончания обязателен".takeUnless { valid }
+                        },
+                    Condition<Int> { it < editingState.startAcademicYear }
+                        .observable { valid ->
+                            editingState.endYearMessage =
+                                "Год окончания не может быть меньше начального".takeUnless { valid }
+                        }
+                )
+            ),
         )
     )
 

@@ -1,26 +1,24 @@
 package com.denchic45.studiversity.domain.usecase
 
 import com.denchic45.studiversity.data.service.DownloadsService
-import com.denchic45.studiversity.domain.model.Attachment2
-import com.denchic45.studiversity.domain.model.FileAttachment2
-import com.denchic45.studiversity.domain.model.FileState
-import com.denchic45.studiversity.domain.model.LinkAttachment2
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.flatMapResourceFlow
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.resourceOf
+import com.denchic45.studiversity.ui.model.AttachmentItem
+import com.denchic45.studiversity.ui.model.FileState
 import kotlinx.coroutines.flow.*
 import java.util.*
 
-abstract class FindAttachmentsUseCase constructor(
+abstract class FindAttachmentsUseCase(
     private val downloadService: DownloadsService,
 ) {
     private val observableDownloads: MutableMap<UUID, Flow<FileState>> = mutableMapOf()
 
     protected fun observeAttachments(
-        flow: Flow<Resource<List<Attachment2>>>,
+        flow: Flow<Resource<List<AttachmentItem>>>,
         ownerId: UUID
-    ): Flow<Resource<List<Attachment2>>> {
+    ): Flow<Resource<List<AttachmentItem>>> {
         println("OBSERVE_ATTACHMENTS: $flow")
         return flow.onEach {
             it.onSuccess {
@@ -35,23 +33,23 @@ abstract class FindAttachmentsUseCase constructor(
     }
 
     private fun getAttachmentResource(
-        attachments: List<Attachment2>,
+        attachments: List<AttachmentItem>,
         states: Map<UUID, FileState>
-    ): Resource.Success<List<Attachment2>> = resourceOf(
+    ): Resource.Success<List<AttachmentItem>> = resourceOf(
         attachments.map { attachment ->
             when (attachment) {
-                is FileAttachment2 -> if (attachment.state == FileState.Preview)
+                is AttachmentItem.FileAttachmentItem -> if (attachment.state == FileState.Preview)
                     attachment.copy(state = states.getValue(attachment.id))
                 else attachment
 
-                is LinkAttachment2 -> attachment
+                is AttachmentItem.LinkAttachmentItem -> attachment
             }
         }
     )
 
-    private fun observeDownloadsFlow(attachments: List<Attachment2>, ownerId: UUID): Flow<Map<UUID, FileState>> {
+    private fun observeDownloadsFlow(attachments: List<AttachmentItem>, ownerId: UUID): Flow<Map<UUID, FileState>> {
         println("DOWNLOAD_FILE observeDownloadsFlow: $ownerId $attachments")
-        val allFileAttachments = attachments.filterIsInstance<FileAttachment2>()
+        val allFileAttachments = attachments.filterIsInstance<AttachmentItem.FileAttachmentItem>()
         val previewFileAttachments = allFileAttachments
             .filter { it.state == FileState.Preview }
 

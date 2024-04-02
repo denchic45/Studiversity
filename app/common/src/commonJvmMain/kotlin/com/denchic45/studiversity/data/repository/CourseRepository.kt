@@ -1,12 +1,10 @@
 package com.denchic45.studiversity.data.repository
 
-import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.CourseTopicLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.StudyGroupCourseLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.StudyGroupLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SubjectLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
+import com.denchic45.studiversity.api.course.CourseApi
+import com.denchic45.studiversity.api.course.model.CourseResponse
+import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.course.model.UpdateCourseRequest
+import com.denchic45.studiversity.data.db.local.source.*
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.mapper.toCourseEntity
@@ -16,17 +14,13 @@ import com.denchic45.studiversity.data.observeResource
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.api.course.CourseApi
-import com.denchic45.studiversity.api.course.model.CourseResponse
-import com.denchic45.studiversity.api.course.model.CreateCourseRequest
-import com.denchic45.studiversity.api.course.model.UpdateCourseRequest
 import com.denchic45.studiversity.util.UserId
 import com.denchic45.studiversity.util.userIdOfMe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CourseRepository(
@@ -34,12 +28,11 @@ class CourseRepository(
     override val userLocalDataSource: UserLocalDataSource,
     override val studyGroupLocalDataSource: StudyGroupLocalDataSource,
     override val courseLocalDataSource: CourseLocalDataSource,
-    override val specialtyLocalDataSource: SpecialtyLocalDataSource,
     override val courseTopicLocalDataSource: CourseTopicLocalDataSource,
     override val studyGroupCourseLocalDataSource: StudyGroupCourseLocalDataSource,
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val courseApi: CourseApi,
-) : NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
+) : NetworkServiceOwner, SaveCourseRepository,
     FindByContainsNameRepository<CourseResponse> {
 
     override fun findByContainsName(text: String): Flow<Resource<List<CourseResponse>>> {

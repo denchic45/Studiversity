@@ -7,7 +7,9 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
-import com.denchic45.studiversity.domain.model.FileState
+import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
+import com.denchic45.studiversity.api.course.material.model.CreateCourseMaterialRequest
+import com.denchic45.studiversity.api.course.material.model.UpdateCourseMaterialRequest
 import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.getOptProperty
@@ -15,7 +17,7 @@ import com.denchic45.studiversity.ui.DropdownMenuItem
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.model.AttachmentItem
-import com.denchic45.studiversity.ui.model.toAttachmentItems
+import com.denchic45.studiversity.ui.model.FileState
 import com.denchic45.studiversity.ui.model.toRequest
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.ui.uiTextOf
@@ -24,9 +26,6 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
-import com.denchic45.studiversity.api.course.material.model.CreateCourseMaterialRequest
-import com.denchic45.studiversity.api.course.material.model.UpdateCourseMaterialRequest
 import com.denchic45.studiversity.util.toUUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -84,7 +83,7 @@ class CourseMaterialEditorComponent(
         removedAttachmentIds
     ) { items, addedItems, removedIds ->
         items.map { attachments ->
-            (attachments.filter { it.id !in removedIds }.toAttachmentItems() + addedItems)
+            (attachments.filter { it.id !in removedIds } + addedItems)
         }
     }.stateInResource(componentScope)
 
@@ -190,7 +189,7 @@ class CourseMaterialEditorComponent(
             componentScope.launch {
                 if (confirmDialogInteractor.receiveConfirm()) {
                     val item = attachments[position]
-                    item.attachmentId.let { removedAttachmentId ->
+                    item.id.let { removedAttachmentId ->
                         removedAttachmentIds.update { it + removedAttachmentId }
                     }
                     _addedAttachmentItems.update { it - item }
@@ -205,7 +204,7 @@ class CourseMaterialEditorComponent(
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
                 FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
                 FileState.Preview, FileState.FailDownload -> componentScope.launch {
-                    downloadFileUseCase(item.attachmentId)
+                    downloadFileUseCase(item.id)
                 }
 
                 else -> {}

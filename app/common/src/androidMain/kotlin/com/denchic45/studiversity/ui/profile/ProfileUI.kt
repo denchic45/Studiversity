@@ -34,7 +34,7 @@ import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
 import com.denchic45.studiversity.ui.appbar.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
-import com.denchic45.studiversity.ui.component.StudyGroupListItem
+import com.denchic45.studiversity.ui.studygroup.StudyGroupListItem
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.ui.usercourses.UserCoursesDialog
@@ -188,11 +188,11 @@ fun FullAvatarScreen(
 
 @Composable
 fun ProfileContent(
-    viewState: Resource<ProfileState>,
+    stateResource: Resource<ProfileState>,
     onAvatarClick: () -> Unit,
     onStudyGroupClick: (UUID) -> Unit,
 ) {
-    ResourceContent(resource = viewState) { profile ->
+    ResourceContent(resource = stateResource) { profile ->
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Row(
                 modifier = Modifier

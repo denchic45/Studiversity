@@ -1,7 +1,8 @@
 package com.denchic45.studiversity.ui.search
 
 import androidx.compose.runtime.Composable
-import com.denchic45.studiversity.ui.component.StudyGroupListItem
+import com.denchic45.studiversity.domain.model.StudyGroupItem
+import com.denchic45.studiversity.ui.studygroup.StudyGroupListItem
 
 @Composable
 fun StudyGroupChooserScreen(
@@ -9,7 +10,7 @@ fun StudyGroupChooserScreen(
 ) {
     SearchScreen(
         component = component,
-        keyItem = { it.id },
+        keyItem = StudyGroupItem::id,
         itemContent = {
             StudyGroupListItem(it)
         })

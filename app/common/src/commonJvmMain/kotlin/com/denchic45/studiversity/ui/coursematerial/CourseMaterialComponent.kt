@@ -1,39 +1,23 @@
 package com.denchic45.studiversity.ui.coursematerial
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.model.FileState
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.mapResource
-import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.domain.resource.resourceOf
-import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
-import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
-import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
-import com.denchic45.studiversity.domain.usecase.FindCourseMaterialAttachmentsUseCase
-import com.denchic45.studiversity.domain.usecase.FindCourseMaterialUseCase
-import com.denchic45.studiversity.domain.usecase.RemoveCourseElementUseCase
+import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
+import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.domain.resource.*
+import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.model.AttachmentItem
-import com.denchic45.studiversity.ui.model.toAttachmentItems
+import com.denchic45.studiversity.ui.model.FileState
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
-import com.denchic45.studiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CourseMaterialComponent(
@@ -79,7 +63,6 @@ class CourseMaterialComponent(
     }
 
     val attachments = findCourseMaterialAttachmentsUseCase( elementId)
-        .mapResource { it.toAttachmentItems() }
         .stateInResource(componentScope, SharingStarted.Eagerly)
 
     private val capabilities = checkUserCapabilitiesInScopeUseCase(
@@ -100,7 +83,7 @@ class CourseMaterialComponent(
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
                 FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
                 FileState.FailDownload, FileState.Preview -> componentScope.launch {
-                    downloadFileUseCase(item.attachmentId)
+                    downloadFileUseCase(item.id)
                 }
 
                 else -> {}

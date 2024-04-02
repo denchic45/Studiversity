@@ -2,18 +2,14 @@ package com.denchic45.studiversity.data.service
 
 import android.content.Context
 import androidx.lifecycle.asFlow
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import androidx.work.workDataOf
+import androidx.work.*
 import com.denchic45.studiversity.data.db.local.source.AttachmentLocalDataSource
 import com.denchic45.studiversity.data.workmanager.DownloadWorker
-import com.denchic45.studiversity.domain.model.FileState
+import com.denchic45.studiversity.ui.model.FileState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 actual class DownloadsService actual constructor() {
     lateinit var context: Context

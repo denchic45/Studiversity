@@ -3,7 +3,7 @@ package com.denchic45.studiversity.ui.studygroup.members
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.api.role.model.Role
-import com.denchic45.studiversity.domain.model.GroupMembers
+import com.denchic45.studiversity.domain.model.StudyGroupMembers
 import com.denchic45.studiversity.domain.model.toUserItem
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.mapResource
@@ -22,7 +22,7 @@ import java.util.*
 
 @Inject
 class StudyGroupMembersComponent(
-    findGroupMembersUseCase: FindGroupMembersUseCase,
+    findStudyGroupMembersUseCase: FindStudyGroupMembersUseCase,
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
@@ -49,20 +49,17 @@ class StudyGroupMembersComponent(
         .mapResource { it.hasCapability(Capability.WriteStudyGroup) }
         .stateInResource(componentScope)
 
-    val members: StateFlow<Resource<GroupMembers>> = flow {
-        emit(findGroupMembersUseCase(studyGroupId))
+    val members: StateFlow<Resource<StudyGroupMembers>> = flow {
+        emit(findStudyGroupMembersUseCase(studyGroupId))
     }.mapResource { scopeMembers ->
-        val curatorMember = scopeMembers.firstOrNull { member -> Role.Curator in member.roles }
-        val groupCurator = curatorMember?.user?.toUserItem()
-        val students = (curatorMember?.let { scopeMembers - it }
-            ?: scopeMembers).map {
-            it.user.toUserItem(if (it.roles.contains(Role.Headman)) "Староста" else null)
-        }
-        GroupMembers(
-            groupId = studyGroupId,
-            curator = groupCurator,
+        val curators = scopeMembers.filter { member -> Role.Curator in member.roles }
+        val students = scopeMembers.filter { member -> Role.Student in member.roles }
+        StudyGroupMembers(
+            studyGroupId = studyGroupId,
+            curators = curators.map { it.user.toUserItem() },
             headmanId = scopeMembers.find { member -> Role.Headman in member.roles }?.user?.id,
-            students = students
+            students = students.map { it.user.toUserItem(if (it.roles.contains(Role.Headman)) "Староста" else null) },
+            otherMembers = (scopeMembers - curators.toSet() - students.toSet()).map { it.user.toUserItem() }
         )
     }.stateInResource(componentScope)
 

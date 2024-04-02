@@ -1,17 +1,15 @@
 package com.denchic45.studiversity.ui.attachments
 
 import com.arkivanov.decompose.ComponentContext
-import com.denchic45.studiversity.domain.model.Attachment2
-import com.denchic45.studiversity.domain.model.FileState
+import com.denchic45.studiversity.api.course.element.model.AttachmentRequest
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.DownloadFileUseCase
 import com.denchic45.studiversity.ui.model.AttachmentItem
-import com.denchic45.studiversity.ui.model.toAttachmentItems
+import com.denchic45.studiversity.ui.model.FileState
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.course.element.model.AttachmentRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -23,7 +21,7 @@ import java.util.*
 class AttachmentsComponent(
     private val downloadFileUseCase: DownloadFileUseCase,
     @Assisted
-    attachments: Flow<Resource<List<Attachment2>>>,
+    attachments: Flow<Resource<List<AttachmentItem>>>,
     @Assisted
     private val onAddAttachment: ((AttachmentRequest) -> Unit)?,
     @Assisted
@@ -32,7 +30,7 @@ class AttachmentsComponent(
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
-    val attachments = attachments.mapResource { it.toAttachmentItems() }.stateInResource(componentScope)
+    val attachments = attachments.stateInResource(componentScope)
 
     val openAttachment = MutableSharedFlow<AttachmentItem>()
 
@@ -41,7 +39,7 @@ class AttachmentsComponent(
             is AttachmentItem.FileAttachmentItem -> when (item.state) {
                 FileState.Downloaded -> componentScope.launch { openAttachment.emit(item) }
                 FileState.Preview, FileState.FailDownload -> componentScope.launch {
-                    downloadFileUseCase(item.attachmentId)
+                    downloadFileUseCase(item.id)
                 }
 
                 else -> {}

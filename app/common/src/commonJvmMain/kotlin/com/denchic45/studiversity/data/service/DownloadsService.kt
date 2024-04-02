@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.data.service
 
-import com.denchic45.studiversity.domain.model.FileState
+import com.denchic45.studiversity.ui.model.FileState
 import kotlinx.coroutines.flow.Flow
-import java.util.UUID
+import java.util.*
 
 expect class DownloadsService() {
 

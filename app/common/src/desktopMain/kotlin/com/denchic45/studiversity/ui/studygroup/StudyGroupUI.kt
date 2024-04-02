@@ -129,7 +129,6 @@ fun StudyGroupContent(
             }
         }
         sidebarChild?.let {
-//            Spacer(Modifier.width(MaterialTheme.spacing.small))
             Card(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxHeight()

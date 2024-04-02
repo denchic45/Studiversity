@@ -2,13 +2,13 @@ package com.denchic45.studiversity.data.service
 
 import com.denchic45.studiversity.data.db.local.source.AttachmentLocalDataSource
 import com.denchic45.studiversity.data.storage.AttachmentStorage
-import com.denchic45.studiversity.domain.model.FileState
+import com.denchic45.studiversity.ui.model.FileState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 actual class DownloadsService actual constructor() {
     lateinit var attachmentLocalDataSource: AttachmentLocalDataSource

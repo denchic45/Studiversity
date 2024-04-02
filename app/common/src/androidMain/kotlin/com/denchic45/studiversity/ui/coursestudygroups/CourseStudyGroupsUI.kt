@@ -18,8 +18,8 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
-import com.denchic45.studiversity.ui.component.StudyGroupListItem
 import com.denchic45.studiversity.ui.search.StudyGroupChooserScreen
+import com.denchic45.studiversity.ui.studygroup.StudyGroupListItem
 import com.denchic45.studiversity.ui.uiTextOf
 
 @Composable
@@ -59,5 +59,4 @@ fun CourseStudyGroupsScreen(component: CourseStudyGroupsComponent) {
             }
         }
     }
-
 }

@@ -14,16 +14,6 @@ data class UserItem(
     val title: String = "$firstName $surname"
 }
 
-fun GroupMember.toUserItem(groupMembers: GroupMembers): UserItem {
-    return UserItem(
-        id = id,
-        firstName = firstName,
-        surname = surname,
-        avatarUrl = photoUrl,
-        subtitle = if (groupMembers.isHeadman(this)) "Староста" else null
-    )
-}
-
 fun UserResponse.toUserItem(subtitle: String? = null): UserItem {
     return UserItem(
         id = id,

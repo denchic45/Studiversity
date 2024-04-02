@@ -1,24 +1,19 @@
 package com.denchic45.studiversity.data.repository
 
-import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.DayLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.EventLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.StudyGroupLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
+import com.denchic45.studiversity.api.timetable.TimetableApi
+import com.denchic45.studiversity.api.timetable.model.PeriodsSorting
+import com.denchic45.studiversity.api.timetable.model.PutTimetableRequest
+import com.denchic45.studiversity.data.db.local.source.*
 import com.denchic45.studiversity.data.fetchObservingResource
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.studiversity.api.timetable.TimetableApi
-import com.denchic45.studiversity.api.timetable.model.PeriodsSorting
-import com.denchic45.studiversity.api.timetable.model.PutTimetableRequest
 import com.denchic45.studiversity.util.UserId
 import com.denchic45.studiversity.util.toUUID
 import kotlinx.coroutines.flow.flow
 import me.tatarka.inject.annotations.Inject
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @Inject
 class TimetableRepository(
@@ -27,11 +22,11 @@ class TimetableRepository(
     private val courseLocalDataSource: CourseLocalDataSource,
     private val dayLocalDataSource: DayLocalDataSource,
     private val userPreferences: UserPreferences,
-    override val userLocalDataSource: UserLocalDataSource,
-    override val studyGroupLocalDataSource: StudyGroupLocalDataSource,
-    override val specialtyLocalDataSource: SpecialtyLocalDataSource,
+    val userLocalDataSource: UserLocalDataSource,
+    val studyGroupLocalDataSource: StudyGroupLocalDataSource,
+    val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val timetableApi: TimetableApi,
-) : NetworkServiceOwner, SaveGroupOperation {
+) : NetworkServiceOwner {
 
     fun findEventsOfDay(
         date: LocalDate,

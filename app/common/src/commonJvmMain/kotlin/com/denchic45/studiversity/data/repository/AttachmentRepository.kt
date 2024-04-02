@@ -1,5 +1,7 @@
 package com.denchic45.studiversity.data.repository
 
+import com.denchic45.studiversity.api.attachment.AttachmentApi
+import com.denchic45.studiversity.api.course.element.model.*
 import com.denchic45.studiversity.data.db.local.source.AttachmentLocalDataSource
 import com.denchic45.studiversity.data.db.local.source.AttachmentReferenceLocalDataSource
 import com.denchic45.studiversity.data.db.local.suspendedTransaction
@@ -7,16 +9,12 @@ import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.observeResource
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.data.storage.AttachmentStorage
-import com.denchic45.studiversity.domain.model.Attachment2
-import com.denchic45.studiversity.domain.model.FileAttachment2
-import com.denchic45.studiversity.domain.model.FileState
-import com.denchic45.studiversity.domain.model.LinkAttachment2
 import com.denchic45.studiversity.domain.resource.EmptyResource
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.entity.AppDatabase
 import com.denchic45.studiversity.entity.Attachment
-import com.denchic45.studiversity.api.attachment.AttachmentApi
-import com.denchic45.studiversity.api.course.element.model.*
+import com.denchic45.studiversity.ui.model.AttachmentItem
+import com.denchic45.studiversity.ui.model.FileState
 import com.denchic45.studiversity.util.toUUID
 import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +34,10 @@ class AttachmentRepository(
     private val database: AppDatabase
 ) : NetworkServiceOwner {
 
-    fun observeByResource(resource: String, resourceId: UUID): Flow<Resource<List<Attachment2>>> {
+    fun observeByResource(
+        resource: String,
+        resourceId: UUID
+    ): Flow<Resource<List<AttachmentItem>>> {
         return observeResource(
             query = getAttachmentsByReferenceId(resourceId).distinctUntilChanged(),
             fetch = { attachmentApi.getByResourceId(resource, resourceId) },
@@ -44,33 +45,39 @@ class AttachmentRepository(
         )
     }
 
-    fun observeByCourseWork(workId: UUID): Flow<Resource<List<Attachment2>>> {
+    fun observeByCourseWork(workId: UUID): Flow<Resource<List<AttachmentItem>>> {
         return observeByResource("course-works", workId)
     }
 
-    fun observeByCourseMaterial(materialId: UUID): Flow<Resource<List<Attachment2>>> {
+    fun observeByCourseMaterial(materialId: UUID): Flow<Resource<List<AttachmentItem>>> {
         return observeByResource("course-materials", materialId)
     }
 
-    fun observeBySubmission(submissionId: UUID): Flow<Resource<List<Attachment2>>> {
+    fun observeBySubmission(submissionId: UUID): Flow<Resource<List<AttachmentItem>>> {
         return observeByResource("work-submissions", submissionId)
     }
 
-    private fun getAttachmentsByReferenceId(referenceId: UUID): Flow<List<Attachment2>> {
+    private fun getAttachmentsByReferenceId(referenceId: UUID): Flow<List<AttachmentItem>> {
         return attachmentLocalDataSource.getByReferenceId(referenceId.toString())
             .map { attachmentEntities ->
                 attachmentEntities.map { entity ->
                     val id = entity.attachment_id.toUUID()
                     when (entity.type) {
-                        AttachmentType.FILE -> FileAttachment2(
-                            id = id,
+                        AttachmentType.FILE -> AttachmentItem.FileAttachmentItem(
                             name = entity.attachment_name,
                             path = entity.path!!.toPath(),
-                            state = if (entity.sync) FileState.Downloaded else FileState.Preview
+                            state = if (entity.sync) FileState.Downloaded else FileState.Preview,
+                            thumbnailUrl = entity.thumbnail_url,
+                            id = id
                         )
 
                         AttachmentType.LINK -> {
-                            LinkAttachment2(id, entity.url!!)
+                            AttachmentItem.LinkAttachmentItem(
+                                entity.attachment_name,
+                                entity.thumbnail_url,
+                                entity.url!!,
+                                id
+                            )
                         }
                     }
                 }

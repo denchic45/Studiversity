@@ -4,16 +4,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -25,24 +16,7 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.Attachment
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -72,13 +46,7 @@ import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.theme.AppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.uiIconOf
-import com.denchic45.studiversity.util.AttachmentViewer
-import com.denchic45.studiversity.util.OpenMultipleAnyDocuments
-import com.denchic45.studiversity.util.collectWithLifecycle
-import com.denchic45.studiversity.util.findActivity
-import com.denchic45.studiversity.util.getFile
-import com.denchic45.studiversity.util.Dates
-import com.denchic45.studiversity.util.toString
+import com.denchic45.studiversity.util.*
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -247,7 +215,7 @@ fun CourseWorkEditorContent(
                         LazyRow {
                             itemsIndexed(
                                 items = attachmentItems,
-                                key = { _, item -> item.attachmentId }) { index, item ->
+                                key = { _, item -> item.id }) { index, item ->
                                 AttachmentListItem(
                                     item = item,
                                     onClick = { onAttachmentClick(item) },

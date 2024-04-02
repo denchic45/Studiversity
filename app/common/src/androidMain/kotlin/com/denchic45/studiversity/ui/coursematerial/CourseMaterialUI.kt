@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.appbar.AppBarContent
@@ -31,7 +32,6 @@ import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.AttachmentViewer
 import com.denchic45.studiversity.util.collectWithLifecycle
 import com.denchic45.studiversity.util.findActivity
-import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -112,7 +112,7 @@ private fun CourseMaterialContent(
                         name = "Прикрепленные файлы",
                     )
                     LazyRow(contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.normal)) {
-                        items(attachments, key = { it.attachmentId }) {
+                        items(attachments, key = { it.id }) {
                             AttachmentListItem(item = it, onClick = { onAttachmentClick(it) })
                         }
                     }

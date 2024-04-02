@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.denchic45.studiversity.domain.model.GroupMembers
+import com.denchic45.studiversity.domain.model.StudyGroupMembers
 import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.ResourceContent
@@ -42,7 +42,7 @@ private fun StudyGroupMemberScreen(
 
 @Composable
 private fun StudyGroupMemberContent(
-    members: Resource<GroupMembers>,
+    members: Resource<StudyGroupMembers>,
     onClick: (UUID) -> Unit,
     selectedItemId: UUID?,
     component: StudyGroupMembersComponent,
@@ -51,8 +51,9 @@ private fun StudyGroupMemberContent(
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             val actions by component.memberActions.collectAsState()
             MemberList(
-                curator = it.curator,
+                curators = it.curators,
                 students = it.students,
+                otherMembers = it.otherMembers,
                 selectedItemId = selectedItemId,
                 actions = actions,
                 onClick = onClick,
@@ -74,10 +75,10 @@ private fun StudentListItem(
     onClick: (UUID) -> Unit,
     onExpandActions: (memberId: UUID) -> Unit,
     actions: Pair<List<StudyGroupMembersComponent.MemberAction>, UUID>?,
-    onMemberEditClick: (UUID) -> Unit,
-    onMemberRemoveClick: (UUID) -> Unit,
-    onMemberSetHeadmanClick: (UUID) -> Unit,
-    onMemberRemoveHeadmanClick: (UUID) -> Unit,
+    onEditMemberClick: (UUID) -> Unit,
+    onRemoveMemberClick: (UUID) -> Unit,
+    onSetHeadmanClick: (UUID) -> Unit,
+    onRemoveHeadmanClick: (UUID) -> Unit,
     onDismissActions: () -> Unit,
 ) {
     val interactionSource = remember(::MutableInteractionSource)
@@ -109,28 +110,28 @@ private fun StudentListItem(
                     StudyGroupMembersComponent.MemberAction.EDIT -> {
                         DropdownMenuItem(
                             text = { Text("Изменить") },
-                            onClick = { onMemberEditClick(userItem.id) }
+                            onClick = { onEditMemberClick(userItem.id) }
                         )
                     }
 
                     StudyGroupMembersComponent.MemberAction.REMOVE -> {
                         DropdownMenuItem(
-                            text = { Text("Удалить") },
-                            onClick = { onMemberRemoveClick(userItem.id) }
+                            text = { Text("Удалить из группы") },
+                            onClick = { onRemoveMemberClick(userItem.id) }
                         )
                     }
 
                     StudyGroupMembersComponent.MemberAction.SET_HEADMAN -> {
                         DropdownMenuItem(
                             text = { Text("Назначить старостой") },
-                            onClick = { onMemberSetHeadmanClick(userItem.id) }
+                            onClick = { onSetHeadmanClick(userItem.id) }
                         )
                     }
 
                     StudyGroupMembersComponent.MemberAction.REMOVE_HEADMAN -> {
                         DropdownMenuItem(
                             text = { Text("Лишить прав старосты") },
-                            onClick = { onMemberRemoveHeadmanClick(userItem.id) }
+                            onClick = { onRemoveHeadmanClick(userItem.id) }
                         )
                     }
                 }
@@ -142,8 +143,9 @@ private fun StudentListItem(
 @Composable
 fun MemberList(
     modifier: Modifier = Modifier,
-    curator: UserItem?,
+    curators: List<UserItem>,
     students: List<UserItem>,
+    otherMembers: List<UserItem>,
     selectedItemId: UUID?,
     onClick: (UUID) -> Unit,
     onExpandActions: (memberId: UUID) -> Unit,
@@ -159,21 +161,19 @@ fun MemberList(
         contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp, start = 24.dp, end = 24.dp)
     ) {
 
-        curator?.let {
-            item { HeaderItem("Куратор") }
-
-            item {
+        if (curators.isNotEmpty()) {
+            item { HeaderItem(if (curators.size == 1) "Куратор" else "Кураторы") }
+            items(curators) {
                 UserListItem(
-                    item = curator,
+                    item = it,
                     onClick = onClick,
                     actionsVisible = false,
-                    selected = curator.id == selectedItemId
+                    selected = it.id == selectedItemId
                 )
             }
         }
 
         item { HeaderItem("Студенты") }
-
         items(students) {
             StudentListItem(
                 userItem = it,
@@ -181,12 +181,23 @@ fun MemberList(
                 onClick = onClick,
                 onExpandActions = onExpandActions,
                 actions = actions,
-                onMemberEditClick = onMemberEditClick,
-                onMemberRemoveClick = onMemberRemoveClick,
-                onMemberSetHeadmanClick = onMemberSetHeadmanClick,
-                onMemberRemoveHeadmanClick = onMemberRemoveHeadmanClick,
+                onEditMemberClick = onMemberEditClick,
+                onRemoveMemberClick = onMemberRemoveClick,
+                onSetHeadmanClick = onMemberSetHeadmanClick,
+                onRemoveHeadmanClick = onMemberRemoveHeadmanClick,
                 onDismissActions = onDismissActions
             )
+        }
+
+        if (otherMembers.isNotEmpty()) {
+            item { HeaderItem("Другие участники") }
+            items(students) {
+                UserListItem(
+                    item = it,
+                    selected = it.id == selectedItemId,
+                    onClick = onClick,
+                )
+            }
         }
     }
 }

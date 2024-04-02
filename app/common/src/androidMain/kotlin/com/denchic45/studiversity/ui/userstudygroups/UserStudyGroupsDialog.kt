@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.component.StudyGroupListItem
+import com.denchic45.studiversity.ui.studygroup.StudyGroupListItem
 
 @Composable
 fun UserStudyGroupsDialog(component: UserStudyGroupsComponent) {

@@ -165,12 +165,12 @@ fun SubmissionAttachmentsContent(
         HeaderItem(name = "Прикрепленные файлы")
         if (attachments.isNotEmpty()) {
             LazyRow(Modifier) {
-                items(attachments, key = { it.attachmentId.toString() }) { item ->
+                items(attachments, key = { it.id.toString() }) { item ->
                     Spacer(Modifier.width(MaterialTheme.spacing.normal))
                     AttachmentListItem(
                         item = item,
                         onClick = { onAttachmentClick(item) },
-                        onRemove = onAttachmentRemove?.let { { it(item.attachmentId) } })
+                        onRemove = onAttachmentRemove?.let { { it(item.id) } })
                 }
             }
         } else {

@@ -1,20 +1,5 @@
 package com.denchic45.studiversity.data.repository
 
-import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.CourseTopicLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.StudyGroupCourseLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.StudyGroupLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SubjectLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
-import com.denchic45.studiversity.data.fetchResource
-import com.denchic45.studiversity.data.fetchResourceFlow
-import com.denchic45.studiversity.data.preference.AppPreferences
-import com.denchic45.studiversity.data.preference.TimestampPreferences
-import com.denchic45.studiversity.data.preference.UserPreferences
-import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.api.course.CourseApi
 import com.denchic45.studiversity.api.member.MembersApi
 import com.denchic45.studiversity.api.role.RoleApi
@@ -23,6 +8,15 @@ import com.denchic45.studiversity.api.studygroup.StudyGroupApi
 import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
+import com.denchic45.studiversity.data.db.local.source.*
+import com.denchic45.studiversity.data.fetchResource
+import com.denchic45.studiversity.data.fetchResourceFlow
+import com.denchic45.studiversity.data.preference.AppPreferences
+import com.denchic45.studiversity.data.preference.TimestampPreferences
+import com.denchic45.studiversity.data.preference.UserPreferences
+import com.denchic45.studiversity.data.service.NetworkService
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.util.UserId
 import com.denchic45.studiversity.util.toUUID
 import com.denchic45.studiversity.util.userIdOf
@@ -33,12 +27,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class StudyGroupRepository(
     override val studyGroupLocalDataSource: StudyGroupLocalDataSource,
-    override val specialtyLocalDataSource: SpecialtyLocalDataSource,
+    val specialtyLocalDataSource: SpecialtyLocalDataSource,
     private val appPreferences: AppPreferences,
     private val timestampPreferences: TimestampPreferences,
     private val userPreferences: UserPreferences,
@@ -52,7 +46,7 @@ class StudyGroupRepository(
     private val courseApi: CourseApi,
     private val membersApi: MembersApi,
     private val roleApi: RoleApi,
-) : NetworkServiceOwner, SaveGroupOperation, SaveCourseRepository,
+) : NetworkServiceOwner, SaveCourseRepository,
     FindByContainsNameRepository<StudyGroupResponse> {
 
     override fun findByContainsName(text: String): Flow<Resource<List<StudyGroupResponse>>> {
@@ -217,12 +211,7 @@ class StudyGroupRepository(
 //        }
 //    }
 
-//    fun findGroupByStudent(user: User): Flow<Group> = flow {
-//        if (!userLocalDataSource.isExistByIdAndGroupId(user.id, user.groupId!!)) findById(user.groupId)
-//        emitAll(groupLocalDataSource.getByStudentId(user.id).map { it.toGroup() })
-//    }
-
-    suspend fun findGroupMembersByGroupId(studyGroupId: UUID) = fetchResource {
+    suspend fun findStudyGroupMembersByGroupId(studyGroupId: UUID) = fetchResource {
         membersApi.getByScope(studyGroupId)
     }
 

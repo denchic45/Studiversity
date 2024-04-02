@@ -24,6 +24,7 @@ import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.component.HeaderItem
+import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
 
@@ -39,7 +40,13 @@ fun UserEditorSidebar(component: UserEditorComponent) {
 fun UserEditorScreen(component: UserEditorComponent) {
     val state = remember { component.editingState }
     val allowSave by component.allowSave.collectAsState()
-//    val appBarState = LocalAppBarState.current
+    val needToConfirmToDismiss by component.needToConfirmToDismiss.collectAsState()
+
+    DismissChangesConfirmDialog(
+        show = needToConfirmToDismiss,
+        onConfirm = component::onDismissRequest,
+        onDismiss = component::onCancelDismiss
+    )
 
     updateAnimatedAppBarState(
         allowSave, AppBarContent(
@@ -53,21 +60,6 @@ fun UserEditorScreen(component: UserEditorComponent) {
             )
         )
     )
-
-//    LaunchedEffect(allowSave) {
-//        appBarState.animateUpdate {
-//            content = AppBarContent(
-//                title = uiTextOf("Новый пользователь"),
-//                actionItems = listOf(
-//                    ActionMenuItem2(
-//                        icon = uiIconOf(Icons.Default.Done),
-//                        enabled = allowSave,
-//                        onClick = component::onSaveClick
-//                    )
-//                )
-//            )
-//        }
-//    }
 
     val scrollState = rememberScrollState()
     Surface {

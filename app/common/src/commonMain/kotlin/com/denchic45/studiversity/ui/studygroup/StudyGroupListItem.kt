@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.component
+package com.denchic45.studiversity.ui.studygroup
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

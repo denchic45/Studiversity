@@ -7,7 +7,12 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
-import com.denchic45.studiversity.domain.model.FileState
+import com.denchic45.studiversity.api.course.element.model.CourseElementResponse
+import com.denchic45.studiversity.api.course.element.model.UpdateCourseElementRequest
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
+import com.denchic45.studiversity.api.course.work.model.CourseWorkType
+import com.denchic45.studiversity.api.course.work.model.CreateCourseWorkRequest
+import com.denchic45.studiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.getOptProperty
@@ -15,7 +20,7 @@ import com.denchic45.studiversity.ui.DropdownMenuItem
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.model.AttachmentItem
-import com.denchic45.studiversity.ui.model.toAttachmentItems
+import com.denchic45.studiversity.ui.model.FileState
 import com.denchic45.studiversity.ui.model.toRequest
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.ui.uiTextOf
@@ -24,12 +29,6 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.course.element.model.CourseElementResponse
-import com.denchic45.studiversity.api.course.element.model.UpdateCourseElementRequest
-import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
-import com.denchic45.studiversity.api.course.work.model.CourseWorkType
-import com.denchic45.studiversity.api.course.work.model.CreateCourseWorkRequest
-import com.denchic45.studiversity.api.course.work.model.UpdateCourseWorkRequest
 import com.denchic45.studiversity.util.optPropertyOf
 import com.denchic45.studiversity.util.toUUID
 import kotlinx.coroutines.Dispatchers
@@ -94,7 +93,7 @@ class CourseWorkEditorComponent(
         removedAttachmentIds
     ) { items, addedItems, removedIds ->
         items.map { attachments ->
-            (attachments.filter { it.id !in removedIds }.toAttachmentItems() + addedItems)
+            (attachments.filter { it.id !in removedIds } + addedItems)
         }
     }.stateInResource(componentScope)
 
@@ -225,7 +224,7 @@ class CourseWorkEditorComponent(
             componentScope.launch {
                 if (confirmDialogInteractor.receiveConfirm()) {
                     val item = attachments[position]
-                    item.attachmentId.let { removedAttachmentId ->
+                    item.id.let { removedAttachmentId ->
                         removedAttachmentIds.update { it + removedAttachmentId }
                     }
                     addedAttachmentItems.update { it - item }
@@ -240,7 +239,7 @@ class CourseWorkEditorComponent(
             when (item) {
                 is AttachmentItem.FileAttachmentItem -> when (item.state) {
                     FileState.Downloaded -> openAttachment.emit(item)
-                    FileState.Preview, FileState.FailDownload -> downloadFileUseCase(item.attachmentId)
+                    FileState.Preview, FileState.FailDownload -> downloadFileUseCase(item.id)
                     // TODO: Возможно использовать в будущем: открывать файл сразу после его загрузки
 //                            .collect {
 //                            if (it == FileState.Downloaded)
@@ -346,7 +345,7 @@ class CourseWorkEditorComponent(
             }
         }
         addedAttachmentItems.update { oldAddedAttachments ->
-            oldAddedAttachments.filterNot { item -> item.attachmentId in successfullyAddedAttachmentIds }
+            oldAddedAttachments.filterNot { item -> item.id in successfullyAddedAttachmentIds }
         }
         return res
     }

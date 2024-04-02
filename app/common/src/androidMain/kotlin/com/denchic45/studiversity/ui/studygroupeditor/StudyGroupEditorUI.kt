@@ -12,6 +12,7 @@ import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
+import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
 
@@ -20,6 +21,13 @@ fun StudyGroupEditorScreen(component: StudyGroupEditorComponent) {
     val stateResource by component.stateResource.collectAsState()
     val allowSave by component.allowSave.collectAsState()
     val isNew = component.isNew
+    val needToConfirmToDismiss by component.needToConfirmToDismiss.collectAsState()
+
+    DismissChangesConfirmDialog(
+        show = needToConfirmToDismiss,
+        onConfirm = component::onDismissRequest,
+        onDismiss = component::onCancelDismiss
+    )
 
     updateAnimatedAppBarState(
         allowSave,
