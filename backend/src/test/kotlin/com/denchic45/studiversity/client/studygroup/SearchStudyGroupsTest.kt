@@ -1,9 +1,6 @@
 package com.denchic45.studiversity.client.studygroup
 
 import com.denchic45.studiversity.KtorClientTest
-import com.denchic45.studiversity.util.assertResultIsOk
-import com.denchic45.studiversity.util.assertedResultIsOk
-import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.studiversity.api.specialty.SpecialtyApi
 import com.denchic45.studiversity.api.specialty.model.CreateSpecialtyRequest
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
@@ -11,6 +8,9 @@ import com.denchic45.studiversity.api.studygroup.StudyGroupApi
 import com.denchic45.studiversity.api.studygroup.model.AcademicYear
 import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.util.assertResultIsOk
+import com.denchic45.studiversity.util.assertedResultIsOk
+import com.denchic45.studiversity.util.unwrapAsserted
 import com.github.michaelbull.result.unwrap
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -31,7 +31,7 @@ class SearchStudyGroupsTest : KtorClientTest() {
 
     @BeforeEach
     fun init(): Unit = runBlocking {
-        specialty = specialtyApi.create(CreateSpecialtyRequest("Программирование в компьютерных системах", "ПКС"))
+        specialty = specialtyApi.create(CreateSpecialtyRequest("Программирование в компьютерных системах", "ПКС", null))
             .unwrapAsserted()
         studyGroup =
             studyGroupApi.create(CreateStudyGroupRequest(expectedName, AcademicYear(2022, 2026), specialty.id, null))

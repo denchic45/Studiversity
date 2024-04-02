@@ -17,5 +17,6 @@ private val repositoryModule = module {
 }
 
 val subjectModule = module {
+    single { SubjectIconStorage(get()) }
     includes(useCaseModule, repositoryModule)
 }

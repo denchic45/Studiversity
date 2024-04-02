@@ -1,5 +1,7 @@
 package com.denchic45.studiversity.feature.course.work
 
+import com.denchic45.studiversity.api.course.work.model.CreateCourseWorkRequest
+import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.feature.attachment.receiveAttachment
 import com.denchic45.studiversity.feature.attachment.usecase.AddAttachmentUseCase
 import com.denchic45.studiversity.feature.attachment.usecase.FindAttachmentsByResourceUseCase
@@ -10,9 +12,9 @@ import com.denchic45.studiversity.feature.course.work.usecase.FindCourseWorkUseC
 import com.denchic45.studiversity.feature.course.work.usecase.FindCourseWorksUseCase
 import com.denchic45.studiversity.feature.course.work.usecase.UpdateCourseWorkUseCase
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
-import com.denchic45.studiversity.ktor.*
-import com.denchic45.studiversity.api.course.work.model.CreateCourseWorkRequest
-import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.ktor.currentUserId
+import com.denchic45.studiversity.ktor.getUuidOrFail
+import com.denchic45.studiversity.ktor.requireUserUuidByQueryParameterOrMe
 import com.denchic45.studiversity.util.toUUID
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -90,7 +92,7 @@ private fun Route.courseWorkById() {
             val addAttachment: AddAttachmentUseCase by inject()
             val findAttachments: FindAttachmentsByResourceUseCase by inject()
             val removeAttachment: RemoveAttachmentUseCase by inject()
-            
+
             post {
                 val workId = call.parameters.getUuidOrFail("workId")
                 requireCapability(
@@ -126,31 +128,5 @@ private fun Route.courseWorkById() {
                 )
             }
         }
-
-//        attachmentRoutes(
-//            ownerOfParameterName = "workId",
-//            beforePostAttachment = {
-//                requireCapability(
-//                    userId = currentUserId(),
-//                    capability = Capability.WriteCourseElements,
-//                    scopeId = parameters.getUuidOrFail("courseId")
-//                )
-//            },
-//            beforeGetAttachments = {
-//                requireCapability(
-//                    userId = currentUserId(),
-//                    capability = Capability.ReadCourseElements,
-//                    parameters.getUuidOrFail("courseId")
-//                )
-//            },
-//            beforeDeleteAttachment = {
-//                requireCapability(
-//                    userId = currentUserId(),
-//                    capability = Capability.WriteCourseElements,
-//                    scopeId = parameters.getUuidOrFail("courseId")
-//                )
-//            }
-//        )
-//        workSubmissionRoutes()
     }
 }

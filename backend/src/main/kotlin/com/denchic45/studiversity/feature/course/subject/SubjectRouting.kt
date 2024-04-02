@@ -1,17 +1,18 @@
 package com.denchic45.studiversity.feature.course.subject
 
-import com.denchic45.studiversity.config.config
-import com.denchic45.studiversity.feature.course.subject.usecase.*
-import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
-import com.denchic45.studiversity.ktor.*
-import com.denchic45.studiversity.util.onlyDigits
-import com.denchic45.studiversity.validation.buildValidationResult
-import com.denchic45.studiversity.validation.require
 import com.denchic45.studiversity.api.course.subject.SubjectErrors
 import com.denchic45.studiversity.api.course.subject.model.CreateSubjectRequest
 import com.denchic45.studiversity.api.course.subject.model.UpdateSubjectRequest
 import com.denchic45.studiversity.api.role.model.Capability
-import com.denchic45.studiversity.util.toUUID
+import com.denchic45.studiversity.config.config
+import com.denchic45.studiversity.feature.course.subject.usecase.*
+import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
+import com.denchic45.studiversity.ktor.CommonErrors
+import com.denchic45.studiversity.ktor.currentUserId
+import com.denchic45.studiversity.ktor.getUuidOrFail
+import com.denchic45.studiversity.util.onlyDigits
+import com.denchic45.studiversity.validation.buildValidationResult
+import com.denchic45.studiversity.validation.require
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -19,6 +20,7 @@ import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
 
 fun Application.subjectRoutes() {
@@ -36,7 +38,7 @@ fun Application.subjectRoutes() {
                             )
                             condition(
                                 request.iconUrl.isNotEmpty(),
-                                SubjectErrors.INVALID_SUBJECT_ICON_NAME
+                                SubjectErrors.INVALID_SUBJECT_ICON_URL
                             )
                         }
                     }
@@ -67,24 +69,34 @@ fun Application.subjectRoutes() {
                 call.respond(findSubjectsIcons())
             }
         }
+        route("/subject-icons") {
+            val findSubjectIcon: FindSubjectIconUseCase by inject()
+            get("/{iconName}") {
+                val stream = findSubjectIcon(call.parameters.getOrFail("iconName"))
+                call.respondOutputStream(
+                    contentType = ContentType.Image.SVG,
+                    producer = { stream.transferTo(this) }
+                )
+            }
+        }
     }
 }
 
 fun Route.subjectByIdRoute() {
-    route("/{id}") {
+    route("/{subjectId}") {
         install(RequestValidation) {
             validate<UpdateSubjectRequest> { request ->
                 buildValidationResult {
                     request.name.ifPresent {
                         condition(
-                            it.isNotEmpty() && !it.onlyDigits(),
+                            it.isNotEmpty(),
                             SubjectErrors.INVALID_SUBJECT_NAME
                         )
                     }
                     request.iconUrl.ifPresent {
                         condition(
                             it.isNotEmpty(),
-                            SubjectErrors.INVALID_SUBJECT_ICON_NAME
+                            SubjectErrors.INVALID_SUBJECT_ICON_URL
                         )
                     }
                 }
@@ -96,36 +108,28 @@ fun Route.subjectByIdRoute() {
         val removeSubject: RemoveSubjectUseCase by inject()
 
         get {
-            val id = call.parameters.getUuidOrFail("id")
-
-            findSubjectById(id).let { subject ->
-                call.respond(HttpStatusCode.OK, subject)
-            }
+            val subjectId = call.parameters.getUuidOrFail("subjectId")
+            call.respond(HttpStatusCode.OK, findSubjectById(subjectId))
         }
         patch {
-            val id = call.parameters.getUuidOrFail("id")
-
             requireCapability(
                 call.currentUserId(),
                 Capability.WriteSubject,
                 config.organizationId
             )
 
-            val body = call.receive<UpdateSubjectRequest>()
-            updateSubject(id, body).let { subject ->
+            updateSubject(call.parameters.getUuidOrFail("subjectId"), call.receive()).let { subject ->
                 call.respond(HttpStatusCode.OK, subject)
             }
         }
         delete {
-            val id = call.parameters["id"]!!.toUUID()
-
             requireCapability(
                 call.currentUserId(),
                 Capability.WriteSubject,
                 config.organizationId
             )
 
-            removeSubject(id)
+            removeSubject(call.parameters.getUuidOrFail("subjectId"))
             call.respond(HttpStatusCode.NoContent)
         }
     }

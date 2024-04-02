@@ -53,10 +53,7 @@ class AttachmentApiImpl(private val client: HttpClient) : AttachmentApi {
         resource: String,
         resourceId: UUID
     ): ResponseResult<List<AttachmentHeader>> {
-        return client.get("/attachments") {
-            parameter("resource_type", resource)
-            parameter("resource_id", resourceId)
-        }.toResult()
+        return client.get("$resource/$resourceId/attachments").toResult()
     }
 
     @OptIn(InternalAPI::class)

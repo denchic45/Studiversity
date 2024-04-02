@@ -44,32 +44,6 @@ class TokenRepository {
         RefreshTokens.deleteWhere { token eq refreshToken }
     }
 
-//    fun addMagicLink(magicLinkToken: MagicLinkToken): String {
-//        return MagicLinks.insert {
-//            it[token] = magicLinkToken.token
-//            it[userId] = magicLinkToken.userId
-//            it[expireAt] = magicLinkToken.expireAt
-//        }[MagicLinks.token]
-//    }
-
-//    fun removeMagicLink(token: String) {
-//        MagicLinks.deleteWhere { this.token eq token }
-//    }
-
-//    fun findMagicLinkByToken(token: String): MagicLinkToken? {
-//        val expiredTokens = MagicLinks.selectAll().where(MagicLinks.expireAt less Instant.now()).limit(100)
-//            .map { it[MagicLinks.id] }
-//        MagicLinks.deleteWhere { MagicLinks.id inList expiredTokens }
-//
-//        return MagicLinks.selectAll().where(MagicLinks.token eq token).singleOrNull()?.let {
-//            MagicLinkToken(
-//                userId = it[MagicLinks.userId].value,
-//                token = it[MagicLinks.token],
-//                expireAt = it[MagicLinks.expireAt]
-//            )
-//        }
-//    }
-
     fun generateVerificationToken(userId: UUID, payload: String, secondsDuration: Long): UUID {
         return VerificationTokens.insert {
             it[VerificationTokens.userId] = userId

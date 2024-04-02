@@ -22,7 +22,6 @@ import com.denchic45.studiversity.plugin.configureStatusPages
 import com.denchic45.studiversity.setup.configureSetup
 import com.denchic45.studiversity.setup.onInitialized
 import com.denchic45.studiversity.setup.setupDatabase
-import com.denchic45.studiversity.util.EmailSender
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -90,7 +89,6 @@ private fun Application.configureServer() {
     logger.info { "auth configured" }
     configureUsers()
     configureRoles()
-//        configureMembership()
     configureAttachments()
     configureStudyGroups()
     configureSpecialties()

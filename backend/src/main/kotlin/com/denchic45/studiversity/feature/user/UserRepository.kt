@@ -44,7 +44,7 @@ class UserRepository(
             generatedAvatar = false
             gender = request.gender
         }.apply {
-            avatarUrl = avatarService.generateAvatar(id.value, request.firstName)
+            avatarUrl = avatarService.generateAvatar(id.value, request.firstName, request.surname)
         }.toUserResponse()
 //            .apply { addScope(id, ScopeType.User, organizationId) }
     }

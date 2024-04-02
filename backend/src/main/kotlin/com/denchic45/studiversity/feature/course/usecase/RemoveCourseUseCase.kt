@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.feature.course.usecase
 
 import com.denchic45.studiversity.feature.course.CourseErrors
-import com.denchic45.studiversity.feature.course.repository.CourseRepository
+import com.denchic45.studiversity.feature.course.CourseRepository
 import com.denchic45.studiversity.feature.role.repository.ScopeRepository
 import com.denchic45.studiversity.ktor.ConflictException
 import com.denchic45.studiversity.transaction.TransactionWorker

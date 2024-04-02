@@ -1,14 +1,13 @@
-package com.denchic45.studiversity.feature.course.repository
+package com.denchic45.studiversity.feature.course
 
-import com.denchic45.studiversity.database.exists
-import com.denchic45.studiversity.database.table.*
-import com.denchic45.studiversity.feature.attachment.AttachmentFileStorage
-import com.denchic45.studiversity.feature.course.toResponse
-import com.denchic45.studiversity.feature.studygroup.mapper.toResponse
 import com.denchic45.studiversity.api.course.model.CourseResponse
 import com.denchic45.studiversity.api.course.model.CreateCourseRequest
 import com.denchic45.studiversity.api.course.model.UpdateCourseRequest
 import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.database.exists
+import com.denchic45.studiversity.database.table.*
+import com.denchic45.studiversity.feature.attachment.AttachmentFileStorage
+import com.denchic45.studiversity.feature.studygroup.toResponse
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
@@ -92,21 +91,13 @@ class CourseRepository(private val storage: AttachmentFileStorage) {
             CoursesStudyGroups.courseId eq courseId and
                     (CoursesStudyGroups.studyGroupId eq studyGroupId)
         }
-//        return ExternalStudyGroupsMemberships
-//            .innerJoin(Memberships, { membershipId }, { Memberships.id })
-//            .slice(ExternalStudyGroupsMemberships.studyGroupId)
-//            .exists { Memberships.scopeId eq courseId and (ExternalStudyGroupsMemberships.studyGroupId eq studyGroupId) }
     }
 
 
     fun findStudyGroupsByCourse(courseId: UUID): List<StudyGroupResponse> {
         return StudyGroupDao.wrapRows(
-//            ExternalStudyGroupsMemberships
-//                .innerJoin(Memberships, { membershipId }, { Memberships.id })
-//                .innerJoin(StudyGroups, { ExternalStudyGroupsMemberships.studyGroupId }, { StudyGroups.id })
-//                .select(Memberships.scopeId eq courseId)
             CoursesStudyGroups.innerJoin(StudyGroups, { studyGroupId }, { StudyGroups.id })
-                .select(CoursesStudyGroups.courseId eq courseId)
+                .selectAll().where(CoursesStudyGroups.courseId eq courseId)
         ).map(StudyGroupDao::toResponse)
     }
 
@@ -122,25 +113,10 @@ class CourseRepository(private val storage: AttachmentFileStorage) {
             }
         }
 
-
         CoursesStudyGroups.insert {
             it[CoursesStudyGroups.courseId] = courseId
             it[CoursesStudyGroups.studyGroupId] = studyGroupId
         }
-
-
-//        val membershipId = Memberships
-//            .select(Memberships.scopeId eq courseId and (Memberships.type eq "by_group"))
-//            .firstOrNull()?.get(Memberships.id)
-//            ?: Memberships.insertIgnore {
-//                it[scopeId] = courseId
-//                it[active] = true
-//                it[type] = "by_group"
-//            }[Memberships.id]
-//        ExternalStudyGroupsMemberships.insertIgnore {
-//            it[ExternalStudyGroupsMemberships.membershipId] = membershipId
-//            it[ExternalStudyGroupsMemberships.studyGroupId] = studyGroupId
-//        }
     }
 
     // todo удалять enrollment для групп, если откреплена последняя оставшаяся гурппа
@@ -150,26 +126,11 @@ class CourseRepository(private val storage: AttachmentFileStorage) {
                     (CoursesStudyGroups.studyGroupId eq studyGroupId)
         } > 0
 
-//        val membershipOfCourseByGroupId = Memberships.slice(Memberships.id).select(
-//            Memberships.scopeId eq courseId and (Memberships.type eq "by_group")
-//        ).first()[Memberships.id]
-
-//        val courseStudyGroupDeleted = ExternalStudyGroupsMemberships.deleteWhere {
-//            ExternalStudyGroupsMemberships.studyGroupId eq studyGroupId and
-//                    (membershipId eq membershipOfCourseByGroupId)
-//        } > 0
-
         // Remove course enrollment for groups if no groups remain
         if (!CoursesStudyGroups.exists { CoursesStudyGroups.courseId eq courseId })
             Enrollments.deleteWhere {
                 Enrollments.courseId eq courseId and (type eq EnrollmentType.STUDY_GROUPS)
             }
-//        if (!ExternalStudyGroupsMemberships.exists {
-//                ExternalStudyGroupsMemberships.membershipId eq membershipOfCourseByGroupId
-//            })
-//            Memberships.deleteWhere { Memberships.id eq membershipOfCourseByGroupId }
-//        return courseStudyGroupDeleted
-
         return studyGroupDetached
     }
 

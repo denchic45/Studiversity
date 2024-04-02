@@ -2,7 +2,6 @@ package com.denchic45.studiversity.feature.course
 
 import com.denchic45.studiversity.feature.course.element.courseElementModule
 import com.denchic45.studiversity.feature.course.member.courseMemberModule
-import com.denchic45.studiversity.feature.course.repository.CourseRepository
 import com.denchic45.studiversity.feature.course.subject.subjectModule
 import com.denchic45.studiversity.feature.course.topic.courseTopicModule
 import com.denchic45.studiversity.feature.course.usecase.*
