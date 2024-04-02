@@ -7,3 +7,7 @@ fun Application.configureUsers() {
     userRoutes()
     accountRoutes()
 }
+
+object UserErrors {
+    const val USER_NOT_FOUND = "USER_NOT_FOUND"
+}

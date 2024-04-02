@@ -7,4 +7,5 @@ object RoleErrors {
     const val NOT_FOUND_ROLE = "NOT_FOUND_ROLE"
     const val NO_ROLE_ASSIGNMENT = "NO_ROLE_ASSIGNMENT"
     const val ROLES_DUPLICATION = "ROLES_DUPLICATION"
+    const val SCOPE_NOT_FOUND = "SCOPE_NOT_FOUND"
 }

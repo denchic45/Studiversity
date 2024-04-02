@@ -1,12 +1,14 @@
 package com.denchic45.studiversity.feature.role.repository
 
+import com.denchic45.studiversity.api.role.model.*
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.role.Permission
+import com.denchic45.studiversity.feature.role.RoleErrors
 import com.denchic45.studiversity.feature.role.combinedPermission
 import com.denchic45.studiversity.feature.role.mapper.toRole
-import com.denchic45.studiversity.api.role.model.*
+import com.denchic45.studiversity.feature.user.UserErrors
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
@@ -57,7 +59,7 @@ class RoleRepository {
     }
 
     fun hasCapability(userId: UUID, capability: Capability, scopeId: UUID): Boolean {
-        val scope = ScopeDao.findById(scopeId) ?: throw NotFoundException("SCOPE_NOT_FOUND")
+        val scope = ScopeDao.findById(scopeId) ?: throw NotFoundException(RoleErrors.SCOPE_NOT_FOUND)
         val path = scope.path
         var has = false
         for (nextScopeId in path) {
@@ -165,7 +167,7 @@ class RoleRepository {
                 UserRolesResponse(userId, listOf(Role.User))
             }
 
-            else -> throw NotFoundException("USER_NOT_FOUND")
+            else -> throw NotFoundException(UserErrors.USER_NOT_FOUND)
         }
     }
 

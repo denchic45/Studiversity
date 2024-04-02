@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.feature.attachment
 
+import com.denchic45.studiversity.api.course.element.model.*
 import com.denchic45.studiversity.database.table.AttachmentDao
 import com.denchic45.studiversity.database.table.AttachmentReferenceDao
 import com.denchic45.studiversity.database.table.AttachmentReferences
 import com.denchic45.studiversity.database.table.Attachments
-import com.denchic45.studiversity.api.course.element.model.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
@@ -43,11 +43,9 @@ class AttachmentRepository(private val storage: AttachmentFileStorage) {
         }.toLinkAttachmentHeader()
     }
 
-    // TODO: В будущем передавать также consumerType? чтобы проверить его наличие, напр:
-    //  consumerType может быть SUBMISSION
-
     fun addAttachmentReference(attachmentId: UUID, resourceId: UUID): AttachmentHeader {
-        val attachmentDao = AttachmentDao.findById(attachmentId) ?: throw NotFoundException("ATTACHMENT_NOT_FOUND")
+        val attachmentDao =
+            AttachmentDao.findById(attachmentId) ?: throw NotFoundException(AttachmentErrors.ATTACHMENT_NOT_FOUND)
         addAttachmentReference(attachmentDao, resourceId)
         return attachmentDao.toAttachmentResponse()
     }
@@ -59,45 +57,7 @@ class AttachmentRepository(private val storage: AttachmentFileStorage) {
         }
     }
 
-//    suspend fun removeByCourseId(courseId: UUID) {
-//        CourseElements.select { CourseElements.courseId eq courseId }
-//            .forEach { removeByCourseElementId(it[CourseElements.id].value) }
-//    }
-
-//    suspend fun removeByCourseElementId(elementId: UUID) {
-//        Submissions.select { Submissions.courseWorkId eq elementId }.forEach {
-//            removeByConsumer(it[Submissions.id].value)
-//        }
-//        removeByConsumer(elementId)
-//    }
-
-//    private fun addAttachmentSubmissionReference(dao: AttachmentDao, submissionId: UUID) {
-//        AttachmentsSubmissions.insert {
-//            it[attachmentId] = dao.id.value
-//            it[AttachmentsSubmissions.submissionId] = submissionId
-//        }
-//    }
-
-//    private fun addAttachmentCourseElementReference(dao: AttachmentDao, elementId: UUID) {
-//        AttachmentsCourseElements.insert {
-//            it[attachmentId] = dao.id.value
-//            it[courseElementId] = elementId
-//        }
-//    }
-
-//    fun findAttachmentsBySubmissionId(submissionId: UUID): List<AttachmentHeader> {
-//        return Attachments.innerJoin(AttachmentsSubmissions, { Attachments.id }, { attachmentId })
-//            .select { AttachmentsSubmissions.submissionId eq submissionId }
-//            .map(ResultRow::toAttachment)
-//    }
-
-//    fun findAttachmentsByCourseElementId(elementId: UUID): List<AttachmentHeader> {
-//        return Attachments.innerJoin(AttachmentsCourseElements, { Attachments.id }, { attachmentId })
-//            .select { AttachmentsCourseElements.courseElementId eq elementId }
-//            .map(ResultRow::toAttachment)
-//    }
-
-    suspend fun removeReference(attachmentId: UUID, resourceId: UUID) {
+    fun removeReference(attachmentId: UUID, resourceId: UUID) {
         val attachmentDao = AttachmentDao[attachmentId]
         if (attachmentDao.resourceId == resourceId) {
             storage.delete(attachmentId)
