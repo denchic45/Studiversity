@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import com.denchic45.studiversity.data.service.model.BellSchedule
 import com.denchic45.studiversity.data.service.model.PeriodTime
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.component.TitleAlertDialog
 
 
 @Composable
@@ -22,7 +23,12 @@ fun ScheduleDialog(component: ScheduleComponent, onDismissRequest: () -> Unit) {
     ResourceContent(resource = scheduleResource) { schedule ->
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text("Расписание звонков") },
+            title = {
+                TitleAlertDialog(
+                    text = "Расписание звонков",
+                    onClose = onDismissRequest
+                )
+            },
             text = {
                 ScheduleContent(schedule)
             },

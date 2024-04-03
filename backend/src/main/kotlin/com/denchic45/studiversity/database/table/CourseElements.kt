@@ -12,7 +12,6 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.max
-import org.jetbrains.exposed.sql.select
 import java.util.*
 
 object CourseElements : UUIDTable("course_element", "course_element_id") {
@@ -33,8 +32,8 @@ class CourseElementDao(id: EntityID<UUID>) : UUIDEntity(id) {
         }
 
         fun getMaxOrderByCourseIdAndTopicId(courseId: UUID, topicId: UUID?): Int {
-            return CourseElements.slice(CourseElements.order.max())
-                .select(
+            return CourseElements.select(CourseElements.order.max())
+                .where(
                     CourseElements.courseId eq courseId
                             and (CourseElements.topicId eq topicId)
                 )

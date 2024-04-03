@@ -1,8 +1,8 @@
 package com.denchic45.studiversity.feature.timetable
 
+import com.denchic45.studiversity.api.timetable.model.*
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.util.toSqlSortOrder
-import com.denchic45.studiversity.api.timetable.model.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.between
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -117,10 +117,11 @@ class TimetableRepository {
     ): Query {
         val query = Periods.leftJoin(Lessons, { Periods.id }, { id })
             .leftJoin(Events, { Periods.id }, { id })
+            .selectAll()
             .run {
                 endDate?.let {
-                    select(Periods.date.between(startDate, endDate))
-                } ?: select(Periods.date eq startDate)
+                    where(Periods.date.between(startDate, endDate))
+                } ?: where(Periods.date eq startDate)
             }
 
         studyGroupId?.let { query.andWhere { Periods.studyGroupId inList it } }
@@ -169,7 +170,7 @@ class TimetableRepository {
                                 { Periods.studyGroupId },
                                 { id })
                         }
-                            .adjustSlice { slice(fields + StudyGroups.name) }
+                            .adjustSelect { select(fields + StudyGroups.name) }
                         StudyGroups.name
                     }
                 },

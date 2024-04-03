@@ -7,19 +7,13 @@ import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.denchic45.studiversity.util.UserId
-import io.ktor.client.HttpClient
-import io.ktor.client.request.delete
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.client.request.patch
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import java.util.UUID
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import java.util.*
 
 interface StudyGroupApi {
-    suspend fun create(createStudyGroupRequest: CreateStudyGroupRequest): ResponseResult<StudyGroupResponse>
+    suspend fun create(request: CreateStudyGroupRequest): ResponseResult<StudyGroupResponse>
 
     suspend fun getById(studyGroupId: UUID): ResponseResult<StudyGroupResponse>
 
@@ -33,7 +27,7 @@ interface StudyGroupApi {
 
     suspend fun update(
         studyGroupId: UUID,
-        updateStudyGroupRequest: UpdateStudyGroupRequest,
+        request: UpdateStudyGroupRequest,
     ): ResponseResult<StudyGroupResponse>
 
     suspend fun search(query: String): ResponseResult<List<StudyGroupResponse>> =
@@ -41,15 +35,14 @@ interface StudyGroupApi {
 
     suspend fun delete(studyGroupId: UUID): EmptyResponseResult
 
-
     suspend fun getByAcademicYear(academicYear: Int): ResponseResult<List<StudyGroupResponse>>
 }
 
 class StudyGroupApiImpl(private val client: HttpClient) : StudyGroupApi {
-    override suspend fun create(createStudyGroupRequest: CreateStudyGroupRequest): ResponseResult<StudyGroupResponse> {
+    override suspend fun create(request: CreateStudyGroupRequest): ResponseResult<StudyGroupResponse> {
         return client.post("/studygroups") {
             contentType(ContentType.Application.Json)
-            setBody(createStudyGroupRequest)
+            setBody(request)
         }.toResult()
     }
 
@@ -75,11 +68,11 @@ class StudyGroupApiImpl(private val client: HttpClient) : StudyGroupApi {
 
     override suspend fun update(
         studyGroupId: UUID,
-        updateStudyGroupRequest: UpdateStudyGroupRequest,
+        request: UpdateStudyGroupRequest,
     ): ResponseResult<StudyGroupResponse> {
         return client.patch("/studygroups/$studyGroupId") {
             contentType(ContentType.Application.Json)
-            setBody(updateStudyGroupRequest)
+            setBody(request)
         }.toResult()
     }
 

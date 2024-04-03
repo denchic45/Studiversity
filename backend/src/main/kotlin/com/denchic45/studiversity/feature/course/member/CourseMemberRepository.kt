@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.feature.course.member
 
+import com.denchic45.studiversity.api.user.model.UserResponse
 import com.denchic45.studiversity.database.distinctOn
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
 import com.denchic45.studiversity.feature.user.toUserResponse
-import com.denchic45.studiversity.api.user.model.UserResponse
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
@@ -14,8 +14,8 @@ class CourseMemberRepository {
 
     fun findByCourseId(courseId: UUID): List<UserResponse> {
         val userIds = Enrollments.innerJoin(UserEnrollments, { Enrollments.id }, { enrollmentId })
-            .slice(UserEnrollments.userId.distinctOn())
-            .select { Enrollments.courseId eq courseId }
+            .select(UserEnrollments.userId.distinctOn())
+            .where { Enrollments.courseId eq courseId }
             .map { it[UserEnrollments.userId.distinctOn()].value }
 
         return UserDao.find(Users.id inList userIds).map(UserDao::toUserResponse)
@@ -25,9 +25,9 @@ class CourseMemberRepository {
     fun enroll(courseId: UUID, userId: UUID) {
         UserEnrollments.insert {
             it[UserEnrollments.userId] = userId
-            it[enrollmentId] = Enrollments.select {
-                Enrollments.courseId eq courseId and (Enrollments.type eq EnrollmentType.DEFAULT)
-            }.single()[Enrollments.id]
+            it[enrollmentId] = Enrollments.selectAll()
+                .where { Enrollments.courseId eq courseId and (Enrollments.type eq EnrollmentType.DEFAULT) }
+                .single()[Enrollments.id]
         }
     }
 
