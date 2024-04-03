@@ -80,7 +80,7 @@ class AvatarService(private val fileSystem: FileSystem) {
         font.deriveFont(fontSizeLast)
 
         // Font color
-        g2.color = Color.WHITE
+        g2.color = colors.random()
 
         // Center font
         val fontRect = fm.getStringBounds(initial, g2)
@@ -111,4 +111,16 @@ class AvatarService(private val fileSystem: FileSystem) {
     }
 
     private fun userDir(userId: UUID) = avatarsDir / userId.toString()
+
+    private val colors = listOf(
+        Color(32, 176, 136),
+        Color(177, 37, 34),
+        Color(221, 105, 28),
+        Color(237, 186, 17),
+        Color(122, 43, 158),
+        Color(42, 132, 210),
+        Color(36, 162, 78),
+        Color(32, 48, 64),
+        Color(174, 181, 187),
+        )
 }
