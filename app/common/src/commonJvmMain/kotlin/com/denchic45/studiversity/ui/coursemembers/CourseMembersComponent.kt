@@ -2,13 +2,14 @@ package com.denchic45.studiversity.ui.coursemembers
 
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.user.model.UserResponse
 import com.denchic45.studiversity.domain.model.toUserItem
 import com.denchic45.studiversity.domain.resource.map
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
-import com.denchic45.studiversity.domain.usecase.FindMembersByScopeUseCase
-import com.denchic45.studiversity.domain.usecase.RemoveMemberFromScopeUseCase
+import com.denchic45.studiversity.domain.usecase.FindCourseMembersUseCase
+import com.denchic45.studiversity.domain.usecase.RemoveStudyGroupMemberUseCase
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.uiTextOf
@@ -23,9 +24,9 @@ import java.util.*
 @Inject
 class CourseMembersComponent(
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
-    private val findMembersByScopeUseCase: FindMembersByScopeUseCase,
+    private val findCourseMembersUseCase: FindCourseMembersUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
-    private val removeMemberFromScopeUseCase: RemoveMemberFromScopeUseCase,
+    private val removeMemberFromScopeUseCase: RemoveStudyGroupMemberUseCase,
     @Assisted
     private val courseId: UUID,
     @Assisted
@@ -47,10 +48,10 @@ class CourseMembersComponent(
         it.hasCapability(Capability.WriteCourse)
     }.stateInResource(componentScope)
 
-    private val _members = flow { emit(findMembersByScopeUseCase(courseId)) }
+    private val _members = flow { emit(findCourseMembersUseCase(courseId)) }
         .stateInResource(componentScope)
 
-    val members = _members.map(componentScope) { it.map { it.map { it.user.toUserItem() } } }
+    val members = _members.map(componentScope) { it.map { it.users.map(UserResponse::toUserItem) } }
 
     fun onMemberClick(memberId: UUID) {
         onMemberOpen(memberId)

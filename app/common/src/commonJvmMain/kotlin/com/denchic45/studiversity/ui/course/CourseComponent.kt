@@ -5,14 +5,12 @@ import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.course.element.model.CourseElementType
 import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
 import com.denchic45.studiversity.api.role.model.Capability
-import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
@@ -32,7 +30,6 @@ import com.denchic45.studiversity.ui.navigation.isActiveFlow
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.profile.ProfileComponent
-import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Assisted
@@ -102,13 +99,13 @@ class CourseComponent(
         UUID,
         ComponentContext,
     ) -> ProfileComponent,
-    scopeMemberEditorComponent: (
-        availableRoles: List<Role>,
-        scopeId: UUID,
-        memberId: UUID?,
-        onFinish: () -> Unit,
-        ComponentContext
-    ) -> ScopeMemberEditorComponent,
+//    scopeMemberEditorComponent: (
+//        availableRoles: List<Role>,
+//        scopeId: UUID,
+//        memberId: UUID?,
+//        onFinish: () -> Unit,
+//        ComponentContext
+//    ) -> ScopeMemberEditorComponent,
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
@@ -189,15 +186,16 @@ class CourseComponent(
 //                    _profileComponent(onStudyGroupOpen, config.userId, context)
 //                )
 
-                is SidebarConfig.ScopeMemberEditor -> SidebarChild.ScopeMemberEditor(
-                    scopeMemberEditorComponent(
-                        listOf(Role.Student, Role.Teacher),
-                        courseId,
-                        config.memberId,
-                        sidebarNavigation::dismiss,
-                        context
-                    )
-                )
+//                is SidebarConfig.ScopeMemberEditor -> SidebarChild.ScopeMemberEditor(
+//                    scopeMemberEditorComponent(
+//                        listOf(Role.Student, Role.Teacher),
+//                        courseId,
+//                        config.memberId,
+//                        sidebarNavigation::dismiss,
+//                        context
+//                    )
+//                )
+                is SidebarConfig.ScopeMemberEditor -> TODO()
             }
         }
     )
@@ -307,13 +305,21 @@ class CourseComponent(
     @Parcelize
     sealed class Config : Parcelable {
 
-        object None : Config()
+        data object None : Config() {
+            private fun readResolve(): Any = None
+        }
 
-        object CourseEditor : Config()
+        data object CourseEditor : Config() {
+            private fun readResolve(): Any = CourseEditor
+        }
 
-        object Topics : Config()
+        data object Topics : Config() {
+            private fun readResolve(): Any = Topics
+        }
 
-        object CourseStudyGroupsEditor : Config()
+        data object CourseStudyGroupsEditor : Config() {
+            private fun readResolve(): Any = CourseStudyGroupsEditor
+        }
 
         data class CourseWork(val workId: UUID) : Config()
 
@@ -321,9 +327,7 @@ class CourseComponent(
 
         data class CourseMaterial(val materialId: UUID) : Config()
 
-        data class CourseMaterialEditor(
-            val materialId: UUID?
-        ) : Config()
+        data class CourseMaterialEditor(val materialId: UUID?) : Config()
     }
 
     sealed class Child {
@@ -342,7 +346,7 @@ class CourseComponent(
 
         class CourseWorMaterialEditor(val component: CourseMaterialEditorComponent) : Child()
 
-        object None : Child()
+        data object None : Child()
     }
 
     @Parcelize
@@ -357,7 +361,7 @@ class CourseComponent(
 
 //        class Profile(val component: ProfileComponent) : SidebarChild()
 
-        class ScopeMemberEditor(val component: ScopeMemberEditorComponent) : SidebarChild()
+//        class ScopeMemberEditor(val component: ScopeMemberEditorComponent) : SidebarChild()
     }
 
     override fun hasChildrenFlow(): Flow<Boolean> {

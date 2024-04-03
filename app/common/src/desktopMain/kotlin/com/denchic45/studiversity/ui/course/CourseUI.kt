@@ -1,45 +1,24 @@
 package com.denchic45.studiversity.ui.course
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.ViewDay
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
+import com.denchic45.studiversity.api.course.model.CourseResponse
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.LocalAppBarMediator
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.studiversity.api.course.model.CourseResponse
 
 @Composable
 fun CourseScreen(component: CourseComponent) {
@@ -76,13 +55,6 @@ fun CourseScreen(component: CourseComponent) {
             onEditCourseClick = component::onCourseEditClick,
             onOpenTopicsClick = component::onOpenTopicsClick
         )
-//                appBarInteractor.set(AppBarState(visible = false))
-//                fabInteractor.set(
-//                    FabState(
-//                        icon = UiIcon.Resource(R.drawable.ic_add),
-//                        onClick = component::onFabClick
-//                    )
-//                )
     }
 }
 
@@ -130,7 +102,8 @@ fun CourseContent(
                 sidebarChild.child?.instance?.let { sidebar ->
                     Box(Modifier.weight(1f)) {
                         when (sidebar) {
-                            is CourseComponent.SidebarChild.ScopeMemberEditor -> TODO()
+//                            is CourseComponent.SidebarChild.ScopeMemberEditor -> TODO()
+                            else -> {}
                         }
                     }
                 }

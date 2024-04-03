@@ -1,8 +1,6 @@
 package com.denchic45.studiversity.data.repository
 
 import com.denchic45.studiversity.api.course.CourseApi
-import com.denchic45.studiversity.api.member.MembersApi
-import com.denchic45.studiversity.api.role.RoleApi
 import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.api.studygroup.StudyGroupApi
 import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
@@ -44,8 +42,6 @@ class StudyGroupRepository(
     override val subjectLocalDataSource: SubjectLocalDataSource,
     private val studyGroupApi: StudyGroupApi,
     private val courseApi: CourseApi,
-    private val membersApi: MembersApi,
-    private val roleApi: RoleApi,
 ) : NetworkServiceOwner, SaveCourseRepository,
     FindByContainsNameRepository<StudyGroupResponse> {
 
@@ -54,7 +50,6 @@ class StudyGroupRepository(
             studyGroupApi.search(text)
         }
     }
-
 
 //    private suspend fun saveYourGroup(group: GroupMap) {
 //        saveGroup(group)
@@ -211,10 +206,6 @@ class StudyGroupRepository(
 //        }
 //    }
 
-    suspend fun findStudyGroupMembersByGroupId(studyGroupId: UUID) = fetchResource {
-        membersApi.getByScope(studyGroupId)
-    }
-
     fun observeIdsByMe() = appPreferences.observeBellSchedule
         .map { Json.decodeFromString<List<String>>(it).map(String::toUUID) }
 
@@ -227,7 +218,6 @@ class StudyGroupRepository(
                         Json.encodeToString(responses.map { it.id.toString() })
                 }
             }
-
     }
 
     fun findByCourseId(courseId: UUID) = fetchResourceFlow {

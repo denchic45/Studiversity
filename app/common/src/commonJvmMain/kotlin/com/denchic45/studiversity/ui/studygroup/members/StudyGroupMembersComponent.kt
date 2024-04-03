@@ -26,7 +26,7 @@ class StudyGroupMembersComponent(
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
-    private val removeMemberFromScopeUseCase: RemoveMemberFromScopeUseCase,
+    private val removeMemberFromScopeUseCase: RemoveStudyGroupMemberUseCase,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     @Assisted
     private val onMemberOpen: (memberId: UUID) -> Unit,

@@ -30,11 +30,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.denchic45.studiversity.api.course.model.CourseResponse
 import com.denchic45.studiversity.domain.resource.Forbidden
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
 import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.component.TabIndicator
@@ -48,9 +48,7 @@ import com.denchic45.studiversity.ui.coursetimetable.CourseTimetableScreen
 import com.denchic45.studiversity.ui.coursetopics.CourseTopicsScreen
 import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
 import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
-import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.studiversity.api.course.model.CourseResponse
 import kotlinx.coroutines.launch
 
 
@@ -98,7 +96,7 @@ fun CourseScreen(component: CourseComponent) {
 
     childSidebar.child?.let {
         when (val child = it.instance) {
-            is CourseComponent.SidebarChild.ScopeMemberEditor -> ScopeMemberEditorScreen(child.component)
+//            is CourseComponent.SidebarChild.ScopeMemberEditor -> ScopeMemberEditorScreen(child.component)
         }
     } ?: run {
         hideAppBar()
