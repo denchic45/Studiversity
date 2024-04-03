@@ -1,7 +1,5 @@
 package com.denchic45.studiversity.ui.subject
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,9 +9,7 @@ import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 @Composable
 fun SubjectListItem(
     item: SubjectResponse,
-    onClick: () -> Unit = {},
     trailingContent: @Composable (() -> Unit)? = null,
-    interactionSource: MutableInteractionSource = MutableInteractionSource(),
     modifier: Modifier = Modifier
 ) {
     ListItem(
@@ -32,6 +28,6 @@ fun SubjectListItem(
 //            )
 //        },
         trailingContent = trailingContent,
-        modifier = modifier.clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
+        modifier = modifier
     )
 }

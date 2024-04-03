@@ -125,7 +125,8 @@ fun StudyGroupMembersContent(
                 com.denchic45.studiversity.ui.user.UserListItem(
                     item = it,
                     avatarContent = { UserAvatarImage(it.avatarUrl) },
-                    onClick = { onMemberClick(it.id) })
+                    modifier = Modifier.clickable(onClick = { onMemberClick(it.id) })
+                )
             }
         }
         if (members.students.isNotEmpty()) {

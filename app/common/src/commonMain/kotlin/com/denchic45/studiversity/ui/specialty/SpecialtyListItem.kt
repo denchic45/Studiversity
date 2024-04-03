@@ -1,7 +1,5 @@
 package com.denchic45.studiversity.ui.specialty
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Engineering
 import androidx.compose.material3.Icon
@@ -15,9 +13,7 @@ import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 @Composable
 fun SpecialtyListItem(
     item: SpecialtyResponse,
-    onClick: () -> Unit = {},
     trailingContent: (@Composable () -> Unit)? = null,
-    interactionSource: MutableInteractionSource = MutableInteractionSource(),
     modifier: Modifier = Modifier
 ) {
     ListItem(
@@ -31,6 +27,6 @@ fun SpecialtyListItem(
             )
         },
         trailingContent = trailingContent,
-        modifier = modifier.clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
+        modifier = modifier
     )
 }

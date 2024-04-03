@@ -1,7 +1,5 @@
 package com.denchic45.studiversity.ui.user
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ListItem
@@ -15,10 +13,8 @@ import com.denchic45.studiversity.domain.model.UserItem
 @Composable
 fun UserListItem(
     item: UserItem,
-    onClick: () -> Unit = {},
     avatarContent: @Composable () -> Unit,
     trailingContent: (@Composable () -> Unit)? = null,
-    interactionSource: MutableInteractionSource = MutableInteractionSource(),
     modifier: Modifier = Modifier
 ) {
     item.apply {
@@ -32,7 +28,6 @@ fun UserListItem(
             leadingContent = { avatarContent() },
             trailingContent = trailingContent,
             modifier = modifier.height(64.dp)
-                .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
         )
     }
 }

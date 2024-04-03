@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.ui.admindashboard
 
+import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.model.CourseItem
 import com.denchic45.studiversity.ui.course.ArchiveCourseConfirmDialog
@@ -80,7 +82,6 @@ fun CoursesAdminScreen(component: CoursesAdminComponent) {
         val isHovered by interactionSource.collectIsHoveredAsState()
         CourseListItem(
             item = item,
-            onClick = { component.onSelect(item) },
             trailingContent = {
                 if (isHovered) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -101,7 +102,8 @@ fun CoursesAdminScreen(component: CoursesAdminComponent) {
                         }
                     }
                 }
-            }
+            },
+            modifier = Modifier.hoverable(interactionSource),
         )
     }
 }
