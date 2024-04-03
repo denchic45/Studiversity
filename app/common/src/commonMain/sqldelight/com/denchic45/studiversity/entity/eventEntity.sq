@@ -1,5 +1,6 @@
 import kotlin.collections.List;
 import kotlin.Int;
+import kotlin.String;
 
 CREATE TABLE eventEntity (
 event_id TEXT NOT NULL UNIQUE PRIMARY KEY,

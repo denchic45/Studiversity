@@ -1,4 +1,5 @@
 import kotlin.collections.List;
+import kotlin.String;
 
 CREATE TABLE submission (
 submission_id TEXT NOT NULL UNIQUE PRIMARY KEY,
