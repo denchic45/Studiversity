@@ -112,10 +112,7 @@ fun StudyGroupContent(
                             Box(Modifier.fillMaxSize()) {
                                 when (val child = it) {
                                     is StudyGroupComponent.TabChild.Members -> {
-                                        SelectableStudyGroupMembersScreen(
-                                            component = child.component,
-                                            selectedItemId = (sidebarChild as? StudyGroupComponent.SlotChild.Member)?.component?.userId
-                                        )
+                                        StudyGroupMembersScreen(child.component)
                                     }
 
                                     is StudyGroupComponent.TabChild.Courses -> {

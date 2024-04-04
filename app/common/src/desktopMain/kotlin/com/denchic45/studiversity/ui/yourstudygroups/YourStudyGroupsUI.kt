@@ -15,7 +15,6 @@ import com.denchic45.studiversity.ui.ScreenScaffold
 import com.denchic45.studiversity.ui.main.AppBarTitle
 import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
-import com.denchic45.studiversity.ui.studygroup.StudyGroupContent
 import com.denchic45.studiversity.ui.theme.spacing
 import java.util.*
 
@@ -65,13 +64,12 @@ fun YourStudyGroupScreen(component: StudyGroupComponent) {
     val selectedTab by component.selectedTab.collectAsState()
     val childSidebar by component.childSidebar.subscribeAsState()
 
-    StudyGroupContent(
-        selectedTab = selectedTab,
-        children = component.childTabs,
-        sidebarChild = childSidebar.child?.instance,
-        onTabSelect = component::onTabSelect,
-        onSidebarClose = component::onSidebarClose
-    )
+    // TODO вернуть
+//    StudyGroupContent(
+//        selectedTab = selectedTab,
+//        children = component.childTabs,
+//        onTabSelect = component::onTabSelect
+//    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
