@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.timetable.model.TimetableResponse
 import com.denchic45.studiversity.data.repository.MetaRepository
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.resource.Resource
@@ -27,7 +28,6 @@ import com.denchic45.studiversity.ui.timetable.state.toLocalDateOfWeekOfYear
 import com.denchic45.studiversity.ui.timetable.state.toTimetableState
 import com.denchic45.studiversity.ui.timetableeditor.TimetableEditorComponent
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.studiversity.api.timetable.model.TimetableResponse
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.*
@@ -42,7 +42,7 @@ class TimetablesPublisherComponent(
     metaRepository: MetaRepository,
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val studyGroupChooserComponent: (
-            (StudyGroupItem) -> Unit,
+            (StudyGroupItem?) -> Unit,
             ComponentContext,
     ) -> StudyGroupChooserComponent,
     private val periodEditorComponent: (
@@ -77,9 +77,9 @@ class TimetablesPublisherComponent(
             when (config) {
                 OverlayConfig.StudyGroupChooser -> OverlayChild.StudyGroupChooser(
                     studyGroupChooserComponent(
-                        {
+                        { studyGroup ->
+                            studyGroup?.let(::onAddStudyGroup)
                             overlayNavigation.dismiss()
-                            it.let(::onAddStudyGroup)
                         },
                         componentContext
                     )
@@ -89,8 +89,8 @@ class TimetablesPublisherComponent(
                     periodEditorComponent(
                         config.periodConfig,
                         {
-                            overlayNavigation.dismiss()
                             config.onFinish(it)
+                            overlayNavigation.dismiss()
                         },
                         componentContext
                     )

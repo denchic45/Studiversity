@@ -22,7 +22,7 @@ import java.util.*
 
 @Inject
 class ScopeMemberEditorComponent(
-    userChooserComponent: (onSelect: (UserItem) -> Unit, ComponentContext) -> UserChooserComponent,
+    userChooserComponent: (onSelect: (UserItem?) -> Unit, ComponentContext) -> UserChooserComponent,
     private val assignRolesToUserInScopeUseCase: AssignRolesToUserInScopeUseCase,
     @Assisted
     private val availableRoles: List<Role>,
@@ -45,10 +45,7 @@ class ScopeMemberEditorComponent(
         childFactory = { config, context ->
             when (config) {
                 Config.UserChooser -> Child.UserChooser(
-                    userChooserComponent(
-                        ::onSelectUser,
-                        context
-                    )
+                    userChooserComponent({ user -> user?.let(::onSelectUser) }, context)
                 )
             }
         }

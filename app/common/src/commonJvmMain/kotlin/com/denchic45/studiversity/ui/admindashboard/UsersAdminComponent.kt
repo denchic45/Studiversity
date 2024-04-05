@@ -21,7 +21,7 @@ import java.util.*
 @Inject
 class UsersAdminComponent(
     private val removeUserUseCase: RemoveUserUseCase,
-    userChooserComponent: (onSelect: (UserItem) -> Unit, ComponentContext) -> UserChooserComponent,
+    userChooserComponent: (onSelect: (UserItem?) -> Unit, ComponentContext) -> UserChooserComponent,
     userEditorComponent: (UUID?, onFinish: () -> Unit, ComponentContext) -> UserEditorComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
@@ -41,7 +41,7 @@ class UsersAdminComponent(
             }
         })
 
-    override val chooserComponent = userChooserComponent(::onSelect, componentContext)
+    override val chooserComponent = userChooserComponent({ user -> user?.let(::onSelect) }, componentContext)
 
     override fun onSelect(item: UserItem) {
         rootNavigation.push(RootConfig.Profile(item.id))

@@ -9,7 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.ui.component.TitleAlertDialog
+import com.denchic45.studiversity.ui.component.AlertDialogTitle
 import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
 import com.denchic45.studiversity.ui.theme.CommonAppTheme
 import java.util.*
@@ -30,7 +30,7 @@ fun StudyGroupEditorDialog(component: StudyGroupEditorComponent) {
         AlertDialog(
             onDismissRequest = component::onDismissRequest,
             title = {
-                TitleAlertDialog(
+                AlertDialogTitle(
                     text = if (state.isNew) "Создать группу" else "Изменить группу",
                     onClose = component::onDismissRequest
                 )

@@ -15,7 +15,7 @@ import me.tatarka.inject.annotations.Inject
 class CourseChooserComponent(
     private val findCourseByContainsNameUseCase: FindCourseByContainsNameUseCase,
     @Assisted
-    override val onSelect: (CourseItem) -> Unit,
+    override val onFinish: (CourseItem?) -> Unit,
     @Assisted
     val componentContext: ComponentContext,
 ) : ChooserComponent<CourseItem>(componentContext) {

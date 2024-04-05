@@ -7,6 +7,7 @@ import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.room.model.RoomResponse
 import com.denchic45.studiversity.domain.usecase.RemoveRoomUseCase
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
@@ -14,17 +15,16 @@ import com.denchic45.studiversity.ui.roomeditor.RoomEditorComponent
 import com.denchic45.studiversity.ui.search.RoomChooserComponent
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.room.model.RoomResponse
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class RoomsAdminComponent(
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val removeRoomUseCase: RemoveRoomUseCase,
-    roomChooserComponent: (onSelect: (RoomResponse) -> Unit, ComponentContext) -> RoomChooserComponent,
+    roomChooserComponent: (onSelect: (RoomResponse?) -> Unit, ComponentContext) -> RoomChooserComponent,
     roomEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> RoomEditorComponent,
     @Assisted
     componentContext: ComponentContext,
@@ -33,7 +33,7 @@ class RoomsAdminComponent(
 
     private val componentScope = componentScope()
 
-    override val chooserComponent = roomChooserComponent(::onSelect, componentContext)
+    override val chooserComponent = roomChooserComponent({ room -> room?.let(::onSelect) }, componentContext)
 
     private val overlayNavigation = SlotNavigation<Config>()
     val childSlot = childSlot(source = overlayNavigation,

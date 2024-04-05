@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.studygroup.timetable
+package com.denchic45.studiversity.ui.studygroup
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class StudyGroupTimetableComponent(

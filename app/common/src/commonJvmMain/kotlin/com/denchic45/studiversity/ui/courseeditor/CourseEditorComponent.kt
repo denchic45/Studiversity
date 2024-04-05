@@ -46,7 +46,7 @@ class CourseEditorComponent(
     private val updateCourseUseCase: UpdateCourseUseCase,
     private val archiveCourseUseCase: ArchiveCourseUseCase,
     private val findCourseByIdUseCase: FindCourseByIdUseCase,
-    private val _subjectChooserComponent: ((SubjectResponse) -> Unit, ComponentContext) -> SubjectChooserComponent,
+    private val _subjectChooserComponent: ((SubjectResponse?) -> Unit, ComponentContext) -> SubjectChooserComponent,
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
@@ -78,12 +78,14 @@ class CourseEditorComponent(
         childFactory = { config, componentContext ->
             when (config) {
                 DialogConfig.SubjectChooser -> DialogChild.SubjectChooser(_subjectChooserComponent({ response ->
-                    editingState.subject = SelectedSubject(
-                        subjectId = response.id,
-                        subjectName = response.name,
-                        subjectIconUrl = response.iconUrl
-                    )
-                    updateEnableSave()
+                    response?.let {
+                        editingState.subject = SelectedSubject(
+                            subjectId = response.id,
+                            subjectName = response.name,
+                            subjectIconUrl = response.iconUrl
+                        )
+                        updateEnableSave()
+                    }
                     slotNavigation.dismiss()
                 }, componentContext))
             }

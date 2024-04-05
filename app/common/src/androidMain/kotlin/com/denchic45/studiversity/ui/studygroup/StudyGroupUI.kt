@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -17,39 +17,75 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.domain.resource.ifSuccess
-import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.appbar.AppBarContent
 import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.component.TabIndicator
-import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorScreen
 import com.denchic45.studiversity.ui.uiTextOf
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalDecomposeApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun StudyGroupScreen(component: StudyGroupComponent) {
-    val childSidebar by component.childSidebar.subscribeAsState()
-    val studyGroup by component.studyGroup.collectAsState()
+    val childSlot by component.childSlot.subscribeAsState()
+    val studyGroupResource by component.studyGroup.collectAsState()
     val allowEditResource by component.allowEdit.collectAsState()
 
-    val studyGroupName = studyGroup.ifSuccess { it.name } ?: ""
+    val studyGroupName = studyGroupResource.ifSuccess { it.name }.orEmpty()
     val allowEdit = allowEditResource.ifSuccess { it } ?: false
 
-    StudyGroupContent(
-        children = component.childTabs,
-        onTabSelect = component::onTabSelect
-    )
+    val childPages by component.childPages.subscribeAsState()
+    val coroutineScope = rememberCoroutineScope()
+    val pagerState = rememberPagerState(pageCount = childPages.items::size)
 
-    childSidebar.child.let {
-        when (val child = it?.instance) {
-            is StudyGroupComponent.SlotChild.Member -> ProfileScreen(child.component)
-            is StudyGroupComponent.SlotChild.StudyGroupEditor -> StudyGroupEditorScreen(child.component)
-            is StudyGroupComponent.SlotChild.ScopeMemberEditor -> {
-                ScopeMemberEditorScreen(child.component)
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            indicator = { tabPositions ->
+                TabIndicator(Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]))
+            },
+            divider = {}) {
+            childPages.items.forEachIndexed { index, item ->
+                Tab(
+                    text = { Text(item.configuration.tabTitle()) },
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(index)
+                            component.onTabSelect(index)
+                        }
+                    },
+                )
             }
+        }
+        HorizontalDivider()
+        HorizontalPager(
+            state = pagerState,
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                childPages.items[childPages.selectedIndex].instance?.let { child ->
+                    when (child) {
+                        is StudyGroupComponent.TabChild.Members -> StudyGroupMembersScreen(child.component)
+                        is StudyGroupComponent.TabChild.Courses -> StudyGroupCoursesScreen(child.component)
+                        is StudyGroupComponent.TabChild.Timetable -> StudyGroupTimetableScreen(child.component)
+                    }
+                }
+            }
+        }
+    }
+
+    childSlot.child.let {
+        when (val child = it?.instance) {
+            is StudyGroupComponent.SlotChild.StudyGroupEditor -> StudyGroupEditorScreen(child.component)
+            StudyGroupComponent.SlotChild.Info -> studyGroupResource.onSuccess { studyGroup ->
+                StudyGroupInfoDialog(studyGroup, component::onDialogClose)
+            }
+
             null -> {
                 updateAppBarState(
                     studyGroupName, allowEdit, AppBarContent(
@@ -59,16 +95,22 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
                                 title = uiTextOf("Изменить"),
                                 onClick = component::onEditClick
                             ),
-                            DropdownMenuItem2(
-                                title = uiTextOf("Добавить участника"),
-                                onClick = component::onAddMemberClick
-                            )
+//                            DropdownMenuItem2(
+//                                title = uiTextOf("Добавить участника"),
+//                                onClick = component::onAddMemberClick
+//                            )
                         ) else emptyList()
                     )
                 )
             }
         }
     }
+}
+
+fun StudyGroupComponent.TabConfig.tabTitle() = when (this) {
+    StudyGroupComponent.TabConfig.Members -> "Участники"
+    StudyGroupComponent.TabConfig.Courses -> "Курсы"
+    StudyGroupComponent.TabConfig.Timetable -> "Расписание"
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -100,7 +142,7 @@ fun StudyGroupContent(
                 )
             }
         }
-        Divider()
+        HorizontalDivider()
         HorizontalPager(
             state = pagerState,
         ) {

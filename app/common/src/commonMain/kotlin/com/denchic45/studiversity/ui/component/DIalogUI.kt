@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun TitleAlertDialog(text: String, onClose: () -> Unit) {
+fun AlertDialogTitle(text: String, onClose: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier

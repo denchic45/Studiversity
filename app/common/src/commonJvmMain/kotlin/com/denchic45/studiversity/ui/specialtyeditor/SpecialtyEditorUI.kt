@@ -14,7 +14,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.denchic45.studiversity.ui.LoadingDialog
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.component.TitleAlertDialog
+import com.denchic45.studiversity.ui.component.AlertDialogTitle
 import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
 import com.denchic45.studiversity.ui.specialty.RemoveSpecialtyConfirmDialog
 import com.denchic45.studiversity.ui.theme.spacing
@@ -48,7 +48,7 @@ fun SpecialtyEditorDialog(component: SpecialtyEditorComponent) {
                 TextButton(onClick = component::onDismissRequest) { Text("Отмена") }
             },
             title = {
-                TitleAlertDialog(
+                AlertDialogTitle(
                     text = if (state.isNew) "Создать специальность" else "Изменить специальность",
                     onClose = component::onDismissRequest
                 )

@@ -13,8 +13,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.ui.LoadingDialog
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.component.AlertDialogTitle
 import com.denchic45.studiversity.ui.component.DeleteListItem
-import com.denchic45.studiversity.ui.component.TitleAlertDialog
 import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
 import com.denchic45.studiversity.ui.subject.RemoveSubjectConfirmDialog
 import com.denchic45.studiversity.ui.theme.spacing
@@ -38,7 +38,7 @@ fun SubjectEditorDialog(component: SubjectEditorComponent) {
         AlertDialog(
             onDismissRequest = component::onDismissRequest,
             title = {
-                TitleAlertDialog(
+                AlertDialogTitle(
                     text = if (state.isNew) "Новый предмет" else "Изменить предмет",
                     onClose = component::onDismissRequest
                 )

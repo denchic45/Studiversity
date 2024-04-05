@@ -1,85 +1,76 @@
 package com.denchic45.studiversity.ui.yourstudygroups
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
-import com.denchic45.studiversity.ui.CircularLoadingBox
-import com.denchic45.studiversity.ui.ScopeMemberEditorScreen
-import com.denchic45.studiversity.ui.appbar.AppBarContent
-import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
-import com.denchic45.studiversity.ui.appbar.updateAppBarState
-import com.denchic45.studiversity.ui.profile.ProfileScreen
-import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
-import com.denchic45.studiversity.ui.studygroup.StudyGroupContent
-import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorScreen
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 
 
-@Composable
-fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
-    val groups by component.studyGroups.collectAsState()
-    val selectedStudyGroup by component.selectedStudyGroup.collectAsState()
-    val allowEditSelectedRes by component.allowEditSelected.collectAsState()
-
-    Column {
-        var showSpinner by remember { mutableStateOf(true) }
-        if (showSpinner)
-            StudyGroupSpinner(groups, selectedStudyGroup, component)
-
-        val childStudyGroup by component.childStudyGroup.subscribeAsState()
-
-        childStudyGroup.child?.instance?.let { studyGroupComponent ->
-            Box {
-                YourStudyGroupScreen(studyGroupComponent)
-                val childSidebar by studyGroupComponent.childSidebar.subscribeAsState()
-                showSpinner = childSidebar.child == null
-                when (val child = childSidebar.child?.instance) {
-                    is StudyGroupComponent.SlotChild.Member -> ProfileScreen(child.component)
-
-                    is StudyGroupComponent.SlotChild.StudyGroupEditor -> {
-                        StudyGroupEditorScreen(child.component)
-                    }
-
-                    null -> {
-                        val title = uiTextOf("")
-                        val menuItems = if (allowEditSelectedRes.takeValueIfSuccess() == true) {
-                            listOf(
-                                DropdownMenuItem2(
-                                    title = uiTextOf("Изменить"),
-                                    onClick = component::onEditStudyGroupClick
-                                ),
-                                DropdownMenuItem2(
-                                    title = uiTextOf("Добавить участника"),
-                                    onClick = component::onAddMemberClick
-                                )
-                            )
-                        } else emptyList()
-                        updateAppBarState(
-                            title,
-                            menuItems,
-                            AppBarContent(title = title, dropdownItems = menuItems)
-                        )
-
-                    }
-
-                    is StudyGroupComponent.SlotChild.ScopeMemberEditor -> {
-                        ScopeMemberEditorScreen(child.component)
-                    }
-                }
-            }
-        } ?: run {
-            updateAppBarState(AppBarContent())
-            CircularLoadingBox(Modifier.fillMaxSize())
-        }
-    }
-}
+//@Composable
+//fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
+//    val groups by component.studyGroups.collectAsState()
+//    val selectedStudyGroup by component.selectedStudyGroup.collectAsState()
+//    val allowEditSelectedRes by component.allowEditSelected.collectAsState()
+//
+//    Column {
+//        var showSpinner by remember { mutableStateOf(true) }
+//        if (showSpinner)
+//            StudyGroupSpinner(groups, selectedStudyGroup, component)
+//
+//        val childStudyGroup by component.childStudyGroup.subscribeAsState()
+//
+//        childStudyGroup.child?.instance?.let { studyGroupComponent ->
+//            Box {
+//                YourStudyGroupScreen(studyGroupComponent)
+//                val childSidebar by studyGroupComponent.childSlot.subscribeAsState()
+//                showSpinner = childSidebar.child == null
+//                when (val child = childSidebar.child?.instance) {
+//                    is StudyGroupComponent.SlotChild.Member -> ProfileScreen(child.component)
+//
+//                    is StudyGroupComponent.SlotChild.StudyGroupEditor -> {
+//                        StudyGroupEditorScreen(child.component)
+//                    }
+//
+//                    null -> {
+//                        val title = uiTextOf("")
+//                        val menuItems = if (allowEditSelectedRes.takeValueIfSuccess() == true) {
+//                            listOf(
+//                                DropdownMenuItem2(
+//                                    title = uiTextOf("Изменить"),
+//                                    onClick = component::onEditStudyGroupClick
+//                                ),
+//                                DropdownMenuItem2(
+//                                    title = uiTextOf("Добавить участника"),
+//                                    onClick = component::onAddMemberClick
+//                                )
+//                            )
+//                        } else emptyList()
+//                        updateAppBarState(
+//                            title,
+//                            menuItems,
+//                            AppBarContent(title = title, dropdownItems = menuItems)
+//                        )
+//
+//                    }
+//
+//                    is StudyGroupComponent.SlotChild.ScopeMemberEditor -> {
+//                        ScopeMemberEditorScreen(child.component)
+//                    }
+//
+//                    StudyGroupComponent.SlotChild.Info -> TODO()
+//                }
+//            }
+//        } ?: run {
+//            updateAppBarState(AppBarContent())
+//            CircularLoadingBox(Modifier.fillMaxSize())
+//        }
+//    }
+//}
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,10 +120,10 @@ private fun StudyGroupSpinner(
     }
 }
 
-@Composable
-fun YourStudyGroupScreen(component: StudyGroupComponent) {
-    StudyGroupContent(
-        children = component.childTabs,
-        onTabSelect = component::onTabSelect
-    )
-}
+//@Composable
+//fun YourStudyGroupScreen(component: StudyGroupComponent) {
+//    StudyGroupContent(
+//        children = component.childTabs,
+//        onTabSelect = component::onTabSelect
+//    )
+//}

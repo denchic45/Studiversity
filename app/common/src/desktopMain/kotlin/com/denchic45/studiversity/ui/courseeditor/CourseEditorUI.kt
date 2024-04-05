@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.component.TitleAlertDialog
+import com.denchic45.studiversity.ui.component.AlertDialogTitle
 import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
 
 @Composable
@@ -25,7 +25,7 @@ fun CourseEditorDialog(component: CourseEditorComponent) {
     ResourceContent(stateResource) { state ->
         AlertDialog(onDismissRequest = component::onDismissRequest,
             title = {
-                TitleAlertDialog(
+                AlertDialogTitle(
                     text = if (state.isNew) "Создать курс" else "Изменить курс",
                     onClose = component::onDismissRequest
                 )

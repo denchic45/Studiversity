@@ -34,8 +34,8 @@ class RootNavigatorComponent(
         ComponentContext,
     ) -> CourseComponent,
     studyGroupComponent: (
-        UUID,
         rootNavigator: RootNavigator,
+        UUID,
         ComponentContext,
     ) -> StudyGroupComponent,
     adminDashboardComponent: (StackNavigation<RootConfig>, ComponentContext) -> AdminDashboardComponent,
@@ -79,9 +79,9 @@ class RootNavigatorComponent(
                     )
                 )
 
-                RootConfig.YourStudyGroups -> RootChild.YourStudyGroups(
-                    yourStudyGroupsComponent(navigation, context)
-                )
+//                RootConfig.YourStudyGroups -> RootChild.YourStudyGroups(
+//                    yourStudyGroupsComponent(navigation, context)
+//                )
 
                 is RootConfig.Course -> RootChild.Course(
                     courseComponent(
@@ -94,8 +94,8 @@ class RootNavigatorComponent(
 
                 is RootConfig.StudyGroup -> RootChild.StudyGroup(
                     studyGroupComponent(
-                        config.studyGroupId,
                         navigation,
+                        config.studyGroupId,
                         context
                     )
                 )
@@ -133,9 +133,9 @@ sealed interface RootConfig : Parcelable {
         private fun readResolve(): Any = YourTimetables
     }
 
-    data object YourStudyGroups : RootConfig {
-        private fun readResolve(): Any = YourStudyGroups
-    }
+//    data object YourStudyGroups : RootConfig {
+//        private fun readResolve(): Any = YourStudyGroups
+//    }
 
     data object YourCourseWorks : RootConfig {
         private fun readResolve(): Any = YourCourseWorks
@@ -163,9 +163,9 @@ sealed interface RootChild {
         override val component: YourTimetablesComponent,
     ) : RootChild, ChildrenContainerChild
 
-    class YourStudyGroups(
-        override val component: YourStudyGroupsComponent,
-    ) : RootChild, ChildrenContainerChild
+//    class YourStudyGroups(
+//        override val component: StudyGroupComponent,
+//    ) : RootChild, ChildrenContainerChild
 
     class YourCourseWorks(
         override val component: YourCourseWorksComponent,

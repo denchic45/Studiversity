@@ -22,7 +22,7 @@ import java.util.*
 @Inject
 class SubjectsAdminComponent(
     private val removeSubjectUseCase: RemoveSubjectUseCase,
-    subjectChooserComponent: (onSelect: (SubjectResponse) -> Unit, ComponentContext) -> SubjectChooserComponent,
+    subjectChooserComponent: (onSelect: (SubjectResponse?) -> Unit, ComponentContext) -> SubjectChooserComponent,
     subjectEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> SubjectEditorComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
@@ -33,8 +33,9 @@ class SubjectsAdminComponent(
 
     private val componentScope = componentScope()
 
-    override val chooserComponent: SubjectChooserComponent =
-        subjectChooserComponent(::onSelect, componentContext)
+    override val chooserComponent = subjectChooserComponent(
+        { subject -> subject?.let(::onSelect) }, componentContext
+    )
 
     private val overlayNavigation = SlotNavigation<Config>()
     val childSlot = childSlot(

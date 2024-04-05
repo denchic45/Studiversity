@@ -30,6 +30,7 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleC
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.AppBarMediator
 import com.denchic45.studiversity.ui.LocalAppBarMediator
 import com.denchic45.studiversity.ui.ResourceContent
@@ -83,6 +84,7 @@ fun MainScreen(component: MainComponent) {
         val activeChild = childStack.active.instance
         val availableScreens by component.availableScreens.collectAsState()
         val userInfo by component.userInfo.collectAsState()
+        val yourStudyGroups by component.yourStudyGroups.collectAsState()
 
         Column {
             Row {
@@ -259,7 +261,7 @@ fun MainScreen(component: MainComponent) {
                         NavigationRailItem(
                             icon = { Icon(painterResource("ic_study_group".toDrawablePath()), null) },
                             selected = activeChild is MainComponent.Child.YourStudyGroups,
-                            onClick = component::onStudyGroupsClick
+                            onClick = { yourStudyGroups.onSuccess { component.onStudyGroupsClick(it.first().id) } }
                         )
                     }
 

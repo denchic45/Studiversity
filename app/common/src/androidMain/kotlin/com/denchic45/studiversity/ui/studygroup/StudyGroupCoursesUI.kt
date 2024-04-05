@@ -24,7 +24,6 @@ import coil.request.ImageRequest
 import coil3.compose.SubcomposeAsyncImage
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.model.StudyGroupCourseItem
-import com.denchic45.studiversity.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.studiversity.ui.theme.spacing
 import java.util.*
 

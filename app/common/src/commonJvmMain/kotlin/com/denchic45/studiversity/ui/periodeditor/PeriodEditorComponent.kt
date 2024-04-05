@@ -42,8 +42,8 @@ import kotlin.random.Random
 @Inject
 class PeriodEditorComponent(
     private val findRoomByContainsNameUseCase: FindRoomByContainsNameUseCase,
-    private val courseChooserComponent: (onFinish: (CourseItem) -> Unit, ComponentContext) -> CourseChooserComponent,
-    private val userChooserComponent: (onFinish: (UserItem) -> Unit, ComponentContext) -> UserChooserComponent,
+    private val courseChooserComponent: (onFinish: (CourseItem?) -> Unit, ComponentContext) -> CourseChooserComponent,
+    private val userChooserComponent: (onFinish: (UserItem?) -> Unit, ComponentContext) -> UserChooserComponent,
     private val eventDetailsEditorComponent: (EditingPeriod, ComponentContext) -> EventDetailsEditorComponent,
     private val lessonDetailsEditorComponent: (EditingPeriod, SlotNavigation<OverlayConfig>, ComponentContext) -> LessonDetailsEditorComponent,
     @Assisted
@@ -113,16 +113,16 @@ class PeriodEditorComponent(
         childFactory = { config, componentContext ->
             when (config) {
                 is OverlayConfig.CourseChooser -> OverlayChild.CourseChooser(
-                    courseChooserComponent({
+                    courseChooserComponent({ course ->
+                        course?.let { config.onFinish(it) }
                         overlayNavigation.dismiss()
-                        config.onFinish(it)
                     }, componentContext)
                 )
 
                 is OverlayConfig.UserChooser -> OverlayChild.UserChooser(
-                    userChooserComponent({
+                    userChooserComponent({ user ->
+                        user?.let(config.onSelect)
                         overlayNavigation.dismiss()
-                        config.onSelect(it)
                     }, componentContext)
                 )
             }

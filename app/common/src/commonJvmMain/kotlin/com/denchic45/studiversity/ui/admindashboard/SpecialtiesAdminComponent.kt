@@ -20,7 +20,7 @@ import java.util.*
 @Inject
 class SpecialtiesAdminComponent(
     private val removeSpecialtyUseCase: RemoveSpecialtyUseCase,
-    specialtyChooserComponent: (onSelect: (SpecialtyResponse) -> Unit, ComponentContext) -> SpecialtyChooserComponent,
+    specialtyChooserComponent: (onSelect: (SpecialtyResponse?) -> Unit, ComponentContext) -> SpecialtyChooserComponent,
     specialtyEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> SpecialtyEditorComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
@@ -31,8 +31,9 @@ class SpecialtiesAdminComponent(
 
     private val componentScope = componentScope()
 
-    override val chooserComponent: SpecialtyChooserComponent =
-        specialtyChooserComponent(::onSelect, componentContext)
+    override val chooserComponent = specialtyChooserComponent(
+        { specialty -> specialty?.let(::onSelect) }, componentContext
+    )
 
     private val slotNavigation = SlotNavigation<Config>()
     val childSlot: Value<ChildSlot<Config, Child>> = childSlot(

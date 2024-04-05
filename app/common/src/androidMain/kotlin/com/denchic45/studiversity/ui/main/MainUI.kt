@@ -136,6 +136,7 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
                 if (instance is MainComponent.ExtraChild) return@Scaffold
 
                 val moreNavItemThanOne = availableScreens.yourStudyGroups
+                val yourStudyGroups by component.yourStudyGroups.collectAsState()
 
                 if (moreNavItemThanOne) {
                     NavigationBar {
@@ -152,7 +153,12 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
 
                         if (availableScreens.yourStudyGroups) {
                             NavigationBarItem(selected = instance is MainComponent.Child.YourStudyGroups,
-                                onClick = component::onStudyGroupsClick,
+                                onClick = {
+                                    yourStudyGroups.onSuccess {
+                                        // TODO: Сделать выпадающее меню, если есть несколько групп
+                                        component.onStudyGroupsClick(it.first().id)
+                                    }
+                                },
                                 icon = {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_study_group),
@@ -197,6 +203,8 @@ fun MediumMainScreen(
     component: MainComponent,
     activity: ComponentActivity,
 ) {
+    val yourStudyGroups by component.yourStudyGroups.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     ModalNavigationDrawer(
@@ -220,41 +228,45 @@ fun MediumMainScreen(
 
         Row {
             val instance = stack.active.instance
-                val availableScreens by component.availableScreens.collectAsState()
-                NavigationRail(header = {
-                    Spacer(modifier = Modifier.height(1.dp))
-                    IconButton(
-                        onClick = { coroutineScope.launch { drawerState.open() } }) {
+            val availableScreens by component.availableScreens.collectAsState()
+            NavigationRail(header = {
+                Spacer(modifier = Modifier.height(1.dp))
+                IconButton(
+                    onClick = { coroutineScope.launch { drawerState.open() } }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Menu,
+                        contentDescription = "menu"
+                    )
+                }
+            }, containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)) {
+                NavigationRailItem(selected = instance is MainComponent.Child.YourTimetables,
+                    onClick = component::onTimetableClick,
+                    icon = {
                         Icon(
-                            imageVector = Icons.Outlined.Menu,
-                            contentDescription = "menu"
+                            painter = painterResource(R.drawable.ic_timetable),
+                            contentDescription = "your timetables menu"
                         )
-                    }
-                }, containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)) {
-                    NavigationRailItem(selected = instance is MainComponent.Child.YourTimetables,
-                        onClick = component::onTimetableClick,
+                    },
+                    label = { Text("Расписание") }
+                )
+
+                if (availableScreens.yourStudyGroups) {
+                    NavigationRailItem(selected = instance is MainComponent.Child.YourStudyGroups,
+                        onClick = {
+                            yourStudyGroups.onSuccess {
+                                component.onStudyGroupsClick(it.first().id)
+                            }
+                        },
                         icon = {
                             Icon(
-                                painter = painterResource(R.drawable.ic_timetable),
-                                contentDescription = "your timetables menu"
+                                painter = painterResource(R.drawable.ic_study_group),
+                                contentDescription = "your groups menu"
                             )
                         },
-                        label = { Text("Расписание") }
+                        label = { Text("Группы") }
                     )
-
-                    if (availableScreens.yourStudyGroups) {
-                        NavigationRailItem(selected = instance is MainComponent.Child.YourStudyGroups,
-                            onClick = component::onStudyGroupsClick,
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_study_group),
-                                    contentDescription = "your groups menu"
-                                )
-                            },
-                            label = { Text("Группы") }
-                        )
-                    }
                 }
+            }
 
             Scaffold(topBar = { TopBarContent(activity, drawerState) }) {
                 ScreenContainer(paddingValues = it, stack = stack)

@@ -15,7 +15,7 @@ import me.tatarka.inject.annotations.Inject
 class UserChooserComponent(
     private val findUserByContainsNameUseCase: FindUserByContainsNameUseCase,
     @Assisted
-    override val onSelect: (UserItem) -> Unit,
+    override val onFinish: (UserItem?) -> Unit,
     @Assisted
     val componentContext: ComponentContext,
 ) : ChooserComponent<UserItem>(componentContext) {

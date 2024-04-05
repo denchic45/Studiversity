@@ -21,7 +21,7 @@ import java.util.*
 @Inject
 class StudyGroupsAdminComponent(
     private val removeStudyGroupUseCase: RemoveStudyGroupUseCase,
-    studyGroupChooserComponent: (onSelect: (StudyGroupItem) -> Unit, ComponentContext) -> StudyGroupChooserComponent,
+    studyGroupChooserComponent: (onSelect: (StudyGroupItem?) -> Unit, ComponentContext) -> StudyGroupChooserComponent,
     studyGroupEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> StudyGroupEditorComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
@@ -30,7 +30,9 @@ class StudyGroupsAdminComponent(
 ) : ComponentContext by componentContext, SearchableAdminComponent<StudyGroupItem> {
     private val componentScope = componentScope()
 
-    override val chooserComponent = studyGroupChooserComponent(::onSelect, componentContext)
+    override val chooserComponent = studyGroupChooserComponent(
+        { studyGroup -> studyGroup?.let(::onSelect) }, componentContext
+    )
 
     private val slotNavigation = SlotNavigation<Config>()
     val childSlot: Value<ChildSlot<Config, Child>> = childSlot(source = slotNavigation,

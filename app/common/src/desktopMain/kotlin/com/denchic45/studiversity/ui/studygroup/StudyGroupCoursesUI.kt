@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -14,30 +16,46 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
+import com.denchic45.studiversity.ui.BlockContent
 import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.ScreenScaffold
 import com.denchic45.studiversity.ui.component.HeaderItem
+import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.model.StudyGroupCourseItem
-import com.denchic45.studiversity.ui.studygroup.courses.StudyGroupCoursesComponent
 import com.denchic45.studiversity.ui.theme.DesktopAppTheme
 import com.denchic45.studiversity.ui.theme.spacing
 import com.seiko.imageloader.rememberAsyncImagePainter
 import java.util.*
 
 @Composable
-fun StudyGroupCoursesScreen(studyGroupCoursesComponent: StudyGroupCoursesComponent) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-        val courses by studyGroupCoursesComponent.courses.collectAsState()
+fun StudyGroupCoursesScreen(component: StudyGroupCoursesComponent) {
+    val courses by component.courses.collectAsState()
+    val allowEdit by component.allowEdit.collectAsState()
+
+    BlockContent(Modifier.fillMaxSize()) {
         ResourceContent(courses) {
-            StudyGroupCourses(it)
+            ScreenScaffold(topBar = {
+                CustomAppBar(
+                    title = { Text("Курсы") },
+                    actions = {
+                        if (allowEdit.takeValueIfSuccess() == true)
+                            Button(onClick = component::onAddCourseClick) {
+                                Icon(Icons.Outlined.Add, null)
+                                Text("Добавить курс")
+                            }
+                    }
+                )
+            }) { StudyGroupCourses(it) }
         }
     }
 }
 
 @Composable
-fun StudyGroupCourses(list: List<StudyGroupCourseItem>) {
+fun StudyGroupCourses(items: List<StudyGroupCourseItem>) {
     Column {
         Spacer(Modifier.height(8.dp))
-        HeaderItem("${list.size} курс(ов)")
+        HeaderItem("${items.size} курс(ов)")
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -48,7 +66,7 @@ fun StudyGroupCourses(list: List<StudyGroupCourseItem>) {
                 vertical = MaterialTheme.spacing.small
             )
         ) {
-            items(list) {
+            items(items) {
                 StudyGroupCourseListItem(it)
             }
         }

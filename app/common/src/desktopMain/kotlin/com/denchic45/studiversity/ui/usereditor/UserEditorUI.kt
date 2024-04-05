@@ -21,9 +21,9 @@ import com.denchic45.studiversity.api.user.model.Gender
 import com.denchic45.studiversity.displayName
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.systemRoleName
+import com.denchic45.studiversity.ui.component.AlertDialogTitle
 import com.denchic45.studiversity.ui.component.DeleteListItem
 import com.denchic45.studiversity.ui.component.HeaderItem
-import com.denchic45.studiversity.ui.component.TitleAlertDialog
 import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
 import com.denchic45.studiversity.ui.theme.DesktopAppTheme
 import com.denchic45.studiversity.ui.theme.spacing
@@ -46,7 +46,7 @@ fun UserEditorDialog(component: UserEditorComponent) {
         AlertDialog(
             modifier = Modifier.heightIn(max = 648.dp),
             title = {
-                TitleAlertDialog(
+                AlertDialogTitle(
                     text = if (it.isNew) "Создать пользователя" else "Изменить пользователя",
                     onClose = component::onDismissRequest
                 )

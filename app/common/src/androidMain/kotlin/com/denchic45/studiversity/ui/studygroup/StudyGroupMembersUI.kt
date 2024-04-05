@@ -26,24 +26,39 @@ import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.component.IconTitleBox
+import com.denchic45.studiversity.ui.confirm.ConfirmDeletionDialog
 import com.denchic45.studiversity.ui.search.UserAvatarImage
 import com.denchic45.studiversity.ui.search.UserListItem
-import com.denchic45.studiversity.ui.studygroup.members.StudyGroupMembersComponent
 import com.denchic45.studiversity.ui.theme.spacing
 import java.util.*
 
 @Composable
 fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
-    val members by component.members.collectAsState()
+    val membersResource by component.members.collectAsState()
     val allowEditMembers by component.allowEditMembers.collectAsState()
 
-    ResourceContent(resource = members) {
+    var confirmDeletion by remember { mutableStateOf<UUID?>(null) }
+    confirmDeletion?.let { userId ->
+        ConfirmDeletionDialog(
+            title = "Удалить участника группы?",
+            text = "Данные, связанные с участников в группе, невозможно будет восстановить.",
+            onConfirm = {
+                component.onRemoveMemberClick(userId)
+                confirmDeletion = null
+            },
+            onDismiss = {
+                confirmDeletion = null
+            }
+        )
+    }
+
+    ResourceContent(resource = membersResource) { members ->
         StudyGroupMembersContent(
-            members = it,
+            members = members,
             allowEditMembers = allowEditMembers.takeValueIfSuccess() ?: false,
             onMemberClick = component::onMemberClick,
             onMemberEditClick = component::onEditMemberClick,
-            onMemberRemoveClick = component::onRemoveMemberClick,
+            onMemberRemoveClick = { confirmDeletion = it },
             onMemberSetHeadmanClick = component::onMemberSetHeadmanClick,
             onMemberRemoveHeadmanClick = component::onRemoveHeadmanClick,
         )

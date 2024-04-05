@@ -1,20 +1,26 @@
-package com.denchic45.studiversity.ui.studygroup.members
+package com.denchic45.studiversity.ui.studygroup
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.*
+import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.domain.model.StudyGroupMembers
 import com.denchic45.studiversity.domain.model.toUserItem
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.mapResource
-import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.*
-import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
-import com.denchic45.studiversity.ui.confirm.ConfirmState
-import com.denchic45.studiversity.ui.uiTextOf
+import com.denchic45.studiversity.ui.navigator.RootConfig
+import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.util.componentScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
@@ -24,14 +30,17 @@ import java.util.*
 class StudyGroupMembersComponent(
     findStudyGroupMembersUseCase: FindStudyGroupMembersUseCase,
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
+    private val inviteStudyGroupMembersComponent: (
+            () -> Unit, UUID, ComponentContext
+    ) -> InviteStudyGroupMembersComponent,
+    private val studyGroupMemberEditorComponent: (
+            () -> Unit, UUID, UUID, ComponentContext
+    ) -> StudyGroupMemberEditorComponent,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
     private val removeMemberFromScopeUseCase: RemoveStudyGroupMemberUseCase,
-    private val confirmDialogInteractor: ConfirmDialogInteractor,
     @Assisted
-    private val onMemberOpen: (memberId: UUID) -> Unit,
-    @Assisted
-    private val onMemberEdit: (memberId: UUID) -> Unit,
+    private val rootNavigator: RootNavigator,
     @Assisted
     private val studyGroupId: UUID,
     @Assisted
@@ -49,6 +58,24 @@ class StudyGroupMembersComponent(
         .mapResource { it.hasCapability(Capability.WriteStudyGroup) }
         .stateInResource(componentScope)
 
+    private val slotNavigation = SlotNavigation<SlotConfig>()
+    val childSlot: Value<ChildSlot<SlotConfig, SlotChild>> = childSlot(
+        source = slotNavigation,
+        handleBackButton = true,
+        childFactory = { config, context ->
+            when (config) {
+                is SlotConfig.InviteMembers -> SlotChild.InviteMembers(
+                    inviteStudyGroupMembersComponent(slotNavigation::dismiss, studyGroupId, context)
+                )
+
+
+                is SlotConfig.MemberEditor -> SlotChild.MemberEditor(
+                    studyGroupMemberEditorComponent(slotNavigation::dismiss, studyGroupId, config.userId, context)
+                )
+            }
+        }
+    )
+
     val members: StateFlow<Resource<StudyGroupMembers>> = flow {
         emit(findStudyGroupMembersUseCase(studyGroupId))
     }.mapResource { scopeMembers ->
@@ -63,28 +90,22 @@ class StudyGroupMembersComponent(
         )
     }.stateInResource(componentScope)
 
-    val memberActions = MutableStateFlow<Pair<List<MemberAction>, UUID>?>(null)
-
     fun onMemberClick(memberId: UUID) {
-        onMemberOpen(memberId)
+        rootNavigator.push(RootConfig.Profile(memberId))
+    }
+
+    fun onAddMemberClick() {
+        slotNavigation.activate(SlotConfig.InviteMembers)
     }
 
     fun onEditMemberClick(memberId: UUID) {
-        onMemberEdit(memberId)
+        slotNavigation.activate(SlotConfig.MemberEditor(memberId))
     }
 
 
     fun onRemoveMemberClick(memberId: UUID) {
         componentScope.launch {
-            if (confirmDialogInteractor.confirmRequest(
-                    ConfirmState(
-                        uiTextOf("Удалить члена группы?"),
-                        uiTextOf("Удалятся все данные, связанные с данным пользователем в группе")
-                    )
-                )
-            ) {
-                removeMemberFromScopeUseCase(memberId, studyGroupId)
-            }
+            removeMemberFromScopeUseCase(memberId, studyGroupId)
         }
     }
 
@@ -108,26 +129,41 @@ class StudyGroupMembersComponent(
         }
     }
 
-    fun onMemberActionsExpand(memberId: UUID) {
-        members.value.onSuccess { members ->
-            memberActions.update {
-                buildList {
-                    if (members.students.any { it.id == memberId }) {
-                        add(
-                            if (members.headmanId != memberId) MemberAction.SET_HEADMAN
-                            else MemberAction.REMOVE_HEADMAN
-                        )
-                    }
-                    add(MemberAction.EDIT)
-                    add(MemberAction.REMOVE)
-                } to memberId
-            }
+//    fun onMemberActionsExpand(memberId: UUID) {
+//        members.value.onSuccess { members ->
+//            memberActions.update {
+//                buildList {
+//                    if (members.students.any { it.id == memberId }) {
+//                        add(
+//                            if (members.headmanId != memberId) MemberAction.SET_HEADMAN
+//                            else MemberAction.REMOVE_HEADMAN
+//                        )
+//                    }
+//                    add(MemberAction.EDIT)
+//                    add(MemberAction.REMOVE)
+//                } to memberId
+//            }
+//        }
+//    }
+
+//    fun onDismissActions() {
+//        memberActions.value = null
+//    }
+
+    @Parcelize
+    sealed class SlotConfig : Parcelable {
+        data object InviteMembers : SlotConfig() {
+            private fun readResolve(): Any = InviteMembers
         }
+
+        data class MemberEditor(val userId: UUID) : SlotConfig()
     }
 
-    fun onDismissActions() {
-        memberActions.value = null
+    sealed class SlotChild {
+        class InviteMembers(val component: InviteStudyGroupMembersComponent) : SlotChild()
+
+        class MemberEditor(val component: StudyGroupMemberEditorComponent) : SlotChild()
     }
 
-    enum class MemberAction { EDIT, REMOVE, SET_HEADMAN, REMOVE_HEADMAN }
+//    enum class MemberAction { EDIT, REMOVE, SET_HEADMAN, REMOVE_HEADMAN }
 }

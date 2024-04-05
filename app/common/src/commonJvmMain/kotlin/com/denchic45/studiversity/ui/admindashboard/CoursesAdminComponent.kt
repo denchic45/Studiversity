@@ -26,7 +26,7 @@ class CoursesAdminComponent(
     private val unarchiveCourseUseCase: UnarchiveCourseUseCase,
     private val removeCourseUseCase: RemoveCourseUseCase,
     courseChooserComponent: (
-        onSelect: (CourseItem) -> Unit,
+        onSelect: (CourseItem?) -> Unit,
         ComponentContext
     ) -> CourseChooserComponent,
     courseEditorComponent: (
@@ -54,7 +54,9 @@ class CoursesAdminComponent(
             }
         })
 
-    override val chooserComponent: CourseChooserComponent = courseChooserComponent(::onSelect, componentContext)
+    override val chooserComponent: CourseChooserComponent = courseChooserComponent(
+        { course -> course?.let { onSelect(course) } }, componentContext
+    )
 
     override fun onSelect(item: CourseItem) {
         rootNavigation.bringToFront(RootConfig.Course(item.id))

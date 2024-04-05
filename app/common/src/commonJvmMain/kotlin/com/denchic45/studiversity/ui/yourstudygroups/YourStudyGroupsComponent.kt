@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.onSuccess
@@ -18,7 +19,6 @@ import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponen
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
 import com.denchic45.studiversity.util.asFlow
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.util.toUUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,8 +35,8 @@ class YourStudyGroupsComponent(
     private val checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
     private val _studyGroupComponent: (
-        UUID,
         rootNavigator: RootNavigator,
+        UUID,
         ComponentContext,
     ) -> StudyGroupComponent,
     @Assisted
@@ -53,8 +53,8 @@ class YourStudyGroupsComponent(
         source = studyGroupNavigation,
         childFactory = { config, componentContext ->
             _studyGroupComponent(
-                config.studyGroupId,
                 rootNavigator,
+                config.studyGroupId,
                 componentContext
             )
         },
@@ -137,9 +137,9 @@ class YourStudyGroupsComponent(
         childStudyGroup.value.child?.instance?.onEditClick()
     }
 
-    fun onAddMemberClick() {
-        childStudyGroup.value.child?.instance?.onAddMemberClick()
-    }
+//    fun onAddMemberClick() {
+//        childStudyGroup.value.child?.instance?.onAddMemberClick()
+//    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun hasChildrenFlow(): Flow<Boolean> {

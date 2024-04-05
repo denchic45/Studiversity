@@ -26,17 +26,17 @@ import java.util.*
 @Inject
 class FinderComponent(
     userChooserComponent: (
-            (UserItem) -> Unit,
+            (UserItem?) -> Unit,
             ComponentContext,
     ) -> UserChooserComponent,
     studyGroupChooserComponent: (
-            (StudyGroupResponse) -> Unit,
+            (StudyGroupResponse?) -> Unit,
             ComponentContext,
     ) -> StudyGroupChooserComponent,
     profileComponent: (RootNavigator, UUID, ComponentContext) -> ProfileComponent,
     studyGroupComponent: (
-        UUID,
         rootNavigator: RootNavigator,
+        UUID,
         ComponentContext,
     ) -> StudyGroupComponent,
     courseComponent: (
@@ -77,7 +77,7 @@ class FinderComponent(
                 )
 
                 is OverlayConfig.StudyGroup -> OverlayChild.StudyGroup(
-                    studyGroupComponent(config.studyGroupId, rootNavigator, context)
+                    studyGroupComponent(rootNavigator, config.studyGroupId, context)
                 )
 
                 is OverlayConfig.Course -> OverlayChild.Course(

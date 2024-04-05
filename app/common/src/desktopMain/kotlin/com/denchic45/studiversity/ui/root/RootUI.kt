@@ -10,7 +10,6 @@ import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
 import com.denchic45.studiversity.ui.navigator.RootChild
 import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
-import com.denchic45.studiversity.ui.yourstudygroups.YourStudyGroupsScreen
 import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesScreen
 import com.denchic45.studiversity.ui.yourworks.YourWorksScreen
 
@@ -21,7 +20,7 @@ fun RootScreen(component: RootStackChildrenContainer) {
     Children(childStack) {
         when (val child = it.instance) {
             is RootChild.YourTimetables -> YourTimetablesScreen(child.component)
-            is RootChild.YourStudyGroups -> YourStudyGroupsScreen(child.component)
+//            is RootChild.YourStudyGroups -> YourStudyGroupsScreen(child.component)
             is RootChild.StudyGroup -> StudyGroupScreen(child.component)
             is RootChild.Course -> CourseScreen(child.component)
             is RootChild.Profile -> ProfileScreen(child.component)

@@ -5,6 +5,7 @@ import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.model.toItem
 import com.denchic45.studiversity.domain.resource.Resource
@@ -16,7 +17,6 @@ import com.denchic45.studiversity.domain.usecase.DetachStudyGroupsToCourseUseCas
 import com.denchic45.studiversity.domain.usecase.FindAttachedStudyGroupsByCourseIdUseCase
 import com.denchic45.studiversity.ui.search.StudyGroupChooserComponent
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.last
@@ -31,7 +31,7 @@ class CourseStudyGroupsComponent(
     private val attachStudyGroupsToCourseUseCase: AttachStudyGroupsToCourseUseCase,
     private val detachStudyGroupsToCourseUseCase: DetachStudyGroupsToCourseUseCase,
     private val studyGroupChooserComponent: (
-            (StudyGroupItem) -> Unit,
+            (StudyGroupItem?) -> Unit,
             ComponentContext,
     ) -> StudyGroupChooserComponent,
     @Assisted
@@ -49,7 +49,7 @@ class CourseStudyGroupsComponent(
         childFactory = { config, context ->
             when (config) {
                 Config.StudyGroupChooser -> Child.StudyGroupChooser(
-                    studyGroupChooserComponent(::onStudyGroupAdd, context)
+                    studyGroupChooserComponent({ studyGroup -> studyGroup?.let(::onStudyGroupAdd) }, context)
                 )
             }
         }
@@ -94,7 +94,9 @@ class CourseStudyGroupsComponent(
 
     @Parcelize
     sealed interface Config : Parcelable {
-        object StudyGroupChooser : Config
+        data object StudyGroupChooser : Config {
+            private fun readResolve(): Any = StudyGroupChooser
+        }
     }
 
     sealed interface Child {

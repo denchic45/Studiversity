@@ -61,10 +61,9 @@ private fun StudyGroupsSpinner(
 
 @Composable
 fun YourStudyGroupScreen(component: StudyGroupComponent) {
-    val selectedTab by component.selectedTab.collectAsState()
-    val childSidebar by component.childSidebar.subscribeAsState()
+    val childSidebar by component.childSlot.subscribeAsState()
 
-    // TODO вернуть
+    // TODO удалить
 //    StudyGroupContent(
 //        selectedTab = selectedTab,
 //        children = component.childTabs,

@@ -1,34 +1,27 @@
 package com.denchic45.studiversity.ui.studygroup
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
-import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
-import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.ExperimentalDecomposeApi
+import com.arkivanov.decompose.router.pages.Pages
+import com.arkivanov.decompose.router.pages.PagesNavigation
+import com.arkivanov.decompose.router.pages.childPages
+import com.arkivanov.decompose.router.pages.select
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.role.model.Capability
-import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.studiversity.ui.navigation.ChildrenContainer
 import com.denchic45.studiversity.ui.navigation.isActiveFlow
-import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.navigator.RootNavigator
-import com.denchic45.studiversity.ui.profile.ProfileComponent
-import com.denchic45.studiversity.ui.scopemembereditor.ScopeMemberEditorComponent
-import com.denchic45.studiversity.ui.studygroup.courses.StudyGroupCoursesComponent
-import com.denchic45.studiversity.ui.studygroup.members.StudyGroupMembersComponent
-import com.denchic45.studiversity.ui.studygroup.timetable.StudyGroupTimetableComponent
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.shareIn
 import me.tatarka.inject.annotations.Assisted
@@ -39,36 +32,27 @@ import java.util.*
 @Inject
 class StudyGroupComponent(
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
-    private val profileComponent: (RootNavigator, UUID, ComponentContext) -> ProfileComponent,
-    scopeMemberEditorComponent: (
-        availableRoles: List<Role>,
-        scopeId: UUID,
-        memberId: UUID?,
-        onFinish: () -> Unit,
-        ComponentContext
-    ) -> ScopeMemberEditorComponent,
     private val studyGroupEditorComponent: (
         onFinish: () -> Unit,
         UUID?,
         ComponentContext,
     ) -> StudyGroupEditorComponent,
     studyGroupMembersComponent: (
-        onMemberOpen: (UUID) -> Unit,
-        onMemberEdit: (UUID) -> Unit,
+        rootNavigator: RootNavigator,
         UUID,
         ComponentContext,
     ) -> StudyGroupMembersComponent,
     studyGroupCoursesComponent: (
-        onCourseOpen: (UUID) -> Unit,
+        rootNavigator: RootNavigator,
         UUID,
         ComponentContext,
     ) -> StudyGroupCoursesComponent,
     studyGroupTimetableComponent: (UUID, ComponentContext) -> StudyGroupTimetableComponent,
     findStudyGroupByIdUseCase: FindStudyGroupByIdUseCase,
     @Assisted
-    private val studyGroupId: UUID,
-    @Assisted
     private val rootNavigator: RootNavigator,
+    @Assisted
+    private val studyGroupId: UUID,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext, ChildrenContainer {
@@ -84,14 +68,13 @@ class StudyGroupComponent(
         .mapResource { it.hasCapability(Capability.WriteStudyGroup) }
         .stateInResource(componentScope)
 
-    private val slotNavigation = SlotNavigation<OverlayConfig>()
-
-    val childSidebar = childSlot(
+    private val slotNavigation = SlotNavigation<SlotConfig>()
+    val childSlot: Value<ChildSlot<SlotConfig, SlotChild>> = childSlot(
         source = slotNavigation,
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
-                is OverlayConfig.StudyGroupEditor -> {
+                is SlotConfig.StudyGroupEditor -> {
                     SlotChild.StudyGroupEditor(
                         studyGroupEditorComponent(
                             slotNavigation::dismiss,
@@ -101,91 +84,124 @@ class StudyGroupComponent(
                     )
                 }
 
-                is OverlayConfig.Member -> {
-                    SlotChild.Member(
-                        profileComponent(
-                            rootNavigator,
-                            config.memberId,
-                            context
-                        )
-                    )
-                }
-
-                is OverlayConfig.ScopeMemberEditor -> {
-                    SlotChild.ScopeMemberEditor(
-                        scopeMemberEditorComponent(
-                            listOf(Role.Curator, Role.Student, Role.Headman),
-                            studyGroupId,
-                            config.memberId,
-                            { slotNavigation.dismiss() },
-                            context
-                        )
-                    )
-                }
+                SlotConfig.Info -> SlotChild.Info
             }
         }
     )
 
-    val childTabs = listOf(
-        TabChild.Members(
-            studyGroupMembersComponent(
-                { slotNavigation.activate(OverlayConfig.Member(it)) },
-                { slotNavigation.activate(OverlayConfig.ScopeMemberEditor(it)) },
-                studyGroupId,
-                componentContext.childContext("Members")
+    private val tabNavigation = SlotNavigation<TabConfig>()
+
+    @OptIn(ExperimentalDecomposeApi::class)
+    private val pagesNavigation = PagesNavigation<TabConfig>()
+
+    @OptIn(ExperimentalDecomposeApi::class)
+    val childPages = childPages(
+        source = pagesNavigation,
+        initialPages = {
+            Pages(
+                items = listOf(TabConfig.Members, TabConfig.Courses, TabConfig.Timetable),
+                selectedIndex = 0
             )
-        ),
-        TabChild.Courses(
-            studyGroupCoursesComponent(
-                { rootNavigator.bringToFront(RootConfig.Course(it)) },
-                studyGroupId,
-                componentContext.childContext("Courses")
-            )
-        ),
-        TabChild.Timetable(
-            studyGroupTimetableComponent(
-                studyGroupId,
-                componentContext.childContext("Timetable")
-            )
-        )
+        },
+        childFactory = { config, context ->
+            when (config) {
+                TabConfig.Members -> {
+                    TabChild.Members(studyGroupMembersComponent(rootNavigator, studyGroupId, context))
+                }
+
+                TabConfig.Courses -> {
+                    TabChild.Courses(studyGroupCoursesComponent(rootNavigator, studyGroupId, context))
+                }
+
+                TabConfig.Timetable -> {
+                    TabChild.Timetable(studyGroupTimetableComponent(studyGroupId, context))
+                }
+            }
+        }
     )
+//    val childTabs = listOf(
+//        TabChild.Members(
+//            studyGroupMembersComponent(
+//                { slotNavigation.activate(SlotConfig.Member(it)) },
+//                { slotNavigation.activate(SlotConfig.ScopeMemberEditor(it)) },
+//                studyGroupId,
+//                componentContext.childContext("Members")
+//            )
+//        ),
+//        TabChild.Courses(
+//            studyGroupCoursesComponent(
+//                { rootNavigator.bringToFront(RootConfig.Course(it)) },
+//                studyGroupId,
+//                componentContext.childContext("Courses")
+//            )
+//        ),
+//        TabChild.Timetable(
+//            studyGroupTimetableComponent(
+//                studyGroupId,
+//                componentContext.childContext("Timetable")
+//            )
+//        )
+//    )
 
     val studyGroup = findStudyGroupByIdUseCase(studyGroupId).stateInResource(componentScope)
 
-    val selectedTab = MutableStateFlow(0)
+    @OptIn(ExperimentalDecomposeApi::class)
+    fun onTabSelect(index: Int) {
+        pagesNavigation.select(index)
+    }
 
-    fun onTabSelect(position: Int) {
-        selectedTab.value = position
+    fun onMembersClick() {
+        tabNavigation.activate(TabConfig.Members)
+    }
+
+    fun onCoursesClick() {
+        tabNavigation.activate(TabConfig.Courses)
+    }
+
+    fun onTimetableClick() {
+        tabNavigation.activate(TabConfig.Timetable)
+    }
+
+    fun onInfoClick() {
+        slotNavigation.activate(SlotConfig.Info)
     }
 
     fun onEditClick() {
-        slotNavigation.activate(OverlayConfig.StudyGroupEditor(studyGroupId))
+        slotNavigation.activate(SlotConfig.StudyGroupEditor(studyGroupId))
     }
 
-    fun onAddMemberClick() {
-        slotNavigation.activate(OverlayConfig.ScopeMemberEditor(null))
-    }
-
-    fun onSidebarClose() {
+    fun onDialogClose() {
         slotNavigation.dismiss()
     }
 
     @Parcelize
-    sealed class OverlayConfig : Parcelable {
-        data class StudyGroupEditor(val studyGroupId: UUID) : OverlayConfig()
+    sealed class SlotConfig : Parcelable {
+        data class StudyGroupEditor(val studyGroupId: UUID) : SlotConfig()
 
-        data class Member(val memberId: UUID) : OverlayConfig()
-
-        data class ScopeMemberEditor(val memberId: UUID?) : OverlayConfig()
+        data object Info : SlotConfig() {
+            private fun readResolve(): Any = Info
+        }
     }
 
     sealed class SlotChild {
-
         class StudyGroupEditor(val component: StudyGroupEditorComponent) : SlotChild()
+        data object Info : SlotChild()
+    }
 
-        class Member(val component: ProfileComponent) : SlotChild()
+    @Parcelize
+    sealed class TabConfig : Parcelable {
 
-        class ScopeMemberEditor(val component: ScopeMemberEditorComponent) : SlotChild()
+        data object Members : TabConfig() {
+            private fun readResolve(): Any = Members
+        }
+
+        data object Courses : TabConfig() {
+            private fun readResolve(): Any = Courses
+        }
+
+        data object Timetable : TabConfig() {
+            private fun readResolve(): Any = Timetable
+        }
     }
 
     sealed class TabChild(val title: String) {
@@ -195,7 +211,7 @@ class StudyGroupComponent(
     }
 
     override fun hasChildrenFlow(): Flow<Boolean> {
-        return childSidebar.isActiveFlow()
+        return childSlot.isActiveFlow()
     }
 
     fun onBack() {

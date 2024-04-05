@@ -16,6 +16,7 @@ import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.domain.usecase.FindAssignedUserRolesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindYourCoursesUseCase
+import com.denchic45.studiversity.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.studiversity.ui.navigation.ChildrenContainerChild
 import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
 import com.denchic45.studiversity.ui.navigation.SlotChild
@@ -37,9 +38,10 @@ import java.util.*
 @Inject
 class MainComponent(
     findYourCoursesUseCase: FindYourCoursesUseCase,
+    findYourStudyGroupsUseCase: FindYourStudyGroupsUseCase,
     findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     yourTimetablesRootComponent: (ComponentContext) -> YourTimetablesRootComponent,
-    yourStudyGroupsRootComponent: (ComponentContext) -> YourStudyGroupsRootComponent,
+    yourStudyGroupsRootComponent: (UUID, ComponentContext) -> YourStudyGroupsRootComponent,
     scheduleComponent: (ComponentContext) -> ScheduleComponent,
     adminDashboardRootComponent: (ComponentContext) -> AdminDashboardRootComponent,
     yourCourseWorksRootComponent: (ComponentContext) -> YourCourseWorksRootComponent,
@@ -63,7 +65,7 @@ class MainComponent(
                 )
 
                 is Config.YourStudyGroups -> Child.YourStudyGroups(
-                    yourStudyGroupsRootComponent(context)
+                    yourStudyGroupsRootComponent(config.studyGroupId, context)
                 )
 
                 Config.YourCourseWorks -> Child.YourWorks(yourCourseWorksRootComponent(context))
@@ -131,6 +133,8 @@ class MainComponent(
     val yourCourses = flow { emit(findYourCoursesUseCase()) }
         .stateInResource(componentScope)
 
+    val yourStudyGroups = findYourStudyGroupsUseCase().stateInResource(componentScope)
+
     init {
         componentScope.launch { interactor.startListeners() }
     }
@@ -140,9 +144,10 @@ class MainComponent(
         navigation.bringToFront(Config.YourTimetables)
     }
 
-    fun onStudyGroupsClick() {
+    fun onStudyGroupsClick(studyGroupId: UUID) {
         onDialogClose()
-        navigation.bringToFront(Config.YourStudyGroups)
+        navigation.bringToFront(Config.YourStudyGroups(studyGroupId))
+
     }
 
     fun onDialogClose() {
@@ -198,9 +203,7 @@ class MainComponent(
             private fun readResolve(): Any = YourTimetables
         }
 
-        data object YourStudyGroups : Config {
-            private fun readResolve(): Any = YourStudyGroups
-        }
+        data class YourStudyGroups(val studyGroupId: UUID) : Config
 
         data object YourCourseWorks : Config {
             private fun readResolve(): Any = YourCourseWorks

@@ -19,7 +19,7 @@ interface SearchableComponent<T> {
 abstract class ChooserComponent<T>(componentContext: ComponentContext) :
     ComponentContext by componentContext, SearchableComponent<T> {
 
-    protected abstract val onSelect: (T) -> Unit
+    protected abstract val onFinish: (T?) -> Unit
 
     final override val query = MutableStateFlow("")
 
@@ -43,11 +43,15 @@ abstract class ChooserComponent<T>(componentContext: ComponentContext) :
     protected abstract fun search(query: String): Flow<Resource<List<T>>>
 
     override fun onItemClick(item: T) {
-        onSelect(item)
+        onFinish(item)
     }
 
     override fun onQueryChange(text: String) {
         query.value = text
+    }
+
+    fun onDismissRequest() {
+        onFinish(null)
     }
 }
 
