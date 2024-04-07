@@ -7,8 +7,7 @@ import org.jetbrains.exposed.sql.SizedIterable
 fun SubjectDao.toResponse() = SubjectResponse(
     id = id.value,
     name = name,
-    shortname = shortname,
-    iconUrl = iconUrl
+    shortname = shortname
 )
 
 fun SizedIterable<SubjectDao>.toResponses() = map(SubjectDao::toResponse)

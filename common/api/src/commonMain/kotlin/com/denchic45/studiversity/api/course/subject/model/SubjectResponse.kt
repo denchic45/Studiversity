@@ -9,6 +9,5 @@ data class SubjectResponse(
     @Serializable(UUIDSerializer::class)
     val id: UUID,
     val name: String,
-    val shortname: String,
-    val iconUrl: String
+    val shortname: String?
 )

@@ -11,8 +11,18 @@ import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.api.user.model.CreateUserRequest
 import com.denchic45.studiversity.api.user.model.Gender
 import com.denchic45.studiversity.api.user.model.UpdateUserRequest
-import com.denchic45.studiversity.domain.resource.*
-import com.denchic45.studiversity.domain.usecase.*
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.flatMapResourceFlow
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.onFailure
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.stateInResource
+import com.denchic45.studiversity.domain.usecase.AddUserUseCase
+import com.denchic45.studiversity.domain.usecase.FindAssignableRolesByUserAndScopeUseCase
+import com.denchic45.studiversity.domain.usecase.FindAssignedUserRolesInScopeUseCase
+import com.denchic45.studiversity.domain.usecase.FindUserByIdUseCase
+import com.denchic45.studiversity.domain.usecase.RemoveUserUseCase
+import com.denchic45.studiversity.domain.usecase.UpdateUserUseCase
 import com.denchic45.studiversity.getOptProperty
 import com.denchic45.studiversity.uivalidator.Operator
 import com.denchic45.studiversity.uivalidator.condition.Condition
@@ -23,12 +33,16 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class UserEditorComponent(
@@ -39,9 +53,9 @@ class UserEditorComponent(
     findAssignableRolesByUserAndScopeUseCase: FindAssignableRolesByUserAndScopeUseCase,
     findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     @Assisted
-    private val userId: UUID?,
+    private val onFinish: (Boolean) -> Unit,
     @Assisted
-    private val onFinish: () -> Unit,
+    private val userId: UUID?,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
@@ -176,7 +190,7 @@ class UserEditorComponent(
         componentScope.launch {
             removeUserUseCase(userId!!).onSuccess {
                 withContext(Dispatchers.Main) {
-                    onFinish()
+                    onFinish(true)
                 }
             }
         }
@@ -197,7 +211,11 @@ class UserEditorComponent(
                             fieldEditor.getOptProperty("surname"),
                             fieldEditor.getOptProperty("patronymic"),
                             fieldEditor.getOptProperty("gender"),
-                            fieldEditor.getOptProperty<List<Role>, List<Long>>("roles") { it.map(Role::id) }
+                            fieldEditor.getOptProperty<List<Role>, List<Long>>("roles") {
+                                it.map(
+                                    Role::id
+                                )
+                            }
                         )
                     )
                 } ?: addUserUseCase(
@@ -211,8 +229,8 @@ class UserEditorComponent(
                     )
                 )
                 result.onSuccess {
-                    withContext(Dispatchers.Main.immediate) {
-                        onFinish()
+                    withContext(Dispatchers.Main) {
+                        onFinish(true)
                     }
                 }.onFailure { }
             }
@@ -222,7 +240,7 @@ class UserEditorComponent(
     fun onDismissRequest() {
         if (fieldEditor.hasChanges() && !needToConfirmToDismiss.value)
             needToConfirmToDismiss.value = true
-        else onFinish()
+        else onFinish(false)
     }
 
     fun onCancelDismiss() {

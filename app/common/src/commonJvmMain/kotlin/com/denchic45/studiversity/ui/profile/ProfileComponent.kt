@@ -13,8 +13,19 @@ import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.domain.model.toItem
-import com.denchic45.studiversity.domain.resource.*
-import com.denchic45.studiversity.domain.usecase.*
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.bindResources
+import com.denchic45.studiversity.domain.resource.filterNotNullValue
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.stateInResource
+import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
+import com.denchic45.studiversity.domain.usecase.FindAssignedUserRolesInScopeUseCase
+import com.denchic45.studiversity.domain.usecase.FindCoursesUseCase
+import com.denchic45.studiversity.domain.usecase.FindStudyGroupsUseCase
+import com.denchic45.studiversity.domain.usecase.ObserveUserUseCase
+import com.denchic45.studiversity.domain.usecase.RemoveAvatarUseCase
+import com.denchic45.studiversity.domain.usecase.UpdateAvatarUseCase
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.navigator.RootNavigator
@@ -25,10 +36,11 @@ import com.denchic45.studiversity.util.toUUID
 import com.denchic45.studiversity.util.userIdOf
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class ProfileComponent(
@@ -52,7 +64,10 @@ class ProfileComponent(
 
     private val componentScope = componentScope()
 
-    private val userFlow = observeUserUseCase(userId).stateInResource(componentScope)
+    private val userFlow = observeUserUseCase(userId)
+        .onEach { it.onSuccess { navigator.pop() } }
+        .filterNotNullValue()
+        .stateInResource(componentScope)
     private val userRole = findAssignedUserRolesInScopeUseCase(userId, null)
     private val studyGroups = findStudyGroupsUseCase(memberId = userIdOf(userId))
         .mapResource { it.map(StudyGroupResponse::toItem) }
@@ -84,7 +99,11 @@ class ProfileComponent(
                 is SlotConfig.UserStudyGroups -> SlotChild.UserStudyGroups(
                     userStudyGroupsComponent({ studyGroupId ->
                         slotNavigation.dismiss()
-                        if (studyGroupId != null) navigator.bringToFront(RootConfig.StudyGroup(studyGroupId))
+                        if (studyGroupId != null) navigator.bringToFront(
+                            RootConfig.StudyGroup(
+                                studyGroupId
+                            )
+                        )
                     }, config.userId, context)
                 )
             }

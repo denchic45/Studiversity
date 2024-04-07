@@ -9,6 +9,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.RemoveSubjectUseCase
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.search.SubjectChooserComponent
@@ -17,35 +18,38 @@ import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class SubjectsAdminComponent(
     private val removeSubjectUseCase: RemoveSubjectUseCase,
     subjectChooserComponent: (onSelect: (SubjectResponse?) -> Unit, ComponentContext) -> SubjectChooserComponent,
-    subjectEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> SubjectEditorComponent,
+    subjectEditorComponent: (onFinish: (Boolean) -> Unit, UUID?, ComponentContext) -> SubjectEditorComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
-    SearchableAdminComponent<SubjectResponse> {
+    AdminSearchableComponent<SubjectResponse> {
 
     private val componentScope = componentScope()
 
-    override val chooserComponent = subjectChooserComponent(
+    override val searchableComponent = subjectChooserComponent(
         { subject -> subject?.let(::onSelect) }, componentContext
     )
 
-    private val overlayNavigation = SlotNavigation<Config>()
+    private val slotNavigation = SlotNavigation<Config>()
     val childSlot = childSlot(
-        source = overlayNavigation,
+        source = slotNavigation,
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
                 is Config.SubjectEditor -> Child.SubjectEditor(
                     subjectEditorComponent(
-                        overlayNavigation::dismiss,
+                        { edited ->
+                            slotNavigation.dismiss()
+                            if (edited) searchableComponent.forceUpdate()
+                        },
                         config.subjectId,
                         context
                     )
@@ -58,16 +62,17 @@ class SubjectsAdminComponent(
     }
 
     override fun onAddClick() {
-        overlayNavigation.activate(Config.SubjectEditor(null))
+        slotNavigation.activate(Config.SubjectEditor(null))
     }
 
     override fun onEditClick(id: UUID) {
-        overlayNavigation.activate(Config.SubjectEditor(id))
+        slotNavigation.activate(Config.SubjectEditor(id))
     }
 
     override fun onRemoveClick(id: UUID) {
         componentScope.launch {
             removeSubjectUseCase(id)
+                .onSuccess { searchableComponent.forceUpdate() }
         }
     }
 

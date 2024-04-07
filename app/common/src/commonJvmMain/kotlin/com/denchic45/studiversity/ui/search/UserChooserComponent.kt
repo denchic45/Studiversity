@@ -18,7 +18,7 @@ class UserChooserComponent(
     override val onFinish: (UserItem?) -> Unit,
     @Assisted
     val componentContext: ComponentContext,
-) : ChooserComponent<UserItem>(componentContext) {
+) : SearchableComponent<UserItem>(componentContext) {
     override fun search(query: String): Flow<Resource<List<UserItem>>> {
         return findUserByContainsNameUseCase(query).mapResource { it.map(UserResponse::toUserItem) }
     }

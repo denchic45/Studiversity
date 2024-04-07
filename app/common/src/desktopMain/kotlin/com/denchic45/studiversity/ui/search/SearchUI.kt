@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -45,7 +44,6 @@ fun <T> SearchScreen(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 private fun <T> SearchContent(
     component: SearchableComponent<T>,
     keyItem: (T) -> Any,

@@ -1,0 +1,7 @@
+CREATE TABLE study_group_member (
+study_group_id TEXT NOT NULL,
+member_id TEXT NOT NULL,
+FOREIGN KEY (study_group_id) REFERENCES studyGroup(study_group_id) ON DELETE CASCADE,
+FOREIGN KEY (member_id) REFERENCES user(user_id) ON DELETE CASCADE,
+UNIQUE(study_group_id, member_id)
+);

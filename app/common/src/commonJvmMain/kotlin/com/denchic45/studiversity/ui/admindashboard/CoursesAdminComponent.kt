@@ -1,13 +1,18 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.*
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.model.CourseItem
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.ArchiveCourseUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveCourseUseCase
 import com.denchic45.studiversity.domain.usecase.UnarchiveCourseUseCase
@@ -18,7 +23,7 @@ import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class CoursesAdminComponent(
@@ -30,15 +35,16 @@ class CoursesAdminComponent(
         ComponentContext
     ) -> CourseChooserComponent,
     courseEditorComponent: (
-        onFinish: () -> Unit,
-        UUID?, ComponentContext
+        onFinish: (Boolean) -> Unit,
+        UUID?,
+        ComponentContext
     ) -> CourseEditorComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
-    SearchableAdminComponent<CourseItem> {
+    AdminSearchableComponent<CourseItem> {
 
     private val componentScope = componentScope()
 
@@ -49,12 +55,16 @@ class CoursesAdminComponent(
         childFactory = { config, context ->
             when (config) {
                 is Config.CourseEditor -> Child.CourseEditor(
-                    courseEditorComponent(slotNavigation::dismiss, config.courseId, context)
+                    courseEditorComponent({ edited ->
+                        slotNavigation.dismiss()
+                        if (edited)
+                            searchableComponent.forceUpdate()
+                    }, config.courseId, context)
                 )
             }
         })
 
-    override val chooserComponent: CourseChooserComponent = courseChooserComponent(
+    override val searchableComponent: CourseChooserComponent = courseChooserComponent(
         { course -> course?.let { onSelect(course) } }, componentContext
     )
 
@@ -72,19 +82,19 @@ class CoursesAdminComponent(
 
     fun onArchiveClick(id: UUID) {
         componentScope.launch {
-            archiveCourseUseCase(id)
+            archiveCourseUseCase(id).onSuccess { searchableComponent.forceUpdate() }
         }
     }
 
     fun onUnarchiveClick(id: UUID) {
         componentScope.launch {
-            unarchiveCourseUseCase(id)
+            unarchiveCourseUseCase(id).onSuccess { searchableComponent.forceUpdate() }
         }
     }
 
     override fun onRemoveClick(id: UUID) {
         componentScope.launch {
-            removeCourseUseCase(id)
+            removeCourseUseCase(id).onSuccess { searchableComponent.forceUpdate() }
         }
     }
 

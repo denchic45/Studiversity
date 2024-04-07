@@ -33,7 +33,7 @@ getCoursesByStudyGroupId:
 SELECT c.*, s.* FROM course c
 JOIN studyGroupCourse gc ON gc.course_id =c.course_id
 JOIN subject s ON s.subject_id = c.subject_id
-WHERE gc.group_id =: groupId;
+WHERE gc.study_group_id =: groupId;
 
 -- hasRelatedTeacherToGroup:
 -- SELECT EXISTS (
@@ -45,7 +45,7 @@ WHERE gc.group_id =: groupId;
 hasRelatedSubjectToGroup:
 SELECT EXISTS (
 SELECT 1 FROM course c
-JOIN studyGroupCourse gc ON gc.group_id =:groupId
+JOIN studyGroupCourse gc ON gc.study_group_id =:groupId
 WHERE subject_id=:subjectId
 );
 

@@ -4,6 +4,7 @@ import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.Transacter
 import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
+import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlDriver
 import com.denchic45.studiversity.data.mapper.ListMapper
 import com.denchic45.studiversity.entity.AppDatabase
@@ -57,8 +58,8 @@ class DbHelper(val driver: SqlDriver) {
         ),
         userAdapter = User.Adapter(EnumColumnAdapter()),
         studyGroupAdapter = StudyGroup.Adapter(
-            start_academic_yearAdapter = LocalDateColumnAdapter(),
-            end_academic_yearAdapter = LocalDateColumnAdapter()
+            start_academic_yearAdapter = IntColumnAdapter,
+            end_academic_yearAdapter = IntColumnAdapter
         ),
         attachmentAdapter = Attachment.Adapter(EnumColumnAdapter()),
         courseTopicAdapter = CourseTopic.Adapter(IntColumnAdapter)
@@ -69,7 +70,7 @@ class DbHelper(val driver: SqlDriver) {
             val sqlCursor = driver.executeQuery(
                 identifier = null,
                 sql = "PRAGMA user_version;",
-                mapper = { it.getLong(0)!!.toInt() },
+                mapper = { QueryResult.Value(it.getLong(0)!!.toInt()) },
                 parameters = 0,
                 binders = null
             )

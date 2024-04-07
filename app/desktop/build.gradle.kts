@@ -4,7 +4,6 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     id("com.google.devtools.ksp")
-
 }
 
 group = "com.denchic45.studiversity"

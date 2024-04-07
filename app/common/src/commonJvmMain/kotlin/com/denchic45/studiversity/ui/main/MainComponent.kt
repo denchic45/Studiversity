@@ -5,7 +5,12 @@ import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
-import com.arkivanov.decompose.router.stack.*
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.active
+import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -19,8 +24,6 @@ import com.denchic45.studiversity.domain.usecase.FindYourCoursesUseCase
 import com.denchic45.studiversity.domain.usecase.FindYourStudyGroupsUseCase
 import com.denchic45.studiversity.ui.navigation.ChildrenContainerChild
 import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
-import com.denchic45.studiversity.ui.navigation.SlotChild
-import com.denchic45.studiversity.ui.navigation.SlotConfig
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.root.AdminDashboardRootComponent
 import com.denchic45.studiversity.ui.root.YourCourseWorksRootComponent
@@ -29,11 +32,17 @@ import com.denchic45.studiversity.ui.root.YourTimetablesRootComponent
 import com.denchic45.studiversity.ui.schedule.ScheduleComponent
 import com.denchic45.studiversity.ui.settings.SettingsComponent
 import com.denchic45.studiversity.util.componentScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class MainComponent(
@@ -84,8 +93,6 @@ class MainComponent(
         key = "MainChildSlot"
     ) { config, context ->
         when (config) {
-            is SlotConfig.Confirm -> SlotChild.Confirm(config)
-
             is SlotConfig.Settings -> SlotChild.Settings(
                 settingsComponent(context)
             )
@@ -194,7 +201,11 @@ class MainComponent(
         val yourStudyGroups: Boolean = false,
         val yourWorks: Boolean = false,
         val adminDashboard: Boolean = false,
-    )
+    ) {
+        val moreItemsThanOne: Boolean = listOf(
+            yourStudyGroups, yourWorks, adminDashboard
+        ).count { it } > 1
+    }
 
     @Parcelize
     sealed interface Config : Parcelable {
@@ -214,30 +225,46 @@ class MainComponent(
         }
     }
 
-    sealed interface PrimaryChild {
+
+    sealed interface Child {
+
         val component: RootStackChildrenContainer
-    }
-
-    sealed interface ExtraChild
-
-    sealed interface Child : PrimaryChild {
 
         class YourTimetables(
             override val component: YourTimetablesRootComponent,
-        ) : Child, ChildrenContainerChild, PrimaryChild
+        ) : Child, ChildrenContainerChild
 
         class YourStudyGroups(
             override val component: YourStudyGroupsRootComponent,
-        ) : Child, ChildrenContainerChild, PrimaryChild
+        ) : Child, ChildrenContainerChild
 
         class YourWorks(
             override val component: YourCourseWorksRootComponent,
-        ) : Child, ExtraChild
+        ) : Child
 
         class AdminDashboard(
             override val component: AdminDashboardRootComponent,
-        ) : Child, ExtraChild
+        ) : Child
     }
+
+    @Parcelize
+    sealed interface SlotConfig : Parcelable {
+        data object Schedule : SlotConfig {
+            private fun readResolve(): Any = Schedule
+        }
+
+        data object Settings : SlotConfig {
+            private fun readResolve(): Any = Settings
+        }
+
+    }
+
+    sealed interface SlotChild {
+        class Schedule(val component: ScheduleComponent) : SlotChild
+
+        class Settings(val component: SettingsComponent) : SlotChild
+    }
+
 }
 
 typealias AppNavigation = StackNavigation<MainComponent.Config>

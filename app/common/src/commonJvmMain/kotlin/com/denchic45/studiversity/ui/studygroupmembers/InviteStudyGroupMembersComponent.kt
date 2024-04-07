@@ -1,6 +1,10 @@
-package com.denchic45.studiversity.ui.studygroup
+package com.denchic45.studiversity.ui.studygroupmembers
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.api.member.CreateMemberRequest
 import com.denchic45.studiversity.api.role.model.Role
@@ -15,15 +19,17 @@ import com.denchic45.studiversity.domain.usecase.AddStudyGroupMemberUseCase
 import com.denchic45.studiversity.domain.usecase.FindAssignableRolesByUserAndScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindUserByContainsNameUseCase
 import com.denchic45.studiversity.util.componentScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class InviteStudyGroupMembersComponent(
@@ -31,7 +37,7 @@ class InviteStudyGroupMembersComponent(
     private val findUserByContainsNameUseCase: FindUserByContainsNameUseCase,
     private val addStudyGroupMemberUseCase: AddStudyGroupMemberUseCase,
     @Assisted
-    private val onFinish: () -> Unit,
+    private val onFinish: (Boolean) -> Unit,
     @Assisted
     private val studyGroupId: UUID,
     @Assisted
@@ -40,19 +46,6 @@ class InviteStudyGroupMembersComponent(
     private val componentScope = componentScope()
 
     val state = InvitedMembersState()
-
-    //    private val validator = CompositeValidator(
-//        validators = listOf(
-//            ValueValidator(
-//                value = state::members,
-//                conditions = listOf(Condition(List<UserItem>::isNotEmpty))
-//            ).observable { state.membersMessage = getIfNot(it) { "Выберите хотя бы одного пользователя" } },
-//            ValueValidator(
-//                value = state::role,
-//                conditions = listOf(Condition { it != null })
-//            ).observable { state.roleMessage = getIfNot(it) { "Выберите роль" } }
-//        )
-//    )
     private val queryText = MutableStateFlow("")
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -96,12 +89,12 @@ class InviteStudyGroupMembersComponent(
                 state.members.forEach {
                     addStudyGroupMemberUseCase(studyGroupId, CreateMemberRequest(it.id, listOf(roleId))).bind()
                 }
-            }.onSuccess { onFinish() }
+            }.onSuccess { withContext(Dispatchers.Main) { onFinish(true) } }
         }
     }
 
     fun onDismissRequest() {
-        onFinish()
+        onFinish(false)
     }
 }
 
@@ -113,9 +106,6 @@ class InvitedMembersState {
 
     val members = mutableStateListOf<UserItem>()
     var role by mutableStateOf<Role?>(null)
-
-//    var membersMessage by mutableStateOf<String?>(null)
-//    var roleMessage by mutableStateOf<String?>(null)
 
     val allowSave: Boolean
         get() = members.isNotEmpty() && role != null

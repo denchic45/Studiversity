@@ -10,6 +10,6 @@ class AssignRolesToUserInScopeUseCase(
     private val roleRepository: RoleRepository
 ) {
     suspend operator fun invoke(userId: UUID, scopeId: UUID, roleIds: List<Long>): EmptyResource {
-        return roleRepository.addUserRoles(userId, roleIds, scopeId)
+        return roleRepository.setUserRoles(userId, roleIds, scopeId)
     }
 }

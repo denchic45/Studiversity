@@ -28,7 +28,7 @@ class SearchCoursesTest : KtorClientTest() {
 
     @BeforeEach
     fun init(): Unit = runBlocking {
-        subject = subjectApi.create(CreateSubjectRequest("Теория алгоритмов", "ТАЛГ", "algorithm")).unwrapAsserted()
+        subject = subjectApi.create(CreateSubjectRequest("Теория алгоритмов", "ТАЛГ")).unwrapAsserted()
         course = courseApi.create(CreateCourseRequest(expectedName, subject.id)).unwrapAsserted()
     }
 

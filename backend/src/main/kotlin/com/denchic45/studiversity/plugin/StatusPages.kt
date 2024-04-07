@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.plugin
 
+import com.denchic45.studiversity.api.GeneralErrors
 import com.denchic45.studiversity.ktor.ConflictException
 import com.denchic45.studiversity.ktor.ForbiddenException
 import com.denchic45.studiversity.util.respondWithError
@@ -38,10 +39,10 @@ fun Application.configureStatusPages() {
         }
 
         status(HttpStatusCode.NotFound) { call, _ ->
-            call.respondWithError(HttpStatusCode.NotFound, ErrorInfo("NOT_FOUND"))
+            call.respondWithError(HttpStatusCode.NotFound, ErrorInfo(GeneralErrors.NOT_FOUND))
         }
         status(HttpStatusCode.InternalServerError) { call, _ ->
-            call.respondWithError(HttpStatusCode.InternalServerError, ErrorInfo("INTERNAL_SERVER"))
+            call.respondWithError(HttpStatusCode.InternalServerError, ErrorInfo(GeneralErrors.INTERNAL_SERVER_ERROR))
         }
     }
 }

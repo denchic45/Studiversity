@@ -46,7 +46,6 @@ kotlin {
                 val coil3Version = "3.0.0-alpha06"
                 implementation("io.coil-kt.coil3:coil:$coil3Version")
                 implementation("io.coil-kt.coil3:coil-network-ktor:$coil3Version")
-//                implementation("io.coil-kt:coil-compose:2.6.0")
                 implementation("io.coil-kt.coil3:coil-compose:$coil3Version")
 
                 // Ktor
@@ -65,7 +64,7 @@ kotlin {
 
                 implementation("app.cash.sqldelight:runtime:$sqlDelightVersion")
                 implementation("app.cash.sqldelight:coroutines-extensions:$sqlDelightVersion")
-                implementation("app.cash.sqldelight:primitive-adapters:2.0.0-alpha05")
+                implementation("app.cash.sqldelight:primitive-adapters:$sqlDelightVersion")
 
                 // Settings
                 implementation("com.russhwolf:multiplatform-settings:1.0.0")
@@ -153,7 +152,6 @@ kotlin {
                 // Cropper
                 implementation("com.github.SmartToolFactory:Compose-Cropper:0.4.0")
                 // Coil
-//                implementation("io.coil-kt:coil-compose:2.2.2")
                 implementation("io.coil-kt:coil-svg:2.3.0")
 
                 implementation("androidx.recyclerview:recyclerview:1.3.2")
@@ -247,7 +245,6 @@ sqldelight {
     databases {
         create("AppDatabase") {
             packageName.set("com.denchic45.studiversity.entity")
-            sourceFolders.set(listOf("sqldelight"))
             dialect("app.cash.sqldelight:sqlite-3-38-dialect:$sqlDelightVersion")
         }
     }

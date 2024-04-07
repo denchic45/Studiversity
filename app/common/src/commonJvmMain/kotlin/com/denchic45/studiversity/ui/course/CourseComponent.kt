@@ -5,7 +5,11 @@ import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.stack.*
+import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.course.element.model.CourseElementType
@@ -29,28 +33,34 @@ import com.denchic45.studiversity.ui.navigation.ChildrenContainer
 import com.denchic45.studiversity.ui.navigation.isActiveFlow
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.navigator.RootNavigator
-import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.util.componentScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 
 @Inject
 class CourseComponent(
     findCourseByIdUseCase: FindCourseByIdUseCase,
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
-    _courseTopicsComponent: (
+    courseTopicsComponent: (
         courseId: UUID,
         ComponentContext,
     ) -> CourseTopicsComponent,
-    _courseEditorComponent: (
-        onFinish: () -> Unit,
+    courseEditorComponent: (
+        onFinish: (Boolean) -> Unit,
         courseId: UUID?,
         ComponentContext,
     ) -> CourseEditorComponent,
-    _courseWorkComponent: (
+    courseWorkComponent: (
         onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
         onFinish: () -> Unit,
         courseId: UUID,
@@ -79,38 +89,25 @@ class CourseComponent(
         ComponentContext,
     ) -> CourseMaterialEditorComponent,
     courseStudyGroupsComponent: (UUID, ComponentContext) -> CourseStudyGroupsComponent,
-    _courseElementsComponent: (
+    courseElementsComponent: (
         courseId: UUID,
         onElementOpen: (courseId: UUID, elementId: UUID, type: CourseElementType) -> Unit,
         ComponentContext,
     ) -> CourseElementsComponent,
-    _courseMembersComponent: (
+    courseMembersComponent: (
         courseId: UUID,
         onMemberOpen: (memberId: UUID) -> Unit,
         onMemberEdit: (memberId: UUID) -> Unit,
         ComponentContext,
     ) -> CourseMembersComponent,
-    _courseTimetableComponent: (
+    courseTimetableComponent: (
         courseId: UUID,
         ComponentContext,
     ) -> CourseTimetableComponent,
-    _profileComponent: (
-        RootNavigator,
-        UUID,
-        ComponentContext,
-    ) -> ProfileComponent,
-//    scopeMemberEditorComponent: (
-//        availableRoles: List<Role>,
-//        scopeId: UUID,
-//        memberId: UUID?,
-//        onFinish: () -> Unit,
-//        ComponentContext
-//    ) -> ScopeMemberEditorComponent,
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
     private val rootNavigator: RootNavigator,
-//    private val onStudyGroupOpen: (studyGroupId: UUID) -> Unit,
     @Assisted
     private val courseId: UUID,
     @Assisted
@@ -118,7 +115,11 @@ class CourseComponent(
 ) : ComponentContext by componentContext, ChildrenContainer {
     private val componentScope = componentScope()
 
-    val course = flow { emit(findCourseByIdUseCase(courseId)) }.stateInResource(componentScope)
+    private val trigger = Channel<Unit>()
+    val course = trigger.receiveAsFlow()
+        .onStart { emit(Unit) }
+        .map { findCourseByIdUseCase(courseId) }
+        .stateInResource(componentScope)
 
     private val checkCapabilities = checkUserCapabilitiesInScopeUseCase(
         scopeId = courseId,
@@ -137,7 +138,7 @@ class CourseComponent(
         }
     }
 
-    private val courseElementsComponent = _courseElementsComponent(
+    private val courseElementsComponent = courseElementsComponent(
         courseId,
         { _, elementId, type ->
             stackNavigation.push(
@@ -150,14 +151,14 @@ class CourseComponent(
         componentContext.childContext("Elements")
     )
 
-    private val courseMembersComponent = _courseMembersComponent(
+    private val courseMembersComponent = courseMembersComponent(
         courseId,
         { rootNavigator.bringToFront(RootConfig.Profile(it)) },
         { sidebarNavigation.activate(SidebarConfig.ScopeMemberEditor(it)) },
         componentContext.childContext("Members")
     )
 
-    private val courseTimetableComponent = _courseTimetableComponent(
+    private val courseTimetableComponent = courseTimetableComponent(
         courseId,
         componentContext.childContext("Timetable")
     )
@@ -167,12 +168,11 @@ class CourseComponent(
         capabilities = listOf()
     ).shareIn(componentScope, SharingStarted.Lazily)
 
-    private val defaultTabChildren =
-        listOf(
-            TabChild.Elements(courseElementsComponent),
-            TabChild.Members(courseMembersComponent),
-            TabChild.Timetable(courseTimetableComponent)
-        )
+    private val defaultTabChildren = listOf(
+        TabChild.Elements(this.courseElementsComponent),
+        TabChild.Members(this.courseMembersComponent),
+        TabChild.Timetable(this.courseTimetableComponent)
+    )
 
     val children = defaultTabChildren
 
@@ -208,11 +208,14 @@ class CourseComponent(
         childFactory = { config, context ->
             when (config) {
                 is Config.Topics -> Child.Topics(
-                    _courseTopicsComponent(courseId, context)
+                    courseTopicsComponent(courseId, context)
                 )
 
                 is Config.CourseEditor -> Child.CourseEditor(
-                    _courseEditorComponent(stackNavigation::pop, courseId, context)
+                    courseEditorComponent({ edit ->
+                        stackNavigation.pop()
+                        if (edit) forceUpdate()
+                    }, courseId, context)
                 )
 
                 Config.CourseStudyGroupsEditor -> Child.CourseStudyGroupsEditor(
@@ -230,7 +233,7 @@ class CourseComponent(
                 )
 
                 is Config.CourseWork -> Child.CourseWork(
-                    _courseWorkComponent(
+                    courseWorkComponent(
                         { _, workId -> stackNavigation.push(Config.CourseWorkEditor(workId)) },
                         stackNavigation::pop,
                         courseId, config.workId,
@@ -266,6 +269,10 @@ class CourseComponent(
             }
         }
     )
+
+    private fun forceUpdate() {
+        componentScope.launch { trigger.send(Unit) }
+    }
 
     fun onAddMemberClick() {
         sidebarNavigation.activate(SidebarConfig.ScopeMemberEditor(null))

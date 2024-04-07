@@ -81,7 +81,7 @@ fun RoomEditorContent(
         OutlinedTextField(
             value = state.shortname,
             onValueChange = onShortnameChange,
-            placeholder = { Text("Дополнительное название") }
+            placeholder = { Text("Краткое название") }
         )
     }
 }

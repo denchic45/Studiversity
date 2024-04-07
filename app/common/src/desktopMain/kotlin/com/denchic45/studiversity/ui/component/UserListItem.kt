@@ -3,7 +3,12 @@ package com.denchic45.studiversity.ui.component
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
@@ -21,11 +26,11 @@ import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.model.UserItem
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
-import java.util.*
+import java.util.UUID
 
 
 @Composable
-fun UserListItem(
+private fun UserListItem(
     item: UserItem,
     onClick: (id: UUID) -> Unit,
     modifier: Modifier = Modifier,

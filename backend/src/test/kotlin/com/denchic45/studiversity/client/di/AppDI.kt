@@ -18,8 +18,6 @@ import com.denchic45.studiversity.api.course.work.CourseWorkApi
 import com.denchic45.studiversity.api.course.work.CourseWorkApiImpl
 import com.denchic45.studiversity.api.member.MembersApi
 import com.denchic45.studiversity.api.member.MembersApiImpl
-import com.denchic45.studiversity.api.membership.MembershipApi
-import com.denchic45.studiversity.api.membership.MembershipApiImpl
 import com.denchic45.studiversity.api.role.CapabilityApi
 import com.denchic45.studiversity.api.role.CapabilityApiImpl
 import com.denchic45.studiversity.api.role.RoleApi
@@ -56,7 +54,6 @@ internal val apiModule = module {
     factory<CourseWorkApi> { CourseWorkApiImpl(it.get()) }
     factory<SubmissionsApi> { SubmissionsApiImpl(it.get()) }
     factory<CourseTopicApi> { CourseTopicApiImpl(it.get()) }
-    factory<MembershipApi> { MembershipApiImpl(it.get()) }
     factory<MembersApi> { MembersApiImpl(it.get()) }
     factory<TimetableApi> { TimetableApiImpl(it.get()) }
     factory<RoomApi> { RoomApiImpl(it.get()) }

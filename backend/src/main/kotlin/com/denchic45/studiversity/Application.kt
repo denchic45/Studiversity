@@ -73,7 +73,6 @@ fun Application.module() = runBlocking {
     configureStatusPages()
     if (config.initialized) {
         configureServer()
-        setupDatabase()
     } else {
         configureSetup()
         onInitialized(::configureServer)

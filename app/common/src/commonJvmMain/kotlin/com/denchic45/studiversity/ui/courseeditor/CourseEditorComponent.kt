@@ -5,8 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.*
-import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.childContext
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.Field
@@ -22,23 +24,25 @@ import com.denchic45.studiversity.domain.usecase.AddCourseUseCase
 import com.denchic45.studiversity.domain.usecase.ArchiveCourseUseCase
 import com.denchic45.studiversity.domain.usecase.FindCourseByIdUseCase
 import com.denchic45.studiversity.domain.usecase.UpdateCourseUseCase
+import com.denchic45.studiversity.getOptProperty
 import com.denchic45.studiversity.ui.navigation.SlotChildrenContainer
 import com.denchic45.studiversity.ui.search.SubjectChooserComponent
 import com.denchic45.studiversity.uivalidator.condition.Condition
 import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.util.optPropertyOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class CourseEditorComponent(
@@ -48,7 +52,7 @@ class CourseEditorComponent(
     private val findCourseByIdUseCase: FindCourseByIdUseCase,
     private val _subjectChooserComponent: ((SubjectResponse?) -> Unit, ComponentContext) -> SubjectChooserComponent,
     @Assisted
-    private val onFinish: () -> Unit,
+    private val onFinish: (Boolean) -> Unit,
     @Assisted
     private val courseId: UUID?,
     @Assisted
@@ -58,32 +62,15 @@ class CourseEditorComponent(
 
     private val componentScope = componentScope()
 
-//    val appBarState = MutableStateFlow(AppBarState(
-//        title = courseId?.let { uiTextOf("Редактирование курса") }
-//            ?: uiTextOf("Новый курс"),
-//        actions = listOf(
-//            ActionMenuItem(
-//                id = "save",
-//                icon = uiIconOf(Icons.Default.Done),
-//                enabled = false,
-//                onClick = ::onSaveClick
-//            )
-//        ),
-//    ))
-
     override val slotNavigation = SlotNavigation<DialogConfig>()
-    override val childSlot: Value<ChildSlot<DialogConfig, DialogChild>> = childSlot(
+    override val childSlot = childSlot(
         handleBackButton = true,
         source = slotNavigation,
         childFactory = { config, componentContext ->
             when (config) {
                 DialogConfig.SubjectChooser -> DialogChild.SubjectChooser(_subjectChooserComponent({ response ->
                     response?.let {
-                        editingState.subject = SelectedSubject(
-                            subjectId = response.id,
-                            subjectName = response.name,
-                            subjectIconUrl = response.iconUrl
-                        )
+                        state.subject = response
                         updateEnableSave()
                     }
                     slotNavigation.dismiss()
@@ -92,27 +79,29 @@ class CourseEditorComponent(
         }
     )
 
+    private val subjectChooserComponent = _subjectChooserComponent({ response ->
+        response?.let {
+            state.subject = response
+            updateEnableSave()
+        }
+        slotNavigation.dismiss()
+    }, childContext("SubjectChooser"))
+
     val isNew: Boolean = courseId == null
     val allowSave = MutableStateFlow(false)
     val needToConfirmToDismiss = MutableStateFlow(false)
 
-    private val editingState = EditingCourse(isNew)
-
-    data class SelectedSubject(
-        val subjectId: UUID,
-        val subjectName: String,
-        val subjectIconUrl: String,
-    )
+    private val state = EditingCourse(isNew)
 
     private val fieldEditor = FieldEditor(mapOf(
-        "name" to Field { editingState.name },
-        "subject" to Field { editingState.subject }
+        "name" to Field { state.name },
+        "subjectId" to Field { state.subject?.id }
     ))
 
     private val validator = CompositeValidator(
         validators = listOf(
             ValueValidator(
-                value = editingState::name,
+                value = state::name,
                 conditions = listOf(Condition(String::isNotEmpty))
             )
         )
@@ -121,47 +110,23 @@ class CourseEditorComponent(
     val stateResource = (courseId?.let {
         flow<Resource<EditingCourse>> {
             emit(findCourseByIdUseCase(it).map { response ->
-                editingState.apply {
+                state.apply {
                     name = response.name
-                    subject = response.subject?.let {
-                        SelectedSubject(it.id, it.name, it.iconUrl)
-                    }
+                    subject = response.subject
                     fieldEditor.updateOldValues()
                 }
             })
         }
-    } ?: flowOf(Resource.Success(editingState))).stateInResource(componentScope)
+    } ?: flowOf(Resource.Success(state))).stateInResource(componentScope)
 
-    fun onSaveClick() {
-        if (validator.validate())
-            componentScope.launch {
-                val result = courseId?.let {
-                    updateCourseUseCase(
-                        it, UpdateCourseRequest(
-                            optPropertyOf(editingState.name),
-                            optPropertyOf(editingState.subject?.subjectId)
-                        )
-                    )
-                } ?: run {
-                    addCourseUseCase(
-                        CreateCourseRequest(
-                            editingState.name,
-                            editingState.subject?.subjectId
-                        )
-                    )
-                }
-                when (result) {
-                    is Resource.Error -> {}
-                    is Resource.Loading -> {}
-                    is Resource.Success -> withContext(Dispatchers.Main) {
-                        onFinish()
-                    }
-                }
-            }
+    init {
+        subjectChooserComponent.foundItems.onEach { resource ->
+            resource.onSuccess { state.foundSubjects = it }
+        }.launchIn(componentScope)
     }
 
     fun onNameChange(name: String) {
-        editingState.name = name
+        state.name = name
         updateEnableSave()
     }
 
@@ -169,11 +134,16 @@ class CourseEditorComponent(
         allowSave.update { fieldEditor.hasChanges() }
     }
 
+    fun onSubjectQueryChange(text: String) {
+        state.subjectQuery = text
+        subjectChooserComponent.onQueryChange(text)
+    }
+
     private fun onArchiveClick() {
         if (fieldEditor.hasChanges() || courseId != null) {
             componentScope.launch {
                 archiveCourseUseCase(courseId!!).onSuccess {
-                    withContext(Dispatchers.Main) { onFinish() }
+                    withContext(Dispatchers.Main) { onFinish(true) }
                 }
 //                confirmDialogInteractor.set(
 //                    ConfirmState(
@@ -188,22 +158,40 @@ class CourseEditorComponent(
         }
     }
 
-    fun onSubjectChoose() {
-        slotNavigation.activate(DialogConfig.SubjectChooser)
+    fun onSubjectSelect(subject: SubjectResponse) {
+        state.subject = subject
+        subjectChooserComponent.onQueryChange("")
     }
 
     fun onSubjectClose() {
-        editingState.subject = null
+        state.subject = null
     }
 
     fun onDismissRequest() {
         if (fieldEditor.hasChanges() && !needToConfirmToDismiss.value)
             needToConfirmToDismiss.value = true
-        else onFinish()
+        else onFinish(false)
     }
 
     fun onCancelDismiss() {
         needToConfirmToDismiss.value = false
+    }
+
+    fun onSaveClick() {
+        if (validator.validate())
+            componentScope.launch {
+                val result = courseId?.let {
+                    updateCourseUseCase(
+                        courseId,
+                        UpdateCourseRequest(
+                            fieldEditor.getOptProperty("name"),
+                            fieldEditor.getOptProperty("subjectId")
+                        )
+                    )
+                } ?: addCourseUseCase(CreateCourseRequest(state.name, state.subject?.id))
+
+                result.onSuccess { onFinish(true) }
+            }
     }
 
     @Parcelize
@@ -221,7 +209,10 @@ class CourseEditorComponent(
 @Stable
 class EditingCourse(val isNew: Boolean) {
     var name: String by mutableStateOf("")
-    var subject: CourseEditorComponent.SelectedSubject? by mutableStateOf(null)
+    var subject: SubjectResponse? by mutableStateOf(null)
+
+    var subjectQuery by mutableStateOf("")
+    var foundSubjects by mutableStateOf<List<SubjectResponse>>(emptyList())
 
     var nameMessage: String? by mutableStateOf(null)
 }

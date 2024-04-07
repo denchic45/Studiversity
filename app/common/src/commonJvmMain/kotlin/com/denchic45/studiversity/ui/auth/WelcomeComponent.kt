@@ -4,10 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.domain.resource.Cause
 import com.denchic45.studiversity.domain.resource.ClientError
-import com.denchic45.studiversity.domain.resource.Forbidden
 import com.denchic45.studiversity.domain.resource.NoConnection
-import com.denchic45.studiversity.domain.resource.NotFound
-import com.denchic45.studiversity.domain.resource.ServerError
 import com.denchic45.studiversity.domain.resource.onFailure
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.CheckDomainUseCase
@@ -63,10 +60,7 @@ class WelcomeComponent(
                     }
 
                     NoConnection -> state.value = State.NoConnection
-                    Forbidden,
                     is ClientError,
-                    NotFound,
-                    ServerError,
                     -> state.value = State.UnknownError
                 }
             }
@@ -76,13 +70,13 @@ class WelcomeComponent(
 
     sealed class State(val isError: Boolean = false) {
 
-        object Idle : State()
-        object Loading : State()
+        data object Idle : State()
+        data object Loading : State()
         data class Success(private val organization: OrganizationResponse) : State()
-        object NoConnection : State(true)
-        object FailedConnect : State(true)
-        object WrongDomain : State(true)
-        object Timeout : State(true)
-        object UnknownError : State(true)
+        data object NoConnection : State(true)
+        data object FailedConnect : State(true)
+        data object WrongDomain : State(true)
+        data object Timeout : State(true)
+        data object UnknownError : State(true)
     }
 }

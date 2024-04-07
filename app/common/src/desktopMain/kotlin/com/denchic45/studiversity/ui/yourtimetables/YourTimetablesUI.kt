@@ -37,7 +37,6 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
                     },
                 )
             }) {
-            BlockContent {
                 TimetableContent(
                     selectedDate = mondayDate,
                     timetableResource = timetable,
@@ -45,7 +44,6 @@ fun YourTimetablesScreen(component: YourTimetablesComponent) {
                     onPreviousWeekClick = component::onPreviousWeekClick,
                     onNextWeekClick = component::onNextWeekClick
                 )
-            }
         }
     }
 }

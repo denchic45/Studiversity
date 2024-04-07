@@ -1,0 +1,11 @@
+CREATE TABLE role  (
+role_id INTEGER NOT NULL UNIQUE PRIMARY KEY,
+role_name TEXT NOT NULL
+);
+
+upsert:
+INSERT INTO role
+VALUES ?
+ON CONFLICT(role_id)
+DO UPDATE SET
+role_name = excluded.role_name;

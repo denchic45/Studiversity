@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.room.model.RoomResponse
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.RemoveRoomUseCase
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
@@ -18,22 +19,23 @@ import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class RoomsAdminComponent(
     private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val removeRoomUseCase: RemoveRoomUseCase,
     roomChooserComponent: (onSelect: (RoomResponse?) -> Unit, ComponentContext) -> RoomChooserComponent,
-    roomEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> RoomEditorComponent,
+    roomEditorComponent: (onFinish: (Boolean) -> Unit, UUID?, ComponentContext) -> RoomEditorComponent,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
-    SearchableAdminComponent<RoomResponse> {
+    AdminSearchableComponent<RoomResponse> {
 
     private val componentScope = componentScope()
 
-    override val chooserComponent = roomChooserComponent({ room -> room?.let(::onSelect) }, componentContext)
+    override val searchableComponent =
+        roomChooserComponent({ room -> room?.let(::onSelect) }, componentContext)
 
     private val overlayNavigation = SlotNavigation<Config>()
     val childSlot = childSlot(source = overlayNavigation,
@@ -42,7 +44,10 @@ class RoomsAdminComponent(
             when (config) {
                 is Config.RoomEditor -> Child.RoomEditor(
                     roomEditorComponent(
-                        overlayNavigation::dismiss,
+                        { edited ->
+                            overlayNavigation.dismiss()
+                            if (edited) searchableComponent.forceUpdate()
+                        },
                         config.roomId,
                         context
                     )
@@ -71,7 +76,7 @@ class RoomsAdminComponent(
                 )
             )
             if (confirm) {
-                removeRoomUseCase(id)
+                removeRoomUseCase(id).onSuccess { searchableComponent.forceUpdate() }
             }
         }
     }

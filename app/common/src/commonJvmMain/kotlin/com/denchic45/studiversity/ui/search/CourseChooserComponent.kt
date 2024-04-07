@@ -18,7 +18,7 @@ class CourseChooserComponent(
     override val onFinish: (CourseItem?) -> Unit,
     @Assisted
     val componentContext: ComponentContext,
-) : ChooserComponent<CourseItem>(componentContext) {
+) : SearchableComponent<CourseItem>(componentContext) {
     override fun search(query: String): Flow<Resource<List<CourseItem>>> {
         return findCourseByContainsNameUseCase(query).mapResource { it.map(CourseResponse::toItem) }
     }

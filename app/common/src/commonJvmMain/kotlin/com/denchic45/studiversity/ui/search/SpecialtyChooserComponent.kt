@@ -15,7 +15,7 @@ class SpecialtyChooserComponent(
     override val onFinish: (SpecialtyResponse?) -> Unit,
     @Assisted
     val componentContext: ComponentContext,
-) : ChooserComponent<SpecialtyResponse>(componentContext) {
+) : SearchableComponent<SpecialtyResponse>(componentContext) {
     override fun search(query: String): Flow<Resource<List<SpecialtyResponse>>> {
         return findSpecialtyByContainsNameUseCase(query)
     }

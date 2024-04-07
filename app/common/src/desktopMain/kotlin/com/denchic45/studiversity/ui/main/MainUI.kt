@@ -5,15 +5,48 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.HelpOutline
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,8 +67,6 @@ import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.AppBarMediator
 import com.denchic45.studiversity.ui.LocalAppBarMediator
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.confirm.ConfirmDialog
-import com.denchic45.studiversity.ui.navigation.SlotChild
 import com.denchic45.studiversity.ui.root.RootScreen
 import com.denchic45.studiversity.ui.schedule.ScheduleDialog
 import com.denchic45.studiversity.ui.settings.SettingsDialog
@@ -125,10 +156,14 @@ fun MainScreen(component: MainComponent) {
                                         Card(
                                             colors = if (isHovered)
                                                 CardDefaults.cardColors(
-                                                    containerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                                                    containerColor = MaterialTheme.colorScheme.outline.copy(
+                                                        alpha = 0.2f
+                                                    )
                                                 )
                                             else CardDefaults.cardColors(
-                                                containerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
+                                                containerColor = MaterialTheme.colorScheme.outline.copy(
+                                                    alpha = 0.1f
+                                                )
                                             ),
                                             shape = MaterialTheme.shapes.medium,
                                             modifier = Modifier
@@ -150,7 +185,10 @@ fun MainScreen(component: MainComponent) {
                                                     contentScale = ContentScale.Crop
                                                 )
                                                 Column(Modifier.padding(start = 16.dp)) {
-                                                    Text(user.fullName, style = MaterialTheme.typography.bodyLarge)
+                                                    Text(
+                                                        user.fullName,
+                                                        style = MaterialTheme.typography.bodyLarge
+                                                    )
                                                     Text(
                                                         "Посмотреть профиль",
                                                         style = MaterialTheme.typography.bodyMedium
@@ -166,14 +204,23 @@ fun MainScreen(component: MainComponent) {
                                         }
                                         ListItem(
                                             headlineContent = { Text("Настройки") },
-                                            leadingContent = { Icon(Icons.Outlined.Settings, null) },
+                                            leadingContent = {
+                                                Icon(
+                                                    Icons.Outlined.Settings,
+                                                    null
+                                                )
+                                            },
                                             modifier = Modifier.clickable(onClick = {
                                                 showProfilePopup = false
                                                 component.onSettingsClick()
                                             })
                                         )
                                         Column {
-                                            var expandedThemePicker by remember { mutableStateOf(false) }
+                                            var expandedThemePicker by remember {
+                                                mutableStateOf(
+                                                    false
+                                                )
+                                            }
                                             ListItem(
                                                 headlineContent = {
                                                     Row {
@@ -184,7 +231,12 @@ fun MainScreen(component: MainComponent) {
                                                         )
                                                     }
                                                 },
-                                                leadingContent = { Icon(Icons.Outlined.DarkMode, null) },
+                                                leadingContent = {
+                                                    Icon(
+                                                        Icons.Outlined.DarkMode,
+                                                        null
+                                                    )
+                                                },
                                                 modifier = Modifier.clickable {
                                                     expandedThemePicker = !expandedThemePicker
                                                 }
@@ -209,7 +261,12 @@ fun MainScreen(component: MainComponent) {
                                         }
                                         ListItem(
                                             headlineContent = { Text("Расписание") },
-                                            leadingContent = { Icon(Icons.Outlined.Schedule, null) },
+                                            leadingContent = {
+                                                Icon(
+                                                    Icons.Outlined.Schedule,
+                                                    null
+                                                )
+                                            },
                                             modifier = Modifier.clickable(onClick = {
                                                 showProfilePopup = false
                                                 component.onScheduleClick()
@@ -217,7 +274,12 @@ fun MainScreen(component: MainComponent) {
                                         )
                                         ListItem(
                                             headlineContent = { Text("Помощь") },
-                                            leadingContent = { Icon(Icons.Rounded.HelpOutline, null) },
+                                            leadingContent = {
+                                                Icon(
+                                                    Icons.Rounded.HelpOutline,
+                                                    null
+                                                )
+                                            },
                                             modifier = Modifier.clickable {
                                                 showProfilePopup = false
 //                                                onHelpClick()
@@ -259,7 +321,12 @@ fun MainScreen(component: MainComponent) {
                     }
                     if (availableScreens.yourStudyGroups) {
                         NavigationRailItem(
-                            icon = { Icon(painterResource("ic_study_group".toDrawablePath()), null) },
+                            icon = {
+                                Icon(
+                                    painterResource("ic_study_group".toDrawablePath()),
+                                    null
+                                )
+                            },
                             selected = activeChild is MainComponent.Child.YourStudyGroups,
                             onClick = { yourStudyGroups.onSuccess { component.onStudyGroupsClick(it.first().id) } }
                         )
@@ -277,51 +344,38 @@ fun MainScreen(component: MainComponent) {
                             onClick = component::onAdminDashboardClick
                         )
                     }
-
-                    NavigationRailItem(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Settings,
-                                contentDescription = "settings"
-                            )
-                        },
-                        selected = false,
-                        onClick = component::onSettingsClick
-                    )
                 }
-                when (val child = childStack.active.instance) {
-                    is MainComponent.Child.YourTimetables -> RootScreen(child.component)
-                    is MainComponent.Child.YourStudyGroups -> RootScreen(child.component)
-                    is MainComponent.Child.YourWorks -> RootScreen(child.component)
-                    is MainComponent.Child.AdminDashboard -> RootScreen(child.component)
+                val child = childStack.active.instance
+                val hasChildren by child.component.hasChildrenFlow().collectAsState(false)
+                CompositionLocalProvider(LocalChildrenExistence provides hasChildren) {
+                    when (child) {
+                        is MainComponent.Child.YourTimetables -> RootScreen(child.component)
+                        is MainComponent.Child.YourStudyGroups -> RootScreen(child.component)
+                        is MainComponent.Child.YourWorks -> RootScreen(child.component)
+                        is MainComponent.Child.AdminDashboard -> RootScreen(child.component)
+                    }
                 }
 
-                val overlay by component.childSlot.subscribeAsState()
-                overlay.child?.let {
-                    when (val child = it.instance) {
-                        is SlotChild.Confirm -> with(child.config) {
-                            ConfirmDialog(
-                                title = title,
-                                text = text,
-                                onConfirm = {},
-                                onDismiss = component::onDialogClose
-                            )
-                        }
-
-                        is SlotChild.Settings -> SettingsDialog(
-                            onCloseRequest = component::onDialogClose,
-                            component = child.component
+                val childSlot by component.childSlot.subscribeAsState()
+                childSlot.child?.instance?.let { instance ->
+                    when (instance) {
+                        is MainComponent.SlotChild.Settings -> SettingsDialog(
+                            component = instance.component,
+                            onCloseRequest = component::onDialogClose
                         )
 
-                        is SlotChild.Schedule -> {
-                            ScheduleDialog(child.component, onDismissRequest = component::onDialogClose)
-                        }
+                        is MainComponent.SlotChild.Schedule -> ScheduleDialog(
+                            component = instance.component,
+                            onDismissRequest = component::onDialogClose
+                        )
                     }
                 }
             }
         }
     }
 }
+
+val LocalChildrenExistence = compositionLocalOf<Boolean>() { error("No RootComponent") }
 
 @Composable
 fun CustomAppBar(
@@ -334,10 +388,8 @@ fun CustomAppBar(
         modifier = modifier.height(80.dp).padding(end = 24.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        navigationContent?.let {
-            it()
-            Spacer(Modifier.width(MaterialTheme.spacing.normal))
-        }
+        navigationContent?.invoke()
+        Spacer(Modifier.width(MaterialTheme.spacing.normal))
         title()
         Spacer(Modifier.weight(1f))
         actions()
@@ -377,7 +429,8 @@ fun AppBarTitle(text: String) {
 
 @Composable
 fun NavigationIconBack(onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
-        Icon(Icons.Filled.ArrowBack, "pop")
-    }
+    if (LocalChildrenExistence.current)
+        IconButton(onClick = onClick) {
+            Icon(Icons.Filled.ArrowBack, "pop")
+        }
 }

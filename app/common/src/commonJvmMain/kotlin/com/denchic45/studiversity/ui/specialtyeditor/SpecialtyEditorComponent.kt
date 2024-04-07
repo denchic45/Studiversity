@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class SpecialtyEditorComponent(
@@ -38,7 +38,7 @@ class SpecialtyEditorComponent(
     private val updateSpecialtyUseCase: UpdateSpecialtyUseCase,
     private val removeSpecialtyUseCase: RemoveSpecialtyUseCase,
     @Assisted
-    private val onFinish: () -> Unit,
+    private val onFinish: (Boolean) -> Unit,
     @Assisted
     private val specialtyId: UUID?,
     @Assisted
@@ -81,7 +81,7 @@ class SpecialtyEditorComponent(
     fun onRemoveClick() {
         componentScope.launch {
             removeSpecialtyUseCase(specialtyId!!).onSuccess {
-                onFinish()
+                onFinish(true)
             }
         }
     }
@@ -104,7 +104,7 @@ class SpecialtyEditorComponent(
     fun onDismissRequest() {
         if (fieldEditor.hasChanges() && !needToConfirmToDismiss.value)
             needToConfirmToDismiss.value = true
-        else onFinish()
+        else onFinish(false)
     }
 
     private fun updateAllowSave() {
@@ -136,8 +136,8 @@ class SpecialtyEditorComponent(
                 )
             )
         }
-        withContext(Dispatchers.Main.immediate) {
-            result.onSuccess { onFinish() }
+        withContext(Dispatchers.Main) {
+            result.onSuccess { onFinish(true) }
         }
     }
 }

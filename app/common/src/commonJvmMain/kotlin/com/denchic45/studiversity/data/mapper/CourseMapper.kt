@@ -1,10 +1,10 @@
 package com.denchic45.studiversity.data.mapper
 
 
-import com.denchic45.studiversity.entity.Course
-import com.denchic45.studiversity.entity.CourseWithSubject
 import com.denchic45.studiversity.api.course.model.CourseResponse
 import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.entity.Course
+import com.denchic45.studiversity.entity.CourseWithSubject
 import com.denchic45.studiversity.util.toUUID
 
 fun CourseResponse.toCourseEntity() = Course(
@@ -23,8 +23,7 @@ fun CourseWithSubject.toCourseResponse() = CourseResponse(
         SubjectResponse(
             id = it,
             name = subject_name!!,
-            shortname = subject_shortname!!,
-            iconUrl = icon_name!!
+            shortname = shortname
         )
     },
     archived = archived

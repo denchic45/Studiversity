@@ -4,7 +4,16 @@ import com.denchic45.studiversity.api.common.ResponseResult
 import com.github.michaelbull.result.mapBoth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.stateIn
 
 sealed interface Resource<out T> {
     data object Loading : Resource<Nothing>
@@ -31,22 +40,19 @@ fun <T> Resource<T>.success() = this as Resource.Success
 fun <T> ResponseResult<T>.toResource(): Resource<T> = mapBoth(
     success = { Resource.Success(it) },
     failure = {
-        Resource.Error(it.toFailure()).apply {
+        resourceOf(ClientError(it)).apply {
             when (val failure = failure) {
                 is Cause -> failure.throwable.printStackTrace()
                 is ClientError -> println("Client error: ${failure.response.code} ${failure.response.error}")
-                Forbidden -> println("Forbidden")
                 NoConnection -> println("NoConnection")
-                NotFound -> println("NotFound")
-                ServerError -> println("ServerError")
             }
         }
     }
 )
 
 fun <T> ResponseResult<T>.toEmptyResource(): EmptyResource = mapBoth(
-    success = { Resource.Success(Unit) },
-    failure = { Resource.Error(it.toFailure()) }
+    success = { resourceOf(Unit) },
+    failure = { resourceOf(ClientError(it)) }
 )
 
 inline infix fun <T> Resource<T>.onSuccess(action: (T) -> Unit): Resource<T> = apply {
@@ -94,15 +100,15 @@ inline fun <T, V> Resource<T>.mapResource(function: (T) -> Resource<V>): Resourc
     }
 }
 
-fun <T> Resource<T?>.notNullOrFailure(error: Failure = NotFound): Resource<T> {
-    return when (this) {
-        is Resource.Error -> this
-        is Resource.Loading -> this
-        is Resource.Success -> value?.let {
-            Resource.Success(it)
-        } ?: Resource.Error(error)
-    }
-}
+//fun <T> Resource<T?>.notNullOrFailure(error: Failure = NotFound): Resource<T> {
+//    return when (this) {
+//        is Resource.Error -> this
+//        is Resource.Loading -> this
+//        is Resource.Success -> value?.let {
+//            Resource.Success(it)
+//        } ?: Resource.Error(error)
+//    }
+//}
 
 inline fun <T> Resource<T>.mapError(transform: (Failure) -> Failure): Resource<T> {
     return when (this) {
@@ -138,9 +144,10 @@ fun <T> Flow<Resource<T>>.filterResource(
 
 fun <T> Flow<Resource<T>>.filterSuccess(): Flow<Resource.Success<T>> = filterIsInstance()
 
-fun <T> Flow<Resource<T?>>.filterNotNullValue(): Flow<Resource<T>> = filter { resource ->
-    resource.ifSuccess { it != null } ?: true
-}.map { it.notNullOrFailure() }
+fun <T> Flow<Resource<T?>>.filterNotNullValue(): Flow<Resource<T>> = mapNotNull { resource ->
+    val value = resource.takeValueIfSuccess()
+    value?.let { resource.map(::requireNotNull) }
+}
 
 fun <T> Flow<Resource.Success<T>>.mapToValue(): Flow<T> = map { it.value }
 
@@ -176,9 +183,9 @@ fun <T, V> Flow<Resource<T>>.flatMapResourceFlow(function: (T) -> Flow<Resource<
     }
 }
 
-fun <T> Flow<Resource<T?>>.notNullOrFailure(error: Failure = NotFound): Flow<Resource<T>> {
-    return map { it.notNullOrFailure() }
-}
+//fun <T> Flow<Resource<T?>>.notNullOrFailure(error: Failure = NotFound): Flow<Resource<T>> {
+//    return map { it.notNullOrFailure() }
+//}
 
 fun <T> Flow<Resource<T>>.stateInResource(
     scope: CoroutineScope,

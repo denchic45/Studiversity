@@ -14,7 +14,7 @@ import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.search.SubjectChooserScreen
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
-import java.util.*
+import java.util.UUID
 
 
 @Composable
@@ -47,8 +47,9 @@ fun CourseEditorScreen(component: CourseEditorComponent) {
                 CourseEditorContent(
                     state = state,
                     onNameChange = component::onNameChange,
-                    onSubjectChoose = component::onSubjectChoose,
-                    onSubjectClose = component::onSubjectClose
+                    onSubjectQueryChange = component::onSubjectQueryChange,
+                    onSubjectSelect = component::onSubjectSelect,
+                    onSubjectRemove = component::onSubjectClose
                 )
             }
         }
@@ -63,11 +64,11 @@ fun CourseEditorPreview() {
             name = "Course name"
             subject = CourseEditorComponent.SelectedSubject(
                 subjectId = UUID.randomUUID(),
-                subjectName = "Subject name",
-                subjectIconUrl = ""
+                subjectName = "Subject name"
             )
         },
         onNameChange = {},
-        onSubjectChoose = {},
-        onSubjectClose = {})
+        onSubjectQueryChange = {},
+        onSubjectSelect = {},
+        onSubjectRemove = {})
 }

@@ -9,7 +9,6 @@ private val useCaseModule = module {
     single { SearchSubjectsUseCase(get(), get()) }
     single { UpdateSubjectUseCase(get()) }
     single { RemoveSubjectUseCase(get()) }
-    single { FindSubjectsIconsUseCase(get()) }
 }
 
 private val repositoryModule = module {

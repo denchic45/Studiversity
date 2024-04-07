@@ -19,45 +19,45 @@ import com.denchic45.studiversity.ui.theme.spacing
 import java.util.*
 
 
-@Composable
-fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
-    val selectedStudyGroup by component.selectedStudyGroup.collectAsState()
-    val studyGroups by component.studyGroups.collectAsState()
-    val childStudyGroup by component.childStudyGroup.subscribeAsState()
+//@Composable
+//fun YourStudyGroupsScreen(component: YourStudyGroupsComponent) {
+//    val selectedStudyGroup by component.selectedStudyGroup.collectAsState()
+//    val studyGroups by component.studyGroups.collectAsState()
+//    val childStudyGroup by component.childStudyGroup.subscribeAsState()
+//
+//    ScreenScaffold(
+//        topBar = {
+//            CustomAppBar(
+//                title = {
+//                    AppBarTitle(
+//                        text = when (val selected = selectedStudyGroup) {
+//                            is Resource.Success -> "Группа ${selected.value.name}"
+//                            else -> ""
+//                        }
+//                    )
+//                    Spacer(Modifier.width(MaterialTheme.spacing.normal))
+//                    StudyGroupsSpinner(studyGroups, selectedStudyGroup, component)
+//                },
+//            )
+//        }
+//    ) {
+//        childStudyGroup.child?.instance?.let {
+//            YourStudyGroupScreen(it)
+//        }
+//    }
+//}
 
-    ScreenScaffold(
-        topBar = {
-            CustomAppBar(
-                title = {
-                    AppBarTitle(
-                        text = when (val selected = selectedStudyGroup) {
-                            is Resource.Success -> "Группа ${selected.value.name}"
-                            else -> ""
-                        }
-                    )
-                    Spacer(Modifier.width(MaterialTheme.spacing.normal))
-                    StudyGroupsSpinner(studyGroups, selectedStudyGroup, component)
-                },
-            )
-        }
-    ) {
-        childStudyGroup.child?.instance?.let {
-            YourStudyGroupScreen(it)
-        }
-    }
-}
-
-@Composable
-private fun StudyGroupsSpinner(
-    studyGroups: Resource<List<StudyGroupResponse>>,
-    selectedStudyGroup: Resource<StudyGroupResponse>,
-    component: YourStudyGroupsComponent
-) {
-    studyGroups.onSuccess { groups ->
-        Spacer(Modifier.width(MaterialTheme.spacing.normal))
-        StudyGroupSpinner(groups, selectedStudyGroup, component::onGroupSelect)
-    }
-}
+//@Composable
+//private fun StudyGroupsSpinner(
+//    studyGroups: Resource<List<StudyGroupResponse>>,
+//    selectedStudyGroup: Resource<StudyGroupResponse>,
+//    component: YourStudyGroupsComponent
+//) {
+//    studyGroups.onSuccess { groups ->
+//        Spacer(Modifier.width(MaterialTheme.spacing.normal))
+//        StudyGroupSpinner(groups, selectedStudyGroup, component::onGroupSelect)
+//    }
+//}
 
 @Composable
 fun YourStudyGroupScreen(component: StudyGroupComponent) {

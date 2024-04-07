@@ -3,7 +3,11 @@ package com.denchic45.studiversity.data.db.local.source
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import com.denchic45.studiversity.api.member.ScopeMember
+import com.denchic45.studiversity.data.db.local.suspendedTransaction
 import com.denchic45.studiversity.entity.AppDatabase
+import com.denchic45.studiversity.entity.Specialty
+import com.denchic45.studiversity.entity.SpecialtyQueries
 import com.denchic45.studiversity.entity.StudyGroup
 import com.denchic45.studiversity.entity.StudyGroupQueries
 import com.denchic45.studiversity.entity.StudyGroupWithSpecialty
@@ -16,6 +20,8 @@ import me.tatarka.inject.annotations.Inject
 class StudyGroupLocalDataSource(db: AppDatabase) {
 
     private val queries: StudyGroupQueries = db.studyGroupQueries
+    private val specialtyQueries: SpecialtyQueries = db.specialtyQueries
+    private val f = db.eventMemberQueries
 
     suspend fun upsert(studyGroup: StudyGroup) = withContext(Dispatchers.IO) {
         queries.upsert(studyGroup)
@@ -26,6 +32,14 @@ class StudyGroupLocalDataSource(db: AppDatabase) {
             studyGroups.forEach { queries.upsert(it) }
         }
     }
+
+    suspend fun upsert(studyGroup: StudyGroup, specialty: Specialty?) {
+        queries.suspendedTransaction {
+            specialty?.let(specialtyQueries::upsert)
+            queries.upsert(studyGroup)
+        }
+    }
+
 
     suspend fun get(id: String): StudyGroupWithSpecialty? = withContext(Dispatchers.IO) {
         queries.getById(id).executeAsOneOrNull()
@@ -54,6 +68,14 @@ class StudyGroupLocalDataSource(db: AppDatabase) {
 
     suspend fun deleteById(groupId: String) = withContext(Dispatchers.IO) {
         queries.deleteById(groupId)
+    }
+
+    suspend fun observeMembers(studyGroupId: String) = queries.suspendedTransaction {
+
+    }
+
+    fun upsertMembers(studyGroupId: String, members: List<ScopeMember>) {
+        TODO("Not yet implemented")
     }
 
 //    suspend fun saveGroup(

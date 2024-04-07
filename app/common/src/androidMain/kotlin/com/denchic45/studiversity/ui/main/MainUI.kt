@@ -3,19 +3,63 @@ package com.denchic45.studiversity.ui.main
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.SpaceDashboard
-import androidx.compose.material3.*
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalAbsoluteTonalElevation
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,7 +82,6 @@ import com.denchic45.studiversity.ui.confirm.ConfirmDialog
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.get
 import com.denchic45.studiversity.ui.getPainter
-import com.denchic45.studiversity.ui.navigation.SlotChild
 import com.denchic45.studiversity.ui.root.RootStackScreen
 import com.denchic45.studiversity.ui.schedule.ScheduleScreen
 import com.denchic45.studiversity.ui.settings.SettingsScreen
@@ -117,28 +160,17 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
     ) {
         val stack by component.stack.subscribeAsState()
         val appBarState = LocalAppBarState.current
-        appBarState.navigationIcon = when (val child = stack.active.instance) {
-            is MainComponent.PrimaryChild -> {
-                val hasChildren by child.component.hasChildrenFlow().collectAsState(initial = false)
-                if (hasChildren) NavigationIcon.BACK
-                else NavigationIcon.TOGGLE
-            }
-
-            else -> NavigationIcon.BACK
-        }
+        val hasChildren by stack.active.instance.component.hasStackAndSlotChildrenFlow()
+            .collectAsState(false)
+        appBarState.navigationIcon = if (hasChildren) NavigationIcon.BACK
+        else NavigationIcon.TOGGLE
 
         Scaffold(
-            topBar = {
-                TopBarContent(activity, drawerState)
-            },
+            topBar = { TopBarContent(activity, drawerState) },
             bottomBar = {
-                val instance = stack.active.instance
-                if (instance is MainComponent.ExtraChild) return@Scaffold
-
-                val moreNavItemThanOne = availableScreens.yourStudyGroups
                 val yourStudyGroups by component.yourStudyGroups.collectAsState()
-
-                if (moreNavItemThanOne) {
+                if (availableScreens.moreItemsThanOne) {
+                    val instance = stack.active.instance
                     NavigationBar {
                         NavigationBarItem(selected = instance is MainComponent.Child.YourTimetables,
                             onClick = component::onTimetableClick,
@@ -174,22 +206,11 @@ private fun CompactMainScreen(component: MainComponent, activity: ComponentActiv
         ) { paddingValues ->
             ScreenContainer(paddingValues, stack)
             Box(Modifier.padding(paddingValues)) {
-                val overlay by component.childSlot.subscribeAsState()
-                overlay.child?.let {
+                val childSlot by component.childSlot.subscribeAsState()
+                childSlot.child?.let {
                     when (val child = it.instance) {
-                        is SlotChild.Confirm -> with(child.config) {
-                            TODO()
-//                        ConfirmDialog(
-//                            title = title,
-//                            text = text,
-//                            onConfirm = {},
-//                            onDismiss = component::onOverlayDismiss
-//                        )
-                        }
-
-//                        is SlotChild.YourProfile -> ProfileScreen(child.component)
-                        is SlotChild.Settings -> SettingsScreen(child.component)
-                        is SlotChild.Schedule -> ScheduleScreen(child.component)
+                        is MainComponent.SlotChild.Settings -> SettingsScreen(child.component)
+                        is MainComponent.SlotChild.Schedule -> ScheduleScreen(child.component)
                     }
                 } ?: expandAppBar()
             }
@@ -214,17 +235,13 @@ fun MediumMainScreen(
         }
     ) {
         val stack by component.stack.subscribeAsState()
-
         val appBarState = LocalAppBarState.current
-        appBarState.navigationIcon = when (val child = stack.active.instance) {
-            is MainComponent.PrimaryChild -> {
-                val hasChildren by child.component.hasChildrenFlow().collectAsState(initial = false)
-                if (hasChildren) NavigationIcon.BACK
-                else NavigationIcon.NOTHING
-            }
 
-            else -> NavigationIcon.BACK
-        }
+        val child = stack.active.instance
+        val hasChildren by child.component.hasStackAndSlotChildrenFlow().collectAsState(false)
+        appBarState.navigationIcon = if (hasChildren)
+            NavigationIcon.BACK
+        else NavigationIcon.NOTHING
 
         Row {
             val instance = stack.active.instance
@@ -362,7 +379,7 @@ private fun DrawerContent(
                         contentDescription = "schedule"
                     )
                 },
-                selected = overlay.child?.instance is SlotChild.Schedule,
+                selected = overlay.child?.instance is MainComponent.SlotChild.Schedule,
                 onClick = {
                     component.onScheduleClick()
                     closeDrawer()
@@ -418,7 +435,7 @@ private fun DrawerContent(
                             })
                     }
                 }
-                Divider(Modifier.padding(vertical = 4.dp))
+                HorizontalDivider(Modifier.padding(vertical = 4.dp))
             }
             if (availableScreens.adminDashboard) {
                 NavigationDrawerItem(
@@ -455,7 +472,7 @@ private fun DrawerContent(
                         contentDescription = "settings"
                     )
                 },
-                selected = overlay.child?.instance is SlotChild.Settings,
+                selected = overlay.child?.instance is MainComponent.SlotChild.Settings,
                 onClick = {
                     component.onSettingsClick()
                     closeDrawer()
@@ -486,7 +503,7 @@ private fun TopBarContent(activity: ComponentActivity, drawerState: DrawerState)
                 NavigationIcon.BACK -> IconButton(
                     onClick = { activity.onBackPressedDispatcher.onBackPressed() }) {
                     Icon(
-                        imageVector = Icons.Outlined.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                         contentDescription = "back"
                     )
                 }
@@ -538,24 +555,17 @@ private fun ScreenContainer(
     paddingValues: PaddingValues,
     stack: ChildStack<MainComponent.Config, MainComponent.Child>,
 ) {
-//    Children(
-//        modifier = Modifier.padding(paddingValues), stack = stack,
-//    ) {
-    Crossfade(modifier = Modifier.padding(paddingValues), targetState = stack.active) {
+    Crossfade(
+        modifier = Modifier.padding(paddingValues),
+        targetState = stack.active,
+        label = "screen"
+    ) {
         println("children: ${it.instance}")
         when (val child = it.instance) {
             is MainComponent.Child.YourTimetables -> RootStackScreen(child.component)
             is MainComponent.Child.YourStudyGroups -> RootStackScreen(child.component)
             is MainComponent.Child.YourWorks -> RootStackScreen(child.component)
             is MainComponent.Child.AdminDashboard -> RootStackScreen(child.component)
-
-//            is MainComponent.Child.YourCourse -> CourseScreen(child.component)
-//            is MainComponent.Child.Course -> CourseScreen(child.component)
-//            is MainComponent.Child.StudyGroup -> StudyGroupScreen(child.component)
-
-//            is MainComponent.Child.CourseWork -> CourseWorkScreen(child.component)
-//            is MainComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
         }
     }
-//    }
 }

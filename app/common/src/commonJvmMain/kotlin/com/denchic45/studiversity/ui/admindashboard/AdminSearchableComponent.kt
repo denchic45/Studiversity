@@ -1,11 +1,11 @@
 package com.denchic45.studiversity.ui.admindashboard
 
-import com.denchic45.studiversity.ui.search.ChooserComponent
+import com.denchic45.studiversity.ui.search.SearchableComponent
 import java.util.UUID
 
-interface SearchableAdminComponent<T> {
+interface AdminSearchableComponent<T> {
 
-    val chooserComponent: ChooserComponent<T>
+    val searchableComponent: SearchableComponent<T>
 
     fun onSelect(item: T)
 

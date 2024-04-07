@@ -20,14 +20,11 @@ import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
 
 fun Application.subjectRoutes() {
     routing {
         authenticate("auth-jwt") {
-            val findSubjectsIcons: FindSubjectsIconsUseCase by inject()
-
             route("/subjects") {
                 install(RequestValidation) {
                     validate<CreateSubjectRequest> { request ->
@@ -35,10 +32,6 @@ fun Application.subjectRoutes() {
                             condition(
                                 request.name.isNotEmpty() && !request.name.onlyDigits(),
                                 SubjectErrors.INVALID_SUBJECT_NAME
-                            )
-                            condition(
-                                request.iconUrl.isNotEmpty(),
-                                SubjectErrors.INVALID_SUBJECT_ICON_URL
                             )
                         }
                     }
@@ -65,19 +58,6 @@ fun Application.subjectRoutes() {
                 }
                 subjectByIdRoute()
             }
-            get("/subjects-icons") {
-                call.respond(findSubjectsIcons())
-            }
-        }
-        route("/subject-icons") {
-            val findSubjectIcon: FindSubjectIconUseCase by inject()
-            get("/{iconName}") {
-                val stream = findSubjectIcon(call.parameters.getOrFail("iconName"))
-                call.respondOutputStream(
-                    contentType = ContentType.Image.SVG,
-                    producer = { stream.transferTo(this) }
-                )
-            }
         }
     }
 }
@@ -91,12 +71,6 @@ fun Route.subjectByIdRoute() {
                         condition(
                             it.isNotEmpty(),
                             SubjectErrors.INVALID_SUBJECT_NAME
-                        )
-                    }
-                    request.iconUrl.ifPresent {
-                        condition(
-                            it.isNotEmpty(),
-                            SubjectErrors.INVALID_SUBJECT_ICON_URL
                         )
                     }
                 }

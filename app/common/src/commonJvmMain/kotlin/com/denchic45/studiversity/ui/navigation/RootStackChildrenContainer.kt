@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 
 interface RootStackChildrenContainer : StackChildrenContainer<RootConfig, RootChild> {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun hasChildrenFlow(): Flow<Boolean> {
+    fun hasStackAndSlotChildrenFlow(): Flow<Boolean> {
         return childStack.asFlow().flatMapLatest { childStack ->
             val instance = childStack.active.instance
             if (instance is ChildrenContainerChild) {

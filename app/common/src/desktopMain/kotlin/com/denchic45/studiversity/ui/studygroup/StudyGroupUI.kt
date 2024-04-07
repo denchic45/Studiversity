@@ -1,13 +1,34 @@
 package com.denchic45.studiversity.ui.studygroup
 
-import androidx.compose.animation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +46,7 @@ import com.denchic45.studiversity.ui.main.AppBarTitle
 import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.main.NavigationIconBack
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorDialog
+import com.denchic45.studiversity.ui.studygroupmembers.StudyGroupMembersScreen
 import com.denchic45.studiversity.ui.theme.spacing
 
 
@@ -59,23 +81,18 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
             )
             Row {
                 Column(Modifier.requiredWidth(300.dp).padding(end = MaterialTheme.spacing.normal)) {
-                    NavigationDrawerItem(
-                        label = { Text(text = "Участники", style = MaterialTheme.typography.labelLarge) },
-                        onClick = component::onMembersClick,
-                        selected = activeChildPageInstance is StudyGroupComponent.TabChild.Members
-                    )
-
-                    NavigationDrawerItem(
-                        label = { Text(text = "Курсы", style = MaterialTheme.typography.labelLarge) },
-                        onClick = component::onCoursesClick,
-                        selected = activeChildPageInstance is StudyGroupComponent.TabChild.Courses
-                    )
-
-                    NavigationDrawerItem(
-                        label = { Text(text = "Расписание", style = MaterialTheme.typography.labelLarge) },
-                        onClick = component::onTimetableClick,
-                        selected = activeChildPageInstance is StudyGroupComponent.TabChild.Timetable
-                    )
+                    childPages.items.forEachIndexed { index, child ->
+                        NavigationDrawerItem(
+                            label = {
+                                Text(
+                                    text = child.configuration.tabTitle(),
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            },
+                            onClick = { component.onTabSelect(index) },
+                            selected = index == childPages.selectedIndex
+                        )
+                    }
                 }
 
                 activeChildPageInstance?.let {
@@ -85,19 +102,19 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
                                 (slideInVertically { -it / 8 } + fadeIn())
                                     .togetherWith(slideOutVertically { it / 8 } + fadeOut())
                             }
-                        ) {
+                        ) { child ->
                             Box(Modifier.fillMaxSize()) {
-                                when (activeChildPageInstance) {
+                                when (child) {
                                     is StudyGroupComponent.TabChild.Members -> {
-                                        StudyGroupMembersScreen(activeChildPageInstance.component)
+                                        StudyGroupMembersScreen(child.component)
                                     }
 
                                     is StudyGroupComponent.TabChild.Courses -> {
-                                        StudyGroupCoursesScreen(activeChildPageInstance.component)
+                                        StudyGroupCoursesScreen(child.component)
                                     }
 
                                     is StudyGroupComponent.TabChild.Timetable -> {
-                                        StudyGroupTimetableScreen(activeChildPageInstance.component)
+                                        StudyGroupTimetableScreen(child.component)
                                     }
                                 }
                             }

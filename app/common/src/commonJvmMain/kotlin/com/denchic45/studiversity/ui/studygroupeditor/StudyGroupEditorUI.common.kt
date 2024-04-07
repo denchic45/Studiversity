@@ -1,14 +1,30 @@
 package com.denchic45.studiversity.ui.studygroupeditor
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.studiversity.ui.component.CustomExposedDropdownMenu
 import com.denchic45.studiversity.ui.component.DeleteListItem
 import com.denchic45.studiversity.ui.studygroup.RemoveStudyGroupConfirmDialog
 import com.denchic45.studiversity.ui.theme.spacing
@@ -37,6 +53,7 @@ fun StudyGroupEditorContent(
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Название") },
             isError = state.nameMessage != null,
+            singleLine = true,
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             supportingText = { Text(state.nameMessage ?: "") }
         )
@@ -56,18 +73,15 @@ fun StudyGroupEditorContent(
                     .fillMaxWidth()
                     .menuAnchor(),
                 label = { Text("Специальность") },
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(
-                        expanded = showList
-                    )
-                },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(showList) },
                 singleLine = true,
                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
 
-            ExposedDropdownMenu(
+            CustomExposedDropdownMenu(
                 expanded = showList,
-                onDismissRequest = { specialtiesExpanded = false }) {
+                onDismissRequest = { specialtiesExpanded = false },
+            ) {
                 state.foundSpecialties.forEach {
                     DropdownMenuItem(
                         text = { Text(it.name) },
@@ -81,7 +95,6 @@ fun StudyGroupEditorContent(
         }
 
         val pattern = remember { Regex("^\\d+\$") }
-
         Row {
             OutlinedTextField(
                 value = state.startAcademicYear.takeIf { it != 0 }?.toString() ?: "",

@@ -26,6 +26,7 @@ import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorScreen
+import com.denchic45.studiversity.ui.studygroupmembers.StudyGroupMembersScreen
 import com.denchic45.studiversity.ui.uiTextOf
 import kotlinx.coroutines.launch
 
@@ -105,12 +106,6 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
             }
         }
     }
-}
-
-fun StudyGroupComponent.TabConfig.tabTitle() = when (this) {
-    StudyGroupComponent.TabConfig.Members -> "Участники"
-    StudyGroupComponent.TabConfig.Courses -> "Курсы"
-    StudyGroupComponent.TabConfig.Timetable -> "Расписание"
 }
 
 @OptIn(ExperimentalFoundationApi::class)

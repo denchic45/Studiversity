@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
@@ -42,14 +41,15 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.denchic45.studiversity.api.room.model.RoomResponse
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.ifSuccess
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.hideAppBar
+import com.denchic45.studiversity.ui.component.TransparentTextField
 import com.denchic45.studiversity.ui.search.CourseChooserScreen
 import com.denchic45.studiversity.ui.search.UserChooserScreen
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.studiversity.api.room.model.RoomResponse
 import com.denchic45.studiversity.util.DateTimePatterns
 import com.denchic45.studiversity.util.toString
 
@@ -268,35 +268,4 @@ fun PeriodEditorContent(
             )
         }
     }
-}
-
-@Composable
-fun TransparentTextField(
-    value: String,
-    modifier: Modifier = Modifier,
-    onValueChange: (String) -> Unit,
-    enabled: Boolean = true,
-    readOnly: Boolean = false,
-    singleLine: Boolean = true,
-    placeholder: String? = null,
-) {
-    BasicTextField(
-        value = value,
-        onValueChange = onValueChange,
-        enabled = enabled,
-        readOnly = readOnly,
-        singleLine = singleLine,
-        decorationBox = { innerTextField ->
-            Box(modifier = Modifier.fillMaxWidth()) {
-                if (value.isEmpty() && placeholder != null) {
-                    Text(
-                        text = placeholder,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                    )
-                }
-                innerTextField()
-            }
-        },
-        modifier = modifier
-    )
 }

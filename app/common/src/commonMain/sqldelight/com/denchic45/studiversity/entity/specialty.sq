@@ -1,14 +1,16 @@
 CREATE TABLE specialty (
 specialty_id TEXT NOT NULL UNIQUE PRIMARY KEY,
-name TEXT NOT NULL,
-shortname TEXT
+specialty_name TEXT NOT NULL,
+shortname TEXT,
+code TEXT
 );
 
 upsert:
 INSERT INTO specialty VALUES ?
 ON CONFLICT(specialty_id) DO UPDATE SET
-name = excluded.name,
-shortname = excluded.shortname;
+specialty_name = excluded.specialty_name,
+shortname = excluded.shortname,
+code = excluded.code;
 
 getById:
 SELECT * FROM specialty

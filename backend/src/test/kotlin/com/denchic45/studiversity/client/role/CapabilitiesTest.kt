@@ -3,7 +3,6 @@ package com.denchic45.studiversity.client.role
 import com.denchic45.studiversity.KtorClientTest
 import com.denchic45.studiversity.util.assertedResultIsOk
 import com.denchic45.studiversity.util.unwrapAsserted
-import com.denchic45.studiversity.api.membership.MembershipApi
 import com.denchic45.studiversity.api.role.CapabilityApi
 import com.denchic45.studiversity.api.role.RoleApi
 import com.denchic45.studiversity.api.role.model.Capability
@@ -30,7 +29,6 @@ class CapabilitiesTest : KtorClientTest() {
     private val roleApi: RoleApi by inject { parametersOf(client) }
     private val userApi: UserApi by inject { parametersOf(client) }
     private val studyGroupApi: StudyGroupApi by inject { parametersOf(client) }
-    private val membershipApi: MembershipApi by inject { parametersOf(client) }
 
     private lateinit var user: UserResponse
     private lateinit var studyGroup: StudyGroupResponse
@@ -43,7 +41,6 @@ class CapabilitiesTest : KtorClientTest() {
         studyGroup = studyGroupApi.create(
             CreateStudyGroupRequest("Test group", AcademicYear(2023, 2027), null, null)
         ).unwrapAsserted()
-        membershipApi.joinToScopeManually(user.id, studyGroup.id, listOf(Role.Student.id))
     }
 
     @AfterEach

@@ -18,12 +18,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.denchic45.studiversity.api.room.model.RoomResponse
 import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.roomeditor.RoomEditorDialog
 import com.denchic45.studiversity.ui.search.RoomListItem
 import com.denchic45.studiversity.ui.search.SearchScreen
-import com.denchic45.studiversity.api.room.model.RoomResponse
 
 @Composable
 fun RoomsAdminScreen(component: RoomsAdminComponent) {
@@ -59,7 +59,7 @@ private fun RoomsAdminMainScreen(component: RoomsAdminComponent) {
         }) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             SearchScreen(
-                component = component.chooserComponent,
+                component = component.searchableComponent,
                 keyItem = RoomResponse::id,
                 placeholder = "Поиск аудиторий"
             ) { item ->

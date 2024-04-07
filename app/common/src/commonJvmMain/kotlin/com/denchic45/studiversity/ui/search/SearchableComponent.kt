@@ -5,49 +5,59 @@ import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.resourceOf
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-interface SearchableComponent<T> {
-    val query: MutableStateFlow<String>
-
-    val searchState: StateFlow<SearchState<T>>
-
-    fun onItemClick(item: T)
-    fun onQueryChange(text: String)
-}
-
-abstract class ChooserComponent<T>(componentContext: ComponentContext) :
-    ComponentContext by componentContext, SearchableComponent<T> {
-
+abstract class SearchableComponent<T>(
+    componentContext: ComponentContext
+) : ComponentContext by componentContext {
     protected abstract val onFinish: (T?) -> Unit
+    protected val componentScope = componentScope()
 
-    final override val query = MutableStateFlow("")
-
-    private val coroutineScope = componentScope()
+    private val forceTrigger = Channel<Unit>()
+    val query = MutableStateFlow("")
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val foundItems: StateFlow<Resource<List<T>>> = query
-        .flatMapLatest {
-            val text = it.trim()
-            if (text.isNotEmpty()) search(text)
-            else flowOf(resourceOf(emptyList()))
-        }
-        .stateIn(coroutineScope, SharingStarted.Lazily, Resource.Success(emptyList()))
+    val foundItems: StateFlow<Resource<List<T>>> =
+        forceTrigger.receiveAsFlow()
+            .onStart { emit(Unit) }
+            .flatMapLatest { query }
+            .flatMapLatest {
+                val text = it.trim()
+                if (text.isNotEmpty()) search(text)
+                else flowOf(resourceOf(emptyList()))
+            }
+            .stateIn(componentScope, SharingStarted.Lazily, resourceOf(emptyList()))
 
-    final override val searchState: StateFlow<SearchState<T>> = combine(query, foundItems) { query, items ->
+    val searchState: StateFlow<SearchState<T>> = combine(query, foundItems) { query, items ->
         if (query.isEmpty()) SearchState.EmptyQuery
         else SearchState.Result(items)
-    }.stateIn(coroutineScope, SharingStarted.Lazily, SearchState.EmptyQuery)
-
+    }.stateIn(componentScope, SharingStarted.Lazily, SearchState.EmptyQuery)
 
     protected abstract fun search(query: String): Flow<Resource<List<T>>>
 
-    override fun onItemClick(item: T) {
+    fun onItemClick(item: T) {
         onFinish(item)
     }
 
-    override fun onQueryChange(text: String) {
+    fun onQueryChange(text: String) {
         query.value = text
+    }
+
+    fun forceUpdate() {
+        componentScope.launch {
+            forceTrigger.send(Unit)
+        }
     }
 
     fun onDismissRequest() {

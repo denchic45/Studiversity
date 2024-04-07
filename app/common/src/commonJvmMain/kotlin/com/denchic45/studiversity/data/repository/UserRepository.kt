@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class UserRepository(
@@ -64,9 +64,7 @@ class UserRepository(
             .distinctUntilChanged()
             .map { it?.toUserResponse() },
         fetch = { userApi.getById(userId) },
-        saveFetch = {
-            userLocalDataSource.upsert(it.toEntity())
-        }
+        saveFetch = { userLocalDataSource.upsert(it.toEntity()) }
     )
 
     suspend fun remove(userId: UUID): EmptyResource {

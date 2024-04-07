@@ -22,10 +22,9 @@ fun StudyGroupInfoDialog(studyGroup: StudyGroupResponse, onDismissRequest: () ->
 fun StudyGroupInfoContent(studyGroup: StudyGroupResponse) {
     Column {
         studyGroup.specialty?.let { specialty ->
-            ListItem({ Text("Специальность:" + specialty.name) })
+            ListItem({ Text("Специальность: " + specialty.name) })
         }
         ListItem({ Text("Курс: ${studyGroup.academicYear.end - studyGroup.academicYear.start}") })
         ListItem({ Text("Период обучения: ${studyGroup.academicYear.start} - ${studyGroup.academicYear.end}") })
-        ListItem({ Text("Количество учащихся: N") }) // TODO выводить именно кол-во учащихся, а не всех участников
     }
 }

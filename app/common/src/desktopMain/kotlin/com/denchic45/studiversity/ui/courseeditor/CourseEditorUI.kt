@@ -34,8 +34,9 @@ fun CourseEditorDialog(component: CourseEditorComponent) {
                 CourseEditorContent(
                     state = state,
                     onNameChange = component::onNameChange,
-                    onSubjectChoose = component::onSubjectChoose,
-                    onSubjectClose = component::onSubjectClose
+                    onSubjectQueryChange = component::onSubjectQueryChange,
+                    onSubjectSelect = component::onSubjectSelect,
+                    onSubjectRemove = component::onSubjectClose
                 )
             },
             confirmButton = { TextButton(component::onSaveClick, enabled = allowSave) { Text("Сохранить") } },

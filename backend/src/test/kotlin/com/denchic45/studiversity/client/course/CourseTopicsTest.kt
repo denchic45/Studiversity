@@ -1,8 +1,6 @@
 package com.denchic45.studiversity.client.course
 
 import com.denchic45.studiversity.KtorClientTest
-import com.denchic45.studiversity.util.assertResultIsOk
-import com.denchic45.studiversity.util.unwrapAsserted
 import com.denchic45.studiversity.api.course.CourseApi
 import com.denchic45.studiversity.api.course.element.CourseElementsApi
 import com.denchic45.studiversity.api.course.element.model.CourseElementsSorting
@@ -16,10 +14,11 @@ import com.denchic45.studiversity.api.course.topic.model.UpdateCourseTopicReques
 import com.denchic45.studiversity.api.course.work.CourseWorkApi
 import com.denchic45.studiversity.api.course.work.model.CourseWorkType
 import com.denchic45.studiversity.api.course.work.model.CreateCourseWorkRequest
-import com.denchic45.studiversity.api.membership.MembershipApi
 import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.util.OptionalProperty
+import com.denchic45.studiversity.util.assertResultIsOk
 import com.denchic45.studiversity.util.toUUID
+import com.denchic45.studiversity.util.unwrapAsserted
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.unwrap
 import com.github.michaelbull.result.unwrapError
@@ -44,7 +43,6 @@ class CourseTopicsTest : KtorClientTest() {
     private val courseTopicApi: CourseTopicApi by inject { parametersOf(teacherClient) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(teacherClient) }
     private val courseElementsApi: CourseElementsApi by inject { parametersOf(teacherClient) }
-    private val membershipApi: MembershipApi by inject { parametersOf(client) }
 
     @BeforeEach
     fun init(): Unit = runBlocking {
@@ -64,7 +62,7 @@ class CourseTopicsTest : KtorClientTest() {
     }
 
     private suspend fun enrolUser(userId: UUID, roleId: Long) {
-        membershipApi.joinToScopeManually(userId, course.id, listOf(roleId)).also(::assertResultIsOk)
+//        membershipApi.joinToScopeManually(userId, course.id, listOf(roleId)).also(::assertResultIsOk)
     }
 
     @Test

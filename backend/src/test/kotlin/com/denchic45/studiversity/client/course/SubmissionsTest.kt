@@ -14,7 +14,6 @@ import com.denchic45.studiversity.api.course.work.model.CourseWorkType
 import com.denchic45.studiversity.api.course.work.model.CreateCourseWorkRequest
 import com.denchic45.studiversity.api.submission.model.SubmissionResponse
 import com.denchic45.studiversity.api.submission.model.SubmissionState
-import com.denchic45.studiversity.api.membership.MembershipApi
 import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.api.submission.SubmissionsApi
 import com.denchic45.studiversity.util.toUUID
@@ -56,7 +55,6 @@ class SubmissionsTest : KtorClientTest() {
     private val attachmentApi: AttachmentApi by inject { parametersOf(client) }
     private val courseElementsApi: CourseElementsApi by inject { parametersOf(client) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(client) }
-    private val membershipApi: MembershipApi by inject { parametersOf(client) }
 
 
     override fun setup(): Unit = runBlocking {
@@ -110,13 +108,13 @@ class SubmissionsTest : KtorClientTest() {
     }
 
     private suspend fun enrolUser(userId: UUID, roleId: Long) {
-        membershipApi.joinToScopeManually(userId, course.id, listOf(roleId)).also(::assertResultIsOk)
+//        membershipApi.joinToScopeManually(userId, course.id, listOf(roleId)).also(::assertResultIsOk)
     }
 
     private suspend fun unrollUser(userId: UUID) {
-        membershipApi.leaveFromScope(userId, course.id, "manual")
-            .onSuccess { println("Success unroll user: $userId") }
-            .onFailure { println("Failed unroll user: $userId. Status: ${it.code}. Body: ${it.error}") }
+//        membershipApi.leaveFromScope(userId, course.id, "manual")
+//            .onSuccess { println("Success unroll user: $userId") }
+//            .onFailure { println("Failed unroll user: $userId. Status: ${it.code}. Body: ${it.error}") }
     }
 
     @Test

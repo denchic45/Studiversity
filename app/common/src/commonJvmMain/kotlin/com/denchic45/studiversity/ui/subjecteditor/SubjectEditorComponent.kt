@@ -5,12 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
-import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
 import com.denchic45.studiversity.api.course.subject.model.CreateSubjectRequest
@@ -24,7 +18,6 @@ import com.denchic45.studiversity.domain.usecase.FindSubjectByIdUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveSubjectUseCase
 import com.denchic45.studiversity.domain.usecase.UpdateSubjectUseCase
 import com.denchic45.studiversity.getOptProperty
-import com.denchic45.studiversity.ui.subjecticons.SubjectIconsComponent
 import com.denchic45.studiversity.uivalidator.condition.Condition
 import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
@@ -37,7 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class SubjectEditorComponent(
@@ -45,34 +38,13 @@ class SubjectEditorComponent(
     private val addSubjectUseCase: AddSubjectUseCase,
     private val removeSubjectUseCase: RemoveSubjectUseCase,
     private val updateSubjectUseCase: UpdateSubjectUseCase,
-    private val subjectIconsComponent: (
-        onSelect: (iconUrl: String?) -> Unit,
-        ComponentContext
-    ) -> SubjectIconsComponent,
     @Assisted
-    private val onFinish: () -> Unit,
+    private val onFinish: (Boolean) -> Unit,
     @Assisted
     private val subjectId: UUID?,
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
-
-    private val overlayNavigation = SlotNavigation<SubjectIcons>()
-    val childSlot = childSlot(
-        source = overlayNavigation,
-        handleBackButton = true,
-        childFactory = { _, context ->
-            subjectIconsComponent({
-                overlayNavigation.dismiss()
-                it?.apply(::onIconSelect)
-            }, context)
-        })
-
-    @Parcelize
-    object SubjectIcons : Parcelable {
-        private fun readResolve(): Any = SubjectIcons
-    }
-
     private val componentScope = componentScope()
 
     private val editingState = EditingSubjectState(subjectId == null)
@@ -82,8 +54,7 @@ class SubjectEditorComponent(
     private val fieldEditor = FieldEditor(
         mapOf(
             "name" to Field(editingState::name),
-            "shortname" to Field(editingState::shortname),
-            "iconUrl" to Field(editingState::iconUrl)
+            "shortname" to Field(editingState::shortname)
         )
     )
     private val validator = CompositeValidator(
@@ -91,10 +62,6 @@ class SubjectEditorComponent(
             ValueValidator(
                 value = editingState::name,
                 conditions = listOf(Condition(String::isNotEmpty))
-            ),
-            ValueValidator(
-                value = editingState::iconUrl,
-                conditions = listOf(Condition { !it.isNullOrEmpty() })
             )
         )
     )
@@ -103,8 +70,7 @@ class SubjectEditorComponent(
         findSubjectByIdUseCase(it).mapResource { response ->
             editingState.apply {
                 name = response.name
-                shortname = response.shortname
-                iconUrl = response.iconUrl
+                shortname = response.shortname.orEmpty()
                 fieldEditor.updateOldValues()
             }
         }
@@ -118,19 +84,17 @@ class SubjectEditorComponent(
                         it,
                         UpdateSubjectRequest(
                             name = fieldEditor.getOptProperty("name"),
-                            shortname = fieldEditor.getOptProperty("shortname"),
-                            iconUrl = fieldEditor.getOptProperty("iconUrl")
+                            shortname = fieldEditor.getOptProperty("shortname")
                         )
                     )
                 } ?: addSubjectUseCase(
                     CreateSubjectRequest(
                         name = editingState.name,
-                        shortname = editingState.shortname,
-                        iconUrl = editingState.iconUrl!!
+                        shortname = editingState.shortname
                     )
                 )
-                withContext(Dispatchers.Main.immediate) {
-                    result.onSuccess { onFinish() }
+                withContext(Dispatchers.Main) {
+                    result.onSuccess { onFinish(true) }
                 }
             }
         }
@@ -138,11 +102,6 @@ class SubjectEditorComponent(
 
     private fun updateAllowSave() {
         allowSave.update { fieldEditor.hasChanges() && validator.validate() }
-    }
-
-    private fun onIconSelect(iconUrl: String) {
-        editingState.iconUrl = iconUrl
-        updateAllowSave()
     }
 
     fun onNameChange(name: String) {
@@ -155,14 +114,10 @@ class SubjectEditorComponent(
         updateAllowSave()
     }
 
-    fun onIconClick() {
-        overlayNavigation.activate(SubjectIcons)
-    }
-
     fun onDismissRequest() {
         if (fieldEditor.hasChanges() && !needToConfirmToDismiss.value)
             needToConfirmToDismiss.value = true
-        else onFinish()
+        else onFinish(false)
     }
 
     fun onCancelDismiss() {
@@ -173,7 +128,7 @@ class SubjectEditorComponent(
         componentScope.launch {
             removeSubjectUseCase(subjectId!!).onSuccess {
                 withContext(Dispatchers.Main) {
-                    onFinish()
+                    onFinish(true)
                 }
             }
         }
@@ -184,5 +139,4 @@ class SubjectEditorComponent(
 class EditingSubjectState(val isNew: Boolean) {
     var name by mutableStateOf("")
     var shortname by mutableStateOf("")
-    var iconUrl by mutableStateOf<String?>(null)
 }

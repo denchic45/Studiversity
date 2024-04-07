@@ -72,53 +72,53 @@ import com.denchic45.studiversity.ui.theme.spacing
 //    }
 //}
 
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun StudyGroupSpinner(
-    groupsResource: Resource<List<StudyGroupResponse>>,
-    selectedStudyGroup: Resource<StudyGroupResponse>,
-    component: YourStudyGroupsComponent,
-) {
-    groupsResource.onSuccess { groups ->
-        var expanded by remember { mutableStateOf(false) }
-        val showList = expanded && groups.isNotEmpty()
-
-        selectedStudyGroup.onSuccess { selected ->
-            ExposedDropdownMenuBox(
-                expanded = showList,
-                onExpandedChange = { expanded = it }) {
-                OutlinedTextField(
-                    value = "Группа ${selected.name}",
-                    readOnly = true,
-                    onValueChange = {},
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = showList)
-                    },
-                    singleLine = true,
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(MaterialTheme.spacing.small)
-                        .menuAnchor(),
-                )
-                ExposedDropdownMenu(
-                    expanded = showList,
-                    onDismissRequest = { expanded = false }) {
-
-                    groups.forEachIndexed { index, group ->
-                        DropdownMenuItem(
-                            text = { Text(group.name) },
-                            onClick = {
-                                component.onGroupSelect(group.id)
-                                expanded = false
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
+//@Composable
+//@OptIn(ExperimentalMaterial3Api::class)
+//private fun StudyGroupSpinner(
+//    groupsResource: Resource<List<StudyGroupResponse>>,
+//    selectedStudyGroup: Resource<StudyGroupResponse>,
+//    component: YourStudyGroupsComponent,
+//) {
+//    groupsResource.onSuccess { groups ->
+//        var expanded by remember { mutableStateOf(false) }
+//        val showList = expanded && groups.isNotEmpty()
+//
+//        selectedStudyGroup.onSuccess { selected ->
+//            ExposedDropdownMenuBox(
+//                expanded = showList,
+//                onExpandedChange = { expanded = it }) {
+//                OutlinedTextField(
+//                    value = "Группа ${selected.name}",
+//                    readOnly = true,
+//                    onValueChange = {},
+//                    trailingIcon = {
+//                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = showList)
+//                    },
+//                    singleLine = true,
+//                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(MaterialTheme.spacing.small)
+//                        .menuAnchor(),
+//                )
+//                ExposedDropdownMenu(
+//                    expanded = showList,
+//                    onDismissRequest = { expanded = false }) {
+//
+//                    groups.forEachIndexed { index, group ->
+//                        DropdownMenuItem(
+//                            text = { Text(group.name) },
+//                            onClick = {
+//                                component.onGroupSelect(group.id)
+//                                expanded = false
+//                            }
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
 
 //@Composable
 //fun YourStudyGroupScreen(component: StudyGroupComponent) {

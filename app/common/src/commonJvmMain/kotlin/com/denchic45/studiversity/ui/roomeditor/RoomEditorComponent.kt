@@ -7,6 +7,8 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
 import com.denchic45.studiversity.Field
 import com.denchic45.studiversity.FieldEditor
+import com.denchic45.studiversity.api.room.model.CreateRoomRequest
+import com.denchic45.studiversity.api.room.model.UpdateRoomRequest
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.onSuccess
@@ -20,8 +22,6 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.updateOldValues
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.room.model.CreateRoomRequest
-import com.denchic45.studiversity.api.room.model.UpdateRoomRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -36,7 +36,7 @@ class RoomEditorComponent(
     private val addRoomUseCase: AddRoomUseCase,
     private val updateRoomUseCase: UpdateRoomUseCase,
     @Assisted
-    private val onFinish: () -> Unit,
+    private val onFinish: (Boolean) -> Unit,
     @Assisted
     private val roomId: UUID?,
     @Assisted
@@ -92,7 +92,7 @@ class RoomEditorComponent(
     }
 
     fun onCloseClick() {
-        onFinish()
+        onFinish(false)
     }
 
     fun onSaveClick() {
@@ -104,21 +104,20 @@ class RoomEditorComponent(
     }
 
     private suspend fun saveChanges() {
-        val result = if (editingState.isNew) {
-            addRoomUseCase(
-                CreateRoomRequest(editingState.name, editingState.shortname)
-            )
-        } else {
+        val result = roomId?.let {
             updateRoomUseCase(
-                roomId!!,
+                roomId,
                 UpdateRoomRequest(
                     fieldEditor.getOptProperty("name"),
                     fieldEditor.getOptProperty("shortname")
                 )
             )
-        }
-        withContext(Dispatchers.Main.immediate) {
-            result.onSuccess { onFinish() }
+        } ?: addRoomUseCase(
+            CreateRoomRequest(editingState.name, editingState.shortname)
+        )
+
+        withContext(Dispatchers.Main) {
+            result.onSuccess { onFinish(true) }
         }
     }
 }

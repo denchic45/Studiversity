@@ -1,7 +1,13 @@
 package com.denchic45.studiversity.ui.navigator
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.stack.*
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.StackNavigator
+import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
@@ -14,18 +20,16 @@ import com.denchic45.studiversity.ui.navigation.ChildrenContainerChild
 import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.studygroup.StudyGroupComponent
-import com.denchic45.studiversity.ui.yourstudygroups.YourStudyGroupsComponent
 import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesComponent
 import com.denchic45.studiversity.ui.yourworks.YourCourseWorksComponent
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 
 @Inject
 class RootNavigatorComponent(
     yourTimetablesComponent: (onStudyGroupOpen: (UUID) -> Unit, ComponentContext) -> YourTimetablesComponent,
-    yourStudyGroupsComponent: (rootNavigator: RootNavigator, ComponentContext) -> YourStudyGroupsComponent,
     profileComponent: (RootNavigator, UUID, ComponentContext) -> ProfileComponent,
     courseComponent: (
         onFinish: () -> Unit,
@@ -40,7 +44,7 @@ class RootNavigatorComponent(
     ) -> StudyGroupComponent,
     adminDashboardComponent: (StackNavigation<RootConfig>, ComponentContext) -> AdminDashboardComponent,
     courseEditorComponent: (
-        onFinish: () -> Unit,
+        onFinish: (Boolean) -> Unit,
         courseId: UUID?,
         ComponentContext
     ) -> CourseEditorComponent,
@@ -72,16 +76,8 @@ class RootNavigatorComponent(
                 )
 
                 is RootConfig.Profile -> RootChild.Profile(
-                    profileComponent(
-                        navigation,
-                        config.userId,
-                        context
-                    )
+                    profileComponent(navigation, config.userId, context)
                 )
-
-//                RootConfig.YourStudyGroups -> RootChild.YourStudyGroups(
-//                    yourStudyGroupsComponent(navigation, context)
-//                )
 
                 is RootConfig.Course -> RootChild.Course(
                     courseComponent(
@@ -106,9 +102,7 @@ class RootNavigatorComponent(
                 )
 
                 is RootConfig.CourseEditor -> RootChild.CourseEditor(
-                    courseEditorComponent(
-                        navigation::pop, config.courseId, context
-                    )
+                    courseEditorComponent({ navigation.pop() }, config.courseId, context)
                 )
 
                 is RootConfig.CourseWork -> RootChild.CourseWork(

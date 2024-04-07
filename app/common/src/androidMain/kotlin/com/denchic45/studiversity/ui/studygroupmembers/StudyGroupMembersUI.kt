@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.studygroup
+package com.denchic45.studiversity.ui.studygroupmembers
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.domain.model.StudyGroupMembers
 import com.denchic45.studiversity.domain.model.UserItem
@@ -27,7 +28,6 @@ import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.confirm.ConfirmDeletionDialog
-import com.denchic45.studiversity.ui.search.UserAvatarImage
 import com.denchic45.studiversity.ui.search.UserListItem
 import com.denchic45.studiversity.ui.theme.spacing
 import java.util.*
@@ -36,6 +36,19 @@ import java.util.*
 fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
     val membersResource by component.members.collectAsState()
     val allowEditMembers by component.allowEditMembers.collectAsState()
+
+    val childSlot by component.childSlot.subscribeAsState()
+    childSlot.child?.let {
+        when (val child = it.instance) {
+            is StudyGroupMembersComponent.SlotChild.InviteMembers -> {
+                InviteStudyGroupMembersDialog(child.component)
+            }
+
+            is StudyGroupMembersComponent.SlotChild.MemberEditor -> {
+                StudyGroupMemberEditorDialog(child.component)
+            }
+        }
+    }
 
     var confirmDeletion by remember { mutableStateOf<UUID?>(null) }
     confirmDeletion?.let { userId ->
@@ -58,9 +71,7 @@ fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
             allowEditMembers = allowEditMembers.takeValueIfSuccess() ?: false,
             onMemberClick = component::onMemberClick,
             onMemberEditClick = component::onEditMemberClick,
-            onMemberRemoveClick = { confirmDeletion = it },
-            onMemberSetHeadmanClick = component::onMemberSetHeadmanClick,
-            onMemberRemoveHeadmanClick = component::onRemoveHeadmanClick,
+            onMemberRemoveClick = { confirmDeletion = it }
         )
     }
 }
@@ -70,10 +81,8 @@ fun StudyGroupMembersContent(
     members: StudyGroupMembers,
     allowEditMembers: Boolean,
     onMemberClick: (UUID) -> Unit,
-    onMemberEditClick: (UUID) -> Unit,
-    onMemberRemoveClick: (UUID) -> Unit,
-    onMemberSetHeadmanClick: (UUID) -> Unit,
-    onMemberRemoveHeadmanClick: (UUID) -> Unit
+    onMemberEditClick: (UserItem) -> Unit,
+    onMemberRemoveClick: (UUID) -> Unit
 ) {
     if (members.isEmpty())
         IconTitleBox(
@@ -90,56 +99,15 @@ fun StudyGroupMembersContent(
 
     val memberTrailingContent: @Composable (UUID, isStudent: Boolean) -> Unit =
         { memberId, isStudent ->
-            if (allowEditMembers) {
-                var expanded by remember { mutableStateOf(false) }
-                ExpandableDropdownMenu(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it }) {
-                    if (isStudent) {
-                        if (members.headmanId == memberId) {
-                            DropdownMenuItem(
-                                text = { Text("Лишить прав старосты") },
-                                onClick = {
-                                    expanded = false
-                                    onMemberRemoveHeadmanClick(memberId)
-                                }
-                            )
-                        } else {
-                            DropdownMenuItem(
-                                text = { Text("Назначить старостой") },
-                                onClick = {
-                                    expanded = false
-                                    onMemberSetHeadmanClick(memberId)
-                                }
-                            )
-                        }
-                    }
 
-                    DropdownMenuItem(
-                        text = { Text("Изменить") },
-                        onClick = {
-                            expanded = false
-                            onMemberEditClick(memberId)
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Удалить") },
-                        onClick = {
-                            expanded = false
-                            onMemberRemoveClick(memberId)
-                        }
-                    )
-                }
-            }
         }
 
     LazyColumn(contentPadding = PaddingValues(bottom = MaterialTheme.spacing.medium)) {
         members.curators.takeIf(List<UserItem>::isNotEmpty)?.let { curators ->
             item { HeaderItem(if (curators.size == 1) "Куратор" else "Кураторы") }
             items(curators) {
-                com.denchic45.studiversity.ui.user.UserListItem(
+                UserListItem(
                     item = it,
-                    avatarContent = { UserAvatarImage(it.avatarUrl) },
                     modifier = Modifier.clickable(onClick = { onMemberClick(it.id) })
                 )
             }
@@ -153,7 +121,27 @@ fun StudyGroupMembersContent(
                     item = it,
                     modifier = Modifier.clickable { onMemberClick(it.id) },
                     trailingContent = {
-                        memberTrailingContent(it.id, true)
+                        if (allowEditMembers) {
+                            var expanded by remember { mutableStateOf(false) }
+                            ExpandableDropdownMenu(
+                                expanded = expanded,
+                                onExpandedChange = { expanded = it }) {
+                                DropdownMenuItem(
+                                    text = { Text("Изменить") },
+                                    onClick = {
+                                        expanded = false
+                                        onMemberEditClick(it)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Удалить") },
+                                    onClick = {
+                                        expanded = false
+                                        onMemberRemoveClick(it.id)
+                                    }
+                                )
+                            }
+                        }
                     }
                 )
             }

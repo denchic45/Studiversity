@@ -15,7 +15,7 @@ class RoomChooserComponent(
     override val onFinish: (RoomResponse?) -> Unit,
     @Assisted
     val componentContext: ComponentContext,
-) : ChooserComponent<RoomResponse>(componentContext) {
+) : SearchableComponent<RoomResponse>(componentContext) {
     override fun search(query: String): Flow<Resource<List<RoomResponse>>> {
         return findRoomByContainsNameUseCase(query)
     }

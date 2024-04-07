@@ -15,8 +15,8 @@ class SpecialtyLocalDataSource(db: AppDatabase) {
 
     private val queries: SpecialtyQueries = db.specialtyQueries
 
-    suspend fun upsert(Specialty: Specialty) = withContext(Dispatchers.IO) {
-        queries.upsert(Specialty)
+    suspend fun upsert(specialty: Specialty) = withContext(Dispatchers.IO) {
+        queries.upsert(specialty)
     }
 
     suspend fun upsert(specialtyEntities: List<Specialty>) = withContext(Dispatchers.IO) {

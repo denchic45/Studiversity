@@ -6,15 +6,24 @@ import com.denchic45.studiversity.api.studygroup.StudyGroupApi
 import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
-import com.denchic45.studiversity.data.db.local.source.*
+import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.CourseTopicLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.StudyGroupCourseLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.StudyGroupLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.SubjectLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
+import com.denchic45.studiversity.data.mapper.toEntity
+import com.denchic45.studiversity.data.observeResource
 import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.preference.TimestampPreferences
 import com.denchic45.studiversity.data.preference.UserPreferences
 import com.denchic45.studiversity.data.service.NetworkService
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.entity.AppDatabase
 import com.denchic45.studiversity.util.UserId
 import com.denchic45.studiversity.util.toUUID
 import com.denchic45.studiversity.util.userIdOf
@@ -25,7 +34,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class StudyGroupRepository(
@@ -35,6 +44,7 @@ class StudyGroupRepository(
     private val timestampPreferences: TimestampPreferences,
     private val userPreferences: UserPreferences,
     override val networkService: NetworkService,
+    private val db: AppDatabase,
     override val studyGroupCourseLocalDataSource: StudyGroupCourseLocalDataSource,
     override val userLocalDataSource: UserLocalDataSource,
     override val courseLocalDataSource: CourseLocalDataSource,
@@ -140,17 +150,11 @@ class StudyGroupRepository(
         studyGroupApi.getById(studyGroupId)
     }
 
-//    private suspend fun observeAndSaveGroupFlow(groupId: String): Flow<GroupMap?> {
-//        return groupRemoteDataSource.observeById(groupId).onEach { groupMap ->
-//            if (groupMap != null) {
-//                if (groupMap.timestampNotNull()) {
-//                    saveGroup(groupMap)
-//                }
-//            } else {
-//                groupLocalDataSource.deleteById(groupId)
-//            }
-//        }
-//    }
+    fun observeById(studyGroupId: UUID) = observeResource(
+        query = studyGroupLocalDataSource.observe(studyGroupId.toString()),
+        fetch = { studyGroupApi.getById(studyGroupId) },
+        saveFetch = { studyGroupLocalDataSource.upsert(it.toEntity(), it.specialty?.toEntity()) }
+    )
 
     suspend fun add(createStudyGroupRequest: CreateStudyGroupRequest) = fetchResource {
         studyGroupApi.create(createStudyGroupRequest)

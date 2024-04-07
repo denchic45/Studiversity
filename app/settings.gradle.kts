@@ -1,6 +1,7 @@
 pluginManagement {
     val kotlinVersion: String by settings
     val jetbrainsComposeVersion: String by settings
+    val sqlDelightVersion: String by settings
 
     repositories {
         google()
@@ -15,6 +16,7 @@ pluginManagement {
         kotlin("multiplatform") version kotlinVersion
         kotlin("plugin.serialization") version kotlinVersion
         id("org.jetbrains.compose") version jetbrainsComposeVersion
+        id("app.cash.sqldelight") version sqlDelightVersion
 
         id("com.android.library") version "7.4.1"
     }

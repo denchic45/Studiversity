@@ -9,16 +9,19 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.studiversity.ui.specialty.RemoveSpecialtyConfirmDialog
+import com.denchic45.studiversity.ui.specialty.SpecialtyListItem
 import com.denchic45.studiversity.ui.specialtyeditor.SpecialtyEditorDialog
-import java.util.*
+import java.util.UUID
 
 @Composable
 fun SpecialtiesAdminScreen(component: SpecialtiesAdminComponent) {
@@ -52,8 +55,8 @@ fun SpecialtiesAdminScreen(component: SpecialtiesAdminComponent) {
         val interactionSource = remember { MutableInteractionSource() }
         val isHovered by interactionSource.collectIsHoveredAsState()
 
-        ListItem(
-            headlineContent = { Text(item.name) },
+        SpecialtyListItem(
+            item = item,
             trailingContent = {
                 if (isHovered) {
                     Row(verticalAlignment = Alignment.CenterVertically) {

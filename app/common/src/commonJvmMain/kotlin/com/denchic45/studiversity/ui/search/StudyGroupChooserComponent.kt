@@ -18,7 +18,7 @@ class StudyGroupChooserComponent(
     override val onFinish: (StudyGroupItem?) -> Unit,
     @Assisted
     val componentContext: ComponentContext,
-) : ChooserComponent<StudyGroupItem>(componentContext) {
+) : SearchableComponent<StudyGroupItem>(componentContext) {
 
     override fun search(query: String): Flow<Resource<List<StudyGroupItem>>> {
         return findStudyGroupByContainsNameUseCase(query).mapResource { it.map(StudyGroupResponse::toItem) }

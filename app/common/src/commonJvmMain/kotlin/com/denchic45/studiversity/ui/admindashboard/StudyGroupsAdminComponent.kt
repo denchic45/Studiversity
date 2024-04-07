@@ -1,13 +1,18 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.*
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.domain.model.StudyGroupItem
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.RemoveStudyGroupUseCase
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.search.StudyGroupChooserComponent
@@ -16,21 +21,21 @@ import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class StudyGroupsAdminComponent(
     private val removeStudyGroupUseCase: RemoveStudyGroupUseCase,
     studyGroupChooserComponent: (onSelect: (StudyGroupItem?) -> Unit, ComponentContext) -> StudyGroupChooserComponent,
-    studyGroupEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> StudyGroupEditorComponent,
+    studyGroupEditorComponent: (onFinish: (Boolean) -> Unit, UUID?, ComponentContext) -> StudyGroupEditorComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
     @Assisted
     componentContext: ComponentContext
-) : ComponentContext by componentContext, SearchableAdminComponent<StudyGroupItem> {
+) : ComponentContext by componentContext, AdminSearchableComponent<StudyGroupItem> {
     private val componentScope = componentScope()
 
-    override val chooserComponent = studyGroupChooserComponent(
+    override val searchableComponent = studyGroupChooserComponent(
         { studyGroup -> studyGroup?.let(::onSelect) }, componentContext
     )
 
@@ -40,7 +45,11 @@ class StudyGroupsAdminComponent(
         childFactory = { config, context ->
             when (config) {
                 is Config.StudyGroupEditor -> Child.StudyGroupEditor(
-                    studyGroupEditorComponent({ slotNavigation.dismiss() }, config.studyGroupId, context)
+                    studyGroupEditorComponent({ edited ->
+                        slotNavigation.dismiss()
+                        if (edited)
+                            searchableComponent.forceUpdate()
+                    }, config.studyGroupId, context)
                 )
             }
         })
@@ -55,7 +64,7 @@ class StudyGroupsAdminComponent(
 
     override fun onRemoveClick(id: UUID) {
         componentScope.launch {
-            removeStudyGroupUseCase(id)
+            removeStudyGroupUseCase(id).onSuccess { searchableComponent.forceUpdate() }
         }
     }
 

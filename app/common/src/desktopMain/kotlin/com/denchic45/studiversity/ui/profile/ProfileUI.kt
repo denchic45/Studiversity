@@ -31,6 +31,7 @@ import com.denchic45.studiversity.systemRoleName
 import com.denchic45.studiversity.ui.BlockContent
 import com.denchic45.studiversity.ui.ScreenScaffold
 import com.denchic45.studiversity.ui.component.HeaderItem
+import com.denchic45.studiversity.ui.main.AppBarTitle
 import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.main.NavigationIconBack
 import com.denchic45.studiversity.ui.theme.spacing
@@ -49,7 +50,7 @@ fun ProfileScreen(component: ProfileComponent) {
         topBar = {
             CustomAppBar(
                 navigationContent = { NavigationIconBack(onClick = component::onBack) },
-                title = { Text("Профиль") }
+                title = { AppBarTitle("Профиль") }
             )
         }
     ) {
@@ -76,11 +77,12 @@ fun ProfileScreen(component: ProfileComponent) {
                         }
                     }
                     Column {
-                        CoursesBlock(
-                            courses = state.courses,
-                            onCourseClick = component::onCourseClick,
-                            onMoreCoursesClick = component::onMoreCourseClick
-                        )
+                        if (state.courses.isNotEmpty())
+                            CoursesBlock(
+                                courses = state.courses,
+                                onCourseClick = component::onCourseClick,
+                                onMoreCoursesClick = component::onMoreCourseClick
+                            )
                     }
                 }
             }
@@ -154,7 +156,7 @@ fun ProfileHeaderBlock(
                         Modifier.padding(end = MaterialTheme.spacing.small)
                     )
                     Text(state.user.account.email, style = MaterialTheme.typography.titleSmall)
-
+                    Spacer(Modifier.width(MaterialTheme.spacing.normal))
                     state.studyGroups.takeIf(List<StudyGroupItem>::isNotEmpty)
                         ?.let { studyGroups ->
                             Row(Modifier.clickable {

@@ -3,16 +3,24 @@ package com.denchic45.studiversity.ui.subjecteditor
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import com.denchic45.studiversity.ui.LoadingDialog
-import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.component.AlertDialogTitle
 import com.denchic45.studiversity.ui.component.DeleteListItem
 import com.denchic45.studiversity.ui.confirm.DismissChangesConfirmDialog
@@ -31,10 +39,7 @@ fun SubjectEditorDialog(component: SubjectEditorComponent) {
         onDismiss = component::onCancelDismiss
     )
 
-    ResourceContent(
-        resource = stateResource,
-        onLoading = { LoadingDialog(onDismissRequest = component::onDismissRequest) }
-    ) { state ->
+    stateResource.onSuccess { state ->
         AlertDialog(
             onDismissRequest = component::onDismissRequest,
             title = {
@@ -46,27 +51,6 @@ fun SubjectEditorDialog(component: SubjectEditorComponent) {
             text = {
                 SubjectEditorContent(
                     state = state,
-                    avatarContent = { // todo ПОТОМ ВЕРНУТЬ
-//                        SubcomposeAsyncImage(
-//                            model = state.iconUrl?.let { url ->
-//                                ImageRequest.Builder(PlatformContext.INSTANCE)
-//                                    .data(url)
-////                                    .decoderFactory(SvgDecoder.Factory())
-//                                    .build()
-//
-//                            }
-////                                ?: R.drawable.ic_subject,
-//                                ?: Icons.Outlined.Subject,
-//                            loading = { CircularProgressIndicator() },
-//                            contentDescription = null,
-//                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.secondary),
-//                            modifier = Modifier
-//                                .size(56.dp)
-//                                .clip(RoundedCornerShape(16.dp))
-//                                .padding(MaterialTheme.spacing.small)
-//                                .clickable(onClick = component::onIconClick)
-//                        )
-                    },
                     onNameChange = component::onNameChange,
                     onShortnameChange = component::onShortnameChange,
                     onRemoveClick = component::onRemoveClick
@@ -84,34 +68,33 @@ fun SubjectEditorDialog(component: SubjectEditorComponent) {
             }
         )
     }
-
-    val childSlot by component.childSlot.subscribeAsState()
-//    childSlot.child?.let { todo потом вернуть
-//        SubjectIconsDialog(it.instance)
-//    }
 }
 
 @Composable
 fun SubjectEditorContent(
     state: EditingSubjectState,
-    avatarContent: @Composable () -> Unit,
     onNameChange: (String) -> Unit,
     onShortnameChange: (String) -> Unit,
     onRemoveClick: () -> Unit
 ) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            avatarContent()
             OutlinedTextField(
                 value = state.name,
                 onValueChange = onNameChange,
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+                placeholder = { Text("Название") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                modifier = Modifier.fillMaxWidth()
             )
         }
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
-        OutlinedTextField(value = state.shortname,
+        OutlinedTextField(
+            value = state.shortname,
             onValueChange = onShortnameChange,
-            placeholder = { Text("Дополнительное название") }
+            placeholder = { Text("Краткое название") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
         )
 
         if (!state.isNew) {

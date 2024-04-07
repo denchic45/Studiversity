@@ -49,7 +49,7 @@ private fun UsersAdminMainScreen(component: UsersAdminComponent) {
         }) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             SearchScreen(
-                component = component.chooserComponent,
+                component = component.searchableComponent,
                 keyItem = UserItem::id,
                 placeholder = "Поиск пользователей"
             ) { item ->

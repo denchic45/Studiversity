@@ -15,7 +15,7 @@ class SubjectChooserComponent(
     override val onFinish: (SubjectResponse?) -> Unit,
     @Assisted
     val componentContext: ComponentContext,
-) : ChooserComponent<SubjectResponse>(componentContext) {
+) : SearchableComponent<SubjectResponse>(componentContext) {
     override fun search(query: String): Flow<Resource<List<SubjectResponse>>> {
         return findSubjectByContainsNameUseCase(query)
     }

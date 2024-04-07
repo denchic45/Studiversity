@@ -1,16 +1,16 @@
 package com.denchic45.studiversity.data.repository
 
-import com.denchic45.studiversity.data.fetchResource
-import com.denchic45.studiversity.data.fetchResourceFlow
-import com.denchic45.studiversity.data.preference.AppPreferences
-import com.denchic45.studiversity.data.service.NetworkService
-import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.api.role.CapabilityApi
 import com.denchic45.studiversity.api.role.RoleApi
 import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.api.role.model.CheckCapabilitiesResponse
 import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.api.role.model.UserRolesResponse
+import com.denchic45.studiversity.data.fetchResource
+import com.denchic45.studiversity.data.fetchResourceFlow
+import com.denchic45.studiversity.data.preference.AppPreferences
+import com.denchic45.studiversity.data.service.NetworkService
+import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.util.toUUID
 import com.denchic45.studiversity.util.userIdOrMe
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +29,7 @@ class RoleRepository(
         roleApi.assignRoleToUserInScope(userId, scopeId, roleId)
     }
 
-    suspend fun addUserRoles(userId: UUID, roleIds: List<Long>, scopeId: UUID) = fetchResource {
+    suspend fun setUserRoles(userId: UUID, roleIds: List<Long>, scopeId: UUID) = fetchResource {
         roleApi.assignRolesToUserInScope(userId, scopeId, roleIds)
     }
 

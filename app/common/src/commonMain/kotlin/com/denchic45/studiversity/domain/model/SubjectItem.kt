@@ -6,13 +6,11 @@ import java.util.UUID
 data class SubjectItem(
     val id: UUID,
     val name: String,
-    val shortname: String,
-    val iconUrl: String
+    val shortname: String?
 )
 
 fun SubjectResponse.toItem() = SubjectItem(
     id = id,
     name = name,
-    shortname = shortname,
-    iconUrl = iconUrl
+    shortname = shortname
 )

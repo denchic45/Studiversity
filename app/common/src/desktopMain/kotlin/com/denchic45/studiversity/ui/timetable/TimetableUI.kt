@@ -1,13 +1,42 @@
 package com.denchic45.studiversity.ui.timetable
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,12 +55,12 @@ import com.denchic45.studiversity.domain.timetable.model.PeriodDetails
 import com.denchic45.studiversity.domain.timetable.model.PeriodItem
 import com.denchic45.studiversity.domain.timetable.model.PeriodSlot
 import com.denchic45.studiversity.domain.timetable.model.Window
+import com.denchic45.studiversity.ui.BlockContent
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetable.state.TimetableState
 import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesComponent
 import com.denchic45.studiversity.util.DateTimePatterns
 import com.denchic45.studiversity.util.toString
-import com.seiko.imageloader.rememberAsyncImagePainter
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -60,55 +89,57 @@ fun TimetableContent(
 ) {
     val verticalScroll: ScrollState = rememberScrollState()
     val horizontalScroll: ScrollState = rememberScrollState()
-    BoxWithConstraints(Modifier) {
-        val modifierHorScroll =
-            if (maxWidth < 1000.dp)
-                Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
-            else Modifier
+    BlockContent {
+        BoxWithConstraints(Modifier) {
+            val modifierHorScroll =
+                if (maxWidth < 1000.dp)
+                    Modifier.horizontalScroll(horizontalScroll).widthIn(1000.dp)
+                else Modifier
 
-        Column(Modifier.fillMaxWidth()) {
-            TimetableBar(
-                onTodayClick = onTodayClick,
-                onPreviousWeekClick = onPreviousWeekClick,
-                onNextWeekClick = onNextWeekClick,
-                selectedDate = selectedDate
-            )
+            Column(Modifier.fillMaxWidth()) {
+                TimetableBar(
+                    onTodayClick = onTodayClick,
+                    onPreviousWeekClick = onPreviousWeekClick,
+                    onNextWeekClick = onNextWeekClick,
+                    selectedDate = selectedDate
+                )
 
-            AnimatedContent(
-                targetState = selectedDate,
-                transitionSpec = {
-                    if (initialState > targetState) {
-                        (slideInHorizontally { -it / 6 } + fadeIn()) togetherWith slideOutHorizontally { it / 6 } + fadeOut()
-                    } else {
-                        (slideInHorizontally { it / 6 } + fadeIn()) togetherWith slideOutHorizontally { -it / 6 } + fadeOut()
-                    }
-                }
-            ) { monday ->
-                Column {
-                    Row {
-                        Box(
-                            Modifier.size(78.dp, 124.dp),
-                            contentAlignment = Alignment.BottomEnd
-                        ) {
-                            Divider(Modifier.width(1.dp).height(24.dp))
+                AnimatedContent(
+                    targetState = selectedDate,
+                    transitionSpec = {
+                        if (initialState > targetState) {
+                            (slideInHorizontally { -it / 6 } + fadeIn()) togetherWith slideOutHorizontally { it / 6 } + fadeOut()
+                        } else {
+                            (slideInHorizontally { it / 6 } + fadeIn()) togetherWith slideOutHorizontally { -it / 6 } + fadeOut()
                         }
-                        DaysOfWeekHeader(modifierHorScroll, monday)
                     }
-                    AnimatedContent(
-                        targetState = timetableResource,
-                        transitionSpec = { fadeIn() togetherWith fadeOut() }
-                    ) { timetableState ->
-                        Divider()
+                ) { monday ->
+                    Column {
                         Row {
-                            timetableState.onSuccess { state ->
-                                LessonOrders(state, verticalScroll)
-                                LessonCells(modifierHorScroll, verticalScroll, state)
-                            }.onLoading {
-                                Box(
-                                    Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    LinearProgressIndicator()
+                            Box(
+                                Modifier.size(78.dp, 124.dp),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+                                Divider(Modifier.width(1.dp).height(24.dp))
+                            }
+                            DaysOfWeekHeader(modifierHorScroll, monday)
+                        }
+                        AnimatedContent(
+                            targetState = timetableResource,
+                            transitionSpec = { fadeIn() togetherWith fadeOut() }
+                        ) { timetableState ->
+                            Divider()
+                            Row {
+                                timetableState.onSuccess { state ->
+                                    LessonOrders(state, verticalScroll)
+                                    LessonCells(modifierHorScroll, verticalScroll, state)
+                                }.onLoading {
+                                    Box(
+                                        Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        LinearProgressIndicator()
+                                    }
                                 }
                             }
                         }
@@ -127,9 +158,7 @@ private fun TimetableBar(
     selectedDate: LocalDate,
 ) {
     Row(
-        Modifier.fillMaxWidth().height(64.dp)
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 78.dp),
+        Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 78.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         OutlinedButton(onClick = onTodayClick) {
@@ -274,16 +303,6 @@ fun PeriodCell(item: PeriodSlot) {
             is PeriodItem -> {
                 when (val details = item.details) {
                     is PeriodDetails.Lesson -> {
-
-                        details.course.subject?.iconUrl?.let {
-                            Icon(
-                                painter = rememberAsyncImagePainter(it),
-                                modifier = Modifier.size(36.dp),
-                                tint = MaterialTheme.colorScheme.secondary,
-                                contentDescription = null
-                            )
-                        }
-
                         Spacer(Modifier.weight(1f))
                         Text(
                             details.course.subject?.name ?: "null",

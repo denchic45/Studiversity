@@ -6,13 +6,22 @@ import com.arkivanov.decompose.router.pages.Pages
 import com.arkivanov.decompose.router.pages.PagesNavigation
 import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.router.pages.select
-import com.arkivanov.decompose.router.slot.*
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.role.model.Capability
+import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
+import com.denchic45.studiversity.domain.resource.ClientError
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.loadingResource
 import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.onFailure
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindStudyGroupByIdUseCase
@@ -20,20 +29,27 @@ import com.denchic45.studiversity.ui.navigation.ChildrenContainer
 import com.denchic45.studiversity.ui.navigation.isActiveFlow
 import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorComponent
+import com.denchic45.studiversity.ui.studygroupmembers.StudyGroupMembersComponent
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 
 @Inject
 class StudyGroupComponent(
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val studyGroupEditorComponent: (
-        onFinish: () -> Unit,
+        onFinish: (Boolean) -> Unit,
         UUID?,
         ComponentContext,
     ) -> StudyGroupEditorComponent,
@@ -74,22 +90,26 @@ class StudyGroupComponent(
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
-                is SlotConfig.StudyGroupEditor -> {
-                    SlotChild.StudyGroupEditor(
-                        studyGroupEditorComponent(
-                            slotNavigation::dismiss,
-                            config.studyGroupId,
-                            context
-                        )
+                is SlotConfig.StudyGroupEditor -> SlotChild.StudyGroupEditor(
+                    studyGroupEditorComponent(
+                        { edited ->
+                            slotNavigation.dismiss()
+                            if (edited)
+                                componentScope.launch {
+                                    studyGroup.update {
+                                        findStudyGroupByIdUseCase(studyGroupId).last()
+                                    }
+                                }
+                        },
+                        config.studyGroupId,
+                        context
                     )
-                }
+                )
 
                 SlotConfig.Info -> SlotChild.Info
             }
         }
     )
-
-    private val tabNavigation = SlotNavigation<TabConfig>()
 
     @OptIn(ExperimentalDecomposeApi::class)
     private val pagesNavigation = PagesNavigation<TabConfig>()
@@ -106,11 +126,23 @@ class StudyGroupComponent(
         childFactory = { config, context ->
             when (config) {
                 TabConfig.Members -> {
-                    TabChild.Members(studyGroupMembersComponent(rootNavigator, studyGroupId, context))
+                    TabChild.Members(
+                        studyGroupMembersComponent(
+                            rootNavigator,
+                            studyGroupId,
+                            context
+                        )
+                    )
                 }
 
                 TabConfig.Courses -> {
-                    TabChild.Courses(studyGroupCoursesComponent(rootNavigator, studyGroupId, context))
+                    TabChild.Courses(
+                        studyGroupCoursesComponent(
+                            rootNavigator,
+                            studyGroupId,
+                            context
+                        )
+                    )
                 }
 
                 TabConfig.Timetable -> {
@@ -119,47 +151,26 @@ class StudyGroupComponent(
             }
         }
     )
-//    val childTabs = listOf(
-//        TabChild.Members(
-//            studyGroupMembersComponent(
-//                { slotNavigation.activate(SlotConfig.Member(it)) },
-//                { slotNavigation.activate(SlotConfig.ScopeMemberEditor(it)) },
-//                studyGroupId,
-//                componentContext.childContext("Members")
-//            )
-//        ),
-//        TabChild.Courses(
-//            studyGroupCoursesComponent(
-//                { rootNavigator.bringToFront(RootConfig.Course(it)) },
-//                studyGroupId,
-//                componentContext.childContext("Courses")
-//            )
-//        ),
-//        TabChild.Timetable(
-//            studyGroupTimetableComponent(
-//                studyGroupId,
-//                componentContext.childContext("Timetable")
-//            )
-//        )
-//    )
 
-    val studyGroup = findStudyGroupByIdUseCase(studyGroupId).stateInResource(componentScope)
+    val studyGroup = MutableStateFlow<Resource<StudyGroupResponse>>(loadingResource())
+
+    init {
+        componentScope.launch {
+            studyGroup.emitAll(findStudyGroupByIdUseCase(studyGroupId))
+        }
+
+        studyGroup.onEach { resource ->
+            resource.onFailure {
+                if (it is ClientError) {
+                    if (it.response.code == 404) onBack()
+                }
+            }
+        }
+    }
 
     @OptIn(ExperimentalDecomposeApi::class)
     fun onTabSelect(index: Int) {
         pagesNavigation.select(index)
-    }
-
-    fun onMembersClick() {
-        tabNavigation.activate(TabConfig.Members)
-    }
-
-    fun onCoursesClick() {
-        tabNavigation.activate(TabConfig.Courses)
-    }
-
-    fun onTimetableClick() {
-        tabNavigation.activate(TabConfig.Timetable)
     }
 
     fun onInfoClick() {
@@ -217,4 +228,10 @@ class StudyGroupComponent(
     fun onBack() {
         rootNavigator.pop()
     }
+}
+
+fun StudyGroupComponent.TabConfig.tabTitle() = when (this) {
+    StudyGroupComponent.TabConfig.Members -> "Участники"
+    StudyGroupComponent.TabConfig.Courses -> "Курсы"
+    StudyGroupComponent.TabConfig.Timetable -> "Расписание"
 }

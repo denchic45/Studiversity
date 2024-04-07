@@ -1,16 +1,14 @@
 package com.denchic45.studiversity.ui.model
 
 import com.denchic45.studiversity.api.course.model.CourseResponse
-import java.util.*
+import java.util.UUID
 
 data class StudyGroupCourseItem(
     val id: UUID,
-    val name: String,
-    val iconUrl: String?,
+    val name: String
 )
 
 fun CourseResponse.toGroupCourseItem() = StudyGroupCourseItem(
     id = id,
-    name = name,
-    iconUrl = subject?.iconUrl
+    name = name
 )

@@ -11,8 +11,16 @@ import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.studiversity.api.studygroup.model.AcademicYear
 import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
-import com.denchic45.studiversity.domain.resource.*
-import com.denchic45.studiversity.domain.usecase.*
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.onFailure
+import com.denchic45.studiversity.domain.resource.onSuccess
+import com.denchic45.studiversity.domain.resource.stateInResource
+import com.denchic45.studiversity.domain.usecase.AddStudyGroupUseCase
+import com.denchic45.studiversity.domain.usecase.FindSpecialtyByContainsNameUseCase
+import com.denchic45.studiversity.domain.usecase.FindStudyGroupByIdUseCase
+import com.denchic45.studiversity.domain.usecase.RemoveStudyGroupUseCase
+import com.denchic45.studiversity.domain.usecase.UpdateStudyGroupUseCase
 import com.denchic45.studiversity.getOptProperty
 import com.denchic45.studiversity.uivalidator.condition.Condition
 import com.denchic45.studiversity.uivalidator.condition.observable
@@ -24,12 +32,18 @@ import com.denchic45.studiversity.util.componentScope
 import com.denchic45.studiversity.util.optPropertyOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Inject
@@ -40,7 +54,7 @@ class StudyGroupEditorComponent(
     private val updateStudyGroupUseCase: UpdateStudyGroupUseCase,
     private val removeStudyGroupUseCase: RemoveStudyGroupUseCase,
     @Assisted
-    private val onFinish: () -> Unit,
+    private val onFinish: (Boolean) -> Unit,
     @Assisted
     private val studyGroupId: UUID?,
     @Assisted
@@ -74,11 +88,13 @@ class StudyGroupEditorComponent(
                 conditions = listOf(
                     Condition<Int> { it != 0 }
                         .observable { valid ->
-                            editingState.startYearMessage = "Год начала обязателен".takeUnless { valid }
+                            editingState.startYearMessage =
+                                "Год начала обязателен".takeUnless { valid }
                         },
-                    Condition<Int> { it >= 200 }
+                    Condition<Int> { it >= 2000 }
                         .observable { valid ->
-                            editingState.startYearMessage = "Введен недопустимый год".takeUnless { valid }
+                            editingState.startYearMessage =
+                                "Введен недопустимый год".takeUnless { valid }
                         }
                 )
             ),
@@ -87,12 +103,14 @@ class StudyGroupEditorComponent(
                 conditions = listOf(
                     Condition<Int> { it != 0 }
                         .observable { valid ->
-                            editingState.endYearMessage = "Год окончания обязателен".takeUnless { valid }
+                            editingState.endYearMessage =
+                                "Год окончания обязателен".takeUnless { valid }
                         },
-                    Condition<Int> { it < editingState.startAcademicYear }
+                    Condition<Int> { it > editingState.startAcademicYear }
                         .observable { valid ->
                             editingState.endYearMessage =
-                                "Год окончания не может быть меньше начального".takeUnless { valid }
+                                "Год окончания не может быть меньше начального"
+                                    .takeUnless { valid }
                         }
                 )
             ),
@@ -183,7 +201,7 @@ class StudyGroupEditorComponent(
 
                 withContext(Dispatchers.Main) {
                     resource.onSuccess {
-                        onFinish()
+                        onFinish(true)
                     }.onFailure {
                         println("Not save study group: $it")
                     }
@@ -195,7 +213,7 @@ class StudyGroupEditorComponent(
     fun onDismissRequest() {
         if (fieldEditor.hasChanges() && !needToConfirmToDismiss.value)
             needToConfirmToDismiss.value = true
-        else onFinish()
+        else onFinish(false)
     }
 
     fun onCancelDismiss() {
@@ -209,7 +227,7 @@ class StudyGroupEditorComponent(
 
     fun onRemoveStudyGroupClick() {
         componentScope.launch {
-            removeStudyGroupUseCase(studyGroupId!!).onSuccess { onFinish() }
+            removeStudyGroupUseCase(studyGroupId!!).onSuccess { onFinish(true) }
         }
     }
 }

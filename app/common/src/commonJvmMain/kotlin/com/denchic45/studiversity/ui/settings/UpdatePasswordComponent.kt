@@ -5,10 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.studiversity.api.GeneralErrors
 import com.denchic45.studiversity.api.account.AccountErrors
 import com.denchic45.studiversity.api.account.model.UpdatePasswordRequest
 import com.denchic45.studiversity.domain.resource.ClientError
-import com.denchic45.studiversity.domain.resource.ServerError
 import com.denchic45.studiversity.domain.resource.onFailure
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.UpdatePasswordUseCase
@@ -103,10 +103,11 @@ class UpdatePasswordComponent(
                             AccountErrors.PASSWORD_MUST_CONTAIN_UPPER_AND_LOWER_CASE_CHARS -> PASSWORD_MUST_CONTAIN_UPPER_AND_LOWER_CASE_CHARS
                             AccountErrors.PASSWORD_MUST_CONTAIN_DIGITS -> PASSWORD_MUST_CONTAIN_DIGITS
 
+                            GeneralErrors.INTERNAL_SERVER_ERROR -> "Ошибка на стороне сервера"
+
                             else -> "Неизвестная ошибка"
                         }
 
-                        ServerError -> "Ошибка на стороне сервера"
                         else -> "Неизвестная ошибка"
                     }
                 }

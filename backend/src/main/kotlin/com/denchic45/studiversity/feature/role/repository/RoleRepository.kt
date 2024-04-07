@@ -73,7 +73,6 @@ class RoleRepository {
             }
         }
         return has
-
     }
 
     private fun findCapabilityPermissionOfUserInScope(
@@ -104,7 +103,7 @@ class RoleRepository {
 
     fun existRolesByScope(roles: List<Long>, scopeId: UUID): Boolean = transaction {
         roles.all { roleId ->
-            RoleDao[roleId].scopeType.id == ScopeDao[scopeId].id
+            RoleDao[roleId].scopeType.id == ScopeDao[scopeId].type.id
         }
     }
 
@@ -113,7 +112,7 @@ class RoleRepository {
     }
 
     private fun existPermissionRoleByUserAndScopeId(userId: UUID, assignRoleId: Long, scopeId: UUID): Boolean {
-        return ScopeDao.findById(scopeId)!!.path.any { segmentScopeId ->
+        return ScopeDao[scopeId].path.any { segmentScopeId ->
             getUserRoleIdsInScope(userId, segmentScopeId).any { roleId ->
                 existRoleAssignment(RoleDao.findParentRoleIdsByRoleId(roleId) + roleId, assignRoleId)
             }
@@ -139,14 +138,16 @@ class RoleRepository {
         .map(RoleDao::toRole)
 
     fun findAssignableRolesByUserAndScope(userId: UUID, scopeId: UUID): List<Role> {
-        val scopeType = ScopeDao[scopeId].type
-        val userRolesInScope = getUserRoleIdsInScope(userId, scopeId)
+        val scopeTypeDao = ScopeDao[scopeId].type
+        val userRolesInThisAndParentScopes = getUserRoleIdsInThisAndParentScopes(userId, scopeId)
 
         return RolesAssignments
             .innerJoin(Roles, { assignableRoleId }, { Roles.id })
             .select(Roles.columns)
-            .where(RolesAssignments.roleId inList userRolesInScope and (Roles.scopeTypeId eq scopeType.id))
-//            .where(UsersRolesScopes.scopeId eq scopeId and (UsersRolesScopes.userId eq userId))
+            .where(
+                RolesAssignments.roleId inList userRolesInThisAndParentScopes
+                        and (Roles.scopeTypeId eq scopeTypeDao.id)
+            )
             .let(RoleDao::wrapRows)
             .map(RoleDao::toRole)
     }
@@ -169,6 +170,13 @@ class RoleRepository {
 
             else -> throw NotFoundException(UserErrors.USER_NOT_FOUND)
         }
+    }
+
+    private fun getUserRoleIdsInThisAndParentScopes(userId: UUID, scopeId: UUID): List<Long> {
+        val scope = ScopeDao[scopeId]
+        return UsersRolesScopes.select(UsersRolesScopes.roleId)
+            .where(UsersRolesScopes.userId eq userId and (UsersRolesScopes.scopeId inList scope.path))
+            .map { it[UsersRolesScopes.roleId].value }
     }
 
     private fun getUserRoleIdsInScope(userId: UUID, scopeId: UUID): List<Long> {

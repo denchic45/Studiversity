@@ -11,7 +11,11 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
@@ -21,7 +25,7 @@ import com.denchic45.studiversity.ui.course.CourseListItem
 import com.denchic45.studiversity.ui.course.RemoveCourseConfirmDialog
 import com.denchic45.studiversity.ui.course.RestorationCourseConfirmDialog
 import com.denchic45.studiversity.ui.courseeditor.CourseEditorDialog
-import java.util.*
+import java.util.UUID
 
 @Composable
 fun CoursesAdminScreen(component: CoursesAdminComponent) {
@@ -85,14 +89,14 @@ fun CoursesAdminScreen(component: CoursesAdminComponent) {
             trailingContent = {
                 if (isHovered) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { confirmDeletion = item.id }) {
-                            Icon(Icons.Outlined.Delete, null)
-                        }
                         if (!item.archived) {
                             IconButton(onClick = { confirmArchiving = item.id }) {
                                 Icon(Icons.Outlined.Archive, null)
                             }
                         } else {
+                            IconButton(onClick = { confirmDeletion = item.id }) {
+                                Icon(Icons.Outlined.Delete, null)
+                            }
                             IconButton(onClick = { confirmRestoration = item.id }) {
                                 Icon(Icons.Outlined.Unarchive, null)
                             }

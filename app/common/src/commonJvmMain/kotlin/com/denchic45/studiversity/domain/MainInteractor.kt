@@ -1,17 +1,18 @@
 package com.denchic45.studiversity.domain
 
+import com.denchic45.studiversity.api.user.model.UserResponse
 import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.repository.StudyGroupRepository
-import com.denchic45.studiversity.data.service.AuthService
 import com.denchic45.studiversity.data.service.AccountService
-import com.denchic45.studiversity.domain.resource.NotFound
+import com.denchic45.studiversity.data.service.AuthService
+import com.denchic45.studiversity.domain.resource.ClientError
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.filterSuccess
 import com.denchic45.studiversity.domain.resource.map
 import com.denchic45.studiversity.domain.resource.onFailure
 import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.api.user.model.UserResponse
 import com.denchic45.studiversity.util.toUUID
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -49,7 +50,7 @@ class MainInteractor(
 //                }
 //            }
             user.onFailure {
-                if (it is NotFound) {
+                if (it is ClientError && it.response.code == HttpStatusCode.NotFound.value) {
 //                    clearAllData()
                     authService.signOut()
                 }

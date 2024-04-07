@@ -10,7 +10,7 @@ fun RemoveSubjectConfirmDialog(
 ) {
     ConfirmDeletionDialog(
         title = "Удалить предмет?",
-        text = "Восстановить группу будет невозможно.",
+        text = "Курсы по данному предмету останутся. Восстановить предмет будет невозможно.",
         onConfirm = onConfirm,
         onDismiss = onDismiss
     )

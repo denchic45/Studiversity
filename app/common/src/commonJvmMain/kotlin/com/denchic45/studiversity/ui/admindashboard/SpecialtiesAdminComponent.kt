@@ -1,12 +1,17 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.*
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.RemoveSpecialtyUseCase
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.search.SpecialtyChooserComponent
@@ -15,23 +20,23 @@ import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
+import java.util.UUID
 
 @Inject
 class SpecialtiesAdminComponent(
     private val removeSpecialtyUseCase: RemoveSpecialtyUseCase,
     specialtyChooserComponent: (onSelect: (SpecialtyResponse?) -> Unit, ComponentContext) -> SpecialtyChooserComponent,
-    specialtyEditorComponent: (onFinish: () -> Unit, UUID?, ComponentContext) -> SpecialtyEditorComponent,
+    specialtyEditorComponent: (onFinish: (Boolean) -> Unit, UUID?, ComponentContext) -> SpecialtyEditorComponent,
     @Assisted
     private val rootNavigation: StackNavigation<RootConfig>,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
-    SearchableAdminComponent<SpecialtyResponse> {
+    AdminSearchableComponent<SpecialtyResponse> {
 
     private val componentScope = componentScope()
 
-    override val chooserComponent = specialtyChooserComponent(
+    override val searchableComponent = specialtyChooserComponent(
         { specialty -> specialty?.let(::onSelect) }, componentContext
     )
 
@@ -43,7 +48,10 @@ class SpecialtiesAdminComponent(
             when (config) {
                 is Config.SpecialtyEditor -> Child.SpecialtyEditor(
                     specialtyEditorComponent(
-                        slotNavigation::dismiss,
+                        { edited ->
+                            slotNavigation.dismiss()
+                            if (edited) searchableComponent.forceUpdate()
+                        },
                         config.specialtyId,
                         context
                     )
@@ -65,7 +73,7 @@ class SpecialtiesAdminComponent(
 
     override fun onRemoveClick(id: UUID) {
         componentScope.launch {
-            removeSpecialtyUseCase(id)
+            removeSpecialtyUseCase(id).onSuccess { searchableComponent.forceUpdate() }
         }
     }
 
