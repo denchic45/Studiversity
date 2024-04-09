@@ -1,7 +1,10 @@
 package com.denchic45.studiversity.database.table
 
+import org.jetbrains.exposed.sql.Query
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.innerJoin
+import java.util.*
 
 object UsersRolesScopes : Table("user_role_scope") {
     val userId = reference("user_id", Users, onDelete = ReferenceOption.CASCADE)
@@ -13,14 +16,8 @@ object UsersRolesScopes : Table("user_role_scope") {
     }
 }
 
-//class UserRoleScopeDao(id: EntityID<Long>) : LongEntity(id) {
-//    companion object : LongEntityClass<UserRoleScopeDao>(UsersRolesScopes)
-//
-//    var userId by UsersRolesScopes.userId
-//    var roleId by UsersRolesScopes.roleId
-//    var scopeId by UsersRolesScopes.scopeId
-//
-//    var role by RoleDao referencedOn UsersRolesScopes.roleId
-//    var user by UserDao referencedOn UsersRolesScopes.userId
-//    var scope by ScopeDao referencedOn UsersRolesScopes.scopeId
-//}
+fun UsersRolesScopes.getUserRolesByScopeId(scopeId: UUID): Query {
+    return UsersRolesScopes.innerJoin(Roles, { roleId }, { Roles.id })
+        .select(roleId)
+        .where { UsersRolesScopes.scopeId eq scopeId }
+}

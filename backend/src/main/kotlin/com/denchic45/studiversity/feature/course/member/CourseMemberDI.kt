@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 private val useCaseModule = module {
     single { EnrollCourseMemberUseCase(get(), get(), get()) }
-    single { FindCourseMembersUseCase(get(), get(), get()) }
+    single { FindCourseMembersUseCase(get(), get()) }
     single { CheckExistCourseMemberUseCase(get(), get()) }
     single { RemoveCourseMemberUseCase(get(), get(), get()) }
 }
