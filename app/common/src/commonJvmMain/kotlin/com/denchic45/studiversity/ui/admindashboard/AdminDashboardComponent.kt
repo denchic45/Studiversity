@@ -9,13 +9,12 @@ import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.ui.navigation.StackChildrenContainer
 import com.denchic45.studiversity.ui.navigator.RootConfig
-import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.timetableloader.TimetableLoaderComponent
 import com.denchic45.studiversity.ui.timetablesearch.TimetableSearchComponent
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class AdminDashboardComponent(
@@ -44,7 +43,6 @@ class AdminDashboardComponent(
     roomsAdminComponent: (
         ComponentContext,
     ) -> RoomsAdminComponent,
-    profileComponent: (RootNavigator, UUID, ComponentContext) -> ProfileComponent,
     @Assisted
     rootNavigation: StackNavigation<RootConfig>,
     @Assisted
@@ -64,25 +62,17 @@ class AdminDashboardComponent(
 
                 Config.TimetableFinder -> Child.TimetableFinder(timetableSearchComponent(context))
 
-                Config.TimetableLoader -> Child.TimetableLoader(
-                    timetableLoaderComponent(navigation::pop, context)
-                )
+                Config.TimetableLoader -> Child.TimetableLoader(timetableLoaderComponent(navigation::pop, context))
 
                 Config.Courses -> Child.Courses(coursesAdminComponent(rootNavigation, context))
 
                 Config.Users -> Child.Users(usersAdminComponent(rootNavigation, context))
 
-                Config.StudyGroups -> Child.StudyGroups(
-                    studyGroupsAdminComponent(rootNavigation, context)
-                )
+                Config.StudyGroups -> Child.StudyGroups(studyGroupsAdminComponent(rootNavigation, context))
 
-                Config.Subjects -> Child.Subjects(
-                    subjectsAdminComponent(rootNavigation, context)
-                )
+                Config.Subjects -> Child.Subjects(subjectsAdminComponent(rootNavigation, context))
 
-                Config.Specialties -> Child.Specialties(
-                    specialtiesAdminComponent(rootNavigation, context)
-                )
+                Config.Specialties -> Child.Specialties(specialtiesAdminComponent(rootNavigation, context))
 
                 Config.Rooms -> Child.Rooms(roomsAdminComponent(context))
             }
@@ -124,20 +114,46 @@ class AdminDashboardComponent(
 
     @Parcelize
     sealed interface Config : Parcelable {
-        object None : Config
-        object TimetableFinder : Config
-        object TimetableLoader : Config
-        object Courses : Config
-        object Users : Config
-        object StudyGroups : Config
-        object Subjects : Config
-        object Specialties : Config
-        object Rooms : Config
+        data object None : Config {
+            private fun readResolve(): Any = None
+        }
+
+        data object TimetableFinder : Config {
+            private fun readResolve(): Any = TimetableFinder
+        }
+
+        data object TimetableLoader : Config {
+            private fun readResolve(): Any = TimetableLoader
+        }
+
+        data object Courses : Config {
+            private fun readResolve(): Any = Courses
+        }
+
+        data object Users : Config {
+            private fun readResolve(): Any = Users
+        }
+
+        data object StudyGroups : Config {
+            private fun readResolve(): Any = StudyGroups
+        }
+
+        data object Subjects : Config {
+            private fun readResolve(): Any = Subjects
+        }
+
+        data object Specialties : Config {
+            private fun readResolve(): Any = Specialties
+        }
+
+        data object Rooms : Config {
+            private fun readResolve(): Any = Rooms
+        }
 
     }
 
     sealed interface Child {
-        object None : Child
+        data object None : Child
         class TimetableFinder(val component: TimetableSearchComponent) : Child
         class TimetableLoader(val component: TimetableLoaderComponent) : Child
         class Courses(val component: CoursesAdminComponent) : Child

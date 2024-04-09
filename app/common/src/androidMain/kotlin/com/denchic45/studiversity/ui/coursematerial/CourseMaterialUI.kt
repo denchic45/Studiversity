@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
@@ -26,6 +27,7 @@ import com.denchic45.studiversity.ui.appbar.DropdownMenuItem2
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.attachment.AttachmentListItem
 import com.denchic45.studiversity.ui.component.HeaderItem
+import com.denchic45.studiversity.ui.coursematerialeditor.CourseMaterialEditorScreen
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.uiTextOf
@@ -38,9 +40,13 @@ import com.denchic45.studiversity.util.findActivity
 fun CourseMaterialScreen(component: CourseMaterialComponent) {
     val materialResource by component.courseMaterial.collectAsState()
     val attachmentsResource by component.attachments.collectAsState()
+    val allowEdit by component.allowEditMaterial.collectAsState(initial = false)
     val context = LocalContext.current
 
-    val allowEdit by component.allowEditMaterial.collectAsState(initial = false)
+    val childSlot by component.childSlot.subscribeAsState()
+    childSlot.child?.instance?.let { child ->
+        CourseMaterialEditorScreen(child.component)
+    }
 
     updateAppBarState(
         allowEdit, AppBarContent(

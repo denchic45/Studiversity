@@ -1,10 +1,11 @@
 package com.denchic45.studiversity
 
-import com.denchic45.studiversity.domain.resource.Forbidden
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.bindResources
-import com.denchic45.studiversity.domain.resource.resourceOf
-import com.denchic45.studiversity.domain.resource.success
+
+import com.denchic45.studiversity.api.GeneralErrors
+import com.denchic45.studiversity.domain.resource.*
+import com.denchic45.studiversity.util.ErrorInfo
+import com.denchic45.studiversity.util.ErrorResponse
+import io.ktor.http.*
 import kotlin.test.Test
 
 class ResourceTest {
@@ -12,7 +13,15 @@ class ResourceTest {
     @Test
     fun testErrorBinding() {
         val res1: Resource<String> = resourceOf("string 1")
-        val res2: Resource<String> = resourceOf(Forbidden)
+        val res2: Resource<String> =
+            resourceOf(
+                ClientError(
+                    ErrorResponse(
+                        HttpStatusCode.Forbidden.value,
+                        ErrorInfo(GeneralErrors.PERMISSION_DENIED)
+                    )
+                )
+            )
         val bindResources = bindResources {
             res1.bind() + res2.bind()
         }
@@ -41,8 +50,7 @@ class ResourceTest {
 
     @Test
     fun testEmptyBinding() {
-        val bindResources = bindResources {
-        }
+        val bindResources = bindResources {}
         assert(bindResources is Resource.Success)
     }
 }

@@ -3,8 +3,8 @@ package com.denchic45.studiversity.client.course
 import com.denchic45.studiversity.KtorClientTest
 import com.denchic45.studiversity.api.course.model.CourseResponse
 import com.denchic45.studiversity.api.course.model.CreateCourseRequest
+import com.denchic45.studiversity.api.member.ScopeMember
 import com.denchic45.studiversity.api.membership.model.ManualJoinMemberRequest
-import com.denchic45.studiversity.api.membership.model.ScopeMember
 import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.api.studygroup.model.AcademicYear
 import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest

@@ -15,13 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil.decode.SvgDecoder
-import coil.request.ImageRequest
 import coil3.compose.AsyncImage
-import coil3.compose.rememberAsyncImagePainter
 import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.theme.spacing
@@ -54,24 +49,7 @@ fun LessonDetailsEditorContent(
     Column {
         Box(modifier = Modifier.clickable(onClick = onCourseChoose)) {
             details.course?.let {
-                ListItem(
-                    headlineContent = { Text(text = it.subject?.name ?: it.name) },
-                    leadingContent = {
-                        Icon(
-                            painter = it.subject?.let {
-                                rememberAsyncImagePainter(
-                                    ImageRequest.Builder(LocalContext.current)
-                                        .decoderFactory(SvgDecoder.Factory())
-                                        .data(it.iconUrl)
-                                        .build()
-                                )
-                            } ?: rememberVectorPainter(Icons.Outlined.School),
-                            contentDescription = "subject icon",
-                            tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.size(40.dp)
-                        )
-                    },
-                )
+                ListItem(headlineContent = { Text(text = it.subject?.name ?: it.name) })
             } ?: ListItem(
                 headlineContent = {
                     Text(

@@ -226,8 +226,7 @@ class TimetableParserTest {
     private val subjectResponse = SubjectResponse(
         id = UUID.randomUUID(),
         name = "МДК",
-        shortname = "",
-        iconUrl = ""
+        shortname = ""
     )
 
     private val courseResponse = CourseResponse(

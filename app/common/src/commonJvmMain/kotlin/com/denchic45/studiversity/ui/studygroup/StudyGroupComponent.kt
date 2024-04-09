@@ -6,23 +6,14 @@ import com.arkivanov.decompose.router.pages.Pages
 import com.arkivanov.decompose.router.pages.PagesNavigation
 import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.router.pages.select
-import com.arkivanov.decompose.router.slot.ChildSlot
-import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
-import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
-import com.denchic45.studiversity.domain.resource.ClientError
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.loadingResource
-import com.denchic45.studiversity.domain.resource.mapResource
-import com.denchic45.studiversity.domain.resource.onFailure
-import com.denchic45.studiversity.domain.resource.stateInResource
+import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
 import com.denchic45.studiversity.domain.usecase.FindStudyGroupByIdUseCase
 import com.denchic45.studiversity.ui.navigation.ChildrenContainer
@@ -31,18 +22,11 @@ import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.studygroupeditor.StudyGroupEditorComponent
 import com.denchic45.studiversity.ui.studygroupmembers.StudyGroupMembersComponent
 import com.denchic45.studiversity.util.componentScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 
 @Inject
@@ -101,7 +85,7 @@ class StudyGroupComponent(
                                     }
                                 }
                         },
-                        config.studyGroupId,
+                        studyGroupId,
                         context
                     )
                 )
@@ -178,7 +162,7 @@ class StudyGroupComponent(
     }
 
     fun onEditClick() {
-        slotNavigation.activate(SlotConfig.StudyGroupEditor(studyGroupId))
+        slotNavigation.activate(SlotConfig.StudyGroupEditor)
     }
 
     fun onDialogClose() {
@@ -187,7 +171,9 @@ class StudyGroupComponent(
 
     @Parcelize
     sealed class SlotConfig : Parcelable {
-        data class StudyGroupEditor(val studyGroupId: UUID) : SlotConfig()
+        data object StudyGroupEditor : SlotConfig() {
+            private fun readResolve(): Any = StudyGroupEditor
+        }
 
         data object Info : SlotConfig() {
             private fun readResolve(): Any = Info

@@ -65,9 +65,7 @@ fun StudyGroupScreen(component: StudyGroupComponent) {
             }
         }
         HorizontalDivider()
-        HorizontalPager(
-            state = pagerState,
-        ) {
+        HorizontalPager(pagerState) {
             Box(modifier = Modifier.fillMaxSize()) {
                 childPages.items[childPages.selectedIndex].instance?.let { child ->
                     when (child) {

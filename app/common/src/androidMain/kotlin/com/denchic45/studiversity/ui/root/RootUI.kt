@@ -7,8 +7,8 @@ import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.ui.admindashboard.AdminDashboardScreen
 import com.denchic45.studiversity.ui.course.CourseScreen
 import com.denchic45.studiversity.ui.courseeditor.CourseEditorScreen
+import com.denchic45.studiversity.ui.coursematerial.CourseMaterialScreen
 import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
-import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
 import com.denchic45.studiversity.ui.navigator.RootChild
 import com.denchic45.studiversity.ui.profile.ProfileScreen
@@ -31,7 +31,7 @@ fun RootStackScreen(
             is RootChild.YourCourseWorks -> TODO()
             is RootChild.CourseEditor -> CourseEditorScreen(child.component)
             is RootChild.CourseWork -> CourseWorkScreen(child.component)
-            is RootChild.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
+            is RootChild.CourseMaterial -> CourseMaterialScreen(child.component)
             is RootChild.Profile -> ProfileScreen(component = child.component)
         }
     }

@@ -28,109 +28,67 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
+import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.arkivanov.decompose.router.pages.ChildPages
 import com.denchic45.studiversity.api.course.model.CourseResponse
-import com.denchic45.studiversity.domain.resource.Forbidden
+import com.denchic45.studiversity.domain.resource.ClientError
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.hideAppBar
 import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.component.TabIndicator
-import com.denchic45.studiversity.ui.courseeditor.CourseEditorScreen
 import com.denchic45.studiversity.ui.courseelements.CourseElementsScreen
-import com.denchic45.studiversity.ui.coursematerial.CourseMaterialScreen
-import com.denchic45.studiversity.ui.coursematerialeditor.CourseMaterialEditorScreen
 import com.denchic45.studiversity.ui.coursemembers.CourseMembersScreen
 import com.denchic45.studiversity.ui.coursestudygroups.CourseStudyGroupsScreen
 import com.denchic45.studiversity.ui.coursetimetable.CourseTimetableScreen
-import com.denchic45.studiversity.ui.coursetopics.CourseTopicsScreen
-import com.denchic45.studiversity.ui.coursework.CourseWorkScreen
-import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorScreen
 import com.denchic45.studiversity.ui.theme.spacing
+import io.ktor.http.*
 import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalDecomposeApi::class)
 @Composable
 fun CourseScreen(component: CourseComponent) {
     val course by component.course.collectAsState()
     val allowEdit by component.allowEdit.collectAsState(false)
-    val children = component.children
+    val childPages by component.childPages.subscribeAsState()
 
-    val childStack by component.childStack.subscribeAsState()
-    val childSidebar by component.childSidebar.subscribeAsState()
-
-    Children(stack = component.childStack) {
-        when (val child = childStack.active.instance) {
-            is CourseComponent.Child.Topics -> CourseTopicsScreen(child.component)
-
-            is CourseComponent.Child.CourseEditor -> CourseEditorScreen(child.component)
-
-            is CourseComponent.Child.CourseWork -> CourseWorkScreen(child.component)
-
-            is CourseComponent.Child.CourseWorkEditor -> CourseWorkEditorScreen(child.component)
-
-            is CourseComponent.Child.CourseStudyGroupsEditor -> CourseStudyGroupsScreen(child.component)
-
-            is CourseComponent.Child.CourseMaterial -> CourseMaterialScreen(child.component)
-
-            is CourseComponent.Child.CourseWorMaterialEditor -> CourseMaterialEditorScreen(child.component)
-            CourseComponent.Child.None -> {
-                hideAppBar()
-                CourseContent(
-                    course = course,
-                    allowEdit = allowEdit,
-                    children = children,
-                    onBackClick = component::onCloseClick,
-                    onCourseEditClick = component::onCourseEditClick,
-                    onStudyGroupsEditClick = component::onStudyGroupsEditClick,
-                    onTopicsEditClick = component::onOpenTopicsClick,
-                    onAddMemberClick = component::onAddMemberClick,
-                    onAddWorkClick = component::onAddWorkClick,
-                    onAddMaterialClick = component::onAddMaterialClick
-                )
-            }
-        }
-    }
-
-    childSidebar.child?.let {
-        when (val child = it.instance) {
-//            is CourseComponent.SidebarChild.ScopeMemberEditor -> ScopeMemberEditorScreen(child.component)
-        }
-    } ?: run {
-        hideAppBar()
-    }
+    hideAppBar()
+    CourseContent(
+        courseResource = course,
+        allowEdit = allowEdit,
+        childPages = childPages,
+        onBackClick = component::onCloseClick,
+        onCourseEditClick = component::onEditClick,
+        onTopicsEditClick = component::onTopicsClick,
+        onAddWorkClick = component::onAddWorkClick,
+        onAddMaterialClick = component::onAddMaterialClick
+    )
 }
 
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalFoundationApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalDecomposeApi::class)
 @Composable
 fun CourseContent(
-    course: Resource<CourseResponse>,
+    courseResource: Resource<CourseResponse>,
     allowEdit: Boolean,
-    children: List<CourseComponent.TabChild>,
+    childPages: ChildPages<CourseComponent.TabConfig, CourseComponent.TabChild>,
     onBackClick: () -> Unit,
     onCourseEditClick: () -> Unit,
-    onStudyGroupsEditClick: () -> Unit,
     onTopicsEditClick: () -> Unit,
-    onAddMemberClick: () -> Unit,
     onAddWorkClick: () -> Unit,
     onAddMaterialClick: () -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-        rememberTopAppBarState()
-    )
-
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     var fabExpanded by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 title = {
-                    course.onSuccess {
+                    courseResource.onSuccess {
                         Text(text = it.name)
                     }
                 },
@@ -157,20 +115,6 @@ fun CourseContent(
                                     menuExpanded = false
                                     onTopicsEditClick()
                                 },
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Управлять группами") },
-                                onClick = {
-                                    menuExpanded = false
-                                    onStudyGroupsEditClick()
-                                },
-                            )
-                            DropdownMenuItem(
-                                text = { Text(text = "Добавить участника") },
-                                onClick = {
-                                    menuExpanded = false
-                                    onAddMemberClick()
-                                }
                             )
                         }
                     }
@@ -277,19 +221,20 @@ fun CourseContent(
             }
         }
     ) { paddingValues ->
-        ResourceContent(resource = course, onError = {
+        ResourceContent(resource = courseResource, onError = {
             when (it) {
-                Forbidden -> {
-                    IconTitleBox(
-                        icon = {
-                            Icon(
-                                Icons.Outlined.Lock,
-                                "forbidden",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        },
-                        title = { Text("У вас нет доступа") }
-                    )
+                is ClientError -> {
+                    if (it.response.code == HttpStatusCode.Forbidden.value)
+                        IconTitleBox(
+                            icon = {
+                                Icon(
+                                    Icons.Outlined.Lock,
+                                    "forbidden",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            },
+                            title = { Text("У вас нет доступа") }
+                        )
                 }
 
                 else -> {
@@ -304,15 +249,15 @@ fun CourseContent(
         }) {
             Column(Modifier.padding(paddingValues)) {
                 val coroutineScope = rememberCoroutineScope()
-                val pagerState = rememberPagerState(pageCount = children::size)
+                val pagerState = rememberPagerState(pageCount = childPages.items::size)
 
                 TabRow(selectedTabIndex = pagerState.currentPage,
                     indicator = { positions ->
                         TabIndicator(Modifier.tabIndicatorOffset(positions[pagerState.currentPage]))
                     }) {
-                    children.forEachIndexed { index, child ->
+                    childPages.items.forEachIndexed { index, child ->
                         Tab(
-                            text = { Text(child.title) },
+                            text = { Text(child.configuration.tabTitle()) },
                             selected = pagerState.currentPage == index,
                             onClick = {
                                 coroutineScope.launch {
@@ -322,22 +267,26 @@ fun CourseContent(
                         )
                     }
                 }
-                HorizontalPager(
-                    state = pagerState
-                ) {
+                HorizontalPager(state = pagerState) {
                     Box(modifier = Modifier.fillMaxHeight()) {
-                        when (val child = children[it]) {
-                            is CourseComponent.TabChild.Elements -> CourseElementsScreen(
-                                component = child.component
-                            )
+                        childPages.items[childPages.selectedIndex].instance?.let { child ->
+                            when (child) {
+                                is CourseComponent.TabChild.Elements -> {
+                                    CourseElementsScreen(child.component)
+                                }
 
-                            is CourseComponent.TabChild.Members -> CourseMembersScreen(
-                                component = child.component
-                            )
+                                is CourseComponent.TabChild.Members -> {
+                                    CourseMembersScreen(child.component)
+                                }
 
-                            is CourseComponent.TabChild.Timetable -> CourseTimetableScreen(
-                                component = child.component
-                            )
+                                is CourseComponent.TabChild.Timetable -> {
+                                    CourseTimetableScreen(child.component)
+                                }
+
+                                is CourseComponent.TabChild.StudyGroups -> {
+                                    CourseStudyGroupsScreen(child.component)
+                                }
+                            }
                         }
                     }
                 }

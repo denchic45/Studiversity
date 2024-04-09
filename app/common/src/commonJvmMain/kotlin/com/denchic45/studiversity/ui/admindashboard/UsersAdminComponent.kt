@@ -1,11 +1,7 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.ChildSlot
-import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
-import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
@@ -21,7 +17,7 @@ import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class UsersAdminComponent(
@@ -49,8 +45,7 @@ class UsersAdminComponent(
             }
         })
 
-    override val searchableComponent =
-        userChooserComponent({ user -> user?.let(::onSelect) }, componentContext)
+    override val searchableComponent = userChooserComponent({ user -> user?.let(::onSelect) }, componentContext)
 
     override fun onSelect(item: UserItem) {
         rootNavigation.push(RootConfig.Profile(item.id))

@@ -2,6 +2,13 @@ package com.denchic45.studiversity.ui.coursework
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
+import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.domain.resource.mapResource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.stateInResource
@@ -12,10 +19,11 @@ import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.coursework.details.CourseWorkDetailsComponent
 import com.denchic45.studiversity.ui.coursework.submissions.CourseWorkSubmissionsComponent
 import com.denchic45.studiversity.ui.coursework.yourSubmission.YourSubmissionComponent
+import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
+import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.ui.uiTextOf
 import com.denchic45.studiversity.util.componentScope
-import com.denchic45.studiversity.api.role.model.Capability
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -42,9 +50,15 @@ class CourseWorkComponent(
         workId: UUID,
         ComponentContext,
     ) -> YourSubmissionComponent,
-
+    courseWorkEditorComponent: (
+        onFinish: () -> Unit,
+        courseId: UUID,
+        workId: UUID?,
+        topicId: UUID?,
+        ComponentContext,
+    ) -> CourseWorkEditorComponent,
     @Assisted
-    private val onEditorOpen: (courseId: UUID, elementId: UUID?) -> Unit,
+    private val rootNavigator: RootNavigator,
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
@@ -81,6 +95,22 @@ class CourseWorkComponent(
         childContext("Details")
     )
 
+    private val slotNavigation = SlotNavigation<SlotConfig>()
+    val childSlot = childSlot(slotNavigation,
+        childFactory = { config, context ->
+            when (config) {
+                SlotConfig.CourseWorkEditor -> SlotChild.CourseWorkEditor(
+                    courseWorkEditorComponent(
+                        { slotNavigation.dismiss() },
+                        courseId,
+                        workId,
+                        null,
+                        context
+                    )
+                )
+            }
+        })
+
     val allowEditWork = capabilities.mapResource {
         it.hasCapability(Capability.WriteCourseElements)
     }.stateInResource(componentScope)
@@ -105,7 +135,7 @@ class CourseWorkComponent(
     }.stateInResource(componentScope)
 
     fun onEditClick() {
-        onEditorOpen(courseId, workId)
+        slotNavigation.activate(SlotConfig.CourseWorkEditor)
     }
 
     fun onDeleteClick() {
@@ -130,5 +160,16 @@ class CourseWorkComponent(
     sealed class Child(val title: String) {
         class Details(val component: CourseWorkDetailsComponent) : Child("Задание")
         class Submissions(val component: CourseWorkSubmissionsComponent) : Child("Ответы")
+    }
+
+    @Parcelize
+    sealed class SlotConfig : Parcelable {
+        data object CourseWorkEditor : SlotConfig() {
+            private fun readResolve(): Any = CourseWorkEditor
+        }
+    }
+
+    sealed class SlotChild {
+        class CourseWorkEditor(val component: CourseWorkEditorComponent) : SlotChild()
     }
 }

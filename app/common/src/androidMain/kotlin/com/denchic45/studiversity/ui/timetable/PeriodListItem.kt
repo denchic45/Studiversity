@@ -8,15 +8,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.decode.SvgDecoder
-import coil.request.ImageRequest
-import coil3.compose.rememberAsyncImagePainter
 import com.denchic45.studiversity.api.room.model.RoomResponse
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.data.service.model.PeriodTime
@@ -64,26 +60,26 @@ fun PeriodListItem(
                 )
                 when (item) {
                     is PeriodItem -> {
-                        val painter = rememberAsyncImagePainter(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .decoderFactory(SvgDecoder.Factory())
-                                .data(
-                                    when (val details = item.details) {
-                                        is PeriodDetails.Event -> details.iconUrl
-                                        is PeriodDetails.Lesson -> details.course.subject?.iconUrl
-                                    }
-                                )
-                                .build()
-                        )
-                        Icon(
-                            painter = painter,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier
-                                .padding(horizontal = MaterialTheme.spacing.normal)
-                                .size(32.dp)
-
-                        )
+//                        val painter = rememberAsyncImagePainter(
+//                            model = ImageRequest.Builder(LocalContext.current)
+//                                .decoderFactory(SvgDecoder.Factory())
+//                                .data(
+//                                    when (val details = item.details) {
+//                                        is PeriodDetails.Event -> details.iconUrl
+//                                        is PeriodDetails.Lesson -> details.course.subject?.iconUrl
+//                                    }
+//                                )
+//                                .build()
+//                        )
+//                        Icon(
+//                            painter = painter,
+//                            contentDescription = null,
+//                            tint = MaterialTheme.colorScheme.secondary,
+//                            modifier = Modifier
+//                                .padding(horizontal = MaterialTheme.spacing.normal)
+//                                .size(32.dp)
+//
+//                        )
                         Column(Modifier.weight(1f)) {
                             when (val details = item.details) {
                                 is PeriodDetails.Lesson -> {
@@ -200,8 +196,7 @@ fun PeriodItemPreview() {
                         SubjectItem(
                             UUID.randomUUID(),
                             "Математика",
-                            "Матем",
-                            "https://coil-kt.github.io/coil/images/coil_logo_black.svg"
+                            "Матем"
                         ),
                         false
                     )

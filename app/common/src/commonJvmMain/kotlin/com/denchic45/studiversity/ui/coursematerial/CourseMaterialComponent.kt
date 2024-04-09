@@ -1,12 +1,19 @@
 package com.denchic45.studiversity.ui.coursematerial
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.essenty.parcelable.Parcelable
+import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.course.material.model.CourseMaterialResponse
 import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.domain.resource.*
 import com.denchic45.studiversity.domain.usecase.*
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
 import com.denchic45.studiversity.ui.confirm.ConfirmState
+import com.denchic45.studiversity.ui.coursematerialeditor.CourseMaterialEditorComponent
 import com.denchic45.studiversity.ui.model.AttachmentItem
 import com.denchic45.studiversity.ui.model.FileState
 import com.denchic45.studiversity.ui.uiTextOf
@@ -21,29 +28,49 @@ import java.util.*
 
 @Inject
 class CourseMaterialComponent(
+    private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val findCourseMaterialUseCase: FindCourseMaterialUseCase,
     findCourseMaterialAttachmentsUseCase: FindCourseMaterialAttachmentsUseCase,
     private val downloadFileUseCase: DownloadFileUseCase,
-    private val confirmDialogInteractor: ConfirmDialogInteractor,
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val removeCourseElementUseCase: RemoveCourseElementUseCase,
+    courseMaterialEditorComponent: (
+        onFinish: (CourseMaterialResponse) -> Unit,
+        courseId: UUID,
+        materialId: UUID?,
+        topicId: UUID?,
+        ComponentContext,
+    ) -> CourseMaterialEditorComponent,
     @Assisted
     private val onFinish: () -> Unit,
     @Assisted
-    private val onEditorOpen: (courseId: UUID, elementId: UUID?) -> Unit,
-    @Assisted
     private val courseId: UUID,
     @Assisted
-    private val elementId: UUID,
+    private val materialId: UUID,
     @Assisted
     private val componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    private val observedCourseMaterial = flow {
-        emit(findCourseMaterialUseCase( elementId))
-    }.stateInResource(componentScope, SharingStarted.Eagerly)
+    private val slotNavigation = SlotNavigation<SlotConfig>()
+    val childSlot = childSlot(slotNavigation,
+        childFactory = { config, context ->
+            when (config) {
+                SlotConfig.CourseMaterialEditor -> SlotChild.CourseMaterialEditor(
+                    courseMaterialEditorComponent(
+                        { slotNavigation.dismiss() },
+                        courseId,
+                        materialId,
+                        null,
+                        context
+                    )
+                )
+            }
+        })
 
+    private val observedCourseMaterial = flow {
+        emit(findCourseMaterialUseCase(materialId))
+    }.stateInResource(componentScope, SharingStarted.Eagerly)
     val courseMaterial = MutableStateFlow<Resource<CourseMaterialResponse>>(resourceOf())
 
     val refreshing = MutableStateFlow(false)
@@ -57,12 +84,12 @@ class CourseMaterialComponent(
     fun onRefresh() {
         componentScope.launch {
             refreshing.update { true }
-            courseMaterial.update { findCourseMaterialUseCase( elementId) }
+            courseMaterial.update { findCourseMaterialUseCase(materialId) }
             refreshing.update { false }
         }
     }
 
-    val attachments = findCourseMaterialAttachmentsUseCase( elementId)
+    val attachments = findCourseMaterialAttachmentsUseCase(materialId)
         .stateInResource(componentScope, SharingStarted.Eagerly)
 
     private val capabilities = checkUserCapabilitiesInScopeUseCase(
@@ -96,7 +123,7 @@ class CourseMaterialComponent(
     }
 
     fun onEditClick() {
-        onEditorOpen(courseId, elementId)
+        slotNavigation.activate(SlotConfig.CourseMaterialEditor)
     }
 
     fun onDeleteClick() {
@@ -109,12 +136,23 @@ class CourseMaterialComponent(
 
         componentScope.launch {
             if (confirmDialogInteractor.receiveConfirm()) {
-                removeCourseElementUseCase(courseId, elementId).onSuccess {
+                removeCourseElementUseCase(courseId, materialId).onSuccess {
                     withContext(Dispatchers.Main) {
                         onFinish()
                     }
                 }
             }
         }
+    }
+
+    @Parcelize
+    sealed class SlotConfig : Parcelable {
+        data object CourseMaterialEditor : SlotConfig() {
+            private fun readResolve(): Any = CourseMaterialEditor
+        }
+    }
+
+    sealed class SlotChild {
+        class CourseMaterialEditor(val component: CourseMaterialEditorComponent) : SlotChild()
     }
 }

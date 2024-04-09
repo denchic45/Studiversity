@@ -1,6 +1,9 @@
 package com.denchic45.studiversity.ui.coursetopics
 
 import com.arkivanov.decompose.ComponentContext
+import com.denchic45.studiversity.api.course.topic.model.CourseTopicResponse
+import com.denchic45.studiversity.api.course.topic.model.CreateCourseTopicRequest
+import com.denchic45.studiversity.api.course.topic.model.UpdateCourseTopicRequest
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.resourceOf
@@ -11,17 +14,14 @@ import com.denchic45.studiversity.domain.usecase.UpdateCourseTopicUseCase
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
 import com.denchic45.studiversity.util.componentScope
 import com.denchic45.studiversity.util.copy
-import com.denchic45.studiversity.util.swap
-import com.denchic45.studiversity.api.course.topic.model.CourseTopicResponse
-import com.denchic45.studiversity.api.course.topic.model.CreateCourseTopicRequest
-import com.denchic45.studiversity.api.course.topic.model.UpdateCourseTopicRequest
 import com.denchic45.studiversity.util.optPropertyOf
+import com.denchic45.studiversity.util.swap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CourseTopicsComponent(
@@ -127,5 +127,4 @@ class CourseTopicsComponent(
             position = -1
         }
     }
-
 }

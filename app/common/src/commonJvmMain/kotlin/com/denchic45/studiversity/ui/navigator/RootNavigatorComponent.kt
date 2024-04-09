@@ -1,21 +1,15 @@
 package com.denchic45.studiversity.ui.navigator
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.StackNavigator
-import com.arkivanov.decompose.router.stack.bringToFront
-import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.ui.admindashboard.AdminDashboardComponent
 import com.denchic45.studiversity.ui.course.CourseComponent
 import com.denchic45.studiversity.ui.courseeditor.CourseEditorComponent
+import com.denchic45.studiversity.ui.coursematerial.CourseMaterialComponent
 import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
-import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
 import com.denchic45.studiversity.ui.navigation.ChildrenContainerChild
 import com.denchic45.studiversity.ui.navigation.RootStackChildrenContainer
 import com.denchic45.studiversity.ui.profile.ProfileComponent
@@ -24,7 +18,7 @@ import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesComponent
 import com.denchic45.studiversity.ui.yourworks.YourCourseWorksComponent
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 
 @Inject
@@ -49,12 +43,18 @@ class RootNavigatorComponent(
         ComponentContext
     ) -> CourseEditorComponent,
     courseWorkComponent: (
-        onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
+        RootNavigator,
         onFinish: () -> Unit,
         courseId: UUID,
         elementId: UUID,
         ComponentContext,
     ) -> CourseWorkComponent,
+    courseMaterialComponent: (
+        onFinish: () -> Unit,
+        courseId: UUID,
+        materialId: UUID,
+        ComponentContext,
+    ) -> CourseMaterialComponent,
     @Assisted
     initialConfiguration: RootConfig,
     @Assisted
@@ -107,7 +107,7 @@ class RootNavigatorComponent(
 
                 is RootConfig.CourseWork -> RootChild.CourseWork(
                     courseWorkComponent(
-                        { _, workId -> navigation.push(RootConfig.CourseWorkEditor(workId)) },
+                        navigation,
                         navigation::pop,
                         config.courseId,
                         config.workId,
@@ -115,7 +115,14 @@ class RootNavigatorComponent(
                     )
                 )
 
-                is RootConfig.CourseWorkEditor -> TODO()
+                is RootConfig.CourseMaterial -> RootChild.CourseMaterial(
+                    courseMaterialComponent(
+                        { navigation.pop() },
+                        config.courseId,
+                        config.materialId,
+                        context
+                    )
+                )
             }
         }
     )
@@ -149,7 +156,9 @@ sealed interface RootConfig : Parcelable {
 
     data class CourseWork(val courseId: UUID, val workId: UUID) : RootConfig
 
-    data class CourseWorkEditor(val workId: UUID?) : RootConfig
+    data class CourseMaterial(val courseId: UUID, val materialId: UUID) : RootConfig
+
+//    data class CourseWorkEditor(val workId: UUID?) : RootConfig
 }
 
 sealed interface RootChild {
@@ -185,7 +194,9 @@ sealed interface RootChild {
 
     class CourseWork(val component: CourseWorkComponent) : RootChild
 
-    class CourseWorkEditor(val component: CourseWorkEditorComponent) : RootChild
+    class CourseMaterial(val component: CourseMaterialComponent) : RootChild
+
+//    class CourseWorkEditor(val component: CourseWorkEditorComponent) : RootChild
 }
 
 typealias RootNavigator = StackNavigator<RootConfig>

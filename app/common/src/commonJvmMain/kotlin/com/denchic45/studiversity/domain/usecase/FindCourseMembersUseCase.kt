@@ -1,8 +1,9 @@
 package com.denchic45.studiversity.domain.usecase
 
-import com.denchic45.studiversity.api.member.ScopeMembers
+import com.denchic45.studiversity.api.member.ScopeMember
 import com.denchic45.studiversity.data.repository.CourseMemberRepository
 import com.denchic45.studiversity.domain.resource.Resource
+import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
@@ -12,7 +13,7 @@ class FindCourseMembersUseCase(
     private val courseMemberRepository: CourseMemberRepository
 ) {
 
-    suspend operator fun invoke(scopeId: UUID): Resource<ScopeMembers> {
+    operator fun invoke(scopeId: UUID): Flow<Resource<List<ScopeMember>>> {
         return courseMemberRepository.findMembersByCourseId(scopeId)
     }
 }

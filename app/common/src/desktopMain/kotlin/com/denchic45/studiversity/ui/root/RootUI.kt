@@ -20,7 +20,6 @@ fun RootScreen(component: RootStackChildrenContainer) {
     Children(childStack) {
         when (val child = it.instance) {
             is RootChild.YourTimetables -> YourTimetablesScreen(child.component)
-//            is RootChild.YourStudyGroups -> YourStudyGroupsScreen(child.component)
             is RootChild.StudyGroup -> StudyGroupScreen(child.component)
             is RootChild.Course -> CourseScreen(child.component)
             is RootChild.Profile -> ProfileScreen(child.component)
@@ -28,8 +27,7 @@ fun RootScreen(component: RootStackChildrenContainer) {
             is RootChild.YourCourseWorks -> YourWorksScreen(child.component)
             is RootChild.CourseEditor -> TODO()
             is RootChild.CourseWork -> TODO()
-            is RootChild.CourseWorkEditor -> TODO()
-
+            is RootChild.CourseMaterial -> TODO()
         }
     }
 }

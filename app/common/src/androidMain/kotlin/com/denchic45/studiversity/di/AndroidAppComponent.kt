@@ -9,9 +9,8 @@ import com.denchic45.studiversity.data.storage.AttachmentStorage
 import com.denchic45.studiversity.data.workmanager.AppWorkerFactory
 import com.denchic45.studiversity.data.workmanager.DownloadWorker
 import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
-import com.denchic45.studiversity.ui.fab.FabInteractor
 import com.denchic45.studiversity.util.SystemDirs
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
@@ -55,7 +54,7 @@ abstract class AndroidAppComponent(
 
     abstract val workFactory: AppWorkerFactory
 
-    abstract val fabInteractor: FabInteractor
+//    abstract val fabInteractor: FabInteractor
 
     abstract val confirmDialogInteractor: ConfirmDialogInteractor
 }

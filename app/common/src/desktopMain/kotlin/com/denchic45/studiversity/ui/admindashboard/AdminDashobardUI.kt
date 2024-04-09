@@ -1,34 +1,14 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.ProvideTextStyle
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,9 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
@@ -49,7 +26,6 @@ import com.denchic45.studiversity.ui.ScreenScaffold
 import com.denchic45.studiversity.ui.search.SearchState
 import com.denchic45.studiversity.ui.search.SearchableComponent
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.studiversity.ui.theme.toDrawablePath
 
 @Composable
 fun AdminDashboardScreen(component: AdminDashboardComponent) {
@@ -61,57 +37,49 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
                 AdminListItem(
                     title = "Расписания",
                     selected = childStack.active.instance is AdminDashboardComponent.Child.TimetableFinder,
-                    painter = painterResource("ic_timetable".toDrawablePath()),
-                    contentDescription = "timetables",
                     onClick = component::onTimetableFinderClick
                 )
 
                 AdminListItem(
                     title = "Создать расписание",
                     selected = childStack.active.instance is AdminDashboardComponent.Child.TimetableLoader,
-                    painter = rememberVectorPainter(Icons.Default.AddBox),
-                    contentDescription = "timetables",
                     onClick = component::onTimetableLoaderClick
                 )
 
                 AdminListItem(
                     title = "Курсы",
                     selected = childStack.active.instance is AdminDashboardComponent.Child.Courses,
-                    painter = painterResource("ic_course".toDrawablePath()),
-                    contentDescription = "courses",
                     onClick = component::onCoursesClick
                 )
 
                 AdminListItem(
                     title = "Пользователи",
                     selected = childStack.active.instance is AdminDashboardComponent.Child.Users,
-                    painter = painterResource("ic_user".toDrawablePath()),
-                    contentDescription = "users",
                     onClick = component::onUsersClick
                 )
 
                 AdminListItem(
                     title = "Учебные группы",
                     selected = childStack.active.instance is AdminDashboardComponent.Child.StudyGroups,
-                    painter = painterResource("ic_study_group".toDrawablePath()),
-                    contentDescription = "study groups",
                     onClick = component::onStudyGroupsClick
                 )
 
                 AdminListItem(
                     title = "Предметы",
                     selected = childStack.active.instance is AdminDashboardComponent.Child.Subjects,
-                    painter = painterResource("ic_subject".toDrawablePath()),
-                    contentDescription = "subjects",
                     onClick = component::onSubjectsClick
                 )
 
                 AdminListItem(
                     title = "Специальности",
                     selected = childStack.active.instance is AdminDashboardComponent.Child.Specialties,
-                    painter = painterResource("ic_specialty".toDrawablePath()),
-                    contentDescription = "specialties",
                     onClick = component::onSpecialtiesClick
+                )
+
+                AdminListItem(
+                    title = "Аудитории",
+                    selected = childStack.active.instance is AdminDashboardComponent.Child.Rooms,
+                    onClick = component::onRoomsClick
                 )
             }
         }
@@ -132,7 +100,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
                 is AdminDashboardComponent.Child.StudyGroups -> StudyGroupsAdminScreen(child.component)
                 is AdminDashboardComponent.Child.Subjects -> SubjectsAdminScreen(child.component)
                 is AdminDashboardComponent.Child.Specialties -> SpecialtiesAdminScreen(child.component)
-                is AdminDashboardComponent.Child.Rooms -> TODO()
+                is AdminDashboardComponent.Child.Rooms -> RoomsAdminScreen(child.component)
             }
         }
     }
@@ -142,8 +110,6 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
 fun AdminListItem(
     title: String,
     selected: Boolean,
-    painter: Painter,
-    contentDescription: String,
     onClick: () -> Unit,
 ) {
     NavigationDrawerItem(
@@ -160,7 +126,7 @@ fun <T> AdminSearchScreen(
     emptyQueryContent: (@Composable () -> Unit)? = { StartSearch() },
     emptyResultContent: (@Composable () -> Unit)? = { EmptySearch() },
     searchPlaceholder: String = "Поиск",
-    fabText:String = "Создать",
+    fabText: String = "Создать",
     itemContent: @Composable (T) -> Unit,
 ) {
     SearchContent(

@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.ActionMenuItem2
 import com.denchic45.studiversity.ui.appbar.AppBarContent
@@ -14,7 +15,7 @@ import com.denchic45.studiversity.ui.appbar.updateAnimatedAppBarState
 import com.denchic45.studiversity.ui.search.SubjectChooserScreen
 import com.denchic45.studiversity.ui.uiIconOf
 import com.denchic45.studiversity.ui.uiTextOf
-import java.util.UUID
+import java.util.*
 
 
 @Composable
@@ -62,9 +63,10 @@ fun CourseEditorPreview() {
     CourseEditorContent(
         state = EditingCourse(true).apply {
             name = "Course name"
-            subject = CourseEditorComponent.SelectedSubject(
-                subjectId = UUID.randomUUID(),
-                subjectName = "Subject name"
+            subject = SubjectResponse(
+                id = UUID.randomUUID(),
+                name = "Subject name",
+                shortname = null
             )
         },
         onNameChange = {},
