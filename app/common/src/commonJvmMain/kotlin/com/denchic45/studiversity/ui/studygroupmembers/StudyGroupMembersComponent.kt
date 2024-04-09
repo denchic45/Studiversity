@@ -1,60 +1,41 @@
 package com.denchic45.studiversity.ui.studygroupmembers
 
+import androidx.compose.runtime.Immutable
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.ChildSlot
-import com.arkivanov.decompose.router.slot.SlotNavigation
-import com.arkivanov.decompose.router.slot.activate
-import com.arkivanov.decompose.router.slot.childSlot
-import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.api.role.model.Role
-import com.denchic45.studiversity.domain.model.StudyGroupMembers
 import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.model.toUserItem
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.loadingResource
-import com.denchic45.studiversity.domain.resource.mapResource
-import com.denchic45.studiversity.domain.resource.onSuccess
-import com.denchic45.studiversity.domain.resource.stateInResource
-import com.denchic45.studiversity.domain.usecase.AssignUserRoleInScopeUseCase
-import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
-import com.denchic45.studiversity.domain.usecase.FindStudyGroupMembersUseCase
-import com.denchic45.studiversity.domain.usecase.RemoveStudyGroupMemberUseCase
-import com.denchic45.studiversity.domain.usecase.RemoveUserRoleFromScopeUseCase
+import com.denchic45.studiversity.domain.resource.*
+import com.denchic45.studiversity.domain.usecase.*
+import com.denchic45.studiversity.ui.membereditor.MemberRolesEditorComponent
 import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.util.componentScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class StudyGroupMembersComponent(
     findStudyGroupMembersUseCase: FindStudyGroupMembersUseCase,
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
-    private val inviteStudyGroupMembersComponent: (
-            (Boolean) -> Unit, UUID, ComponentContext
-    ) -> InviteStudyGroupMembersComponent,
-    private val studyGroupMemberEditorComponent: (
-            (Boolean) -> Unit, UUID, UserItem, ComponentContext
-    ) -> StudyGroupMemberEditorComponent,
     private val assignUserRoleInScopeUseCase: AssignUserRoleInScopeUseCase,
     private val removeUserRoleFromScopeUseCase: RemoveUserRoleFromScopeUseCase,
     private val removeStudyGroupMemberUseCase: RemoveStudyGroupMemberUseCase,
+    private val inviteStudyGroupMembersComponent: (
+            (Boolean) -> Unit, UUID, ComponentContext
+    ) -> InviteStudyGroupMembersComponent,
+    private val memberRolesEditorComponent: (
+            (Boolean) -> Unit, UUID, UserItem, ComponentContext
+    ) -> MemberRolesEditorComponent,
     @Assisted
     private val rootNavigator: RootNavigator,
     @Assisted
@@ -90,7 +71,7 @@ class StudyGroupMembersComponent(
                 )
 
                 is SlotConfig.MemberEditor -> SlotChild.MemberEditor(
-                    studyGroupMemberEditorComponent(
+                    memberRolesEditorComponent(
                         { edited ->
                             slotNavigation.dismiss()
                             if (edited) forceUpdate()
@@ -105,12 +86,12 @@ class StudyGroupMembersComponent(
     )
 
     val refreshing = MutableStateFlow(false)
-    val members: MutableStateFlow<Resource<StudyGroupMembers>> = MutableStateFlow(loadingResource())
+    val members: MutableStateFlow<Resource<StudyGroupMembersState>> = MutableStateFlow(loadingResource())
     private val observedMembers = findStudyGroupMembersUseCase(studyGroupId)
         .mapResource { scopeMembers ->
             val curators = scopeMembers.filter { member -> Role.Curator in member.roles }
             val students = scopeMembers.filter { member -> Role.StudyGroupStudent in member.roles }
-            StudyGroupMembers(
+            StudyGroupMembersState(
                 studyGroupId = studyGroupId,
                 curators = curators.map { it.user.toUserItem() },
                 headmanId = scopeMembers.find { member -> Role.Headman in member.roles }?.user?.id,
@@ -185,6 +166,23 @@ class StudyGroupMembersComponent(
     sealed class SlotChild {
         class InviteMembers(val component: InviteStudyGroupMembersComponent) : SlotChild()
 
-        class MemberEditor(val component: StudyGroupMemberEditorComponent) : SlotChild()
+        class MemberEditor(val component: MemberRolesEditorComponent) : SlotChild()
+    }
+}
+
+@Immutable
+data class StudyGroupMembersState(
+    val studyGroupId: UUID,
+    val curators: List<UserItem>,
+    val headmanId: UUID?,
+    val students: List<UserItem>,
+    val otherMembers: List<UserItem>
+) {
+    fun isHeadman(memberId: UUID): Boolean {
+        return headmanId == memberId
+    }
+
+    fun isEmpty(): Boolean {
+        return curators.isEmpty() && students.isEmpty() && otherMembers.isEmpty()
     }
 }

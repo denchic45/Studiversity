@@ -1,32 +1,18 @@
 package com.denchic45.studiversity.ui.coursemembers
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.onLoading
-import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
-import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
-import com.denchic45.studiversity.ui.search.UserListItem
+import com.denchic45.studiversity.ui.ResourceContent
+import com.denchic45.studiversity.ui.component.HeaderItem
+import com.denchic45.studiversity.ui.member.MemberListItem
 import com.denchic45.studiversity.ui.theme.spacing
 import java.util.*
 
@@ -46,54 +32,43 @@ fun CourseMembersScreen(component: CourseMembersComponent) {
 
 @Composable
 fun CourseMembersContent(
-    membersResource: Resource<List<UserItem>>,
+    membersResource: Resource<CourseMembersState>,
     allowEditMembers: Boolean,
     onMemberClick: (UUID) -> Unit,
-    onMemberEditClick: (UUID) -> Unit,
+    onMemberEditClick: (UserItem) -> Unit,
     onMemberRemoveClick: (UUID) -> Unit
 ) {
-
-    val memberTrailingContent: @Composable (UUID) -> Unit = { memberId ->
-        if (allowEditMembers) {
-            var expanded by remember { mutableStateOf(false) }
-            ExpandableDropdownMenu(
-                expanded = expanded,
-                onExpandedChange = { expanded = it }) {
-
-                DropdownMenuItem(
-                    text = { Text("Изменить") },
-                    onClick = {
-                        expanded = false
-                        onMemberEditClick(memberId)
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Удалить") },
-                    onClick = {
-                        expanded = false
-                        onMemberRemoveClick(memberId)
-                    }
-                )
-            }
-        } else Box(Modifier.size(40.dp))
-    }
-
-    membersResource.onSuccess { members ->
-        LazyColumn(contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)) {
-            items(members, key = { it.id }) {
-                UserListItem(
-                    item = it,
-                    modifier = Modifier.clickable { onMemberClick(it.id) },
-                    trailingContent = { memberTrailingContent(it.id) }
-                )
-            }
+    ResourceContent(membersResource) { members ->
+        val memberItem: @Composable (UserItem) -> Unit = { member ->
+            MemberListItem(
+                item = member,
+                allowEdit = allowEditMembers,
+                onClick = { onMemberClick(member.id) },
+                onEditClick = { onMemberEditClick(member) },
+                onRemoveClick = { onMemberRemoveClick(member.id) }
+            )
         }
-    }.onLoading {
-        Box(
-            modifier = Modifier.fillMaxHeight(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
+        LazyColumn(contentPadding = PaddingValues(vertical = MaterialTheme.spacing.normal)) {
+            members.teachers.takeIf(List<UserItem>::isNotEmpty)?.let { teachers ->
+                item { HeaderItem(if (teachers.size == 1) "Преподаватель" else "Преподаватели") }
+                items(teachers, key = { it.id }) { member ->
+                    memberItem(member)
+                }
+            }
+
+            members.students.takeIf(List<UserItem>::isNotEmpty)?.let { students ->
+                item { HeaderItem("Студенты") }
+                items(students, key = { it.id }) { member ->
+                    memberItem(member)
+                }
+            }
+
+            members.otherMembers.takeIf(List<UserItem>::isNotEmpty)?.let { otherMembers ->
+                item { HeaderItem("Другие участники") }
+                items(otherMembers, key = { it.id }) { member ->
+                    memberItem(member)
+                }
+            }
         }
     }
 }

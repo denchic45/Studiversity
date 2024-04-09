@@ -1,30 +1,15 @@
 package com.denchic45.studiversity.ui.studygroupmembers
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.PersonRemove
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.*
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
@@ -35,9 +20,10 @@ import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.confirm.ConfirmDeletionDialog
 import com.denchic45.studiversity.ui.main.AppBarTitle
 import com.denchic45.studiversity.ui.main.CustomAppBar
+import com.denchic45.studiversity.ui.member.MemberListItem
+import com.denchic45.studiversity.ui.membereditor.MemberRolesEditorDialog
 import com.denchic45.studiversity.ui.theme.spacing
-import com.denchic45.studiversity.ui.user.UserListItem
-import java.util.UUID
+import java.util.*
 
 
 @Composable
@@ -53,7 +39,7 @@ fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
             }
 
             is StudyGroupMembersComponent.SlotChild.MemberEditor -> {
-                StudyGroupMemberEditorDialog(child.component)
+                MemberRolesEditorDialog(child.component)
             }
         }
     }
@@ -86,10 +72,8 @@ fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
                             }
                     })
             }) {
-                MemberList(
-                    curators = it.curators,
-                    students = it.students,
-                    otherMembers = it.otherMembers,
+                StudyGroupMembersContent(
+                    state = it,
                     onClick = component::onMemberClick,
                     allowEditMembers = allowEditMembers.takeValueIfSuccess() == true,
                     onMemberEditClick = component::onEditMemberClick,
@@ -101,89 +85,36 @@ fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
 }
 
 @Composable
-private fun MemberListItem(
-    item: UserItem,
-    allowEdit: Boolean,
-    onClick: () -> Unit,
-    onEditClick: () -> Unit,
-    onRemoveClick: () -> Unit,
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isHovered by interactionSource.collectIsHoveredAsState()
-
-    UserListItem(
-        item = item,
-        trailingContent = if (allowEdit) {
-            {
-                if (isHovered) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = onRemoveClick) {
-                            Icon(Icons.Outlined.PersonRemove, null)
-                        }
-
-                        IconButton(onClick = onEditClick) {
-                            Icon(Icons.Outlined.Edit, null)
-                        }
-                    }
-                }
-            }
-        } else null,
-        modifier = Modifier.clickable(
-            onClick = onClick,
-            interactionSource = interactionSource,
-            indication = rememberRipple()
-        )
-    )
-}
-
-@Composable
-fun MemberList(
-    curators: List<UserItem>,
-    students: List<UserItem>,
-    otherMembers: List<UserItem>,
+fun StudyGroupMembersContent(
+    state: StudyGroupMembersState,
     onClick: (UUID) -> Unit,
     allowEditMembers: Boolean,
     onMemberEditClick: (UserItem) -> Unit,
     onMemberRemoveClick: (UUID) -> Unit,
 ) {
+    val memberItem: @Composable (UserItem) -> Unit = {
+        MemberListItem(
+            item = it,
+            allowEdit = allowEditMembers,
+            onClick = { onClick(it.id) },
+            onEditClick = { onMemberEditClick(it) },
+            onRemoveClick = { onMemberRemoveClick(it.id) }
+        )
+    }
     LazyColumn(contentPadding = PaddingValues(bottom = MaterialTheme.spacing.normal)) {
-        if (curators.isNotEmpty()) {
+        state.curators.takeIf(List<UserItem>::isNotEmpty)?.let { curators ->
             item { HeaderItem(if (curators.size == 1) "Куратор" else "Кураторы") }
-            items(curators) {
-                MemberListItem(
-                    item = it,
-                    allowEdit = allowEditMembers,
-                    onClick = { onClick(it.id) },
-                    onEditClick = { onMemberEditClick(it) },
-                    onRemoveClick = { onMemberRemoveClick(it.id) }
-                )
-            }
+            items(curators, key = { it.id }) { memberItem(it) }
         }
 
-        if (students.isNotEmpty()) {
+        state.students.takeIf(List<UserItem>::isNotEmpty)?.let { students ->
             item { HeaderItem("Студенты") }
-            items(students) {
-                MemberListItem(
-                    item = it,
-                    allowEdit = allowEditMembers,
-                    onClick = { onClick(it.id) },
-                    onEditClick = { onMemberEditClick(it) },
-                    onRemoveClick = { onMemberRemoveClick(it.id) }
-                )
-            }
+            items(students, key = { it.id }) { memberItem(it) }
         }
 
-        if (otherMembers.isNotEmpty()) {
+        state.otherMembers.takeIf(List<UserItem>::isNotEmpty)?.let { otherMembers ->
             item { HeaderItem("Другие участники") }
-            items(otherMembers) {
-                MemberListItem(
-                    item = it,
-                    allowEdit = allowEditMembers,
-                    onClick = { onClick(it.id) },
-                    onEditClick = { onMemberEditClick(it) },
-                    onRemoveClick = { onMemberRemoveClick(it.id) }
-                )
-            }
+            items(otherMembers, key = { it.id }) { memberItem(it) }
         }
     }
 }

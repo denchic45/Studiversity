@@ -1,11 +1,9 @@
 package com.denchic45.studiversity.ui.studygroupmembers
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,15 +18,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.common.R
-import com.denchic45.studiversity.domain.model.StudyGroupMembers
 import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
 import com.denchic45.studiversity.ui.ResourceContent
-import com.denchic45.studiversity.ui.component.ExpandableDropdownMenu
 import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.confirm.ConfirmDeletionDialog
-import com.denchic45.studiversity.ui.search.UserListItem
+import com.denchic45.studiversity.ui.member.MemberListItem
+import com.denchic45.studiversity.ui.membereditor.MemberRolesEditorDialog
 import com.denchic45.studiversity.ui.theme.spacing
 import java.util.*
 
@@ -45,7 +42,7 @@ fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
             }
 
             is StudyGroupMembersComponent.SlotChild.MemberEditor -> {
-                StudyGroupMemberEditorDialog(child.component)
+                MemberRolesEditorDialog(child.component)
             }
         }
     }
@@ -78,7 +75,7 @@ fun StudyGroupMembersScreen(component: StudyGroupMembersComponent) {
 
 @Composable
 fun StudyGroupMembersContent(
-    members: StudyGroupMembers,
+    members: StudyGroupMembersState,
     allowEditMembers: Boolean,
     onMemberClick: (UUID) -> Unit,
     onMemberEditClick: (UserItem) -> Unit,
@@ -96,55 +93,30 @@ fun StudyGroupMembersContent(
             },
             title = { Text(text = "Здесь пока еще нет участников") }
         )
-
-    val memberTrailingContent: @Composable (UUID, isStudent: Boolean) -> Unit =
-        { memberId, isStudent ->
-
-        }
+    val memberItem: @Composable (UserItem) -> Unit = { member ->
+        MemberListItem(
+            item = member,
+            allowEdit = allowEditMembers,
+            onClick = { onMemberClick(member.id) },
+            onEditClick = { onMemberEditClick(member) },
+            onRemoveClick = { onMemberRemoveClick(member.id) }
+        )
+    }
 
     LazyColumn(contentPadding = PaddingValues(bottom = MaterialTheme.spacing.medium)) {
         members.curators.takeIf(List<UserItem>::isNotEmpty)?.let { curators ->
             item { HeaderItem(if (curators.size == 1) "Куратор" else "Кураторы") }
-            items(curators) {
-                UserListItem(
-                    item = it,
-                    modifier = Modifier.clickable(onClick = { onMemberClick(it.id) })
-                )
-            }
+            items(curators, key = { it.id }) { memberItem(it) }
         }
-        if (members.students.isNotEmpty()) {
-            item {
-                HeaderItem(name = "Студенты")
-            }
-            items(members.students, key = { it.id }) {
-                UserListItem(
-                    item = it,
-                    modifier = Modifier.clickable { onMemberClick(it.id) },
-                    trailingContent = {
-                        if (allowEditMembers) {
-                            var expanded by remember { mutableStateOf(false) }
-                            ExpandableDropdownMenu(
-                                expanded = expanded,
-                                onExpandedChange = { expanded = it }) {
-                                DropdownMenuItem(
-                                    text = { Text("Изменить") },
-                                    onClick = {
-                                        expanded = false
-                                        onMemberEditClick(it)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Удалить") },
-                                    onClick = {
-                                        expanded = false
-                                        onMemberRemoveClick(it.id)
-                                    }
-                                )
-                            }
-                        }
-                    }
-                )
-            }
+
+        members.students.takeIf(List<UserItem>::isNotEmpty)?.let {
+            item { HeaderItem(name = "Студенты") }
+            items(members.students, key = { it.id }) { memberItem(it) }
+        }
+
+        members.otherMembers.takeIf(List<UserItem>::isNotEmpty)?.let {
+            item { HeaderItem(name = "Другие участники") }
+            items(members.students, key = { it.id }) { memberItem(it) }
         }
     }
 }

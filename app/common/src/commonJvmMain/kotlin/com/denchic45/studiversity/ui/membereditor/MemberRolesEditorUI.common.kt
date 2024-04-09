@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.studygroupmembers
+package com.denchic45.studiversity.ui.membereditor
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -13,7 +13,7 @@ import com.denchic45.studiversity.ui.component.HeaderItem
 import com.denchic45.studiversity.ui.user.UserListItem
 
 @Composable
-fun StudyGroupMemberEditorContent(state: EditingMemberState, onRoleClick: (Role) -> Unit) {
+fun MemberRolesEditorContent(state: EditingMemberState, onRoleClick: (Role) -> Unit) {
     Column {
         UserListItem(state.member)
         HeaderItem("Роли")

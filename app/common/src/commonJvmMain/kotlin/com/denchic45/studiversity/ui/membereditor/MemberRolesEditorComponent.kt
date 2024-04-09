@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.ui.studygroupmembers
+package com.denchic45.studiversity.ui.membereditor
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.toMutableStateList
@@ -19,17 +19,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
-class StudyGroupMemberEditorComponent(
+class MemberRolesEditorComponent(
     findAssignableRolesByUserAndScopeUseCase: FindAssignableRolesByUserAndScopeUseCase,
     findAssignedUserRolesInScopeUseCase: FindAssignedUserRolesInScopeUseCase,
     private val assignRolesToUserInScopeUseCase: AssignRolesToUserInScopeUseCase,
     @Assisted
     private val onFinish: (Boolean) -> Unit,
     @Assisted
-    private val studyGroupId: UUID,
+    private val scopeId: UUID,
     @Assisted
     private val userItem: UserItem,
     @Assisted
@@ -37,8 +37,8 @@ class StudyGroupMemberEditorComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
     val stateResource = combine(
-        findAssignableRolesByUserAndScopeUseCase(null, studyGroupId),
-        findAssignedUserRolesInScopeUseCase(userItem.id, studyGroupId)
+        findAssignableRolesByUserAndScopeUseCase(null, scopeId),
+        findAssignedUserRolesInScopeUseCase(userItem.id, scopeId)
     ) { assignableRoles, assignedRoles ->
         bindResources {
             EditingMemberState(userItem, assignableRoles.bind(), assignedRoles.bind().roles)
@@ -58,7 +58,7 @@ class StudyGroupMemberEditorComponent(
         componentScope.launch {
             assignRolesToUserInScopeUseCase(
                 userItem.id,
-                studyGroupId,
+                scopeId,
                 state.assignedRoles.map(Role::id)
             ).onSuccess {
                 withContext(Dispatchers.Main) {
