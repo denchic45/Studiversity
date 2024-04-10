@@ -24,6 +24,7 @@ import java.util.*
 @Inject
 class RootNavigatorComponent(
     yourTimetablesComponent: (onStudyGroupOpen: (UUID) -> Unit, ComponentContext) -> YourTimetablesComponent,
+    yourCourseWorksComponent: (RootNavigator, ComponentContext) -> YourCourseWorksComponent,
     profileComponent: (RootNavigator, UUID, ComponentContext) -> ProfileComponent,
     courseComponent: (
         onFinish: () -> Unit,
@@ -96,7 +97,10 @@ class RootNavigatorComponent(
                     )
                 )
 
-                RootConfig.YourCourseWorks -> TODO()
+                RootConfig.YourCourseWorks -> RootChild.YourCourseWorks(
+                    yourCourseWorksComponent(navigation, context)
+                )
+
                 RootConfig.AdminDashboard -> RootChild.AdminDashboard(
                     adminDashboardComponent(navigation, context)
                 )
@@ -134,10 +138,6 @@ sealed interface RootConfig : Parcelable {
         private fun readResolve(): Any = YourTimetables
     }
 
-//    data object YourStudyGroups : RootConfig {
-//        private fun readResolve(): Any = YourStudyGroups
-//    }
-
     data object YourCourseWorks : RootConfig {
         private fun readResolve(): Any = YourCourseWorks
     }
@@ -157,18 +157,12 @@ sealed interface RootConfig : Parcelable {
     data class CourseWork(val courseId: UUID, val workId: UUID) : RootConfig
 
     data class CourseMaterial(val courseId: UUID, val materialId: UUID) : RootConfig
-
-//    data class CourseWorkEditor(val workId: UUID?) : RootConfig
 }
 
 sealed interface RootChild {
     class YourTimetables(
         override val component: YourTimetablesComponent,
     ) : RootChild, ChildrenContainerChild
-
-//    class YourStudyGroups(
-//        override val component: StudyGroupComponent,
-//    ) : RootChild, ChildrenContainerChild
 
     class YourCourseWorks(
         override val component: YourCourseWorksComponent,
@@ -195,8 +189,6 @@ sealed interface RootChild {
     class CourseWork(val component: CourseWorkComponent) : RootChild
 
     class CourseMaterial(val component: CourseMaterialComponent) : RootChild
-
-//    class CourseWorkEditor(val component: CourseWorkEditorComponent) : RootChild
 }
 
 typealias RootNavigator = StackNavigator<RootConfig>

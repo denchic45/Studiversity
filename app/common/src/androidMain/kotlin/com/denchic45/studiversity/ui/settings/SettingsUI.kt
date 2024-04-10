@@ -3,18 +3,14 @@ package com.denchic45.studiversity.ui.settings
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.AccountBox
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.Logout
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material.icons.outlined.Colorize
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.VerifiedUser
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -31,8 +27,8 @@ fun SettingsScreen(component: SettingsComponent) {
             TopAppBar(
                 title = { Text(text = "Настройки") },
                 navigationIcon = {
-                    IconButton(onClick = { current.onBackPressedDispatcher.onBackPressed() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+                    IconButton(onClick = current.onBackPressedDispatcher::onBackPressed) {
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back")
                     }
                 }
             )
@@ -43,22 +39,27 @@ fun SettingsScreen(component: SettingsComponent) {
                 onClick = component::onAccountClick
             )
             CustomListItem(
+                title = "Безопасность и вход",
+                painter = rememberVectorPainter(Icons.Outlined.VerifiedUser),
+                contentDescription = "Security",
+                onClick = component::onSecurityClick
+            )
+            CustomListItem(
                 title = "Уведомления",
-                painter = rememberVectorPainter(Icons.Outlined.AccountBox),
+                painter = rememberVectorPainter(Icons.Outlined.Notifications),
                 contentDescription = "Notifications",
                 onClick = component::onNotificationsClick
             )
             CustomListItem(
-                title = "Тема",
-                subtitle = "По умолчанию (брать из настроек)",
-                painter = rememberVectorPainter(Icons.Outlined.DarkMode),
-                contentDescription = "Theme picker",
+                title = "Внешний вид",
+                painter = rememberVectorPainter(Icons.Outlined.Colorize),
+                contentDescription = "Appearance",
                 onClick = component::onThemePickerClick
             )
-            Divider()
+            HorizontalDivider()
             CustomListItem(
                 title = "Выйти",
-                painter = rememberVectorPainter(Icons.Outlined.Logout),
+                painter = rememberVectorPainter(Icons.AutoMirrored.Outlined.Logout),
                 contentDescription = "Logout",
                 onClick = component::onSignOutClick
             )

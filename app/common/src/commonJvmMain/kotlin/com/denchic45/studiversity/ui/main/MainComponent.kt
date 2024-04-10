@@ -5,15 +5,7 @@ import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
-import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.active
-import com.arkivanov.decompose.router.stack.bringToFront
-import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.value.Value
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import com.arkivanov.decompose.router.stack.*
 import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.domain.MainInteractor
 import com.denchic45.studiversity.domain.resource.onSuccess
@@ -31,18 +23,14 @@ import com.denchic45.studiversity.ui.root.YourStudyGroupsRootComponent
 import com.denchic45.studiversity.ui.root.YourTimetablesRootComponent
 import com.denchic45.studiversity.ui.schedule.ScheduleComponent
 import com.denchic45.studiversity.ui.settings.SettingsComponent
+import com.denchic45.studiversity.util.UUIDSerializer
 import com.denchic45.studiversity.util.componentScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class MainComponent(
@@ -63,8 +51,9 @@ class MainComponent(
 
     private val componentScope = componentScope()
 
-    val stack: Value<ChildStack<Config, Child>> = childStack(
+    val stack = childStack(
         source = navigation,
+        serializer = Config.serializer(),
         handleBackButton = true,
         initialConfiguration = Config.YourTimetables,
         childFactory = { config, context ->
@@ -89,6 +78,7 @@ class MainComponent(
 
     val childSlot = childSlot(
         source = slotNavigation,
+        serializer = SlotConfig.serializer(),
         handleBackButton = true,
         key = "MainChildSlot"
     ) { config, context ->
@@ -207,27 +197,24 @@ class MainComponent(
         ).count { it } > 1
     }
 
-    @Parcelize
-    sealed interface Config : Parcelable {
+    @Serializable
+    sealed interface Config {
 
-        data object YourTimetables : Config {
-            private fun readResolve(): Any = YourTimetables
-        }
+        @Serializable
+        data object YourTimetables : Config
 
-        data class YourStudyGroups(val studyGroupId: UUID) : Config
+        @Serializable
+        data class YourStudyGroups(@Serializable(UUIDSerializer::class) val studyGroupId: UUID) : Config
 
-        data object YourCourseWorks : Config {
-            private fun readResolve(): Any = YourCourseWorks
-        }
+        @Serializable
+        data object YourCourseWorks : Config
 
-        data object AdminDashboard : Config {
-            private fun readResolve(): Any = AdminDashboard
-        }
+        @Serializable
+        data object AdminDashboard : Config
     }
 
 
     sealed interface Child {
-
         val component: RootStackChildrenContainer
 
         class YourTimetables(
@@ -247,15 +234,13 @@ class MainComponent(
         ) : Child
     }
 
-    @Parcelize
-    sealed interface SlotConfig : Parcelable {
-        data object Schedule : SlotConfig {
-            private fun readResolve(): Any = Schedule
-        }
+    @Serializable
+    sealed interface SlotConfig {
+        @Serializable
+        data object Schedule : SlotConfig
 
-        data object Settings : SlotConfig {
-            private fun readResolve(): Any = Settings
-        }
+        @Serializable
+        data object Settings : SlotConfig
 
     }
 

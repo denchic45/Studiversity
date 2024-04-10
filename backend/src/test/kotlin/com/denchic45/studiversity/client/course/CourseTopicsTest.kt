@@ -39,29 +39,29 @@ class CourseTopicsTest : KtorClientTest() {
 
     private val teacherClient by lazy { createAuthenticatedClient("stefan@gmail.com", "FSg54g45dg") }
 
-    private val CourseApi: CourseApi by inject { parametersOf(client) }
+    private val courseApi: CourseApi by inject { parametersOf(client) }
     private val courseTopicApi: CourseTopicApi by inject { parametersOf(teacherClient) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(teacherClient) }
     private val courseElementsApi: CourseElementsApi by inject { parametersOf(teacherClient) }
 
     @BeforeEach
     fun init(): Unit = runBlocking {
-        course = CourseApi.create(CreateCourseRequest("Test course for topics"))
+        course = courseApi.create(CreateCourseRequest("Test course for topics"))
             .also(::assertResultIsOk).unwrap()
         enrolTeacher(teacher1Id)
     }
 
     @AfterEach
     fun tearDown(): Unit = runBlocking {
-        CourseApi.setArchive(course.id)
-        CourseApi.delete(course.id)
+        courseApi.setArchive(course.id)
+        courseApi.delete(course.id)
     }
 
     private suspend fun enrolTeacher(userId: UUID) {
         enrolUser(userId, Role.Teacher.id)
     }
 
-    private suspend fun enrolUser(userId: UUID, roleId: Long) {
+    private fun enrolUser(userId: UUID, roleId: Long) {
 //        membershipApi.joinToScopeManually(userId, course.id, listOf(roleId)).also(::assertResultIsOk)
     }
 

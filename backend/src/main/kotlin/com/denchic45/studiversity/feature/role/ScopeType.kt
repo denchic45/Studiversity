@@ -15,7 +15,7 @@ data class ScopeType(val id: Long, val name: String, val parent: ScopeType?) {
             if (currentParent == null)
                 break
             if (currentParent.id in parentIds)
-                throw IllegalStateException("Cyclic parent: ${currentParent}")
+                throw IllegalStateException("Cyclic parent: $currentParent")
 
             parentIds.add(currentParent.id)
 

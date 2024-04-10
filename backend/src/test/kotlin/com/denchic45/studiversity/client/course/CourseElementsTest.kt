@@ -73,7 +73,7 @@ class CourseElementsTest : KtorClientTest() {
 
     private val student1Id by lazy { runBlocking { userApi.getBySurname("Васильев") }.unwrap().first().id }
 
-    private val CourseApi: CourseApi by inject { parametersOf(client) }
+    private val courseApi: CourseApi by inject { parametersOf(client) }
     private val courseElementsApi: CourseElementsApi by inject { parametersOf(client) }
     private val courseTopicApi: CourseTopicApi by inject { parametersOf(teacherClient) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(teacherClient) }
@@ -86,14 +86,14 @@ class CourseElementsTest : KtorClientTest() {
     private lateinit var courseWork: CourseWorkResponse
 
     override fun setup(): Unit = runBlocking {
-        course = CourseApi.create(CreateCourseRequest("Test course"))
+        course = courseApi.create(CreateCourseRequest("Test course"))
             .apply { assertResultIsOk(this) }.unwrap()
         enrolTeacher(teacher1Id)
     }
 
     override fun cleanup(): Unit = runBlocking {
-        CourseApi.setArchive(course.id)
-        CourseApi.delete(course.id)
+        courseApi.setArchive(course.id)
+        courseApi.delete(course.id)
     }
 
     @BeforeEach
@@ -129,13 +129,13 @@ class CourseElementsTest : KtorClientTest() {
         enrolUser(userId, Role.Teacher.id)
     }
 
-    private suspend fun enrolUser(userId: UUID, roleId: Long) {
+    private fun enrolUser(userId: UUID, roleId: Long) {
 //        membershipApi.joinToScopeManually(userId, course.id, listOf(roleId)).apply {
 //            assertResultIsOk(this)
 //        }
     }
 
-    private suspend fun unrollUser(userId: UUID) {
+    private fun unrollUser(userId: UUID) {
 //        membershipApi.leaveFromScope(userId, course.id, "manual")
 //            .onSuccess { println("Success unroll user: $userId") }
 //            .onFailure { println("Failed unroll user: $userId. Status: ${it.code}. Body: ${it.error}") }

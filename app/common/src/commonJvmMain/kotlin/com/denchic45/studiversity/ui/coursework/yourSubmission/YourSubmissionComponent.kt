@@ -22,7 +22,6 @@ import java.util.*
 
 @Inject
 class YourSubmissionComponent(
-    checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     private val addAttachmentToSubmissionUseCase: AddAttachmentToSubmissionUseCase,
     private val removeAttachmentFromSubmissionUseCase: RemoveAttachmentFromSubmissionUseCase,
     observeYourSubmissionUseCase: ObserveYourSubmissionUseCase,
@@ -69,18 +68,8 @@ class YourSubmissionComponent(
 
     val submission = MutableStateFlow<Resource<SubmissionUiState>>(Resource.Loading)
 
-//    val sheetExpanded = MutableStateFlow(false)
-
-//    private val backCallback = BackCallback { sheetExpanded.update { false } }
 
     init {
-//        backHandler.register(backCallback)
-//        componentScope.launch {
-//            sheetExpanded.collect {
-//                backCallback.isEnabled = it
-//            }
-//        }
-
         componentScope.launch {
             submission.emitAll(
                 merge(_observeYourSubmission, _updatedYourSubmission)
@@ -93,10 +82,7 @@ class YourSubmissionComponent(
         submission.value.onSuccess { submissionUiState ->
             componentScope.launch {
                 paths.map { path ->
-                    addAttachmentToSubmissionUseCase(
-                        submissionUiState.id,
-                        CreateFileRequest(path.toFile())
-                    )
+                    addAttachmentToSubmissionUseCase(submissionUiState.id, CreateFileRequest(path.toFile()))
                         .onSuccess {
                             println("success load: $it")
                         }.onFailure {

@@ -1,19 +1,20 @@
 package com.denchic45.studiversity.domain.model
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.timetable.model.PeriodMember
 import com.denchic45.studiversity.api.user.model.UserResponse
+import com.denchic45.studiversity.util.UUIDSerializer
+import kotlinx.serialization.Serializable
 import java.util.*
 
-@Parcelize
+@Serializable
 data class UserItem(
+    @Serializable(UUIDSerializer::class)
     override val id: UUID,
     val firstName: String,
     val surname: String,
     val avatarUrl: String,
     val subtitle: String? = null,
-) : UiModel, Parcelable {
+) : UiModel {
     val title: String = "$firstName $surname"
 }
 

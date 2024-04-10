@@ -65,7 +65,7 @@ class CourseRepository(private val storage: AttachmentFileStorage) {
         }
         q?.let {
             query.adjustColumnSet { leftJoin(Subjects, { Courses.subjectId }, { Subjects.id }) }
-                .adjustSlice { slice(fields + Subjects.id) }
+                .adjustSelect { select(fields + Subjects.id) }
                 .andWhere {
                     Courses.name.lowerCase() like "%$q%" or
                             (Subjects.name.lowerCase() like "%$q%") or

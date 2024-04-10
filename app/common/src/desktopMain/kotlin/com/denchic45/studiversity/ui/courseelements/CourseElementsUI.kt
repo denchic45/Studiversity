@@ -7,4 +7,9 @@ import androidx.compose.runtime.getValue
 @Composable
 fun CourseElementsScreen(component: CourseElementsComponent) {
     val elementsResource by component.elements.collectAsState()
+
+    CourseElementsContent(
+        elementsResource = elementsResource,
+        onElementClick = component::onItemClick,
+    )
 }

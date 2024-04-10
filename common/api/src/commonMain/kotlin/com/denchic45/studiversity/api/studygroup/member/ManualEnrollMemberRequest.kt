@@ -1,4 +1,4 @@
-package com.denchic45.studiversity.api.course.member
+package com.denchic45.studiversity.api.studygroup.member
 
 import com.denchic45.studiversity.util.UUIDSerializer
 import kotlinx.serialization.Serializable

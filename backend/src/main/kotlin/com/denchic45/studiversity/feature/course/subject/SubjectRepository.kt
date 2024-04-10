@@ -1,18 +1,18 @@
 package com.denchic45.studiversity.feature.course.subject
 
+import com.denchic45.studiversity.api.course.subject.model.CreateSubjectRequest
+import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
+import com.denchic45.studiversity.api.course.subject.model.UpdateSubjectRequest
 import com.denchic45.studiversity.database.table.CourseDao
 import com.denchic45.studiversity.database.table.Courses
 import com.denchic45.studiversity.database.table.SubjectDao
 import com.denchic45.studiversity.database.table.Subjects
-import com.denchic45.studiversity.api.course.subject.model.CreateSubjectRequest
-import com.denchic45.studiversity.api.course.subject.model.SubjectResponse
-import com.denchic45.studiversity.api.course.subject.model.UpdateSubjectRequest
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-class SubjectRepository() {
+class SubjectRepository {
 
     fun add(request: CreateSubjectRequest) = transaction {
         SubjectDao.new {
@@ -51,7 +51,7 @@ class SubjectRepository() {
         subjectDao.delete()
     }
 
-    suspend fun findIconsUrls(): List<String> {
+    fun findIconsUrls(): List<String> {
         return TODO()
 //        return bucket.list("subjects_icons").map { bucket.publicUrl("subjects_icons/${it.name}") }
     }

@@ -240,9 +240,7 @@ fun CourseContent(
                 else -> {
                     IconTitleBox(
                         icon = { Icon(Icons.Outlined.Error, "forbidden") },
-                        title = {
-                            Text("Неизвестная ошибка")
-                        }
+                        title = { Text("Неизвестная ошибка") }
                     )
                 }
             }
@@ -308,7 +306,6 @@ private fun Overlap(enable: Boolean, color: Color = Color.Black, onDismiss: () -
                     indication = null,
                     onClick = onDismiss
                 )
-
         ) {
             drawRect(color.copy(alpha = 0.32f))
         }

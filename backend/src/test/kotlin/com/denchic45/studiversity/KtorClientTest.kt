@@ -58,7 +58,7 @@ abstract class KtorClientTest : KoinTest {
 
     open fun cleanup() {}
 
-    fun createGuestClient() = testApp.createClient {
+    private fun createGuestClient() = testApp.createClient {
         installContentNegotiation()
     }
 

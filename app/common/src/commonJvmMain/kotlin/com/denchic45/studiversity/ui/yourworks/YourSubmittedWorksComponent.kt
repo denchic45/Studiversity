@@ -1,29 +1,25 @@
 package com.denchic45.studiversity.ui.yourworks
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.stack.push
 import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.domain.resource.loadingResource
-import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.FindYourSubmittedCourseWorksUseCase
+import com.denchic45.studiversity.ui.navigator.RootConfig
+import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.util.componentScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class YourSubmittedWorksComponent(
     private val findYourSubmittedCourseWorksUseCase: FindYourSubmittedCourseWorksUseCase,
     @Assisted
-    private val onWorkOpen: (courseId: UUID, workId: UUID) -> Unit,
+    private val rootNavigator: RootNavigator,
     @Assisted
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
@@ -51,7 +47,7 @@ class YourSubmittedWorksComponent(
     }
 
     fun onWorkClick(courseId: UUID, workId: UUID) {
-        onWorkOpen(courseId, workId)
+        rootNavigator.push(RootConfig.CourseWork(courseId, workId))
     }
 
     private suspend fun forceUpdate() {

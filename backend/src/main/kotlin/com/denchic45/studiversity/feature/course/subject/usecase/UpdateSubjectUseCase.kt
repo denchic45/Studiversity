@@ -7,7 +7,7 @@ import io.ktor.server.plugins.*
 import java.util.*
 
 class UpdateSubjectUseCase(private val subjectRepository: SubjectRepository) {
-  suspend operator fun invoke(id: UUID, request: UpdateSubjectRequest): SubjectResponse {
+  operator fun invoke(id: UUID, request: UpdateSubjectRequest): SubjectResponse {
         return subjectRepository.update(id, request) ?: throw NotFoundException()
     }
 }

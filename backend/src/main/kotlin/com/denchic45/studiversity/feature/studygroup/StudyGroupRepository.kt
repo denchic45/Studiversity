@@ -1,11 +1,10 @@
-package com.denchic45.studiversity.feature.studygroup.repository
+package com.denchic45.studiversity.feature.studygroup
 
 import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
 import com.denchic45.studiversity.database.exists
 import com.denchic45.studiversity.database.table.*
-import com.denchic45.studiversity.feature.studygroup.toResponse
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.Instant
@@ -75,7 +74,7 @@ class StudyGroupRepository {
             .map(StudyGroupDao::toResponse)
     }
 
-    fun remove(id: UUID) = StudyGroups.deleteWhere { StudyGroups.id eq id }.run { this != 0 }
+    fun remove(id: UUID) = StudyGroups.deleteWhere { StudyGroups.id eq id } > 0
 
     fun exist(id: UUID): Boolean {
         return StudyGroups.exists { StudyGroups.id eq id }

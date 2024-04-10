@@ -1,19 +1,18 @@
 package com.denchic45.studiversity.setup
 
+import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.config.database
 import com.denchic45.studiversity.database.table.ScopeDao
 import com.denchic45.studiversity.database.table.ScopeTypeDao
 import com.denchic45.studiversity.feature.auth.usecase.SignUpUseCase
-import com.denchic45.studiversity.feature.role.repository.ScopeRepository
 import com.denchic45.studiversity.feature.role.usecase.SetRoleToUserInScopeUseCase
 import com.denchic45.studiversity.logger.logger
 import com.denchic45.studiversity.setup.model.DatabaseSetupRequest
 import com.denchic45.studiversity.setup.model.OrganizationSetupRequest
 import com.denchic45.studiversity.setup.model.SetupErrors
-import com.denchic45.studiversity.util.respondWithError
-import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.util.ErrorInfo
+import com.denchic45.studiversity.util.respondWithError
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -47,7 +46,6 @@ fun Application.configureSetup() {
         }
 
         route("/setup") {
-            val scopeRepository: ScopeRepository by inject()
             val signup: SignUpUseCase by inject()
             val setRoleToUserInScope: SetRoleToUserInScopeUseCase by inject()
 
@@ -97,14 +95,14 @@ private suspend fun PipelineContext<*, ApplicationCall>.requireDatabaseConnectio
     try {
         transaction(Database.connect(url = config.dbUrl, user = config.dbUser, password = config.dbPassword)) {
             if (!connection.isClosed)
-                logger.info("database successfully connected")
+                logger.info { "database successfully connected" }
         }
     } catch (e: Exception) {
-        logger.error("database not connected")
+        logger.error { "database not connected" }
         if (e is SQLException) {
-            logger.error(
+            logger.error {
                 "database not connected: ${e.sqlState}"
-            )
+            }
             call.respondWithError(
                 HttpStatusCode.BadRequest,
                 ErrorInfo(
@@ -117,7 +115,7 @@ private suspend fun PipelineContext<*, ApplicationCall>.requireDatabaseConnectio
                 )
             )
         }
-        logger.error(e.message)
+        logger.error { e.message }
         throw e
     }
 }

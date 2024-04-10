@@ -1,5 +1,6 @@
 package com.denchic45.studiversity.feature.course.member
 
+import com.denchic45.studiversity.api.course.member.CourseMemberSorting
 import com.denchic45.studiversity.api.member.ScopeMember
 import com.denchic45.studiversity.database.distinctOn
 import com.denchic45.studiversity.database.exists
@@ -12,7 +13,7 @@ import java.util.*
 
 class CourseMemberRepository {
 
-    fun findByCourseId(courseId: UUID): List<ScopeMember> {
+    fun findByCourseId(courseId: UUID, sorting: List<CourseMemberSorting>?): List<ScopeMember> {
         val roles = UsersRolesScopes.getUserRolesByScopeId(courseId)
             .groupBy { it[UsersRolesScopes.userId].value }
             .mapValues { (_, value) -> value.map { RoleDao.wrapRow(it).toRole() } }

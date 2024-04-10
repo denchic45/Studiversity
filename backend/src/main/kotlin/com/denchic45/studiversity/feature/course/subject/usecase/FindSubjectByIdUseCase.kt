@@ -7,7 +7,7 @@ import java.util.*
 
 class FindSubjectByIdUseCase(private val subjectRepository: SubjectRepository) {
 
-  suspend operator fun invoke(id: UUID): SubjectResponse {
+  operator fun invoke(id: UUID): SubjectResponse {
         return subjectRepository.findById(id) ?: throw NotFoundException()
     }
 }

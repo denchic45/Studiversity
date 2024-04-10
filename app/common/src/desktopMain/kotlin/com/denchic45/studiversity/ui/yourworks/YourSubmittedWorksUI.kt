@@ -8,5 +8,5 @@ import androidx.compose.runtime.getValue
 @Composable
 fun YourSubmittedWorksScreen(component: YourSubmittedWorksComponent) {
     val works by component.works.collectAsState()
-    WorksListContent(works, component::onWorkClick)
+    WorksContent(works, component::onWorkClick)
 }

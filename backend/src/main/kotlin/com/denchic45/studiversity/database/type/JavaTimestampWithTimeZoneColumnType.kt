@@ -46,7 +46,7 @@ class JavaTimestampWithTimeZoneColumnType(zoneOffset: ZoneOffset) : ColumnType()
 }
 
 /**
- * A timestamp with timezone to store a instant.
+ * A timestamp with timezone to store an instant.
  *
  * **See:** https://www.toolbox.com/tech/data-management/blogs/zone-of-misunderstanding-092811/
  *

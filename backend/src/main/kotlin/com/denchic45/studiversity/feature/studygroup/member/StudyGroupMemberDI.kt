@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 private val useCaseModule = module {
     single { AddStudyGroupMemberUseCase(get(), get(), get()) }
-    single { FindStudyGroupMembersUseCase(get(), get(), get()) }
+    single { FindStudyGroupMembersUseCase(get(), get()) }
     single { CheckExistStudyGroupMemberUseCase(get(), get()) }
     single { RemoveStudyGroupMemberUseCase(get(), get(), get()) }
 }

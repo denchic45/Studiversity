@@ -51,22 +51,22 @@ class SubmissionsTest : KtorClientTest() {
 
     private val submissionsApiOfStudent: SubmissionsApi by inject { parametersOf(studentClient) }
     private val submissionsApiOfTeacher: SubmissionsApi by inject { parametersOf(teacherClient) }
-    private val CourseApi: CourseApi by inject { parametersOf(client) }
+    private val courseApi: CourseApi by inject { parametersOf(client) }
     private val attachmentApi: AttachmentApi by inject { parametersOf(client) }
     private val courseElementsApi: CourseElementsApi by inject { parametersOf(client) }
     private val courseWorkApi: CourseWorkApi by inject { parametersOf(client) }
 
 
     override fun setup(): Unit = runBlocking {
-        course = CourseApi.create(CreateCourseRequest("Test course for submissions")).apply {
+        course = courseApi.create(CreateCourseRequest("Test course for submissions")).apply {
             assertNotNull(get()) { unwrapError().error.toString() }
         }.unwrap()
         enrolTeacher(teacher1Id)
     }
 
     override fun cleanup(): Unit = runBlocking {
-        CourseApi.setArchive(course.id)
-        CourseApi.delete(course.id)
+        courseApi.setArchive(course.id)
+        courseApi.delete(course.id)
     }
 
     @BeforeEach
@@ -107,11 +107,11 @@ class SubmissionsTest : KtorClientTest() {
         enrolUser(userId, Role.Teacher.id)
     }
 
-    private suspend fun enrolUser(userId: UUID, roleId: Long) {
+    private fun enrolUser(userId: UUID, roleId: Long) {
 //        membershipApi.joinToScopeManually(userId, course.id, listOf(roleId)).also(::assertResultIsOk)
     }
 
-    private suspend fun unrollUser(userId: UUID) {
+    private fun unrollUser(userId: UUID) {
 //        membershipApi.leaveFromScope(userId, course.id, "manual")
 //            .onSuccess { println("Success unroll user: $userId") }
 //            .onFailure { println("Failed unroll user: $userId. Status: ${it.code}. Body: ${it.error}") }

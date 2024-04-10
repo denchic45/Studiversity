@@ -31,4 +31,4 @@ data class CourseWork @OptIn(ExperimentalSerializationApi::class) constructor(
 }
 
 @Serializable
-object CourseMaterial : CourseElementDetails()
+data object CourseMaterial : CourseElementDetails()

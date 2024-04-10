@@ -14,26 +14,22 @@ import com.denchic45.studiversity.ui.navigator.RootChild
 import com.denchic45.studiversity.ui.profile.ProfileScreen
 import com.denchic45.studiversity.ui.studygroup.StudyGroupScreen
 import com.denchic45.studiversity.ui.yourtimetables.YourTimetablesScreen
+import com.denchic45.studiversity.ui.yourworks.YourWorksScreen
 
 @Composable
-fun RootStackScreen(
-    component: RootStackChildrenContainer,
-) {
+fun RootStackScreen(component: RootStackChildrenContainer) {
     val childStack by component.childStack.subscribeAsState()
-//    Children(stack = component.childStack) {
     Crossfade(targetState = childStack) {
         when (val child = it.active.instance) {
             is RootChild.YourTimetables -> YourTimetablesScreen(child.component)
-//            is RootChild.YourStudyGroups -> YourStudyGroupsScreen(child.component)
             is RootChild.AdminDashboard -> AdminDashboardScreen(child.component)
             is RootChild.Course -> CourseScreen(child.component)
             is RootChild.StudyGroup -> StudyGroupScreen(child.component)
-            is RootChild.YourCourseWorks -> TODO()
+            is RootChild.YourCourseWorks -> YourWorksScreen(child.component)
             is RootChild.CourseEditor -> CourseEditorScreen(child.component)
             is RootChild.CourseWork -> CourseWorkScreen(child.component)
             is RootChild.CourseMaterial -> CourseMaterialScreen(child.component)
             is RootChild.Profile -> ProfileScreen(component = child.component)
         }
     }
-//    }
 }

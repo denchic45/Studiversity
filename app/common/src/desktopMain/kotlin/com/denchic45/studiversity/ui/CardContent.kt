@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.denchic45.studiversity.ui.theme.spacing
 
-@Deprecated("Use BlockContent")
+@Deprecated("Use BlockContent", replaceWith = ReplaceWith("BlockContent(content)"))
 @Composable
 fun CardContent(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Card(

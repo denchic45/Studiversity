@@ -46,7 +46,7 @@ class CourseTopicRepository {
 
     private fun shiftTopicsOrdersWhereGreaterOrder(courseId: UUID, oldOrder: Int, newOrder: Int) {
         val shiftUpper = oldOrder < newOrder
-        logger.info("reorder topic. old: $oldOrder new: $newOrder")
+        logger.info { "reorder topic. old: $oldOrder new: $newOrder" }
         val body: CourseTopics.(UpdateStatement) -> Unit = if (shiftUpper) {
             { it[order] = order - 1 }
         } else {

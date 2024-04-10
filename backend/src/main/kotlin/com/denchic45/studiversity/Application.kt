@@ -55,7 +55,6 @@ fun restartServer() {
     startServer()
 }
 
-@Suppress("unused")
 fun Application.module() = runBlocking {
     logger.info { "starting started..." }
     install(PartialContent)

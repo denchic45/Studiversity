@@ -8,7 +8,7 @@ import com.denchic45.studiversity.api.timetable.model.*
 
 fun PeriodDao.toResponse() = when (type) {
     PeriodType.LESSON -> LessonResponse(
-        id = id.value.toLong(),
+        id = id.value,
         date = date,
         order = order,
         room = room?.toResponse(),

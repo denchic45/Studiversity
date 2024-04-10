@@ -19,7 +19,7 @@ class StudyGroupMemberRepository {
             .groupBy { it[UsersRolesScopes.userId].value }
             .mapValues { (_, value) -> value.map { RoleDao.wrapRow(it).toRole() } }
 
-        val membersQuery = StudyGroupsMembers.innerJoin(Users, { StudyGroupsMembers.memberId }, { Users.id })
+        val membersQuery = StudyGroupsMembers.innerJoin(Users, { memberId }, { Users.id })
             .select(StudyGroupsMembers.memberId)
             .where(StudyGroupsMembers.studyGroupId eq studyGroupId)
 

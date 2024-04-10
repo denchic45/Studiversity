@@ -5,21 +5,20 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.ui.navigation.StackChildrenContainer
 import com.denchic45.studiversity.ui.navigator.RootConfig
-import com.denchic45.studiversity.ui.profile.ProfileComponent
 import com.denchic45.studiversity.ui.timetableloader.TimetableLoaderComponent
 import com.denchic45.studiversity.ui.timetablesearch.TimetableSearchComponent
+import kotlinx.serialization.Serializable
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.*
 
 @Inject
 class AdminDashboardComponent(
     timetableSearchComponent: (ComponentContext) -> TimetableSearchComponent,
-    timetableLoaderComponent: (onClose: () -> Unit, ComponentContext) -> TimetableLoaderComponent,
+    timetableLoaderComponent: (
+        onClose: () -> Unit, ComponentContext
+    ) -> TimetableLoaderComponent,
     coursesAdminComponent: (
         rootNavigation: StackNavigation<RootConfig>,
         ComponentContext,
@@ -37,12 +36,9 @@ class AdminDashboardComponent(
         ComponentContext,
     ) -> SubjectsAdminComponent,
     specialtiesAdminComponent: (
-        rootNavigation: StackNavigation<RootConfig>,
         ComponentContext,
     ) -> SpecialtiesAdminComponent,
-    roomsAdminComponent: (
-        ComponentContext,
-    ) -> RoomsAdminComponent,
+    roomsAdminComponent: (ComponentContext) -> RoomsAdminComponent,
     @Assisted
     rootNavigation: StackNavigation<RootConfig>,
     @Assisted
@@ -54,6 +50,7 @@ class AdminDashboardComponent(
 
     override val childStack = childStack(
         source = navigation,
+        serializer = Config.serializer(),
         initialConfiguration = Config.None,
         handleBackButton = true,
         childFactory = { config, context ->
@@ -72,7 +69,7 @@ class AdminDashboardComponent(
 
                 Config.Subjects -> Child.Subjects(subjectsAdminComponent(rootNavigation, context))
 
-                Config.Specialties -> Child.Specialties(specialtiesAdminComponent(rootNavigation, context))
+                Config.Specialties -> Child.Specialties(specialtiesAdminComponent(context))
 
                 Config.Rooms -> Child.Rooms(roomsAdminComponent(context))
             }
@@ -112,8 +109,8 @@ class AdminDashboardComponent(
     }
 
 
-    @Parcelize
-    sealed interface Config : Parcelable {
+    @Serializable
+    sealed interface Config {
         data object None : Config {
             private fun readResolve(): Any = None
         }
@@ -162,14 +159,5 @@ class AdminDashboardComponent(
         class Subjects(val component: SubjectsAdminComponent) : Child
         class Specialties(val component: SpecialtiesAdminComponent) : Child
         class Rooms(val component: RoomsAdminComponent) : Child
-    }
-
-    @Parcelize
-    sealed interface SidebarConfig : Parcelable {
-        data class Profile(val userId: UUID) : SidebarConfig
-    }
-
-    sealed interface SidebarChild {
-        class Profile(val component: ProfileComponent) : SidebarChild
     }
 }

@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.feature.studygroup.usecase
 
-import com.denchic45.studiversity.feature.studygroup.repository.StudyGroupRepository
+import com.denchic45.studiversity.feature.studygroup.StudyGroupRepository
 import com.denchic45.studiversity.transaction.SuspendTransactionWorker
 import com.denchic45.studiversity.util.searchable
 import java.util.*

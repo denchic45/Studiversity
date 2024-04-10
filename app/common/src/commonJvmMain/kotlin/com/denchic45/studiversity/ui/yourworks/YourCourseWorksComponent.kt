@@ -1,131 +1,100 @@
 package com.denchic45.studiversity.ui.yourworks
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.ExperimentalDecomposeApi
+import com.arkivanov.decompose.router.pages.Pages
+import com.arkivanov.decompose.router.pages.PagesNavigation
+import com.arkivanov.decompose.router.pages.childPages
+import com.arkivanov.decompose.router.pages.select
 import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.essenty.parcelable.Parcelable
 import com.arkivanov.essenty.parcelable.Parcelize
-import com.denchic45.studiversity.ui.coursework.CourseWorkComponent
-import com.denchic45.studiversity.ui.courseworkeditor.CourseWorkEditorComponent
-import com.denchic45.studiversity.ui.main.AppNavigation
-import com.denchic45.studiversity.ui.main.MainComponent
+import com.denchic45.studiversity.ui.course.CourseComponent.TabConfig
 import com.denchic45.studiversity.ui.navigation.EmptyChildrenContainer
-import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.navigator.RootNavigator
-import kotlinx.coroutines.flow.MutableStateFlow
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
 
+@OptIn(ExperimentalDecomposeApi::class)
 @Inject
 class YourCourseWorksComponent(
-    _yourUpcomingWorksComponent: (onWorkOpen: (UUID, UUID) -> Unit, ComponentContext) -> YourUpcomingWorksComponent,
-    _yourOverdueWorksComponent: (onWorkOpen: (UUID, UUID) -> Unit, ComponentContext) -> YourOverdueWorksComponent,
-    _yourSubmittedWorksComponent: (onWorkOpen: (UUID, UUID) -> Unit, ComponentContext) -> YourSubmittedWorksComponent,
-    private val _courseWorkComponent: (
-        onEdit: (courseId: UUID, elementId: UUID?) -> Unit,
-        onFinish: () -> Unit,
-        courseId: UUID,
-        elementId: UUID,
-        ComponentContext,
-    ) -> CourseWorkComponent,
-    courseWorkEditorComponent: (
-        onFinish: () -> Unit,
-        courseId: UUID,
-        workId: UUID?,
-        topicId: UUID?,
-        ComponentContext,
-    ) -> CourseWorkEditorComponent,
+    yourUpcomingWorksComponent: (RootNavigator, ComponentContext) -> YourUpcomingWorksComponent,
+    yourOverdueWorksComponent: (RootNavigator, ComponentContext) -> YourOverdueWorksComponent,
+    yourSubmittedWorksComponent: (RootNavigator, ComponentContext) -> YourSubmittedWorksComponent,
+    @Assisted
     private val rootNavigator: RootNavigator,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext, EmptyChildrenContainer {
 
-//    private val overlayNavigation = SlotNavigation<OverlayConfig>()
-//
-//    val childSlot = childSlot(
-//        source = overlayNavigation,
-//        handleBackButton = true,
-//        childFactory = { config, context ->
-//            when (config) {
-//                is OverlayConfig.CourseWork -> OverlayChild.CourseWork(
-//                    createCourseWorkComponent(
-//                        config.courseId,
-//                        config.workId,
-//                        context
-//                    )
-//                )
-//
-//                is OverlayConfig.CourseWorkEditor -> OverlayChild.CourseWorkEditor(
-//                    courseWorkEditorComponent(
-//                        { overlayNavigation.dismiss() },
-//                        config.courseId,
-//                        config.workId,
-//                        null,
-//                        context
-//                    )
-//                )
-//            }
-//        }
-//    )
+    private val pageNavigation = PagesNavigation<TabConfig>()
+    val childPages = childPages(
+        source = pageNavigation,
+        initialPages = {
+            Pages(
+                items = listOf(TabConfig.Upcoming, TabConfig.Overdue, TabConfig.Submitted),
+                selectedIndex = 0
+            )
+        },
+        childFactory = { config, context ->
+            when (config) {
+                TabConfig.Upcoming -> TabChild.Upcoming(
+                    yourUpcomingWorksComponent(
+                        rootNavigator,
+                        context
+                    )
+                )
 
-//    private fun createCourseWorkComponent(courseId: UUID, workId: UUID, context: ComponentContext) =
-//        _courseWorkComponent(
-//            { courseId, workId ->
-//                appNavigation.push(MainComponent.Config.CourseWorkEditor(courseId, workId))
-//            },
-//            appNavigation::pop,
-//            courseId,
-//            workId,
-//            context
-//        )
+                TabConfig.Overdue -> TabChild.Overdue(
+                    yourOverdueWorksComponent(
+                        rootNavigator,
+                        context
+                    )
+                )
 
-    val selectedTab = MutableStateFlow(0)
-    val tabChildren = listOf(
-        TabChild.Upcoming(
-            _yourUpcomingWorksComponent(
-                ::onWorkOpen,
-                componentContext.childContext("Upcoming")
-            )
-        ),
-        TabChild.Overdue(
-            _yourOverdueWorksComponent(
-                ::onWorkOpen,
-                componentContext.childContext("Overdue")
-            )
-        ),
-        TabChild.Submitted(
-            _yourSubmittedWorksComponent(
-                ::onWorkOpen,
-                componentContext.childContext("Submitted")
-            )
-        )
+                TabConfig.Submitted -> TabChild.Submitted(
+                    yourSubmittedWorksComponent(
+                        rootNavigator,
+                        context
+                    )
+                )
+
+            }
+        }
     )
 
-    private fun onWorkOpen(courseId: UUID, workId: UUID) {
-        rootNavigator.bringToFront(RootConfig.CourseWork(courseId, workId))
-    }
-
     fun onTabSelect(position: Int) {
-        selectedTab.value = position
+        pageNavigation.select(position)
     }
 
-    sealed class TabChild(val title: String) {
-        class Upcoming(val component: YourUpcomingWorksComponent) : TabChild("Предстоящие")
-        class Overdue(val component: YourOverdueWorksComponent) : TabChild("Просроченные")
-        class Submitted(val component: YourSubmittedWorksComponent) : TabChild("Сданные")
+    fun onBack() {
+        rootNavigator.pop()
     }
 
     @Parcelize
-    sealed interface OverlayConfig : Parcelable {
-        data class CourseWork(val courseId: UUID, val workId: UUID) : OverlayConfig
-        data class CourseWorkEditor(val courseId: UUID, val workId: UUID?) : OverlayConfig
+    sealed class TabConfig : Parcelable {
+        data object Upcoming : TabConfig() {
+            private fun readResolve(): Any = Upcoming
+        }
+
+        data object Overdue : TabConfig() {
+            private fun readResolve(): Any = Overdue
+        }
+
+        data object Submitted : TabConfig() {
+            private fun readResolve(): Any = Submitted
+        }
     }
 
-    sealed interface OverlayChild {
-        class CourseWork(val component: CourseWorkComponent) : OverlayChild
-        class CourseWorkEditor(val component: CourseWorkEditorComponent) : OverlayChild
+    sealed class TabChild {
+        class Upcoming(val component: YourUpcomingWorksComponent) : TabChild()
+        class Overdue(val component: YourOverdueWorksComponent) : TabChild()
+        class Submitted(val component: YourSubmittedWorksComponent) : TabChild()
     }
+}
+
+fun YourCourseWorksComponent.TabConfig.tabTitle() = when (this) {
+    YourCourseWorksComponent.TabConfig.Upcoming -> "Предстоящие"
+    YourCourseWorksComponent.TabConfig.Overdue -> "Просроченные"
+    YourCourseWorksComponent.TabConfig.Submitted -> "Сданные"
 }

@@ -2,8 +2,6 @@ package com.denchic45.studiversity.feature.studygroup
 
 import com.denchic45.studiversity.config.config
 import com.denchic45.studiversity.feature.studygroup.member.studyMemberModule
-import com.denchic45.studiversity.feature.studygroup.repository.StudyGroupMemberRepository
-import com.denchic45.studiversity.feature.studygroup.repository.StudyGroupRepository
 import com.denchic45.studiversity.feature.studygroup.usecase.*
 import org.koin.dsl.module
 
@@ -18,7 +16,6 @@ private val useCaseModule = module {
 
 private val repositoryModule = module {
     single { StudyGroupRepository() }
-    single { StudyGroupMemberRepository() }
 }
 
 val studyGroupModule = module {

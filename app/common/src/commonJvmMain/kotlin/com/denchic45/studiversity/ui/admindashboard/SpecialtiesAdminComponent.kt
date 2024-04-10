@@ -1,34 +1,28 @@
 package com.denchic45.studiversity.ui.admindashboard
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.value.Value
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.specialty.model.SpecialtyResponse
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.RemoveSpecialtyUseCase
-import com.denchic45.studiversity.ui.navigator.RootConfig
 import com.denchic45.studiversity.ui.search.SpecialtyChooserComponent
 import com.denchic45.studiversity.ui.specialtyeditor.SpecialtyEditorComponent
+import com.denchic45.studiversity.util.UUIDSerializer
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class SpecialtiesAdminComponent(
     private val removeSpecialtyUseCase: RemoveSpecialtyUseCase,
     specialtyChooserComponent: (onSelect: (SpecialtyResponse?) -> Unit, ComponentContext) -> SpecialtyChooserComponent,
     specialtyEditorComponent: (onFinish: (Boolean) -> Unit, UUID?, ComponentContext) -> SpecialtyEditorComponent,
-    @Assisted
-    private val rootNavigation: StackNavigation<RootConfig>,
     @Assisted
     componentContext: ComponentContext,
 ) : ComponentContext by componentContext,
@@ -41,8 +35,9 @@ class SpecialtiesAdminComponent(
     )
 
     private val slotNavigation = SlotNavigation<Config>()
-    val childSlot: Value<ChildSlot<Config, Child>> = childSlot(
+    val childSlot = childSlot(
         source = slotNavigation,
+        serializer = Config.serializer(),
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
@@ -77,9 +72,10 @@ class SpecialtiesAdminComponent(
         }
     }
 
-    @Parcelize
-    sealed interface Config : Parcelable {
-        data class SpecialtyEditor(val specialtyId: UUID?) : Config
+    @Serializable
+    sealed interface Config {
+        @Serializable
+        data class SpecialtyEditor(@Serializable(UUIDSerializer::class) val specialtyId: UUID?) : Config
     }
 
     sealed interface Child {

@@ -1,5 +1,8 @@
 package com.denchic45.studiversity.feature.course.work.submission
 
+import com.denchic45.studiversity.api.course.work.grade.GradeRequest
+import com.denchic45.studiversity.api.course.work.grade.SubmissionGradeRequest
+import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.feature.attachment.receiveAttachment
 import com.denchic45.studiversity.feature.attachment.usecase.AddAttachmentUseCase
 import com.denchic45.studiversity.feature.attachment.usecase.FindAttachmentsByResourceUseCase
@@ -9,9 +12,6 @@ import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.ktor.currentUserId
 import com.denchic45.studiversity.ktor.getUserUuidByParameterOrMe
 import com.denchic45.studiversity.ktor.getUuidOrFail
-import com.denchic45.studiversity.api.course.work.grade.GradeRequest
-import com.denchic45.studiversity.api.course.work.grade.SubmissionGradeRequest
-import com.denchic45.studiversity.api.role.model.Capability
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -178,8 +178,7 @@ fun Route.submissionByAuthorRoute() {
             val currentUserId = call.currentUserId()
             val submission = findSubmissionByStudent(
                 call.parameters.getUuidOrFail("workId"),
-                call.getUserUuidByParameterOrMe("studentId"),
-                currentUserId
+                call.getUserUuidByParameterOrMe("studentId")
             )
 
             val isOwnSubmission = submission.author.id == currentUserId

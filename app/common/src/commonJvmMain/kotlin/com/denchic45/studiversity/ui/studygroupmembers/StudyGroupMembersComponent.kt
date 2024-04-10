@@ -5,8 +5,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.domain.model.UserItem
@@ -19,6 +17,7 @@ import com.denchic45.studiversity.ui.navigator.RootNavigator
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*
@@ -57,6 +56,7 @@ class StudyGroupMembersComponent(
     private val slotNavigation = SlotNavigation<SlotConfig>()
     val childSlot: Value<ChildSlot<SlotConfig, SlotChild>> = childSlot(
         source = slotNavigation,
+        serializer = SlotConfig.serializer(),
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
@@ -154,12 +154,12 @@ class StudyGroupMembersComponent(
         }
     }
 
-    @Parcelize
-    sealed class SlotConfig : Parcelable {
-        data object InviteMembers : SlotConfig() {
-            private fun readResolve(): Any = InviteMembers
-        }
+    @Serializable
+    sealed class SlotConfig {
+        @Serializable
+        data object InviteMembers : SlotConfig()
 
+        @Serializable
         data class MemberEditor(val user: UserItem) : SlotConfig()
     }
 

@@ -23,6 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.ExperimentalDecomposeApi
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.studiversity.domain.resource.Resource
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.appbar.AppBarContent
@@ -30,27 +33,25 @@ import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.component.IconTitleBox
 import com.denchic45.studiversity.ui.component.TabIndicator
 import com.denchic45.studiversity.ui.uiTextOf
-import com.denchic45.studiversity.api.course.work.model.CourseWorkResponse
 import com.denchic45.studiversity.util.toString
 import kotlinx.coroutines.launch
 import java.util.*
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalDecomposeApi::class)
 @Composable
 fun YourWorksScreen(component: YourCourseWorksComponent) {
-    val children = component.tabChildren
-//    val childSlot by component.childSlot.subscribeAsState()
+    val childPages by component.childPages.subscribeAsState()
     val coroutineScope = rememberCoroutineScope()
 
     updateAppBarState(AppBarContent(uiTextOf("Мои задания")))
 
     Surface {
         Column(Modifier.fillMaxSize()) {
-            val selected by component.selectedTab.collectAsState()
-            val pagerState = rememberPagerState(selected, pageCount = { children.size })
+            val selectedTab = childPages.selectedIndex
+            val pagerState = rememberPagerState(selectedTab, pageCount = childPages.items::size)
             LaunchedEffect(pagerState) {
-                snapshotFlow { pagerState.currentPage }.collect { page ->
-                    component.selectedTab.value = page
+                snapshotFlow { pagerState.currentPage }.collect { position ->
+                    component.onTabSelect(position)
                 }
             }
             ScrollableTabRow(
@@ -59,13 +60,13 @@ fun YourWorksScreen(component: YourCourseWorksComponent) {
                 edgePadding = 0.dp
             ) {
                 // Add tabs for all of our pages
-                children.forEachIndexed { index, child ->
+                childPages.items.forEachIndexed { index, child ->
                     Tab(
-                        text = { Text(child.title) },
+                        text = { Text(child.configuration.tabTitle()) },
                         selected = pagerState.currentPage == index,
                         onClick = {
                             coroutineScope.launch {
-                                component.selectedTab.value = index
+                                component.onTabSelect(index)
                                 pagerState.animateScrollToPage(index)
                             }
                         },
@@ -73,31 +74,26 @@ fun YourWorksScreen(component: YourCourseWorksComponent) {
                 }
             }
 
-            HorizontalPager(state = pagerState) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    when (val child = children[it]) {
-                        is YourCourseWorksComponent.TabChild.Upcoming -> YourUpcomingWorksScreen(child.component)
-                        is YourCourseWorksComponent.TabChild.Overdue -> YourOverdueWorksScreen(child.component)
-                        is YourCourseWorksComponent.TabChild.Submitted -> YourSubmittedWorksScreen(child.component)
+            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) {
+                childPages.items[selectedTab].instance?.let { child ->
+                    when (child) {
+                        is YourCourseWorksComponent.TabChild.Upcoming -> {
+                            YourUpcomingWorksScreen(child.component)
+                        }
+
+                        is YourCourseWorksComponent.TabChild.Overdue -> {
+                            YourOverdueWorksScreen(child.component)
+                        }
+
+                        is YourCourseWorksComponent.TabChild.Submitted -> {
+                            YourSubmittedWorksScreen(child.component)
+                        }
                     }
                 }
             }
         }
-
-//        childSlot.overlay?.let {
-//            when (val child = it.instance) {
-//                is YourWorksComponent.OverlayChild.CourseWork -> {
-//                    CourseWorkScreen(component = child.component)
-//                }
-//
-//                is YourWorksComponent.OverlayChild.CourseWorkEditor -> {
-//                    CourseWorkEditorScreen(component = child.component)
-//                }
-//            }
-//        } ?: updateAppBarState(AppBarContent(uiTextOf("Мои задания")))
     }
 }
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

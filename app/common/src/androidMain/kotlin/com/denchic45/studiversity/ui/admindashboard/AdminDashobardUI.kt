@@ -11,17 +11,14 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
-import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 import com.denchic45.studiversity.common.R
 import com.denchic45.studiversity.ui.appbar.AppBarContent
-import com.denchic45.studiversity.ui.appbar.LocalAppBarState
 import com.denchic45.studiversity.ui.appbar.updateAppBarState
 import com.denchic45.studiversity.ui.theme.spacing
 import com.denchic45.studiversity.ui.timetableloader.TimetableLoaderScreen
@@ -30,9 +27,6 @@ import com.denchic45.studiversity.ui.uiTextOf
 
 @Composable
 fun AdminDashboardScreen(component: AdminDashboardComponent) {
-    val appBarState = LocalAppBarState.current
-
-    val childStack by component.childStack.subscribeAsState()
     Column {
         CustomListItem(
             title = "Расписания",
@@ -95,7 +89,7 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
     Children(component.childStack) {
         when (val child = it.instance) {
             AdminDashboardComponent.Child.None -> {
-                updateAppBarState( AppBarContent(title = uiTextOf("Панель управления")))
+                updateAppBarState(AppBarContent(title = uiTextOf("Панель управления")))
             }
 
             is AdminDashboardComponent.Child.TimetableFinder -> TimetableSearchScreen(child.component)
@@ -123,9 +117,7 @@ fun CustomListItem(
             Text(text = title, style = MaterialTheme.typography.titleMedium)
         },
         supportingContent = subtitle?.let {
-            {
-                Text(text = subtitle)
-            }
+            { Text(text = subtitle) }
         },
         leadingContent = {
             Icon(
