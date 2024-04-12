@@ -3,8 +3,6 @@ package com.denchic45.studiversity.ui.coursestudygroups
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.Value
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.domain.model.StudyGroupItem
 import com.denchic45.studiversity.domain.model.toItem
@@ -21,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*
@@ -31,8 +30,7 @@ class CourseStudyGroupsComponent(
     private val attachStudyGroupsToCourseUseCase: AttachStudyGroupsToCourseUseCase,
     private val detachStudyGroupsToCourseUseCase: DetachStudyGroupsToCourseUseCase,
     private val studyGroupChooserComponent: (
-            (StudyGroupItem?) -> Unit,
-            ComponentContext,
+            (StudyGroupItem?) -> Unit, ComponentContext
     ) -> StudyGroupChooserComponent,
     @Assisted
     private val courseId: UUID,
@@ -41,10 +39,11 @@ class CourseStudyGroupsComponent(
 ) : ComponentContext by componentContext {
     private val componentScope = componentScope()
 
-    private val overlayNavigation = SlotNavigation<Config>()
+    private val slotNavigation = SlotNavigation<Config>()
 
     val childSlot: Value<ChildSlot<Config, Child>> = childSlot(
-        source = overlayNavigation,
+        source = slotNavigation,
+        serializer = Config.serializer(),
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
@@ -65,8 +64,15 @@ class CourseStudyGroupsComponent(
         }
     }
 
+    private fun forceUpdate() {
+        componentScope.launch {
+            studyGroups.value = findAttachedStudyGroupsByCourseIdUseCase(courseId)
+                .mapResource { it.map(StudyGroupResponse::toItem) }.last()
+        }
+    }
+
     private fun onStudyGroupAdd(item: StudyGroupItem) {
-        overlayNavigation.dismiss()
+        slotNavigation.dismiss()
         componentScope.launch {
             attachStudyGroupsToCourseUseCase(courseId, item.id).last()
                 .onSuccess {
@@ -77,26 +83,23 @@ class CourseStudyGroupsComponent(
         }
     }
 
-    fun onStudyGroupRemove(item: StudyGroupItem) {
+    fun onStudyGroupRemove(studyGroupId: UUID) {
         componentScope.launch {
-            detachStudyGroupsToCourseUseCase(courseId, item.id).last()
+            detachStudyGroupsToCourseUseCase(courseId, studyGroupId)
                 .onSuccess {
-                    studyGroups.value.onSuccess {
-                        studyGroups.value = resourceOf(it - item)
-                    }
+                    studyGroups.value.onSuccess { forceUpdate() }
                 }
         }
     }
 
     fun onAddStudyGroupClick() {
-        overlayNavigation.activate(Config.StudyGroupChooser)
+        slotNavigation.activate(Config.StudyGroupChooser)
     }
 
-    @Parcelize
-    sealed interface Config : Parcelable {
-        data object StudyGroupChooser : Config {
-            private fun readResolve(): Any = StudyGroupChooser
-        }
+    @Serializable
+    sealed interface Config {
+        @Serializable
+        data object StudyGroupChooser : Config
     }
 
     sealed interface Child {

@@ -1,6 +1,6 @@
 package com.denchic45.studiversity.ui.room
 
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Room
 import androidx.compose.material3.Icon
@@ -24,11 +24,10 @@ fun RoomListItem(
             Icon(
                 imageVector = Icons.Outlined.Room,
                 contentDescription = "room",
-                modifier = Modifier.size(40.dp),
                 tint = MaterialTheme.colorScheme.secondary
             )
         },
         trailingContent = trailingContent,
-        modifier = modifier
+        modifier = modifier.height(64.dp)
     )
 }

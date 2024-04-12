@@ -1,32 +1,12 @@
-package com.denchic45.studiversity.ui.studygroupmembers
+package com.denchic45.studiversity.ui.addmembers
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.InputChip
-import androidx.compose.material3.InputChipDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -40,7 +20,7 @@ import com.denchic45.studiversity.ui.theme.spacing
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun InviteStudyGroupMembersContent(
+fun AddMembersContent(
     state: InvitedMembersState,
     onQueryChange: (String) -> Unit,
     onRoleSelect: (Role) -> Unit,
@@ -105,9 +85,7 @@ fun InviteStudyGroupMembersContent(
                 readOnly = true,
                 label = { Text("Роль") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(rolesExpanded) },
-                singleLine = true,
-//                isError = state.roleMessage != null,
-//                supportingText = { Text(state.roleMessage.orEmpty()) }
+                singleLine = true
             )
 
             CustomExposedDropdownMenu(
@@ -150,4 +128,17 @@ fun UserChip(item: UserItem, onRemove: () -> Unit) {
                 modifier = Modifier.size(InputChipDefaults.AvatarSize).clickable(onClick = onRemove)
             )
         })
+}
+
+@Stable
+class InvitedMembersState {
+    var queryText by mutableStateOf("")
+    var foundMembers by mutableStateOf(emptyList<UserItem>())
+    var assignableRoles by mutableStateOf(listOf<Role>())
+
+    val members = mutableStateListOf<UserItem>()
+    var role by mutableStateOf<Role?>(null)
+
+    val allowSave: Boolean
+        get() = members.isNotEmpty() && role != null
 }

@@ -22,7 +22,7 @@ class CourseMemberRepository(
         courseMemberApi.enroll(courseId, request)
     }
 
-    suspend fun removeMember(courseId: UUID, memberId: UUID) = fetchResource {
+    suspend fun remove(courseId: UUID, memberId: UUID) = fetchResource {
         courseMemberApi.delete(courseId, memberId)
     }
 }

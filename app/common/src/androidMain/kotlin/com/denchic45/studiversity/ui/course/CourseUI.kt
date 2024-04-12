@@ -274,7 +274,7 @@ fun CourseContent(
                                 }
 
                                 is CourseComponent.TabChild.Members -> {
-                                    CourseMembersScreen(child.component)
+                                    CourseMembersScreen(child.component, allowEdit)
                                 }
 
                                 is CourseComponent.TabChild.Timetable -> {

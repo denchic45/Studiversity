@@ -18,7 +18,7 @@ import org.koin.ktor.ext.inject
 fun Application.courseTopicRoutes() {
     routing {
         authenticate("auth-jwt") {
-            route("/course/{courseId}/topics") {
+            route("/courses/{courseId}/topics") {
                 val requireCapability: RequireCapabilityUseCase by inject()
                 val addCourseTopic: AddCourseTopicUseCase by inject()
                 val findCourseTopicsByCourse: FindCourseTopicsByCourseUseCase by inject()

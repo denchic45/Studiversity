@@ -23,6 +23,8 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.denchic45.studiversity.ui.BlockContent
 import com.denchic45.studiversity.ui.ResourceContent
 import com.denchic45.studiversity.ui.ScreenScaffold
+import com.denchic45.studiversity.ui.main.AppBarTitle
+import com.denchic45.studiversity.ui.main.CustomAppBar
 import com.denchic45.studiversity.ui.search.SearchState
 import com.denchic45.studiversity.ui.search.SearchableComponent
 import com.denchic45.studiversity.ui.theme.spacing
@@ -33,7 +35,8 @@ fun AdminDashboardScreen(component: AdminDashboardComponent) {
 
     Row {
         ModalDrawerSheet(Modifier.requiredWidth(300.dp).padding(end = MaterialTheme.spacing.normal)) {
-            Column(Modifier.padding(MaterialTheme.spacing.normal)) {
+            Column(Modifier.padding(horizontal = MaterialTheme.spacing.normal)) {
+                CustomAppBar(title = { AppBarTitle("Админ-панель") })
                 AdminListItem(
                     title = "Расписания",
                     selected = childStack.active.instance is AdminDashboardComponent.Child.TimetableFinder,
@@ -146,8 +149,8 @@ fun <T> AdminSearchScreen(
 private fun <T> SearchContent(
     component: SearchableComponent<T>,
     keyItem: (T) -> Any,
-    emptyQueryContent: @Composable() (() -> Unit)?,
-    emptyResultContent: @Composable() (() -> Unit)?,
+    emptyQueryContent: @Composable (() -> Unit)?,
+    emptyResultContent: @Composable (() -> Unit)?,
     placeholder: String,
     fabText: String,
     onAddClick: () -> Unit,

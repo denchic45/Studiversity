@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.denchic45.studiversity.ui.addmembers.AddMembersContent
 
 @Composable
 fun InviteStudyGroupMembersDialog(component: InviteStudyGroupMembersComponent) {
@@ -15,7 +16,7 @@ fun InviteStudyGroupMembersDialog(component: InviteStudyGroupMembersComponent) {
         onDismissRequest = component::onDismissRequest,
         title = { Text("Добавить новых участников") },
         text = {
-            InviteStudyGroupMembersContent(
+            AddMembersContent(
                 state = state,
                 onQueryChange = component::onQueryChange,
                 onRoleSelect = component::onRoleChange,

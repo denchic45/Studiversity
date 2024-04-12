@@ -32,17 +32,12 @@ import com.denchic45.studiversity.uivalidator.validator.CompositeValidator
 import com.denchic45.studiversity.uivalidator.validator.ValueValidator
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class CourseEditorComponent(
@@ -190,7 +185,7 @@ class CourseEditorComponent(
                     )
                 } ?: addCourseUseCase(CreateCourseRequest(state.name, state.subject?.id))
 
-                result.onSuccess { onFinish(true) }
+                result.onSuccess { withContext(Dispatchers.Main) { onFinish(true) } }
             }
     }
 

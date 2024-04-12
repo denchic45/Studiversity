@@ -10,8 +10,6 @@ import com.arkivanov.decompose.router.pages.select
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.value.Value
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.domain.resource.stateInResource
 import com.denchic45.studiversity.domain.resource.takeValueIfSuccess
@@ -30,6 +28,7 @@ import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.*
@@ -39,16 +38,12 @@ import java.util.*
 class CourseComponent(
     findCourseByIdUseCase: FindCourseByIdUseCase,
     checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
-    courseTopicsComponent: (
-        courseId: UUID,
-        ComponentContext,
-    ) -> CourseTopicsComponent,
+    courseTopicsComponent: (courseId: UUID, ComponentContext) -> CourseTopicsComponent,
     courseEditorComponent: (
         onFinish: (Boolean) -> Unit,
         courseId: UUID?,
         ComponentContext,
     ) -> CourseEditorComponent,
-
     courseStudyGroupsComponent: (UUID, ComponentContext) -> CourseStudyGroupsComponent,
     courseElementsComponent: (
         RootNavigator,
@@ -115,6 +110,7 @@ class CourseComponent(
     private val slotNavigation = SlotNavigation<SlotConfig>()
     val childSlot: Value<ChildSlot<SlotConfig, SlotChild>> = childSlot(
         source = slotNavigation,
+        serializer = SlotConfig.serializer(),
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
@@ -123,9 +119,7 @@ class CourseComponent(
                         { edited ->
                             slotNavigation.dismiss()
                             if (edited)
-                                componentScope.launch {
-                                    forceUpdate()
-                                }
+                                componentScope.launch { forceUpdate() }
                         },
                         courseId,
                         context
@@ -134,7 +128,7 @@ class CourseComponent(
 
                 SlotConfig.Info -> SlotChild.Info
 
-                SlotConfig.Topics -> TODO()
+                SlotConfig.Topics -> SlotChild.Topics(courseTopicsComponent(courseId, context))
             }
         }
     )
@@ -145,20 +139,21 @@ class CourseComponent(
     @OptIn(ExperimentalDecomposeApi::class)
     val childPages = childPages(
         source = pagesNavigation,
+        serializer = TabConfig.serializer(),
         initialPages = {
             Pages(
-                items = listOf(TabConfig.Members, TabConfig.Elements, TabConfig.Timetable),
+                items = listOf(TabConfig.Elements, TabConfig.Members, TabConfig.Timetable, TabConfig.StudyGroups),
                 selectedIndex = 0
             )
         },
         childFactory = { config, context ->
             when (config) {
-                TabConfig.Members -> {
-                    TabChild.Members(courseMembersComponent(rootNavigator, courseId, context))
-                }
-
                 TabConfig.Elements -> {
                     TabChild.Elements(courseElementsComponent(rootNavigator, courseId, context))
+                }
+
+                TabConfig.Members -> {
+                    TabChild.Members(courseMembersComponent(rootNavigator, courseId, context))
                 }
 
                 TabConfig.Timetable -> {
@@ -169,76 +164,6 @@ class CourseComponent(
             }
         }
     )
-
-//    private val stackNavigation = StackNavigation<Config>()
-//    val childStack = childStack(
-//        source = stackNavigation,
-//        handleBackButton = true,
-//        initialConfiguration = Config.None,
-//        childFactory = { config, context ->
-//            when (config) {
-//                is Config.Topics -> Child.Topics(
-//                    courseTopicsComponent(courseId, context)
-//                )
-//
-//                is Config.CourseEditor -> Child.CourseEditor(
-//                    courseEditorComponent({ edit ->
-//                        stackNavigation.pop()
-//                        if (edit) forceUpdate()
-//                    }, courseId, context)
-//                )
-//
-//                Config.CourseStudyGroupsEditor -> Child.CourseStudyGroups(
-//                    courseStudyGroupsComponent(courseId, context)
-//                )
-//
-//                is Config.CourseWorkEditor -> Child.CourseWorkEditor(
-//                    courseWorkEditorComponent(
-//                        stackNavigation::pop,
-//                        courseId,
-//                        config.workId,
-//                        null,
-//                        context
-//                    )
-//                )
-//
-//                is Config.CourseWork -> Child.CourseWork(
-//                    courseWorkComponent(
-//                        { _, workId -> stackNavigation.push(Config.CourseWorkEditor(workId)) },
-//                        stackNavigation::pop,
-//                        courseId, config.workId,
-//                        context
-//                    )
-//                )
-//
-//                is Config.CourseMaterial -> Child.CourseMaterial(
-//                    _courseMaterialComponent(
-//                        stackNavigation::pop,
-//                        { courseId, materialId ->
-//                            stackNavigation.bringToFront(
-//                                Config.CourseMaterialEditor(materialId)
-//                            )
-//                        },
-//                        courseId,
-//                        config.materialId,
-//                        context
-//                    )
-//                )
-//
-//                is Config.CourseMaterialEditor -> Child.CourseWorMaterialEditor(
-//                    courseMaterialEditorComponent(
-//                        { stackNavigation.pop() },
-//                        courseId,
-//                        config.materialId,
-//                        null,
-//                        context
-//                    )
-//                )
-//
-//                Config.None -> Child.None
-//            }
-//        }
-//    )
 
     private fun forceUpdate() {
         componentScope.launch { trigger.send(Unit) }
@@ -269,23 +194,19 @@ class CourseComponent(
         rootNavigator.pop()
     }
 
-    @Parcelize
-    sealed class TabConfig : Parcelable {
-        data object Elements : TabConfig() {
-            private fun readResolve(): Any = Elements
-        }
+    @Serializable
+    sealed class TabConfig {
+        @Serializable
+        data object Elements : TabConfig()
 
-        data object Members : TabConfig() {
-            private fun readResolve(): Any = Members
-        }
+        @Serializable
+        data object Members : TabConfig()
 
-        data object Timetable : TabConfig() {
-            private fun readResolve(): Any = Timetable
-        }
+        @Serializable
+        data object Timetable : TabConfig()
 
-        data object StudyGroups : TabConfig() {
-            private fun readResolve(): Any = StudyGroups
-        }
+        @Serializable
+        data object StudyGroups : TabConfig()
     }
 
     sealed class TabChild(val title: String) {
@@ -299,19 +220,16 @@ class CourseComponent(
         class StudyGroups(val component: CourseStudyGroupsComponent) : TabChild("Группы")
     }
 
-    @Parcelize
-    sealed class SlotConfig : Parcelable {
-        data object CourseEditor : SlotConfig() {
-            private fun readResolve(): Any = CourseEditor
-        }
+    @Serializable
+    sealed class SlotConfig {
+        @Serializable
+        data object CourseEditor : SlotConfig()
 
-        data object Info : SlotConfig() {
-            private fun readResolve(): Any = Info
-        }
+        @Serializable
+        data object Info : SlotConfig()
 
-        data object Topics : SlotConfig() {
-            private fun readResolve(): Any = Topics
-        }
+        @Serializable
+        data object Topics : SlotConfig()
     }
 
     sealed class SlotChild {

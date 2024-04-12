@@ -5,12 +5,13 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.value.Value
-import com.denchic45.studiversity.api.role.model.Capability
 import com.denchic45.studiversity.api.role.model.Role
 import com.denchic45.studiversity.domain.model.UserItem
 import com.denchic45.studiversity.domain.model.toUserItem
-import com.denchic45.studiversity.domain.resource.*
-import com.denchic45.studiversity.domain.usecase.CheckUserCapabilitiesInScopeUseCase
+import com.denchic45.studiversity.domain.resource.Resource
+import com.denchic45.studiversity.domain.resource.loadingResource
+import com.denchic45.studiversity.domain.resource.mapResource
+import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.FindCourseMembersUseCase
 import com.denchic45.studiversity.domain.usecase.RemoveCourseMemberUseCase
 import com.denchic45.studiversity.ui.membereditor.MemberRolesEditorComponent
@@ -26,7 +27,6 @@ import java.util.*
 
 @Inject
 class CourseMembersComponent(
-    checkUserCapabilitiesInScopeUseCase: CheckUserCapabilitiesInScopeUseCase,
     findCourseMembersUseCase: FindCourseMembersUseCase,
     private val removeCourseMemberUseCase: RemoveCourseMemberUseCase,
     private val enrolCourseMembersComponent: (
@@ -44,15 +44,6 @@ class CourseMembersComponent(
 ) : ComponentContext by componentContext {
 
     private val componentScope = componentScope()
-
-    private val checkCapabilities = checkUserCapabilitiesInScopeUseCase(
-        scopeId = courseId,
-        capabilities = listOf(Capability.WriteCourse)
-    ).stateInResource(componentScope)
-
-    val allowEdit = checkCapabilities.mapResource {
-        it.hasCapability(Capability.WriteCourse)
-    }.stateInResource(componentScope)
 
     private val slotNavigation = SlotNavigation<SlotConfig>()
     val childSlot: Value<ChildSlot<SlotConfig, SlotChild>> = childSlot(
@@ -118,11 +109,15 @@ class CourseMembersComponent(
         rootNavigator.bringToFront(RootConfig.Profile(memberId))
     }
 
-    fun onMemberEditClick(member: UserItem) {
+    fun onEnrolMembersClick() {
+        slotNavigation.activate(SlotConfig.EnrolMembers)
+    }
+
+    fun onEditMemberClick(member: UserItem) {
         slotNavigation.activate(SlotConfig.MemberEditor(member))
     }
 
-    fun onMemberRemoveClick(memberId: UUID) {
+    fun onRemoveMemberClick(memberId: UUID) {
         componentScope.launch {
             removeCourseMemberUseCase(courseId, memberId)
                 .onSuccess { forceUpdate() }

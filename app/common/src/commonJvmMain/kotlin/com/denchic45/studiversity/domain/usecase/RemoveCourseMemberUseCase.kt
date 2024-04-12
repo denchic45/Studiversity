@@ -11,6 +11,6 @@ class RemoveCourseMemberUseCase(
 ) {
 
     suspend operator fun invoke(courseId: UUID, memberId: UUID): EmptyResource {
-        return courseMemberRepository.removeMember(courseId, memberId)
+        return courseMemberRepository.remove(courseId, memberId)
     }
 }

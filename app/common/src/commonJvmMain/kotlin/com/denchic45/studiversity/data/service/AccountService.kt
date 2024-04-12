@@ -11,22 +11,13 @@ import com.denchic45.studiversity.api.user.model.Gender
 import com.denchic45.studiversity.api.user.model.UserResponse
 import com.denchic45.studiversity.data.preference.AppPreferences
 import com.denchic45.studiversity.data.preference.UserPreferences
-import com.denchic45.studiversity.domain.resource.ClientError
-import com.denchic45.studiversity.domain.resource.EmptyResource
-import com.denchic45.studiversity.domain.resource.Resource
-import com.denchic45.studiversity.domain.resource.mapResource
-import com.denchic45.studiversity.domain.resource.resourceOf
-import com.denchic45.studiversity.domain.resource.toResource
+import com.denchic45.studiversity.domain.resource.*
 import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class AccountService(
@@ -78,10 +69,14 @@ class AccountService(
         }
         .map { userApi.getMe() }
         .flatMapLatest {
-            userApi.getMe().mapBoth(
-                success = { userPreferences.observeLastUpdateTimestamp.map { resourceOf(it) } },
-                failure = { flowOf(resourceOf(ClientError(it))) }
-            )
+            userApi.getMe()
+                .mapBoth(
+                    success = {
+                        saveUserPreference(it)
+                        userPreferences.observeLastUpdateTimestamp.map { resourceOf(it) }
+                    },
+                    failure = { flowOf(resourceOf(ClientError(it))) }
+                )
         }
         .mapResource { findSelfLocally() }
 

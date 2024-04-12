@@ -5,25 +5,21 @@ import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import com.denchic45.studiversity.api.room.model.RoomResponse
 import com.denchic45.studiversity.domain.resource.onSuccess
 import com.denchic45.studiversity.domain.usecase.RemoveRoomUseCase
-import com.denchic45.studiversity.ui.confirm.ConfirmDialogInteractor
-import com.denchic45.studiversity.ui.confirm.ConfirmState
 import com.denchic45.studiversity.ui.roomeditor.RoomEditorComponent
 import com.denchic45.studiversity.ui.search.RoomChooserComponent
-import com.denchic45.studiversity.ui.uiTextOf
+import com.denchic45.studiversity.util.UUIDSerializer
 import com.denchic45.studiversity.util.componentScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class RoomsAdminComponent(
-    private val confirmDialogInteractor: ConfirmDialogInteractor,
     private val removeRoomUseCase: RemoveRoomUseCase,
     roomChooserComponent: (onSelect: (RoomResponse?) -> Unit, ComponentContext) -> RoomChooserComponent,
     roomEditorComponent: (onFinish: (Boolean) -> Unit, UUID?, ComponentContext) -> RoomEditorComponent,
@@ -33,19 +29,19 @@ class RoomsAdminComponent(
     AdminSearchableComponent<RoomResponse> {
 
     private val componentScope = componentScope()
+    override val searchableComponent = roomChooserComponent({ room -> room?.let(::onSelect) }, componentContext)
 
-    override val searchableComponent =
-        roomChooserComponent({ room -> room?.let(::onSelect) }, componentContext)
-
-    private val overlayNavigation = SlotNavigation<Config>()
-    val childSlot = childSlot(source = overlayNavigation,
+    private val slotNavigation = SlotNavigation<Config>()
+    val childSlot = childSlot(
+        source = slotNavigation,
+        serializer = Config.serializer(),
         handleBackButton = true,
         childFactory = { config, context ->
             when (config) {
                 is Config.RoomEditor -> Child.RoomEditor(
                     roomEditorComponent(
                         { edited ->
-                            overlayNavigation.dismiss()
+                            slotNavigation.dismiss()
                             if (edited) searchableComponent.forceUpdate()
                         },
                         config.roomId,
@@ -60,30 +56,26 @@ class RoomsAdminComponent(
     }
 
     override fun onAddClick() {
-        overlayNavigation.activate(Config.RoomEditor(null))
+        slotNavigation.activate(Config.RoomEditor(null))
     }
 
     override fun onEditClick(id: UUID) {
-        overlayNavigation.activate(Config.RoomEditor(id))
+        slotNavigation.activate(Config.RoomEditor(id))
     }
 
     override fun onRemoveClick(id: UUID) {
         componentScope.launch {
-            val confirm = confirmDialogInteractor.confirmRequest(
-                ConfirmState(
-                    uiTextOf("Удалить аудиторию?"),
-                    uiTextOf("Занятия с данной аудиторией по-прежнему будут доступны. Восстановить аудиторию будет невозможно.")
-                )
-            )
-            if (confirm) {
-                removeRoomUseCase(id).onSuccess { searchableComponent.forceUpdate() }
-            }
+            removeRoomUseCase(id).onSuccess { searchableComponent.forceUpdate() }
         }
     }
 
-    @Parcelize
-    sealed interface Config : Parcelable {
-        data class RoomEditor(val roomId: UUID?) : Config
+    @Serializable
+    sealed interface Config {
+        @Serializable
+        data class RoomEditor(
+            @Serializable(UUIDSerializer::class)
+            val roomId: UUID?
+        ) : Config
     }
 
     sealed interface Child {

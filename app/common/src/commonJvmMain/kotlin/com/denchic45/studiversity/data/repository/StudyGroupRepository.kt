@@ -6,13 +6,7 @@ import com.denchic45.studiversity.api.studygroup.StudyGroupApi
 import com.denchic45.studiversity.api.studygroup.model.CreateStudyGroupRequest
 import com.denchic45.studiversity.api.studygroup.model.StudyGroupResponse
 import com.denchic45.studiversity.api.studygroup.model.UpdateStudyGroupRequest
-import com.denchic45.studiversity.data.db.local.source.CourseLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.CourseTopicLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SpecialtyLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.StudyGroupCourseLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.StudyGroupLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.SubjectLocalDataSource
-import com.denchic45.studiversity.data.db.local.source.UserLocalDataSource
+import com.denchic45.studiversity.data.db.local.source.*
 import com.denchic45.studiversity.data.fetchResource
 import com.denchic45.studiversity.data.fetchResourceFlow
 import com.denchic45.studiversity.data.mapper.toEntity
@@ -34,7 +28,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Inject
-import java.util.UUID
+import java.util.*
 
 @Inject
 class StudyGroupRepository(
@@ -232,7 +226,7 @@ class StudyGroupRepository(
         courseApi.putStudyGroup(courseId, studyGroupId)
     }
 
-    fun removeFromCourse(studyGroupId: UUID, courseId: UUID) = fetchResourceFlow {
+    suspend fun removeFromCourse(studyGroupId: UUID, courseId: UUID) = fetchResource {
         courseApi.deleteStudyGroup(courseId, studyGroupId)
     }
 }

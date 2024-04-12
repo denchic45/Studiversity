@@ -1,9 +1,6 @@
 package com.denchic45.studiversity.database.table
 
-import org.jetbrains.exposed.sql.Query
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.innerJoin
+import org.jetbrains.exposed.sql.*
 import java.util.*
 
 object UsersRolesScopes : Table("user_role_scope") {
@@ -14,10 +11,10 @@ object UsersRolesScopes : Table("user_role_scope") {
     init {
         uniqueIndex("user_role_scope_un", userId, roleId, scopeId)
     }
-}
 
-fun UsersRolesScopes.getUserRolesByScopeId(scopeId: UUID): Query {
-    return UsersRolesScopes.innerJoin(Roles, { roleId }, { Roles.id })
-        .select(roleId)
-        .where { UsersRolesScopes.scopeId eq scopeId }
+    fun getUserRolesByScopeId(scopeId: UUID): Query {
+        return innerJoin(Roles, { roleId }, { Roles.id })
+            .selectAll()
+            .where { UsersRolesScopes.scopeId eq scopeId }
+    }
 }

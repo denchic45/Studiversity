@@ -20,7 +20,7 @@ interface CourseMemberApi {
 
 class CourseMemberApiImpl(private val client: HttpClient) : CourseMemberApi {
     override suspend fun getByCourse(courseId: UUID): ResponseResult<List<ScopeMember>> {
-        return client.get("/course/${courseId}/members").toResult()
+        return client.get("/courses/${courseId}/members").toResult()
     }
 
     override suspend fun enroll(courseId: UUID, body: CreateMemberRequest): EmptyResponseResult {

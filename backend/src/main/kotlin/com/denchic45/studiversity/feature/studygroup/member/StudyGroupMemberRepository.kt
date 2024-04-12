@@ -20,7 +20,7 @@ class StudyGroupMemberRepository {
             .mapValues { (_, value) -> value.map { RoleDao.wrapRow(it).toRole() } }
 
         val membersQuery = StudyGroupsMembers.innerJoin(Users, { memberId }, { Users.id })
-            .select(StudyGroupsMembers.memberId)
+            .select(Users.columns  + StudyGroupsMembers.memberId)
             .where(StudyGroupsMembers.studyGroupId eq studyGroupId)
 
         sorting?.forEach { sort ->

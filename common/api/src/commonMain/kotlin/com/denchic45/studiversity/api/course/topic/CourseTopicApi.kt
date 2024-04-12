@@ -37,7 +37,7 @@ class CourseTopicApiImpl(private val client: HttpClient) : CourseTopicApi {
         courseId: UUID,
         request: CreateCourseTopicRequest
     ): ResponseResult<CourseTopicResponse> {
-        return client.post("/course/$courseId/topics") {
+        return client.post("/courses/$courseId/topics") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.toResult()
@@ -70,7 +70,7 @@ class CourseTopicApiImpl(private val client: HttpClient) : CourseTopicApi {
     }
 
     override suspend fun getList(courseId: UUID): ResponseResult<List<CourseTopicResponse>> {
-        return client.get("/course/$courseId/topics").toResult()
+        return client.get("/courses/$courseId/topics").toResult()
     }
 
     override suspend fun delete(

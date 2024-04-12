@@ -14,6 +14,7 @@ import com.denchic45.studiversity.ktor.currentUserId
 import com.denchic45.studiversity.ktor.getSortingBy
 import com.denchic45.studiversity.ktor.getUuidOrFail
 import com.denchic45.studiversity.util.ErrorInfo
+import com.denchic45.studiversity.util.ErrorResponse
 import com.denchic45.studiversity.util.respondWithError
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -22,7 +23,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
-fun Route.courseMembers() {
+fun Route.courseMembersRoutes() {
     route("/members") {
         val requireCapability: RequireCapabilityUseCase by inject()
         val findCourseMembersUseCase: FindCourseMembersUseCase by inject()
@@ -50,7 +51,13 @@ fun Route.courseMembers() {
             requirePermissionToAssignRoles(currentUserId, assignableRoles, courseId)
             requireAvailableRolesInScope(assignableRoles, courseId)
             if (checkExistCourseMember(courseId, request.memberId)) {
-                call.respond(HttpStatusCode.BadRequest, CourseMemberErrors.COURSE_MEMBER_ALREADY_EXIST)
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    ErrorResponse(
+                        HttpStatusCode.BadRequest.value,
+                        ErrorInfo(CourseMemberErrors.COURSE_MEMBER_ALREADY_EXIST)
+                    )
+                )
                 return@post
             }
 

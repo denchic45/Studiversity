@@ -1,10 +1,11 @@
 package com.denchic45.studiversity.ui.course
 
 import androidx.compose.animation.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.ViewDay
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,148 +47,67 @@ fun CourseScreen(component: CourseComponent) {
         }
     }
     ResourceContent(courseResource) { course ->
-        CustomAppBar(
-            title = { AppBarTitle(course.name) },
-            actions = {
-                IconButton(onClick = component::onInfoClick) { Icon(Icons.Outlined.Info, null) }
-                if (allowEdit) {
-                    IconButton(onClick = component::onTopicsClick) { Icon(Icons.Outlined.Topic, null) }
-                    IconButton(onClick = component::onEditClick) { Icon(Icons.Outlined.Edit, null) }
+        Column {
+            CustomAppBar(
+                title = { AppBarTitle(course.name) },
+                actions = {
+                    IconButton(onClick = component::onInfoClick) { Icon(Icons.Outlined.Info, null) }
+                    if (allowEdit) {
+                        IconButton(onClick = component::onTopicsClick) { Icon(Icons.Outlined.ViewDay, null) }
+                        IconButton(onClick = component::onEditClick) { Icon(Icons.Outlined.Edit, null) }
+                    }
+                },
+                navigationContent = { NavigationIconBack(onClick = component::onBack) }
+            )
+
+            val activeChildPageInstance = childPages.items[childPages.selectedIndex].instance
+            Row {
+                Column(Modifier.requiredWidth(300.dp).padding(end = MaterialTheme.spacing.normal)) {
+                    childPages.items.forEachIndexed { index, child ->
+                        NavigationDrawerItem(
+                            label = {
+                                Text(
+                                    text = child.configuration.tabTitle(),
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            },
+                            onClick = { component.onTabSelect(index) },
+                            selected = index == childPages.selectedIndex
+                        )
+                    }
                 }
-            },
-            navigationContent = { NavigationIconBack(onClick = component::onBack) }
-        )
 
-        val activeChildPageInstance = childPages.items[childPages.selectedIndex].instance
-        Row {
-            Column(Modifier.requiredWidth(300.dp).padding(end = MaterialTheme.spacing.normal)) {
-                childPages.items.forEachIndexed { index, child ->
-                    NavigationDrawerItem(
-                        label = {
-                            Text(
-                                text = child.configuration.tabTitle(),
-                                style = MaterialTheme.typography.labelLarge
-                            )
-                        },
-                        onClick = { component.onTabSelect(index) },
-                        selected = index == childPages.selectedIndex
-                    )
-                }
-            }
+                activeChildPageInstance?.let {
+                    Box(contentAlignment = Alignment.TopCenter) {
+                        AnimatedContent(activeChildPageInstance,
+                            transitionSpec = {
+                                (slideInVertically { -it / 8 } + fadeIn())
+                                    .togetherWith(slideOutVertically { it / 8 } + fadeOut())
+                            }
+                        ) { child ->
+                            Box(Modifier.fillMaxSize()) {
+                                when (child) {
+                                    is CourseComponent.TabChild.Elements -> {
+                                        CourseElementsScreen(child.component, allowEdit)
+                                    }
 
-            activeChildPageInstance?.let {
-                Box(contentAlignment = Alignment.TopCenter) {
-                    AnimatedContent(activeChildPageInstance,
-                        transitionSpec = {
-                            (slideInVertically { -it / 8 } + fadeIn())
-                                .togetherWith(slideOutVertically { it / 8 } + fadeOut())
-                        }
-                    ) { child ->
-                        Box(Modifier.fillMaxSize()) {
-                            when (child) {
-                                is CourseComponent.TabChild.Elements -> {
-                                    CourseElementsScreen(child.component)
-                                }
+                                    is CourseComponent.TabChild.Members -> {
+                                        CourseMembersScreen(child.component, allowEdit)
+                                    }
 
-                                is CourseComponent.TabChild.Members -> {
-                                    CourseMembersScreen(child.component)
-                                }
+                                    is CourseComponent.TabChild.Timetable -> {
+                                        CourseTimetableScreen(child.component)
+                                    }
 
-                                is CourseComponent.TabChild.Timetable -> {
-                                    CourseTimetableScreen(child.component)
-                                }
-
-                                is CourseComponent.TabChild.StudyGroups -> {
-                                    CourseStudyGroupsScreen(child.component)
+                                    is CourseComponent.TabChild.StudyGroups -> {
+                                        CourseStudyGroupsScreen(child.component, allowEdit)
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-    }
-}
-
-
-//@Composable
-//fun CourseContent(
-//    course: Resource<CourseResponse>,
-//    allowEdit: Boolean,
-//    children: List<CourseComponent.TabChild>,
-//    sidebarChild: ChildSlot<CourseComponent.SidebarConfig, CourseComponent.SidebarChild>,
-//    onEditCourseClick: () -> Unit,
-//    onOpenTopicsClick: () -> Unit
-//) {
-//    Card(
-//        shape = RoundedCornerShape(16.dp),
-//        modifier = Modifier.fillMaxSize().padding(end = 24.dp, bottom = 24.dp),
-//        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-//        elevation = CardDefaults.cardElevation(0.dp)
-//    ) {
-//        var selectedTab by remember { mutableStateOf(0) }
-//
-//        Column {
-//            TabRow(selectedTabIndex = selectedTab,
-//                modifier = Modifier.width(396.dp),
-//                contentColor = MaterialTheme.colorScheme.primary,
-//                indicator = { tabPositions -> TabIndicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab])) },
-//                divider = {}) {
-//                children.forEachIndexed { index, item ->
-//                    Tab(
-//                        selectedTab == index,
-//                        onClick = { selectedTab = index },
-//                        text = { Text(item.title) }
-//                    )
-//                }
-//            }
-//            Divider()
-//            Row {
-//                Box(modifier = Modifier.weight(3f)) {
-//                    when (val child = children[selectedTab]) {
-//                        is CourseComponent.TabChild.Elements -> TODO()
-//                        is CourseComponent.TabChild.Members -> TODO()
-//                        is CourseComponent.TabChild.Timetable -> TODO()
-//                    }
-//                }
-//                sidebarChild.child?.instance?.let { sidebar ->
-//                    Box(Modifier.weight(1f)) {
-//                        when (sidebar) {
-////                            is CourseComponent.SidebarChild.ScopeMemberEditor -> TODO()
-//                            else -> {}
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-
-@Composable
-private fun CourseBar(
-    allowEdit: Boolean,
-    onEditCourseClick: () -> Unit,
-    onOpenCourseTopicClick: () -> Unit,
-) {
-    Row(
-        Modifier.fillMaxWidth().height(64.dp)
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = MaterialTheme.spacing.medium),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (!allowEdit) return
-        Spacer(Modifier.weight(1f))
-        IconButton(onClick = onOpenCourseTopicClick) {
-            Icon(
-                imageVector = Icons.Outlined.ViewDay,
-                contentDescription = "open course topics"
-            )
-        }
-        IconButton(onClick = onEditCourseClick) {
-            Icon(
-                imageVector = Icons.Outlined.Settings,
-                contentDescription = "open course editor"
-            )
         }
     }
 }

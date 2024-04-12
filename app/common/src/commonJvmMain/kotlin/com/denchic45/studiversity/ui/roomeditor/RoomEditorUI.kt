@@ -59,13 +59,15 @@ fun RoomEditorContent(
             onValueChange = onNameChange,
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             placeholder = { Text("Название") },
+            singleLine = true,
             modifier = Modifier.focusRequester(focusRequester)
         )
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.normal))
         OutlinedTextField(
             value = state.shortname,
             onValueChange = onShortnameChange,
-            placeholder = { Text("Краткое название") }
+            placeholder = { Text("Краткое название") },
+            singleLine = true
         )
     }
 }

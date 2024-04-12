@@ -1,7 +1,7 @@
 package com.denchic45.studiversity.feature.course
 
 import com.denchic45.studiversity.config.config
-import com.denchic45.studiversity.feature.course.member.courseMembers
+import com.denchic45.studiversity.feature.course.member.courseMembersRoutes
 import com.denchic45.studiversity.feature.course.usecase.*
 import com.denchic45.studiversity.feature.role.usecase.RequireCapabilityUseCase
 import com.denchic45.studiversity.ktor.*
@@ -94,9 +94,7 @@ private fun Route.courseByIdRoutes() {
 
             requireCapability(currentUserId, Capability.WriteCourse, courseId)
 
-            val body = call.receive<UpdateCourseRequest>()
-
-            updateCourse(courseId, body).let { course ->
+            updateCourse(courseId, call.receive()).let { course ->
                 call.respond(HttpStatusCode.OK, course)
             }
         }
@@ -132,12 +130,12 @@ private fun Route.courseByIdRoutes() {
             removeCourse(courseId)
             call.respond(HttpStatusCode.NoContent)
         }
-        courseMembers()
-        courseStudyGroups()
+        courseMembersRoutes()
+        courseStudyGroupsRoutes()
     }
 }
 
-private fun Route.courseStudyGroups() {
+private fun Route.courseStudyGroupsRoutes() {
     route("/studygroups") {
         val requireCapability: RequireCapabilityUseCase by inject()
         val findCourseStudyGroups: FindCourseStudyGroupsUseCase by inject()
@@ -161,7 +159,7 @@ private fun Route.courseStudyGroups() {
 
                 requireCapability(currentUserId, Capability.WriteCourseStudyGroups, courseId)
 
-                val studyGroupId = call.parameters["studyGroupId"]!!.toUUID()
+                val studyGroupId = call.parameters.getUuidOrFail("studyGroupId")
                 attachStudyGroupToCourse(courseId, studyGroupId)
                 call.respond(HttpStatusCode.OK)
             }
@@ -171,7 +169,7 @@ private fun Route.courseStudyGroups() {
 
                 requireCapability(currentUserId, Capability.WriteCourseStudyGroups, courseId)
 
-                val studyGroupId = call.parameters["studyGroupId"]!!.toUUID()
+                val studyGroupId = call.parameters.getUuidOrFail("studyGroupId")
                 detachStudyGroupToCourse(studyGroupId, courseId)
                 call.respond(HttpStatusCode.NoContent)
             }

@@ -141,13 +141,13 @@ class RoleRepository {
         val scopeTypeDao = ScopeDao[scopeId].type
         val userRolesInThisAndParentScopes = getUserRoleIdsInThisAndParentScopes(userId, scopeId)
 
-        return RolesAssignments
-            .innerJoin(Roles, { assignableRoleId }, { Roles.id })
+        return RolesAssignments.innerJoin(Roles, { assignableRoleId }, { Roles.id })
             .select(Roles.columns)
             .where(
                 RolesAssignments.roleId inList userRolesInThisAndParentScopes
                         and (Roles.scopeTypeId eq scopeTypeDao.id)
             )
+            .groupBy(Roles.id)
             .let(RoleDao::wrapRows)
             .map(RoleDao::toRole)
     }

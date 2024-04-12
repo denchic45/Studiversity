@@ -53,9 +53,9 @@ private fun AuthProgress(child: AuthComponent.Child) {
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
     ).value
     LinearProgressIndicator(
-        progress = animatedProgress,
+        progress = { animatedProgress },
         modifier = Modifier.fillMaxWidth(),
         color = md_theme_dark_tertiary,
-        trackColor = Color.Transparent
+        trackColor = Color.Transparent,
     )
 }
